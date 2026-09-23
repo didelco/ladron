@@ -25,7 +25,11 @@ static func seen_share(g: Guard, zone: Museum.Zone, since: float) -> float:
 		return 1.0
 	var n := 0
 	for t in zone.tiles:
-		if g.seen_at[t.y * Museum.w + t.x] >= since:
+		# 0 is "never seen". The game clock starts at 0 when the game does, so
+		# early on `since` can be negative, and a bare >= would count every
+		# unseen tile as looked over.
+		var at := g.seen_at[t.y * Museum.w + t.x]
+		if at > 0 and at >= since:
 			n += 1
 	return float(n) / zone.tiles.size()
 

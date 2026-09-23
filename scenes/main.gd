@@ -1,11 +1,11 @@
 extends Node3D
-## Phase 2: the game, playable, without Laya and without the looks.
-##
-## The museum is boxes, the thief and the guards are capsules with a nose, and
-## the guards decide with the fallback rules (Mind.fallback). Everything is
-## built from code, so this one scene is the whole game for now. The loop is
-## the web version's Game.tsx tick: thieves, noises, guards, the yell, the
-## warning, keeping apart, lights, hidden, caught, the clock.
+## The game, still without the looks: the museum is boxes, the thief and the
+## guards are capsules with a nose. The guards think with Laya through the
+## brain service (BrainClient), and with the fallback rules (Mind.fallback)
+## whenever it is not there. Everything is built from code, so this one scene
+## is the whole game for now. The loop is the web version's Game.tsx tick:
+## thieves, noises, guards, the yell, the warning, keeping apart, lights,
+## hidden, caught, the clock.
 
 ## small, medium or large
 @export var size := "small"
@@ -42,6 +42,8 @@ var stride := [0.0, 0.0]
 var last_think := 0.0
 var last_spread := 0.0
 var log_lines: Array[String] = []
+var think_tick := 0
+var brain: BrainClient
 
 var world: Node3D
 var camera: Camera3D
@@ -56,6 +58,10 @@ var log_label: Label
 
 
 func _ready() -> void:
+	brain = BrainClient.new()
+	add_child(brain)
+	brain.decided.connect(_on_decided)
+	brain.failed.connect(_on_brain_failed)
 	_build_environment()
 	_build_hud()
 	new_round()
@@ -149,13 +155,20 @@ func _tick(dt: float) -> void:
 	if now - last_spread > 500:
 		last_spread = now
 		Sim.keep_apart(guards)
-	# Thinking without Laya: the fallback rules, for guards with a decision to make.
+	# Thinking. Only guards with a decision to make are asked — a guard half
+	# way through a plan made on the same facts would ignore the answer — and
+	# everyone every third time, to keep pace and torch fresh. Without the
+	# brain, the fallback rules decide for the ones that need it.
 	if now - last_think > THINK_EVERY_MS:
 		last_think = now
-		for g in guards:
-			if not g.sees_player and Sim.needs_plan(g):
-				var others: Array[Guard] = guards.filter(func(o): return o != g)
-				Sim.apply_decision(g, Mind.fallback(g, others, now))
+		think_tick += 1
+		var everyone := think_tick % 3 == 0
+		var asking: Array[Guard] = guards.filter(func(g): return not g.sees_player and (everyone or Sim.needs_plan(g)))
+		if not brain.ask(asking, guards, now) and not brain.busy:
+			for g in asking:
+				if Sim.needs_plan(g):
+					var others: Array[Guard] = guards.filter(func(o): return o != g)
+					Sim.apply_decision(g, Mind.fallback(g, others, now))
 
 	for p in thieves:
 		p.hidden = Sim.is_hidden(guards, p)
@@ -168,6 +181,24 @@ func _tick(dt: float) -> void:
 		phase = "caught"
 	elif time_left <= 0:
 		phase = "escaped"
+
+
+func _on_decided(decisions: Dictionary, _ms: int) -> void:
+	if phase != "playing":
+		return
+	for g in guards:
+		if g.sees_player or not decisions.has(g.id):
+			continue
+		var before := g.decision.label if g.decision else ""
+		Sim.apply_decision(g, decisions[g.id])
+		# Log what it actually does: a committed guard keeps its plan.
+		if g.decision.label != before:
+			var p: float = g.decision.probabilities.get(g.decision.option, 0.0)
+			_log("%s: %s · %d%%%s" % [g.name, g.decision.label, roundi(p * 100), " (duda)" if g.decision.torn else ""])
+
+
+func _on_brain_failed(reason: String) -> void:
+	_log("IA: reglas de reserva (%s)" % reason)
 
 
 func _log(line: String) -> void:
@@ -429,7 +460,8 @@ func _draw_hud() -> void:
 		stance = "A GATAS" if p.posture >= 1.0 else "BAJANDO"
 	elif p.posture > 0:
 		stance = "SUBIENDO"
-	hud.text = "%02d   %s   %s   %s" % [ceili(maxf(0.0, time_left)), "A CUBIERTO" if p.hidden else "A LA VISTA", stance, "museo %s (%s)" % [size, Museum.shape]]
+	var ia := "IA: Laya %d ms" % brain.last_ms if brain.status == "laya" else "IA: reglas"
+	hud.text = "%02d   %s   %s   %s   %s" % [ceili(maxf(0.0, time_left)), "A CUBIERTO" if p.hidden else "A LA VISTA", stance, "museo %s (%s)" % [size, Museum.shape], ia]
 	log_label.text = "\n".join(log_lines)
 	if phase == "caught":
 		banner.text = "TE HAN PILLADO\nESPACIO: otra vez · 1/2/3: tamaño"

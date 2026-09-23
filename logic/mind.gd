@@ -303,7 +303,8 @@ static func _neighbours(a: Museum.Zone, b: Museum.Zone) -> bool:
 static func _vantage(g: Guard, z: Museum.Zone, since: float) -> Vector2i:
 	var pool: Array[Vector2i] = []
 	for t in z.tiles:
-		if g.seen_at[t.y * Museum.w + t.x] < since:
+		var seen := g.seen_at[t.y * Museum.w + t.x]
+		if seen <= 0 or seen < since:
 			pool.append(t)
 	if pool.is_empty():
 		pool = z.tiles

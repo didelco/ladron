@@ -685,7 +685,8 @@ static func _search_spot_near(g: Guard, near: float, hiding: float) -> Vector2i:
 		var d := Museum.dist(t.x + 0.5, t.y + 0.5, m.x, m.y)
 		if d < 1.2 or d > radius:
 			continue
-		if g.seen_at[t.y * Museum.w + t.x] >= m.at:
+		var seen := g.seen_at[t.y * Museum.w + t.x]
+		if seen > 0 and seen >= m.at:
 			continue
 		var tucked := 0
 		for dd in Museum.DIRS:

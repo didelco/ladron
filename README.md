@@ -16,11 +16,11 @@ tests/   pruebas sin ventana
 
 ## Plan
 
-1. **Esqueleto y generador** ← aquí. Mismo museo que la web con la misma semilla, comprobado
-   contra 90 museos exportados de la versión web (`tests/fixtures/`).
-2. **Jugable sin IA**: museo con cajas, ladrón, guardias con las reglas de reserva, cámara y controles.
-3. **Laya**: cliente HTTP a `brain/` (`POST /decide`, todos los guardias en una llamada) y la mente de cada guardia.
-4. **Aspecto**: figuras como en la web (encapsuladas en una escena `Figure` para cambiarlas por
+1. ✅ **Esqueleto y generador**: mismo museo que la web con la misma semilla.
+2. ✅ **Jugable sin IA**: museo con cajas, ladrón, guardias, cámara y controles.
+3. ✅ **Laya**: cliente HTTP a `brain/` (`POST /decide`, todos los guardias en una llamada);
+   sin el servicio, reglas de reserva.
+4. **Aspecto** ← siguiente: figuras como en la web (encapsuladas en una escena `Figure` para cambiarlas por
    modelos con esqueleto más adelante), luces, conos de visión, suelo y muros.
 5. **Juego completo**: atraco, HUD, menús, tamaños de museo, sonido (unos pocos `.wav`).
 6. **Exportar** a Windows, macOS y Linux, y decidir cómo va Laya para jugadores.
@@ -28,8 +28,18 @@ tests/   pruebas sin ventana
 ## Pruebas
 
 ```bash
-godot --headless --script tests/test_mapgen.gd
+godot --headless --script tests/test_mapgen.gd   # generador = web
+godot --headless --script tests/test_museum.gd   # museo (salas, zonas, ronda) = web
+godot --headless --script tests/test_sim.gd      # escenarios de la simulación
+godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (necesita el cerebro)
 ```
+
+En macOS, `godot` es `/Applications/Godot.app/Contents/MacOS/Godot`.
+
+## Controles
+
+WASD o flechas para moverse, `C` o `Shift` para ponerse a gatas. Al acabar la ronda,
+`Espacio` para otra y `1`/`2`/`3` para el tamaño del museo.
 
 ## El cerebro
 
