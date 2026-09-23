@@ -3,24 +3,23 @@ extends RefCounted
 ## Museum generator.
 ##
 ## First the building: a footprint of any size, and not only a rectangle — an
-## L, a T, a U, a cross, or a block with bites taken out of it. A circulation
-## corridor runs just inside the outer wall, whatever its shape.
+## L, a T, a U, a cross, or a block with bites taken out of it.
 ##
-## Then the galleries, packed like a real museum: the space inside the
-## corridor is split by binary space partition and every piece becomes a
-## gallery, next to its neighbours with a single wall between — no leftover
-## blocks of solid wall that read as sealed rooms. Doors go through those
-## walls: first enough to reach every gallery (from the corridor too), then
-## more until every gallery has at least two, on different sides where it
-## can, then a few extra so there is always another way round. A gallery with
-## one way in is a trap, not a hiding place.
+## Then the plan, packed like a real museum and with no corridor running
+## round the edge: the whole inside is split by binary space partition,
+## wall to wall, and the pieces become galleries of every size — the odd big
+## hall, long narrow rooms, small cabinets — side by side with a single wall
+## between. Now and then a split leaves a short passage instead of a wall,
+## one or two tiles wide and never longer than a room: the only corridors
+## there are. Doors go through the walls: first enough to reach everything,
+## then more until every gallery and passage has at least two, on different
+## sides where it can, then a few extra so there is always another way
+## round. A gallery with one way in is a trap, not a hiding place.
 ##
-## Then the disorder, because a grid of boxes is a floor plan and not a
-## building: uneven splits and the odd big hall, galleries opened into each
-## other along a wall, the corridor breaking into the rooms here and there,
-## a few crooked shortcuts through the walls, columns in the big halls and
-## partitions jutting into the rooms. After all of it, the guarantees are
-## re-established: everything reachable, no dead ends.
+## Then the disorder: galleries opened into each other along part or all of
+## a wall (L-shaped halls, suites of rooms), a few crooked shortcuts through
+## the walls, columns, shelving, partitions and islands inside. After all of
+## it, the guarantees are re-established: everything reachable, no dead ends.
 ##
 ## (The web version carved rooms with margins and joined them with
 ## corridors; it left dead-end stubs, solid blocks and one-door rooms. This
@@ -33,8 +32,7 @@ extends RefCounted
 const SHAPES: Array[String] = ["rect", "L", "T", "U", "cross", "notched"]
 ## Smallest piece a split may leave: a 4x4 gallery and its wall.
 const MIN_LEAF := 5
-## Every shape keeps its arms at least this wide, so a gallery and the
-## corridor round it always fit.
+## Every shape keeps its arms at least this wide, so a gallery always fits.
 const MIN_ARM := 9
 const DIRS: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
 
@@ -43,7 +41,7 @@ var h: int
 var grid: PackedInt32Array
 ## inside the outer wall: the only tiles that may ever be carved
 var interior: PackedByteArray
-## the circulation corridor along the outer wall
+## floor right against the outer wall: where you can come in from outside
 var ring: PackedByteArray
 ## 1 where there is no building at all
 var outside: PackedByteArray
@@ -88,29 +86,13 @@ func _build(seed: int, width: int, height: int, shape: String) -> void:
 			if all:
 				interior[y * w + x] = 1
 
-	# The circulation corridor: the band of interior right against the wall.
 	ring = PackedByteArray()
 	ring.resize(w * h)
-	for y in h:
-		for x in w:
-			if interior[y * w + x] == 0:
-				continue
-			var edge := false
-			for dy in range(-1, 2):
-				for dx in range(-1, 2):
-					if interior[(y + dy) * w + x + dx] == 0:
-						edge = true
-			if edge:
-				ring[y * w + x] = 1
 
 	# Start solid and carve.
 	grid = PackedInt32Array()
 	grid.resize(w * h)
 	grid.fill(Tiles.WALL)
-
-	for i in w * h:
-		if ring[i] == 1:
-			grid[i] = Tiles.FLOOR
 
 	_carve_galleries()
 	_open_doors()
@@ -119,6 +101,17 @@ func _build(seed: int, width: int, height: int, shape: String) -> void:
 	_scatter_cover()
 	_link_everything()
 	_clear_dead_ends()
+	_keep_galleries()
+
+	# The way in: floor against the outer wall.
+	for y in range(1, h - 1):
+		for x in range(1, w - 1):
+			if grid[y * w + x] != Tiles.FLOOR:
+				continue
+			for dy in range(-1, 2):
+				for dx in range(-1, 2):
+					if interior[(y + dy) * w + x + dx] == 0:
+						ring[y * w + x] = 1
 
 	outside = PackedByteArray()
 	outside.resize(w * h)
@@ -206,13 +199,23 @@ func _part(side: int, lo: float, hi: float) -> int:
 
 ## Recursive binary split, stopping when a half would get too cramped.
 func _split(r: Rect2i, depth: int) -> Array[Rect2i]:
+	# Pieces the outline runs through are first cut along the outline, so
+	# every piece is either inside the building or out of it: no slivers.
+	var mixed := _outline_cut(r)
+	if mixed.size() == 1 and mixed[0] == Rect2i():
+		return []
+	if mixed.size() == 2:
+		var parts: Array[Rect2i] = []
+		parts.append_array(_split(mixed[0], depth))
+		parts.append_array(_split(mixed[1], depth))
+		return parts
 	var can_h := r.size.y >= MIN_LEAF * 2
 	var can_v := r.size.x >= MIN_LEAF * 2
 	if depth > 8 or (not can_h and not can_v):
 		return [r]
 	# Now and then a piece is left whole: the big halls that break the grid.
 	var area := r.size.x * r.size.y
-	if depth >= 2 and area <= 110 and _rand.next() < 0.22:
+	if depth >= 2 and area <= 140 and _rand.next() < 0.25:
 		return [r]
 
 	# Cut across the long side, mostly: long thin galleries read as corridors
@@ -235,6 +238,21 @@ func _split(r: Rect2i, depth: int) -> Array[Rect2i]:
 		t = t * t if _rand.next() < 0.5 else 1.0 - (1.0 - t) * (1.0 - t)
 	var cut := MIN_LEAF + int(floor(t * (side - MIN_LEAF * 2 + 1)))
 	var out: Array[Rect2i] = []
+	# Sometimes a short passage between the halves instead of a wall: only
+	# where the cut is short, so corridors never run the length of the building.
+	var across := r.size.x if horizontal else r.size.y
+	var pw := 2 + _rand.below(2)
+	if across <= 14 and side >= MIN_LEAF * 2 + pw and _rand.next() < 0.3:
+		cut = MIN_LEAF + int(floor(_rand.next() * (side - MIN_LEAF * 2 - pw + 1)))
+		if horizontal:
+			out.append_array(_split(Rect2i(r.position.x, r.position.y, r.size.x, cut), depth + 1))
+			_halls.append(Rect2i(r.position.x, r.position.y + cut, r.size.x, pw))
+			out.append_array(_split(Rect2i(r.position.x, r.position.y + cut + pw, r.size.x, r.size.y - cut - pw), depth + 1))
+		else:
+			out.append_array(_split(Rect2i(r.position.x, r.position.y, cut, r.size.y), depth + 1))
+			_halls.append(Rect2i(r.position.x + cut, r.position.y, pw, r.size.y))
+			out.append_array(_split(Rect2i(r.position.x + cut + pw, r.position.y, r.size.x - cut - pw, r.size.y), depth + 1))
+		return out
 	if horizontal:
 		out.append_array(_split(Rect2i(r.position.x, r.position.y, r.size.x, cut), depth + 1))
 		out.append_array(_split(Rect2i(r.position.x, r.position.y + cut, r.size.x, r.size.y - cut), depth + 1))
@@ -244,34 +262,66 @@ func _split(r: Rect2i, depth: int) -> Array[Rect2i]:
 	return out
 
 
-## Which gallery each tile belongs to, -1 for none.
+## A piece with no inside at all: [Rect2i()]. A piece the outline runs
+## through: the two halves of a cut along it. Otherwise nothing.
+func _outline_cut(r: Rect2i) -> Array[Rect2i]:
+	var inside := 0
+	for y in range(r.position.y, r.end.y):
+		for x in range(r.position.x, r.end.x):
+			inside += interior[y * w + x]
+	if inside == 0:
+		return [Rect2i()]
+	if inside == r.size.x * r.size.y:
+		return []
+	var cuts: Array = []
+	for c in range(1, r.size.y):
+		for x in range(r.position.x, r.end.x):
+			if interior[(r.position.y + c - 1) * w + x] != interior[(r.position.y + c) * w + x]:
+				cuts.append([true, c])
+				break
+	for c in range(1, r.size.x):
+		for y in range(r.position.y, r.end.y):
+			if interior[y * w + r.position.x + c - 1] != interior[y * w + r.position.x + c]:
+				cuts.append([false, c])
+				break
+	var pick: Array = cuts[int(floor(_rand.next() * cuts.size()))]
+	var c: int = pick[1]
+	if pick[0]:
+		return [Rect2i(r.position.x, r.position.y, r.size.x, c), Rect2i(r.position.x, r.position.y + c, r.size.x, r.size.y - c)]
+	return [Rect2i(r.position.x, r.position.y, c, r.size.y), Rect2i(r.position.x + c, r.position.y, r.size.x - c, r.size.y)]
+
+
+## Is there inside on the far side of this piece's right (or bottom) edge?
+## Only then does it keep that edge as a wall to share.
+func _needs_wall(leaf: Rect2i, right: bool) -> bool:
+	if right:
+		if leaf.end.x >= w:
+			return false
+		for y in range(leaf.position.y, leaf.end.y):
+			if interior[y * w + leaf.end.x] == 1:
+				return true
+		return false
+	if leaf.end.y >= h:
+		return false
+	for x in range(leaf.position.x, leaf.end.x):
+		if interior[leaf.end.y * w + x] == 1:
+			return true
+	return false
+
+
+## Which place (gallery or passage) each tile belongs to, -1 for none.
 var _room_of := PackedInt32Array()
+## passages left by the split, before they are carved
+var _halls: Array[Rect2i] = []
+## every place carved, and whether it is a passage rather than a gallery
+var _places: Array[Rect2i] = []
+var _is_hall: Array[bool] = []
 
 
-## The space the galleries fill: inside the building, off the corridor, and
-## one tile back from it — that tile is the wall between corridor and rooms.
-func _gallery_space() -> PackedByteArray:
-	var space := PackedByteArray()
-	space.resize(w * h)
-	for y in h:
-		for x in w:
-			if interior[y * w + x] == 0 or ring[y * w + x] == 1:
-				continue
-			var by_ring := false
-			for dy in range(-1, 2):
-				for dx in range(-1, 2):
-					if ring[(y + dy) * w + x + dx] == 1:
-						by_ring = true
-			if not by_ring:
-				space[y * w + x] = 1
-	return space
-
-
-## Split the gallery space and turn every piece into a gallery. Each keeps
-## its right and bottom edge as the wall it shares with the next one, except
-## at the edge of the space, where the wall to the corridor already is.
+## Split the inside and turn every piece into a gallery or a passage. Each
+## keeps its right and bottom edge as the wall it shares with the next one,
+## except at the edge, where the outer wall already is.
 func _carve_galleries() -> void:
-	var space := _gallery_space()
 	_room_of = PackedInt32Array()
 	_room_of.resize(w * h)
 	_room_of.fill(-1)
@@ -281,29 +331,53 @@ func _carve_galleries() -> void:
 	var y1 := 0
 	for y in h:
 		for x in w:
-			if space[y * w + x] == 1:
+			if interior[y * w + x] == 1:
 				x0 = mini(x0, x)
 				y0 = mini(y0, y)
 				x1 = maxi(x1, x + 1)
 				y1 = maxi(y1, y + 1)
 	if x1 <= x0:
 		return
-	for leaf in _split(Rect2i(x0, y0, x1 - x0, y1 - y0), 0):
-		var rw := leaf.size.x - (0 if leaf.end.x >= x1 else 1)
-		var rh := leaf.size.y - (0 if leaf.end.y >= y1 else 1)
+	_halls.clear()
+	var leaves := _split(Rect2i(x0, y0, x1 - x0, y1 - y0), 0)
+	var all: Array = []
+	for leaf in leaves:
+		all.append([leaf, false])
+	for hall in _halls:
+		all.append([hall, true])
+	for item in all:
+		var leaf: Rect2i = item[0]
+		var rw := leaf.size.x - (1 if _needs_wall(leaf, true) else 0)
+		var rh := leaf.size.y - (1 if _needs_wall(leaf, false) else 0)
 		var room := Rect2i(leaf.position, Vector2i(rw, rh))
 		var carved: Array[Vector2i] = []
 		for y in range(room.position.y, room.end.y):
 			for x in range(room.position.x, room.end.x):
-				if space[y * w + x] == 1:
+				if interior[y * w + x] == 1:
 					carved.append(Vector2i(x, y))
-		# Where the outline bites into a piece, a sliver is not a gallery.
-		if carved.size() < 6:
+		# Where the outline bites into a piece, a sliver is not a place.
+		if carved.size() < (3 if item[1] else 6):
 			continue
 		for t in carved:
 			grid[t.y * w + t.x] = Tiles.FLOOR
-			_room_of[t.y * w + t.x] = rooms.size()
-		rooms.append(room)
+			_room_of[t.y * w + t.x] = _places.size()
+		_places.append(room)
+		_is_hall.append(item[1])
+	rooms = _places
+
+
+## At the end, only the galleries are rooms: passages are corridor floor.
+func _keep_galleries() -> void:
+	var remap := PackedInt32Array()
+	var kept: Array[Rect2i] = []
+	for i in _places.size():
+		remap.append(-1 if _is_hall[i] else kept.size())
+		if not _is_hall[i]:
+			kept.append(_places[i])
+	for i in w * h:
+		if _room_of[i] >= 0:
+			_room_of[i] = remap[_room_of[i]]
+	rooms = kept
 
 
 ## Doors through the walls between galleries, and between a gallery and the
@@ -407,12 +481,14 @@ func _open_doors() -> void:
 	# way — L-shaped spaces, alcoves, a ragged edge instead of a frame.
 	for key in keys:
 		var p: Array = pairs[key]
-		var chance := 0.3 if p[0] == RING or p[1] == RING else 0.22
-		if (p[2] as Array).size() < 3 or _rand.next() >= chance:
+		if p[0] < 0 or p[1] < 0 or _is_hall[p[0]] or _is_hall[p[1]]:
+			continue
+		if (p[2] as Array).size() < 3 or _rand.next() >= 0.28:
 			continue
 		var cands: Array = p[2]
 		var n := cands.size()
-		var run := maxi(2, int(n * (0.3 + _rand.next() * 0.5)))
+		# Part of the wall, or all of it: two galleries become one hall.
+		var run := n if _rand.next() < 0.35 else maxi(2, int(n * (0.3 + _rand.next() * 0.5)))
 		var from := int(floor(_rand.next() * (n - run + 1)))
 		for k in range(from, from + run):
 			var t: Vector2i = cands[k][0]
@@ -440,7 +516,7 @@ func _open_doors() -> void:
 func _shortcuts() -> void:
 	if rooms.size() < 3:
 		return
-	for k in 1 + rooms.size() / 7:
+	for k in rooms.size() / 9:
 		var a: Rect2i = rooms[int(floor(_rand.next() * rooms.size()))]
 		var b: Rect2i = rooms[int(floor(_rand.next() * rooms.size()))]
 		var p := Vector2i(a.position.x + int(floor(_rand.next() * a.size.x)), a.position.y + int(floor(_rand.next() * a.size.y)))
@@ -472,7 +548,7 @@ func _shortcuts() -> void:
 func _link_everything() -> void:
 	var start := Vector2i(-1, -1)
 	for i in w * h:
-		if ring[i] == 1 and grid[i] == Tiles.FLOOR:
+		if grid[i] == Tiles.FLOOR:
 			start = Vector2i(i % w, i / w)
 			break
 	if start.x < 0:
@@ -533,8 +609,8 @@ func _link_everything() -> void:
 
 
 ## Corridor ends that lead nowhere get filled back in: a stub is a place to
-## get cornered, not a place to go. Galleries and the circulation corridor
-## are left alone.
+## get cornered, not a place to go. Passages are trimmed back to their
+## doors the same way; galleries are left alone.
 func _clear_dead_ends() -> void:
 	var changed := true
 	while changed:
@@ -542,7 +618,7 @@ func _clear_dead_ends() -> void:
 		for y in range(1, h - 1):
 			for x in range(1, w - 1):
 				var i := y * w + x
-				if grid[i] != Tiles.FLOOR or ring[i] == 1 or _room_of[i] >= 0:
+				if grid[i] != Tiles.FLOOR or (_room_of[i] >= 0 and not _is_hall[_room_of[i]]):
 					continue
 				var open := 0
 				for d in DIRS:
@@ -560,7 +636,10 @@ static func _js_round(v: float) -> int:
 
 ## What is inside a gallery: open, rows of shelving, or an island of cases.
 func _furnish_rooms() -> void:
-	for room in rooms:
+	for i in _places.size():
+		if _is_hall[i]:
+			continue
+		var room := _places[i]
 		var rx := room.position.x
 		var ry := room.position.y
 		var rw := room.size.x
@@ -651,7 +730,7 @@ func _scatter_cover() -> void:
 			# Only inside galleries: floor in a wall line is a doorway or a
 			# gallery opened into the next, however wide.
 			var room := _room_of[y * w + x]
-			if room < 0 or _by_door(Vector2i(x, y), rooms[room]):
+			if room < 0 or _is_hall[room] or _by_door(Vector2i(x, y), _places[room]):
 				continue
 			var walls := 0
 			for d in DIRS:

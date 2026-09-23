@@ -83,7 +83,7 @@ func _check_museum(tag: String) -> void:
 	var doors := _doors_min()
 	if doors < 2:
 		failures.append("%s: una sala con %d puertas" % [tag, doors])
-	# No stubs: a corridor tile (not gallery, not the ring) with one way out.
+	# No stubs: a corridor tile (not gallery, not against the outer wall) with one way out.
 	for y in range(1, h - 1):
 		for x in range(1, w - 1):
 			if Museum.grid[y * w + x] != Tiles.FLOOR or Museum.is_ring(x, y) or Museum.room_at(x + 0.5, y + 0.5):
