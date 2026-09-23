@@ -43,11 +43,13 @@ En macOS, `godot` es `/Applications/Godot.app/Contents/MacOS/Godot`.
 
 ## Controles
 
-WASD o flechas para moverse, `C` o `Shift` para ponerse a gatas, `Esc` para la pausa. En el título,
-`1`/`2`/`3` elige el tamaño del museo. El objetivo: robar la pieza (quieto delante unos segundos) y
+En el título se elige uno o dos ladrones (o `1`/`2`), y en SETTINGS el sonido (`M`), el panel de IA y
+el tamaño del museo. Solo: WASD o flechas, `C` o `Shift` para ponerse a gatas. Dos jugadores: P1 con
+WASD y `C`, P2 con flechas y `-` o `/`. `Esc` para la pausa. El objetivo: robar la pieza (quieto delante unos segundos) y
 salir por la puerta verde antes de que acabe el reloj.
 
-Para grabar o probar sin pulsar teclas: `godot -- --autostart` salta directamente a la partida.
+Para grabar o probar sin pulsar teclas: `godot -- --autostart` salta directamente a la partida
+(`-- --autostart --two` con dos ladrones).
 
 ## El cerebro
 

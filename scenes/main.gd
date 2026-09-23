@@ -18,6 +18,8 @@ const COLOURS := {
 	"night": Color("#0f0d14"),
 	"thief": Color("#2ec4a6"),
 	"thief_dark": Color("#12705f"),
+	"thief2": Color("#f0a13a"),
+	"thief2_dark": Color("#8a5410"),
 	"guard": Color("#9b2c3f"),
 	"guard_dark": Color("#5e1826"),
 	"ink": Color("#08070c"),
@@ -41,6 +43,12 @@ const ROOM_LIGHT_POOL := 4
 const CONE_RAYS := 40
 
 var size := "small"
+## one thief or two on the same keyboard
+var players := 1
+var sound_on := true
+var show_ia := false
+## where the settings screen goes back to: "title" or "paused"
+var settings_from := "title"
 var level := 1
 var thieves: Array[Thief] = []
 var guards: Array[Guard] = []
@@ -81,8 +89,11 @@ func _ready() -> void:
 	_new_round(1)
 	_show_title()
 	# For recording and testing: `godot -- --autostart` skips the title, shows
-	# the mission for two seconds and starts the round.
+	# the mission for two seconds and starts the round; add --two for two thieves.
 	if "--autostart" in OS.get_cmdline_user_args():
+		if "--two" in OS.get_cmdline_user_args():
+			players = 2
+			_new_round(1)
 		_show_mission()
 		get_tree().create_timer(2.0).timeout.connect(_start_playing)
 
@@ -91,12 +102,81 @@ func _ready() -> void:
 
 func _show_title() -> void:
 	phase = "title"
-	hud.show_panel("LADRÓN", Hud.C.gold, [
-		"Un museo cerrado de noche y vigilantes que piensan con Laya.",
-		"Muévete con WASD o flechas · C o Shift: a gatas · Esc: pausa",
-		"",
-		"Museo: %s (%d guardias) · 1 / 2 / 3 para cambiarlo" % [SIZE_NAMES[size], Museum.SIZES[size].guards],
-	], "▶ ESPACIO PARA EMPEZAR")
+	hud.show_menu([
+		{"title": "¡APAGA LA LUZ\nQUE TE PILLO!", "size": 64},
+		{"buttons": [
+			{"icon": Hud.thief_icon([COLOURS.thief]), "call": _start.bind(1), "colour": COLOURS.thief},
+			{"icon": Hud.thief_icon([COLOURS.thief, COLOURS.thief2]), "call": _start.bind(2), "colour": COLOURS.thief2},
+		], "row": true},
+		{"buttons": [{"text": "✦ SETTINGS", "call": _show_settings.bind("title")}]},
+	])
+
+
+func _start(n: int) -> void:
+	players = n
+	_new_round(1)
+	_show_mission()
+
+
+## Sound, the IA panel and the size of the museum. Opens from the title and
+## from the pause; the size takes effect on the next museum built.
+func _show_settings(from: String) -> void:
+	settings_from = from
+	phase = "settings"
+	hud.show_menu([
+		{"title": "SETTINGS", "size": 48},
+		{"buttons": [
+			{"text": "SONIDO: %s  (M)" % ("SÍ" if sound_on else "NO"), "call": _toggle_sound},
+			{"text": "PANEL IA: %s" % ("SÍ" if show_ia else "NO"), "call": _toggle_ia},
+			{"text": "MUSEO: %s · %d GUARDIAS" % [SIZE_NAMES[size], Museum.SIZES[size].guards], "call": _next_size},
+			{"text": "◂ VOLVER", "call": _settings_back},
+		]},
+		{"text": "P1: WASD · C para ponerse a gatas" if players == 1 or from == "title" else "P1: WASD · C    P2: flechas · - o /"},
+		{"text": "Con un solo jugador valen también las flechas y Shift."},
+	])
+
+
+func _toggle_sound() -> void:
+	_set_sound(not sound_on)
+	_show_settings(settings_from)
+
+
+func _set_sound(on: bool) -> void:
+	sound_on = on
+	AudioServer.set_bus_mute(0, not on)
+
+
+func _toggle_ia() -> void:
+	show_ia = not show_ia
+	_show_settings(settings_from)
+
+
+func _next_size() -> void:
+	size = {"small": "medium", "medium": "large", "large": "small"}[size]
+	# A fresh museum behind the title shows the new size; mid-round, the
+	# change waits for the next museum.
+	if settings_from == "title":
+		_new_round(1)
+	_show_settings(settings_from)
+
+
+func _settings_back() -> void:
+	if settings_from == "paused":
+		_pause()
+	else:
+		_show_title()
+
+
+func _pause() -> void:
+	phase = "paused"
+	hud.show_menu([
+		{"title": "PAUSA", "size": 56},
+		{"buttons": [
+			{"text": "▶ SEGUIR", "call": _start_playing},
+			{"text": "✦ SETTINGS", "call": _show_settings.bind("paused")},
+			{"text": "◂ MENÚ", "call": _show_title},
+		]},
+	])
 
 
 func _show_mission() -> void:
@@ -106,14 +186,18 @@ func _show_mission() -> void:
 	var lines := [Heist.first_upper(Heist.loot.name)]
 	if level == 1:
 		lines.append("Quieto %s ante la pieza · la alarma atrae guardias · sal por la puerta verde" % _seconds(Heist.loot.seconds))
-	hud.show_panel("NIVEL %02d" % level, Hud.C.gold, lines, "▶ ESPACIO", Hud.mission_map(guards))
+	var items: Array = [{"title": "NIVEL %02d" % level, "size": 52}]
+	for l in lines:
+		items.append({"text": l})
+	items.append({"picture": Hud.mission_map(guards)})
+	items.append({"buttons": [{"text": "▶ EMPEZAR", "call": _start_playing}]})
+	hud.show_menu(items)
 
 
 func _show_end() -> void:
 	var title := "TE HAN PILLADO"
 	var colour: Color = Hud.C.alert
 	var line := "Nivel %d: %s %s." % [level, Heist.loot.name, "vuelve a su vitrina" if Heist.taken else "sigue en su sitio"]
-	var footer := "▶ OTRA VEZ · ESPACIO · Esc: menú"
 	if phase == "timeup":
 		title = "SE ACABÓ EL TIEMPO"
 		line = "Llega el relevo y %s %s." % [Heist.loot.name, "no salió del edificio" if Heist.taken else "sigue en su sitio"]
@@ -121,8 +205,19 @@ func _show_end() -> void:
 		title = "¡GOLPE PERFECTO!"
 		colour = Hud.C.safe
 		line = "Nivel %d superado: %s ya es tuyo." % [level, Heist.loot.name]
-		footer = "▶ SIGUIENTE GOLPE · ESPACIO · Esc: menú"
-	hud.show_panel(title, colour, [line], footer)
+	hud.show_menu([
+		{"title": title, "colour": colour, "size": 52},
+		{"text": line},
+		{"buttons": [
+			{"text": "▶ SIGUIENTE GOLPE" if phase == "escaped" else "▶ OTRA VEZ", "call": _again},
+			{"text": "◂ MENÚ", "call": _show_title},
+		]},
+	])
+
+
+func _again() -> void:
+	_new_round(level + 1 if phase == "escaped" else level)
+	_show_mission()
 
 
 func _seconds(s: float) -> String:
@@ -133,33 +228,33 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not (event is InputEventKey and event.pressed and not event.echo):
 		return
 	var key: int = event.keycode
+	# Menus are buttons (mouse, arrows and Enter); these are the shortcuts.
+	if key == KEY_M:
+		_set_sound(not sound_on)
+		if phase == "settings":
+			_show_settings(settings_from)
+		return
 	match phase:
 		"title":
-			if key in [KEY_1, KEY_2, KEY_3]:
-				size = ["small", "medium", "large"][key - KEY_1]
-				_new_round(1)
-				_show_title()
-			elif key == KEY_SPACE or key == KEY_ENTER:
-				_new_round(1)
-				_show_mission()
+			if key in [KEY_1, KEY_2]:
+				_start(key - KEY_0)
 		"mission":
-			if key == KEY_SPACE or key == KEY_ENTER:
+			if key == KEY_SPACE:
 				_start_playing()
 			elif key == KEY_ESCAPE:
 				_show_title()
 		"playing":
 			if key == KEY_ESCAPE or key == KEY_P:
-				phase = "paused"
-				hud.show_panel("PAUSA", Hud.C.gold, [], "▶ ESPACIO O ESC PARA SEGUIR · Q: menú")
+				_pause()
 		"paused":
-			if key == KEY_ESCAPE or key == KEY_P or key == KEY_SPACE:
+			if key == KEY_ESCAPE or key == KEY_P:
 				_start_playing()
-			elif key == KEY_Q:
-				_show_title()
+		"settings":
+			if key == KEY_ESCAPE:
+				_settings_back()
 		"caught", "timeup", "escaped":
-			if key == KEY_SPACE or key == KEY_ENTER:
-				_new_round(level + 1 if phase == "escaped" else level)
-				_show_mission()
+			if key == KEY_SPACE:
+				_again()
 			elif key == KEY_ESCAPE:
 				_show_title()
 
@@ -175,6 +270,8 @@ func _new_round(n: int) -> void:
 	level = n
 	Sim.new_map(randi() % 1000000000, size)
 	thieves = [Sim.new_thief("p1")]
+	if players == 2:
+		thieves.append(Sim.new_thief("p2"))
 	guards = Sim.new_guards(Museum.SIZES[size].guards)
 	Heist.plan_job(level)
 	time_left = Sim.ROUND_SECONDS
@@ -212,7 +309,9 @@ func _tick(dt: float) -> void:
 		var p := thieves[i]
 		var px := p.x
 		var py := p.y
-		var step := Sim.step_thief(p, keys, dt, "solo")
+		# On your own both pads drive you; with two, each pad is its own.
+		var scheme := "solo" if thieves.size() == 1 else ("wasd" if i == 0 else "arrows")
+		var step := Sim.step_thief(p, keys, dt, scheme)
 		var noise := Hearing.thief_noise(px, py, p, step.entered_cover, step.bumped, Sim.TOP_SPEED)
 		# Footsteps land once per stride; a bump is its own event.
 		stride[i] += Museum.dist(px, py, p.x, p.y)
@@ -417,8 +516,9 @@ func _build_world() -> void:
 
 	_build_job()
 
-	for p in thieves:
-		var f := Figure.make("thief", COLOURS.thief, COLOURS.thief_dark)
+	for i in thieves.size():
+		# Second pad, second colour: two teal figures would be one figure.
+		var f := Figure.make("thief", COLOURS.thief if i == 0 else COLOURS.thief2, COLOURS.thief_dark if i == 0 else COLOURS.thief2_dark)
 		world.add_child(f)
 		thief_nodes.append(f)
 	for i in ROOM_LIGHT_POOL:
@@ -521,7 +621,7 @@ func _draw_frame(dt: float) -> void:
 		if p.out:
 			f.set_ghost(COLOURS.ink, 0.35)
 		elif p.hidden:
-			f.set_ghost(COLOURS.thief, 0.75)
+			f.set_ghost(COLOURS.thief if i == 0 else COLOURS.thief2, 0.75)
 		else:
 			f.set_ghost(COLOURS.alert, 1.0)
 	for i in guards.size():
@@ -636,18 +736,28 @@ func _follow_camera(dt: float) -> void:
 func _draw_hud() -> void:
 	if thieves.is_empty():
 		return
-	var p := thieves[0]
-	var stance := "DE PIE"
-	if p.crouched:
-		stance = "A GATAS" if p.posture >= 1.0 else "BAJANDO"
-	elif p.posture > 0:
-		stance = "SUBIENDO"
 	var ia := "IA: Laya %d ms" % brain.last_ms if brain.status == "laya" else "IA: reglas"
-	var status := "%02d   %s   %s   ·   %s" % [ceili(maxf(0.0, time_left)), "A CUBIERTO" if p.hidden else "A LA VISTA", stance, ia]
-	# The arrow at the screen edge: to the piece, or to the door once you have it.
+	var parts := PackedStringArray(["%02d" % ceili(maxf(0.0, time_left))])
+	for i in thieves.size():
+		var p := thieves[i]
+		var stance := "DE PIE"
+		if p.crouched:
+			stance = "A GATAS" if p.posture >= 1.0 else "BAJANDO"
+		elif p.posture > 0:
+			stance = "SUBIENDO"
+		var state := "PILLADO" if p.out else ("A CUBIERTO" if p.hidden else "A LA VISTA")
+		parts.append(("P%d " % (i + 1) if thieves.size() == 2 else "") + "%s · %s" % [state, stance])
+	parts.append(ia)
+	var any_seen := thieves.any(func(p): return not p.out and not p.hidden)
+	# The arrow at the screen edge, from whoever is nearest: to the piece, or
+	# to the door once someone has it.
 	var goal := Heist.objective()
-	var d := Museum.dist(p.x, p.y, goal.x, goal.y)
-	var angle := atan2(goal.y - p.y, goal.x - p.x) if d > 6 and phase == "playing" else NAN
+	var ref := thieves[0]
+	for p in thieves:
+		if not p.out and (ref.out or Museum.dist(p.x, p.y, goal.x, goal.y) < Museum.dist(ref.x, ref.y, goal.x, goal.y)):
+			ref = p
+	var d := Museum.dist(ref.x, ref.y, goal.x, goal.y)
+	var angle := atan2(goal.y - ref.y, goal.x - ref.x) if d > 6 and phase == "playing" else NAN
 	var job := {
 		"working": Heist.by != "",
 		"progress": Heist.progress,
@@ -656,4 +766,17 @@ func _draw_hud() -> void:
 		"dropped": Heist.dropped != Vector2.INF,
 		"name": Heist.loot.name,
 	}
-	hud.update_play(status, COLOURS.safe if p.hidden else COLOURS.alert, log_lines, job, angle, COLOURS.switch_on if Heist.carrier != "" else Color(Heist.loot.colour))
+	if not hud.menu_open():
+		hud.update_play("   ".join(parts), COLOURS.alert if any_seen else COLOURS.safe, log_lines, job, angle, COLOURS.switch_on if Heist.carrier != "" else Color(Heist.loot.colour))
+	var cards: Array = []
+	for g in guards:
+		var card := {"name": g.name, "title": "Te ha visto" if g.sees_player else (g.decision.label if g.decision else "pensando…"), "colour": COLOURS.alert if g.sees_player else Hud.C.text}
+		if g.decision and not g.sees_player:
+			var opts: Array = []
+			for k in g.decision.probabilities:
+				opts.append([g.decision.labels.get(k, k), g.decision.probabilities[k]])
+			opts.sort_custom(func(a, b): return a[1] > b[1])
+			card.options = opts
+			card.note = "ritmo %d%% · %s%s" % [roundi(g.decision.aggression * 100), Mind.LOOK_LABEL[g.decision.look], " · duda" if g.decision.torn else ""]
+		cards.append(card)
+	hud.set_ia(show_ia and phase == "playing", cards)

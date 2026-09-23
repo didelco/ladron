@@ -30,6 +30,10 @@ var _shout_left := 0.0
 var _shout_angle := 0.0
 var _panel: ColorRect
 var _panel_box: VBoxContainer
+## what is drawn over the game while playing; hidden behind a menu
+var _play: Array[Control] = []
+var _ia: PanelContainer
+var _ia_box: VBoxContainer
 
 
 func _ready() -> void:
@@ -71,6 +75,24 @@ func _ready() -> void:
 	_panel_box = VBoxContainer.new()
 	_panel_box.add_theme_constant_override("separation", 14)
 	centre.add_child(_panel_box)
+	_play = [_status, _log, _job, _bar_back, _bar, _arrow]
+
+	# The model's reasoning, for whoever wants to watch it think: a card per
+	# guard with its plan and the probabilities Laya gave each option.
+	_ia = PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color("#140f2e", 0.92)
+	style.border_color = Color("#241d52")
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(12)
+	style.set_content_margin_all(12)
+	_ia.add_theme_stylebox_override("panel", style)
+	_ia.custom_minimum_size = Vector2(300, 0)
+	add_child(_ia)
+	move_child(_ia, _panel.get_index())
+	_ia_box = VBoxContainer.new()
+	_ia.add_child(_ia_box)
+	_ia.visible = false
 
 
 func _label(size: int, colour: Color, parent: Node = self) -> Label:
@@ -85,36 +107,154 @@ func _label(size: int, colour: Color, parent: Node = self) -> Label:
 
 # --- Panels --------------------------------------------------------------------
 
-## A full-screen panel: a title, lines of text, an optional picture (the
-## mission map) and a footer with what to press.
-func show_panel(title: String, title_colour: Color, lines: Array, footer: String, picture: Texture2D = null) -> void:
+## A full-screen menu. items, top to bottom, each one of:
+##   {"title": text, "colour": Color, "size": int}   the heading
+##   {"text": text}                                   a line
+##   {"picture": Texture2D}                           the mission map
+##   {"buttons": [{"text", "call", "icon"?, "colour"?}], "row": bool}
+##   {"footer": text}                                 what to press
+## Buttons work with the mouse, and with the arrows and Enter; the first one
+## has the focus.
+func show_menu(items: Array) -> void:
 	for c in _panel_box.get_children():
 		c.queue_free()
-	var t := _label(56, title_colour, _panel_box)
-	t.text = title
-	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	for line in lines:
-		var l := _label(20, C.text, _panel_box)
-		l.text = line
-		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	if picture:
-		var r := TextureRect.new()
-		r.texture = picture
-		r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		var size := Vector2(picture.get_size())
-		var k := minf(720.0 / size.x, 420.0 / size.y)
-		r.custom_minimum_size = size * k
-		r.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		_panel_box.add_child(r)
-	var f := _label(22, C.gold, _panel_box)
-	f.text = footer
-	f.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var first: Button = null
+	for item in items:
+		if item.has("title"):
+			var t := _label(item.get("size", 56), item.get("colour", C.gold), _panel_box)
+			t.text = item.title
+			t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			t.add_theme_constant_override("outline_size", 10)
+			t.add_theme_color_override("font_outline_color", Color("#b45309"))
+		elif item.has("text"):
+			var l := _label(20, C.text, _panel_box)
+			l.text = item.text
+			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		elif item.has("picture"):
+			var picture: Texture2D = item.picture
+			var r := TextureRect.new()
+			r.texture = picture
+			r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			var size := Vector2(picture.get_size())
+			var k := minf(720.0 / size.x, 420.0 / size.y)
+			r.custom_minimum_size = size * k
+			r.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			_panel_box.add_child(r)
+		elif item.has("buttons"):
+			var box: BoxContainer = HBoxContainer.new() if item.get("row", false) else VBoxContainer.new()
+			box.alignment = BoxContainer.ALIGNMENT_CENTER
+			box.add_theme_constant_override("separation", 24 if item.get("row", false) else 10)
+			_panel_box.add_child(box)
+			for b in item.buttons:
+				var button := _button(b)
+				box.add_child(button)
+				if first == null:
+					first = button
+		elif item.has("footer"):
+			var f := _label(22, C.gold, _panel_box)
+			f.text = item.footer
+			f.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_panel.visible = true
+	for c in _play:
+		c.visible = false
+	if first:
+		first.grab_focus.call_deferred()
+
+
+## A menu button: a framed line of text, or a big icon (the thieves on the
+## title), lit up on hover and focus.
+func _button(b: Dictionary) -> Button:
+	var button := Button.new()
+	button.text = b.get("text", "")
+	button.focus_mode = Control.FOCUS_ALL
+	button.add_theme_font_size_override("font_size", 20)
+	var colour: Color = b.get("colour", C.safe)
+	for state in ["normal", "hover", "pressed", "focus"]:
+		var st := StyleBoxFlat.new()
+		st.bg_color = Color("#140f2e", 0.8) if state == "normal" else Color("#1d1640", 0.95)
+		st.border_color = Color("#241d52") if state == "normal" else colour
+		st.set_border_width_all(2)
+		st.set_content_margin_all(14)
+		st.content_margin_left = 28
+		st.content_margin_right = 28
+		button.add_theme_stylebox_override(state, st)
+	button.add_theme_color_override("font_color", C.text)
+	button.add_theme_color_override("font_hover_color", colour)
+	button.add_theme_color_override("font_focus_color", colour)
+	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	if b.has("icon"):
+		var icon: Texture2D = b.icon
+		button.icon = icon
+		button.expand_icon = true
+		# As tall as the single thief, as wide as however many there are.
+		var h := 120.0
+		var w := h * icon.get_width() / icon.get_height()
+		button.custom_minimum_size = Vector2(w + 40, h + 30)
+		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
+	button.pressed.connect(b.call)
+	return button
+
+
+## The thief on the title screen, as the web draws it: a hooded figure in
+## pixels with the slit of a visor. One per player, side by side.
+static func thief_icon(colours: Array) -> ImageTexture:
+	var cell := 10
+	var img := Image.create(12 * colours.size() - 2, 14, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	for i in colours.size():
+		var x0 := i * 12
+		var c: Color = colours[i]
+		for r in [[3, 0, 4, 1], [2, 1, 6, 3], [2, 5, 6, 4], [1, 6, 1, 3], [8, 6, 1, 3], [2, 10, 2, 4], [6, 10, 2, 4]]:
+			img.fill_rect(Rect2i(x0 + r[0], r[1], r[2], r[3]), c)
+		img.fill_rect(Rect2i(x0 + 3, 2, 4, 1), Color("#0b0820"))
+	img.resize(img.get_width() * cell, img.get_height() * cell, Image.INTERPOLATE_NEAREST)
+	return ImageTexture.create_from_image(img)
+
+
+## The simple case: a heading, some lines, maybe the map, and a footer.
+func show_panel(title: String, title_colour: Color, lines: Array, footer: String, picture: Texture2D = null) -> void:
+	var items: Array = [{"title": title, "colour": title_colour}]
+	for line in lines:
+		items.append({"text": line})
+	if picture:
+		items.append({"picture": picture})
+	items.append({"footer": footer})
+	show_menu(items)
 
 
 func hide_panel() -> void:
 	_panel.visible = false
+	for c in _play:
+		c.visible = true
+
+
+func menu_open() -> bool:
+	return _panel.visible
+
+
+## The IA panel: one card per guard. entries are {"name", "title", "colour",
+## "options": [[label, probability]], "note"}.
+func set_ia(on: bool, entries: Array) -> void:
+	_ia.visible = on and not _panel.visible
+	if not _ia.visible:
+		return
+	var view := get_viewport().get_visible_rect().size
+	_ia.position = Vector2(view.x - 324, 64)
+	for c in _ia_box.get_children():
+		c.queue_free()
+	for e in entries:
+		var name := _label(17, C.text, _ia_box)
+		name.text = "%s · %s" % [e.name, e.title]
+		name.add_theme_color_override("font_color", e.get("colour", C.text))
+		for o in e.get("options", []):
+			var line := _label(13, C.dim, _ia_box)
+			var bar := "▮".repeat(roundi(float(o[1]) * 12))
+			line.text = "  %-18s %s %d%%" % [o[0], bar, roundi(float(o[1]) * 100)]
+		if e.has("note"):
+			var n := _label(13, C.dim, _ia_box)
+			n.text = "  " + e.note
 
 
 ## The mission map: the plan, the route from the way in to the piece to the
