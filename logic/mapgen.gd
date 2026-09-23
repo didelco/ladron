@@ -1,23 +1,31 @@
 class_name MapGen
 extends RefCounted
-## Museum generator: a line-by-line port of the web version's mapgen.ts.
+## Museum generator.
 ##
 ## First the building: a footprint of any size, and not only a rectangle — an
-## L, a T, a U, a cross, or a block with bites taken out of it. Everything
-## after is carved inside that footprint and nowhere else. Then the floor
-## plan: split by binary space partition, each leaf gets a gallery, a block of
-## shelving or open floor, and corridors join them back up. A circulation
+## L, a T, a U, a cross, or a block with bites taken out of it. A circulation
 ## corridor runs just inside the outer wall, whatever its shape.
 ##
-## Same seed, same museum as the web: every call to the PRNG happens in the
-## same order as there. tests/test_mapgen.gd holds it to that.
+## Then the galleries, packed like a real museum: the space inside the
+## corridor is split by binary space partition and every piece becomes a
+## gallery, next to its neighbours with a single wall between — no leftover
+## blocks of solid wall that read as sealed rooms. Doors go through those
+## walls: first enough to reach every gallery (from the corridor too), then
+## more until every gallery has at least two, on different sides where it
+## can, then a few extra so there is always another way round. A gallery with
+## one way in is a trap, not a hiding place.
+##
+## (The web version carved rooms with margins and joined them with
+## corridors; it left dead-end stubs, solid blocks and one-door rooms. This
+## is the Godot port's own generator from here on.)
 ##
 ## The grid is flat — index y * w + x — because packed arrays nested inside an
 ## Array are copied on write in GDScript, and grid[y][x] = v would change a
 ## copy.
 
 const SHAPES: Array[String] = ["rect", "L", "T", "U", "cross", "notched"]
-const MIN_LEAF := 6
+## Smallest piece a split may leave: a 4x4 gallery and its wall.
+const MIN_LEAF := 5
 ## Every shape keeps its arms at least this wide, so a gallery and the
 ## corridor round it always fit.
 const MIN_ARM := 9
@@ -93,29 +101,16 @@ func _build(seed: int, width: int, height: int, shape: String) -> void:
 	grid.resize(w * h)
 	grid.fill(Tiles.WALL)
 
-	var leaves := _split(Rect2i(1, 1, w - 2, h - 2), 0)
-	for leaf in leaves:
-		var room := _carve_room(leaf)
-		if room.size.x > 0:
-			rooms.append(room)
-
-	# Join rooms in sequence, plus one extra link, so there is always a way
-	# round rather than a single spine everyone has to share.
-	for i in range(1, rooms.size()):
-		_corridor(_centre(rooms[i - 1]), _centre(rooms[i]))
-	if rooms.size() > 2:
-		_corridor(_centre(rooms[0]), _centre(rooms[rooms.size() - 1]))
-
 	for i in w * h:
 		if ring[i] == 1:
 			grid[i] = Tiles.FLOOR
-	for room in rooms:
-		_door_to_ring(room)
 
-	_connect()
+	_carve_galleries()
+	_open_doors()
 	_furnish_rooms()
 	_scatter_cover()
-	_clear_blocked_furniture()
+	_link_everything()
+	_clear_dead_ends()
 
 	outside = PackedByteArray()
 	outside.resize(w * h)
@@ -221,53 +216,264 @@ func _split(r: Rect2i, depth: int) -> Array[Rect2i]:
 	return out
 
 
-func _centre(r: Rect2i) -> Vector2i:
-	return Vector2i(int(floor(r.position.x + r.size.x / 2.0)), int(floor(r.position.y + r.size.y / 2.0)))
+## Which gallery each tile belongs to, -1 for none.
+var _room_of := PackedInt32Array()
 
 
-## Inside the outer wall, and not on the corridor that runs along it.
-func _buildable(x: int, y: int) -> bool:
-	return x > 0 and y > 0 and x < w - 1 and y < h - 1 and interior[y * w + x] == 1 and ring[y * w + x] == 0
+## The space the galleries fill: inside the building, off the corridor, and
+## one tile back from it — that tile is the wall between corridor and rooms.
+func _gallery_space() -> PackedByteArray:
+	var space := PackedByteArray()
+	space.resize(w * h)
+	for y in h:
+		for x in w:
+			if interior[y * w + x] == 0 or ring[y * w + x] == 1:
+				continue
+			var by_ring := false
+			for dy in range(-1, 2):
+				for dx in range(-1, 2):
+					if ring[(y + dy) * w + x + dx] == 1:
+						by_ring = true
+			if not by_ring:
+				space[y * w + x] = 1
+	return space
 
 
-func _inside(x: int, y: int) -> bool:
-	return x >= 0 and y >= 0 and x < w and y < h and interior[y * w + x] == 1
-
-
-## A gallery inside a leaf, with a one-tile margin. Its floor must be inside
-## the building and off the corridor along the outer wall; its walls may be
-## that corridor. Smaller rooms are tried before the leaf is given up on.
-## Returns an empty Rect2i when nothing fits.
-func _carve_room(leaf: Rect2i) -> Rect2i:
-	var max_w := leaf.size.x - 2
-	var max_h := leaf.size.y - 2
-	if max_w < 3 or max_h < 3:
-		return Rect2i()
-
-	for attempt in 8:
-		# Start at nearly the whole leaf, then shrink towards the minimum.
-		var shrink := attempt / 7.0
-		var rw := maxi(3, _js_round(max_w - int(floor(_rand.next() * 2)) - (max_w - 3) * shrink))
-		var rh := maxi(3, _js_round(max_h - int(floor(_rand.next() * 2)) - (max_h - 3) * shrink))
-		var x := leaf.position.x + 1 + int(floor(_rand.next() * (max_w - rw + 1)))
-		var y := leaf.position.y + 1 + int(floor(_rand.next() * (max_h - rh + 1)))
-
-		var fits := true
-		for j in range(y - 1, y + rh + 1):
-			for i in range(x - 1, x + rw + 1):
-				if not fits:
-					break
-				var wall := j == y - 1 or j == y + rh or i == x - 1 or i == x + rw
-				if (not _inside(i, j)) if wall else (not _buildable(i, j)):
-					fits = false
-		if not fits:
+## Split the gallery space and turn every piece into a gallery. Each keeps
+## its right and bottom edge as the wall it shares with the next one, except
+## at the edge of the space, where the wall to the corridor already is.
+func _carve_galleries() -> void:
+	var space := _gallery_space()
+	_room_of = PackedInt32Array()
+	_room_of.resize(w * h)
+	_room_of.fill(-1)
+	var x0 := w
+	var y0 := h
+	var x1 := 0
+	var y1 := 0
+	for y in h:
+		for x in w:
+			if space[y * w + x] == 1:
+				x0 = mini(x0, x)
+				y0 = mini(y0, y)
+				x1 = maxi(x1, x + 1)
+				y1 = maxi(y1, y + 1)
+	if x1 <= x0:
+		return
+	for leaf in _split(Rect2i(x0, y0, x1 - x0, y1 - y0), 0):
+		var rw := leaf.size.x - (0 if leaf.end.x >= x1 else 1)
+		var rh := leaf.size.y - (0 if leaf.end.y >= y1 else 1)
+		var room := Rect2i(leaf.position, Vector2i(rw, rh))
+		var carved: Array[Vector2i] = []
+		for y in range(room.position.y, room.end.y):
+			for x in range(room.position.x, room.end.x):
+				if space[y * w + x] == 1:
+					carved.append(Vector2i(x, y))
+		# Where the outline bites into a piece, a sliver is not a gallery.
+		if carved.size() < 6:
 			continue
+		for t in carved:
+			grid[t.y * w + t.x] = Tiles.FLOOR
+			_room_of[t.y * w + t.x] = rooms.size()
+		rooms.append(room)
 
-		for j in range(y, y + rh):
-			for i in range(x, x + rw):
-				_put(i, j, Tiles.FLOOR)
-		return Rect2i(x, y, rw, rh)
-	return Rect2i()
+
+## Doors through the walls between galleries, and between a gallery and the
+## corridor. Every wall tile with open floor straight across it is a
+## candidate, grouped by which two places it joins (the corridor counts as
+## one place). First a spanning tree, so everything is reachable; then more
+## until every gallery has two doors, on a side it has no door on yet; then
+## a few extra, so the building has loops.
+func _open_doors() -> void:
+	var RING := -2
+	var place := func(x: int, y: int) -> int:
+		if x < 0 or y < 0 or x >= w or y >= h or grid[y * w + x] != Tiles.FLOOR:
+			return -1
+		if ring[y * w + x] == 1:
+			return RING
+		return _room_of[y * w + x]
+	# pair key -> [a, b, [[tile, side_of_a, side_of_b], ...]]
+	var pairs := {}
+	for y in range(1, h - 1):
+		for x in range(1, w - 1):
+			if grid[y * w + x] != Tiles.WALL or interior[y * w + x] == 0:
+				continue
+			for axis in [Vector2i(1, 0), Vector2i(0, 1)]:
+				var a: int = place.call(x - axis.x, y - axis.y)
+				var b: int = place.call(x + axis.x, y + axis.y)
+				if a == -1 or b == -1 or a == b:
+					continue
+				var lo := mini(a, b)
+				var hi := maxi(a, b)
+				var key := "%d:%d" % [lo, hi]
+				if not pairs.has(key):
+					pairs[key] = [lo, hi, []]
+				# The side of the wall each gallery sees the door on.
+				var side_a: Vector2i = axis if a == lo else -axis
+				pairs[key][2].append([Vector2i(x, y), side_a, -side_a])
+
+	var keys := pairs.keys()
+	keys.sort()
+	for i in range(keys.size() - 1, 0, -1):
+		var j := int(floor(_rand.next() * (i + 1)))
+		var tmp = keys[i]
+		keys[i] = keys[j]
+		keys[j] = tmp
+
+	var parent := {}
+	var find := func(n: int, f: Callable) -> int:
+		if not parent.has(n) or parent[n] == n:
+			parent[n] = n
+			return n
+		parent[n] = f.call(parent[n], f)
+		return parent[n]
+	var doors := {}     # gallery -> number of doors
+	var sides := {}     # gallery -> {side: true}
+	var opened := {}    # pair key -> true
+	var open := func(key: String) -> void:
+		var p: Array = pairs[key]
+		var cands: Array = p[2]
+		# Not in a corner: a door in the middle third of the wall where it can.
+		var c: Array = cands[int(floor(_rand.next() * cands.size()))]
+		if cands.size() >= 3:
+			c = cands[cands.size() / 3 + int(floor(_rand.next() * maxi(1, cands.size() / 3)))]
+		var t: Vector2i = c[0]
+		grid[t.y * w + t.x] = Tiles.FLOOR
+		opened[key] = true
+		for k in [[p[0], c[1]], [p[1], c[2]]]:
+			if k[0] >= 0:
+				doors[k[0]] = doors.get(k[0], 0) + 1
+				if not sides.has(k[0]):
+					sides[k[0]] = {}
+				sides[k[0]][k[1]] = true
+
+	# Everything reachable, the corridor included.
+	for key in keys:
+		var p: Array = pairs[key]
+		var ra: int = find.call(p[0], find)
+		var rb: int = find.call(p[1], find)
+		if ra != rb:
+			parent[ra] = rb
+			open.call(key)
+	# Two doors each, on a new side if there is one.
+	for pass_n in 2:
+		for key in keys:
+			if opened.has(key):
+				continue
+			var p: Array = pairs[key]
+			for end in [[p[0], 1], [p[1], 2]]:
+				var room: int = end[0]
+				if room < 0 or doors.get(room, 0) >= 2:
+					continue
+				var side: Vector2i = (pairs[key][2] as Array)[0][end[1]]
+				if pass_n == 0 and sides.get(room, {}).has(side):
+					continue
+				open.call(key)
+				break
+	# And a few more, so there is more than one way round.
+	for key in keys:
+		if not opened.has(key) and _rand.next() < 0.2:
+			open.call(key)
+	# A gallery with a single neighbour gets its second door in that wall.
+	for key in keys:
+		var p: Array = pairs[key]
+		for room in [p[0], p[1]]:
+			if room >= 0 and doors.get(room, 0) < 2 and (p[2] as Array).size() >= 3:
+				var cands: Array = p[2]
+				for c in [cands[0], cands[cands.size() - 1]]:
+					var t: Vector2i = c[0]
+					if grid[t.y * w + t.x] == Tiles.WALL and doors.get(room, 0) < 2:
+						grid[t.y * w + t.x] = Tiles.FLOOR
+						doors[room] = doors.get(room, 0) + 1
+
+
+## Guarantee: every bit of floor can be walked to from the corridor. Any
+## pocket left cut off — behind a thick wall in a corner of the outline, or
+## boxed in by cases — is joined to the rest by the shortest way through,
+## preferring to move a case over cutting a wall. Repeats until nothing is
+## left out, so there are no closed spaces, whatever the dice did.
+func _link_everything() -> void:
+	var start := Vector2i(-1, -1)
+	for i in w * h:
+		if ring[i] == 1 and grid[i] == Tiles.FLOOR:
+			start = Vector2i(i % w, i / w)
+			break
+	if start.x < 0:
+		return
+	for attempt in 200:
+		var reached := _flood(start, true)
+		var lost := Vector2i(-1, -1)
+		for i in w * h:
+			if grid[i] == Tiles.FLOOR and reached[i] == 0:
+				lost = Vector2i(i % w, i / w)
+				break
+		if lost.x < 0:
+			return
+		# Cheapest way from the lost pocket to reached floor: floor is free,
+		# a case costs 1, a wall 3; only inside the building.
+		var cost := PackedInt32Array()
+		cost.resize(w * h)
+		cost.fill(1 << 30)
+		var prev := PackedInt32Array()
+		prev.resize(w * h)
+		prev.fill(-1)
+		var lost_zone := _flood(lost, true)
+		var frontier: Array[int] = []
+		for i in w * h:
+			if lost_zone[i] == 1:
+				cost[i] = 0
+				frontier.append(i)
+		var goal := -1
+		while not frontier.is_empty():
+			# Small grids: pick the cheapest by scanning.
+			var bi := 0
+			for k in range(1, frontier.size()):
+				if cost[frontier[k]] < cost[frontier[bi]]:
+					bi = k
+			var cur: int = frontier[bi]
+			frontier.remove_at(bi)
+			if reached[cur] == 1:
+				goal = cur
+				break
+			for d in DIRS:
+				var nx := cur % w + d.x
+				var ny := cur / w + d.y
+				if nx < 1 or ny < 1 or nx >= w - 1 or ny >= h - 1 or interior[ny * w + nx] == 0:
+					continue
+				var k := ny * w + nx
+				var step := 0 if grid[k] == Tiles.FLOOR else (1 if grid[k] == Tiles.COVER else 3)
+				if cost[cur] + step < cost[k]:
+					cost[k] = cost[cur] + step
+					prev[k] = cur
+					if not frontier.has(k):
+						frontier.append(k)
+		if goal < 0:
+			return
+		var c := goal
+		while c >= 0 and cost[c] > 0:
+			grid[c] = Tiles.FLOOR
+			c = prev[c]
+
+
+## Corridor ends that lead nowhere get filled back in: a stub is a place to
+## get cornered, not a place to go. Galleries and the circulation corridor
+## are left alone.
+func _clear_dead_ends() -> void:
+	var changed := true
+	while changed:
+		changed = false
+		for y in range(1, h - 1):
+			for x in range(1, w - 1):
+				var i := y * w + x
+				if grid[i] != Tiles.FLOOR or ring[i] == 1 or _room_of[i] >= 0:
+					continue
+				var open := 0
+				for d in DIRS:
+					if grid[(y + d.y) * w + x + d.x] != Tiles.WALL:
+						open += 1
+				if open <= 1:
+					grid[i] = Tiles.WALL
+					changed = true
 
 
 ## Math.round: halves go up, towards +infinity.
@@ -313,66 +519,6 @@ func _furnish_rooms() -> void:
 					_put(x, y, Tiles.WALL)
 
 
-## Doors from a room out to open floor, on some sides, only where the walk
-## out stays inside the building and gets somewhere in a few steps.
-func _door_to_ring(room: Rect2i) -> void:
-	var rx := room.position.x
-	var ry := room.position.y
-	var rw := room.size.x
-	var rh := room.size.y
-	# Built one after another, in this order, as in the web version: each
-	# entry draws its random offset in turn.
-	var sides: Array[Array] = []
-	sides.append([rx + _rand.below(rw), ry - 1, 0, -1])
-	sides.append([rx + _rand.below(rw), ry + rh, 0, 1])
-	sides.append([rx - 1, ry + _rand.below(rh), -1, 0])
-	sides.append([rx + rw, ry + _rand.below(rh), 1, 0])
-	var chosen: Array[Array] = []
-	for s in sides:
-		if _rand.next() < 0.5:
-			chosen.append(s)
-	if chosen.is_empty():
-		chosen.append(sides[0])
-
-	for s in chosen:
-		var walk: Array[Vector2i] = []
-		var x: int = s[0]
-		var y: int = s[1]
-		var reached := false
-		for step in 8:
-			if x < 0 or y < 0 or x >= w or y >= h or interior[y * w + x] == 0:
-				break
-			walk.append(Vector2i(x, y))
-			if ring[y * w + x] == 1 or (step > 0 and at(x, y) == Tiles.FLOOR):
-				reached = true
-				break
-			x += s[2]
-			y += s[3]
-		if reached:
-			for t in walk:
-				_put(t.x, t.y, Tiles.FLOOR)
-
-
-## L-shaped corridor between two points, inside the building.
-func _corridor(a: Vector2i, b: Vector2i) -> void:
-	var horizontal_first := _rand.next() < 0.5
-	if horizontal_first:
-		for x in range(mini(a.x, b.x), maxi(a.x, b.x) + 1):
-			_dig(x, a.y)
-		for y in range(mini(a.y, b.y), maxi(a.y, b.y) + 1):
-			_dig(b.x, y)
-	else:
-		for y in range(mini(a.y, b.y), maxi(a.y, b.y) + 1):
-			_dig(a.x, y)
-		for x in range(mini(a.x, b.x), maxi(a.x, b.x) + 1):
-			_dig(x, b.y)
-
-
-func _dig(x: int, y: int) -> void:
-	if interior[y * w + x] == 1:
-		_put(x, y, Tiles.FLOOR)
-
-
 ## Cases to duck behind, mostly against walls and in corners.
 func _scatter_cover() -> void:
 	var candidates: Array[Vector2i] = []
@@ -392,6 +538,15 @@ func _scatter_cover() -> void:
 				or (at(x - 1, y) == Tiles.WALL and at(x + 1, y) == Tiles.WALL)
 			if pinch or walls > 2:
 				continue
+			# Not in front of a door: a case there turns the door into a wall.
+			var at_door := false
+			for d in DIRS:
+				var nx := x + d.x
+				var ny := y + d.y
+				if at(nx, ny) == Tiles.FLOOR and ((at(nx, ny - 1) == Tiles.WALL and at(nx, ny + 1) == Tiles.WALL) or (at(nx - 1, ny) == Tiles.WALL and at(nx + 1, ny) == Tiles.WALL)):
+					at_door = true
+			if at_door:
+				continue
 			candidates.append(Vector2i(x, y))
 
 	var wanted := _js_round(candidates.size() * 0.14)
@@ -408,35 +563,6 @@ func _scatter_cover() -> void:
 			continue
 		_put(c.x, c.y, Tiles.COVER)
 		placed += 1
-
-
-## Clear any furniture that stranded part of the map.
-func _clear_blocked_furniture() -> void:
-	for pass_n in 12 + (w * h) / 150:
-		var start := _first_tile(true)
-		if start.x < 0:
-			return
-		var seen := _flood(start, true)
-		var stranded: Array[Vector2i] = []
-		for y in range(1, h - 1):
-			for x in range(1, w - 1):
-				if at(x, y) == Tiles.FLOOR and seen[y * w + x] == 0:
-					stranded.append(Vector2i(x, y))
-		if stranded.is_empty():
-			return
-		var opened := false
-		for s in stranded:
-			for d in DIRS:
-				var f := s + d
-				if f.x < 0 or f.y < 0 or f.x >= w or f.y >= h or at(f.x, f.y) != Tiles.COVER:
-					continue
-				_put(f.x, f.y, Tiles.FLOOR)
-				opened = true
-				break
-			if opened:
-				break
-		if not opened:
-			return
 
 
 ## First tile, scanning rows, that is floor (floor_only) or anything but wall.
@@ -469,39 +595,6 @@ func _flood(from: Vector2i, floor_only: bool) -> PackedByteArray:
 			seen[n.y * w + n.x] = 1
 			queue.append(n)
 	return seen
-
-
-## Carve back until everything is reachable, inside the building.
-func _connect() -> void:
-	for attempt in 80 + (w * h) / 20:
-		var start := _first_tile(false)
-		if start.x < 0:
-			return
-		var seen := _flood(start, false)
-		var stranded: Array[Vector2i] = []
-		for y in range(1, h - 1):
-			for x in range(1, w - 1):
-				if at(x, y) != Tiles.WALL and seen[y * w + x] == 0:
-					stranded.append(Vector2i(x, y))
-		if stranded.is_empty():
-			return
-
-		var s := stranded[int(floor(_rand.next() * stranded.size()))]
-		var opened := false
-		for d in DIRS:
-			var b := s + d * 2
-			if b.x < 1 or b.y < 1 or b.x > w - 2 or b.y > h - 2:
-				continue
-			var m := s + d
-			if at(m.x, m.y) == Tiles.WALL and interior[m.y * w + m.x] == 1 and seen[b.y * w + b.x] == 1:
-				_put(m.x, m.y, Tiles.FLOOR)
-				opened = true
-				break
-		if not opened:
-			for d in DIRS:
-				var m := s + d
-				if interior[m.y * w + m.x] == 1:
-					_put(m.x, m.y, Tiles.FLOOR)
 
 
 ## Drop the player on the corridor along the outer wall.

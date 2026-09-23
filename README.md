@@ -16,7 +16,8 @@ tests/   pruebas sin ventana
 
 ## Plan
 
-1. ✅ **Esqueleto y generador**: mismo museo que la web con la misma semilla.
+1. ✅ **Esqueleto y generador**: primero idéntico a la web; después, generador propio: salas
+   contiguas con al menos dos puertas, sin espacios cerrados ni pasillos sin salida.
 2. ✅ **Jugable sin IA**: museo con cajas, ladrón, guardias, cámara y controles.
 3. ✅ **Laya**: cliente HTTP a `brain/` (`POST /decide`, todos los guardias en una llamada);
    sin el servicio, reglas de reserva.
@@ -31,8 +32,7 @@ tests/   pruebas sin ventana
 ## Pruebas
 
 ```bash
-godot --headless --script tests/test_mapgen.gd   # generador = web
-godot --headless --script tests/test_museum.gd   # museo (salas, zonas, ronda) = web
+godot --headless --script tests/test_mapgen.gd   # museos bien formados (306 de todos los tamaños y formas)
 godot --headless --script tests/test_sim.gd      # escenarios de la simulación
 godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (necesita el cerebro)
 ```
