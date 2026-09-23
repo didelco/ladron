@@ -24,7 +24,8 @@ tests/   pruebas sin ventana
    vitrinas, suelo, muros, vitrinas, linternas, luces de sala y de emergencia; faltan cuadros y piezas
    del museo): figuras como en la web (encapsuladas en una escena `Figure` para cambiarlas por
    modelos con esqueleto más adelante), luces, conos de visión, suelo y muros.
-5. **Juego completo**: atraco, HUD, menús, tamaños de museo, sonido (unos pocos `.wav`).
+5. ✅ **Juego completo**: atraco por niveles (pieza, alarma, puerta de salida), pantallas de título,
+   misión, pausa y final, HUD con flecha al objetivo y el grito en grande, sonido sintetizado.
 6. **Exportar** a Windows, macOS y Linux, y decidir cómo va Laya para jugadores.
 
 ## Pruebas
@@ -42,8 +43,11 @@ En macOS, `godot` es `/Applications/Godot.app/Contents/MacOS/Godot`.
 
 ## Controles
 
-WASD o flechas para moverse, `C` o `Shift` para ponerse a gatas. Al acabar la ronda,
-`Espacio` para otra y `1`/`2`/`3` para el tamaño del museo.
+WASD o flechas para moverse, `C` o `Shift` para ponerse a gatas, `Esc` para la pausa. En el título,
+`1`/`2`/`3` elige el tamaño del museo. El objetivo: robar la pieza (quieto delante unos segundos) y
+salir por la puerta verde antes de que acabe el reloj.
+
+Para grabar o probar sin pulsar teclas: `godot -- --autostart` salta directamente a la partida.
 
 ## El cerebro
 

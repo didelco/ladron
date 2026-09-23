@@ -1,22 +1,21 @@
 extends Node3D
-## The game, still without the looks: the museum is boxes, the thief and the
-## guards are capsules with a nose. The guards think with Laya through the
-## brain service (BrainClient), and with the fallback rules (Mind.fallback)
-## whenever it is not there. Everything is built from code, so this one scene
-## is the whole game for now. The loop is the web version's Game.tsx tick:
-## thieves, noises, guards, the yell, the warning, keeping apart, lights,
+## The game: screens, the loop, and drawing the world each frame.
+##
+## Screens: title (pick the museum size) → mission (the job, the plan, a map)
+## → playing ⇄ paused → caught, time up, or escaped with the piece (next
+## level). The loop is the web version's Game.tsx tick: thieves and their
+## noise, the job and its alarm, guards, the yell, the warning, keeping apart,
+## lights, thinking (Laya through BrainClient, or the fallback rules),
 ## hidden, caught, the clock.
 
-## small, medium or large
-@export var size := "small"
-## the guards think this often, like the web's think() without Laya
+## the guards think this often
 const THINK_EVERY_MS := 1100.0
+const SIZE_NAMES := {"small": "CHICO", "medium": "MEDIANO", "large": "GRANDE"}
+## What a guard yells on spotting you.
+const SHOUTS := ["¡ALTO!", "¡QUIETO!", "¡PARA!"]
 
 const COLOURS := {
 	"night": Color("#0f0d14"),
-	"floor": Color("#2b2834"),
-	"wall": Color("#3a3446"),
-	"cover": Color("#5b6f86"),
 	"thief": Color("#2ec4a6"),
 	"thief_dark": Color("#12705f"),
 	"guard": Color("#9b2c3f"),
@@ -28,6 +27,7 @@ const COLOURS := {
 	"lit": Color("#eef3ff"),
 	"switch_off": Color("#f87171"),
 	"switch_on": Color("#4ade80"),
+	"safe": Color("#22d3ee"),
 }
 
 ## Physical keys the game reads, by the names Sim.SCHEMES uses.
@@ -36,33 +36,35 @@ const KEYS := {
 	KEY_UP: "up", KEY_DOWN: "down", KEY_LEFT: "left", KEY_RIGHT: "right",
 	KEY_C: "c", KEY_SHIFT: "shift", KEY_MINUS: "minus", KEY_SLASH: "slash",
 }
+## A fixed handful of room lights, handed to the lit rooms nearest the camera.
+const ROOM_LIGHT_POOL := 4
+const CONE_RAYS := 40
 
+var size := "small"
+var level := 1
 var thieves: Array[Thief] = []
 var guards: Array[Guard] = []
-var phase := "playing"
+var phase := "title"
 var time_left := Sim.ROUND_SECONDS
 var stride := [0.0, 0.0]
 var last_think := 0.0
 var last_spread := 0.0
-var log_lines: Array[String] = []
 var think_tick := 0
-var brain: BrainClient
+var log_lines: Array[String] = []
 
+var brain: BrainClient
+var sfx: Sfx
+var hud: Hud
 var world: Node3D
 var camera: Camera3D
 var thief_nodes: Array[Figure] = []
 var guard_nodes: Array[Figure] = []
 var torches: Array[SpotLight3D] = []
-## A fixed handful of room lights, handed to the lit rooms nearest the camera:
-## a light per room would slow a big museum down.
-const ROOM_LIGHT_POOL := 4
 var room_lights: Array[OmniLight3D] = []
 var cones: Array[MeshInstance3D] = []
 var switch_marks: Array[MeshInstance3D] = []
 var lit_washes: Array[MeshInstance3D] = []
-var hud: Label
-var banner: Label
-var log_label: Label
+var loot_node: MeshInstance3D
 
 
 func _ready() -> void:
@@ -70,35 +72,120 @@ func _ready() -> void:
 	add_child(brain)
 	brain.decided.connect(_on_decided)
 	brain.failed.connect(_on_brain_failed)
+	sfx = Sfx.new()
+	add_child(sfx)
+	hud = Hud.new()
+	add_child(hud)
 	_build_environment()
-	_build_hud()
-	new_round()
+	# A museum behind the title screen, so it is not a black void.
+	_new_round(1)
+	_show_title()
+	# For recording and testing: `godot -- --autostart` skips the title, shows
+	# the mission for two seconds and starts the round.
+	if "--autostart" in OS.get_cmdline_user_args():
+		_show_mission()
+		get_tree().create_timer(2.0).timeout.connect(_start_playing)
 
 
-# --- Rounds ------------------------------------------------------------------
+# --- Screens -----------------------------------------------------------------------
 
-func new_round() -> void:
+func _show_title() -> void:
+	phase = "title"
+	hud.show_panel("LADRÓN", Hud.C.gold, [
+		"Un museo cerrado de noche y vigilantes que piensan con Laya.",
+		"Muévete con WASD o flechas · C o Shift: a gatas · Esc: pausa",
+		"",
+		"Museo: %s (%d guardias) · 1 / 2 / 3 para cambiarlo" % [SIZE_NAMES[size], Museum.SIZES[size].guards],
+	], "▶ ESPACIO PARA EMPEZAR")
+
+
+func _show_mission() -> void:
+	phase = "mission"
+	# Little text: the piece, the map, and on the first level one line on how.
+	# The map already says where you come in, where the piece is and the door.
+	var lines := [Heist.first_upper(Heist.loot.name)]
+	if level == 1:
+		lines.append("Quieto %s ante la pieza · la alarma atrae guardias · sal por la puerta verde" % _seconds(Heist.loot.seconds))
+	hud.show_panel("NIVEL %02d" % level, Hud.C.gold, lines, "▶ ESPACIO", Hud.mission_map(guards))
+
+
+func _show_end() -> void:
+	var title := "TE HAN PILLADO"
+	var colour: Color = Hud.C.alert
+	var line := "Nivel %d: %s %s." % [level, Heist.loot.name, "vuelve a su vitrina" if Heist.taken else "sigue en su sitio"]
+	var footer := "▶ OTRA VEZ · ESPACIO · Esc: menú"
+	if phase == "timeup":
+		title = "SE ACABÓ EL TIEMPO"
+		line = "Llega el relevo y %s %s." % [Heist.loot.name, "no salió del edificio" if Heist.taken else "sigue en su sitio"]
+	elif phase == "escaped":
+		title = "¡GOLPE PERFECTO!"
+		colour = Hud.C.safe
+		line = "Nivel %d superado: %s ya es tuyo." % [level, Heist.loot.name]
+		footer = "▶ SIGUIENTE GOLPE · ESPACIO · Esc: menú"
+	hud.show_panel(title, colour, [line], footer)
+
+
+func _seconds(s: float) -> String:
+	return ("%d segundos" % int(s)) if is_equal_approx(s, round(s)) else ("%s segundos" % str(s).replace(".", ","))
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not (event is InputEventKey and event.pressed and not event.echo):
+		return
+	var key: int = event.keycode
+	match phase:
+		"title":
+			if key in [KEY_1, KEY_2, KEY_3]:
+				size = ["small", "medium", "large"][key - KEY_1]
+				_new_round(1)
+				_show_title()
+			elif key == KEY_SPACE or key == KEY_ENTER:
+				_new_round(1)
+				_show_mission()
+		"mission":
+			if key == KEY_SPACE or key == KEY_ENTER:
+				_start_playing()
+			elif key == KEY_ESCAPE:
+				_show_title()
+		"playing":
+			if key == KEY_ESCAPE or key == KEY_P:
+				phase = "paused"
+				hud.show_panel("PAUSA", Hud.C.gold, [], "▶ ESPACIO O ESC PARA SEGUIR · Q: menú")
+		"paused":
+			if key == KEY_ESCAPE or key == KEY_P or key == KEY_SPACE:
+				_start_playing()
+			elif key == KEY_Q:
+				_show_title()
+		"caught", "timeup", "escaped":
+			if key == KEY_SPACE or key == KEY_ENTER:
+				_new_round(level + 1 if phase == "escaped" else level)
+				_show_mission()
+			elif key == KEY_ESCAPE:
+				_show_title()
+
+
+func _start_playing() -> void:
+	phase = "playing"
+	hud.hide_panel()
+
+
+# --- Rounds --------------------------------------------------------------------------
+
+func _new_round(n: int) -> void:
+	level = n
 	Sim.new_map(randi() % 1000000000, size)
 	thieves = [Sim.new_thief("p1")]
 	guards = Sim.new_guards(Museum.SIZES[size].guards)
-	phase = "playing"
+	Heist.plan_job(level)
 	time_left = Sim.ROUND_SECONDS
 	stride = [0.0, 0.0]
 	last_think = 0.0
+	think_tick = 0
 	log_lines.clear()
 	Sim.thoughts.clear()
 	Sim.light_events.clear()
 	_build_world()
 	_snap_camera()
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_SPACE and phase != "playing":
-			new_round()
-		elif event.keycode in [KEY_1, KEY_2, KEY_3] and phase != "playing":
-			size = ["small", "medium", "large"][event.keycode - KEY_1]
-			new_round()
 
 
 func _pressed_keys() -> Dictionary:
@@ -109,7 +196,7 @@ func _pressed_keys() -> Dictionary:
 	return keys
 
 
-# --- The loop --------------------------------------------------------------------
+# --- The loop ------------------------------------------------------------------------
 
 func _physics_process(dt: float) -> void:
 	if phase == "playing":
@@ -136,6 +223,24 @@ func _tick(dt: float) -> void:
 				stride[i] = 0.0
 		if noise and not p.out:
 			noises.append(noise)
+			var what := "step" if noise.kind in ["walk", "sprint", "rustle"] else ("shelf" if noise.kind == "shelf" else "bump")
+			sfx.at(what, _to_world(p.x, p.y), clampf(noise.loudness / 9.0, 0.15, 1.0))
+
+	# The job: working the case (and its alarm), carrying, dropping, the door.
+	var before_alarms := noises.size()
+	var took := Heist.step(thieves, dt, now, noises)
+	if noises.size() > before_alarms:
+		if Heist.progress < 0.1:
+			_log("¡Salta la alarma de la vitrina!")
+		sfx.at("alarm", _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5), 0.8)
+	match took:
+		"stolen":
+			sfx.ui("stolen")
+			_log("Tienes %s: ahora, a la salida" % Heist.loot.name)
+		"dropped":
+			_log("%s ha caído al suelo" % Heist.first_upper(Heist.loot.name))
+		"picked":
+			sfx.ui("pick")
 
 	Sim.tick_lights(dt)
 	var saw_before := {}
@@ -144,10 +249,17 @@ func _tick(dt: float) -> void:
 	for g in guards:
 		Sim.step_guard(g, thieves, noises, now, dt)
 	for s in Sim.call_for_backup(saw_before, guards, now):
+		sfx.at("shout", _to_world(s.x, s.y), 1.0 if s.first else 0.5)
 		if s.first:
-			var heard: String = ", ".join(s.heard_by) if not (s.heard_by as Array).is_empty() else "nadie más"
-			_log("%s: ¡Alto! (lo oye: %s)" % [s.from, heard])
+			var heard_by: Array = s.heard_by
+			var heard: String = ("%s lo ha oído y viene" % " y ".join(heard_by)) if not heard_by.is_empty() else "nadie más lo ha oído"
+			var ear := thieves[0]
+			var angle := atan2(s.y - ear.y, s.x - ear.x)
+			var d := Museum.dist(ear.x, ear.y, s.x, s.y)
+			hud.shout(SHOUTS[randi() % SHOUTS.size()], "%s grita %s · %s" % [s.from, "a lo lejos" if d > 9 else "cerca", heard], angle)
+			_log("%s: ¡Alto! — %s" % [s.from, heard])
 	for w in Sim.warn_partners(guards, now):
+		sfx.at("whisper", _to_world(w.x, w.y), 0.6)
 		_log("%s avisa a %s en voz baja" % [w.from, w.to])
 	for t in Sim.thoughts:
 		_log("%s: %s" % [t.by, t.text])
@@ -157,16 +269,16 @@ func _tick(dt: float) -> void:
 		for z in Museum.zones:
 			if z.room == e.room:
 				label = z.label
+		var r: Museum.Room = Museum.rooms[e.room]
+		sfx.at("lights", _to_world(r.switch_at.x + 0.5, r.switch_at.y + 0.5), 0.8)
 		_log("%s enciende las luces de %s" % [e.by, label])
 	Sim.light_events.clear()
 
 	if now - last_spread > 500:
 		last_spread = now
 		Sim.keep_apart(guards)
-	# Thinking. Only guards with a decision to make are asked — a guard half
-	# way through a plan made on the same facts would ignore the answer — and
-	# everyone every third time, to keep pace and torch fresh. Without the
-	# brain, the fallback rules decide for the ones that need it.
+	# Thinking. Only guards with a decision to make are asked, and everyone
+	# every third time; without the brain, the fallback rules decide.
 	if now - last_think > THINK_EVERY_MS:
 		last_think = now
 		think_tick += 1
@@ -183,12 +295,21 @@ func _tick(dt: float) -> void:
 		if Sim.caught(guards, p):
 			p.out = true
 			p.speed = 0
-			_log("¡Te han pillado!")
+			sfx.ui("caught")
 	time_left -= dt
-	if thieves.all(func(p): return p.out):
-		phase = "caught"
-	elif time_left <= 0:
+	# Out of the door with the piece is the only way to win; the clock running
+	# out is the relief shift walking in.
+	if took == "out":
 		phase = "escaped"
+		sfx.ui("escaped")
+		_show_end()
+	elif thieves.all(func(p): return p.out):
+		phase = "caught"
+		_show_end()
+	elif time_left <= 0:
+		phase = "timeup"
+		sfx.ui("caught")
+		_show_end()
 
 
 func _on_decided(decisions: Dictionary, _ms: int) -> void:
@@ -216,18 +337,14 @@ func _log(line: String) -> void:
 
 # --- Building the world --------------------------------------------------------
 
-## Grid (x, y) to world (x, z): y is up, as Godot expects.
 func _to_world(x: float, y: float, height: float = 0.0) -> Vector3:
-	return Vector3(x - Museum.w / 2.0, height, y - Museum.h / 2.0)
+	return MuseumView.to_world(x, y, height)
 
 
-func _material(colour: Color, unshaded := false) -> StandardMaterial3D:
+func _flat(colour: Color) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()
 	m.albedo_color = colour
-	m.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
-	m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
-	if unshaded:
-		m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	if colour.a < 1.0:
 		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	return m
@@ -238,17 +355,20 @@ func _build_environment() -> void:
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = COLOURS.night
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	# The building is shut and the lights are off: what you see by is the
-	# torches, the room lights once switched on, and this faint blue night.
+	# The building is shut: what you see by is the torches, the room lights
+	# once switched on, and this faint blue night.
 	env.ambient_light_color = Color("#6f78a8")
 	env.ambient_light_energy = 0.6
+	env.glow_enabled = true
+	env.glow_intensity = 0.6
+	env.glow_hdr_threshold = 0.9
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)
-	var sun := DirectionalLight3D.new()
-	sun.rotation_degrees = Vector3(-60, 30, 0)
-	sun.light_energy = 0.12
-	add_child(sun)
+	var moon := DirectionalLight3D.new()
+	moon.rotation_degrees = Vector3(-60, 30, 0)
+	moon.light_energy = 0.12
+	add_child(moon)
 	camera = Camera3D.new()
 	camera.fov = 50
 	add_child(camera)
@@ -278,7 +398,7 @@ func _build_world() -> void:
 		var b := BoxMesh.new()
 		b.size = Vector3(0.25, 0.25, 0.25)
 		mark.mesh = b
-		mark.material_override = _material(COLOURS.switch_off, true)
+		mark.material_override = _flat(COLOURS.switch_off)
 		var s := r.switch_at
 		mark.position = _to_world(s.x + 0.5 + r.face.x * 0.4, s.y + 0.5 + r.face.y * 0.4, 1.25)
 		world.add_child(mark)
@@ -287,13 +407,15 @@ func _build_world() -> void:
 		var p := PlaneMesh.new()
 		p.size = Vector2(r.rect.size.x, r.rect.size.y)
 		wash.mesh = p
-		var wm := _material(Color(COLOURS.lit, 0.18), true)
+		var wm := _flat(Color(COLOURS.lit, 0.18))
 		wm.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
 		wash.material_override = wm
 		wash.position = _to_world(r.rect.position.x + r.rect.size.x / 2.0, r.rect.position.y + r.rect.size.y / 2.0, 0.02)
 		wash.visible = false
 		world.add_child(wash)
 		lit_washes.append(wash)
+
+	_build_job()
 
 	for p in thieves:
 		var f := Figure.make("thief", COLOURS.thief, COLOURS.thief_dark)
@@ -321,28 +443,72 @@ func _build_world() -> void:
 		torches.append(torch)
 		var cone := MeshInstance3D.new()
 		cone.mesh = ImmediateMesh.new()
-		var cm := _material(Color(COLOURS.cone, 0.12), true)
+		var cm := _flat(Color(COLOURS.cone, 0.12))
 		cm.cull_mode = BaseMaterial3D.CULL_DISABLED
-		cm.no_depth_test = false
 		cone.material_override = cm
 		world.add_child(cone)
 		cones.append(cone)
 
 
-func _multimesh(mesh: Mesh, tiles: Array[Vector2i], height: float, mat: Material) -> void:
-	var mm := MultiMesh.new()
-	mm.transform_format = MultiMesh.TRANSFORM_3D
-	mm.mesh = mesh
-	mm.instance_count = tiles.size()
-	for i in tiles.size():
-		mm.set_instance_transform(i, Transform3D(Basis(), _to_world(tiles[i].x + 0.5, tiles[i].y + 0.5, height)))
-	var node := MultiMeshInstance3D.new()
-	node.multimesh = mm
-	node.material_override = mat
-	world.add_child(node)
+## The piece, glowing on its case, and the door out: a green panel in the
+## outer wall with a light over it.
+func _build_job() -> void:
+	var colour := Color(Heist.loot.colour)
+	var mesh: PrimitiveMesh
+	match Heist.loot.shape:
+		"egg":
+			mesh = SphereMesh.new()
+			mesh.radius = 0.14
+			mesh.height = 0.36
+		"crown":
+			mesh = TorusMesh.new()
+			mesh.inner_radius = 0.1
+			mesh.outer_radius = 0.17
+		"mask":
+			mesh = BoxMesh.new()
+			mesh.size = Vector3(0.26, 0.3, 0.06)
+		"idol":
+			mesh = CapsuleMesh.new()
+			mesh.radius = 0.08
+			mesh.height = 0.36
+		_:
+			mesh = SphereMesh.new()
+			mesh.radius = 0.16
+			mesh.height = 0.32
+			mesh.radial_segments = 6
+			mesh.rings = 3
+	var m := StandardMaterial3D.new()
+	m.albedo_color = colour
+	m.emission_enabled = true
+	m.emission = colour
+	m.emission_energy_multiplier = 1.6
+	loot_node = MeshInstance3D.new()
+	loot_node.mesh = mesh
+	loot_node.material_override = m
+	world.add_child(loot_node)
+	var glow := OmniLight3D.new()
+	glow.light_color = colour
+	glow.light_energy = 1.2
+	glow.omni_range = 2.5
+	loot_node.add_child(glow)
+
+	var door := MeshInstance3D.new()
+	var b := BoxMesh.new()
+	b.size = Vector3(0.9, 1.2, 0.08) if Heist.exit_face.y != 0 else Vector3(0.08, 1.2, 0.9)
+	door.mesh = b
+	var dm := _flat(COLOURS.switch_on)
+	door.material_override = dm
+	door.position = _to_world(Heist.exit.x + 0.5 + Heist.exit_face.x * 0.46, Heist.exit.y + 0.5 + Heist.exit_face.y * 0.46, 0.6)
+	world.add_child(door)
+	var exit_light := OmniLight3D.new()
+	exit_light.light_color = COLOURS.switch_on
+	exit_light.light_energy = 1.5
+	exit_light.omni_range = 3.0
+	exit_light.position = door.position + Vector3(0, 0.8, 0)
+	world.add_child(exit_light)
 
 
-# --- Drawing -----------------------------------------------------------------
+# --- Drawing -------------------------------------------------------------------------
 
 func _draw_frame(dt: float) -> void:
 	for i in thieves.size():
@@ -350,8 +516,8 @@ func _draw_frame(dt: float) -> void:
 		var f := thief_nodes[i]
 		f.set_state(_to_world(p.x, p.y), p.dir, p.posture, dt)
 		f.scale = Vector3.ONE * (0.75 if p.out else 1.0)
-		# Seen through the cases: your colour while nobody sees you, the alarm
-		# red the moment one does, all but gone once you are out.
+		# Seen through the cases: your colour while nobody sees you, the
+		# alarm red the moment one does, all but gone once you are out.
 		if p.out:
 			f.set_ghost(COLOURS.ink, 0.35)
 		elif p.hidden:
@@ -371,6 +537,13 @@ func _draw_frame(dt: float) -> void:
 		# Under the ceiling lights a torch is pointless, and switched off.
 		torch.light_energy = 0.0 if Museum.is_lit(g.x, g.y) else (6.0 if g.alert else 3.5)
 		_draw_cone(g, cones[i])
+	_draw_room_lights()
+	_draw_loot()
+	_follow_camera(dt)
+	_draw_hud()
+
+
+func _draw_room_lights() -> void:
 	var lit: Array = []
 	for r in Museum.rooms:
 		var on := Museum.lights_left[r.id] > 0
@@ -388,11 +561,22 @@ func _draw_frame(dt: float) -> void:
 			l.light_energy = 2.5
 		else:
 			l.light_energy = 0.0
-	_follow_camera(dt)
-	_draw_hud()
 
 
-const CONE_RAYS := 40
+## The piece: turning over its case, on the thief's back, or on the floor.
+func _draw_loot() -> void:
+	var t := Time.get_ticks_msec() / 1000.0
+	if Heist.carrier != "":
+		var c: Thief = thieves[0]
+		for p in thieves:
+			if p.id == Heist.carrier:
+				c = p
+		loot_node.position = _to_world(c.x - cos(c.dir) * 0.2, c.y - sin(c.dir) * 0.2, 1.05 - c.posture * 0.5)
+	elif Heist.dropped != Vector2.INF:
+		loot_node.position = _to_world(Heist.dropped.x, Heist.dropped.y, 0.2)
+	else:
+		loot_node.position = _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5, 1.05 + sin(t * 2.0) * 0.05)
+	loot_node.rotation.y = t * 1.2
 
 
 ## The view cone, rebuilt from rays every frame so it stops at the walls.
@@ -449,28 +633,9 @@ func _follow_camera(dt: float) -> void:
 	camera.look_at(camera.position - Vector3(0, 15.4, 6))
 
 
-# --- HUD ---------------------------------------------------------------------
-
-func _build_hud() -> void:
-	var layer := CanvasLayer.new()
-	add_child(layer)
-	hud = Label.new()
-	hud.position = Vector2(20, 16)
-	hud.add_theme_font_size_override("font_size", 22)
-	layer.add_child(hud)
-	log_label = Label.new()
-	log_label.position = Vector2(20, 90)
-	log_label.add_theme_font_size_override("font_size", 15)
-	log_label.modulate = Color(1, 1, 1, 0.7)
-	layer.add_child(log_label)
-	banner = Label.new()
-	banner.set_anchors_preset(Control.PRESET_CENTER)
-	banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	banner.add_theme_font_size_override("font_size", 40)
-	layer.add_child(banner)
-
-
 func _draw_hud() -> void:
+	if thieves.is_empty():
+		return
 	var p := thieves[0]
 	var stance := "DE PIE"
 	if p.crouched:
@@ -478,12 +643,17 @@ func _draw_hud() -> void:
 	elif p.posture > 0:
 		stance = "SUBIENDO"
 	var ia := "IA: Laya %d ms" % brain.last_ms if brain.status == "laya" else "IA: reglas"
-	hud.text = "%02d   %s   %s   %s   %s" % [ceili(maxf(0.0, time_left)), "A CUBIERTO" if p.hidden else "A LA VISTA", stance, "museo %s (%s)" % [size, Museum.shape], ia]
-	log_label.text = "\n".join(log_lines)
-	if phase == "caught":
-		banner.text = "TE HAN PILLADO\nESPACIO: otra vez · 1/2/3: tamaño"
-	elif phase == "escaped":
-		banner.text = "HAS AGUANTADO\nESPACIO: otra vez · 1/2/3: tamaño"
-	else:
-		banner.text = ""
-	banner.position = get_viewport().get_visible_rect().size / 2.0 - banner.size / 2.0
+	var status := "%02d   %s   %s   ·   %s" % [ceili(maxf(0.0, time_left)), "A CUBIERTO" if p.hidden else "A LA VISTA", stance, ia]
+	# The arrow at the screen edge: to the piece, or to the door once you have it.
+	var goal := Heist.objective()
+	var d := Museum.dist(p.x, p.y, goal.x, goal.y)
+	var angle := atan2(goal.y - p.y, goal.x - p.x) if d > 6 and phase == "playing" else NAN
+	var job := {
+		"working": Heist.by != "",
+		"progress": Heist.progress,
+		"verb": Heist.loot.verb,
+		"carrying": Heist.carrier != "",
+		"dropped": Heist.dropped != Vector2.INF,
+		"name": Heist.loot.name,
+	}
+	hud.update_play(status, COLOURS.safe if p.hidden else COLOURS.alert, log_lines, job, angle, COLOURS.switch_on if Heist.carrier != "" else Color(Heist.loot.colour))
