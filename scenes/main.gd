@@ -18,7 +18,10 @@ const COLOURS := {
 	"wall": Color("#3a3446"),
 	"cover": Color("#5b6f86"),
 	"thief": Color("#2ec4a6"),
+	"thief_dark": Color("#12705f"),
 	"guard": Color("#9b2c3f"),
+	"guard_dark": Color("#5e1826"),
+	"ink": Color("#08070c"),
 	"alert": Color("#ff3d6e"),
 	"cone": Color("#ffd479"),
 	"cone_alert": Color("#ffa94d"),
@@ -47,8 +50,13 @@ var brain: BrainClient
 
 var world: Node3D
 var camera: Camera3D
-var thief_nodes: Array[Node3D] = []
-var guard_nodes: Array[Node3D] = []
+var thief_nodes: Array[Figure] = []
+var guard_nodes: Array[Figure] = []
+var torches: Array[SpotLight3D] = []
+## A fixed handful of room lights, handed to the lit rooms nearest the camera:
+## a light per room would slow a big museum down.
+const ROOM_LIGHT_POOL := 4
+var room_lights: Array[OmniLight3D] = []
 var cones: Array[MeshInstance3D] = []
 var switch_marks: Array[MeshInstance3D] = []
 var lit_washes: Array[MeshInstance3D] = []
@@ -216,6 +224,8 @@ func _to_world(x: float, y: float, height: float = 0.0) -> Vector3:
 func _material(colour: Color, unshaded := false) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()
 	m.albedo_color = colour
+	m.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
+	m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 	if unshaded:
 		m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	if colour.a < 1.0:
@@ -228,14 +238,16 @@ func _build_environment() -> void:
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = COLOURS.night
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color("#8e96c8")
-	env.ambient_light_energy = 0.55
+	# The building is shut and the lights are off: what you see by is the
+	# torches, the room lights once switched on, and this faint blue night.
+	env.ambient_light_color = Color("#6f78a8")
+	env.ambient_light_energy = 0.6
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-60, 30, 0)
-	sun.light_energy = 0.5
+	sun.light_energy = 0.12
 	add_child(sun)
 	camera = Camera3D.new()
 	camera.fov = 50
@@ -249,30 +261,16 @@ func _build_world() -> void:
 	add_child(world)
 	thief_nodes.clear()
 	guard_nodes.clear()
+	torches.clear()
+	room_lights.clear()
 	cones.clear()
 	switch_marks.clear()
 	lit_washes.clear()
 
-	# Floor: a tile under everything that is part of the building.
-	var floor_tiles: Array[Vector2i] = []
-	var walls: Array[Vector2i] = []
-	for y in Museum.h:
-		for x in Museum.w:
-			if Museum.is_outside(x, y):
-				continue
-			if Museum.grid[y * Museum.w + x] == Tiles.WALL:
-				walls.append(Vector2i(x, y))
-			else:
-				floor_tiles.append(Vector2i(x, y))
-	var plane := PlaneMesh.new()
-	plane.size = Vector2(1, 1)
-	_multimesh(plane, floor_tiles, 0.0, _material(COLOURS.floor))
-	var wall_box := BoxMesh.new()
-	wall_box.size = Vector3(1, 1.15, 1)
-	_multimesh(wall_box, walls, 0.575, _material(COLOURS.wall))
-	var case_box := BoxMesh.new()
-	case_box.size = Vector3(0.86, 0.82, 0.86)
-	_multimesh(case_box, Museum.cover_tiles, 0.41, _material(COLOURS.cover))
+	# Floor, walls, cases and emergency lights: built once, never touched again.
+	var view := MuseumView.new()
+	view.build()
+	world.add_child(view)
 
 	# Switches, and the white wash that fills a lit room.
 	for r in Museum.rooms:
@@ -298,9 +296,29 @@ func _build_world() -> void:
 		lit_washes.append(wash)
 
 	for p in thieves:
-		thief_nodes.append(_figure(COLOURS.thief))
+		var f := Figure.make("thief", COLOURS.thief, COLOURS.thief_dark)
+		world.add_child(f)
+		thief_nodes.append(f)
+	for i in ROOM_LIGHT_POOL:
+		var l := OmniLight3D.new()
+		l.light_color = COLOURS.lit
+		l.light_energy = 0.0
+		l.omni_attenuation = 0.8
+		world.add_child(l)
+		room_lights.append(l)
 	for g in guards:
-		guard_nodes.append(_figure(COLOURS.guard))
+		var f := Figure.make("guard", COLOURS.guard, COLOURS.guard_dark)
+		world.add_child(f)
+		guard_nodes.append(f)
+		# A torch, not a bulb: narrow cone, soft edge, pointed where it looks.
+		var torch := SpotLight3D.new()
+		torch.light_color = COLOURS.cone
+		torch.spot_attenuation = 1.0
+		torch.shadow_enabled = true
+		f.add_child(torch)
+		torch.position = Vector3(0, 1.15, 0.1)
+		torch.rotation.x = -0.35
+		torches.append(torch)
 		var cone := MeshInstance3D.new()
 		cone.mesh = ImmediateMesh.new()
 		var cm := _material(Color(COLOURS.cone, 0.12), true)
@@ -324,53 +342,52 @@ func _multimesh(mesh: Mesh, tiles: Array[Vector2i], height: float, mat: Material
 	world.add_child(node)
 
 
-## A stand-in figure: a capsule with a nose pointing where it faces. The real
-## figure comes in phase 4, behind this same node.
-func _figure(colour: Color) -> Node3D:
-	var root := Node3D.new()
-	var body := MeshInstance3D.new()
-	var cap := CapsuleMesh.new()
-	cap.radius = 0.28
-	cap.height = 0.9
-	body.mesh = cap
-	body.position.y = 0.45
-	body.material_override = _material(colour)
-	body.name = "Body"
-	root.add_child(body)
-	var nose := MeshInstance3D.new()
-	var nb := BoxMesh.new()
-	nb.size = Vector3(0.12, 0.12, 0.3)
-	nose.mesh = nb
-	nose.position = Vector3(0, 0.75, 0.28)
-	nose.material_override = _material(colour.lightened(0.4))
-	root.add_child(nose)
-	world.add_child(root)
-	return root
-
-
 # --- Drawing -----------------------------------------------------------------
 
 func _draw_frame(dt: float) -> void:
 	for i in thieves.size():
 		var p := thieves[i]
-		var n := thief_nodes[i]
-		n.position = _to_world(p.x, p.y)
-		n.rotation.y = -p.dir + PI / 2
-		# On all fours: squashed down, for now.
-		n.scale = Vector3(1, 1.0 - p.posture * 0.55, 1) * (0.75 if p.out else 1.0)
-		(n.get_node("Body") as MeshInstance3D).material_override.albedo_color = \
-			Color("#444") if p.out else (COLOURS.thief if p.hidden else COLOURS.alert)
+		var f := thief_nodes[i]
+		f.set_state(_to_world(p.x, p.y), p.dir, p.posture, dt)
+		f.scale = Vector3.ONE * (0.75 if p.out else 1.0)
+		# Seen through the cases: your colour while nobody sees you, the alarm
+		# red the moment one does, all but gone once you are out.
+		if p.out:
+			f.set_ghost(COLOURS.ink, 0.35)
+		elif p.hidden:
+			f.set_ghost(COLOURS.thief, 0.75)
+		else:
+			f.set_ghost(COLOURS.alert, 1.0)
 	for i in guards.size():
 		var g := guards[i]
-		var n := guard_nodes[i]
-		n.position = _to_world(g.x, g.y)
-		n.rotation.y = -g.dir + PI / 2
-		(n.get_node("Body") as MeshInstance3D).material_override.albedo_color = COLOURS.alert if g.sees_player else COLOURS.guard
+		var f := guard_nodes[i]
+		f.set_state(_to_world(g.x, g.y), g.dir, 0.0, dt)
+		f.set_ghost(COLOURS.alert if g.sees_player else COLOURS.guard, 0.75)
+		var view := Sim.view_of(g)
+		var torch := torches[i]
+		torch.light_color = COLOURS.alert if g.sees_player else COLOURS.cone
+		torch.spot_angle = rad_to_deg(view.half) * 0.85
+		torch.spot_range = view.range + 1.0
+		# Under the ceiling lights a torch is pointless, and switched off.
+		torch.light_energy = 0.0 if Museum.is_lit(g.x, g.y) else (6.0 if g.alert else 3.5)
 		_draw_cone(g, cones[i])
+	var lit: Array = []
 	for r in Museum.rooms:
 		var on := Museum.lights_left[r.id] > 0
 		switch_marks[r.id].material_override.albedo_color = COLOURS.switch_on if on else COLOURS.switch_off
 		lit_washes[r.id].visible = on
+		if on:
+			var c := _to_world(r.rect.position.x + r.rect.size.x / 2.0, r.rect.position.y + r.rect.size.y / 2.0, 2.6)
+			lit.append([c, c.distance_to(camera.position), Vector2(r.rect.size).length()])
+	lit.sort_custom(func(a, b): return a[1] < b[1])
+	for i in room_lights.size():
+		var l := room_lights[i]
+		if i < lit.size():
+			l.position = lit[i][0]
+			l.omni_range = lit[i][2] / 2.0 + 3.0
+			l.light_energy = 2.5
+		else:
+			l.light_energy = 0.0
 	_follow_camera(dt)
 	_draw_hud()
 

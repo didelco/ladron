@@ -9,7 +9,7 @@ Regla general: **simplificar**. Se porta la lógica tal cual; las mejoras, despu
 
 ```
 logic/   lógica pura, sin nodos (GDScript con tipos): se prueba sola
-scenes/  lo visual: museo, figuras, HUD            (pendiente)
+scenes/  lo visual: main (bucle y HUD), museum_view (museo), figure (personajes)
 brain/   el cerebro: FastAPI sobre Laya, igual que en la web
 tests/   pruebas sin ventana
 ```
@@ -20,7 +20,9 @@ tests/   pruebas sin ventana
 2. ✅ **Jugable sin IA**: museo con cajas, ladrón, guardias, cámara y controles.
 3. ✅ **Laya**: cliente HTTP a `brain/` (`POST /decide`, todos los guardias en una llamada);
    sin el servicio, reglas de reserva.
-4. **Aspecto** ← siguiente: figuras como en la web (encapsuladas en una escena `Figure` para cambiarlas por
+4. 🟡 **Aspecto** (primera versión hecha: figuras animadas con contorno y silueta a través de las
+   vitrinas, suelo, muros, vitrinas, linternas, luces de sala y de emergencia; faltan cuadros y piezas
+   del museo): figuras como en la web (encapsuladas en una escena `Figure` para cambiarlas por
    modelos con esqueleto más adelante), luces, conos de visión, suelo y muros.
 5. **Juego completo**: atraco, HUD, menús, tamaños de museo, sonido (unos pocos `.wav`).
 6. **Exportar** a Windows, macOS y Linux, y decidir cómo va Laya para jugadores.
@@ -33,6 +35,8 @@ godot --headless --script tests/test_museum.gd   # museo (salas, zonas, ronda) =
 godot --headless --script tests/test_sim.gd      # escenarios de la simulación
 godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (necesita el cerebro)
 ```
+
+`tests/visual/figures.tscn` enseña de cerca al ladrón y al guardia con sus animaciones.
 
 En macOS, `godot` es `/Applications/Godot.app/Contents/MacOS/Godot`.
 
