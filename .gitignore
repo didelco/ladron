@@ -1,0 +1,10 @@
+# Godot
+.godot/
+/export/
+*.tmp
+
+# El cerebro (Python)
+brain/.venv/
+brain/__pycache__/
+
+.DS_Store
