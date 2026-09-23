@@ -65,4 +65,4 @@ Sin el cerebro, los guardias deciden con reglas fijas: el juego siempre se puede
 
 ## Créditos
 
-Los modelos 3D de terceros, cuando se incorporen, llevan su licencia en `CREDITS.md`.
+Recursos de terceros y sus licencias: `CREDITS.md`.

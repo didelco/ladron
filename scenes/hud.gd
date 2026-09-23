@@ -15,6 +15,10 @@ const C := {
 }
 ## How long the yell fills the screen.
 const SHOUT_S := 1.4
+## The arcade face, for titles, buttons, the clock and the yell only: it is a
+## shouting font and unreadable in paragraphs, so the log and the IA panel keep
+## the plain one.
+const ARCADE := preload("res://assets/fonts/PressStart2P-Regular.ttf")
 
 var _status: Label
 var _log: Label
@@ -37,11 +41,11 @@ var _ia_box: VBoxContainer
 
 
 func _ready() -> void:
-	_status = _label(24, C.text)
+	_status = _label(16, C.text, self, true)
 	_status.position = Vector2(24, 16)
 	_log = _label(15, C.dim)
 	_log.position = Vector2(24, 64)
-	_job = _label(20, C.gold)
+	_job = _label(14, C.gold, self, true)
 	_job.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_bar_back = ColorRect.new()
 	_bar_back.color = Color("#241d52")
@@ -57,7 +61,7 @@ func _ready() -> void:
 	_shout.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_shout.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_shout)
-	_shout_word = _label(120, C.alert, _shout)
+	_shout_word = _label(96, C.alert, _shout, true)
 	_shout_word.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_shout_text = _label(20, C.gold, _shout)
 	_shout_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -95,8 +99,10 @@ func _ready() -> void:
 	_ia.visible = false
 
 
-func _label(size: int, colour: Color, parent: Node = self) -> Label:
+func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> Label:
 	var l := Label.new()
+	if arcade:
+		l.add_theme_font_override("font", ARCADE)
 	l.add_theme_font_size_override("font_size", size)
 	l.add_theme_color_override("font_color", colour)
 	l.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
@@ -121,7 +127,8 @@ func show_menu(items: Array) -> void:
 	var first: Button = null
 	for item in items:
 		if item.has("title"):
-			var t := _label(item.get("size", 56), item.get("colour", C.gold), _panel_box)
+			# Pixel faces run wide: the arcade title at about two thirds the size.
+			var t := _label(int(item.get("size", 56) * 0.66), item.get("colour", C.gold), _panel_box, true)
 			t.text = item.title
 			t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			t.add_theme_constant_override("outline_size", 10)
@@ -152,7 +159,7 @@ func show_menu(items: Array) -> void:
 				if first == null:
 					first = button
 		elif item.has("footer"):
-			var f := _label(22, C.gold, _panel_box)
+			var f := _label(14, C.gold, _panel_box, true)
 			f.text = item.footer
 			f.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_panel.visible = true
@@ -168,7 +175,8 @@ func _button(b: Dictionary) -> Button:
 	var button := Button.new()
 	button.text = b.get("text", "")
 	button.focus_mode = Control.FOCUS_ALL
-	button.add_theme_font_size_override("font_size", 20)
+	button.add_theme_font_override("font", ARCADE)
+	button.add_theme_font_size_override("font_size", 14)
 	var colour: Color = b.get("colour", C.safe)
 	for state in ["normal", "hover", "pressed", "focus"]:
 		var st := StyleBoxFlat.new()
