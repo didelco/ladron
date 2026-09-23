@@ -493,15 +493,7 @@ func _build_world() -> void:
 
 	# Switches, and the white wash that fills a lit room.
 	for r in Museum.rooms:
-		var mark := MeshInstance3D.new()
-		var b := BoxMesh.new()
-		b.size = Vector3(0.25, 0.25, 0.25)
-		mark.mesh = b
-		mark.material_override = _flat(COLOURS.switch_off)
-		var s := r.switch_at
-		mark.position = _to_world(s.x + 0.5 + r.face.x * 0.4, s.y + 0.5 + r.face.y * 0.4, 1.25)
-		world.add_child(mark)
-		switch_marks.append(mark)
+		switch_marks.append(_switch(r))
 		var wash := MeshInstance3D.new()
 		var p := PlaneMesh.new()
 		p.size = Vector2(r.rect.size.x, r.rect.size.y)
@@ -550,62 +542,174 @@ func _build_world() -> void:
 		cones.append(cone)
 
 
-## The piece, glowing on its case, and the door out: a green panel in the
-## outer wall with a light over it.
+## A light switch as mounted: a panel with a lever on the wall face, a conduit
+## up to a junction box on the wall's cap, and the box's lamp — red while the
+## room is dark, green once someone has thrown it. The lamp is what reads from
+## the camera; it is what gets returned, to be recoloured.
+func _switch(r: Museum.Room) -> MeshInstance3D:
+	var s := r.switch_at
+	var root := Node3D.new()
+	root.position = _to_world(s.x + 0.5 + r.face.x * 0.5, s.y + 0.5 + r.face.y * 0.5)
+	root.rotation.y = atan2(-r.face.x, -r.face.y)
+	world.add_child(root)
+	var part := func(size: Vector3, colour: Color, at: Vector3) -> MeshInstance3D:
+		var m := MeshInstance3D.new()
+		var b := BoxMesh.new()
+		b.size = size
+		m.mesh = b
+		m.material_override = MuseumView.toon(colour)
+		m.position = at
+		root.add_child(m)
+		return m
+	part.call(Vector3(0.24, 0.32, 0.04), COLOURS.ink, Vector3(0, 0.8, 0.02))
+	part.call(Vector3(0.2, 0.28, 0.05), Color("#e8ddc0"), Vector3(0, 0.8, 0.04))
+	part.call(Vector3(0.05, 0.12, 0.05), COLOURS.ink, Vector3(0, 0.82, 0.08)).rotation.x = 0.5
+	part.call(Vector3(0.05, 0.3, 0.04), Color("#5a5560"), Vector3(0, 1.05, 0.03))
+	part.call(Vector3(0.28, 0.1, 0.28), Color("#5a5560"), Vector3(0, MuseumView.WALL_HEIGHT + MuseumView.CAP_H + 0.05, -0.18))
+	var lamp := MeshInstance3D.new()
+	var c := CylinderMesh.new()
+	c.top_radius = 0.07
+	c.bottom_radius = 0.07
+	c.height = 0.05
+	lamp.mesh = c
+	lamp.material_override = _flat(COLOURS.switch_off)
+	lamp.position = Vector3(0, MuseumView.WALL_HEIGHT + MuseumView.CAP_H + 0.12, -0.18)
+	root.add_child(lamp)
+	return lamp
+
+
+## The piece, glowing over its case, and the door out: a frame in the outer
+## wall with a green door, a light over it and SALIDA above.
 func _build_job() -> void:
 	var colour := Color(Heist.loot.colour)
-	var mesh: PrimitiveMesh
-	match Heist.loot.shape:
-		"egg":
-			mesh = SphereMesh.new()
-			mesh.radius = 0.14
-			mesh.height = 0.36
-		"crown":
-			mesh = TorusMesh.new()
-			mesh.inner_radius = 0.1
-			mesh.outer_radius = 0.17
-		"mask":
-			mesh = BoxMesh.new()
-			mesh.size = Vector3(0.26, 0.3, 0.06)
-		"idol":
-			mesh = CapsuleMesh.new()
-			mesh.radius = 0.08
-			mesh.height = 0.36
-		_:
-			mesh = SphereMesh.new()
-			mesh.radius = 0.16
-			mesh.height = 0.32
-			mesh.radial_segments = 6
-			mesh.rings = 3
 	var m := StandardMaterial3D.new()
 	m.albedo_color = colour
 	m.emission_enabled = true
 	m.emission = colour
-	m.emission_energy_multiplier = 1.6
+	m.emission_energy_multiplier = 1.4
+	m.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
 	loot_node = MeshInstance3D.new()
-	loot_node.mesh = mesh
 	loot_node.material_override = m
 	world.add_child(loot_node)
+	_loot_shape(loot_node, Heist.loot.shape, m)
 	var glow := OmniLight3D.new()
 	glow.light_color = colour
 	glow.light_energy = 1.2
 	glow.omni_range = 2.5
 	loot_node.add_child(glow)
 
-	var door := MeshInstance3D.new()
-	var b := BoxMesh.new()
-	b.size = Vector3(0.9, 1.2, 0.08) if Heist.exit_face.y != 0 else Vector3(0.08, 1.2, 0.9)
-	door.mesh = b
-	var dm := _flat(COLOURS.switch_on)
-	door.material_override = dm
-	door.position = _to_world(Heist.exit.x + 0.5 + Heist.exit_face.x * 0.46, Heist.exit.y + 0.5 + Heist.exit_face.y * 0.46, 0.6)
+	var door := Node3D.new()
+	door.position = _to_world(Heist.exit.x + 0.5 + Heist.exit_face.x * 0.5, Heist.exit.y + 0.5 + Heist.exit_face.y * 0.5)
+	door.rotation.y = atan2(-Heist.exit_face.x, -Heist.exit_face.y)
 	world.add_child(door)
+	var box := func(size: Vector3, mat: Material, at: Vector3) -> void:
+		var mi := MeshInstance3D.new()
+		var b := BoxMesh.new()
+		b.size = size
+		mi.mesh = b
+		mi.material_override = mat
+		mi.position = at
+		door.add_child(mi)
+	var frame := MuseumView.toon(Color("#1b1622"))
+	box.call(Vector3(0.1, 1.3, 0.12), frame, Vector3(-0.42, 0.65, 0.04))
+	box.call(Vector3(0.1, 1.3, 0.12), frame, Vector3(0.42, 0.65, 0.04))
+	box.call(Vector3(0.94, 0.1, 0.12), frame, Vector3(0, 1.3, 0.04))
+	var panel := StandardMaterial3D.new()
+	panel.albedo_color = COLOURS.switch_on.darkened(0.3)
+	panel.emission_enabled = true
+	panel.emission = COLOURS.switch_on
+	panel.emission_energy_multiplier = 0.6
+	box.call(Vector3(0.74, 1.2, 0.04), panel, Vector3(0, 0.6, 0.02))
+	box.call(Vector3(0.06, 0.06, 0.05), MuseumView.toon(Color("#f0c46a")), Vector3(0.26, 0.6, 0.06))
+	var sign := Label3D.new()
+	sign.text = "SALIDA"
+	sign.font = Hud.ARCADE
+	sign.font_size = 48
+	sign.pixel_size = 0.004
+	sign.modulate = COLOURS.switch_on
+	sign.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	sign.position = Vector3(0, 1.75, 0.1)
+	door.add_child(sign)
 	var exit_light := OmniLight3D.new()
 	exit_light.light_color = COLOURS.switch_on
 	exit_light.light_energy = 1.5
 	exit_light.omni_range = 3.0
-	exit_light.position = door.position + Vector3(0, 0.8, 0)
-	world.add_child(exit_light)
+	exit_light.position = Vector3(0, 1.5, 0.5)
+	door.add_child(exit_light)
+
+
+## Each piece its own shape: a cut gem, an egg, a crown with points, a jade
+## mask with eye holes, a pitted meteorite, an idol with a head.
+func _loot_shape(node: MeshInstance3D, shape: String, mat: Material) -> void:
+	var add := func(mesh: Mesh, at: Vector3, rot := Vector3.ZERO, colour := Color.TRANSPARENT) -> void:
+		var mi := MeshInstance3D.new()
+		mi.mesh = mesh
+		mi.position = at
+		mi.rotation = rot
+		mi.material_override = mat if colour == Color.TRANSPARENT else _flat(colour)
+		node.add_child(mi)
+	match shape:
+		"gem":
+			var s := SphereMesh.new()
+			s.radius = 0.15
+			s.height = 0.34
+			s.radial_segments = 6
+			s.rings = 2
+			node.mesh = s
+		"egg":
+			var s := SphereMesh.new()
+			s.radius = 0.13
+			s.height = 0.34
+			node.mesh = s
+		"crown":
+			var t := CylinderMesh.new()
+			t.top_radius = 0.16
+			t.bottom_radius = 0.15
+			t.height = 0.1
+			node.mesh = t
+			for i in 5:
+				var a := i * TAU / 5
+				var p := CylinderMesh.new()
+				p.top_radius = 0.0
+				p.bottom_radius = 0.035
+				p.height = 0.1
+				add.call(p, Vector3(cos(a) * 0.15, 0.1, sin(a) * 0.15))
+				var g := SphereMesh.new()
+				g.radius = 0.022
+				g.height = 0.044
+				add.call(g, Vector3(cos(a) * 0.155, 0.02, sin(a) * 0.155), Vector3.ZERO, Color("#c2185b"))
+		"mask":
+			var s := SphereMesh.new()
+			s.radius = 0.16
+			s.height = 0.34
+			node.mesh = s
+			node.scale = Vector3(1, 1, 0.45)
+			for dx in [-0.06, 0.06]:
+				var e := SphereMesh.new()
+				e.radius = 0.035
+				e.height = 0.05
+				add.call(e, Vector3(dx, 0.04, 0.15), Vector3.ZERO, Color("#08070c"))
+		"idol":
+			var c := CapsuleMesh.new()
+			c.radius = 0.08
+			c.height = 0.3
+			node.mesh = c
+			var h := SphereMesh.new()
+			h.radius = 0.08
+			h.height = 0.16
+			add.call(h, Vector3(0, 0.22, 0))
+			for side in [-1, 1]:
+				var a := CapsuleMesh.new()
+				a.radius = 0.025
+				a.height = 0.16
+				add.call(a, Vector3(side * 0.1, 0.03, 0), Vector3(0, 0, side * 0.4))
+		_:
+			var s := SphereMesh.new()
+			s.radius = 0.15
+			s.height = 0.24
+			s.radial_segments = 7
+			s.rings = 4
+			node.mesh = s
 
 
 # --- Drawing -------------------------------------------------------------------------
