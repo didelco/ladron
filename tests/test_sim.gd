@@ -95,12 +95,12 @@ func _init() -> void:
 		clock += 1000.0 / 60
 		Sim.step_guard(g, none, [] as Array[SoundEvent], clock, 1.0 / 60)
 	check(not g.alert and g.memory == null, "11 s sin nada: tranquilo y olvida")
-	for k in 2:
+	for k in 1:
 		Sim.step_guard(g, none, [SoundEvent.make(g.x + 1, g.y, "sprint")], clock, 1.0 / 60)
 		for f in 60 * 11:
 			clock += 1000.0 / 60
 			Sim.step_guard(g, none, [] as Array[SoundEvent], clock, 1.0 / 60)
-	check(g.alert and g.calm_in == INF, "a la tercera: alerta para siempre")
+	check(g.alert and g.calm_in == INF, "en media, a la segunda: alerta para siempre")
 
 	print("Museo generado: luces y aviso")
 	Sim.new_map(12345, "small")
@@ -171,14 +171,24 @@ func _init() -> void:
 	target.y = 8.5
 	Sim.difficulty = "easy"
 	var easy_sees := Sim.can_see(seer, target)
-	var easy_round := Sim.round_seconds()
 	var easy_lock: float = Heist.loot_for(1).seconds
 	Sim.difficulty = "hard"
 	var hard_sees := Sim.can_see(seer, target)
 	var hard_lock: float = Heist.loot_for(1).seconds
+	# Sounds to put a guard on alert for good: easy 3, medium 2, hard 1.
+	var stays := {}
+	for d in ["easy", "medium", "hard"]:
+		Sim.difficulty = d
+		var ear := guard_at(5.5, 5.5)
+		var n := 0
+		while ear.calm_in != INF and n < 10:
+			ear.alert = false
+			Sim.step_guard(ear, none, [SoundEvent.make(6.5, 5.5, "sprint")], clock + n * 20000.0, 1.0 / 60)
+			n += 1
+		stays[d] = n
 	Sim.difficulty = "medium"
+	check(stays.easy == 3 and stays.medium == 2 and stays.hard == 1, "ruidos hasta la alerta permanente: fácil %d, media %d, difícil %d" % [stays.easy, stays.medium, stays.hard])
 	check(not easy_sees and hard_sees, "a 8,5 casillas: en fácil no te ve, en difícil sí")
-	check(easy_round == 120.0 and Sim.round_seconds() == 99.0, "ronda: 120 s en fácil, 99 s en media")
 	check(easy_lock < Heist.loot_for(1).seconds and hard_lock > Heist.loot_for(1).seconds, "forzar: %s s fácil, %s s media, %s s difícil" % [easy_lock, Heist.loot_for(1).seconds, hard_lock])
 
 	if failures.is_empty():

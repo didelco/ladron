@@ -40,7 +40,6 @@ const NOISE_REFRESH_MS := 1200.0
 const MAX_WATCH := 6.0
 ## Two idle guards closer than this are wasting a guard.
 const TOO_CLOSE := 6.0
-const ROUND_SECONDS := 99.0
 
 ## Movement builds up: tapping creeps, holding winds up to a run.
 const CREEP := 1.5
@@ -77,19 +76,16 @@ const SCHEMES := {
 const DIFFICULTIES := {
 	# Easy: one slow guard, whatever the size of the museum, and the piece
 	# comes out of its case in a moment.
-	"easy": {"view": 0.8, "hearing": 0.8, "speed": 0.7, "round": 120.0, "lock": 0.35, "calm_after": 7.0, "alarms": 4, "guards": 1},
-	"medium": {"view": 1.0, "hearing": 1.0, "speed": 1.0, "round": 99.0, "lock": 1.0, "calm_after": 10.0, "alarms": 3, "guards": 0},
-	"hard": {"view": 1.15, "hearing": 1.2, "speed": 1.1, "round": 80.0, "lock": 1.3, "calm_after": 14.0, "alarms": 2, "guards": 0},
+	# alarms: how many sounds it takes to put a guard on alert for good.
+	"easy": {"view": 0.8, "hearing": 0.8, "speed": 0.7, "lock": 0.35, "calm_after": 7.0, "alarms": 3, "guards": 1},
+	"medium": {"view": 1.0, "hearing": 1.0, "speed": 1.0, "lock": 1.0, "calm_after": 10.0, "alarms": 2, "guards": 0},
+	"hard": {"view": 1.15, "hearing": 1.2, "speed": 1.1, "lock": 1.3, "calm_after": 14.0, "alarms": 1, "guards": 0},
 }
 static var difficulty := "medium"
 
 
 static func tuning(key: String) -> float:
 	return float(DIFFICULTIES[difficulty][key])
-
-
-static func round_seconds() -> float:
-	return tuning("round")
 
 
 ## How many guards a museum of this size gets on this night.

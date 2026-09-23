@@ -47,7 +47,7 @@ En el título se elige uno o dos ladrones (o `1`/`2`) y la dificultad (fácil: u
 la pieza sale en un momento; media; difícil), y en SETTINGS el sonido (`M`), el panel de IA y el
 tamaño del museo. Solo: WASD o flechas, `C` o `Shift` para ponerse a gatas. Dos jugadores: P1 con
 WASD y `C`, P2 con flechas y `-` o `/`. `Esc` para la pausa. El objetivo: robar la pieza (quieto delante unos segundos) y
-salir por la puerta verde antes de que acabe el reloj.
+salir por la puerta verde. Sin reloj: se tarda lo que se quiera.
 
 Para grabar o probar sin pulsar teclas: `godot -- --autostart` salta directamente a la partida
 (`-- --autostart --two` con dos ladrones).

@@ -2,11 +2,11 @@ extends Node3D
 ## The game: screens, the loop, and drawing the world each frame.
 ##
 ## Screens: title (pick the museum size) → mission (the job, the plan, a map)
-## → playing ⇄ paused → caught, time up, or escaped with the piece (next
-## level). The loop is the web version's Game.tsx tick: thieves and their
+## → playing ⇄ paused → caught, or escaped with the piece (next level). No
+## clock: a round lasts as long as it takes. The loop is the web version's Game.tsx tick: thieves and their
 ## noise, the job and its alarm, guards, the yell, the warning, keeping apart,
 ## lights, thinking (Laya through BrainClient, or the fallback rules),
-## hidden, caught, the clock.
+## hidden, caught.
 
 ## the guards think this often
 const THINK_EVERY_MS := 1100.0
@@ -54,7 +54,6 @@ var level := 1
 var thieves: Array[Thief] = []
 var guards: Array[Guard] = []
 var phase := "title"
-var time_left := 99.0
 var stride := [0.0, 0.0]
 var last_think := 0.0
 var last_spread := 0.0
@@ -217,10 +216,7 @@ func _show_end() -> void:
 	var title := "TE HAN PILLADO"
 	var colour: Color = Hud.C.alert
 	var line := "Nivel %d: %s %s." % [level, Heist.loot.name, "vuelve a su vitrina" if Heist.taken else "sigue en su sitio"]
-	if phase == "timeup":
-		title = "SE ACABÓ EL TIEMPO"
-		line = "Llega el relevo y %s %s." % [Heist.loot.name, "no salió del edificio" if Heist.taken else "sigue en su sitio"]
-	elif phase == "escaped":
+	if phase == "escaped":
 		title = "¡GOLPE PERFECTO!"
 		colour = Hud.C.safe
 		line = "Nivel %d superado: %s ya es tuyo." % [level, Heist.loot.name]
@@ -271,7 +267,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		"settings":
 			if key == KEY_ESCAPE:
 				_settings_back()
-		"caught", "timeup", "escaped":
+		"caught", "escaped":
 			if key == KEY_SPACE:
 				_again()
 			elif key == KEY_ESCAPE:
@@ -293,7 +289,6 @@ func _new_round(n: int) -> void:
 		thieves.append(Sim.new_thief("p2"))
 	guards = Sim.new_guards(Sim.guard_count(size))
 	Heist.plan_job(level)
-	time_left = Sim.round_seconds()
 	stride = [0.0, 0.0]
 	last_think = 0.0
 	think_tick = 0
@@ -414,19 +409,14 @@ func _tick(dt: float) -> void:
 			p.out = true
 			p.speed = 0
 			sfx.ui("caught")
-	time_left -= dt
-	# Out of the door with the piece is the only way to win; the clock running
-	# out is the relief shift walking in.
+	# No clock: take as long as you like. Out of the door with the piece wins;
+	# everyone caught loses.
 	if took == "out":
 		phase = "escaped"
 		sfx.ui("escaped")
 		_show_end()
 	elif thieves.all(func(p): return p.out):
 		phase = "caught"
-		_show_end()
-	elif time_left <= 0:
-		phase = "timeup"
-		sfx.ui("caught")
 		_show_end()
 
 
@@ -860,7 +850,7 @@ func _draw_hud() -> void:
 	if thieves.is_empty():
 		return
 	var ia := "IA: Laya %d ms" % brain.last_ms if brain.status == "laya" else "IA: reglas"
-	var parts := PackedStringArray(["%02d" % ceili(maxf(0.0, time_left))])
+	var parts := PackedStringArray()
 	for i in thieves.size():
 		var p := thieves[i]
 		var stance := "DE PIE"
