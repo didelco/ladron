@@ -162,6 +162,25 @@ func _init() -> void:
 	var fb := Mind.fallback(a, others, clock)
 	check(fb.label != "", "decisión de reserva: %s" % fb.label)
 
+	print("Dificultad")
+	open_room()
+	var seer := guard_at(5.5, 8.5, 0.0)
+	seer.alert = true
+	var target := Sim.new_thief()
+	target.x = 5.5 + 8.5
+	target.y = 8.5
+	Sim.difficulty = "easy"
+	var easy_sees := Sim.can_see(seer, target)
+	var easy_round := Sim.round_seconds()
+	var easy_lock: float = Heist.loot_for(1).seconds
+	Sim.difficulty = "hard"
+	var hard_sees := Sim.can_see(seer, target)
+	var hard_lock: float = Heist.loot_for(1).seconds
+	Sim.difficulty = "medium"
+	check(not easy_sees and hard_sees, "a 8,5 casillas: en fácil no te ve, en difícil sí")
+	check(easy_round == 120.0 and Sim.round_seconds() == 99.0, "ronda: 120 s en fácil, 99 s en media")
+	check(easy_lock < Heist.loot_for(1).seconds and hard_lock > Heist.loot_for(1).seconds, "forzar: %s s fácil, %s s media, %s s difícil" % [easy_lock, Heist.loot_for(1).seconds, hard_lock])
+
 	if failures.is_empty():
 		print("OK: simulación como en la web")
 		quit(0)

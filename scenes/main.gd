@@ -11,6 +11,7 @@ extends Node3D
 ## the guards think this often
 const THINK_EVERY_MS := 1100.0
 const SIZE_NAMES := {"small": "CHICO", "medium": "MEDIANO", "large": "GRANDE"}
+const DIFFICULTY_NAMES := {"easy": "FÁCIL", "medium": "MEDIA", "hard": "DIFÍCIL"}
 ## What a guard yells on spotting you.
 const SHOUTS := ["¡ALTO!", "¡QUIETO!", "¡PARA!"]
 
@@ -53,7 +54,7 @@ var level := 1
 var thieves: Array[Thief] = []
 var guards: Array[Guard] = []
 var phase := "title"
-var time_left := Sim.ROUND_SECONDS
+var time_left := 99.0
 var stride := [0.0, 0.0]
 var last_think := 0.0
 var last_spread := 0.0
@@ -108,8 +109,25 @@ func _show_title() -> void:
 			{"icon": Hud.thief_icon([COLOURS.thief]), "call": _start.bind(1), "colour": COLOURS.thief},
 			{"icon": Hud.thief_icon([COLOURS.thief, COLOURS.thief2]), "call": _start.bind(2), "colour": COLOURS.thief2},
 		], "row": true},
-		{"buttons": [{"text": "✦ SETTINGS", "call": _show_settings.bind("title")}]},
+		{"buttons": [
+			{"text": "DIFICULTAD: %s" % DIFFICULTY_NAMES[Sim.difficulty], "call": _next_difficulty.bind("title"), "colour": _difficulty_colour()},
+			{"text": "✦ SETTINGS", "call": _show_settings.bind("title")},
+		]},
 	])
+
+
+## Easy, medium, hard, round again. Mid-round (from the pause) the guards'
+## senses and pace change at once; the clock and the lock at the next museum.
+func _next_difficulty(from: String) -> void:
+	Sim.difficulty = {"easy": "medium", "medium": "hard", "hard": "easy"}[Sim.difficulty]
+	if from == "title":
+		_show_title()
+	else:
+		_show_settings(from)
+
+
+func _difficulty_colour() -> Color:
+	return {"easy": Hud.C.green, "medium": Hud.C.gold, "hard": Hud.C.alert}[Sim.difficulty]
 
 
 func _start(n: int) -> void:
@@ -128,7 +146,8 @@ func _show_settings(from: String) -> void:
 		{"buttons": [
 			{"text": "SONIDO: %s  (M)" % ("SÍ" if sound_on else "NO"), "call": _toggle_sound},
 			{"text": "PANEL IA: %s" % ("SÍ" if show_ia else "NO"), "call": _toggle_ia},
-			{"text": "MUSEO: %s · %d GUARDIAS" % [SIZE_NAMES[size], Museum.SIZES[size].guards], "call": _next_size},
+			{"text": "DIFICULTAD: %s" % DIFFICULTY_NAMES[Sim.difficulty], "call": _next_difficulty.bind(from), "colour": _difficulty_colour()},
+			{"text": "MUSEO: %s · %d %s" % [SIZE_NAMES[size], Sim.guard_count(size), "GUARDIA" if Sim.guard_count(size) == 1 else "GUARDIAS"], "call": _next_size},
 			{"text": "◂ VOLVER", "call": _settings_back},
 		]},
 		{"text": "P1: WASD · C para ponerse a gatas" if players == 1 or from == "title" else "P1: WASD · C    P2: flechas · - o /"},
@@ -272,9 +291,9 @@ func _new_round(n: int) -> void:
 	thieves = [Sim.new_thief("p1")]
 	if players == 2:
 		thieves.append(Sim.new_thief("p2"))
-	guards = Sim.new_guards(Museum.SIZES[size].guards)
+	guards = Sim.new_guards(Sim.guard_count(size))
 	Heist.plan_job(level)
-	time_left = Sim.ROUND_SECONDS
+	time_left = Sim.round_seconds()
 	stride = [0.0, 0.0]
 	last_think = 0.0
 	think_tick = 0

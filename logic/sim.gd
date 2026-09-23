@@ -71,6 +71,33 @@ const SCHEMES := {
 	"arrows": {"up": ["up"], "down": ["down"], "left": ["left"], "right": ["right"], "crouch": ["minus", "slash"]},
 }
 
+## How hard the night is. Medium is the game as designed; easy and hard scale
+## what the guards can do and how long you have. Every rule reads it through
+## the functions below, so the numbers live in one place.
+const DIFFICULTIES := {
+	# Easy: one slow guard, whatever the size of the museum, and the piece
+	# comes out of its case in a moment.
+	"easy": {"view": 0.8, "hearing": 0.8, "speed": 0.7, "round": 120.0, "lock": 0.35, "calm_after": 7.0, "alarms": 4, "guards": 1},
+	"medium": {"view": 1.0, "hearing": 1.0, "speed": 1.0, "round": 99.0, "lock": 1.0, "calm_after": 10.0, "alarms": 3, "guards": 0},
+	"hard": {"view": 1.15, "hearing": 1.2, "speed": 1.1, "round": 80.0, "lock": 1.3, "calm_after": 14.0, "alarms": 2, "guards": 0},
+}
+static var difficulty := "medium"
+
+
+static func tuning(key: String) -> float:
+	return float(DIFFICULTIES[difficulty][key])
+
+
+static func round_seconds() -> float:
+	return tuning("round")
+
+
+## How many guards a museum of this size gets on this night.
+static func guard_count(size: String) -> int:
+	var fixed := int(tuning("guards"))
+	return fixed if fixed > 0 else int(Museum.SIZES[size].guards)
+
+
 ## Things that happened this frame, for the game loop's log and sound.
 static var thoughts: Array[Dictionary] = []
 static var light_events: Array[Dictionary] = []
@@ -83,7 +110,9 @@ static func now_ms() -> float:
 
 
 static func view_of(g: Guard) -> Dictionary:
-	return VIEW.alert if g.alert else VIEW.calm
+	var v: Dictionary = VIEW.alert if g.alert else VIEW.calm
+	# Easier guards see less far; the width of the cone stays the same.
+	return {"range": v.range * tuning("view"), "half": v.half}
 
 
 static func _angle_diff(a: float) -> float:
@@ -95,7 +124,7 @@ static func _angle_diff(a: float) -> float:
 ## Build a museum and put the thief's start as far from the guards as it goes.
 static func new_map(seed: int, size: String = "small", guards: int = -1) -> void:
 	if guards < 0:
-		guards = Museum.SIZES[size].guards
+		guards = guard_count(size)
 	Museum.regenerate(seed, size)
 	var starts := _guard_starts(guards)
 	var candidates: Array = []
@@ -441,7 +470,7 @@ static func _alarm(g: Guard) -> void:
 	if not g.alert:
 		g.alarms += 1
 	g.alert = true
-	g.calm_in = INF if g.alarms >= ALARMS_TO_STAY else CALM_AFTER_S
+	g.calm_in = INF if g.alarms >= int(tuning("alarms")) else tuning("calm_after")
 
 
 ## Set off on a decision. Errands are finished first; a guard on its way
@@ -597,7 +626,7 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 		return
 
 	# Calm is a stroll; alert is a brisk walk that becomes a run.
-	var speed := (2.3 + dec.aggression * 2.3) if alert else (1.0 + dec.aggression * 0.5)
+	var speed := ((2.3 + dec.aggression * 2.3) if alert else (1.0 + dec.aggression * 0.5)) * tuning("speed")
 
 	# Close enough to lunge: go for the body, not the middle of its tile.
 	if player and Museum.dist(g.x, g.y, player.x, player.y) < LUNGE_RANGE:

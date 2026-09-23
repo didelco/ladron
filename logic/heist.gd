@@ -59,6 +59,8 @@ static var _last_alarm := 0.0
 static func loot_for(n: int) -> Dictionary:
 	var l: Dictionary = LOOT[(n - 1) % LOOT.size()].duplicate()
 	l.seconds += (n - 1) / LOOT.size()
+	# Harder locks on a harder night, in half seconds.
+	l.seconds = maxf(0.5, snappedf(l.seconds * Sim.tuning("lock"), 0.5))
 	return l
 
 

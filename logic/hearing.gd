@@ -46,7 +46,7 @@ static func crash_loudness(speed: float, top_speed: float, shelf: bool) -> float
 static func heard_at(g: Guard, noise: SoundEvent) -> Variant:
 	var d := Museum.dist(g.x, g.y, noise.x, noise.y)
 	# A guard on alert is listening for you; a calm one is half asleep.
-	var reach := noise.loudness * (HEARING_ALERT if g.alert else HEARING_CALM) \
+	var reach := noise.loudness * (HEARING_ALERT if g.alert else HEARING_CALM) * Sim.tuning("hearing") \
 		- WALL_DAMPING * Museum.muffle_between(g.x, g.y, noise.x, noise.y)
 	if reach <= 0 or d > reach:
 		return null

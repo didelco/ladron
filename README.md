@@ -43,8 +43,9 @@ En macOS, `godot` es `/Applications/Godot.app/Contents/MacOS/Godot`.
 
 ## Controles
 
-En el título se elige uno o dos ladrones (o `1`/`2`), y en SETTINGS el sonido (`M`), el panel de IA y
-el tamaño del museo. Solo: WASD o flechas, `C` o `Shift` para ponerse a gatas. Dos jugadores: P1 con
+En el título se elige uno o dos ladrones (o `1`/`2`) y la dificultad (fácil: un solo guardia lento y
+la pieza sale en un momento; media; difícil), y en SETTINGS el sonido (`M`), el panel de IA y el
+tamaño del museo. Solo: WASD o flechas, `C` o `Shift` para ponerse a gatas. Dos jugadores: P1 con
 WASD y `C`, P2 con flechas y `-` o `/`. `Esc` para la pausa. El objetivo: robar la pieza (quieto delante unos segundos) y
 salir por la puerta verde antes de que acabe el reloj.
 
