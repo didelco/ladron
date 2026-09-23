@@ -109,26 +109,49 @@ func _init() -> void:
 	var b := gs[1]
 	a.alert = true
 	a.calm_in = INF
-	var room: Museum.Room = Museum.rooms[0]
-	var sw := room.switch_at
+	# Find a guard's-eye view of a dark room's switch that does not also show
+	# the whole room: from there it should go and switch the light on. (A room
+	# it can see all of, empty, it rightly leaves dark.)
+	var room: Museum.Room = null
 	var from := Vector2i(-1, -1)
-	for tile in Museum.open_tiles:
-		var d := Museum.dist(tile.x, tile.y, sw.x, sw.y)
-		if d > 2 and d < 5 and Museum.has_line_of_sight(tile.x + 0.5, tile.y + 0.5, sw.x + 0.5, sw.y + 0.5):
-			from = tile
+	for seed in [12345, 777, 4242, 99, 31337]:
+		Sim.new_map(seed, "medium")
+		for r in Museum.rooms:
+			var sw := r.switch_at
+			for tile in Museum.open_tiles:
+				var d := Museum.dist(tile.x, tile.y, sw.x, sw.y)
+				if d < 2 or d > 6 or not Museum.has_line_of_sight(tile.x + 0.5, tile.y + 0.5, sw.x + 0.5, sw.y + 0.5):
+					continue
+				var probe: Guard = Sim.new_guards(1)[0]
+				probe.alert = true
+				probe.calm_in = INF
+				probe.x = tile.x + 0.5
+				probe.y = tile.y + 0.5
+				probe.dir = atan2(sw.y - tile.y, sw.x - tile.x)
+				Sim.step_guard(probe, none, [] as Array[SoundEvent], clock, 1.0 / 60)
+				if probe.errand == "lights" and probe.errand_room == r.id:
+					room = r
+					from = tile
+					break
+			if room:
+				break
+		if room:
 			break
-	a.x = from.x + 0.5
-	a.y = from.y + 0.5
-	a.dir = atan2(sw.y - from.y, sw.x - from.x)
-	b.x = 1.5
-	b.y = 15.5
-	var secs := 0.0
-	while Museum.lights_left[room.id] == 0 and secs < 20:
-		clock += 1000.0 / 60
-		Sim.step_guard(a, none, [] as Array[SoundEvent], clock, 1.0 / 60)
-		Sim.tick_lights(1.0 / 60)
-		secs += 1.0 / 60
-	check(Museum.lights_left[room.id] > 0, "ve el interruptor y enciende la luz en %.1f s" % secs)
+	check(room != null, "hay un interruptor visible sin ver la sala entera")
+	if room:
+		a = Sim.new_guards(1)[0]
+		a.alert = true
+		a.calm_in = INF
+		a.x = from.x + 0.5
+		a.y = from.y + 0.5
+		a.dir = atan2(room.switch_at.y - from.y, room.switch_at.x - from.x)
+		var secs := 0.0
+		while Museum.lights_left[room.id] == 0 and secs < 20:
+			clock += 1000.0 / 60
+			Sim.step_guard(a, none, [] as Array[SoundEvent], clock, 1.0 / 60)
+			Sim.tick_lights(1.0 / 60)
+			secs += 1.0 / 60
+		check(Museum.lights_left[room.id] > 0, "ve el interruptor y enciende la luz en %.1f s" % secs)
 
 	# Warning: a sees b, unaware, a few tiles away.
 	Sim.new_map(12345, "small")
