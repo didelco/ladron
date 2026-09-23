@@ -15,6 +15,13 @@ extends RefCounted
 ## can, then a few extra so there is always another way round. A gallery with
 ## one way in is a trap, not a hiding place.
 ##
+## Then the disorder, because a grid of boxes is a floor plan and not a
+## building: uneven splits and the odd big hall, galleries opened into each
+## other along a wall, the corridor breaking into the rooms here and there,
+## a few crooked shortcuts through the walls, columns in the big halls and
+## partitions jutting into the rooms. After all of it, the guarantees are
+## re-established: everything reachable, no dead ends.
+##
 ## (The web version carved rooms with margins and joined them with
 ## corridors; it left dead-end stubs, solid blocks and one-door rooms. This
 ## is the Godot port's own generator from here on.)
@@ -107,6 +114,7 @@ func _build(seed: int, width: int, height: int, shape: String) -> void:
 
 	_carve_galleries()
 	_open_doors()
+	_shortcuts()
 	_furnish_rooms()
 	_scatter_cover()
 	_link_everything()
@@ -202,15 +210,35 @@ func _split(r: Rect2i, depth: int) -> Array[Rect2i]:
 	var can_v := r.size.x >= MIN_LEAF * 2
 	if depth > 8 or (not can_h and not can_v):
 		return [r]
+	# Now and then a piece is left whole: the big halls that break the grid.
+	var area := r.size.x * r.size.y
+	if depth >= 2 and area <= 110 and _rand.next() < 0.22:
+		return [r]
 
-	var horizontal := can_h and (not can_v or _rand.next() < 0.5)
+	# Cut across the long side, mostly: long thin galleries read as corridors
+	# of rooms, not as a grid. Square pieces go either way.
+	var horizontal: bool
+	if can_h and not can_v:
+		horizontal = true
+	elif can_v and not can_h:
+		horizontal = false
+	elif r.size.y > r.size.x * 1.3:
+		horizontal = _rand.next() < 0.85
+	elif r.size.x > r.size.y * 1.3:
+		horizontal = _rand.next() < 0.15
+	else:
+		horizontal = _rand.next() < 0.5
+	var side := r.size.y if horizontal else r.size.x
+	# Anywhere in the allowed range, skewed off the middle half the time.
+	var t := _rand.next()
+	if _rand.next() < 0.5:
+		t = t * t if _rand.next() < 0.5 else 1.0 - (1.0 - t) * (1.0 - t)
+	var cut := MIN_LEAF + int(floor(t * (side - MIN_LEAF * 2 + 1)))
 	var out: Array[Rect2i] = []
 	if horizontal:
-		var cut := MIN_LEAF + int(floor(_rand.next() * (r.size.y - MIN_LEAF * 2 + 1)))
 		out.append_array(_split(Rect2i(r.position.x, r.position.y, r.size.x, cut), depth + 1))
 		out.append_array(_split(Rect2i(r.position.x, r.position.y + cut, r.size.x, r.size.y - cut), depth + 1))
 	else:
-		var cut := MIN_LEAF + int(floor(_rand.next() * (r.size.x - MIN_LEAF * 2 + 1)))
 		out.append_array(_split(Rect2i(r.position.x, r.position.y, cut, r.size.y), depth + 1))
 		out.append_array(_split(Rect2i(r.position.x + cut, r.position.y, r.size.x - cut, r.size.y), depth + 1))
 	return out
@@ -374,6 +402,25 @@ func _open_doors() -> void:
 	for key in keys:
 		if not opened.has(key) and _rand.next() < 0.2:
 			open.call(key)
+	# Open plan: some neighbours are opened into each other along a stretch
+	# of their wall, and the corridor breaks into some galleries the same
+	# way — L-shaped spaces, alcoves, a ragged edge instead of a frame.
+	for key in keys:
+		var p: Array = pairs[key]
+		var chance := 0.3 if p[0] == RING or p[1] == RING else 0.22
+		if (p[2] as Array).size() < 3 or _rand.next() >= chance:
+			continue
+		var cands: Array = p[2]
+		var n := cands.size()
+		var run := maxi(2, int(n * (0.3 + _rand.next() * 0.5)))
+		var from := int(floor(_rand.next() * (n - run + 1)))
+		for k in range(from, from + run):
+			var t: Vector2i = cands[k][0]
+			grid[t.y * w + t.x] = Tiles.FLOOR
+		opened[key] = true
+		for room in [p[0], p[1]]:
+			if room >= 0:
+				doors[room] = doors.get(room, 0) + 2
 	# A gallery with a single neighbour gets its second door in that wall.
 	for key in keys:
 		var p: Array = pairs[key]
@@ -385,6 +432,36 @@ func _open_doors() -> void:
 					if grid[t.y * w + t.x] == Tiles.WALL and doors.get(room, 0) < 2:
 						grid[t.y * w + t.x] = Tiles.FLOOR
 						doors[room] = doors.get(room, 0) + 1
+
+
+## A few crooked passages cut through the walls from one gallery to another
+## far off: stepping mostly towards the target, sometimes sideways, so they
+## run at odd angles across the plan instead of along the grid.
+func _shortcuts() -> void:
+	if rooms.size() < 3:
+		return
+	for k in 1 + rooms.size() / 7:
+		var a: Rect2i = rooms[int(floor(_rand.next() * rooms.size()))]
+		var b: Rect2i = rooms[int(floor(_rand.next() * rooms.size()))]
+		var p := Vector2i(a.position.x + int(floor(_rand.next() * a.size.x)), a.position.y + int(floor(_rand.next() * a.size.y)))
+		var q := Vector2i(b.position.x + int(floor(_rand.next() * b.size.x)), b.position.y + int(floor(_rand.next() * b.size.y)))
+		if absi(p.x - q.x) + absi(p.y - q.y) < 8:
+			continue
+		var steps := 0
+		while p != q and steps < 200:
+			steps += 1
+			var d := Vector2i(signi(q.x - p.x), signi(q.y - p.y))
+			var along_x := d.y == 0 or (d.x != 0 and _rand.next() < 0.5)
+			var step := Vector2i(d.x, 0) if along_x else Vector2i(0, d.y)
+			# A sideways jog now and then.
+			if _rand.next() < 0.18:
+				step = Vector2i(0, 1 if _rand.next() < 0.5 else -1) if along_x else Vector2i(1 if _rand.next() < 0.5 else -1, 0)
+			var n := p + step
+			if n.x < 1 or n.y < 1 or n.x >= w - 1 or n.y >= h - 1 or interior[n.y * w + n.x] == 0:
+				continue
+			p = n
+			if grid[p.y * w + p.x] == Tiles.WALL:
+				grid[p.y * w + p.x] = Tiles.FLOOR
 
 
 ## Guarantee: every bit of floor can be walked to from the corridor. Any
@@ -484,39 +561,81 @@ static func _js_round(v: float) -> int:
 ## What is inside a gallery: open, rows of shelving, or an island of cases.
 func _furnish_rooms() -> void:
 	for room in rooms:
-		var roll := _rand.next()
-		if roll < 0.35 or room.size.x < 5 or room.size.y < 5:
-			continue  # left open
 		var rx := room.position.x
 		var ry := room.position.y
-		if roll < 0.7:
-			# Shelving: rows with a gap, never touching the walls.
-			var vertical := _rand.next() < 0.5
-			if vertical:
-				var x := rx + 2
-				while x < rx + room.size.x - 2:
-					var from := ry + 1 + _rand.below(2)
-					var to := ry + room.size.y - 2 - _rand.below(2)
-					for y in range(from, to + 1):
+		var rw := room.size.x
+		var rh := room.size.y
+		if rw < 5 or rh < 5:
+			continue
+		var roll := _rand.next()
+		if roll < 0.25:
+			continue  # left open
+		if roll < 0.5:
+			# Shelving: runs of shelf with gaps, at uneven spacing, never
+			# touching the walls so the edge of the room stays walkable.
+			var vertical := rw > rh if _rand.next() < 0.7 else _rand.next() < 0.5
+			var across := rw if vertical else rh
+			var along := rh if vertical else rw
+			var line := 2
+			while line < across - 2:
+				var a := 1 + _rand.below(2)
+				var b := along - 2 - _rand.below(2)
+				var gap := a + 1 + _rand.below(maxi(1, b - a - 1))
+				for k in range(a, b + 1):
+					if k == gap:
+						continue
+					if vertical:
+						_put(rx + line, ry + k, Tiles.WALL)
+					else:
+						_put(rx + k, ry + line, Tiles.WALL)
+				line += 2 + _rand.below(2)
+		elif roll < 0.7 and rw >= 6 and rh >= 6:
+			# Columns in a loose grid, the hall of a grand museum.
+			var gx := 2 + _rand.below(2)
+			var gy := 2 + _rand.below(2)
+			var y := ry + gy
+			while y < ry + rh - 2:
+				var x := rx + gx
+				while x < rx + rw - 2:
+					if _rand.next() < 0.85:
 						_put(x, y, Tiles.WALL)
-					x += 2
+					x += 2 + _rand.below(2)
+				y += 2 + _rand.below(2)
+		elif roll < 0.85:
+			# A partition jutting in from one wall, making a nook.
+			var side := _rand.below(4)
+			var len := 2 + _rand.below(maxi(1, mini(rw, rh) - 3))
+			var tiles: Array[Vector2i] = []
+			if side < 2:
+				var x := rx + 2 + _rand.below(maxi(1, rw - 4))
+				for k in len:
+					tiles.append(Vector2i(x, ry + k if side == 0 else ry + rh - 1 - k))
 			else:
-				var y := ry + 2
-				while y < ry + room.size.y - 2:
-					var from := rx + 1 + _rand.below(2)
-					var to := rx + room.size.x - 2 - _rand.below(2)
-					for x in range(from, to + 1):
-						_put(x, y, Tiles.WALL)
-					y += 2
+				var y := ry + 2 + _rand.below(maxi(1, rh - 4))
+				for k in len:
+					tiles.append(Vector2i(rx + k if side == 2 else rx + rw - 1 - k, y))
+			# Never across a doorway.
+			if tiles.all(func(t): return not _by_door(t, room)):
+				for t in tiles:
+					_put(t.x, t.y, Tiles.WALL)
 		else:
-			# An island in the middle of the floor.
-			var cx := int(floor(rx + room.size.x / 2.0))
-			var cy := int(floor(ry + room.size.y / 2.0))
+			# An island in the middle of the floor, off-centre.
+			var cx := rx + 1 + _rand.below(maxi(1, rw - 3))
+			var cy := ry + 1 + _rand.below(maxi(1, rh - 3))
 			var bw := 1 + _rand.below(2)
 			var bh := 1 + _rand.below(2)
-			for y in range(cy - bh + 1, cy + 1):
-				for x in range(cx - bw + 1, cx + 1):
+			for y in range(cy, mini(cy + bh, ry + rh - 1)):
+				for x in range(cx, mini(cx + bw, rx + rw - 1)):
 					_put(x, y, Tiles.WALL)
+
+
+## Is this tile of the room just inside an opening in its wall?
+func _by_door(t: Vector2i, room: Rect2i) -> bool:
+	for d in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+		var n: Vector2i = t + d
+		if not room.has_point(n) and grid[n.y * w + n.x] != Tiles.WALL:
+			return true
+	return false
 
 
 ## Cases to duck behind, mostly against walls and in corners.
@@ -528,6 +647,11 @@ func _scatter_cover() -> void:
 				continue
 			# Keep the circulation corridor clear.
 			if ring[y * w + x] == 1:
+				continue
+			# Only inside galleries: floor in a wall line is a doorway or a
+			# gallery opened into the next, however wide.
+			var room := _room_of[y * w + x]
+			if room < 0 or _by_door(Vector2i(x, y), rooms[room]):
 				continue
 			var walls := 0
 			for d in DIRS:
