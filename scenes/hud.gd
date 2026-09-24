@@ -304,6 +304,8 @@ static func mission_map(guards: Array[Guard]) -> ImageTexture:
 	mark.call(Heist.start, C.safe, 3)
 	mark.call(Heist.at, Color(Heist.loot.colour), 4)
 	mark.call(Heist.exit, C.green, 3)
+	if Heist.team:
+		mark.call(Heist.panel, Color("#ff922b"), 3)
 	return ImageTexture.create_from_image(img)
 
 
@@ -318,7 +320,7 @@ func update_play(status: String, status_colour: Color, log_lines: Array[String],
 	_status.add_theme_color_override("font_color", status_colour)
 	_log.text = "\n".join(log_lines)
 	var view := get_viewport().get_visible_rect().size
-	var working: bool = job.get("working", false)
+	var working: bool = job.get("working", false) and not job.get("waiting", false)
 	_bar_back.visible = working
 	_bar.visible = working
 	if working:
@@ -327,12 +329,16 @@ func update_play(status: String, status_colour: Color, log_lines: Array[String],
 		_bar_back.size = Vector2(w, 14)
 		_bar.position = _bar_back.position
 		_bar.size = Vector2(w * float(job.progress), 14)
-	if working:
+	if job.get("waiting", false):
+		_job.text = "¡QUE TU COMPAÑERO SUJETE EL CUADRO DE ALARMA!"
+	elif working:
 		_job.text = job.verb
 	elif job.get("carrying", false):
 		_job.text = "TIENES %s · ¡A LA SALIDA!" % String(job.name).to_upper()
 	elif job.get("dropped", false):
 		_job.text = "%s ESTÁ EN EL SUELO" % String(job.name).to_upper()
+	elif job.get("panel", false):
+		_job.text = "ALARMA DESCONECTADA · ¡A LA VITRINA!"
 	else:
 		_job.text = ""
 	_job.size = Vector2(view.x, 30)

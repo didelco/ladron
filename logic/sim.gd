@@ -82,9 +82,14 @@ const DIFFICULTIES := {
 	"hard": {"view": 1.15, "hearing": 1.2, "speed": 1.1, "lock": 1.3, "calm_after": 14.0, "alarms": 1, "guards": 0},
 }
 static var difficulty := "medium"
+## The story mode's night, when it sets its own: overrides the difficulty
+## key by key. Empty in the generative mode.
+static var custom := {}
 
 
 static func tuning(key: String) -> float:
+	if custom.has(key):
+		return float(custom[key])
 	return float(DIFFICULTIES[difficulty][key])
 
 
@@ -118,10 +123,10 @@ static func _angle_diff(a: float) -> float:
 # --- A new round ---------------------------------------------------------------
 
 ## Build a museum and put the thief's start as far from the guards as it goes.
-static func new_map(seed: int, size: String = "small", guards: int = -1) -> void:
+static func new_map(seed: int, size: String = "small", guards: int = -1, shape: String = "") -> void:
 	if guards < 0:
 		guards = guard_count(size)
-	Museum.regenerate(seed, size)
+	Museum.regenerate(seed, size, shape)
 	var starts := _guard_starts(guards)
 	var candidates: Array = []
 	var furthest := 0.0

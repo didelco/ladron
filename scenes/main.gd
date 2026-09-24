@@ -1,8 +1,13 @@
 extends Node3D
 ## The game: screens, the loop, and drawing the world each frame.
 ##
-## Screens: title (pick the museum size) → loot (the piece and its story) →
-## mission (the plan, a map) → countdown → playing ⇄ paused → caught, or escaped with the piece (next level). No
+## Two modes. The story: ten fixed nights, easy to hard, with a tale (Story).
+## The generative: a new museum every time, at the difficulty and size you
+## pick. Either with one thief or two; with two, the job takes both (Heist).
+##
+## Screens: title (pick the mode) → the mode's menu (players, and the night or
+## the difficulty) → [prologue] → loot (the piece and its story) → mission
+## (the plan, a map) → countdown → playing ⇄ paused → caught, or escaped with the piece (next level). No
 ## clock: a round lasts as long as it takes. The loop is the web version's Game.tsx tick: thieves and their
 ## noise, the job and its alarm, guards, the yell, the warning, keeping apart,
 ## lights, thinking (Laya through BrainClient, or the fallback rules),
@@ -43,6 +48,10 @@ const KEYS := {
 const ROOM_LIGHT_POOL := 4
 const CONE_RAYS := 40
 
+## "story" or "generative"
+var mode := "story"
+## the story night picked on its menu
+var story_pick := 1
 var size := "small"
 ## one thief or two on the same keyboard
 var players := 1
@@ -73,6 +82,9 @@ var cones: Array[MeshInstance3D] = []
 var switch_marks: Array[MeshInstance3D] = []
 var lit_washes: Array[MeshInstance3D] = []
 var loot_node: MeshInstance3D
+## the alarm panel, two thieves only: its lamp and glow, red till held
+var panel_mat: StandardMaterial3D
+var panel_glow: OmniLight3D
 ## the piece turning on its own stand, on the loot screen
 var preview: SubViewport
 var preview_pivot: Node3D
@@ -95,7 +107,7 @@ func _ready() -> void:
 	# the mission for two seconds and starts the round; add --two for two thieves.
 	# --intro: the piece, then the countdown, for checking the way in.
 	if "--intro" in OS.get_cmdline_user_args():
-		_start(1)
+		_start("generative" if "--gen" in OS.get_cmdline_user_args() else "story", 2 if "--two" in OS.get_cmdline_user_args() else 1)
 		get_tree().create_timer(1.5).timeout.connect(_start_countdown)
 	if "--autostart" in OS.get_cmdline_user_args():
 		if "--two" in OS.get_cmdline_user_args():
@@ -113,12 +125,53 @@ func _show_title() -> void:
 	hud.show_menu([
 		{"title": "¡APAGA LA LUZ\nQUE TE PILLO!", "size": 64},
 		{"buttons": [
-			{"icon": Hud.thief_icon([COLOURS.thief]), "call": _start.bind(1), "colour": COLOURS.thief},
-			{"icon": Hud.thief_icon([COLOURS.thief, COLOURS.thief2]), "call": _start.bind(2), "colour": COLOURS.thief2},
+			{"text": "▶ MODO HISTORIA", "call": _show_story_menu},
+			{"text": "▶ MODO GENERATIVO", "call": _show_generative_menu, "colour": Hud.C.gold},
+			{"text": "✦ SETTINGS", "call": _show_settings.bind("title")},
+		]},
+	])
+
+
+## The story: one thief or two, and which night (any reached so far).
+func _show_story_menu() -> void:
+	phase = "menu"
+	story_pick = clampi(story_pick, 1, Story.unlocked())
+	if story_pick == 1 and Story.unlocked() > 1:
+		story_pick = Story.unlocked()
+	hud.show_menu([
+		{"title": "MODO HISTORIA", "size": 48},
+		{"text": "La Banda del Calcetín contra el Barón Von Bostezo", "colour": Hud.C.gold},
+		{"buttons": [
+			{"icon": Hud.thief_icon([COLOURS.thief]), "call": _start.bind("story", 1), "colour": COLOURS.thief},
+			{"icon": Hud.thief_icon([COLOURS.thief, COLOURS.thief2]), "call": _start.bind("story", 2), "colour": COLOURS.thief2},
 		], "row": true},
 		{"buttons": [
-			{"text": "DIFICULTAD: %s" % DIFFICULTY_NAMES[Sim.difficulty], "call": _next_difficulty.bind("title"), "colour": _difficulty_colour()},
-			{"text": "✦ SETTINGS", "call": _show_settings.bind("title")},
+			{"text": "NOCHE %d DE %d" % [story_pick, Story.count()], "call": _next_night, "colour": Hud.C.gold},
+			{"text": "◂ VOLVER", "call": _show_title},
+		]},
+		{"text": "Elige uno o dos ladrones · con dos, hay que trabajar en equipo", "size": 16, "colour": Hud.C.dim},
+	])
+
+
+func _next_night() -> void:
+	story_pick = story_pick % Story.unlocked() + 1
+	_show_story_menu()
+
+
+## The generative mode: players, difficulty and museum size.
+func _show_generative_menu() -> void:
+	phase = "menu"
+	hud.show_menu([
+		{"title": "MODO GENERATIVO", "size": 48},
+		{"text": "Un museo nuevo cada vez", "colour": Hud.C.gold},
+		{"buttons": [
+			{"icon": Hud.thief_icon([COLOURS.thief]), "call": _start.bind("generative", 1), "colour": COLOURS.thief},
+			{"icon": Hud.thief_icon([COLOURS.thief, COLOURS.thief2]), "call": _start.bind("generative", 2), "colour": COLOURS.thief2},
+		], "row": true},
+		{"buttons": [
+			{"text": "DIFICULTAD: %s" % DIFFICULTY_NAMES[Sim.difficulty], "call": _next_difficulty.bind("generative"), "colour": _difficulty_colour()},
+			{"text": "MUSEO: %s" % SIZE_NAMES[size], "call": _next_size.bind("generative")},
+			{"text": "◂ VOLVER", "call": _show_title},
 		]},
 	])
 
@@ -127,8 +180,8 @@ func _show_title() -> void:
 ## senses and pace change at once; the clock and the lock at the next museum.
 func _next_difficulty(from: String) -> void:
 	Sim.difficulty = {"easy": "medium", "medium": "hard", "hard": "easy"}[Sim.difficulty]
-	if from == "title":
-		_show_title()
+	if from == "generative":
+		_show_generative_menu()
 	else:
 		_show_settings(from)
 
@@ -137,10 +190,26 @@ func _difficulty_colour() -> Color:
 	return {"easy": Hud.C.green, "medium": Hud.C.gold, "hard": Hud.C.alert}[Sim.difficulty]
 
 
-func _start(n: int) -> void:
+func _start(which: String, n: int) -> void:
+	mode = which
 	players = n
-	_new_round(1)
+	if mode == "story":
+		_new_round(story_pick)
+		if story_pick == 1:
+			_show_prologue()
+			return
+	else:
+		_new_round(1)
 	_show_loot()
+
+
+func _show_prologue() -> void:
+	phase = "prologue"
+	hud.show_menu([
+		{"title": "HABÍA UNA VEZ...", "size": 44},
+		{"text": Story.PROLOGUE, "size": 18, "wrap": true},
+		{"buttons": [{"text": "▶ ¡VAMOS!", "call": _show_loot}]},
+	])
 
 
 ## Sound, the IA panel and the size of the museum. Opens from the title and
@@ -153,8 +222,6 @@ func _show_settings(from: String) -> void:
 		{"buttons": [
 			{"text": "SONIDO: %s  (M)" % ("SÍ" if sound_on else "NO"), "call": _toggle_sound},
 			{"text": "PANEL IA: %s" % ("SÍ" if show_ia else "NO"), "call": _toggle_ia},
-			{"text": "DIFICULTAD: %s" % DIFFICULTY_NAMES[Sim.difficulty], "call": _next_difficulty.bind(from), "colour": _difficulty_colour()},
-			{"text": "MUSEO: %s · %d %s" % [SIZE_NAMES[size], Sim.guard_count(size), "GUARDIA" if Sim.guard_count(size) == 1 else "GUARDIAS"], "call": _next_size},
 			{"text": "◂ VOLVER", "call": _settings_back},
 		]},
 		{"text": "P1: WASD · C para ponerse a gatas" if players == 1 or from == "title" else "P1: WASD · C    P2: flechas · - o /"},
@@ -177,13 +244,9 @@ func _toggle_ia() -> void:
 	_show_settings(settings_from)
 
 
-func _next_size() -> void:
+func _next_size(_from: String) -> void:
 	size = {"small": "medium", "medium": "large", "large": "small"}[size]
-	# A fresh museum behind the title shows the new size; mid-round, the
-	# change waits for the next museum.
-	if settings_from == "title":
-		_new_round(1)
-	_show_settings(settings_from)
+	_show_generative_menu()
 
 
 func _settings_back() -> void:
@@ -211,8 +274,8 @@ func _show_loot() -> void:
 	phase = "loot"
 	_build_preview()
 	hud.show_menu([
-		{"title": "NIVEL %02d" % level, "size": 40},
-		{"text": "ESTA NOCHE VAS A ROBAR", "size": 16, "colour": Hud.C.dim},
+		{"title": ("NOCHE %d DE %d" % [level, Story.count()]) if mode == "story" else ("NIVEL %02d" % level), "size": 40},
+		{"text": "ESTA NOCHE HAY QUE RECUPERAR" if mode == "story" else "ESTA NOCHE VAS A ROBAR", "size": 16, "colour": Hud.C.dim},
 		{"picture": preview.get_texture(), "smooth": true, "height": 250},
 		{"title": Heist.loot.name.to_upper(), "size": 30, "colour": Color(Heist.loot.colour)},
 		{"text": Heist.loot.blurb, "colour": Hud.C.gold},
@@ -280,9 +343,11 @@ func _show_mission() -> void:
 	# Little text: the piece, the map, and on the first level one line on how.
 	# The map already says where you come in, where the piece is and the door.
 	var lines := [Heist.first_upper(Heist.loot.name)]
-	if level == 1:
+	if Heist.team:
+		lines.append("Uno sujeta el cuadro de la alarma (naranja) mientras el otro abre la vitrina")
+	elif level == 1:
 		lines.append("Quieto %s ante la pieza · la alarma atrae guardias · sal por la puerta verde" % _seconds(Heist.loot.seconds))
-	var items: Array = [{"title": "NIVEL %02d" % level, "size": 52}]
+	var items: Array = [{"title": "EL PLAN", "size": 52}]
 	for l in lines:
 		items.append({"text": l})
 	items.append({"picture": Hud.mission_map(guards)})
@@ -293,18 +358,36 @@ func _show_mission() -> void:
 func _show_end() -> void:
 	var title := "TE HAN PILLADO"
 	var colour: Color = Hud.C.alert
-	var line := "Nivel %d: %s %s." % [level, Heist.loot.name, "vuelve a su vitrina" if Heist.taken else "sigue en su sitio"]
+	var line := "%s %s." % [Heist.first_upper(Heist.loot.name), "vuelve a su vitrina" if Heist.taken else "sigue en su sitio"]
+	var next := "▶ OTRA VEZ"
 	if phase == "escaped":
 		title = "¡GOLPE PERFECTO!"
 		colour = Hud.C.safe
-		line = "Nivel %d superado: %s ya es tuyo." % [level, Heist.loot.name]
+		line = "%s vuelve a casa." % Heist.first_upper(Heist.loot.name) if mode == "story" else "Nivel %d superado: %s ya es tuyo." % [level, Heist.loot.name]
+		next = "▶ SIGUIENTE NOCHE" if mode == "story" else "▶ SIGUIENTE GOLPE"
+		if mode == "story":
+			Story.unlock(level + 1)
+			story_pick = mini(level + 1, Story.count())
+			if level >= Story.count():
+				_show_ending()
+				return
 	hud.show_menu([
 		{"title": title, "colour": colour, "size": 52},
 		{"text": line},
 		{"buttons": [
-			{"text": "▶ SIGUIENTE GOLPE" if phase == "escaped" else "▶ OTRA VEZ", "call": _again},
+			{"text": next, "call": _again},
 			{"text": "◂ MENÚ", "call": _show_title},
 		]},
+	])
+
+
+func _show_ending() -> void:
+	phase = "ending"
+	sfx.ui("escaped")
+	hud.show_menu([
+		{"title": "¡OPERACIÓN\nDEVOLVERLO TODO!", "colour": Hud.C.safe, "size": 48},
+		{"text": Story.ENDING, "size": 18, "wrap": true},
+		{"buttons": [{"text": "◂ MENÚ", "call": _show_title}]},
 	])
 
 
@@ -328,9 +411,17 @@ func _unhandled_input(event: InputEvent) -> void:
 			_show_settings(settings_from)
 		return
 	match phase:
-		"title":
-			if key in [KEY_1, KEY_2]:
-				_start(key - KEY_0)
+		"menu":
+			if key == KEY_ESCAPE:
+				_show_title()
+		"prologue":
+			if key == KEY_SPACE:
+				_show_loot()
+			elif key == KEY_ESCAPE:
+				_show_title()
+		"ending":
+			if key == KEY_ESCAPE or key == KEY_SPACE:
+				_show_title()
 		"loot":
 			if key == KEY_SPACE:
 				_show_mission()
@@ -378,13 +469,21 @@ func _start_playing() -> void:
 # --- Rounds --------------------------------------------------------------------------
 
 func _new_round(n: int) -> void:
+	if mode == "story":
+		n = clampi(n, 1, Story.count())
 	level = n
-	Sim.new_map(randi() % 1000000000, size)
+	if mode == "story":
+		var night := Story.level(n)
+		Sim.custom = Story.tuning(n)
+		Sim.new_map(Story.seed_for(n), night.size, -1, night.shape)
+	else:
+		Sim.custom = {}
+		Sim.new_map(randi() % 1000000000, size)
 	thieves = [Sim.new_thief("p1")]
 	if players == 2:
 		thieves.append(Sim.new_thief("p2"))
-	guards = Sim.new_guards(Sim.guard_count(size))
-	Heist.plan_job(level)
+	guards = Sim.new_guards(Sim.guard_count(Museum.size_name))
+	Heist.plan_job(level, Story.level(n).loot if mode == "story" else {}, players == 2)
 	stride = [0.0, 0.0]
 	last_think = 0.0
 	think_tick = 0
@@ -737,12 +836,77 @@ func _build_job() -> void:
 	sign.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	sign.position = Vector3(0, 1.75, 0.1)
 	door.add_child(sign)
+	panel_mat = null
+	panel_glow = null
+	if Heist.team:
+		_build_panel()
 	var exit_light := OmniLight3D.new()
 	exit_light.light_color = COLOURS.switch_on
 	exit_light.light_energy = 1.5
 	exit_light.omni_range = 3.0
 	exit_light.position = Vector3(0, 1.5, 0.5)
 	door.add_child(exit_light)
+
+
+## The alarm panel: a grey box on the wall with a big lamp, orange while it
+## waits, green while someone holds it.
+func _build_panel() -> void:
+	var node := Node3D.new()
+	node.position = _to_world(Heist.panel.x + 0.5 + Heist.panel_face.x * 0.5, Heist.panel.y + 0.5 + Heist.panel_face.y * 0.5)
+	node.rotation.y = atan2(-Heist.panel_face.x, -Heist.panel_face.y)
+	world.add_child(node)
+	var box := MeshInstance3D.new()
+	var b := BoxMesh.new()
+	b.size = Vector3(0.5, 0.6, 0.14)
+	box.mesh = b
+	box.material_override = MuseumView.toon(Color("#5c6370"))
+	box.position = Vector3(0, 1.0, 0.07)
+	node.add_child(box)
+	panel_mat = StandardMaterial3D.new()
+	panel_mat.emission_enabled = true
+	panel_mat.emission_energy_multiplier = 2.0
+	var lamp := MeshInstance3D.new()
+	var s := SphereMesh.new()
+	s.radius = 0.1
+	s.height = 0.2
+	lamp.mesh = s
+	lamp.material_override = panel_mat
+	lamp.position = Vector3(0, 1.1, 0.16)
+	node.add_child(lamp)
+	var lever := MeshInstance3D.new()
+	var l := BoxMesh.new()
+	l.size = Vector3(0.06, 0.2, 0.06)
+	lever.mesh = l
+	lever.material_override = MuseumView.toon(Color("#e03131"))
+	lever.position = Vector3(0.14, 0.88, 0.17)
+	node.add_child(lever)
+	panel_glow = OmniLight3D.new()
+	panel_glow.light_energy = 1.2
+	panel_glow.omni_range = 2.5
+	panel_glow.position = Vector3(0, 1.1, 0.5)
+	node.add_child(panel_glow)
+	var sign := Label3D.new()
+	sign.text = "ALARMA"
+	sign.font = Hud.ARCADE
+	sign.font_size = 40
+	sign.pixel_size = 0.004
+	sign.modulate = Color("#ff922b")
+	sign.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	sign.position = Vector3(0, 1.55, 0.1)
+	node.add_child(sign)
+
+
+func _draw_panel() -> void:
+	if panel_mat == null:
+		return
+	var held := Heist.panel_by != ""
+	var t := Time.get_ticks_msec() / 1000.0
+	var c := COLOURS.switch_on if held else Color("#ff922b")
+	panel_mat.albedo_color = c
+	panel_mat.emission = c
+	panel_glow.light_color = c
+	# Blinks while someone waits at the case for it.
+	panel_glow.light_energy = 1.2 if held or not Heist.waiting else (0.4 + 1.2 * absf(sin(t * 6.0)))
 
 
 ## Each piece its own shape: a cut gem, an egg, a crown with points, a jade
@@ -810,6 +974,92 @@ func _loot_shape(node: MeshInstance3D, shape: String, mat: Material) -> void:
 				a.radius = 0.025
 				a.height = 0.16
 				add.call(a, Vector3(side * 0.1, 0.03, 0), Vector3(0, 0, side * 0.4))
+		"teeth":
+			# Pink gums, a row of white teeth on top and one below.
+			var gum := CapsuleMesh.new()
+			gum.radius = 0.05
+			gum.height = 0.3
+			node.mesh = gum
+			node.rotation = Vector3(0, 0, PI / 2)
+			for row in [-1, 1]:
+				for k in 6:
+					var tooth := BoxMesh.new()
+					tooth.size = Vector3(0.035, 0.035, 0.04)
+					add.call(tooth, Vector3(row * 0.045, -0.1 + k * 0.04, 0.02), Vector3.ZERO, Color("#fffdf5"))
+		"duck":
+			var body := SphereMesh.new()
+			body.radius = 0.14
+			body.height = 0.2
+			node.mesh = body
+			var head := SphereMesh.new()
+			head.radius = 0.08
+			head.height = 0.16
+			add.call(head, Vector3(0.07, 0.14, 0))
+			var beak := CylinderMesh.new()
+			beak.top_radius = 0.0
+			beak.bottom_radius = 0.035
+			beak.height = 0.08
+			add.call(beak, Vector3(0.17, 0.13, 0), Vector3(0, 0, -PI / 2), Color("#ff8c1a"))
+			for dz in [-0.035, 0.035]:
+				var eye := SphereMesh.new()
+				eye.radius = 0.015
+				eye.height = 0.03
+				add.call(eye, Vector3(0.12, 0.17, dz), Vector3.ZERO, Color("#08070c"))
+		"sock":
+			var leg := CapsuleMesh.new()
+			leg.radius = 0.07
+			leg.height = 0.32
+			node.mesh = leg
+			node.position.y += 0.06
+			var foot := CapsuleMesh.new()
+			foot.radius = 0.07
+			foot.height = 0.24
+			add.call(foot, Vector3(0.07, -0.13, 0), Vector3(0, 0, PI / 2))
+			for k in 2:
+				var stripe := CylinderMesh.new()
+				stripe.top_radius = 0.073
+				stripe.bottom_radius = 0.073
+				stripe.height = 0.025
+				add.call(stripe, Vector3(0, 0.1 - k * 0.05, 0), Vector3.ZERO, Color("#e03131"))
+		"toast":
+			var bread := BoxMesh.new()
+			bread.size = Vector3(0.28, 0.3, 0.05)
+			node.mesh = bread
+			var crumb := BoxMesh.new()
+			crumb.size = Vector3(0.22, 0.24, 0.02)
+			add.call(crumb, Vector3(0, -0.01, 0.02), Vector3.ZERO, Color("#f3d9a4"))
+			# The Barón's face: two eyes and a moustache, in burn.
+			for dx in [-0.05, 0.05]:
+				var eye := SphereMesh.new()
+				eye.radius = 0.018
+				eye.height = 0.02
+				add.call(eye, Vector3(dx, 0.04, 0.035), Vector3.ZERO, Color("#6b3d12"))
+			var tache := CapsuleMesh.new()
+			tache.radius = 0.015
+			tache.height = 0.14
+			add.call(tache, Vector3(0, -0.03, 0.035), Vector3(0, 0, PI / 2), Color("#6b3d12"))
+		"clock":
+			var face := CylinderMesh.new()
+			face.top_radius = 0.15
+			face.bottom_radius = 0.15
+			face.height = 0.05
+			node.mesh = face
+			node.rotation = Vector3(PI / 2, 0, 0)
+			var dial := CylinderMesh.new()
+			dial.top_radius = 0.125
+			dial.bottom_radius = 0.125
+			dial.height = 0.01
+			add.call(dial, Vector3(0, 0.026, 0), Vector3.ZERO, Color("#f8f9fa"))
+			for hand in [[0.09, 0.3], [0.06, 2.1]]:
+				var bar := BoxMesh.new()
+				bar.size = Vector3(0.012, 0.012, hand[0])
+				var a: float = hand[1]
+				add.call(bar, Vector3(sin(a) * hand[0] / 2, 0.034, cos(a) * hand[0] / 2), Vector3(0, a, 0), Color("#08070c"))
+			for side in [-1, 1]:
+				var bell := SphereMesh.new()
+				bell.radius = 0.045
+				bell.height = 0.05
+				add.call(bell, Vector3(side * 0.1, 0, -0.13), Vector3.ZERO, Color("#f0c46a"))
 		_:
 			var s := SphereMesh.new()
 			s.radius = 0.15
@@ -876,6 +1126,7 @@ func _draw_room_lights() -> void:
 
 ## The piece: turning over its case, on the thief's back, or on the floor.
 func _draw_loot() -> void:
+	_draw_panel()
 	var t := Time.get_ticks_msec() / 1000.0
 	if Heist.carrier != "":
 		var c: Thief = thieves[0]
@@ -976,6 +1227,8 @@ func _draw_hud() -> void:
 		"carrying": Heist.carrier != "",
 		"dropped": Heist.dropped != Vector2.INF,
 		"name": Heist.loot.name,
+		"waiting": Heist.waiting,
+		"panel": Heist.panel_by != "" and not Heist.taken,
 	}
 	if not hud.menu_open():
 		hud.update_play("   ".join(parts), COLOURS.alert if any_seen else COLOURS.safe, log_lines, job, angle, COLOURS.switch_on if Heist.carrier != "" else Color(Heist.loot.colour))

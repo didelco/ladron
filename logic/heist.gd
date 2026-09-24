@@ -8,6 +8,11 @@ extends RefCounted
 ## again — and forcing it sets its alarm off. The way out is a service door in
 ## the outer wall, far from the piece and never where you came in, so the job
 ## is always a crossing and never a there-and-back.
+##
+## With two thieves the job takes both: the case only gives while the other
+## one holds the alarm panel, a box on a wall a good walk from it. Held, the
+## case opens in silence; let go, the work stops where it was. Only if the
+## partner is caught does the one left force it alone, alarm and all.
 
 const LOOT := [
 	{"name": "el Ojo de Medianoche", "blurb": "Un zafiro del tamaño de un puño.", "verb": "FORZANDO LA VITRINA", "seconds": 3.0, "colour": "#5b8cff", "shape": "gem", "story": "Lo sacaron de una mina birmana en 1887 y desde entonces ha cambiado de dueño once veces, casi nunca por las buenas. Dicen que de noche brilla solo. Esta noche va a brillar en tu bolsillo."},
@@ -54,6 +59,16 @@ static var dropped := Vector2.INF
 static var taken := false
 static var _last_alarm := 0.0
 
+# Two thieves: the alarm panel.
+static var team := false
+## floor tile where you stand to hold it, and from it to the wall it is on
+static var panel := Vector2i(-1, -1)
+static var panel_face := Vector2i(0, -1)
+## who is holding it ("" for nobody)
+static var panel_by := ""
+## someone is at the case, waiting for the panel
+static var waiting := false
+
 
 ## The piece for a level (1-based): past the list it loops, a second slower each lap.
 static func loot_for(n: int) -> Dictionary:
@@ -68,9 +83,13 @@ static func loot_for(n: int) -> Dictionary:
 ## gallery, among the furthest from the entrance. The door: on the outer
 ## wall, far from the piece and not beside the entrance. Both at random among
 ## the good candidates, so two museums that look alike do not play alike.
-static func plan_job(n: int) -> void:
+static func plan_job(n: int, piece: Dictionary = {}, two: bool = false) -> void:
 	level = n
-	loot = loot_for(n)
+	loot = loot_for(n) if piece.is_empty() else piece.duplicate()
+	team = two
+	panel = Vector2i(-1, -1)
+	panel_by = ""
+	waiting = false
 	start = Museum.spawn
 	progress = 0.0
 	by = ""
@@ -134,6 +153,9 @@ static func plan_job(n: int) -> void:
 		exit = door[0]
 		exit_face = door[1]
 
+	if team:
+		_place_panel(stand, from_start)
+
 	route = _walk(start, stand)
 	var out := _walk(stand, exit)
 	out.remove_at(0)
@@ -143,6 +165,48 @@ static func plan_job(n: int) -> void:
 		["Pieza", first_upper(Museum.zone_label(at.x + 0.5, at.y + 0.5))],
 		["Salida", "Puerta del muro %s, en %s" % [_side(exit_face), Museum.zone_label(exit.x + 0.5, exit.y + 0.5)]],
 	]
+
+
+## The alarm panel: against an inside wall, a fair walk from the case (so
+## the one holding it is somewhere else, keeping watch alone) but not across
+## the whole museum, and out of the case's gallery.
+static func _place_panel(stand: Vector2i, from_start: PackedInt32Array) -> void:
+	var from_case := _distances(stand)
+	var case_room := Museum.room_at(at.x + 0.5, at.y + 0.5)
+	var far := 0
+	for t in Museum.open_tiles:
+		far = maxi(far, from_case[t.y * Museum.w + t.x])
+	var lo := clampi(far / 4, 6, 12)
+	var hi := maxi(lo + 6, far / 2)
+	var good: Array = []
+	var any: Array = []
+	for t in Museum.open_tiles:
+		if Museum.grid[t.y * Museum.w + t.x] != Tiles.FLOOR:
+			continue
+		var d := from_case[t.y * Museum.w + t.x]
+		if d < 4 or from_start[t.y * Museum.w + t.x] < 0 or t == exit or t == start:
+			continue
+		if case_room and Museum.room_at(t.x + 0.5, t.y + 0.5) == case_room:
+			continue
+		for f in Museum.DIRS:
+			var wall := t + f
+			if Museum.tile_at(wall.x + 0.5, wall.y + 0.5) != Tiles.WALL or Museum.is_outside(wall.x + f.x, wall.y + f.y):
+				continue
+			any.append([t, f])
+			if d >= lo and d <= hi:
+				good.append([t, f])
+			break
+	var pool := good if not good.is_empty() else any
+	if pool.is_empty():
+		team = false
+		return
+	var pick: Array = pool[randi() % pool.size()]
+	panel = pick[0]
+	panel_face = pick[1]
+
+
+static func at_panel(p: Thief) -> bool:
+	return not p.out and Museum.dist(p.x, p.y, panel.x + 0.5, panel.y + 0.5) < 0.75
 
 
 ## "el pasillo" -> "El pasillo". GDScript's capitalize() does every word.
@@ -232,6 +296,13 @@ static func at_door(p: Thief) -> bool:
 ## picking up, leaving. Returns "", "stolen", "dropped", "picked" or "out";
 ## an alarm going off this frame is appended to noises.
 static func step(thieves: Array[Thief], dt: float, now: float, noises: Array[SoundEvent]) -> String:
+	# The panel: whoever stands at it holds it.
+	panel_by = ""
+	waiting = false
+	if team:
+		for p in thieves:
+			if at_panel(p):
+				panel_by = p.id
 	if not taken:
 		var worker: Thief = null
 		for p in thieves:
@@ -243,9 +314,18 @@ static func step(thieves: Array[Thief], dt: float, now: float, noises: Array[Sou
 			by = ""
 			_last_alarm = 0.0
 			return ""
+		# Two thieves: nothing gives until the other one holds the panel,
+		# and then it gives without a sound. Alone (the partner caught), it
+		# is forced the loud way.
+		var partner_in := team and thieves.any(func(p): return p != worker and not p.out)
+		if partner_in and (panel_by == "" or panel_by == worker.id):
+			waiting = true
+			by = worker.id
+			return ""
+		var silent := partner_in
 		# Forcing the case sets its alarm off, and a guard hears it like any
 		# other sound: the job is a race against whoever is in earshot.
-		if now - _last_alarm > ALARM_EVERY_MS:
+		if not silent and now - _last_alarm > ALARM_EVERY_MS:
 			_last_alarm = now
 			noises.append(SoundEvent.make(at.x + 0.5, at.y + 0.5, "alarm"))
 		# Swapping who is at it is stepping away.

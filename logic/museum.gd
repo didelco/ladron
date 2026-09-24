@@ -71,6 +71,8 @@ class Zone:
 static var w := 23
 static var h := 17
 static var shape := "rect"
+## "small", "medium" or "large"
+static var size_name := "small"
 static var grid := PackedInt32Array()
 static var outside := PackedByteArray()
 static var ring := PackedByteArray()
@@ -102,6 +104,7 @@ static func regenerate(seed: int, size: String = "small", outline: String = "") 
 	var dims: Dictionary = SIZES[size]
 	var rand := Mulberry32.new(seed ^ 0x5bd1e995)
 	shape = outline if outline != "" else MapGen.SHAPES[rand.below(MapGen.SHAPES.size())]
+	size_name = size
 	w = dims.w
 	h = dims.h
 

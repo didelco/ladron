@@ -34,6 +34,7 @@ tests/   pruebas sin ventana
 ```bash
 godot --headless --script tests/test_mapgen.gd   # museos bien formados (306 de todos los tamaños y formas)
 godot --headless --script tests/test_sim.gd      # escenarios de la simulación
+godot --headless --script tests/test_heist.gd    # el golpe, el cuadro de alarma y las diez noches
 godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (necesita el cerebro)
 ```
 
@@ -43,14 +44,26 @@ En macOS, `godot` es `/Applications/Godot.app/Contents/MacOS/Godot`.
 
 ## Controles
 
-En el título se elige uno o dos ladrones (o `1`/`2`) y la dificultad (fácil: un solo guardia lento y
-la pieza sale en un momento; media; difícil), y en SETTINGS el sonido (`M`), el panel de IA y el
-tamaño del museo. Solo: WASD o flechas, `C` o `Shift` para ponerse a gatas. Dos jugadores: P1 con
-WASD y `C`, P2 con flechas y `-` o `/`. `Esc` para la pausa. El objetivo: robar la pieza (quieto delante unos segundos) y
-salir por la puerta verde. Sin reloj: se tarda lo que se quiera.
+En el título se elige el modo:
+
+- **Historia**: diez noches fijas, de muy fácil (un guardia medio dormido en un museo pequeño) a
+  difícil (cinco guardias en uno grande). La Banda del Calcetín recupera las cosas que el Barón Von
+  Bostezo se llevó del pueblo (`logic/story.gd`). El progreso se guarda y se puede rejugar cualquier
+  noche ya alcanzada.
+- **Generativo**: un museo nuevo cada vez, con dificultad (fácil, media, difícil) y tamaño a elegir.
+
+En los dos, uno o dos ladrones. Con dos hay que colaborar: la vitrina solo cede mientras el otro
+sujeta el **cuadro de la alarma** (naranja, en una pared lejos de la pieza), y así se abre sin que
+suene. Si pillan a uno, el que queda la fuerza solo, con alarma.
+
+SETTINGS: sonido (`M`) y panel de IA. Solo: WASD o flechas, `C` o `Shift` para ponerse a gatas. Dos
+jugadores: P1 con WASD y `C`, P2 con flechas y `-` o `/`. `Esc` para la pausa. El objetivo: robar
+la pieza (quieto delante unos segundos) y salir por la puerta verde. Sin reloj: se tarda lo que se
+quiera.
 
 Para grabar o probar sin pulsar teclas: `godot -- --autostart` salta directamente a la partida
-(`-- --autostart --two` con dos ladrones).
+(`-- --autostart --two` con dos ladrones), y `-- --intro` enseña el comienzo de la historia con la
+cuenta atrás (`--two` para dos, `--gen` para el modo generativo).
 
 ## El cerebro
 
