@@ -143,6 +143,10 @@ func show_menu(items: Array) -> void:
 	for c in _panel_box.get_children():
 		c.queue_free()
 	var first: Button = null
+	# Rows of focusable controls, top to bottom, for the arrows.
+	var rows: Array = []
+	_named.clear()
+	_nights.clear()
 	for item in items:
 		if item.has("title"):
 			# Pixel faces run wide: the arcade title at about two thirds the size.
@@ -154,6 +158,8 @@ func show_menu(items: Array) -> void:
 		elif item.has("text"):
 			var l := _label(item.get("size", 20), item.get("colour", C.text), _panel_box)
 			l.text = item.text
+			if item.has("id"):
+				_named[item.id] = l
 			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			if item.get("wrap", false):
 				l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -174,17 +180,22 @@ func show_menu(items: Array) -> void:
 			row.alignment = BoxContainer.ALIGNMENT_CENTER
 			row.add_theme_constant_override("separation", 22)
 			_panel_box.add_child(row)
+			var line: Array = []
 			for c in item.cards:
 				var card := _card(c, item.get("width", 300))
 				row.add_child(card)
+				card.set_meta("selected", c.get("selected", false) or c.get("focus", false))
+				line.append(card)
 				if first == null or c.get("focus", false):
 					first = card
+			rows.append(line)
 		elif item.has("nights"):
 			var row := HBoxContainer.new()
 			row.alignment = BoxContainer.ALIGNMENT_CENTER
 			row.add_theme_constant_override("separation", 0)
 			_panel_box.add_child(row)
 			var nights: Array = item.nights
+			var line: Array = []
 			for i in nights.size():
 				if i > 0:
 					var link := ColorRect.new()
@@ -194,20 +205,33 @@ func show_menu(items: Array) -> void:
 					row.add_child(link)
 				var node := _night(nights[i])
 				row.add_child(node)
-				if first == null or nights[i].get("selected", false):
+				if not nights[i].locked:
+					line.append(node)
+					node.set_meta("selected", nights[i].selected)
+				if nights[i].get("selected", false):
 					first = node
+			for node in line:
+				node.set_meta("sticky", true)
+			rows.append(line)
 		elif item.has("buttons"):
 			var box: BoxContainer = HBoxContainer.new() if item.get("row", false) else VBoxContainer.new()
 			box.alignment = BoxContainer.ALIGNMENT_CENTER
 			box.add_theme_constant_override("separation", 24 if item.get("row", false) else 10)
 			_panel_box.add_child(box)
+			var line: Array = []
 			for b in item.buttons:
 				var button := _button(b)
 				if not b.has("icon"):
 					button.custom_minimum_size = Vector2(300 if item.get("row", false) else 460, 54)
 				box.add_child(button)
+				if item.get("row", false):
+					line.append(button)
+				else:
+					rows.append([button])
 				if first == null:
 					first = button
+			if not line.is_empty():
+				rows.append(line)
 		elif item.has("footer"):
 			var f := _label(14, C.gold, _panel_box, true)
 			f.text = item.footer
@@ -215,8 +239,91 @@ func show_menu(items: Array) -> void:
 	_panel.visible = true
 	for c in _play:
 		c.visible = false
+	_wire(rows)
+	# Once laid out, up and down go by where things are on screen.
+	_rows = rows
+	_rewire.call_deferred(rows)
 	if first:
 		first.grab_focus.call_deferred()
+
+
+## Labels a menu gave an id, to change without rebuilding it.
+var _named := {}
+## the path's night buttons, to move the "picked" look along with the focus
+var _nights: Array[Button] = []
+## the focusable rows of the menu on screen
+var _rows: Array = []
+
+
+func set_text(id: String, text: String, colour: Color) -> void:
+	if _named.has(id):
+		var l: Label = _named[id]
+		l.text = text
+		l.add_theme_color_override("font_color", colour)
+
+
+## The arrows go where the eye expects: left and right along a row (round
+## the ends), up and down to the row above or below — to its picked control
+## if it has one, else to the one in the same place along it.
+func _wire(rows: Array) -> void:
+	rows = rows.filter(func(r): return not (r as Array).is_empty())
+	var flat: Array = []
+	for r in rows:
+		flat.append_array(r)
+	var towards := func(row: Array, i: int, n: int) -> Control:
+		for c in row:
+			if (c as Control).get_meta("selected", false):
+				return c
+		if row.size() == 1 or n == 1:
+			return row[(row.size() - 1) / 2]
+		return row[roundi(float(i) / (n - 1) * (row.size() - 1))]
+	_link(rows, towards)
+	for k in flat.size():
+		var c: Control = flat[k]
+		c.focus_next = c.get_path_to(flat[(k + 1) % flat.size()])
+		c.focus_previous = c.get_path_to(flat[(k - 1 + flat.size()) % flat.size()])
+
+
+## Up and down again, now that the menu has its layout: to the control
+## nearest across in the next row. The path of nights always takes you back
+## to the night picked (landing on another would pick it); from a lone
+## button, a row gives its picked control or its middle one.
+func _rewire(rows: Array) -> void:
+	await get_tree().process_frame
+	rows = rows.filter(func(r): return not (r as Array).is_empty() and is_instance_valid(r[0]))
+	if rows.is_empty():
+		return
+	var towards := func(row: Array, i: int, n: int, from: Control) -> Control:
+		var picked: Control = null
+		for c in row:
+			if (c as Control).get_meta("selected", false):
+				picked = c
+		if picked and ((row[0] as Control).get_meta("sticky", false) or n == 1):
+			return picked
+		if n == 1 and row.size() > 1:
+			return row[(row.size() - 1) / 2]
+		var x := from.get_global_rect().get_center().x
+		var best: Control = row[0]
+		for c in row:
+			if absf((c as Control).get_global_rect().get_center().x - x) < absf(best.get_global_rect().get_center().x - x):
+				best = c
+		return best
+	_link(rows, towards, true)
+
+
+func _link(rows: Array, towards: Callable, by_place := false) -> void:
+	for ri in rows.size():
+		var row: Array = rows[ri]
+		var up: Array = rows[(ri - 1 + rows.size()) % rows.size()]
+		var down: Array = rows[(ri + 1) % rows.size()]
+		for i in row.size():
+			var c: Control = row[i]
+			c.focus_neighbor_left = c.get_path_to(row[(i - 1 + row.size()) % row.size()])
+			c.focus_neighbor_right = c.get_path_to(row[(i + 1) % row.size()])
+			var top: Control = towards.call(up, i, row.size(), c) if by_place else towards.call(up, i, row.size())
+			var bottom: Control = towards.call(down, i, row.size(), c) if by_place else towards.call(down, i, row.size())
+			c.focus_neighbor_top = c.get_path_to(top)
+			c.focus_neighbor_bottom = c.get_path_to(bottom)
 
 
 ## A menu button: a framed line of text, or a big icon (the thieves on the
@@ -333,39 +440,54 @@ func _card(c: Dictionary, width: int) -> Button:
 ## colour of its piece once reached, grey and shut before.
 func _night(n: Dictionary) -> Button:
 	var b := Button.new()
-	b.focus_mode = Control.FOCUS_ALL
+	b.focus_mode = Control.FOCUS_NONE if n.locked else Control.FOCUS_ALL
 	b.text = "?" if n.locked else str(n.n)
 	b.disabled = n.locked
 	b.add_theme_font_override("font", ARCADE)
-	b.add_theme_font_size_override("font_size", 16 if n.selected else 13)
-	var colour: Color = n.colour
-	var d := 64 if n.selected else 50
-	b.custom_minimum_size = Vector2(d, d)
+	b.add_theme_font_size_override("font_size", 14)
+	b.custom_minimum_size = Vector2(54, 54)
 	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
-		var st := StyleBoxFlat.new()
-		st.set_corner_radius_all(d / 2)
-		st.anti_aliasing = true
-		if n.locked:
-			st.bg_color = Color("#15112e")
-			st.border_color = Color("#2b2460")
-			st.set_border_width_all(2)
-		else:
-			st.bg_color = colour.darkened(0.55) if not n.selected else colour.darkened(0.25)
-			st.border_color = colour if state != "normal" or n.selected else colour.darkened(0.3)
-			st.set_border_width_all(4 if n.selected or state != "normal" else 3)
-			if n.selected or state != "normal":
-				st.shadow_color = Color(colour, 0.45)
-				st.shadow_size = 12
-		b.add_theme_stylebox_override(state, st)
+	b.set_meta("colour", n.colour)
+	b.set_meta("locked", n.locked)
+	_night_look(b, n.selected)
 	b.add_theme_color_override("font_color", C.text)
 	b.add_theme_color_override("font_focus_color", C.text)
 	b.add_theme_color_override("font_hover_color", C.text)
 	b.add_theme_color_override("font_disabled_color", Color("#4a4380"))
 	if not n.locked:
+		# Landing on a night picks it; the picked look moves with it.
+		b.focus_entered.connect(func() -> void:
+			for other in _nights:
+				_night_look(other, other == b)
+				other.set_meta("selected", other == b)
+			_rewire(_rows)
+			n.call.call())
 		b.pressed.connect(n.call)
+		_nights.append(b)
 	_lift(b)
 	return b
+
+
+func _night_look(b: Button, picked: bool) -> void:
+	var colour: Color = b.get_meta("colour")
+	var locked: bool = b.get_meta("locked")
+	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
+		var st := StyleBoxFlat.new()
+		st.set_corner_radius_all(27)
+		st.anti_aliasing = true
+		if locked:
+			st.bg_color = Color("#15112e")
+			st.border_color = Color("#2b2460")
+			st.set_border_width_all(2)
+		else:
+			var lit: bool = picked or state != "normal"
+			st.bg_color = colour.darkened(0.25) if picked else colour.darkened(0.55)
+			st.border_color = colour if lit else colour.darkened(0.3)
+			st.set_border_width_all(4 if lit else 3)
+			if lit:
+				st.shadow_color = Color(colour, 0.5)
+				st.shadow_size = 12
+		b.add_theme_stylebox_override(state, st)
 
 
 ## The thief on the title screen, as the web draws it: a hooded figure in

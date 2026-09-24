@@ -89,6 +89,7 @@ var panel_glow: OmniLight3D
 ## the piece turning on its own stand, on the loot screen
 var preview: SubViewport
 var preview_pivot: Node3D
+var preview_spot: OmniLight3D
 
 
 func _ready() -> void:
@@ -171,7 +172,7 @@ func _show_story_menu() -> void:
 		{"text": "La Banda del Calcetín contra el Barón Von Bostezo", "colour": Hud.C.gold, "size": 17},
 		{"nights": nights},
 		{"picture": preview.get_texture(), "smooth": true, "height": 150},
-		{"text": "NOCHE %d · %s" % [story_pick, loot.name.to_upper()], "colour": Color(loot.colour), "size": 17},
+		{"text": "NOCHE %d · %s" % [story_pick, loot.name.to_upper()], "colour": Color(loot.colour), "size": 17, "id": "night"},
 		{"cards": [
 			{"title": "1 LADRÓN", "text": "Tú solo contra el museo", "picture": _art("players:1"), "call": _start.bind("story", 1), "colour": COLOURS.thief},
 			{"title": "2 LADRONES", "text": "Uno sujeta la alarma, otro abre", "picture": _art("players:2"), "call": _start.bind("story", 2), "colour": COLOURS.thief2},
@@ -180,9 +181,15 @@ func _show_story_menu() -> void:
 	])
 
 
+## Moving along the path picks the night: the piece and its name change in
+## place, the menu stays as it is.
 func _pick_night(n: int) -> void:
+	if n == story_pick or preview == null:
+		return
 	story_pick = n
-	_show_story_menu()
+	var loot: Dictionary = Story.level(n).loot
+	_preview_piece(loot)
+	hud.set_text("night", "NOCHE %d · %s" % [n, loot.name.to_upper()], Color(loot.colour))
 
 
 ## The generative mode: difficulty and museum size as cards, then play with
@@ -331,11 +338,10 @@ func _build_preview(loot: Dictionary = Heist.loot) -> void:
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-40, 30, 0)
 	preview.add_child(sun)
-	var spot := OmniLight3D.new()
-	spot.position = Vector3(0, 0.8, 0.4)
-	spot.light_color = Color(loot.colour)
-	spot.light_energy = 1.5
-	preview.add_child(spot)
+	preview_spot = OmniLight3D.new()
+	preview_spot.position = Vector3(0, 0.8, 0.4)
+	preview_spot.light_energy = 1.5
+	preview.add_child(preview_spot)
 	# A velvet stand under it.
 	var stand := MeshInstance3D.new()
 	var c := CylinderMesh.new()
@@ -349,6 +355,14 @@ func _build_preview(loot: Dictionary = Heist.loot) -> void:
 	preview_pivot = Node3D.new()
 	preview_pivot.position = Vector3(0, 0.1, 0)
 	preview.add_child(preview_pivot)
+	_preview_piece(loot)
+
+
+## Swap the piece on the stand, keeping the stand, the camera and the picture.
+func _preview_piece(loot: Dictionary) -> void:
+	for c in preview_pivot.get_children():
+		c.queue_free()
+	preview_spot.light_color = Color(loot.colour)
 	var colour := Color(loot.colour)
 	var m := StandardMaterial3D.new()
 	m.albedo_color = colour
@@ -367,6 +381,7 @@ func _drop_preview() -> void:
 		preview.queue_free()
 		preview = null
 		preview_pivot = null
+		preview_spot = null
 
 
 func _show_mission() -> void:
