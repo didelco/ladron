@@ -63,7 +63,7 @@ quiera.
 
 Para grabar o probar sin pulsar teclas: `godot -- --autostart` salta directamente a la partida
 (`-- --autostart --two` con dos ladrones), y `-- --intro` enseña el comienzo de la historia con la
-cuenta atrás (`--two` para dos, `--gen` para el modo generativo).
+cuenta atrás (`--two` para dos, `--gen` para el modo generativo). `-- --menu=story` (o `generative`, `settings`) abre ese menú directamente.
 
 ## El cerebro
 

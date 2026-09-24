@@ -131,6 +131,11 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 ##   {"text": text, "size"?, "colour"?, "wrap"?}      a line, or a paragraph
 ##   {"picture": Texture2D, "smooth"?, "height"?}     the map, the piece
 ##   {"buttons": [{"text", "call", "icon"?, "colour"?}], "row": bool}
+##                                                    text buttons, all one width
+##   {"cards": [{"title", "text"?, "picture", "call", "colour"?, "selected"?,
+##     "focus"?}], "width"?: int}                     big picture cards in a row
+##   {"nights": [{"n", "colour", "locked", "selected", "call"}]}
+##                                                    the story's path of nights
 ##   {"footer": text}                                 what to press
 ## Buttons work with the mouse, and with the arrows and Enter; the first one
 ## has the focus.
@@ -164,6 +169,33 @@ func show_menu(items: Array) -> void:
 			r.custom_minimum_size = size * k
 			r.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if item.get("smooth", false) else CanvasItem.TEXTURE_FILTER_NEAREST
 			_panel_box.add_child(r)
+		elif item.has("cards"):
+			var row := HBoxContainer.new()
+			row.alignment = BoxContainer.ALIGNMENT_CENTER
+			row.add_theme_constant_override("separation", 22)
+			_panel_box.add_child(row)
+			for c in item.cards:
+				var card := _card(c, item.get("width", 300))
+				row.add_child(card)
+				if first == null or c.get("focus", false):
+					first = card
+		elif item.has("nights"):
+			var row := HBoxContainer.new()
+			row.alignment = BoxContainer.ALIGNMENT_CENTER
+			row.add_theme_constant_override("separation", 0)
+			_panel_box.add_child(row)
+			var nights: Array = item.nights
+			for i in nights.size():
+				if i > 0:
+					var link := ColorRect.new()
+					link.custom_minimum_size = Vector2(16, 4)
+					link.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+					link.color = Color("#3b3470") if nights[i].locked else Color("#8a80d0")
+					row.add_child(link)
+				var node := _night(nights[i])
+				row.add_child(node)
+				if first == null or nights[i].get("selected", false):
+					first = node
 		elif item.has("buttons"):
 			var box: BoxContainer = HBoxContainer.new() if item.get("row", false) else VBoxContainer.new()
 			box.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -171,6 +203,8 @@ func show_menu(items: Array) -> void:
 			_panel_box.add_child(box)
 			for b in item.buttons:
 				var button := _button(b)
+				if not b.has("icon"):
+					button.custom_minimum_size = Vector2(300 if item.get("row", false) else 460, 54)
 				box.add_child(button)
 				if first == null:
 					first = button
@@ -195,14 +229,12 @@ func _button(b: Dictionary) -> Button:
 	button.add_theme_font_size_override("font_size", 14)
 	var colour: Color = b.get("colour", C.safe)
 	for state in ["normal", "hover", "pressed", "focus"]:
-		var st := StyleBoxFlat.new()
-		st.bg_color = Color("#140f2e", 0.8) if state == "normal" else Color("#1d1640", 0.95)
-		st.border_color = Color("#241d52") if state == "normal" else colour
-		st.set_border_width_all(2)
+		var st := _frame(colour, state != "normal")
 		st.set_content_margin_all(14)
 		st.content_margin_left = 28
 		st.content_margin_right = 28
 		button.add_theme_stylebox_override(state, st)
+	_lift(button)
 	button.add_theme_color_override("font_color", C.text)
 	button.add_theme_color_override("font_hover_color", colour)
 	button.add_theme_color_override("font_focus_color", colour)
@@ -219,6 +251,121 @@ func _button(b: Dictionary) -> Button:
 		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
 	button.pressed.connect(b.call)
 	return button
+
+
+## The frame every menu control shares: a dark rounded panel with a thin
+## rim, lit in the control's colour, with a soft glow, when it has the focus.
+func _frame(colour: Color, lit: bool, selected := false) -> StyleBoxFlat:
+	var st := StyleBoxFlat.new()
+	st.bg_color = Color("#1d1640", 0.96) if lit else (Color("#181236", 0.94) if selected else Color("#110c28", 0.9))
+	st.border_color = colour if lit or selected else Color("#2b2460")
+	st.set_border_width_all(3 if lit or selected else 2)
+	st.set_corner_radius_all(12)
+	st.anti_aliasing = true
+	if lit or selected:
+		st.shadow_color = Color(colour, 0.35 if lit else 0.2)
+		st.shadow_size = 14 if lit else 8
+	return st
+
+
+## Grows a little under the mouse or the focus; the mouse takes the focus,
+## so the arrows and the mouse never point at two different things.
+func _lift(c: Control) -> void:
+	c.resized.connect(func() -> void: c.pivot_offset = c.size / 2)
+	c.mouse_entered.connect(func() -> void:
+		if c is BaseButton and not (c as BaseButton).disabled:
+			c.grab_focus())
+	c.focus_entered.connect(func() -> void: create_tween().tween_property(c, "scale", Vector2.ONE * 1.05, 0.12))
+	c.focus_exited.connect(func() -> void: create_tween().tween_property(c, "scale", Vector2.ONE, 0.12))
+
+
+## A big card: a picture, a title and a line under it.
+func _card(c: Dictionary, width: int) -> Button:
+	var b := Button.new()
+	b.focus_mode = Control.FOCUS_ALL
+	var colour: Color = c.get("colour", C.safe)
+	var selected: bool = c.get("selected", false)
+	for state in ["normal", "hover", "pressed", "focus"]:
+		var st := _frame(colour, state != "normal", selected)
+		st.set_content_margin_all(12)
+		b.add_theme_stylebox_override(state, st)
+	var box := VBoxContainer.new()
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_theme_constant_override("separation", 8)
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.set_anchors_preset(Control.PRESET_FULL_RECT)
+	box.offset_left = 12
+	box.offset_right = -12
+	box.offset_top = 12
+	box.offset_bottom = -12
+	b.add_child(box)
+	var height := 0.0
+	if c.has("picture"):
+		var picture: Texture2D = c.picture
+		var r := TextureRect.new()
+		r.texture = picture
+		r.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		r.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		var k := (width - 24.0) / picture.get_width()
+		r.custom_minimum_size = Vector2(width - 24, picture.get_height() * k)
+		height += r.custom_minimum_size.y
+		box.add_child(r)
+	var t := _label(c.get("title_size", 16), colour if selected else C.text, box, true)
+	t.text = c.title
+	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	height += 30
+	if c.has("text"):
+		var l := _label(15, C.dim, box)
+		l.text = c.text
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size = Vector2(width - 24, 0)
+		height += 44
+	b.custom_minimum_size = Vector2(width, height + 40)
+	b.pressed.connect(c.call)
+	_lift(b)
+	return b
+
+
+## One night on the story's path: a round stone with its number, in the
+## colour of its piece once reached, grey and shut before.
+func _night(n: Dictionary) -> Button:
+	var b := Button.new()
+	b.focus_mode = Control.FOCUS_ALL
+	b.text = "?" if n.locked else str(n.n)
+	b.disabled = n.locked
+	b.add_theme_font_override("font", ARCADE)
+	b.add_theme_font_size_override("font_size", 16 if n.selected else 13)
+	var colour: Color = n.colour
+	var d := 64 if n.selected else 50
+	b.custom_minimum_size = Vector2(d, d)
+	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
+		var st := StyleBoxFlat.new()
+		st.set_corner_radius_all(d / 2)
+		st.anti_aliasing = true
+		if n.locked:
+			st.bg_color = Color("#15112e")
+			st.border_color = Color("#2b2460")
+			st.set_border_width_all(2)
+		else:
+			st.bg_color = colour.darkened(0.55) if not n.selected else colour.darkened(0.25)
+			st.border_color = colour if state != "normal" or n.selected else colour.darkened(0.3)
+			st.set_border_width_all(4 if n.selected or state != "normal" else 3)
+			if n.selected or state != "normal":
+				st.shadow_color = Color(colour, 0.45)
+				st.shadow_size = 12
+		b.add_theme_stylebox_override(state, st)
+	b.add_theme_color_override("font_color", C.text)
+	b.add_theme_color_override("font_focus_color", C.text)
+	b.add_theme_color_override("font_hover_color", C.text)
+	b.add_theme_color_override("font_disabled_color", Color("#4a4380"))
+	if not n.locked:
+		b.pressed.connect(n.call)
+	_lift(b)
+	return b
 
 
 ## The thief on the title screen, as the web draws it: a hooded figure in

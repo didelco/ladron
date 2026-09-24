@@ -106,6 +106,13 @@ func _ready() -> void:
 	_show_title()
 	# For recording and testing: `godot -- --autostart` skips the title, shows
 	# the mission for two seconds and starts the round; add --two for two thieves.
+	# --menu=story|generative|settings: open a menu straight away, to look at it.
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--menu="):
+			match arg.substr(7):
+				"story": _show_story_menu()
+				"generative": _show_generative_menu()
+				"settings": _show_settings("title")
 	# --intro: the piece, then the countdown, for checking the way in.
 	if "--intro" in OS.get_cmdline_user_args():
 		_start("generative" if "--gen" in OS.get_cmdline_user_args() else "story", 2 if "--two" in OS.get_cmdline_user_args() else 1)
@@ -125,70 +132,91 @@ func _show_title() -> void:
 	_drop_preview()
 	hud.show_menu([
 		{"title": "¡APAGA LA LUZ\nQUE TE PILLO!", "size": 64},
-		{"buttons": [
-			{"text": "▶ MODO HISTORIA", "call": _show_story_menu},
-			{"text": "▶ MODO GENERATIVO", "call": _show_generative_menu, "colour": Hud.C.gold},
-			{"text": "✦ SETTINGS", "call": _show_settings.bind("title")},
-		]},
+		{"cards": [
+			{"title": "HISTORIA", "text": "Diez noches con la Banda del Calcetín", "picture": _art("story"), "call": _show_story_menu, "colour": Hud.C.safe},
+			{"title": "GENERATIVO", "text": "Un museo nuevo cada vez", "picture": _art("generative"), "call": _show_generative_menu, "colour": Hud.C.gold},
+		], "width": 340},
+		{"buttons": [{"text": "✦ SETTINGS", "call": _show_settings.bind("title"), "colour": Hud.C.dim}]},
 	])
 
 
-## The story: one thief or two, and which night (any reached so far).
+## The menu pictures, drawn once.
+var _art_cache := {}
+
+
+func _art(key: String) -> Texture2D:
+	if not _art_cache.has(key):
+		var parts := key.split(":")
+		match parts[0]:
+			"story": _art_cache[key] = Art.story_cover()
+			"generative": _art_cache[key] = Art.generative_cover()
+			"players": _art_cache[key] = Art.players(int(parts[1]))
+			"guards": _art_cache[key] = Art.guards(parts[1])
+			"museum": _art_cache[key] = Art.museum(parts[1])
+	return _art_cache[key]
+
+
+## The story: the path of nights (any reached so far can be picked), the
+## piece of the night picked turning under a light, and one thief or two.
 func _show_story_menu() -> void:
 	phase = "menu"
 	story_pick = clampi(story_pick, 1, Story.unlocked())
-	if story_pick == 1 and Story.unlocked() > 1:
-		story_pick = Story.unlocked()
+	var nights: Array = []
+	for n in range(1, Story.count() + 1):
+		nights.append({"n": n, "colour": Color(Story.level(n).loot.colour), "locked": n > Story.unlocked(), "selected": n == story_pick, "call": _pick_night.bind(n)})
+	var loot: Dictionary = Story.level(story_pick).loot
+	_build_preview(loot)
 	hud.show_menu([
-		{"title": "MODO HISTORIA", "size": 48},
-		{"text": "La Banda del Calcetín contra el Barón Von Bostezo", "colour": Hud.C.gold},
-		{"buttons": [
-			{"icon": Hud.thief_icon([COLOURS.thief]), "call": _start.bind("story", 1), "colour": COLOURS.thief},
-			{"icon": Hud.thief_icon([COLOURS.thief, COLOURS.thief2]), "call": _start.bind("story", 2), "colour": COLOURS.thief2},
-		], "row": true},
-		{"buttons": [
-			{"text": "NOCHE %d DE %d" % [story_pick, Story.count()], "call": _next_night, "colour": Hud.C.gold},
-			{"text": "◂ VOLVER", "call": _show_title},
-		]},
-		{"text": "Elige uno o dos ladrones · con dos, hay que trabajar en equipo", "size": 16, "colour": Hud.C.dim},
+		{"title": "MODO HISTORIA", "size": 44},
+		{"text": "La Banda del Calcetín contra el Barón Von Bostezo", "colour": Hud.C.gold, "size": 17},
+		{"nights": nights},
+		{"picture": preview.get_texture(), "smooth": true, "height": 150},
+		{"text": "NOCHE %d · %s" % [story_pick, loot.name.to_upper()], "colour": Color(loot.colour), "size": 17},
+		{"cards": [
+			{"title": "1 LADRÓN", "text": "Tú solo contra el museo", "picture": _art("players:1"), "call": _start.bind("story", 1), "colour": COLOURS.thief},
+			{"title": "2 LADRONES", "text": "Uno sujeta la alarma, otro abre", "picture": _art("players:2"), "call": _start.bind("story", 2), "colour": COLOURS.thief2},
+		], "width": 290},
+		{"buttons": [{"text": "◂ VOLVER", "call": _show_title, "colour": Hud.C.dim}], "row": true},
 	])
 
 
-func _next_night() -> void:
-	story_pick = story_pick % Story.unlocked() + 1
+func _pick_night(n: int) -> void:
+	story_pick = n
 	_show_story_menu()
 
 
-## The generative mode: players, difficulty and museum size.
+## The generative mode: difficulty and museum size as cards, then play with
+## one thief or two.
 func _show_generative_menu() -> void:
 	phase = "menu"
+	var levels: Array = []
+	for k in ["easy", "medium", "hard"]:
+		levels.append({"title": DIFFICULTY_NAMES[k], "picture": _art("guards:" + k), "call": _pick_difficulty.bind(k),
+			"colour": {"easy": Hud.C.green, "medium": Hud.C.gold, "hard": Hud.C.alert}[k], "selected": Sim.difficulty == k, "focus": Sim.difficulty == k, "title_size": 14})
+	var sizes: Array = []
+	for k in ["small", "medium", "large"]:
+		sizes.append({"title": SIZE_NAMES[k], "picture": _art("museum:" + k), "call": _pick_size.bind(k),
+			"colour": Hud.C.safe, "selected": size == k, "title_size": 14})
 	hud.show_menu([
-		{"title": "MODO GENERATIVO", "size": 48},
-		{"text": "Un museo nuevo cada vez", "colour": Hud.C.gold},
-		{"buttons": [
-			{"icon": Hud.thief_icon([COLOURS.thief]), "call": _start.bind("generative", 1), "colour": COLOURS.thief},
-			{"icon": Hud.thief_icon([COLOURS.thief, COLOURS.thief2]), "call": _start.bind("generative", 2), "colour": COLOURS.thief2},
-		], "row": true},
-		{"buttons": [
-			{"text": "DIFICULTAD: %s" % DIFFICULTY_NAMES[Sim.difficulty], "call": _next_difficulty.bind("generative"), "colour": _difficulty_colour()},
-			{"text": "MUSEO: %s" % SIZE_NAMES[size], "call": _next_size.bind("generative")},
-			{"text": "◂ VOLVER", "call": _show_title},
-		]},
+		{"title": "MODO GENERATIVO", "size": 40},
+		{"cards": levels, "width": 180},
+		{"cards": sizes, "width": 180},
+		{"cards": [
+			{"title": "▶ 1 LADRÓN", "picture": _art("players:1"), "call": _start.bind("generative", 1), "colour": COLOURS.thief, "title_size": 14},
+			{"title": "▶ 2 LADRONES", "picture": _art("players:2"), "call": _start.bind("generative", 2), "colour": COLOURS.thief2, "title_size": 14},
+		], "width": 240},
+		{"buttons": [{"text": "◂ VOLVER", "call": _show_title, "colour": Hud.C.dim}], "row": true},
 	])
 
 
-## Easy, medium, hard, round again. Mid-round (from the pause) the guards'
-## senses and pace change at once; the clock and the lock at the next museum.
-func _next_difficulty(from: String) -> void:
-	Sim.difficulty = {"easy": "medium", "medium": "hard", "hard": "easy"}[Sim.difficulty]
-	if from == "generative":
-		_show_generative_menu()
-	else:
-		_show_settings(from)
+func _pick_difficulty(k: String) -> void:
+	Sim.difficulty = k
+	_show_generative_menu()
 
 
-func _difficulty_colour() -> Color:
-	return {"easy": Hud.C.green, "medium": Hud.C.gold, "hard": Hud.C.alert}[Sim.difficulty]
+func _pick_size(k: String) -> void:
+	size = k
+	_show_generative_menu()
 
 
 func _start(which: String, n: int) -> void:
@@ -252,11 +280,6 @@ func _toggle_ia() -> void:
 	_show_settings(settings_from)
 
 
-func _next_size(_from: String) -> void:
-	size = {"small": "medium", "medium": "large", "large": "small"}[size]
-	_show_generative_menu()
-
-
 func _settings_back() -> void:
 	if settings_from == "paused":
 		_pause()
@@ -292,7 +315,7 @@ func _show_loot() -> void:
 	])
 
 
-func _build_preview() -> void:
+func _build_preview(loot: Dictionary = Heist.loot) -> void:
 	_drop_preview()
 	preview = SubViewport.new()
 	preview.size = Vector2i(480, 300)
@@ -301,7 +324,7 @@ func _build_preview() -> void:
 	preview.msaa_3d = Viewport.MSAA_4X
 	add_child(preview)
 	var cam := Camera3D.new()
-	cam.position = Vector3(0, 0.4, 1.2)
+	cam.position = Vector3(0, 0.36, 1.0)
 	cam.fov = 30
 	preview.add_child(cam)
 	cam.look_at(Vector3(0, 0.12, 0))
@@ -310,7 +333,7 @@ func _build_preview() -> void:
 	preview.add_child(sun)
 	var spot := OmniLight3D.new()
 	spot.position = Vector3(0, 0.8, 0.4)
-	spot.light_color = Color(Heist.loot.colour)
+	spot.light_color = Color(loot.colour)
 	spot.light_energy = 1.5
 	preview.add_child(spot)
 	# A velvet stand under it.
@@ -326,7 +349,7 @@ func _build_preview() -> void:
 	preview_pivot = Node3D.new()
 	preview_pivot.position = Vector3(0, 0.1, 0)
 	preview.add_child(preview_pivot)
-	var colour := Color(Heist.loot.colour)
+	var colour := Color(loot.colour)
 	var m := StandardMaterial3D.new()
 	m.albedo_color = colour
 	m.emission_enabled = true
@@ -336,7 +359,7 @@ func _build_preview() -> void:
 	var piece := MeshInstance3D.new()
 	piece.material_override = m
 	preview_pivot.add_child(piece)
-	_loot_shape(piece, Heist.loot.shape, m)
+	_loot_shape(piece, loot.shape, m)
 
 
 func _drop_preview() -> void:
@@ -379,13 +402,18 @@ func _show_end() -> void:
 			if level >= Story.count():
 				_show_ending()
 				return
+	var picture: Texture2D = _art("guards:hard")
+	if phase == "escaped":
+		_build_preview()
+		picture = preview.get_texture()
 	hud.show_menu([
 		{"title": title, "colour": colour, "size": 52},
+		{"picture": picture, "smooth": phase == "escaped", "height": 170},
 		{"text": line},
 		{"buttons": [
-			{"text": next, "call": _again},
-			{"text": "◂ MENÚ", "call": _show_title},
-		]},
+			{"text": next, "call": _again, "colour": colour},
+			{"text": "◂ MENÚ", "call": _show_title, "colour": Hud.C.dim},
+		], "row": true},
 	])
 
 
