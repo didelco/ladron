@@ -36,6 +36,11 @@ var _panel: ColorRect
 var _panel_box: VBoxContainer
 ## what is drawn over the game while playing; hidden behind a menu
 var _play: Array[Control] = []
+var _count: Label
+var _count_left := 0.0
+var _count_step := -1
+var _count_on_step: Callable
+var _count_on_done: Callable
 var _ia: PanelContainer
 var _ia_box: VBoxContainer
 
@@ -68,6 +73,14 @@ func _ready() -> void:
 	_shout_arrow = _label(64, C.alert, _shout)
 	_shout_arrow.text = "▶"
 	_shout.visible = false
+
+	_count = _label(150, C.gold, self, true)
+	_count.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_count.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_count.add_theme_constant_override("outline_size", 24)
+	_count.add_theme_color_override("font_outline_color", Color("#b45309"))
+	_count.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_count.visible = false
 
 	_panel = ColorRect.new()
 	_panel.color = C.panel
@@ -115,8 +128,8 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 
 ## A full-screen menu. items, top to bottom, each one of:
 ##   {"title": text, "colour": Color, "size": int}   the heading
-##   {"text": text}                                   a line
-##   {"picture": Texture2D}                           the mission map
+##   {"text": text, "size"?, "colour"?, "wrap"?}      a line, or a paragraph
+##   {"picture": Texture2D, "smooth"?, "height"?}     the map, the piece
 ##   {"buttons": [{"text", "call", "icon"?, "colour"?}], "row": bool}
 ##   {"footer": text}                                 what to press
 ## Buttons work with the mouse, and with the arrows and Enter; the first one
@@ -134,9 +147,12 @@ func show_menu(items: Array) -> void:
 			t.add_theme_constant_override("outline_size", 10)
 			t.add_theme_color_override("font_outline_color", Color("#b45309"))
 		elif item.has("text"):
-			var l := _label(20, C.text, _panel_box)
+			var l := _label(item.get("size", 20), item.get("colour", C.text), _panel_box)
 			l.text = item.text
 			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			if item.get("wrap", false):
+				l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+				l.custom_minimum_size = Vector2(640, 0)
 		elif item.has("picture"):
 			var picture: Texture2D = item.picture
 			var r := TextureRect.new()
@@ -144,9 +160,9 @@ func show_menu(items: Array) -> void:
 			r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			var size := Vector2(picture.get_size())
-			var k := minf(720.0 / size.x, 420.0 / size.y)
+			var k := minf(720.0 / size.x, item.get("height", 420.0) / size.y)
 			r.custom_minimum_size = size * k
-			r.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			r.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if item.get("smooth", false) else CanvasItem.TEXTURE_FILTER_NEAREST
 			_panel_box.add_child(r)
 		elif item.has("buttons"):
 			var box: BoxContainer = HBoxContainer.new() if item.get("row", false) else VBoxContainer.new()
@@ -338,7 +354,54 @@ func shout(word: String, text: String, angle: float) -> void:
 	_shout.visible = true
 
 
+## 3, 2, 1, GO! in the middle of the screen, each one swelling and fading
+## as it goes. on_step(i) is called as each appears (3 for GO!), on_done at
+## the end.
+const COUNT := ["3", "2", "1", "GO!"]
+const COUNT_S := 0.8
+
+
+func countdown(on_step: Callable, on_done: Callable) -> void:
+	_count_on_step = on_step
+	_count_on_done = on_done
+	_count_left = COUNT_S * COUNT.size()
+	_count_step = -1
+	_count.visible = true
+
+
+func counting() -> bool:
+	return _count_left > 0
+
+
+func _draw_count(dt: float) -> void:
+	_count_left -= dt
+	if _count_left <= 0:
+		_count.visible = false
+		_count_on_done.call()
+		return
+	var elapsed := COUNT_S * COUNT.size() - _count_left
+	var i := mini(int(elapsed / COUNT_S), COUNT.size() - 1)
+	if i != _count_step:
+		_count_step = i
+		_count.text = COUNT[i]
+		var go := i == COUNT.size() - 1
+		_count.add_theme_color_override("font_color", C.safe if go else C.gold)
+		_count.add_theme_color_override("font_outline_color", Color("#0e7490") if go else Color("#b45309"))
+		_count_on_step.call(i)
+	var t := fmod(elapsed, COUNT_S) / COUNT_S
+	var view := get_viewport().get_visible_rect().size
+	_count.size = Vector2(view.x, 260)
+	_count.position = Vector2(0, view.y / 2 - 130)
+	_count.pivot_offset = Vector2(view.x / 2, 130)
+	# Pops in, then keeps growing as it fades away.
+	var pop := 0.4 + 0.75 * minf(1.0, t / 0.12)
+	_count.scale = Vector2.ONE * (pop + t * t * 1.6)
+	_count.modulate.a = 1.0 if t < 0.45 else clampf(1.0 - (t - 0.45) / 0.55, 0.0, 1.0)
+
+
 func _process(dt: float) -> void:
+	if _count_left > 0:
+		_draw_count(dt)
 	if _shout_left <= 0:
 		return
 	_shout_left -= dt

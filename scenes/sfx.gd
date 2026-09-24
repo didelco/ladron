@@ -21,6 +21,8 @@ func _ready() -> void:
 	_streams.stolen = _tones([[880.0, 0.0, 0.1], [1320.0, 0.1, 0.18]], "sine", 0.4)
 	_streams.pick = _noise(0.03, 4000.0, 0.25)
 	_streams.caught = _tones([[392.0, 0.0, 0.25], [330.0, 0.25, 0.25], [262.0, 0.5, 0.5]], "square", 0.3)
+	_streams.tick = _tones([[660.0, 0.0, 0.16]], "square", 0.3)
+	_streams.go = _tones([[880.0, 0.0, 0.1], [1320.0, 0.1, 0.35]], "square", 0.35)
 	_streams.escaped = _tones([[523.0, 0.0, 0.14], [659.0, 0.14, 0.14], [784.0, 0.28, 0.3]], "square", 0.3)
 	# Every stream is built as samples, then packed once for the engine.
 	for k in _streams.keys():

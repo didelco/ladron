@@ -10,12 +10,12 @@ extends RefCounted
 ## is always a crossing and never a there-and-back.
 
 const LOOT := [
-	{"name": "el Ojo de Medianoche", "blurb": "Un zafiro del tamaño de un puño.", "verb": "FORZANDO LA VITRINA", "seconds": 3.0, "colour": "#5b8cff", "shape": "gem"},
-	{"name": "el huevo de oviraptor", "blurb": "Fósil de setenta millones de años.", "verb": "SOLTANDO EL HUEVO", "seconds": 4.0, "colour": "#e8c89a", "shape": "egg"},
-	{"name": "la corona de la reina Urraca", "blurb": "Oro batido y granates.", "verb": "DESATORNILLANDO", "seconds": 4.5, "colour": "#f0c46a", "shape": "crown"},
-	{"name": "el meteorito de Tolva", "blurb": "Hierro caído del cielo en 1911.", "verb": "ENGAÑANDO EL SENSOR", "seconds": 5.0, "colour": "#9aa3b5", "shape": "rock"},
-	{"name": "la máscara de jade", "blurb": "Funeraria, doscientas teselas verdes.", "verb": "CORTANDO EL SELLO", "seconds": 5.5, "colour": "#3ddc84", "shape": "mask"},
-	{"name": "el ídolo de obsidiana", "blurb": "La pieza estrella del museo.", "verb": "ABRIENDO LA CERRADURA", "seconds": 6.0, "colour": "#b07cff", "shape": "idol"},
+	{"name": "el Ojo de Medianoche", "blurb": "Un zafiro del tamaño de un puño.", "verb": "FORZANDO LA VITRINA", "seconds": 3.0, "colour": "#5b8cff", "shape": "gem", "story": "Lo sacaron de una mina birmana en 1887 y desde entonces ha cambiado de dueño once veces, casi nunca por las buenas. Dicen que de noche brilla solo. Esta noche va a brillar en tu bolsillo."},
+	{"name": "el huevo de oviraptor", "blurb": "Fósil de setenta millones de años.", "verb": "SOLTANDO EL HUEVO", "seconds": 4.0, "colour": "#e8c89a", "shape": "egg", "story": "Un paleontólogo lo encontró en el desierto de Gobi dentro de una roca que usaba de pisapapeles. Pesa como un ladrillo y es más frágil que tu coartada. Llévalo con cariño."},
+	{"name": "la corona de la reina Urraca", "blurb": "Oro batido y granates.", "verb": "DESATORNILLANDO", "seconds": 4.5, "colour": "#f0c46a", "shape": "crown", "story": "La reina Urraca la mandó hacer con las joyas que robaba a sus propios invitados. Un coleccionista paga una fortuna por devolverla a la familia del oficio."},
+	{"name": "el meteorito de Tolva", "blurb": "Hierro caído del cielo en 1911.", "verb": "ENGAÑANDO EL SENSOR", "seconds": 5.0, "colour": "#9aa3b5", "shape": "rock", "story": "Cayó sobre el granero de un tal Tolva y lo partió en dos. El museo lo compró por cuatro perras; un laboratorio lo quiere a cualquier precio. Pesa más de lo que parece."},
+	{"name": "la máscara de jade", "blurb": "Funeraria, doscientas teselas verdes.", "verb": "CORTANDO EL SELLO", "seconds": 5.5, "colour": "#3ddc84", "shape": "mask", "story": "Doscientas teselas de jade cosidas con hilo de oro para un rey que no quería que nadie le viera la cara. Lleva cinco siglos mirando al público. Ya le toca descansar."},
+	{"name": "el ídolo de obsidiana", "blurb": "La pieza estrella del museo.", "verb": "ABRIENDO LA CERRADURA", "seconds": 6.0, "colour": "#b07cff", "shape": "idol", "story": "La pieza estrella: nadie sabe quién la talló ni por qué todos los que la han tenido acabaron durmiendo con la luz encendida. Tu cliente dice que no cree en maldiciones."},
 ]
 
 ## Close enough to the case to work on it: one tile off, body against the glass.

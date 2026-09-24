@@ -1,8 +1,8 @@
 extends Node3D
 ## The game: screens, the loop, and drawing the world each frame.
 ##
-## Screens: title (pick the museum size) → mission (the job, the plan, a map)
-## → playing ⇄ paused → caught, or escaped with the piece (next level). No
+## Screens: title (pick the museum size) → loot (the piece and its story) →
+## mission (the plan, a map) → countdown → playing ⇄ paused → caught, or escaped with the piece (next level). No
 ## clock: a round lasts as long as it takes. The loop is the web version's Game.tsx tick: thieves and their
 ## noise, the job and its alarm, guards, the yell, the warning, keeping apart,
 ## lights, thinking (Laya through BrainClient, or the fallback rules),
@@ -73,6 +73,9 @@ var cones: Array[MeshInstance3D] = []
 var switch_marks: Array[MeshInstance3D] = []
 var lit_washes: Array[MeshInstance3D] = []
 var loot_node: MeshInstance3D
+## the piece turning on its own stand, on the loot screen
+var preview: SubViewport
+var preview_pivot: Node3D
 
 
 func _ready() -> void:
@@ -90,6 +93,10 @@ func _ready() -> void:
 	_show_title()
 	# For recording and testing: `godot -- --autostart` skips the title, shows
 	# the mission for two seconds and starts the round; add --two for two thieves.
+	# --intro: the piece, then the countdown, for checking the way in.
+	if "--intro" in OS.get_cmdline_user_args():
+		_start(1)
+		get_tree().create_timer(1.5).timeout.connect(_start_countdown)
 	if "--autostart" in OS.get_cmdline_user_args():
 		if "--two" in OS.get_cmdline_user_args():
 			players = 2
@@ -102,6 +109,7 @@ func _ready() -> void:
 
 func _show_title() -> void:
 	phase = "title"
+	_drop_preview()
 	hud.show_menu([
 		{"title": "¡APAGA LA LUZ\nQUE TE PILLO!", "size": 64},
 		{"buttons": [
@@ -132,7 +140,7 @@ func _difficulty_colour() -> Color:
 func _start(n: int) -> void:
 	players = n
 	_new_round(1)
-	_show_mission()
+	_show_loot()
 
 
 ## Sound, the IA panel and the size of the museum. Opens from the title and
@@ -197,6 +205,76 @@ func _pause() -> void:
 	])
 
 
+## First the piece: turning under a light, its name, and the story of why
+## someone wants it.
+func _show_loot() -> void:
+	phase = "loot"
+	_build_preview()
+	hud.show_menu([
+		{"title": "NIVEL %02d" % level, "size": 40},
+		{"text": "ESTA NOCHE VAS A ROBAR", "size": 16, "colour": Hud.C.dim},
+		{"picture": preview.get_texture(), "smooth": true, "height": 250},
+		{"title": Heist.loot.name.to_upper(), "size": 30, "colour": Color(Heist.loot.colour)},
+		{"text": Heist.loot.blurb, "colour": Hud.C.gold},
+		{"text": Heist.loot.story, "size": 17, "wrap": true},
+		{"buttons": [{"text": "▶ VER EL PLAN", "call": _show_mission}]},
+	])
+
+
+func _build_preview() -> void:
+	_drop_preview()
+	preview = SubViewport.new()
+	preview.size = Vector2i(480, 300)
+	preview.own_world_3d = true
+	preview.transparent_bg = true
+	preview.msaa_3d = Viewport.MSAA_4X
+	add_child(preview)
+	var cam := Camera3D.new()
+	cam.position = Vector3(0, 0.4, 1.2)
+	cam.fov = 30
+	preview.add_child(cam)
+	cam.look_at(Vector3(0, 0.12, 0))
+	var sun := DirectionalLight3D.new()
+	sun.rotation_degrees = Vector3(-40, 30, 0)
+	preview.add_child(sun)
+	var spot := OmniLight3D.new()
+	spot.position = Vector3(0, 0.8, 0.4)
+	spot.light_color = Color(Heist.loot.colour)
+	spot.light_energy = 1.5
+	preview.add_child(spot)
+	# A velvet stand under it.
+	var stand := MeshInstance3D.new()
+	var c := CylinderMesh.new()
+	c.top_radius = 0.22
+	c.bottom_radius = 0.25
+	c.height = 0.08
+	stand.mesh = c
+	stand.material_override = MuseumView.toon(Color("#4a1d3a"))
+	stand.position = Vector3(0, -0.12, 0)
+	preview.add_child(stand)
+	preview_pivot = Node3D.new()
+	preview_pivot.position = Vector3(0, 0.1, 0)
+	preview.add_child(preview_pivot)
+	var colour := Color(Heist.loot.colour)
+	var m := StandardMaterial3D.new()
+	m.albedo_color = colour
+	m.emission_enabled = true
+	m.emission = colour
+	m.emission_energy_multiplier = 0.5
+	m.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
+	var piece := MeshInstance3D.new()
+	piece.material_override = m
+	preview_pivot.add_child(piece)
+	_loot_shape(piece, Heist.loot.shape, m)
+
+
+func _drop_preview() -> void:
+	if preview:
+		preview.queue_free()
+		preview = null
+		preview_pivot = null
+
+
 func _show_mission() -> void:
 	phase = "mission"
 	# Little text: the piece, the map, and on the first level one line on how.
@@ -208,7 +286,7 @@ func _show_mission() -> void:
 	for l in lines:
 		items.append({"text": l})
 	items.append({"picture": Hud.mission_map(guards)})
-	items.append({"buttons": [{"text": "▶ EMPEZAR", "call": _start_playing}]})
+	items.append({"buttons": [{"text": "▶ EMPEZAR", "call": _start_countdown}]})
 	hud.show_menu(items)
 
 
@@ -232,7 +310,7 @@ func _show_end() -> void:
 
 func _again() -> void:
 	_new_round(level + 1 if phase == "escaped" else level)
-	_show_mission()
+	_show_loot()
 
 
 func _seconds(s: float) -> String:
@@ -253,9 +331,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		"title":
 			if key in [KEY_1, KEY_2]:
 				_start(key - KEY_0)
+		"loot":
+			if key == KEY_SPACE:
+				_show_mission()
+			elif key == KEY_ESCAPE:
+				_show_title()
 		"mission":
 			if key == KEY_SPACE:
-				_start_playing()
+				_start_countdown()
 			elif key == KEY_ESCAPE:
 				_show_title()
 		"playing":
@@ -274,8 +357,21 @@ func _unhandled_input(event: InputEvent) -> void:
 				_show_title()
 
 
+## 3, 2, 1, GO! over the museum, everyone frozen in place until it is over.
+func _start_countdown() -> void:
+	phase = "countdown"
+	_drop_preview()
+	hud.hide_panel()
+	hud.countdown(_count_beep, _start_playing)
+
+
+func _count_beep(i: int) -> void:
+	sfx.ui("go" if i == 3 else "tick")
+
+
 func _start_playing() -> void:
 	phase = "playing"
+	_drop_preview()
 	hud.hide_panel()
 
 
@@ -310,6 +406,8 @@ func _pressed_keys() -> Dictionary:
 # --- The loop ------------------------------------------------------------------------
 
 func _physics_process(dt: float) -> void:
+	if preview_pivot:
+		preview_pivot.rotate_y(dt * 0.9)
 	if phase == "playing":
 		_tick(dt)
 	_draw_frame(dt)
