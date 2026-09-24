@@ -164,6 +164,16 @@ func show_menu(items: Array) -> void:
 			if item.get("wrap", false):
 				l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 				l.custom_minimum_size = Vector2(640, 0)
+		elif item.has("stage"):
+			var stage: MenuStage = item.stage
+			_panel_box.add_child(stage)
+			stage.active = true
+			var r := TextureRect.new()
+			r.texture = stage.get_texture()
+			r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			r.custom_minimum_size = Vector2(stage.size) * (item.get("height", 200.0) / stage.size.y)
+			_panel_box.add_child(r)
 		elif item.has("picture"):
 			var picture: Texture2D = item.picture
 			var r := TextureRect.new()
@@ -407,6 +417,13 @@ func _card(c: Dictionary, width: int) -> Button:
 	box.offset_bottom = -12
 	b.add_child(box)
 	var height := 0.0
+	# A live 3D stage: shown through its texture, animated while focused.
+	if c.has("stage"):
+		var stage: MenuStage = c.stage
+		b.add_child(stage)
+		c.picture = stage.get_texture()
+		b.focus_entered.connect(func() -> void: stage.active = true)
+		b.focus_exited.connect(func() -> void: stage.active = false)
 	if c.has("picture"):
 		var picture: Texture2D = c.picture
 		var r := TextureRect.new()
@@ -414,7 +431,7 @@ func _card(c: Dictionary, width: int) -> Button:
 		r.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		r.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		r.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if c.has("stage") else CanvasItem.TEXTURE_FILTER_NEAREST
 		var k := (width - 24.0) / picture.get_width()
 		r.custom_minimum_size = Vector2(width - 24, picture.get_height() * k)
 		height += r.custom_minimum_size.y

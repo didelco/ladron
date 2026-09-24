@@ -135,27 +135,11 @@ func _show_title() -> void:
 	hud.show_menu([
 		{"title": "¡APAGA LA LUZ\nQUE TE PILLO!", "size": 64},
 		{"cards": [
-			{"title": "HISTORIA", "text": "Diez noches con la Banda del Calcetín", "picture": _art("story"), "call": _show_story_menu, "colour": Hud.C.safe},
-			{"title": "GENERATIVO", "text": "Un museo nuevo cada vez", "picture": _art("generative"), "call": _show_generative_menu, "colour": Hud.C.gold},
+			{"title": "HISTORIA", "text": "Diez noches con la Banda del Calcetín", "stage": MenuStage.make("story"), "call": _show_story_menu, "colour": Hud.C.safe},
+			{"title": "GENERATIVO", "text": "Un museo nuevo cada vez", "stage": MenuStage.make("generative"), "call": _show_generative_menu, "colour": Hud.C.gold},
 		], "width": 340},
 		{"buttons": [{"text": "✦ SETTINGS", "call": _show_settings.bind("title"), "colour": Hud.C.dim}]},
 	])
-
-
-## The menu pictures, drawn once.
-var _art_cache := {}
-
-
-func _art(key: String) -> Texture2D:
-	if not _art_cache.has(key):
-		var parts := key.split(":")
-		match parts[0]:
-			"story": _art_cache[key] = Art.story_cover()
-			"generative": _art_cache[key] = Art.generative_cover()
-			"players": _art_cache[key] = Art.players(int(parts[1]))
-			"guards": _art_cache[key] = Art.guards(parts[1])
-			"museum": _art_cache[key] = Art.museum(parts[1])
-	return _art_cache[key]
 
 
 ## The story: the path of nights (any reached so far can be picked), the
@@ -172,12 +156,12 @@ func _show_story_menu() -> void:
 		{"title": "MODO HISTORIA", "size": 44},
 		{"text": "La Banda del Calcetín contra el Barón Von Bostezo", "colour": Hud.C.gold, "size": 17},
 		{"nights": nights},
-		{"picture": preview.get_texture(), "smooth": true, "height": 150},
+		{"picture": preview.get_texture(), "smooth": true, "height": 130},
 		{"text": "NOCHE %d · %s" % [story_pick, loot.name.to_upper()], "colour": Color(loot.colour), "size": 17, "id": "night"},
 		{"cards": [
-			{"title": "1 LADRÓN", "text": "Tú solo contra el museo", "picture": _art("players:1"), "call": _start.bind("story", 1), "colour": COLOURS.thief},
-			{"title": "2 LADRONES", "text": "Uno sujeta la alarma, otro abre", "picture": _art("players:2"), "call": _start.bind("story", 2), "colour": COLOURS.thief2},
-		], "width": 290},
+			{"title": "1 LADRÓN", "text": "Tú solo contra el museo", "stage": MenuStage.make("players:1"), "call": _start.bind("story", 1), "colour": COLOURS.thief},
+			{"title": "2 LADRONES", "text": "Uno sujeta la alarma, otro abre", "stage": MenuStage.make("players:2"), "call": _start.bind("story", 2), "colour": COLOURS.thief2},
+		], "width": 250},
 		{"buttons": [{"text": "◂ VOLVER", "call": _show_title, "colour": Hud.C.dim}], "row": true},
 	])
 
@@ -199,19 +183,19 @@ func _show_generative_menu() -> void:
 	phase = "menu"
 	var levels: Array = []
 	for k in ["easy", "medium", "hard"]:
-		levels.append({"title": DIFFICULTY_NAMES[k], "picture": _art("guards:" + k), "call": _pick_difficulty.bind(k),
+		levels.append({"title": DIFFICULTY_NAMES[k], "stage": MenuStage.make("guards:" + k), "call": _pick_difficulty.bind(k),
 			"colour": {"easy": Hud.C.green, "medium": Hud.C.gold, "hard": Hud.C.alert}[k], "selected": Sim.difficulty == k, "focus": Sim.difficulty == k, "title_size": 14})
 	var sizes: Array = []
 	for k in ["small", "medium", "large"]:
-		sizes.append({"title": SIZE_NAMES[k], "picture": _art("museum:" + k), "call": _pick_size.bind(k),
+		sizes.append({"title": SIZE_NAMES[k], "stage": MenuStage.make("museum:" + k), "call": _pick_size.bind(k),
 			"colour": Hud.C.safe, "selected": size == k, "title_size": 14})
 	hud.show_menu([
 		{"title": "MODO GENERATIVO", "size": 40},
 		{"cards": levels, "width": 180},
 		{"cards": sizes, "width": 180},
 		{"cards": [
-			{"title": "▶ 1 LADRÓN", "picture": _art("players:1"), "call": _start.bind("generative", 1), "colour": COLOURS.thief, "title_size": 14},
-			{"title": "▶ 2 LADRONES", "picture": _art("players:2"), "call": _start.bind("generative", 2), "colour": COLOURS.thief2, "title_size": 14},
+			{"title": "▶ 1 LADRÓN", "stage": MenuStage.make("players:1"), "call": _start.bind("generative", 1), "colour": COLOURS.thief, "title_size": 14},
+			{"title": "▶ 2 LADRONES", "stage": MenuStage.make("players:2"), "call": _start.bind("generative", 2), "colour": COLOURS.thief2, "title_size": 14},
 		], "width": 240},
 		{"buttons": [{"text": "◂ VOLVER", "call": _show_title, "colour": Hud.C.dim}], "row": true},
 	])
@@ -331,11 +315,13 @@ func _build_preview(loot: Dictionary = Heist.loot) -> void:
 	preview.transparent_bg = true
 	preview.msaa_3d = Viewport.MSAA_4X
 	add_child(preview)
+	# Axonometric, like every picture in the menus.
 	var cam := Camera3D.new()
-	cam.position = Vector3(0, 0.36, 1.0)
-	cam.fov = 30
+	cam.projection = Camera3D.PROJECTION_ORTHOGONAL
+	cam.rotation_degrees = Vector3(-35.264, 45, 0)
+	cam.position = cam.basis.z * 10.0 + Vector3(0, 0.08, 0)
+	cam.size = 0.62
 	preview.add_child(cam)
-	cam.look_at(Vector3(0, 0.12, 0))
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-40, 30, 0)
 	preview.add_child(sun)
@@ -418,13 +404,13 @@ func _show_end() -> void:
 			if level >= Story.count():
 				_show_ending()
 				return
-	var picture: Texture2D = _art("guards:hard")
+	var picture: Dictionary = {"stage": MenuStage.make("guards:hard"), "height": 170}
 	if phase == "escaped":
 		_build_preview()
-		picture = preview.get_texture()
+		picture = {"picture": preview.get_texture(), "smooth": true, "height": 170}
 	hud.show_menu([
 		{"title": title, "colour": colour, "size": 52},
-		{"picture": picture, "smooth": phase == "escaped", "height": 170},
+		picture,
 		{"text": line},
 		{"buttons": [
 			{"text": next, "call": _again, "colour": colour},
