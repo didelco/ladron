@@ -62,7 +62,7 @@ tirado sube su alarma y va a mirar.
 
 SETTINGS: sonido (`M`), música y panel de IA. La música (sintetizada, de misterio) sube de tensión cuando los guardias están en alerta o te ven. Solo: WASD o flechas, `C` o `Shift` para ponerse a gatas. Dos
 jugadores: P1 con WASD y `C`, P2 con flechas y `-` o `/`. `Esc` para la pausa. El objetivo: robar
-la pieza (quieto delante unos segundos) y salir por la puerta verde. Sin reloj: se tarda lo que se
+la pieza (quieto a su lado unos segundos, mires hacia donde mires) y salir por la puerta verde. Sin reloj: se tarda lo que se
 quiera.
 
 Para grabar o probar sin pulsar teclas: `godot -- --autostart` salta directamente a la partida

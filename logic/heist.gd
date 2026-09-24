@@ -3,8 +3,8 @@ extends RefCounted
 ## The job: every level there is one thing to take and one door to leave by.
 ## Port of the web version's heist.ts.
 ##
-## The piece sits in a case deep in the museum; you take it by standing in
-## front of it, still, for as long as the lock takes — step away and you start
+## The piece sits in a case deep in the museum; you take it by standing
+## next to it, still, for as long as the lock takes — step away and you start
 ## again — and forcing it sets its alarm off. The way out is a service door in
 ## the outer wall, far from the piece and never where you came in, so the job
 ## is always a crossing and never a there-and-back.
@@ -23,10 +23,11 @@ const LOOT := [
 	{"name": "el ídolo de obsidiana", "blurb": "La pieza estrella del museo.", "verb": "ABRIENDO LA CERRADURA", "seconds": 6.0, "colour": "#b07cff", "shape": "idol", "story": "La pieza estrella: nadie sabe quién la talló ni por qué todos los que la han tenido acabaron durmiendo con la luz encendida. Tu cliente dice que no cree en maldiciones."},
 ]
 
-## Close enough to the case to work on it: one tile off, body against the glass.
-const REACH := 1.12
-## Facing roughly at it.
-const FACING := 1.3
+## Close enough to the case to work on it: next to it, diagonals too. Which
+## way you face does not matter.
+const REACH := 1.5
+## Close enough to the alarm panel to hold it: on its tile or the next one.
+const PANEL_REACH := 1.1
 ## Near enough to pick up a piece dropped on the floor.
 const PICK_UP := 0.7
 ## Near enough to the door to be through it.
@@ -206,7 +207,7 @@ static func _place_panel(stand: Vector2i, from_start: PackedInt32Array) -> void:
 
 
 static func at_panel(p: Thief) -> bool:
-	return not p.out and Museum.dist(p.x, p.y, panel.x + 0.5, panel.y + 0.5) < 0.75
+	return not p.out and Museum.dist(p.x, p.y, panel.x + 0.5, panel.y + 0.5) < PANEL_REACH
 
 
 ## "el pasillo" -> "El pasillo". GDScript's capitalize() does every word.
@@ -277,15 +278,11 @@ static func _stand_tiles(t: Vector2i) -> Array[Vector2i]:
 	return out
 
 
-## Standing at the case, still, facing it?
+## Standing still next to the case?
 static func at_case(p: Thief) -> bool:
 	if p.out or p.moving or p.speed > 0.2:
 		return false
-	var cx := at.x + 0.5
-	var cy := at.y + 0.5
-	if Museum.dist(p.x, p.y, cx, cy) > REACH:
-		return false
-	return absf(wrapf(atan2(cy - p.y, cx - p.x) - p.dir, -PI, PI)) < FACING
+	return Museum.dist(p.x, p.y, at.x + 0.5, at.y + 0.5) <= REACH
 
 
 static func at_door(p: Thief) -> bool:

@@ -379,7 +379,7 @@ func _show_mission() -> void:
 	if Heist.team:
 		lines.append("Uno sujeta el cuadro de la alarma (naranja) mientras el otro abre la vitrina")
 	elif level == 1:
-		lines.append("Quieto %s ante la pieza · la alarma atrae guardias · sal por la puerta verde" % _seconds(Heist.loot.seconds))
+		lines.append("Quieto %s junto a la pieza · la alarma atrae guardias · sal por la puerta verde" % _seconds(Heist.loot.seconds))
 	var items: Array = [{"title": "EL PLAN", "size": 52}]
 	for l in lines:
 		items.append({"text": l})
