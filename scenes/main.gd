@@ -56,6 +56,7 @@ var size := "small"
 ## one thief or two on the same keyboard
 var players := 1
 var sound_on := true
+var music_on := true
 var show_ia := false
 ## where the settings screen goes back to: "title" or "paused"
 var settings_from := "title"
@@ -221,6 +222,7 @@ func _show_settings(from: String) -> void:
 		{"title": "SETTINGS", "size": 48},
 		{"buttons": [
 			{"text": "SONIDO: %s  (M)" % ("SÍ" if sound_on else "NO"), "call": _toggle_sound},
+			{"text": "MÚSICA: %s" % ("SÍ" if music_on else "NO"), "call": _toggle_music},
 			{"text": "PANEL IA: %s" % ("SÍ" if show_ia else "NO"), "call": _toggle_ia},
 			{"text": "◂ VOLVER", "call": _settings_back},
 		]},
@@ -237,6 +239,12 @@ func _toggle_sound() -> void:
 func _set_sound(on: bool) -> void:
 	sound_on = on
 	AudioServer.set_bus_mute(0, not on)
+
+
+func _toggle_music() -> void:
+	music_on = not music_on
+	sfx.set_music(music_on)
+	_show_settings(settings_from)
 
 
 func _toggle_ia() -> void:
@@ -507,9 +515,24 @@ func _pressed_keys() -> Dictionary:
 func _physics_process(dt: float) -> void:
 	if preview_pivot:
 		preview_pivot.rotate_y(dt * 0.9)
+	_music_mood()
 	if phase == "playing":
 		_tick(dt)
 	_draw_frame(dt)
+
+
+## The music follows the guards: creeping while they are calm, a pulse
+## once any is on alert, all of it while one can see you. Softer in menus.
+func _music_mood() -> void:
+	var tension := 0.0
+	var in_game := phase in ["playing", "countdown", "paused"]
+	if in_game:
+		for g in guards:
+			if g.sees_player:
+				tension = 1.0
+			elif g.alert:
+				tension = maxf(tension, 0.55)
+	sfx.mood(tension, 0.8 if in_game else 0.5)
 
 
 func _tick(dt: float) -> void:
@@ -561,6 +584,7 @@ func _tick(dt: float) -> void:
 	for s in Sim.call_for_backup(saw_before, guards, now):
 		sfx.at("shout", _to_world(s.x, s.y), 1.0 if s.first else 0.5)
 		if s.first:
+			sfx.ui("sting", 0.7)
 			var heard_by: Array = s.heard_by
 			var heard: String = ("%s lo ha oído y viene" % " y ".join(heard_by)) if not heard_by.is_empty() else "nadie más lo ha oído"
 			var ear := thieves[0]
