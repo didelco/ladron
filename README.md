@@ -56,6 +56,10 @@ En los dos, uno o dos ladrones. Con dos hay que colaborar: la vitrina solo cede 
 sujeta el **cuadro de la alarma** (naranja, en una pared lejos de la pieza), y así se abre sin que
 suene. Si pillan a uno, el que queda la fuerza solo, con alarma.
 
+Por el museo hay papeleras, bustos en pedestal y paneles informativos (`logic/props.gd`): si
+chocas con uno se cae (con física, `scenes/props_view.gd`) y hace ruido, y un guardia que lo vea
+tirado sube su alarma y va a mirar.
+
 SETTINGS: sonido (`M`), música y panel de IA. La música (sintetizada, de misterio) sube de tensión cuando los guardias están en alerta o te ven. Solo: WASD o flechas, `C` o `Shift` para ponerse a gatas. Dos
 jugadores: P1 con WASD y `C`, P2 con flechas y `-` o `/`. `Esc` para la pausa. El objetivo: robar
 la pieza (quieto delante unos segundos) y salir por la puerta verde. Sin reloj: se tarda lo que se

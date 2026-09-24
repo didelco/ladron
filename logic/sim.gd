@@ -127,6 +127,7 @@ static func new_map(seed: int, size: String = "small", guards: int = -1, shape: 
 	if guards < 0:
 		guards = guard_count(size)
 	Museum.regenerate(seed, size, shape)
+	Props.list.clear()
 	var starts := _guard_starts(guards)
 	var candidates: Array = []
 	var furthest := 0.0
@@ -561,6 +562,24 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 				m.kind = "noise"
 				m.at = now
 				g.memory = m
+
+	# Something knocked over that was standing before: somebody is about.
+	# One more alarm, and the spot becomes the thing to check — unless it
+	# has fresher news.
+	if not player:
+		var fallen := Props.spotted_by(g)
+		if fallen:
+			_alarm(g)
+			var fresh := g.memory != null and g.memory.kind != "noise" and now - g.memory.at <= 2000
+			if not fresh:
+				var m := Guard.Memory.new()
+				m.x = fallen.x
+				m.y = fallen.y
+				m.kind = "noise"
+				m.at = now
+				g.memory = m
+				g.planned_for = ""
+			thoughts.append({"by": g.name, "text": "¿Quién ha tirado %s?" % Props.NAMES[fallen.kind]})
 
 	# Looked the clue's area over and nobody is there: noted, and the plan is
 	# open again, so the next decision goes somewhere else.

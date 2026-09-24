@@ -83,6 +83,7 @@ var cones: Array[MeshInstance3D] = []
 var switch_marks: Array[MeshInstance3D] = []
 var lit_washes: Array[MeshInstance3D] = []
 var loot_node: MeshInstance3D
+var props_view: PropsView
 ## the alarm panel, two thieves only: its lamp and glow, red till held
 var panel_mat: StandardMaterial3D
 var panel_glow: OmniLight3D
@@ -535,6 +536,13 @@ func _new_round(n: int) -> void:
 		thieves.append(Sim.new_thief("p2"))
 	guards = Sim.new_guards(Sim.guard_count(Museum.size_name))
 	Heist.plan_job(level, Story.level(n).loot if mode == "story" else {}, players == 2)
+	# Things to knock over: never on the tiles the job needs clear.
+	var stand := Heist.route[0]
+	for t in Heist.route:
+		if Museum.dist(t.x + 0.5, t.y + 0.5, Heist.at.x + 0.5, Heist.at.y + 0.5) < 1.1:
+			stand = t
+			break
+	Props.place(Story.seed_for(n) if mode == "story" else randi(), [Heist.exit, Heist.panel, stand, Heist.start])
 	stride = [0.0, 0.0]
 	last_think = 0.0
 	think_tick = 0
@@ -601,6 +609,13 @@ func _tick(dt: float) -> void:
 			noises.append(noise)
 			var what := "step" if noise.kind in ["walk", "sprint", "rustle"] else ("shelf" if noise.kind == "shelf" else "bump")
 			sfx.at(what, _to_world(p.x, p.y), clampf(noise.loudness / 9.0, 0.15, 1.0))
+
+	# Walking into things: over they go, with a crash.
+	Props.step(thieves, now, noises)
+	for p in Props.knocked:
+		props_view.knock(p)
+		sfx.at(p.kind, _to_world(p.x, p.y), 1.0)
+		_log("¡Has tirado %s!" % Props.NAMES[p.kind])
 
 	# The job: working the case (and its alarm), carrying, dropping, the door.
 	var before_alarms := noises.size()
@@ -763,6 +778,9 @@ func _build_world() -> void:
 	var view := MuseumView.new()
 	view.build()
 	world.add_child(view)
+	props_view = PropsView.new()
+	world.add_child(props_view)
+	props_view.build()
 
 	# Switches, and the white wash that fills a lit room.
 	for r in Museum.rooms:

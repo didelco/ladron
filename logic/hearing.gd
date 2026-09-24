@@ -7,6 +7,10 @@ extends RefCounted
 ## Standing still makes none: staying put is the whole point of hiding.
 const LOUDNESS := {
 	"walk": 5.0,
+	## things knocked over (Props): the bin clatters, the bust smashes
+	"bin": 10.0,
+	"bust": 14.0,
+	"panel": 11.0,
 	"sprint": 9.5,
 	## pushing through past a case at a run
 	"rustle": 7.0,

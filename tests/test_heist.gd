@@ -107,6 +107,45 @@ func _init() -> void:
 		secs += 1.0 / 60
 	check(event == "stolen" and not sounds.is_empty(), "con el compañero pillado, se fuerza solo y suena la alarma")
 
+	# Things to knock over: standing against walls, off the doorways; walk
+	# into one and it falls with a crash; a guard who sees it lying there
+	# raises the alarm a notch and goes to look.
+	Sim.new_map(777, "medium")
+	Props.place(777, [])
+	var props_ok := Props.list.size() >= 2
+	for pr in Props.list:
+		var behind := pr.tile + pr.face
+		if Museum.tile_at(pr.tile.x + 0.5, pr.tile.y + 0.5) != Tiles.FLOOR or Museum.tile_at(behind.x + 0.5, behind.y + 0.5) != Tiles.WALL:
+			props_ok = false
+	check(props_ok, "%d objetos derribables, en suelo y contra una pared" % Props.list.size())
+	var target := Props.list[0]
+	var walker := Sim.new_thief("p1")
+	walker.x = target.x
+	walker.y = target.y
+	walker.speed = 1.5
+	walker.dir = 0.3
+	var crash: Array[SoundEvent] = []
+	Props.step([walker] as Array[Thief], 5000.0, crash)
+	check(target.fallen and crash.size() == 1 and crash[0].kind == target.kind and Props.knocked.size() == 1, "chocar con %s lo tira y hace ruido" % Props.NAMES[target.kind])
+	var watcher := Sim.new_guards(1)[0]
+	# Stand the guard two tiles off, looking straight at it.
+	var spot := Vector2i(-1, -1)
+	for t in Museum.open_tiles:
+		var d := Museum.dist(t.x + 0.5, t.y + 0.5, target.x, target.y)
+		if d > 1.5 and d < 3.5 and Museum.has_line_of_sight(t.x + 0.5, t.y + 0.5, target.x, target.y):
+			spot = t
+			break
+	watcher.x = spot.x + 0.5
+	watcher.y = spot.y + 0.5
+	watcher.dir = atan2(target.y - watcher.y, target.x - watcher.x)
+	var nobody: Array[Thief] = []
+	Sim.step_guard(watcher, nobody, [] as Array[SoundEvent], 6000.0, 1.0 / 60)
+	check(watcher.alert and watcher.memory != null and Museum.dist(watcher.memory.x, watcher.memory.y, target.x, target.y) < 0.1, "el guardia ve %s en el suelo: alerta y va a mirar" % Props.NAMES[target.kind])
+	var alarms_before := watcher.alarms
+	Sim.step_guard(watcher, nobody, [] as Array[SoundEvent], 6100.0, 1.0 / 60)
+	check(watcher.alarms == alarms_before, "verlo otra vez no suma otra alarma")
+	Props.list.clear()
+
 	# The story: ten nights, each a playable museum, harder as they go.
 	var last_guards := 0
 	var last_view := 0.0

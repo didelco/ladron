@@ -162,7 +162,7 @@ func _exhibits() -> void:
 		add_child(piece)
 		_base(piece)
 		var yaw := _hash01(t.x, t.y, 3) * TAU
-		var kind := int(_hash01(t.x, t.y) * 6)
+		var kind := int(_hash01(t.x, t.y) * 12)
 		if t == Heist.at:
 			_vitrine(piece, null)
 		elif t == bear:
@@ -182,8 +182,22 @@ func _exhibits() -> void:
 		elif kind == 4:
 			_plinth(piece, CASE_HEIGHT - 0.16, 0.64)
 			_skull(piece, yaw)
-		else:
+		elif kind == 5:
 			_diorama(piece, t.x + t.y)
+		elif kind == 6:
+			var p := _pivot(piece, Vector3.ZERO, yaw)
+			_plinth(p, 0.42, 0.6)
+			_amphora(p, 0.42, t.x * 7 + t.y)
+		elif kind == 7:
+			_globe(_pivot(piece, Vector3.ZERO, yaw))
+		elif kind == 8:
+			_armour(_pivot(piece, Vector3.ZERO, round(yaw / (PI / 2)) * PI / 2))
+		elif kind == 9:
+			_totem(_pivot(piece, Vector3.ZERO, round(yaw / (PI / 2)) * PI / 2), t.x + t.y * 3)
+		elif kind == 10:
+			_dinosaur(_pivot(piece, Vector3.ZERO, yaw))
+		else:
+			_vitrine(piece, _sarcophagus())
 		i += 1
 
 
@@ -215,6 +229,13 @@ func _vitrine(parent: Node3D, contents: Node3D) -> void:
 		_mesh(parent, _box(Vector3(0.815, 0.03, 0.035)), C.gold, Vector3(0, CASE_HEIGHT, 0) + side)
 	for side in [Vector3(0.39, 0, 0), Vector3(-0.39, 0, 0)]:
 		_mesh(parent, _box(Vector3(0.035, 0.03, 0.815)), C.gold, Vector3(0, CASE_HEIGHT, 0) + side)
+	# A strip of warm light under the rim, for the piece to glow in.
+	var lamp := _mesh(parent, _box(Vector3(0.7, 0.015, 0.05)), Color("#ffe8b0"), Vector3(0, CASE_HEIGHT - 0.03, -0.35), true)
+	var lm := toon(Color("#ffe8b0"))
+	lm.emission_enabled = true
+	lm.emission = Color("#ffd98a")
+	lm.emission_energy_multiplier = 1.5
+	lamp.material_override = lm
 	var glass := MeshInstance3D.new()
 	glass.mesh = _box(Vector3(0.78, 0.42, 0.78))
 	var gm := toon(Color(C.glass, 0.28))
@@ -317,6 +338,195 @@ func _diorama(parent: Node3D, seed: int) -> void:
 	s.radial_segments = 6
 	s.rings = 3
 	_mesh(parent, s, C.stone, Vector3(0.2, 0.46, -0.15))
+
+
+## A Greek amphora: a turned body, neck and lip, two handles and a painted
+## band of black figures round its belly.
+func _amphora(parent: Node3D, on: float, seed: int) -> void:
+	var clay := Color("#c8733c")
+	var black := Color("#241a14")
+	var body := SphereMesh.new()
+	body.radius = 0.17
+	body.height = 0.36
+	_mesh(parent, body, clay, Vector3(0, on + 0.2, 0))
+	var band := CylinderMesh.new()
+	band.top_radius = 0.172
+	band.bottom_radius = 0.172
+	band.height = 0.07
+	_mesh(parent, band, black, Vector3(0, on + 0.22, 0))
+	for k in 5:
+		var a := k * TAU / 5 + _hash01(seed, k) * 0.3
+		_mesh(parent, _box(Vector3(0.03, 0.05, 0.01)), clay.lightened(0.2), Vector3(cos(a) * 0.175, on + 0.22, sin(a) * 0.175), true).rotation.y = -a + PI / 2
+	var neck := CylinderMesh.new()
+	neck.top_radius = 0.07
+	neck.bottom_radius = 0.06
+	neck.height = 0.12
+	_mesh(parent, neck, clay, Vector3(0, on + 0.42, 0))
+	var lip := TorusMesh.new()
+	lip.inner_radius = 0.05
+	lip.outer_radius = 0.085
+	_mesh(parent, lip, black, Vector3(0, on + 0.48, 0))
+	var foot := CylinderMesh.new()
+	foot.top_radius = 0.06
+	foot.bottom_radius = 0.1
+	foot.height = 0.05
+	_mesh(parent, foot, black, Vector3(0, on + 0.025, 0))
+	for side in [-1, 1]:
+		var handle := TorusMesh.new()
+		handle.inner_radius = 0.045
+		handle.outer_radius = 0.065
+		var h := _mesh(parent, handle, clay, Vector3(side * 0.12, on + 0.38, 0))
+		h.rotation.x = PI / 2
+
+
+## A globe on a wooden stand in a brass meridian: blue seas, green lands.
+func _globe(parent: Node3D) -> void:
+	var wood := Color("#6b4a2e")
+	for k in 3:
+		var a := k * TAU / 3
+		var leg := _mesh(parent, _box(Vector3(0.05, 0.45, 0.05)), wood, Vector3(cos(a) * 0.18, 0.22, sin(a) * 0.18))
+		leg.rotation = Vector3(sin(a) * 0.25, 0, -cos(a) * 0.25)
+	var ring := TorusMesh.new()
+	ring.inner_radius = 0.3
+	ring.outer_radius = 0.34
+	_mesh(parent, ring, wood, Vector3(0, 0.45, 0))
+	var sea := SphereMesh.new()
+	sea.radius = 0.28
+	sea.height = 0.56
+	_mesh(parent, sea, Color("#2f6f9f"), Vector3(0, 0.72, 0))
+	for k in 6:
+		var a := _hash01(k, 3) * TAU
+		var b := (_hash01(k, 5) - 0.5) * 1.8
+		var land := SphereMesh.new()
+		land.radius = 0.09 + _hash01(k, 7) * 0.06
+		land.height = land.radius * 0.8
+		var at := Vector3(cos(a) * cos(b), sin(b), sin(a) * cos(b)) * 0.25
+		var m := _mesh(parent, land, Color("#5aa050"), Vector3(0, 0.72, 0) + at, true)
+		m.basis = Basis.looking_at(at.normalized(), Vector3.UP if absf(b) < 1.2 else Vector3.RIGHT)
+	var meridian := TorusMesh.new()
+	meridian.inner_radius = 0.31
+	meridian.outer_radius = 0.33
+	var mer := _mesh(parent, meridian, C.gold, Vector3(0, 0.72, 0), true)
+	mer.rotation = Vector3(PI / 2, 0, 0.4)
+
+
+## A suit of armour on a low stand, visor down, holding a lance.
+func _armour(parent: Node3D) -> void:
+	var steel := Color("#a9b2c3")
+	var dark := Color("#5c6370")
+	_mesh(parent, _box(Vector3(0.6, 0.08, 0.5)), C.case_dark, Vector3(0, 0.04, 0))
+	for side in [-1, 1]:
+		_mesh(parent, _box(Vector3(0.1, 0.36, 0.12)), steel, Vector3(side * 0.08, 0.26, 0))
+		_mesh(parent, _box(Vector3(0.12, 0.05, 0.18)), dark, Vector3(side * 0.08, 0.1, 0.03))
+		var shoulder := SphereMesh.new()
+		shoulder.radius = 0.08
+		shoulder.height = 0.12
+		_mesh(parent, shoulder, steel, Vector3(side * 0.17, 0.78, 0))
+		_mesh(parent, _box(Vector3(0.07, 0.3, 0.08)), steel, Vector3(side * 0.2, 0.6, 0.02))
+	_mesh(parent, _box(Vector3(0.28, 0.14, 0.18)), dark, Vector3(0, 0.49, 0))
+	_mesh(parent, _box(Vector3(0.3, 0.26, 0.2)), steel, Vector3(0, 0.68, 0))
+	_mesh(parent, _box(Vector3(0.04, 0.2, 0.01)), dark, Vector3(0, 0.68, 0.1), true)
+	var helm := CylinderMesh.new()
+	helm.top_radius = 0.09
+	helm.bottom_radius = 0.1
+	helm.height = 0.18
+	_mesh(parent, helm, steel, Vector3(0, 0.92, 0))
+	_mesh(parent, _box(Vector3(0.14, 0.015, 0.01)), C.ink, Vector3(0, 0.94, 0.1), true)
+	var plume := SphereMesh.new()
+	plume.radius = 0.05
+	plume.height = 0.14
+	_mesh(parent, plume, C.crimson, Vector3(0, 1.05, -0.03))
+	var lance := _mesh(parent, _box(Vector3(0.03, 1.1, 0.03)), Color("#6b4a2e"), Vector3(0.28, 0.6, 0.05))
+	lance.rotation.z = -0.08
+	var tip := CylinderMesh.new()
+	tip.top_radius = 0.0
+	tip.bottom_radius = 0.04
+	tip.height = 0.12
+	_mesh(parent, tip, steel, Vector3(0.325, 1.2, 0.05))
+
+
+## A totem pole: stacked painted heads, eyes and beaks, wings at the top.
+func _totem(parent: Node3D, seed: int) -> void:
+	var paints := [Color("#b5462f"), Color("#2f6f9f"), Color("#3d7a4a"), Color("#d9a441")]
+	var wood := Color("#7a5234")
+	var y := 0.0
+	for k in 3:
+		var h := 0.3
+		var drum := CylinderMesh.new()
+		drum.top_radius = 0.15
+		drum.bottom_radius = 0.16
+		drum.height = h
+		drum.radial_segments = 10
+		_mesh(parent, drum, wood, Vector3(0, y + h / 2, 0))
+		var paint: Color = paints[int(_hash01(seed, k) * 4) % 4]
+		for side in [-1, 1]:
+			var eye := SphereMesh.new()
+			eye.radius = 0.04
+			eye.height = 0.05
+			_mesh(parent, eye, Color.WHITE, Vector3(side * 0.06, y + h * 0.65, 0.14), true)
+			_mesh(parent, _box(Vector3(0.025, 0.025, 0.02)), C.ink, Vector3(side * 0.06, y + h * 0.65, 0.17), true)
+			_mesh(parent, _box(Vector3(0.07, 0.02, 0.02)), paint, Vector3(side * 0.06, y + h * 0.85, 0.15), true)
+		var beak := CylinderMesh.new()
+		beak.top_radius = 0.0
+		beak.bottom_radius = 0.04
+		beak.height = 0.1 if k % 2 == 0 else 0.05
+		var b := _mesh(parent, beak, paint, Vector3(0, y + h * 0.4, 0.18))
+		b.rotation.x = PI / 2
+		y += h
+	for side in [-1, 1]:
+		var wing := _mesh(parent, _box(Vector3(0.3, 0.1, 0.04)), paints[0], Vector3(side * 0.24, y - 0.08, 0))
+		wing.rotation.z = side * 0.35
+
+
+## A little dinosaur skeleton on a low platform: skull, spine, ribs, tail.
+func _dinosaur(parent: Node3D) -> void:
+	_mesh(parent, _box(Vector3(0.86, 0.1, 0.5)), C.case_dark, Vector3(0, 0.05, 0))
+	for side in [-1, 1]:
+		for leg in [-0.18, 0.14]:
+			_mesh(parent, _box(Vector3(0.03, 0.34, 0.03)), C.bone_dark, Vector3(leg, 0.27, side * 0.07))
+	# Spine: a curve of vertebrae from the tail tip to the neck.
+	var n := 14
+	for i in n:
+		var t := float(i) / (n - 1)
+		var x := lerpf(-0.42, 0.3, t)
+		var y := 0.45 + sin(t * PI) * 0.12 + (0.15 * t * t if t > 0.8 else 0.0)
+		var v := SphereMesh.new()
+		v.radius = 0.028 + sin(t * PI) * 0.02
+		v.height = v.radius * 2.0
+		_mesh(parent, v, C.bone, Vector3(x, y, 0))
+		if t > 0.3 and t < 0.75:
+			var rib := TorusMesh.new()
+			rib.inner_radius = 0.07
+			rib.outer_radius = 0.085
+			var r := _mesh(parent, rib, C.bone, Vector3(x, y - 0.07, 0), true)
+			r.rotation.z = PI / 2
+	var skull := _mesh(parent, _box(Vector3(0.16, 0.08, 0.08)), C.bone, Vector3(0.38, 0.66, 0))
+	skull.rotation.z = -0.3
+	_mesh(parent, _box(Vector3(0.1, 0.02, 0.06)), C.bone_dark, Vector3(0.4, 0.61, 0), true).rotation.z = -0.3
+	var eye := SphereMesh.new()
+	eye.radius = 0.018
+	eye.height = 0.03
+	_mesh(parent, eye, C.ink, Vector3(0.36, 0.68, 0.042), true)
+
+
+## A mummy's case lying in a vitrine: gold, a painted face, blue stripes.
+func _sarcophagus() -> Node3D:
+	var g := Node3D.new()
+	var gold := Color("#d9a441")
+	var body := CapsuleMesh.new()
+	body.radius = 0.13
+	body.height = 0.62
+	var b := _mesh(g, body, gold, Vector3(0, 0.1, 0))
+	b.rotation.x = PI / 2
+	b.scale = Vector3(1, 1, 0.6)
+	for k in 4:
+		var stripe := _mesh(g, _box(Vector3(0.24, 0.02, 0.025)), Color("#2f4f9f"), Vector3(0, 0.17, -0.12 + k * 0.08), true)
+		stripe.rotation.x = 0
+	_mesh(g, _box(Vector3(0.14, 0.02, 0.12)), Color("#e0b07a"), Vector3(0, 0.18, 0.2), true)
+	for side in [-1, 1]:
+		_mesh(g, _box(Vector3(0.03, 0.01, 0.015)), C.ink, Vector3(side * 0.035, 0.19, 0.22), true)
+	_mesh(g, _box(Vector3(0.2, 0.03, 0.05)), Color("#2f4f9f"), Vector3(0, 0.17, 0.27), true)
+	return g
 
 
 ## A downloaded model, fitted to a height and a footprint and sat on its
