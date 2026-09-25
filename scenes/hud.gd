@@ -4,6 +4,45 @@ extends CanvasLayer
 ## progress and the arrow to the objective, the guards' yell, and the
 ## full-screen panels (title, mission, pause, end of round).
 
+## The menus' toy palette: cream cards and buttons, dark ink text.
+const CREAM := Color("#fff4e0")
+const INK := Color("#2a1b4e")
+const INK_SOFT := Color("#6b5f8a")
+
+## Behind every menu: a deep violet gradient with slow diagonal candy
+## stripes and drifting dots, a vignette round the edge.
+const BACKDROP_SHADER := """
+shader_type canvas_item;
+uniform vec4 top : source_color = vec4(0.42, 0.24, 0.86, 0.96);
+uniform vec4 bottom : source_color = vec4(0.13, 0.08, 0.33, 0.97);
+void fragment() {
+	vec4 c = mix(top, bottom, UV.y);
+	float stripe = step(0.5, fract((FRAGCOORD.x + FRAGCOORD.y) / 90.0 + TIME * 0.08));
+	c.rgb += stripe * 0.035;
+	vec2 g = fract(FRAGCOORD.xy / 56.0 + vec2(TIME * 0.04, -TIME * 0.025)) - 0.5;
+	c.rgb += smoothstep(0.1, 0.07, length(g)) * 0.05;
+	c.rgb *= 1.0 - distance(UV, vec2(0.5)) * 0.45;
+	COLOR = c;
+}
+"""
+
+## A picture with rounded corners, to sit inside a rounded card.
+const ROUNDED_SHADER := """
+shader_type canvas_item;
+uniform vec2 box = vec2(300.0, 200.0);
+uniform float radius = 18.0;
+void fragment() {
+	vec2 p = UV * box;
+	vec2 q = min(p, box - p);
+	float a = 1.0;
+	if (q.x < radius && q.y < radius) {
+		a = 1.0 - smoothstep(radius - 1.5, radius, length(vec2(radius) - q));
+	}
+	COLOR = texture(TEXTURE, UV);
+	COLOR.a *= a;
+}
+"""
+
 const C := {
 	"text": Color("#eef2ff"),
 	"dim": Color("#9aa0c8"),
@@ -91,6 +130,10 @@ func _ready() -> void:
 	_panel = ColorRect.new()
 	_panel.color = C.panel
 	_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var backdrop := Shader.new()
+	backdrop.code = BACKDROP_SHADER
+	_panel.material = ShaderMaterial.new()
+	(_panel.material as ShaderMaterial).shader = backdrop
 	add_child(_panel)
 	var centre := CenterContainer.new()
 	centre.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -154,14 +197,20 @@ func show_menu(items: Array) -> void:
 	var rows: Array = []
 	_named.clear()
 	_nights.clear()
+	_titles.clear()
 	for item in items:
 		if item.has("title"):
 			# Pixel faces run wide: the arcade title at about two thirds the size.
 			var t := _label(int(item.get("size", 56) * 0.66), item.get("colour", C.gold), _panel_box, true)
 			t.text = item.title
 			t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			t.add_theme_constant_override("outline_size", 10)
-			t.add_theme_color_override("font_outline_color", Color("#b45309"))
+			t.add_theme_constant_override("outline_size", 14)
+			t.add_theme_color_override("font_outline_color", Color("#3b1d8f"))
+			t.add_theme_color_override("font_shadow_color", Color("#140a38"))
+			t.add_theme_constant_override("shadow_offset_x", 0)
+			t.add_theme_constant_override("shadow_offset_y", 7)
+			t.resized.connect(func() -> void: t.pivot_offset = t.size / 2)
+			_titles.append(t)
 		elif item.has("text"):
 			var l := _label(item.get("size", 20), item.get("colour", C.text), _panel_box)
 			l.text = item.text
@@ -239,7 +288,7 @@ func show_menu(items: Array) -> void:
 			for b in item.buttons:
 				var button := _button(b)
 				if not b.has("icon"):
-					button.custom_minimum_size = Vector2(300 if item.get("row", false) else 460, 54)
+					button.custom_minimum_size = Vector2(300 if item.get("row", false) else 520, 54)
 				box.add_child(button)
 				if item.get("row", false):
 					line.append(button)
@@ -278,6 +327,9 @@ func show_menu(items: Array) -> void:
 
 ## Labels a menu gave an id, to change without rebuilding it.
 var _named := {}
+## the menu's titles, bobbing gently
+var _titles: Array[Label] = []
+var _clock := 0.0
 ## the path's night buttons, to move the "picked" look along with the focus
 var _nights: Array[Button] = []
 ## the focusable rows of the menu on screen
@@ -362,18 +414,17 @@ func _button(b: Dictionary) -> Button:
 	button.text = b.get("text", "")
 	button.focus_mode = Control.FOCUS_ALL
 	button.add_theme_font_override("font", ARCADE)
-	button.add_theme_font_size_override("font_size", 14)
+	button.add_theme_font_size_override("font_size", 15)
 	var colour: Color = b.get("colour", C.safe)
 	for state in ["normal", "hover", "pressed", "focus"]:
 		var st := _frame(colour, state != "normal")
-		st.set_content_margin_all(14)
+		st.set_content_margin_all(16)
 		st.content_margin_left = 28
 		st.content_margin_right = 28
 		button.add_theme_stylebox_override(state, st)
 	_lift(button)
-	button.add_theme_color_override("font_color", C.text)
-	button.add_theme_color_override("font_hover_color", colour)
-	button.add_theme_color_override("font_focus_color", colour)
+	for key in ["font_color", "font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
+		button.add_theme_color_override(key, INK)
 	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	if b.has("icon"):
 		var icon: Texture2D = b.icon
@@ -406,19 +457,37 @@ func _stepper(button: Button, step: Callable) -> void:
 				button.accept_event())
 
 
-## The frame every menu control shares: a dark rounded panel with a thin
-## rim, lit in the control's colour, with a soft glow, when it has the focus.
-func _frame(colour: Color, lit: bool, selected := false) -> StyleBoxFlat:
+## The frame every menu control shares, toy-box style: a cream pill with a
+## raised edge underneath; with the focus it fills with the control's
+## colour and gets a white rim. selected (the choice in force) keeps a rim
+## of its colour while it waits.
+func _frame(colour: Color, lit: bool, selected := false, radius := 26) -> StyleBoxFlat:
 	var st := StyleBoxFlat.new()
-	st.bg_color = Color("#1d1640", 0.96) if lit else (Color("#181236", 0.94) if selected else Color("#110c28", 0.9))
-	st.border_color = colour if lit or selected else Color("#2b2460")
-	st.set_border_width_all(3 if lit or selected else 2)
-	st.set_corner_radius_all(12)
+	st.bg_color = colour.lightened(0.15) if lit else CREAM
+	st.set_corner_radius_all(radius)
 	st.anti_aliasing = true
-	if lit or selected:
-		st.shadow_color = Color(colour, 0.35 if lit else 0.2)
-		st.shadow_size = 14 if lit else 8
+	if lit:
+		st.border_color = Color.WHITE
+		st.set_border_width_all(4)
+	elif selected:
+		st.border_color = colour
+		st.set_border_width_all(4)
+	# The raised edge: a darker shadow straight below, no blur.
+	st.shadow_color = colour.darkened(0.45) if lit else Color("#1a0f45", 0.55)
+	st.shadow_size = 1
+	st.shadow_offset = Vector2(0, 7 if lit else 5)
 	return st
+
+
+## A picture clipped to rounded corners.
+func _round_corners(r: TextureRect, box: Vector2, radius: float) -> void:
+	var shader := Shader.new()
+	shader.code = ROUNDED_SHADER
+	var m := ShaderMaterial.new()
+	m.shader = shader
+	m.set_shader_parameter("box", box)
+	m.set_shader_parameter("radius", radius)
+	r.material = m
 
 
 ## Grows a little under the mouse or the focus; the mouse takes the focus,
@@ -428,8 +497,14 @@ func _lift(c: Control) -> void:
 	c.mouse_entered.connect(func() -> void:
 		if c is BaseButton and not (c as BaseButton).disabled:
 			c.grab_focus())
-	c.focus_entered.connect(func() -> void: create_tween().tween_property(c, "scale", Vector2.ONE * 1.05, 0.12))
-	c.focus_exited.connect(func() -> void: create_tween().tween_property(c, "scale", Vector2.ONE, 0.12))
+	# A springy pop, overshooting a little, like a jelly button.
+	c.focus_entered.connect(func() -> void:
+		c.scale = Vector2(0.96, 1.04)
+		create_tween().tween_property(c, "scale", Vector2.ONE * 1.07, 0.35).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT))
+	c.focus_exited.connect(func() -> void: create_tween().tween_property(c, "scale", Vector2.ONE, 0.15).set_trans(Tween.TRANS_QUAD))
+	if c is BaseButton:
+		# A squash on the press.
+		(c as BaseButton).button_down.connect(func() -> void: c.scale = Vector2(1.1, 0.92))
 
 
 ## A big card: a picture, a title and a line under it.
@@ -439,7 +514,12 @@ func _card(c: Dictionary, width: int) -> Button:
 	var colour: Color = c.get("colour", C.safe)
 	var selected: bool = c.get("selected", false)
 	for state in ["normal", "hover", "pressed", "focus"]:
-		var st := _frame(colour, state != "normal", selected)
+		var st := _frame(colour, state != "normal", selected, 22)
+		if state != "normal":
+			# A card keeps its cream face with the focus: the rim and glow say it.
+			st.bg_color = Color.WHITE
+			st.border_color = colour
+			st.set_border_width_all(6)
 		st.set_content_margin_all(12)
 		b.add_theme_stylebox_override(state, st)
 	var box := VBoxContainer.new()
@@ -470,14 +550,17 @@ func _card(c: Dictionary, width: int) -> Button:
 		r.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if c.has("stage") else CanvasItem.TEXTURE_FILTER_NEAREST
 		var k := (width - 24.0) / picture.get_width()
 		r.custom_minimum_size = Vector2(width - 24, picture.get_height() * k)
+		_round_corners(r, r.custom_minimum_size, 16.0)
 		height += r.custom_minimum_size.y
 		box.add_child(r)
-	var t := _label(c.get("title_size", 16), colour if selected else C.text, box, true)
+	var t := _label(c.get("title_size", 16), INK, box, true)
+	t.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
 	t.text = c.title
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	height += 30
 	if c.has("text"):
-		var l := _label(15, C.dim, box)
+		var l := _label(15, INK_SOFT, box)
+		l.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
 		l.text = c.text
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -503,10 +586,10 @@ func _night(n: Dictionary) -> Button:
 	b.set_meta("colour", n.colour)
 	b.set_meta("locked", n.locked)
 	_night_look(b, n.selected)
-	b.add_theme_color_override("font_color", C.text)
-	b.add_theme_color_override("font_focus_color", C.text)
-	b.add_theme_color_override("font_hover_color", C.text)
-	b.add_theme_color_override("font_disabled_color", Color("#4a4380"))
+	b.add_theme_color_override("font_color", INK)
+	b.add_theme_color_override("font_focus_color", INK)
+	b.add_theme_color_override("font_hover_color", INK)
+	b.add_theme_color_override("font_disabled_color", Color("#8a80c8"))
 	if not n.locked:
 		# Landing on a night picks it; the picked look moves with it.
 		b.focus_entered.connect(func() -> void:
@@ -528,18 +611,17 @@ func _night_look(b: Button, picked: bool) -> void:
 		var st := StyleBoxFlat.new()
 		st.set_corner_radius_all(27)
 		st.anti_aliasing = true
+		st.shadow_size = 1
+		st.shadow_offset = Vector2(0, 5)
 		if locked:
-			st.bg_color = Color("#15112e")
-			st.border_color = Color("#2b2460")
-			st.set_border_width_all(2)
+			st.bg_color = Color("#4a3f86")
+			st.shadow_color = Color("#1a0f45", 0.6)
 		else:
 			var lit: bool = picked or state != "normal"
-			st.bg_color = colour.darkened(0.25) if picked else colour.darkened(0.55)
-			st.border_color = colour if lit else colour.darkened(0.3)
+			st.bg_color = colour.lightened(0.1) if lit else colour.lerp(CREAM, 0.55)
+			st.border_color = Color.WHITE if lit else colour
 			st.set_border_width_all(4 if lit else 3)
-			if lit:
-				st.shadow_color = Color(colour, 0.5)
-				st.shadow_size = 12
+			st.shadow_color = colour.darkened(0.5)
 		b.add_theme_stylebox_override(state, st)
 
 
@@ -746,6 +828,12 @@ func _draw_count(dt: float) -> void:
 
 
 func _process(dt: float) -> void:
+	_clock += dt
+	for i in _titles.size():
+		var t := _titles[i]
+		if is_instance_valid(t):
+			t.rotation = sin(_clock * 1.3 + i) * 0.025
+			t.scale = Vector2.ONE * (1.0 + sin(_clock * 2.1 + i) * 0.025)
 	if _count_left > 0:
 		_draw_count(dt)
 	if _shout_left <= 0:
