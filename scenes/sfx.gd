@@ -17,8 +17,17 @@ extends Node3D
 const RATE := 22050
 const BPM := 90.0
 const BARS := 8
+## Sounds from the world that can ring at once; one more steals the oldest.
+const VOICES := 16
 
 var _streams := {}
+## Players for world sounds, reused: footsteps alone start several a
+## second. The least recently started first.
+var _voices: Array[AudioStreamPlayer3D] = []
+## Interface sounds all go through one polyphonic player.
+var _ui: AudioStreamPlayer
+var _ui_playback: AudioStreamPlaybackPolyphonic
+
 var _calm: AudioStreamPlayer
 var _tense: AudioStreamPlayer
 var _music_task := -1
@@ -80,28 +89,46 @@ func _buses() -> void:
 
 ## Play a sound where it happens in the world. volume 0..1.
 func at(sound: String, pos: Vector3, volume := 1.0) -> void:
-	var p := AudioStreamPlayer3D.new()
+	var p := _voice()
 	p.stream = _streams[sound]
 	p.volume_db = linear_to_db(maxf(volume, 0.01))
-	p.unit_size = 6.0
 	p.position = pos
-	p.bus = "World"
 	# No two footsteps quite alike.
-	if sound == "step" or sound == "bump":
-		p.pitch_scale = randf_range(0.85, 1.15)
-	add_child(p)
-	p.finished.connect(p.queue_free)
+	p.pitch_scale = randf_range(0.85, 1.15) if sound == "step" or sound == "bump" else 1.0
 	p.play()
+
+
+## A world player to use: an idle one, a new one while there are few, or
+## else the one that started longest ago. It goes to the back of the queue.
+func _voice() -> AudioStreamPlayer3D:
+	var p: AudioStreamPlayer3D = null
+	for v in _voices:
+		if not v.playing:
+			p = v
+			break
+	if p == null and _voices.size() < VOICES:
+		p = AudioStreamPlayer3D.new()
+		p.unit_size = 6.0
+		p.bus = "World"
+		add_child(p)
+	elif p == null:
+		p = _voices[0]
+	_voices.erase(p)
+	_voices.append(p)
+	return p
 
 
 ## Play a sound with no place: the interface, the end of a round.
 func ui(sound: String, volume := 1.0) -> void:
-	var p := AudioStreamPlayer.new()
-	p.stream = _streams[sound]
-	p.volume_db = linear_to_db(maxf(volume, 0.01))
-	add_child(p)
-	p.finished.connect(p.queue_free)
-	p.play()
+	if _ui == null:
+		_ui = AudioStreamPlayer.new()
+		var poly := AudioStreamPolyphonic.new()
+		poly.polyphony = 16
+		_ui.stream = poly
+		add_child(_ui)
+		_ui.play()
+		_ui_playback = _ui.get_stream_playback()
+	_ui_playback.play_stream(_streams[sound], 0.0, linear_to_db(maxf(volume, 0.01)))
 
 
 ## How tense the music is (0 creeping .. 1 chase) and how loud (0..1).

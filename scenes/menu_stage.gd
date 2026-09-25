@@ -17,6 +17,11 @@ const WALL_SIDE := Color("#3a3346")
 const STONE := Color("#5a4fa0")
 const STONE_LIT := Color("#7d72c4")
 const GOLD := Color("#ffe066")
+const CASE := Color("#a8d8e8")
+
+## One toon material per colour, shared by every stage: the menus build a
+## dozen stages, each of dozens of pieces.
+static var _materials := {}
 
 var kind := ""
 var arg := ""
@@ -28,6 +33,9 @@ var _figures: Array[Figure] = []
 var _extra: Array[Node3D] = []
 var _plan_seed := 1
 var _walls: Node3D
+## The instanced walls and cases of the plan on show, for _rise: each
+## {"mm": MultiMesh, "h": height, "cells": PackedVector3Array of (x, delay, z)}.
+var _blocks: Array[Dictionary] = []
 
 
 static func make(what: String) -> MenuStage:
@@ -146,17 +154,7 @@ func _build_plan(seed: int) -> void:
 	for c in _walls.get_children():
 		c.queue_free()
 	var plan := MapGen.generate(seed, 21, 15, "rect")
-	var k := 3.1 / plan.w
-	for y in plan.h:
-		for x in plan.w:
-			var t := plan.at(x, y)
-			if t == Tiles.FLOOR:
-				continue
-			var h := 0.28 if t == Tiles.WALL else 0.14
-			var colour := WALL if t == Tiles.WALL else Color("#a8d8e8")
-			var b := _box(_walls, Vector3(k, h, k), colour, Vector3((x - plan.w / 2.0 + 0.5) * k, h / 2, (y - plan.h / 2.0 + 0.5) * k))
-			b.set_meta("h", h)
-			b.set_meta("delay", (x + y) * 0.02)
+	_plan_blocks(plan, 3.1 / plan.w, 0.28, 0.14)
 
 
 ## One thief or two on a round spotlight.
@@ -231,13 +229,33 @@ func _museum(which: String, cam: Camera3D) -> void:
 	_walls = Node3D.new()
 	_root.add_child(_walls)
 	_box(_walls, Vector3(plan.w * k, 0.08, plan.h * k), FLOOR, Vector3(0, -0.04, 0))
-	for y in plan.h:
-		for x in plan.w:
-			var t := plan.at(x, y)
-			if t == Tiles.FLOOR:
-				continue
-			var h := 0.16 if t == Tiles.WALL else 0.07
-			_box(_walls, Vector3(k, h, k), WALL if t == Tiles.WALL else Color("#a8d8e8"), Vector3((x - plan.w / 2.0 + 0.5) * k, h / 2, (y - plan.h / 2.0 + 0.5) * k))
+	_plan_blocks(plan, k, 0.16, 0.07)
+
+
+## The walls and cases of a plan, k a side, as one instanced mesh each
+## rather than a node per tile: the large museum has hundreds of them.
+func _plan_blocks(plan: MapGen, k: float, wall_h: float, case_h: float) -> void:
+	_blocks.clear()
+	for wall in [true, false]:
+		var h := wall_h if wall else case_h
+		var cells := PackedVector3Array()
+		for y in plan.h:
+			for x in plan.w:
+				var t := plan.at(x, y)
+				if t != Tiles.FLOOR and (t == Tiles.WALL) == wall:
+					cells.append(Vector3((x - plan.w / 2.0 + 0.5) * k, (x + y) * 0.02, (y - plan.h / 2.0 + 0.5) * k))
+		if cells.is_empty():
+			continue
+		var mm := MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.mesh = MuseumView._box(Vector3(k, h, k))
+		mm.instance_count = cells.size()
+		var mmi := MultiMeshInstance3D.new()
+		mmi.multimesh = mm
+		mmi.material_override = _material(WALL if wall else CASE)
+		_walls.add_child(mmi)
+		_blocks.append({"mm": mm, "h": h, "cells": cells})
+	_rise(INF)
 
 
 # --- Animation --------------------------------------------------------------------
@@ -314,16 +332,18 @@ func _place_labels(t: float) -> void:
 			l.position = Vector3(0, 1.6 + absf(sin(t * 6.0)) * 0.15, 0)
 
 
-## Walls grow up out of the floor, one diagonal after another.
+## Walls grow up out of the floor, one diagonal after another; INF stands
+## them all at full height.
 func _rise(t: float) -> void:
-	for b in _walls.get_children():
-		if not b.has_meta("h"):
-			continue
-		var h: float = b.get_meta("h")
-		var u := clampf((t - float(b.get_meta("delay"))) / 0.25, 0.0, 1.0)
-		var s := maxf(0.01, u)
-		(b as Node3D).scale.y = s
-		(b as Node3D).position.y = h * s / 2
+	for block in _blocks:
+		var mm: MultiMesh = block.mm
+		var h: float = block.h
+		var cells: PackedVector3Array = block.cells
+		for i in cells.size():
+			var c := cells[i]
+			var u := clampf((t - c.y) / 0.25, 0.0, 1.0)
+			var s := maxf(0.01, u)
+			mm.set_instance_transform(i, Transform3D(Basis.from_scale(Vector3(1, s, 1)), Vector3(c.x, h * s / 2, c.z)))
 
 
 # --- Pieces -----------------------------------------------------------------------
@@ -342,14 +362,23 @@ func _box(parent: Node3D, s: Vector3, colour: Color, at: Vector3) -> MeshInstanc
 func _mesh(parent: Node3D, mesh: Mesh, colour: Color, at: Vector3) -> MeshInstance3D:
 	var mi := MeshInstance3D.new()
 	mi.mesh = mesh
-	mi.material_override = MuseumView.toon(colour)
+	mi.material_override = _material(colour)
 	mi.position = at
 	parent.add_child(mi)
 	return mi
 
 
+static func _material(colour: Color) -> StandardMaterial3D:
+	if not _materials.has(colour):
+		_materials[colour] = MuseumView.toon(colour)
+	return _materials[colour]
+
+
+## A glowing piece gets a material of its own: the shared one must not
+## glow everywhere, and the lit window flickers its own.
 func _glow(mi: MeshInstance3D, colour: Color, energy: float) -> void:
-	var m := mi.material_override as StandardMaterial3D
+	var m := (mi.material_override as StandardMaterial3D).duplicate() as StandardMaterial3D
+	mi.material_override = m
 	m.emission_enabled = true
 	m.emission = colour
 	m.emission_energy_multiplier = energy
