@@ -601,6 +601,7 @@ func _tick(dt: float) -> void:
 	for p in Props.knocked:
 		props_view.knock(p)
 		sfx.at(p.kind, _to_world(p.x, p.y), 1.0)
+		_shake(0.45 if p.kind == "bust" else 0.25)
 		_log("¡Has tirado %s!" % Props.NAMES[p.kind])
 
 	# The job: working the case (and its alarm), carrying, dropping, the door.
@@ -613,6 +614,7 @@ func _tick(dt: float) -> void:
 	match took:
 		"stolen":
 			sfx.ui("stolen")
+			_punch_in()
 			_log("Tienes %s: ahora, a la salida" % Heist.loot.name)
 		"dropped":
 			_log("%s ha caído al suelo" % Heist.first_upper(Heist.loot.name))
@@ -629,6 +631,7 @@ func _tick(dt: float) -> void:
 		sfx.at("shout", _to_world(s.x, s.y), 1.0 if s.first else 0.5)
 		if s.first:
 			sfx.ui("sting", 0.7)
+			_shake(0.6)
 			var heard_by: Array = s.heard_by
 			var heard: String = ("%s lo ha oído y viene" % " y ".join(heard_by)) if not heard_by.is_empty() else "nadie más lo ha oído"
 			var ear := thieves[0]
@@ -1239,6 +1242,26 @@ func _draw_cone(g: Guard, node: MeshInstance3D) -> void:
 	m.albedo_color = Color(colour, 0.22 if g.sees_player else (0.14 if g.alert else 0.07))
 
 
+## Where the camera sits over what it looks at: high up and a little behind.
+const CAM_OFFSET := Vector3(0, 15.4, 6)
+## The shake at full trauma: how far the view slides (in metres at the
+## camera) and how far it rolls (radians).
+const SHAKE_MOVE := 0.45
+const SHAKE_ROLL := 0.025
+## How much of the trauma wears off each second.
+const SHAKE_DECAY := 1.2
+
+## where the camera is headed, followed smoothly; the shake and the punch are
+## put on top of it every frame, so they never pile up in the follow
+var cam_rest := Vector3.ZERO
+## 0..1: how shaken the camera is. It is squared for the shake, so small
+## knocks barely move it and big ones hit hard, and it decays by itself.
+var trauma := 0.0
+## 0..1: how far the camera has swooped in towards the thief (the steal)
+var punch := 0.0
+var punch_tween: Tween
+
+
 func _camera_target() -> Vector3:
 	var live := thieves.filter(func(p): return not p.out)
 	var watched: Array = live if not live.is_empty() else thieves
@@ -1255,15 +1278,46 @@ func _camera_target() -> Vector3:
 
 func _snap_camera() -> void:
 	var t := _camera_target()
-	camera.position = t + Vector3(0, 15.4, 6)
+	cam_rest = t + CAM_OFFSET
+	trauma = 0.0
+	punch = 0.0
+	if punch_tween:
+		punch_tween.kill()
+	camera.h_offset = 0.0
+	camera.v_offset = 0.0
+	camera.position = cam_rest
 	camera.look_at(t)
 
 
 func _follow_camera(dt: float) -> void:
 	var t := _camera_target()
 	var k := 1.0 - pow(0.0015, dt)
-	camera.position = camera.position.lerp(t + Vector3(0, 15.4, 6), k)
-	camera.look_at(camera.position - Vector3(0, 15.4, 6))
+	cam_rest = cam_rest.lerp(t + CAM_OFFSET, k)
+	var focus := cam_rest - CAM_OFFSET
+	camera.position = focus + CAM_OFFSET * (1.0 - 0.22 * punch)
+	camera.look_at(focus)
+	# The shake slides the picture rather than moving the camera, so the
+	# lights nearest the camera do not flicker from room to room.
+	trauma = maxf(trauma - SHAKE_DECAY * dt, 0.0)
+	var s := trauma * trauma
+	var time := Time.get_ticks_msec() / 1000.0
+	camera.h_offset = SHAKE_MOVE * s * (sin(time * 47.0) + 0.5 * sin(time * 83.0 + 1.3)) / 1.5
+	camera.v_offset = SHAKE_MOVE * s * (sin(time * 53.0 + 2.1) + 0.5 * sin(time * 71.0 + 0.4)) / 1.5
+	camera.rotate_object_local(Vector3.BACK, SHAKE_ROLL * s * sin(time * 37.0 + 0.7))
+
+
+## A jolt of the camera: 0.6 for a guard's first yell, less for a crash.
+func _shake(amount: float) -> void:
+	trauma = minf(trauma + amount, 1.0)
+
+
+## The piece is yours: the camera swoops in on the thief and eases back out.
+func _punch_in() -> void:
+	if punch_tween:
+		punch_tween.kill()
+	punch_tween = create_tween()
+	punch_tween.tween_property(self, "punch", 1.0, 0.1).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	punch_tween.tween_property(self, "punch", 0.0, 0.8).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
 func _draw_hud() -> void:

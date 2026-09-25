@@ -15,6 +15,8 @@ const C := {
 }
 ## How long the yell fills the screen.
 const SHOUT_S := 1.4
+## How long a full-screen menu takes to fade in or out over the game.
+const FADE_S := 0.2
 ## The arcade face, for titles, buttons, the clock and the yell only: it is a
 ## shouting font and unreadable in paragraphs, so the log and the IA panel keep
 ## the plain one.
@@ -34,6 +36,10 @@ var _shout_left := 0.0
 var _shout_angle := 0.0
 var _panel: ColorRect
 var _panel_box: VBoxContainer
+## whether a menu is up, as far as the game is concerned: false the moment it
+## starts fading out, while the panel itself is still visible
+var _shown := false
+var _fade: Tween
 ## what is drawn over the game while playing; hidden behind a menu
 var _play: Array[Control] = []
 var _count: Label
@@ -246,7 +252,19 @@ func show_menu(items: Array) -> void:
 			var f := _label(14, C.gold, _panel_box, true)
 			f.text = item.footer
 			f.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_panel.visible = true
+	# Only a menu coming up over the game fades in; one replacing another
+	# (a difficulty picked, a night chosen) is rebuilt in place, at once.
+	if not _shown:
+		_shown = true
+		# The controls in it are brand new; only the frame around them was
+		# made click-through by hide_panel.
+		_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+		(_panel.get_child(0) as Control).mouse_filter = Control.MOUSE_FILTER_PASS
+		_panel_box.mouse_filter = Control.MOUSE_FILTER_PASS
+		if not _panel.visible:
+			_panel.modulate.a = 0.0
+		_panel.visible = true
+		_fade_panel(1.0)
 	for c in _play:
 		c.visible = false
 	_wire(rows)
@@ -534,20 +552,38 @@ func show_panel(title: String, title_colour: Color, lines: Array, footer: String
 	show_menu(items)
 
 
+## Fades the menu away. It is gone for the game straight away: it lets go of
+## the focus and lets clicks through while it fades, so a menu on its way out
+## never swallows a key or a click. Calling it again when hidden does nothing.
 func hide_panel() -> void:
-	_panel.visible = false
 	for c in _play:
 		c.visible = true
+	if not _shown:
+		return
+	_shown = false
+	get_viewport().gui_release_focus()
+	_panel.propagate_call("set", ["mouse_filter", Control.MOUSE_FILTER_IGNORE])
+	_panel.propagate_call("set", ["focus_mode", Control.FOCUS_NONE])
+	_fade_panel(0.0)
+
+
+func _fade_panel(to: float) -> void:
+	if _fade:
+		_fade.kill()
+	_fade = create_tween()
+	_fade.tween_property(_panel, "modulate:a", to, FADE_S * absf(to - _panel.modulate.a))
+	if to == 0.0:
+		_fade.tween_callback(func(): _panel.visible = false)
 
 
 func menu_open() -> bool:
-	return _panel.visible
+	return _shown
 
 
 ## The IA panel: one card per guard. entries are {"name", "title", "colour",
 ## "options": [[label, probability]], "note"}.
 func set_ia(on: bool, entries: Array) -> void:
-	_ia.visible = on and not _panel.visible
+	_ia.visible = on and not _shown
 	if not _ia.visible:
 		return
 	var view := get_viewport().get_visible_rect().size
