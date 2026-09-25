@@ -138,6 +138,7 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 ##   {"picture": Texture2D, "smooth"?, "height"?}     the map, the piece
 ##   {"buttons": [{"text", "call", "icon"?, "colour"?}], "row": bool}
 ##                                                    text buttons, all one width
+##                                                    ("step" for "call": a setting, _stepper)
 ##   {"cards": [{"title", "text"?, "picture", "call", "colour"?, "selected"?,
 ##     "focus"?}], "width"?: int}                     big picture cards in a row
 ##   {"nights": [{"n", "colour", "locked", "selected", "call"}]}
@@ -384,8 +385,25 @@ func _button(b: Dictionary) -> Button:
 		button.custom_minimum_size = Vector2(w + 40, h + 30)
 		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
-	button.pressed.connect(b.call)
+	if b.has("step"):
+		_stepper(button, b.step)
+	else:
+		button.pressed.connect(b.call)
 	return button
+
+
+## A button that holds a setting: {"text", "step"} instead of "call", where
+## step(dir) changes it and returns the button's new text. Enter or a click
+## is dir 0 (the next value, round the end), ← and → are -1 and +1. The text
+## changes in place, so the focus stays put for the next press. A button in a
+## column has no neighbours across, so the arrows are free for this.
+func _stepper(button: Button, step: Callable) -> void:
+	button.pressed.connect(func() -> void: button.text = step.call(0))
+	button.gui_input.connect(func(event: InputEvent) -> void:
+		for dir in [-1, 1]:
+			if event.is_action_pressed("ui_left" if dir < 0 else "ui_right", true):
+				button.text = step.call(dir)
+				button.accept_event())
 
 
 ## The frame every menu control shares: a dark rounded panel with a thin

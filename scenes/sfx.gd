@@ -19,6 +19,8 @@ const BPM := 90.0
 const BARS := 8
 ## Sounds from the world that can ring at once; one more steals the oldest.
 const VOICES := 16
+## the music bus sits a little under the effects, at full volume
+const MUSIC_DB := -5.0
 
 var _streams := {}
 ## Players for world sounds, reused: footsteps alone start several a
@@ -66,7 +68,8 @@ func _ready() -> void:
 	_music_task = WorkerThreadPool.add_task(_render_music)
 
 
-## Two buses with reverb: one for the music, one for sounds in the museum.
+## Two buses with reverb, one for the music and one for sounds in the museum,
+## and a dry one for the interface.
 func _buses() -> void:
 	for bus in ["Music", "World"]:
 		if AudioServer.get_bus_index(bus) >= 0:
@@ -79,12 +82,37 @@ func _buses() -> void:
 		if bus == "Music":
 			reverb.room_size = 0.85
 			reverb.wet = 0.3
-			AudioServer.set_bus_volume_db(i, -5.0)
+			AudioServer.set_bus_volume_db(i, MUSIC_DB)
 		else:
 			reverb.room_size = 0.7
 			reverb.damping = 0.35
 			reverb.wet = 0.25
 		AudioServer.add_bus_effect(i, reverb)
+	# The interface's sounds: no reverb, but the effects volume like the rest.
+	if AudioServer.get_bus_index("Effects") < 0:
+		AudioServer.add_bus()
+		AudioServer.set_bus_name(AudioServer.bus_count - 1, "Effects")
+		AudioServer.set_bus_send(AudioServer.bus_count - 1, "Master")
+	child_entered_tree.connect(_route)
+
+
+## Players left on Master (ui() does not pick a bus) go through Effects, so
+## "effects" means every sound but the music.
+func _route(node: Node) -> void:
+	if node is AudioStreamPlayer and (node as AudioStreamPlayer).bus == &"Master":
+		(node as AudioStreamPlayer).bus = &"Effects"
+
+
+## The music and the effects volumes, 0..1 each. Squared, so the steps sound
+## even: halfway is clearly half as loud, not a barely quieter -6 dB.
+func set_volumes(music: float, effects: float) -> void:
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Music"), MUSIC_DB + _db(music))
+	for bus in ["World", "Effects"]:
+		AudioServer.set_bus_volume_db(AudioServer.get_bus_index(bus), _db(effects))
+
+
+func _db(level: float) -> float:
+	return -80.0 if level <= 0.0 else linear_to_db(level * level)
 
 
 ## Play a sound where it happens in the world. volume 0..1.
