@@ -899,6 +899,12 @@ func _tick(dt: float) -> void:
 	# held-button bookkeeping); every few frames it is redrawn.
 	var keys := _pressed_keys()
 	if map_open:
+		# The controls lean the map instead of moving anyone.
+		var push := Vector2.ZERO
+		for pair in [["a", "d", "w", "s"], ["left", "right", "up", "down"]]:
+			push += Vector2(float(keys.has(pair[1])) - float(keys.has(pair[0])), float(keys.has(pair[3])) - float(keys.has(pair[2])))
+		push += Input.get_vector("p1_left", "p1_right", "p1_up", "p1_down") + Input.get_vector("p2_left", "p2_right", "p2_up", "p2_down")
+		hud.push_map(push)
 		keys = {}
 		if Engine.get_physics_frames() % 6 == 0:
 			hud.update_map(Hud.live_map(thieves, _thief_colours()))

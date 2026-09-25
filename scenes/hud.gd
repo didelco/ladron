@@ -100,6 +100,7 @@ var _count_on_step: Callable
 var _count_on_done: Callable
 var _map: Control
 var _map_picture: TextureRect
+var _map_stage: MapStage
 var _ia: PanelContainer
 var _ia_box: VBoxContainer
 
@@ -141,38 +142,37 @@ func _ready() -> void:
 	_count.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_count.visible = false
 
-	# The map you can take out while playing: parchment in a walnut frame,
-	# centred, under the menus.
-	_map = CenterContainer.new()
+	# The map you can take out while playing: a folded paper map in 3D
+	# (MapStage), over a dimmed game, under the menus.
+	_map = Control.new()
 	_map.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_map.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_map)
-	var frame := PanelContainer.new()
-	var fs := StyleBoxFlat.new()
-	fs.bg_color = Color("#35211a", 0.96)
-	fs.border_color = Color("#d8ac5c")
-	fs.set_border_width_all(3)
-	fs.set_corner_radius_all(18)
-	fs.set_content_margin_all(16)
-	fs.shadow_color = Color(0, 0, 0, 0.6)
-	fs.shadow_size = 18
-	frame.add_theme_stylebox_override("panel", fs)
-	_map.add_child(frame)
+	var dim := ColorRect.new()
+	dim.color = Color(0.03, 0.02, 0.05, 0.55)
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_map.add_child(dim)
 	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 8)
-	frame.add_child(column)
-	var heading := _label(18, Color("#f0c46a"), column, true)
-	heading.text = "MAPA"
-	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.set_anchors_preset(Control.PRESET_FULL_RECT)
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_map.add_child(column)
+	_map_stage = MapStage.new()
+	_map.add_child(_map_stage)
 	_map_picture = TextureRect.new()
-	_map_picture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_map_picture.texture = _map_stage.get_texture()
 	_map_picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_map_picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_map_picture.custom_minimum_size = Vector2(MapStage.SIZE) * 0.95
+	_map_picture.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_map_picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(_map_picture)
 	var legend := _label(13, Color("#e8d6b4"), column)
 	legend.text = "● tú   ◆ la pieza   ■ salida (verde)   ·   M o Y para guardarlo"
 	legend.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_map.visible = false
+	_map_stage.process_mode = Node.PROCESS_MODE_DISABLED
 
 	_panel = ColorRect.new()
 	_panel.color = C.panel
@@ -761,29 +761,32 @@ func set_ia(on: bool, entries: Array) -> void:
 			n.text = "  " + e.note
 
 
-## Take the map out (or put it away) during play.
-func show_map(texture: Texture2D) -> void:
-	_map_picture.texture = texture
-	var size := Vector2(texture.get_size())
-	_map_picture.custom_minimum_size = size * minf(760.0 / size.x, 470.0 / size.y)
+## Take the map out (or put it away) during play: it unfolds as it comes.
+func show_map(plan: Image) -> void:
+	_map_stage.print_plan(plan)
+	_map_stage.process_mode = Node.PROCESS_MODE_INHERIT
+	_map_stage.unfold()
 	_map.visible = true
-	_map.scale = Vector2(0.9, 0.9)
-	_map.pivot_offset = get_viewport().get_visible_rect().size / 2
-	create_tween().tween_property(_map, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
-func update_map(texture: Texture2D) -> void:
-	_map_picture.texture = texture
+func update_map(plan: Image) -> void:
+	_map_stage.print_plan(plan)
+
+
+## Which way the controls push while the map is out, for it to lean.
+func push_map(v: Vector2) -> void:
+	_map_stage.push(v)
 
 
 func hide_map() -> void:
 	_map.visible = false
+	_map_stage.process_mode = Node.PROCESS_MODE_DISABLED
 
 
 ## The map as taken out mid-job, on parchment: the plan, where each thief is
 ## now, the piece (or where it lies), the door, and the alarm panel for two.
 ## No guards: a map does not know where they are.
-static func live_map(thieves: Array[Thief], colours: Array) -> ImageTexture:
+static func live_map(thieves: Array[Thief], colours: Array) -> Image:
 	var s := 8
 	var img := Image.create(Museum.w * s, Museum.h * s, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
@@ -822,7 +825,7 @@ static func live_map(thieves: Array[Thief], colours: Array) -> ImageTexture:
 		var p := thieves[i]
 		if not p.out:
 			dot.call(Vector2(p.x, p.y), colours[i], 5, Color.WHITE, "circle")
-	return ImageTexture.create_from_image(img)
+	return img
 
 
 ## The mission map: the plan, the route from the way in to the piece to the
