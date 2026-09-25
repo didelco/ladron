@@ -102,6 +102,10 @@ var seats: Array[String] = ["any"]
 ## the seats taken so far on the player-select screen, and for which mode
 var joining: Array[String] = []
 var join_for := "story"
+## when the last seat was taken (ms): one press may arrive twice — a pad
+## that shows up as two devices, or one that also sends a key — and must
+## not take both seats
+var joined_at := -INF
 ## the map is out: the thieves stand still to read it, the guards do not
 var map_open := false
 var level := 1
@@ -327,6 +331,7 @@ func _show_join(which: String) -> void:
 	phase = "join"
 	join_for = which
 	joining.clear()
+	joined_at = -INF
 	_draw_join()
 
 
@@ -373,6 +378,10 @@ func _join_input(event: InputEvent) -> void:
 		seat = "pad:%d" % event.device
 	if seat == "" or seat in joining or joining.size() >= 2:
 		return
+	var now := Time.get_ticks_msec()
+	if now - joined_at < 450:
+		return
+	joined_at = now
 	joining.append(seat)
 	sfx.ui("ok")
 	_rumble_pad(seat, 0.3, 0.15)
