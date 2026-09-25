@@ -1,8 +1,10 @@
 class_name MenuStage
 extends SubViewport
-## A little 3D diorama for a menu card, toy-box style: a rounded island on a
-## coloured backdrop, candy-plastic materials, a warm key light and a cool
-## fill, a long lens at the isometric angle with a touch of tilt-shift blur.
+## A little 3D diorama for a menu card, toy-box style but after hours: a
+## rounded island on a dark backdrop, soft-plastic materials in the night
+## museum's colours (dusty violet, walnut, wine velvet, brass), a warm lamp
+## and a cool moon, a long lens at the isometric angle with a touch of
+## tilt-shift blur.
 ## Still while the card waits; alive while it has the focus — thieves hop
 ## and sneak, guards patrol, plans pop up out of the floor.
 ##
@@ -14,32 +16,34 @@ extends SubViewport
 const SIZE := Vector2i(420, 280)
 const FOV := 22.0
 
-# The toy palette.
-const CREAM := Color("#fff4e0")
-const INK := Color("#2a1b4e")
-const LILAC := Color("#b9a6ff")
-const LILAC_DARK := Color("#7a64e0")
-const PINK := Color("#ff7fa8")
-const PINK_DARK := Color("#d9557f")
-const MINT := Color("#7ee0c3")
-const GRASS := Color("#6fd08c")
-const GRASS_NIGHT := Color("#3f9f86")
-const SOIL := Color("#9a6a4a")
-const GOLD := Color("#ffc53d")
-const WALL := Color("#9d8cf0")
-const CASE := Color("#8fe3ff")
-const GUARD := Color("#e0405e")
-const GUARD_DARK := Color("#8c1f3a")
+# The night museum's palette.
+const CREAM := Color("#e8d6b4")
+const INK := Color("#1c1210")
+const LILAC := Color("#7a6496")
+const LILAC_DARK := Color("#3f2e52")
+const PINK := Color("#7a2e44")
+const PINK_DARK := Color("#551e30")
+const MINT := Color("#4f8a7a")
+const GRASS := Color("#3d6b52")
+const GRASS_NIGHT := Color("#2c4f45")
+const SOIL := Color("#4a2f22")
+const GOLD := Color("#d8ac5c")
+const WALL := Color("#8a7299")
+const CASE := Color("#8fc4d6")
+const GUARD := Color("#b8324c")
+const GUARD_DARK := Color("#6e1a2c")
+const WOOD := Color("#5a3a26")
+const VELVET := Color("#5c1f33")
 
-## Each card's backdrop: the colour behind its island.
+## Each card's backdrop: the dark behind its island.
 const BACKDROP := {
-	"story": Color("#28306e"),
-	"generative": Color("#9ad8ff"),
-	"players": Color("#ffcf6e"),
-	"guards:easy": Color("#b9f0cf"),
-	"guards:medium": Color("#ffe39a"),
-	"guards:hard": Color("#ff9fae"),
-	"museum": Color("#d6ccff"),
+	"story": Color("#15112a"),
+	"generative": Color("#1b1526"),
+	"players": Color("#221510"),
+	"guards:easy": Color("#161b24"),
+	"guards:medium": Color("#221a12"),
+	"guards:hard": Color("#2a1016"),
+	"museum": Color("#1a1422"),
 }
 
 ## One candy material per colour, shared by every stage: the menus build a
@@ -79,13 +83,12 @@ func _setup() -> void:
 	size = SIZE
 	own_world_3d = true
 	msaa_3d = Viewport.MSAA_4X
-	var night := kind == "story"
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = BACKDROP.get(kind + ":" + arg, BACKDROP.get(kind, CREAM))
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color("#8e9cff") if night else Color("#fff3e6")
-	env.ambient_light_energy = 0.45 if night else 0.55
+	env.ambient_light_color = Color("#6a5a9a")
+	env.ambient_light_energy = 0.5
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.tonemap_white = 1.2
 	env.glow_enabled = true
@@ -97,21 +100,28 @@ func _setup() -> void:
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)
-	# Warm key from the front left, casting soft shadows; a cool fill from
-	# behind that rims every rounded edge.
+	# A warm lamp from the front left, casting soft shadows; cool moonlight
+	# from behind that rims every rounded edge; and a pool of lamplight on
+	# the island itself.
 	var key := DirectionalLight3D.new()
 	key.rotation_degrees = Vector3(-52, -30, 0)
-	key.light_color = Color("#b8c4ff") if night else Color("#fff0d8")
-	key.light_energy = 0.55 if night else 1.15
+	key.light_color = Color("#ffc98a")
+	key.light_energy = 0.75
 	key.shadow_enabled = true
 	key.shadow_blur = 2.0
 	key.directional_shadow_max_distance = 30.0
 	add_child(key)
 	var fill := DirectionalLight3D.new()
 	fill.rotation_degrees = Vector3(-28, 150, 0)
-	fill.light_color = Color("#9ec1ff")
-	fill.light_energy = 0.35
+	fill.light_color = Color("#8f9cff")
+	fill.light_energy = 0.45
 	add_child(fill)
+	var pool := OmniLight3D.new()
+	pool.position = Vector3(0.3, 1.8, 0.6)
+	pool.light_color = Color("#ffb45a")
+	pool.light_energy = 1.4
+	pool.omni_range = 4.5
+	add_child(pool)
 	_root = Node3D.new()
 	add_child(_root)
 	_cam = Camera3D.new()
@@ -158,7 +168,7 @@ func _story() -> void:
 	_frame(3.9, 0.55)
 	_island(3.6, 2.8, GRASS_NIGHT, SOIL)
 	# The path to the door.
-	_rounded(_root, 0.7, 1.3, 0.02, 0.2, CREAM.darkened(0.15), Vector3(0.35, 0.01, 0.75))
+	_rounded(_root, 0.7, 1.3, 0.02, 0.2, Color("#6d5a4a"), Vector3(0.35, 0.01, 0.75))
 	var front := Node3D.new()
 	front.position = Vector3(0.35, 0, -0.45)
 	_root.add_child(front)
@@ -206,7 +216,7 @@ func _story() -> void:
 ## tumbling over it; every so often it redraws itself.
 func _generative() -> void:
 	_frame(4.0, 0.35)
-	_island(3.6, 2.8, CREAM, Color("#6aa8ff"))
+	_island(3.6, 2.8, Color("#3a2c3e"), WOOD)
 	_walls = Node3D.new()
 	_root.add_child(_walls)
 	_build_plan(20260924)
@@ -228,7 +238,7 @@ func _build_plan(seed: int) -> void:
 ## One thief or two on a podium, under confetti colours.
 func _players(n: int) -> void:
 	_frame(2.5, 0.85)
-	var tiers := [[1.25, 0.26, PINK], [1.05, 0.18, CREAM], [0.9, 0.08, GOLD]]
+	var tiers := [[1.25, 0.26, WOOD], [1.05, 0.18, VELVET], [0.9, 0.08, GOLD]]
 	var y := 0.0
 	for tier in tiers:
 		var c := CylinderMesh.new()
@@ -248,7 +258,7 @@ func _players(n: int) -> void:
 	rng.seed = 11
 	for i in 16:
 		var a := i * TAU / 16
-		var bit := _box(_root, Vector3(0.08, 0.02, 0.08), [PINK, MINT, LILAC, GOLD][i % 4], Vector3(cos(a) * 1.15, 0.53, sin(a) * 1.15))
+		var bit := _box(_root, Vector3(0.08, 0.02, 0.08), [GOLD, CREAM, GOLD, LILAC][i % 4], Vector3(cos(a) * 1.15, 0.53, sin(a) * 1.15))
 		bit.rotation.y = rng.randf() * TAU
 	var spot := SpotLight3D.new()
 	spot.position = Vector3(0, 3.2, 0.3)
@@ -267,10 +277,10 @@ func _players(n: int) -> void:
 ## between cases, three running with a red beacon spinning.
 func _guards(level: String) -> void:
 	_frame(3.1, 0.55)
-	_island(3.3, 2.5, CREAM.darkened(0.04), LILAC_DARK)
+	_island(3.3, 2.5, VELVET, WOOD)
 	# A couple of glass cases to guard.
 	for c in [Vector3(-0.9, 0, -0.7), Vector3(0.95, 0, -0.55)]:
-		_rounded(_root, 0.46, 0.46, 0.3, 0.08, LILAC, c + Vector3(0, 0.15, 0))
+		_rounded(_root, 0.46, 0.46, 0.3, 0.08, WOOD, c + Vector3(0, 0.15, 0))
 		var glass := _rounded(_root, 0.4, 0.4, 0.3, 0.06, Color(CASE, 0.5), c + Vector3(0, 0.45, 0))
 		var gm := _material(CASE).duplicate() as StandardMaterial3D
 		gm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -282,7 +292,7 @@ func _guards(level: String) -> void:
 		gem.height = 0.18
 		gem.radial_segments = 6
 		gem.rings = 3
-		_glow(_mesh(_root, gem, PINK, c + Vector3(0, 0.42, 0)), PINK, 0.5)
+		_glow(_mesh(_root, gem, GOLD, c + Vector3(0, 0.42, 0)), GOLD, 0.8)
 	var n: int = {"easy": 1, "medium": 2, "hard": 3}[level]
 	if level == "easy":
 		# A bench to nod off by.
@@ -331,7 +341,7 @@ func _museum(which: String) -> void:
 	var dims: Dictionary = Museum.SIZES[which]
 	var plan := MapGen.generate(777, dims.w, dims.h, "rect")
 	var k := 0.075
-	_island(plan.w * k + 0.36, plan.h * k + 0.36, CREAM, LILAC_DARK)
+	_island(plan.w * k + 0.36, plan.h * k + 0.36, Color("#3a2c3e"), WOOD)
 	_walls = Node3D.new()
 	_root.add_child(_walls)
 	_plan_blocks(plan, k, 0.2, 0.09)
@@ -614,10 +624,10 @@ static func _material(colour: Color) -> StandardMaterial3D:
 	if not _materials.has(colour):
 		var m := StandardMaterial3D.new()
 		m.albedo_color = colour
-		m.roughness = 0.42
+		m.roughness = 0.55
 		m.rim_enabled = true
-		m.rim = 0.35
-		m.rim_tint = 0.5
+		m.rim = 0.3
+		m.rim_tint = 0.6
 		if colour.a < 1.0:
 			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 		_materials[colour] = m

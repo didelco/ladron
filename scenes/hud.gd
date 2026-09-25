@@ -5,23 +5,35 @@ extends CanvasLayer
 ## full-screen panels (title, mission, pause, end of round).
 
 ## The menus' toy palette: cream cards and buttons, dark ink text.
-const CREAM := Color("#fff4e0")
-const INK := Color("#2a1b4e")
-const INK_SOFT := Color("#6b5f8a")
+const CREAM := Color("#f1dfbd")
+const INK := Color("#2a160d")
+const INK_SOFT := Color("#b9a07a")
+## The night museum's furniture: walnut panels, brass fittings, parchment.
+const WALNUT := Color("#35211a")
+const WALNUT_LIT := Color("#4a2f24")
+const WALNUT_EDGE := Color("#120906")
+const BRASS := Color("#d8ac5c")
+const BRASS_DARK := Color("#7a5a32")
 
-## Behind every menu: a deep violet gradient with slow diagonal candy
-## stripes and drifting dots, a vignette round the edge.
+## Behind every menu: a museum wall at night — aubergine above, dark wood
+## below, a faint striped wallpaper with a damask dot, the warm pool of a
+## lamp from the top, a vignette round the edge.
 const BACKDROP_SHADER := """
 shader_type canvas_item;
-uniform vec4 top : source_color = vec4(0.42, 0.24, 0.86, 0.96);
-uniform vec4 bottom : source_color = vec4(0.13, 0.08, 0.33, 0.97);
+uniform vec4 top : source_color = vec4(0.16, 0.09, 0.2, 0.97);
+uniform vec4 bottom : source_color = vec4(0.08, 0.045, 0.035, 0.98);
 void fragment() {
-	vec4 c = mix(top, bottom, UV.y);
-	float stripe = step(0.5, fract((FRAGCOORD.x + FRAGCOORD.y) / 90.0 + TIME * 0.08));
-	c.rgb += stripe * 0.035;
-	vec2 g = fract(FRAGCOORD.xy / 56.0 + vec2(TIME * 0.04, -TIME * 0.025)) - 0.5;
-	c.rgb += smoothstep(0.1, 0.07, length(g)) * 0.05;
-	c.rgb *= 1.0 - distance(UV, vec2(0.5)) * 0.45;
+	vec4 c = mix(top, bottom, smoothstep(0.0, 1.0, UV.y));
+	float stripe = step(0.5, fract(FRAGCOORD.x / 64.0));
+	c.rgb += stripe * 0.012 * (1.0 - UV.y);
+	vec2 g = fract(FRAGCOORD.xy / vec2(64.0, 80.0) + vec2(0.25, 0.0)) - 0.5;
+	c.rgb += smoothstep(0.09, 0.06, length(g * vec2(1.0, 0.7))) * 0.018 * (1.0 - UV.y);
+	// A wainscot rail across the lower third.
+	c.rgb += smoothstep(0.004, 0.0, abs(UV.y - 0.72)) * 0.05;
+	// The lamp: warm light pooling from the top centre, breathing slowly.
+	float lamp = exp(-pow(distance(UV * vec2(1.6, 1.0), vec2(0.8, 0.05)) * 1.9, 2.0));
+	c.rgb += vec3(0.45, 0.28, 0.12) * lamp * (0.3 + 0.03 * sin(TIME * 1.3));
+	c.rgb *= 1.0 - distance(UV, vec2(0.5)) * 0.55;
 	COLOR = c;
 }
 """
@@ -201,12 +213,12 @@ func show_menu(items: Array) -> void:
 	for item in items:
 		if item.has("title"):
 			# Pixel faces run wide: the arcade title at about two thirds the size.
-			var t := _label(int(item.get("size", 56) * 0.55), item.get("colour", C.gold), _panel_box, true)
+			var t := _label(int(item.get("size", 56) * 0.55), item.get("colour", Color("#f0c46a")), _panel_box, true)
 			t.text = item.title
 			t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			t.add_theme_constant_override("outline_size", 14)
-			t.add_theme_color_override("font_outline_color", Color("#3b1d8f"))
-			t.add_theme_color_override("font_shadow_color", Color("#140a38"))
+			t.add_theme_color_override("font_outline_color", Color("#2a150c"))
+			t.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.7))
 			t.add_theme_constant_override("shadow_offset_x", 0)
 			t.add_theme_constant_override("shadow_offset_y", 7)
 			t.resized.connect(func() -> void: t.pivot_offset = t.size / 2)
@@ -427,7 +439,8 @@ func _button(b: Dictionary) -> Button:
 		st.content_margin_right = 28
 		button.add_theme_stylebox_override(state, st)
 	_lift(button)
-	for key in ["font_color", "font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
+	button.add_theme_color_override("font_color", CREAM)
+	for key in ["font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
 		button.add_theme_color_override(key, INK)
 	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	if b.has("icon"):
@@ -461,25 +474,20 @@ func _stepper(button: Button, step: Callable) -> void:
 				button.accept_event())
 
 
-## The frame every menu control shares, toy-box style: a cream pill with a
-## raised edge underneath; with the focus it fills with the control's
-## colour and gets a white rim. selected (the choice in force) keeps a rim
-## of its colour while it waits.
+## The frame every menu control shares: a walnut pill with a brass edge
+## and a raised lip underneath; with the focus it turns to polished brass.
+## selected (the choice in force) keeps a rim of its colour while it waits.
 func _frame(colour: Color, lit: bool, selected := false, radius := 26) -> StyleBoxFlat:
 	var st := StyleBoxFlat.new()
-	st.bg_color = colour.lightened(0.15) if lit else CREAM
+	st.bg_color = BRASS if lit else WALNUT
 	st.set_corner_radius_all(radius)
 	st.anti_aliasing = true
-	if lit:
-		st.border_color = Color.WHITE
-		st.set_border_width_all(4)
-	elif selected:
-		st.border_color = colour
-		st.set_border_width_all(4)
+	st.border_color = CREAM if lit else (colour.lerp(BRASS, 0.6) if selected else BRASS_DARK)
+	st.set_border_width_all(3 if lit or selected else 2)
 	# The raised edge: a darker shadow straight below, no blur.
-	st.shadow_color = colour.darkened(0.45) if lit else Color("#1a0f45", 0.55)
+	st.shadow_color = Color("#5a3a16") if lit else WALNUT_EDGE
 	st.shadow_size = 1
-	st.shadow_offset = Vector2(0, 7 if lit else 5)
+	st.shadow_offset = Vector2(0, 6 if lit else 4)
 	return st
 
 
@@ -520,10 +528,11 @@ func _card(c: Dictionary, width: int) -> Button:
 	for state in ["normal", "hover", "pressed", "focus"]:
 		var st := _frame(colour, state != "normal", selected, 22)
 		if state != "normal":
-			# A card keeps its cream face with the focus: the rim and glow say it.
-			st.bg_color = Color.WHITE
-			st.border_color = colour
-			st.set_border_width_all(6)
+			# A card keeps its wood face with the focus: a brass-lit rim says it.
+			st.bg_color = WALNUT_LIT
+			st.border_color = colour.lerp(BRASS, 0.75)
+			st.set_border_width_all(5)
+			st.shadow_color = WALNUT_EDGE
 		st.set_content_margin_all(12)
 		b.add_theme_stylebox_override(state, st)
 	var box := VBoxContainer.new()
@@ -557,7 +566,7 @@ func _card(c: Dictionary, width: int) -> Button:
 		_round_corners(r, r.custom_minimum_size, 16.0)
 		height += r.custom_minimum_size.y
 		box.add_child(r)
-	var t := _label(c.get("title_size", 13), INK, box, true)
+	var t := _label(c.get("title_size", 13), CREAM, box, true)
 	t.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
 	t.text = c.title
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -590,10 +599,10 @@ func _night(n: Dictionary) -> Button:
 	b.set_meta("colour", n.colour)
 	b.set_meta("locked", n.locked)
 	_night_look(b, n.selected)
-	b.add_theme_color_override("font_color", INK)
+	b.add_theme_color_override("font_color", CREAM)
 	b.add_theme_color_override("font_focus_color", INK)
 	b.add_theme_color_override("font_hover_color", INK)
-	b.add_theme_color_override("font_disabled_color", Color("#8a80c8"))
+	b.add_theme_color_override("font_disabled_color", Color("#6d5a78"))
 	if not n.locked:
 		# Landing on a night picks it; the picked look moves with it.
 		b.focus_entered.connect(func() -> void:
@@ -618,14 +627,16 @@ func _night_look(b: Button, picked: bool) -> void:
 		st.shadow_size = 1
 		st.shadow_offset = Vector2(0, 5)
 		if locked:
-			st.bg_color = Color("#4a3f86")
-			st.shadow_color = Color("#1a0f45", 0.6)
+			st.bg_color = Color("#2a1d2e")
+			st.border_color = Color("#3d2c40")
+			st.set_border_width_all(2)
+			st.shadow_color = WALNUT_EDGE
 		else:
 			var lit: bool = picked or state != "normal"
-			st.bg_color = colour.lightened(0.1) if lit else colour.lerp(CREAM, 0.55)
-			st.border_color = Color.WHITE if lit else colour
-			st.set_border_width_all(4 if lit else 3)
-			st.shadow_color = colour.darkened(0.5)
+			st.bg_color = colour.darkened(0.1) if lit else colour.darkened(0.5)
+			st.border_color = CREAM if lit else colour.darkened(0.15)
+			st.set_border_width_all(3)
+			st.shadow_color = WALNUT_EDGE
 		b.add_theme_stylebox_override(state, st)
 
 

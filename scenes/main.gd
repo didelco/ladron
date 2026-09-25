@@ -454,7 +454,7 @@ func _build_preview(loot: Dictionary = Heist.loot) -> void:
 	c.bottom_radius = 0.25
 	c.height = 0.08
 	stand.mesh = c
-	stand.material_override = MenuStage._material(Color("#ff7fa8"))
+	stand.material_override = MenuStage._material(MenuStage.VELVET)
 	stand.position = Vector3(0, -0.12, 0)
 	preview.add_child(stand)
 	preview_pivot = Node3D.new()
