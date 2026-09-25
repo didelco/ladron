@@ -244,7 +244,7 @@ func show_menu(items: Array) -> void:
 			r.texture = stage.get_texture()
 			r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			r.custom_minimum_size = Vector2(stage.size) * (item.get("height", 200.0) / stage.size.y)
+			r.custom_minimum_size = Vector2(stage.size) * (float(item.get("height", 200.0)) / stage.size.y)
 			_panel_box.add_child(r)
 		elif item.has("picture"):
 			var picture: Texture2D = item.picture
@@ -253,7 +253,7 @@ func show_menu(items: Array) -> void:
 			r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			var size := Vector2(picture.get_size())
-			var k := minf(720.0 / size.x, item.get("height", 420.0) / size.y)
+			var k := minf(720.0 / size.x, float(item.get("height", 420.0)) / size.y)
 			r.custom_minimum_size = size * k
 			r.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if item.get("smooth", false) else CanvasItem.TEXTURE_FILTER_NEAREST
 			_panel_box.add_child(r)
@@ -304,7 +304,15 @@ func show_menu(items: Array) -> void:
 			for b in item.buttons:
 				var button := _button(b)
 				if not b.has("icon"):
-					button.custom_minimum_size = Vector2(240 if item.get("row", false) else 400, 42)
+					# big: the one thing to do next; small: the way back.
+					if item.get("big", false):
+						button.custom_minimum_size = Vector2(380, 62)
+						button.add_theme_font_size_override("font_size", 17)
+					elif item.get("small", false):
+						button.custom_minimum_size = Vector2(200, 36)
+						button.add_theme_font_size_override("font_size", 10)
+					else:
+						button.custom_minimum_size = Vector2(240 if item.get("row", false) else 400, 42)
 				box.add_child(button)
 				if item.get("row", false):
 					line.append(button)

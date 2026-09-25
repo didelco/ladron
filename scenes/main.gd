@@ -96,6 +96,12 @@ var music_volume := 100
 var effects_volume := 100
 ## where the settings screen goes back to: "title" or "paused"
 var settings_from := "title"
+## the settings page on show: "" for the main one, or "sound", "screen", "pads"
+var settings_page := ""
+var rumble := true
+var rumble_strength := 100
+var deadzone := 50
+var swap_pads := false
 var level := 1
 var thieves: Array[Thief] = []
 var guards: Array[Guard] = []
@@ -156,6 +162,10 @@ func _ready() -> void:
 				"story": _show_story_menu()
 				"generative": _show_generative_menu()
 				"settings": _show_settings("title")
+				"pads": _show_settings("title", "pads")
+				"end":
+					phase = "caught"
+					_show_end()
 	# --intro: the piece, then the countdown, for checking the way in.
 	if "--intro" in OS.get_cmdline_user_args():
 		_start("generative" if "--gen" in OS.get_cmdline_user_args() else "story", 2 if "--two" in OS.get_cmdline_user_args() else 1)
@@ -178,9 +188,18 @@ func _show_title() -> void:
 		{"cards": [
 			{"title": "HISTORIA", "text": "Diez noches de aventura", "stage": MenuStage.make("story"), "call": _show_story_menu, "colour": Hud.C.safe},
 			{"title": "GENERATIVO", "text": "Un museo nuevo cada vez", "stage": MenuStage.make("generative"), "call": _show_generative_menu, "colour": Hud.C.gold},
-		], "width": 200},
-		{"buttons": [{"text": "✦ SETTINGS", "call": _show_settings.bind("title"), "colour": Hud.C.dim}]},
+		], "width": 250},
+		{"buttons": [
+			{"text": "SETTINGS", "call": _show_settings.bind("title"), "colour": Hud.C.dim},
+			{"text": "SALIR", "call": _quit, "colour": Hud.C.dim},
+		], "row": true, "small": true},
 	])
+
+
+## Out of the game, from the title.
+func _quit() -> void:
+	_save_settings()
+	get_tree().quit()
 
 
 ## The story: the path of nights (any reached so far can be picked), the
@@ -202,8 +221,8 @@ func _show_story_menu() -> void:
 		{"cards": [
 			{"title": "1 LADRÓN", "text": "Tú solo contra el museo", "stage": MenuStage.make("players:1"), "call": _start.bind("story", 1), "colour": COLOURS.thief},
 			{"title": "2 LADRONES", "text": "Uno sujeta la alarma, otro abre", "stage": MenuStage.make("players:2"), "call": _start.bind("story", 2), "colour": COLOURS.thief2},
-		], "width": 250},
-		{"buttons": [{"text": "◂ VOLVER", "call": _show_title, "colour": Hud.C.dim}], "row": true},
+		], "width": 150},
+		{"buttons": [{"text": "< VOLVER", "call": _show_title, "colour": Hud.C.dim}], "row": true},
 	])
 
 
@@ -232,13 +251,13 @@ func _show_generative_menu() -> void:
 			"colour": Hud.C.safe, "selected": size == k, "title_size": 12})
 	hud.show_menu([
 		{"title": "MODO GENERATIVO", "size": 40},
-		{"cards": levels, "width": 150},
-		{"cards": sizes, "width": 150},
+		{"cards": levels, "width": 140},
+		{"cards": sizes, "width": 140},
 		{"cards": [
 			{"title": "▶ 1 LADRÓN", "stage": MenuStage.make("players:1"), "call": _start.bind("generative", 1), "colour": COLOURS.thief, "title_size": 12},
 			{"title": "▶ 2 LADRONES", "stage": MenuStage.make("players:2"), "call": _start.bind("generative", 2), "colour": COLOURS.thief2, "title_size": 12},
-		], "width": 170},
-		{"buttons": [{"text": "◂ VOLVER", "call": _show_title, "colour": Hud.C.dim}], "row": true},
+		], "width": 140},
+		{"buttons": [{"text": "< VOLVER", "call": _show_title, "colour": Hud.C.dim}], "row": true},
 	])
 
 
@@ -279,20 +298,36 @@ func _show_prologue() -> void:
 ## Sound and music, their volumes, the screen and the IA panel. Opens from
 ## the title and from the pause. Each line is a setting (Hud._stepper): Enter
 ## or a click moves it on, ← and → move it down and up; each change is saved.
-func _show_settings(from: String) -> void:
+func _show_settings(from: String, page := "") -> void:
 	settings_from = from
+	settings_page = page
 	phase = "settings"
+	var keys: Array = {
+		"": ["ia"],
+		"sound": ["sound", "music", "music_volume", "effects_volume"],
+		"screen": ["fullscreen", "vsync"],
+		"pads": ["rumble", "rumble_strength", "deadzone", "swap_pads"],
+	}[page]
 	var rows: Array = []
-	for k in ["sound", "music", "music_volume", "effects_volume", "fullscreen", "vsync", "ia"]:
+	if page == "":
+		rows.append({"text": "SONIDO >", "call": _show_settings.bind(from, "sound")})
+		rows.append({"text": "PANTALLA >", "call": _show_settings.bind(from, "screen")})
+		rows.append({"text": "CONTROLES >", "call": _show_settings.bind(from, "pads")})
+	for k in keys:
 		rows.append({"text": _setting_text(k), "step": _step_setting.bind(k)})
-	rows.append({"text": "◂ VOLVER", "call": _settings_back})
-	hud.show_menu([
-		{"title": "SETTINGS", "size": 48},
-		{"buttons": rows},
-		{"text": "P1: WASD · C para ponerse a gatas" if players == 1 or from == "title" else "P1: WASD · C    P2: flechas · - o /"},
-		{"text": "Con un solo jugador valen también las flechas y Shift."},
-		{"text": "Volúmenes: ← y → para bajar y subir.", "size": 16, "colour": Hud.C.dim},
-	])
+	rows.append({"text": "< VOLVER", "call": _settings_back, "colour": Hud.C.dim})
+	var title: String = {"": "SETTINGS", "sound": "SONIDO", "screen": "PANTALLA", "pads": "CONTROLES"}[page]
+	var items: Array = [{"title": title, "size": 48}, {"buttons": rows}]
+	match page:
+		"sound":
+			items.append({"text": "← y → para bajar y subir el volumen · M silencia todo", "size": 16, "colour": Hud.C.dim})
+		"pads":
+			var pads := Input.get_connected_joypads()
+			var names: Array = pads.map(func(d): return "%d: %s" % [d + 1, Input.get_joy_name(d)])
+			items.append({"text": ("Mandos: " + " · ".join(names)) if not pads.is_empty() else "No hay mandos conectados", "size": 16, "colour": Hud.C.gold})
+			items.append({"text": "Teclado: P1 WASD y C (a gatas) · P2 flechas y - o /", "size": 16})
+			items.append({"text": "Mando: stick o cruceta, A o B a gatas, Start pausa", "size": 16})
+	hud.show_menu(items)
 
 
 func _setting_text(key: String) -> String:
@@ -305,6 +340,10 @@ func _setting_text(key: String) -> String:
 		"fullscreen": return "PANTALLA COMPLETA: %s" % yes.call(fullscreen)
 		"vsync": return "V-SYNC: %s" % yes.call(vsync)
 		"ia": return "PANEL IA: %s" % yes.call(show_ia)
+		"rumble": return "VIBRACIÓN: %s" % yes.call(rumble)
+		"rumble_strength": return "FUERZA %s" % _volume_bar(rumble_strength)
+		"deadzone": return "ZONA MUERTA STICK: %d%%" % deadzone
+		"swap_pads": return "INTERCAMBIAR MANDOS: %s" % yes.call(swap_pads)
 	return key
 
 
@@ -327,6 +366,18 @@ func _step_setting(dir: int, key: String) -> String:
 		"fullscreen", "vsync":
 			set(key, not get(key))
 			Settings.apply_display(fullscreen, vsync)
+		"rumble", "swap_pads":
+			set(key, not get(key))
+			Settings.apply_pads(deadzone, swap_pads)
+			# Feel it straight away.
+			if key == "rumble" and rumble:
+				_rumble(0.4, 0.4, 0.2)
+		"rumble_strength":
+			rumble_strength = 0 if dir == 0 and rumble_strength >= 100 else Settings.volume(rumble_strength + (Settings.VOLUME_STEP if dir >= 0 else -Settings.VOLUME_STEP))
+			_rumble(0.4, 0.4, 0.2)
+		"deadzone":
+			deadzone = 20 if dir == 0 and deadzone >= 80 else clampi(deadzone + (10 if dir >= 0 else -10), 20, 80)
+			Settings.apply_pads(deadzone, swap_pads)
 		"music_volume", "effects_volume":
 			var v: int = get(key)
 			if dir == 0:
@@ -367,6 +418,11 @@ func _load_settings() -> void:
 	vsync = s.vsync
 	music_volume = s.music_volume
 	effects_volume = s.effects_volume
+	rumble = s.rumble
+	rumble_strength = s.rumble_strength
+	deadzone = s.deadzone
+	swap_pads = s.swap_pads
+	Settings.apply_pads(deadzone, swap_pads)
 	AudioServer.set_bus_mute(0, not sound_on)
 	sfx.set_music(music_on)
 	sfx.set_volumes(music_volume / 100.0, effects_volume / 100.0)
@@ -379,11 +435,15 @@ func _save_settings() -> void:
 		"difficulty": Sim.difficulty, "size": size,
 		"fullscreen": fullscreen, "vsync": vsync,
 		"music_volume": music_volume, "effects_volume": effects_volume,
+		"rumble": rumble, "rumble_strength": rumble_strength,
+		"deadzone": deadzone, "swap_pads": swap_pads,
 	})
 
 
 func _settings_back() -> void:
-	if settings_from == "paused":
+	if settings_page != "":
+		_show_settings(settings_from)
+	elif settings_from == "paused":
 		_pause()
 	else:
 		_show_title()
@@ -398,8 +458,8 @@ func _pause() -> void:
 		{"title": "PAUSA", "size": 56},
 		{"buttons": [
 			{"text": "▶ SEGUIR", "call": _start_playing},
-			{"text": "✦ SETTINGS", "call": _show_settings.bind("paused")},
-			{"text": "◂ MENÚ", "call": _quit_to_title},
+			{"text": "SETTINGS", "call": _show_settings.bind("paused")},
+			{"text": "< MENÚ", "call": _quit_to_title},
 		]},
 	])
 
@@ -530,10 +590,8 @@ func _show_end() -> void:
 		{"title": title, "colour": colour, "size": 52},
 		picture,
 		{"text": line},
-		{"buttons": [
-			{"text": next, "call": _again, "colour": colour},
-			{"text": "◂ MENÚ", "call": _show_title, "colour": Hud.C.dim},
-		], "row": true},
+		{"buttons": [{"text": next, "call": _again, "colour": colour}], "big": true},
+		{"buttons": [{"text": "< VOLVER AL MENÚ", "call": _show_title, "colour": Hud.C.dim}], "small": true},
 	])
 
 
@@ -543,7 +601,7 @@ func _show_ending() -> void:
 	hud.show_menu([
 		{"title": "¡OPERACIÓN\nDEVOLVERLO TODO!", "colour": Hud.C.safe, "size": 48},
 		{"text": Story.ENDING, "size": 18, "wrap": true},
-		{"buttons": [{"text": "◂ MENÚ", "call": _show_title}]},
+		{"buttons": [{"text": "< MENÚ", "call": _show_title}]},
 	])
 
 
@@ -566,7 +624,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if key == KEY_M:
 		_set_sound(not sound_on)
 		if phase == "settings":
-			_show_settings(settings_from)
+			_show_settings(settings_from, settings_page)
 		return
 	match phase:
 		"menu":
@@ -708,11 +766,16 @@ func _pressed_keys() -> Dictionary:
 ## to it (pad 0 is P1, pad 1 is P2). On your own any pad may be the one in
 ## your hands, so all of them shake.
 func _rumble(weak: float, strong: float, secs: float, at := Vector2.INF) -> void:
+	if not rumble or rumble_strength == 0:
+		return
+	var k := rumble_strength / 100.0
+	weak *= k
+	strong *= k
 	var who := -1
 	if thieves.size() == 2 and at != Vector2.INF:
 		who = 0 if Museum.dist(thieves[0].x, thieves[0].y, at.x, at.y) <= Museum.dist(thieves[1].x, thieves[1].y, at.x, at.y) else 1
 	for pad in Input.get_connected_joypads():
-		if who < 0 or pad == who:
+		if who < 0 or pad == (who if not swap_pads else 1 - who):
 			Input.start_joy_vibration(pad, weak, strong, secs)
 
 
