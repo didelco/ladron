@@ -676,6 +676,7 @@ func _tick(dt: float) -> void:
 	match took:
 		"stolen":
 			sfx.ui("stolen")
+			Fx.sparkle(world, _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5, 1.05), Color(Heist.loot.colour))
 			_log("Tienes %s: ahora, a la salida" % Heist.loot.name)
 		"dropped":
 			_log("%s ha caído al suelo" % Heist.first_upper(Heist.loot.name))
@@ -877,6 +878,7 @@ func _build_world() -> void:
 		l.omni_attenuation = 0.8
 		l.light_volumetric_fog_energy = ROOM_FOG
 		world.add_child(l)
+		Fx.dust_in(l)
 		room_lights.append(l)
 	for g in guards:
 		var f := Figure.make("guard", COLOURS.guard, COLOURS.guard_dark)
@@ -893,6 +895,7 @@ func _build_world() -> void:
 		# beam), and turned round: a spot shines down its -Z, a figure faces +Z.
 		torch.position = Vector3(0, 1.15, 0.3)
 		torch.rotation = Vector3(-0.35, PI, 0)
+		Fx.dust_in(torch)
 		torches.append(torch)
 		var cone := MeshInstance3D.new()
 		cone.mesh = ImmediateMesh.new()
