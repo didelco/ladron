@@ -12,6 +12,26 @@ logic/   lógica pura, sin nodos (GDScript con tipos): se prueba sola
 scenes/  lo visual: main (bucle y HUD), museum_view (museo), figure (personajes)
 brain/   el cerebro: FastAPI sobre Laya, igual que en la web
 tests/   pruebas sin ventana
+art/     fuentes en Blender (.blend) de las piezas del museo; se exportan a assets/models
+```
+
+## Piezas modeladas
+
+Lo que tiene forma fija se modela en Blender (`art/<nombre>.blend`) y el juego carga el `.glb`
+de `assets/models/` con su sombreado toon (`MuseumView.asset`): vitrina (una para todas; el código
+pone dentro lo que toque), papelera, pedestal y lo que va encima (cuatro bustos, una regadera y un
+váter), panel, armadura (por piezas, para que se desmonte al caer), cráneo y cabeza de Lego, ánfora,
+globo, tótem, oso de pie, amonite y meteorito. Dos piezas ocupan varias casillas y las reserva el
+generador (`MapGen.BIG`): el esqueleto de dinosaurio (2×3) y el sarcófago (3×1).
+Lo que depende del mapa o de la semilla sigue en código: muros, suelo, plintos, mariposas,
+minerales, dioramas, cuadros (paisaje, retrato, abstracto, pipa, plátano, helado), la lámina de
+cada panel y las luces.
+
+Tras retocar una pieza, guarda el `.blend` y reexporta (las convenciones están en `art/export.py`):
+
+```bash
+/Applications/Blender.app/Contents/MacOS/Blender -b -P art/export.py -- vitrina   # sin nombres: todas
+godot --headless --import
 ```
 
 ## Plan
@@ -38,7 +58,8 @@ godot --headless --script tests/test_heist.gd    # el golpe, el cuadro de alarma
 godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (necesita el cerebro)
 ```
 
-`tests/visual/figures.tscn` enseña de cerca al ladrón y al guardia con sus animaciones.
+`tests/visual/figures.tscn` enseña de cerca al ladrón y al guardia con sus animaciones, y
+`tests/visual/assets.tscn` todas las piezas modeladas.
 
 En macOS, `godot` es `/Applications/Godot.app/Contents/MacOS/Godot`.
 

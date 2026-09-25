@@ -35,6 +35,9 @@ const MIN_LEAF := 5
 ## Every shape keeps its arms at least this wide, so a gallery always fits.
 const MIN_ARM := 9
 const DIRS: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+## The pieces that take more than one tile, in tiles across and along: the
+## dinosaur skeleton on its platform, the sarcophagus on its bier.
+const BIG := {"dinosaur": Vector2i(2, 3), "sarcophagus": Vector2i(1, 3)}
 
 var w: int
 var h: int
@@ -48,6 +51,8 @@ var outside: PackedByteArray
 ## galleries as Rect2i
 var rooms: Array[Rect2i] = []
 var spawn: Vector2i
+## the big pieces, each on a block of COVER: {"kind": ..., "rect": Rect2i}
+var big: Array[Dictionary] = []
 var _rand: Mulberry32
 
 
@@ -112,6 +117,8 @@ func _build(seed: int, width: int, height: int, shape: String) -> void:
 				for dx in range(-1, 2):
 					if interior[(y + dy) * w + x + dx] == 0:
 						ring[y * w + x] = 1
+
+	_big_pieces(seed)
 
 	outside = PackedByteArray()
 	outside.resize(w * h)
@@ -766,6 +773,59 @@ func _scatter_cover() -> void:
 			continue
 		_put(c.x, c.y, Tiles.COVER)
 		placed += 1
+
+
+## The big pieces, each standing on a block of case tiles in a gallery with
+## floor all round it (a free tile on every side, so no way is ever shut): a
+## dinosaur, and a sarcophagus or two in a big museum. They draw from a
+## generator of their own, so the rest of the museum is the same as without
+## them; one to a gallery, and a piece that finds no room is left out.
+func _big_pieces(seed: int) -> void:
+	big.clear()
+	var rand := Mulberry32.new(seed ^ 0x3c6ef372)
+	var wanted := ["dinosaur", "sarcophagus"]
+	if w * h >= 1000:
+		wanted.append("sarcophagus")
+	var order: Array[int] = []
+	for i in rooms.size():
+		order.append(i)
+	for i in range(order.size() - 1, 0, -1):
+		var j := rand.below(i + 1)
+		var tmp := order[i]
+		order[i] = order[j]
+		order[j] = tmp
+	for kind in wanted:
+		var size: Vector2i = BIG[kind]
+		for i in order:
+			var room := rooms[i]
+			var spots: Array[Rect2i] = []
+			for s in [size, Vector2i(size.y, size.x)]:
+				for y in range(room.position.y, room.end.y):
+					for x in range(room.position.x, room.end.x):
+						if _room_all_floor(Rect2i(x - 1, y - 1, s.x + 2, s.y + 2), i):
+							spots.append(Rect2i(x, y, s.x, s.y))
+			if spots.is_empty():
+				continue
+			var r := spots[rand.below(spots.size())]
+			for y in range(r.position.y, r.end.y):
+				for x in range(r.position.x, r.end.x):
+					_put(x, y, Tiles.COVER)
+			big.append({"kind": kind, "rect": r})
+			order.erase(i)
+			break
+
+
+## Every tile of r is plain floor of room i, off the corridor along the
+## outer wall.
+func _room_all_floor(r: Rect2i, i: int) -> bool:
+	if r.position.x < 1 or r.position.y < 1 or r.end.x > w - 1 or r.end.y > h - 1:
+		return false
+	for y in range(r.position.y, r.end.y):
+		for x in range(r.position.x, r.end.x):
+			var k := y * w + x
+			if grid[k] != Tiles.FLOOR or _room_of[k] != i or ring[k] == 1:
+				return false
+	return true
 
 
 ## First tile, scanning rows, that is floor (floor_only) or anything but wall.

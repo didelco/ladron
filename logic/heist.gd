@@ -14,14 +14,19 @@ extends RefCounted
 ## case opens in silence; let go, the work stops where it was. Only if the
 ## partner is caught does the one left force it alone, alarm and all.
 
+## Each piece's name, blurb, verb (on screen while forcing it) and story
+## are keys into Text: translated() has them in words.
 const LOOT := [
-	{"name": "el Ojo de Medianoche", "blurb": "Un zafiro del tamaño de un puño.", "verb": "FORZANDO LA VITRINA", "seconds": 3.0, "colour": "#5b8cff", "shape": "gem", "story": "Lo sacaron de una mina birmana en 1887 y desde entonces ha cambiado de dueño once veces, casi nunca por las buenas. Dicen que de noche brilla solo. Esta noche va a brillar en tu bolsillo."},
-	{"name": "el huevo de oviraptor", "blurb": "Fósil de setenta millones de años.", "verb": "SOLTANDO EL HUEVO", "seconds": 4.0, "colour": "#e8c89a", "shape": "egg", "story": "Un paleontólogo lo encontró en el desierto de Gobi dentro de una roca que usaba de pisapapeles. Pesa como un ladrillo y es más frágil que tu coartada. Llévalo con cariño."},
-	{"name": "la corona de la reina Urraca", "blurb": "Oro batido y granates.", "verb": "DESATORNILLANDO", "seconds": 4.5, "colour": "#f0c46a", "shape": "crown", "story": "La reina Urraca la mandó hacer con las joyas que robaba a sus propios invitados. Un coleccionista paga una fortuna por devolverla a la familia del oficio."},
-	{"name": "el meteorito de Tolva", "blurb": "Hierro caído del cielo en 1911.", "verb": "ENGAÑANDO EL SENSOR", "seconds": 5.0, "colour": "#9aa3b5", "shape": "rock", "story": "Cayó sobre el granero de un tal Tolva y lo partió en dos. El museo lo compró por cuatro perras; un laboratorio lo quiere a cualquier precio. Pesa más de lo que parece."},
-	{"name": "la máscara de jade", "blurb": "Funeraria, doscientas teselas verdes.", "verb": "CORTANDO EL SELLO", "seconds": 5.5, "colour": "#3ddc84", "shape": "mask", "story": "Doscientas teselas de jade cosidas con hilo de oro para un rey que no quería que nadie le viera la cara. Lleva cinco siglos mirando al público. Ya le toca descansar."},
-	{"name": "el ídolo de obsidiana", "blurb": "La pieza estrella del museo.", "verb": "ABRIENDO LA CERRADURA", "seconds": 6.0, "colour": "#b07cff", "shape": "idol", "story": "La pieza estrella: nadie sabe quién la talló ni por qué todos los que la han tenido acabaron durmiendo con la luz encendida. Tu cliente dice que no cree en maldiciones."},
+	{"name": "LOOT_1_NAME", "blurb": "LOOT_1_BLURB", "verb": "LOOT_1_VERB", "seconds": 3.0, "colour": "#5b8cff", "shape": "gem", "story": "LOOT_1_TALE"},
+	{"name": "LOOT_2_NAME", "blurb": "LOOT_2_BLURB", "verb": "LOOT_2_VERB", "seconds": 4.0, "colour": "#e8c89a", "shape": "egg", "story": "LOOT_2_TALE"},
+	{"name": "LOOT_3_NAME", "blurb": "LOOT_3_BLURB", "verb": "LOOT_3_VERB", "seconds": 4.5, "colour": "#f0c46a", "shape": "crown", "story": "LOOT_3_TALE"},
+	{"name": "LOOT_4_NAME", "blurb": "LOOT_4_BLURB", "verb": "LOOT_4_VERB", "seconds": 5.0, "colour": "#9aa3b5", "shape": "rock", "story": "LOOT_4_TALE"},
+	{"name": "LOOT_5_NAME", "blurb": "LOOT_5_BLURB", "verb": "LOOT_5_VERB", "seconds": 5.5, "colour": "#3ddc84", "shape": "mask", "story": "LOOT_5_TALE"},
+	{"name": "LOOT_6_NAME", "blurb": "LOOT_6_BLURB", "verb": "LOOT_6_VERB", "seconds": 6.0, "colour": "#b07cff", "shape": "idol", "story": "LOOT_6_TALE"},
 ]
+
+## The words of a piece, as keys into Text.
+const TEXT_FIELDS := ["name", "blurb", "verb", "story"]
 
 ## Close enough to the case to work on it: next to it, diagonals too. Which
 ## way you face does not matter.
@@ -67,27 +72,44 @@ static var panel := Vector2i(-1, -1)
 static var panel_face := Vector2i(0, -1)
 ## who is holding it ("" for nobody)
 static var panel_by := ""
+## Four thieves: a second panel, far from the first, and both must be held.
+static var panel2 := Vector2i(-1, -1)
+static var panel2_face := Vector2i(0, -1)
+static var panel2_by := ""
 ## someone is at the case, waiting for the panel
 static var waiting := false
+## Three thieves: the case has two locks, worked by two at once while the
+## third holds the panel; short_hand while only one is at it.
+static var hands := 1
+static var short_hand := false
 
 
 ## The piece for a level (1-based): past the list it loops, a second slower each lap.
 static func loot_for(n: int) -> Dictionary:
-	var l: Dictionary = LOOT[(n - 1) % LOOT.size()].duplicate()
+	var l := translated(LOOT[(n - 1) % LOOT.size()])
 	l.seconds += (n - 1) / LOOT.size()
 	# Harder locks on a harder night, in half seconds.
 	l.seconds = maxf(0.5, snappedf(l.seconds * Sim.tuning("lock"), 0.5))
 	return l
 
 
+## A piece (from LOOT or a story night) with its words translated.
+static func translated(piece: Dictionary) -> Dictionary:
+	return Text.fields(piece, TEXT_FIELDS)
+
+
 ## Lay the job out on the museum just generated. The piece: a case in a
 ## gallery, among the furthest from the entrance. The door: on the outer
 ## wall, far from the piece and not beside the entrance. Both at random among
 ## the good candidates, so two museums that look alike do not play alike.
-static func plan_job(n: int, piece: Dictionary = {}, two: bool = false) -> void:
+static func plan_job(n: int, piece: Dictionary = {}, gang: int = 1) -> void:
 	level = n
 	loot = loot_for(n) if piece.is_empty() else piece.duplicate()
-	team = two
+	team = gang >= 2
+	hands = 2 if gang >= 3 else 1
+	panel2 = Vector2i(-1, -1)
+	panel2_by = ""
+	short_hand = false
 	panel = Vector2i(-1, -1)
 	panel_by = ""
 	waiting = false
@@ -103,6 +125,9 @@ static func plan_job(n: int, piece: Dictionary = {}, two: bool = false) -> void:
 
 	var cases: Array = []
 	for t in Museum.cover_tiles:
+		# The piece to steal is in a case of its own, never on a big piece.
+		if not Museum.big_piece_at(t).is_empty():
+			continue
 		var stands := _stand_tiles(t).filter(func(s): return reach.call(s) >= 0)
 		if stands.is_empty():
 			continue
@@ -156,22 +181,25 @@ static func plan_job(n: int, piece: Dictionary = {}, two: bool = false) -> void:
 
 	if team:
 		_place_panel(stand, from_start)
+	if team and gang >= 4:
+		_place_panel(stand, from_start, true)
 
 	route = _walk(start, stand)
 	var out := _walk(stand, exit)
 	out.remove_at(0)
 	route.append_array(out)
 	plan = [
-		["Entrada", first_upper(Museum.zone_label(start.x + 0.5, start.y + 0.5))],
-		["Pieza", first_upper(Museum.zone_label(at.x + 0.5, at.y + 0.5))],
-		["Salida", "Puerta del muro %s, en %s" % [_side(exit_face), Museum.zone_label(exit.x + 0.5, exit.y + 0.5)]],
+		[Text.t("PLAN_ENTRY"), first_upper(Museum.zone_label(start.x + 0.5, start.y + 0.5))],
+		[Text.t("PLAN_PIECE"), first_upper(Museum.zone_label(at.x + 0.5, at.y + 0.5))],
+		[Text.t("PLAN_EXIT"), Text.t(_side(exit_face)) % Museum.zone_label(exit.x + 0.5, exit.y + 0.5)],
 	]
 
 
 ## The alarm panel: against an inside wall, a fair walk from the case (so
 ## the one holding it is somewhere else, keeping watch alone) but not across
 ## the whole museum, and out of the case's gallery.
-static func _place_panel(stand: Vector2i, from_start: PackedInt32Array) -> void:
+## second: the other panel of a gang of four, well away from the first.
+static func _place_panel(stand: Vector2i, from_start: PackedInt32Array, second := false) -> void:
 	var from_case := _distances(stand)
 	var case_room := Museum.room_at(at.x + 0.5, at.y + 0.5)
 	var far := 0
@@ -189,6 +217,8 @@ static func _place_panel(stand: Vector2i, from_start: PackedInt32Array) -> void:
 			continue
 		if case_room and Museum.room_at(t.x + 0.5, t.y + 0.5) == case_room:
 			continue
+		if second and Museum.dist(t.x, t.y, panel.x, panel.y) < 8:
+			continue
 		for f in Museum.DIRS:
 			var wall := t + f
 			if Museum.tile_at(wall.x + 0.5, wall.y + 0.5) != Tiles.WALL or Museum.is_outside(wall.x + f.x, wall.y + f.y):
@@ -202,6 +232,10 @@ static func _place_panel(stand: Vector2i, from_start: PackedInt32Array) -> void:
 		team = false
 		return
 	var pick: Array = pool[randi() % pool.size()]
+	if second:
+		panel2 = pick[0]
+		panel2_face = pick[1]
+		return
 	panel = pick[0]
 	panel_face = pick[1]
 
@@ -210,17 +244,27 @@ static func at_panel(p: Thief) -> bool:
 	return not p.out and Museum.dist(p.x, p.y, panel.x + 0.5, panel.y + 0.5) < PANEL_REACH
 
 
+static func at_panel2(p: Thief) -> bool:
+	return panel2.x >= 0 and not p.out and Museum.dist(p.x, p.y, panel2.x + 0.5, panel2.y + 0.5) < PANEL_REACH
+
+
+## The alarm is off: its panel held — both of them, for a gang of four.
+static func panels_held() -> bool:
+	return panel_by != "" and (panel2.x < 0 or (panel2_by != "" and panel2_by != panel_by))
+
+
 ## "el pasillo" -> "El pasillo". GDScript's capitalize() does every word.
 static func first_upper(s: String) -> String:
 	return s.substr(0, 1).to_upper() + s.substr(1)
 
 
+## The door's line on the plan, by the wall it is in: a key into Text.
 static func _side(face: Vector2i) -> String:
 	match face:
-		Vector2i(-1, 0): return "oeste"
-		Vector2i(1, 0): return "este"
-		Vector2i(0, -1): return "norte"
-		_: return "sur"
+		Vector2i(-1, 0): return "PLAN_DOOR_WEST"
+		Vector2i(1, 0): return "PLAN_DOOR_EAST"
+		Vector2i(0, -1): return "PLAN_DOOR_NORTH"
+		_: return "PLAN_DOOR_SOUTH"
 
 
 ## Walking distance from a tile to every floor tile; -1 unreachable.
@@ -295,11 +339,15 @@ static func at_door(p: Thief) -> bool:
 static func step(thieves: Array[Thief], dt: float, now: float, noises: Array[SoundEvent]) -> String:
 	# The panel: whoever stands at it holds it.
 	panel_by = ""
+	panel2_by = ""
 	waiting = false
+	short_hand = false
 	if team:
 		for p in thieves:
 			if at_panel(p):
 				panel_by = p.id
+			elif at_panel2(p):
+				panel2_by = p.id
 	if not taken:
 		var worker: Thief = null
 		for p in thieves:
@@ -315,14 +363,21 @@ static func step(thieves: Array[Thief], dt: float, now: float, noises: Array[Sou
 		# and then it gives without a sound. Alone (the partner caught), it
 		# is forced the loud way.
 		var partner_in := team and thieves.any(func(p): return p != worker and not p.out)
-		if partner_in and (panel_by == "" or panel_by == worker.id):
+		if partner_in and (not panels_held() or worker.id in [panel_by, panel2_by]):
 			waiting = true
 			by = worker.id
 			return ""
+		# Two locks: nothing gives until a second pair of hands is at the case.
+		if partner_in and hands > 1:
+			var at_it := thieves.filter(func(p): return at_case(p) and not p.id in [panel_by, panel2_by])
+			if at_it.size() < hands:
+				short_hand = true
+				by = worker.id
+				return ""
 		var silent := partner_in
 		# Forcing the case sets its alarm off, and a guard hears it like any
 		# other sound: the job is a race against whoever is in earshot.
-		if not silent and now - _last_alarm > ALARM_EVERY_MS:
+		if not silent and Sim.feature("case_alarm") and now - _last_alarm > ALARM_EVERY_MS:
 			_last_alarm = now
 			noises.append(SoundEvent.make(at.x + 0.5, at.y + 0.5, "alarm"))
 		# Swapping who is at it is stepping away.
@@ -340,7 +395,8 @@ static func step(thieves: Array[Thief], dt: float, now: float, noises: Array[Sou
 		for p in thieves:
 			if p.id == carrier:
 				c = p
-		if c == null or c.out:
+		# Caught with it, it drops; walked out with it, it is gone for good.
+		if c == null or (c.out and not c.safe):
 			carrier = ""
 			dropped = Vector2(c.x, c.y) if c else Vector2.INF
 			return "dropped"

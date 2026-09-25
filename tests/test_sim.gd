@@ -21,6 +21,18 @@ func open_room() -> void:
 			Museum.grid[y * w + x] = Tiles.WALL if (x == 0 or y == 0 or x == w - 1 or y == h - 1) else Tiles.FLOOR
 
 
+## The simulation's clock for the timed checks, in ms.
+var clock := 1000.0
+
+
+## Let this many seconds go by for a guard with nothing to see or hear.
+func wait(g: Guard, seconds: float) -> void:
+	var none: Array[Thief] = []
+	for f in int(seconds * 60):
+		clock += 1000.0 / 60
+		Sim.step_guard(g, none, [] as Array[SoundEvent], clock, 1.0 / 60)
+
+
 func guard_at(x: float, y: float, dir: float = 0.0) -> Guard:
 	var g: Guard = Sim.new_guards(1)[0]
 	g.x = x
@@ -88,19 +100,25 @@ func _init() -> void:
 	open_room()
 	var g := guard_at(5.5, 5.5)
 	var none: Array[Thief] = []
-	var clock := 1000.0
+	clock = 1000.0
 	Sim.step_guard(g, none, [SoundEvent.make(6.5, 5.5, "sprint")], clock, 1.0 / 60)
-	check(g.alert and g.calm_in > 9.9 and g.calm_in <= 10.0 and g.alarms == 1, "oye un paso: alerta 10 s")
-	for f in 60 * 11:
-		clock += 1000.0 / 60
-		Sim.step_guard(g, none, [] as Array[SoundEvent], clock, 1.0 / 60)
-	check(not g.alert and g.memory == null, "11 s sin nada: tranquilo y olvida")
-	for k in 1:
-		Sim.step_guard(g, none, [SoundEvent.make(g.x + 1, g.y, "sprint")], clock, 1.0 / 60)
-		for f in 60 * 11:
-			clock += 1000.0 / 60
-			Sim.step_guard(g, none, [] as Array[SoundEvent], clock, 1.0 / 60)
-	check(g.alert and g.calm_in == INF, "en media, a la segunda: alerta para siempre")
+	check(g.suspicion == 1 and not g.alert and g.memory != null, "oye un paso: sospecha (!), sin alerta")
+	clock += 1500.0
+	Sim.step_guard(g, none, [SoundEvent.make(6.5, 5.5, "sprint")], clock, 1.0 / 60)
+	check(g.suspicion == 2 and g.alert and g.alarms == 1, "otro paso: en alerta (!!)")
+	wait(g, 30.0)
+	check(g.suspicion == 2 and g.alert, "30 s después: sigue en alerta (aguanta un minuto)")
+	wait(g, 31.0)
+	check(g.suspicion == 1 and not g.alert and g.memory == null, "pasado el minuto: baja a sospecha y olvida")
+	wait(g, 11.0)
+	check(g.suspicion == 0, "11 s más sin nada: tranquilo")
+	var crash := guard_at(5.5, 5.5)
+	Sim.step_guard(crash, none, [SoundEvent.make(6.5, 5.5, "bust", 20.0)], clock, 1.0 / 60)
+	check(crash.suspicion == 2 and crash.alert, "un estruendo: en alerta directamente")
+	Sim.step_guard(g, none, [SoundEvent.make(g.x + 1, g.y, "sprint")], clock, 1.0 / 60)
+	clock += 1500.0
+	Sim.step_guard(g, none, [SoundEvent.make(g.x + 1, g.y, "sprint")], clock, 1.0 / 60)
+	check(g.alert and g.calm_in == INF, "en media, a la segunda alerta: alerta para siempre")
 
 	print("Museo generado: luces y aviso")
 	Sim.new_map(12345, "small")
@@ -198,14 +216,16 @@ func _init() -> void:
 	Sim.difficulty = "hard"
 	var hard_sees := Sim.can_see(seer, target)
 	var hard_lock: float = Heist.loot_for(1).seconds
-	# Sounds to put a guard on alert for good: easy 3, medium 2, hard 1.
+	# Times on alert before it is for good: easy 3, medium 2, hard 1.
 	var stays := {}
 	for d in ["easy", "medium", "hard"]:
 		Sim.difficulty = d
 		var ear := guard_at(5.5, 5.5)
 		var n := 0
 		while ear.calm_in != INF and n < 10:
+			# Each time from a hunch, so every sound puts it on alert.
 			ear.alert = false
+			ear.suspicion = 1
 			Sim.step_guard(ear, none, [SoundEvent.make(6.5, 5.5, "sprint")], clock + n * 20000.0, 1.0 / 60)
 			n += 1
 		stays[d] = n

@@ -22,15 +22,17 @@ const SHARPEN := 3.0
 ## A clue younger than this is too hot to walk away from.
 const HOT_CLUE_MS := 6000.0
 
+## Each plan and each way of holding the torch as the IA panel shows it:
+## keys into Text.
 const PLAN_LABEL := {
-	"chase": "Acudir al grito",
-	"cut_off": "Cortarle el paso",
-	"follow": "Seguir el rastro",
-	"search": "Registrar la pista",
-	"check_zone": "Revisar otra zona",
-	"cover": "Cubrir el otro lado",
-	"patrol": "Seguir la ronda",
-	"watch": "Vigilar el cruce",
+	"chase": "MIND_PLAN_CHASE",
+	"cut_off": "MIND_PLAN_CUT_OFF",
+	"follow": "MIND_PLAN_FOLLOW",
+	"search": "MIND_PLAN_SEARCH",
+	"check_zone": "MIND_PLAN_CHECK_ZONE",
+	"cover": "MIND_PLAN_COVER",
+	"patrol": "MIND_PLAN_PATROL",
+	"watch": "MIND_PLAN_WATCH",
 }
 const PLAN_WORDS := {
 	"chase": "answer a shout",
@@ -43,10 +45,15 @@ const PLAN_WORDS := {
 	"patrol": "walk the round",
 }
 const LOOK_LABEL := {
-	"sweep": "barre con la linterna",
-	"ahead": "linterna al frente",
-	"clue": "linterna hacia la pista",
+	"sweep": "MIND_LOOK_SWEEP",
+	"ahead": "MIND_LOOK_AHEAD",
+	"clue": "MIND_LOOK_CLUE",
 }
+
+
+## How a guard holds its torch, in words on screen.
+static func look_label(look: String) -> String:
+	return Text.t(LOOK_LABEL[look])
 
 
 ## What Laya reads and is asked for one guard right now:
@@ -64,6 +71,8 @@ static func _state(g: Guard, others: Array[Guard], now: float) -> Dictionary:
 	if g.alert:
 		mood = "You know for certain there is an intruder in the building." if g.calm_in == INF \
 			else "Something made you jumpy a moment ago; you are on edge."
+	elif g.suspicion == 1:
+		mood = "You noticed something odd just now; probably nothing, but you want a look."
 	state.me = "You are %s, a night attendant in a closed museum of long galleries, standing in %s. %s" % [g.name, Museum.zone_name(g.x, g.y), mood]
 
 	var m := g.memory
@@ -146,7 +155,7 @@ static func _menu(g: Guard, others: Array[Guard], now: float) -> Array[Decision.
 		opt.plan = plan
 		opt.target = target
 		opt.text = "%s (%s is already heading there)" % [text, busy.name] if busy else text
-		opt.label = PLAN_LABEL[plan]
+		opt.label = Text.t(PLAN_LABEL[plan])
 		out.append(opt)
 
 	if m:

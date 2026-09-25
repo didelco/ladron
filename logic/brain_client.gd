@@ -47,7 +47,7 @@ func ask(guards: Array[Guard], all_guards: Array[Guard], now: float) -> bool:
 		payload.append({"id": mind.id, "state": mind.state, "questions": mind.questions})
 	var err := _http.request(URL, ["Content-Type: application/json"], HTTPClient.METHOD_POST, JSON.stringify({"guards": payload}))
 	if err != OK:
-		_fail("no se pudo enviar (%d)" % err, now)
+		_fail(Text.t("BRAIN_SEND_FAILED") % err, now)
 		return false
 	busy = true
 	return true
@@ -57,14 +57,14 @@ func _on_completed(result: int, code: int, _headers: PackedStringArray, body: Pa
 	busy = false
 	var now := Sim.now_ms()
 	if result != HTTPRequest.RESULT_SUCCESS:
-		_fail("sin conexión con el cerebro" if result == HTTPRequest.RESULT_CANT_CONNECT else "error de red %d" % result, now)
+		_fail(Text.t("BRAIN_NO_CONNECTION") if result == HTTPRequest.RESULT_CANT_CONNECT else Text.t("BRAIN_NET_ERROR") % result, now)
 		return
 	if code != 200:
-		_fail("el cerebro respondió %d" % code, now)
+		_fail(Text.t("BRAIN_HTTP_CODE") % code, now)
 		return
 	var data = JSON.parse_string(body.get_string_from_utf8())
 	if typeof(data) != TYPE_DICTIONARY or not data.has("decisions"):
-		_fail("respuesta ilegible", now)
+		_fail(Text.t("BRAIN_UNREADABLE"), now)
 		return
 	var out := {}
 	for d in data.decisions:

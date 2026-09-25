@@ -40,16 +40,39 @@ const C := {
 	"wall_side": Color("#211d29"),
 	"wall_cap": Color("#6f6479"),
 	"ink": Color("#08070c"),
+	## the solid heart of a thick wall, read as filled in, not as roof
+	"core": Color("#15111d"),
 	"case_dark": Color("#232634"),
 	"glass": Color("#a8d8e8"),
 	"emergency": Color("#4ade80"),
 }
 
+## The styles a museum can be built in, so the nights do not all look alike:
+## the floor (floor.gdshader: pattern, two tones, joint, gloss) and the walls
+## (wall.gdshader: wallpaper, pattern, wainscot and dado; cap, trim, skirting).
+const THEMES := [
+	# A classical museum: marble, crimson damask over a wooden wainscot.
+	{"floor": 0, "stone": Color("#2a2530"), "stone2": Color("#3a3340"), "joint": Color("#4a4458"), "gloss": 0.22,
+		"paper": Color("#4a1826"), "paper2": Color("#5e2233"), "wallpaper": 1, "wainscot": Color("#3a2416"), "dado": 0.5,
+		"cap": Color("#7a6a5a"), "trim": Color("#9a7a3c"), "skirt": Color("#08070c")},
+	# A modern gallery: polished concrete, pale plaster, a black skirting.
+	{"floor": 1, "stone": Color("#34343c"), "stone2": Color("#3b3b44"), "joint": Color("#1c1c22"), "gloss": 0.3,
+		"paper": Color("#5c5955"), "paper2": Color("#5c5955"), "wallpaper": 0, "wainscot": Color("#5c5955"), "dado": 0.0,
+		"cap": Color("#56534f"), "trim": Color("#1c1c22"), "skirt": Color("#08070c")},
+	# An old natural-history museum: oak boards, green stripes, panelling.
+	{"floor": 2, "stone": Color("#3a2416"), "stone2": Color("#4d301c"), "joint": Color("#140c07"), "gloss": 0.4,
+		"paper": Color("#1c3326"), "paper2": Color("#23402f"), "wallpaper": 2, "wainscot": Color("#4a2e1a"), "dado": 0.55,
+		"cap": Color("#5a4a36"), "trim": Color("#9a7a3c"), "skirt": Color("#140c07")},
+]
+
 ## The wall tiles with a painting on them, so a lamp is not hung over one.
 var _hung := {}
+## this museum's style (THEMES), from its seed: the same night, the same look
+var theme: Dictionary = THEMES[0]
 
 
 func build() -> void:
+	theme = THEMES[posmod(Museum.seed_used, THEMES.size())]
 	_floor()
 	_walls()
 	_exhibits()
@@ -68,6 +91,34 @@ static func toon(colour: Color) -> StandardMaterial3D:
 	m.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
 	m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 	return m
+
+
+## A piece modelled in Blender (art/<name>.blend, exported to
+## assets/models/<name>.glb), in the same toon shading as the rest: each
+## material keeps its colour, texture, glow and transparency. What is see-through
+## casts no shadow.
+static func asset(name: String) -> Node3D:
+	var scene: PackedScene = load("res://assets/models/%s.glb" % name)
+	var node: Node3D = scene.instantiate()
+	for mi: MeshInstance3D in node.find_children("*", "MeshInstance3D", true, false):
+		for s in mi.mesh.get_surface_count():
+			var src := mi.get_active_material(s) as BaseMaterial3D
+			if src == null:
+				continue
+			if not _asset_mats.has(src):
+				var m := src.duplicate() as BaseMaterial3D
+				m.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
+				m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+				m.metallic = 0.0
+				m.roughness = 1.0
+				_asset_mats[src] = m
+			mi.set_surface_override_material(s, _asset_mats[src])
+			if src.transparency != BaseMaterial3D.TRANSPARENCY_DISABLED:
+				mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return node
+
+
+static var _asset_mats := {}
 
 
 # --- Floor -------------------------------------------------------------------
@@ -98,6 +149,11 @@ func _floor() -> void:
 	m.set_shader_parameter("plan", ImageTexture.create_from_image(img))
 	m.set_shader_parameter("veins", veins)
 	m.set_shader_parameter("size", Vector2(w, h))
+	m.set_shader_parameter("pattern", theme.floor)
+	for k in ["stone", "stone2", "joint"]:
+		var c: Color = theme[k]
+		m.set_shader_parameter(k, Vector3(c.r, c.g, c.b))
+	m.set_shader_parameter("gloss_roughness", theme.gloss)
 	var plane := PlaneMesh.new()
 	plane.size = Vector2(w, h)
 	var node := MeshInstance3D.new()
@@ -125,14 +181,49 @@ func _walls() -> void:
 					edge = true
 			(outer if edge else inner).append(Vector2i(x, y))
 	for set_and_h in [[inner, WALL_HEIGHT], [outer, OUTER_HEIGHT]]:
-		var cells: Array[Vector2i] = set_and_h[0]
+		var all: Array[Vector2i] = set_and_h[0]
 		var wh: float = set_and_h[1]
-		_instances(_box(Vector3(1, wh, 1)), cells, wh / 2, toon(C.wall_side), 0.22)
-		_instances(_box(Vector3(1.04, CAP_H, 1.04)), cells, wh + CAP_H / 2, toon(C.wall_cap), 0.14, true)
-		_instances(_box(Vector3(1.02, TRIM_H, 1.02)), cells, wh - TRIM_H * 1.5, toon(C.gold_dim))
-		_instances(_box(Vector3(1.03, SKIRT_H, 1.03)), cells, SKIRT_H / 2, toon(C.ink))
-		# A dado rail at waist height: the line every gallery wall has.
-		_instances(_box(Vector3(1.015, 0.035, 1.015)), cells, 0.5, toon(C.gold_dim))
+		# A thick mass of wall: only its rim is dressed as a wall; the core,
+		# the cells with no floor round them, is solid dark, like the filled-in
+		# walls of a plan — not a broad slab of lit roof.
+		var cells: Array[Vector2i] = []
+		var core: Array[Vector2i] = []
+		for t in all:
+			(core if _is_core(t) else cells).append(t)
+		_instances(_box(Vector3(1, wh, 1)), core, wh / 2, toon(C.core))
+		_instances(_box(Vector3(1, wh, 1)), cells, wh / 2, _wall_face(), 0.16)
+		_instances(_box(Vector3(1.04, CAP_H, 1.04)), cells, wh + CAP_H / 2, toon(theme.cap), 0.14, true)
+		_instances(_box(Vector3(1.02, TRIM_H, 1.02)), cells, wh - TRIM_H * 1.5, toon(theme.trim))
+		_instances(_box(Vector3(1.03, SKIRT_H, 1.03)), cells, SKIRT_H / 2, toon(theme.skirt))
+		# A dado rail over the wainscot, where the style has one.
+		if theme.dado > 0:
+			_instances(_box(Vector3(1.015, 0.035, 1.015)), cells, theme.dado, toon(theme.trim))
+
+
+## The wall faces in this museum's style: wallpaper over a wainscot
+## (wall.gdshader), each block's shade from its instance colour.
+func _wall_face() -> ShaderMaterial:
+	var m := ShaderMaterial.new()
+	m.shader = preload("res://scenes/wall.gdshader")
+	for k in ["paper", "paper2", "wainscot"]:
+		var c: Color = theme[k]
+		m.set_shader_parameter(k, Vector3(c.r, c.g, c.b))
+	m.set_shader_parameter("pattern", theme.wallpaper)
+	m.set_shader_parameter("dado", theme.dado)
+	return m
+
+
+## Deep inside a wall mass: no floor or case in any of the eight cells round it.
+func _is_core(t: Vector2i) -> bool:
+	for dy in range(-1, 2):
+		for dx in range(-1, 2):
+			var x := t.x + dx
+			var y := t.y + dy
+			if x < 0 or y < 0 or x >= Museum.w or y >= Museum.h:
+				continue
+			if Museum.grid[y * Museum.w + x] != Tiles.WALL:
+				return false
+	return true
 
 
 func _cap_shade(t: Vector2i) -> float:
@@ -147,8 +238,9 @@ func _cap_shade(t: Vector2i) -> float:
 # --- The collection ------------------------------------------------------------
 
 ## What stands on each piece of cover: a glass case of butterflies, minerals or
-## a fossil, a skull or a statue on a plinth, a fern diorama — and one bear,
-## in the roomiest gallery. Which piece a tile gets comes from a hash of its
+## a fossil, a skull or a statue on a plinth, a fern diorama — and one bear
+## standing up (a bronze), in the roomiest gallery. The big pieces (a dinosaur, sarcophagi) stand on
+## blocks of cover of their own. Which piece a tile gets comes from a hash of its
 ## coordinates, so a gallery looks the same every time. All waist-high: the
 ## rules hide someone on all fours behind any of them. The job's own case is
 ## an empty vitrine: the piece itself is drawn by the game, glowing.
@@ -166,8 +258,12 @@ func _exhibits() -> void:
 		if room > best_room:
 			best_room = room
 			bear = t
+	for b in Museum.big_pieces:
+		_big_piece(b.kind, b.rect)
 	var i := 0
 	for t in Museum.cover_tiles:
+		if not Museum.big_piece_at(t).is_empty():
+			continue
 		var piece := Node3D.new()
 		piece.position = to_world(t.x + 0.5, t.y + 0.5)
 		add_child(piece)
@@ -179,7 +275,7 @@ func _exhibits() -> void:
 		elif t == bear:
 			var p := _pivot(piece, Vector3.ZERO, yaw)
 			_plinth(p, 0.3, 0.98)
-			_specimen(p, "res://assets/models/bear.glb", 0.3, 0.62, 0.92, C.bone)
+			_pivot(p, Vector3(0, 0.3, 0)).add_child(asset("oso"))
 		elif kind == 0:
 			_vitrine(piece, _butterflies(t.x + t.y))
 		elif kind == 1:
@@ -192,24 +288,36 @@ func _exhibits() -> void:
 			_specimen(p, "res://assets/models/statue-%s.glb" % ("a" if i % 2 == 0 else "b"), 0.5, 0.88, 0.8, C.bone_dark)
 		elif kind == 4:
 			_plinth(piece, CASE_HEIGHT - 0.16, 0.64)
-			_skull(piece, yaw)
+			_skull(piece, yaw, i % 2 == 1)
 		elif kind == 5:
 			_diorama(piece, t.x + t.y)
-		elif kind == 6:
+		elif kind == 6 or kind == 8:
+			# 8 was the suit of armour: it stands about the galleries now, a
+			# prop that goes over and falls to pieces (Props, PropsView).
 			var p := _pivot(piece, Vector3.ZERO, yaw)
 			_plinth(p, 0.42, 0.6)
-			_amphora(p, 0.42, t.x * 7 + t.y)
+			_amphora(p, 0.42)
 		elif kind == 7:
 			_globe(_pivot(piece, Vector3.ZERO, yaw))
-		elif kind == 8:
-			_armour(_pivot(piece, Vector3.ZERO, round(yaw / (PI / 2)) * PI / 2))
 		elif kind == 9:
-			_totem(_pivot(piece, Vector3.ZERO, round(yaw / (PI / 2)) * PI / 2), t.x + t.y * 3)
+			_totem(_pivot(piece, Vector3.ZERO, round(yaw / (PI / 2)) * PI / 2))
 		elif kind == 10:
-			_dinosaur(_pivot(piece, Vector3.ZERO, yaw))
+			_vitrine(piece, _minerals(t.x * 3 + t.y))
 		else:
-			_vitrine(piece, _sarcophagus())
+			_vitrine(piece, _rock() if i % 2 == 0 else _ammonite())
 		i += 1
+
+
+## A piece standing on a block of tiles (Museum.big_pieces): the dinosaur on
+## its 3x2 platform, the sarcophagus on its 3x1 bier. The models lie along
+## their length (the dinosaur along x, the sarcophagus along z); either end
+## may face either way.
+func _big_piece(kind: String, r: Rect2i) -> void:
+	var along_x := r.size.x > r.size.y
+	var flip := PI if _hash01(r.position.x, r.position.y, 17) < 0.5 else 0.0
+	var yaw := (0.0 if along_x else PI / 2) if kind == "dinosaur" else (PI / 2 if along_x else 0.0)
+	var at := to_world(r.position.x + r.size.x / 2.0, r.position.y + r.size.y / 2.0)
+	_pivot(self, at, yaw + flip).add_child(asset("dinosaurio" if kind == "dinosaur" else "sarcofago"))
 
 
 ## The slab under every exhibit: there is always something visible where the
@@ -225,36 +333,13 @@ func _plinth(parent: Node3D, h: float, w: float) -> void:
 	_mesh(parent, _box(Vector3(0.18, 0.06, 0.01)), C.bone, Vector3(0, h * 0.6, w / 2 + 0.006))
 
 
-## Glass case on a dark base, with brass posts and rim and a label, and
-## whatever it holds sitting on the base.
+## The glass case (one model for all of them, art/vitrina.blend), and
+## whatever it holds sitting on its deck.
 func _vitrine(parent: Node3D, contents: Node3D) -> void:
-	_mesh(parent, _box(Vector3(0.86, 0.4, 0.86)), C.case_dark, Vector3(0, 0.2, 0))
-	_mesh(parent, _box(Vector3(0.2, 0.08, 0.01)), C.bone, Vector3(0, 0.24, 0.434))
+	parent.add_child(asset("vitrina"))
 	if contents:
 		contents.position = Vector3(0, 0.42, 0)
 		parent.add_child(contents)
-	for sx in [-1, 1]:
-		for sz in [-1, 1]:
-			_mesh(parent, _box(Vector3(0.035, 0.43, 0.035)), C.gold_dim, Vector3(sx * 0.39, 0.615, sz * 0.39))
-	for side in [Vector3(0, 0, 0.39), Vector3(0, 0, -0.39)]:
-		_mesh(parent, _box(Vector3(0.815, 0.03, 0.035)), C.gold, Vector3(0, CASE_HEIGHT, 0) + side)
-	for side in [Vector3(0.39, 0, 0), Vector3(-0.39, 0, 0)]:
-		_mesh(parent, _box(Vector3(0.035, 0.03, 0.815)), C.gold, Vector3(0, CASE_HEIGHT, 0) + side)
-	# A strip of warm light under the rim, for the piece to glow in.
-	var lamp := _mesh(parent, _box(Vector3(0.7, 0.015, 0.05)), Color("#ffe8b0"), Vector3(0, CASE_HEIGHT - 0.03, -0.35), true)
-	var lm := toon(Color("#ffe8b0"))
-	lm.emission_enabled = true
-	lm.emission = Color("#ffd98a")
-	lm.emission_energy_multiplier = 1.5
-	lamp.material_override = lm
-	var glass := MeshInstance3D.new()
-	glass.mesh = _box(Vector3(0.78, 0.42, 0.78))
-	var gm := toon(Color(C.glass, 0.28))
-	gm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	glass.material_override = gm
-	glass.position = Vector3(0, 0.61, 0)
-	glass.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	parent.add_child(glass)
 
 
 ## Pinned butterflies: little bright wings on a card.
@@ -288,44 +373,20 @@ func _minerals(seed: int) -> Node3D:
 	return g
 
 
-## An ammonite: a coiled fossil lying flat.
+## An ammonite on its little stand (art/amonite.blend).
 func _ammonite() -> Node3D:
-	var g := Node3D.new()
-	for ring in [[0.16, 0.07, C.bone_dark], [0.09, 0.05, C.bone], [0.035, 0.03, C.bone_dark]]:
-		var t := TorusMesh.new()
-		t.inner_radius = ring[0] - ring[1]
-		t.outer_radius = ring[0] + ring[1]
-		_mesh(g, t, ring[2], Vector3(0, 0.07, 0))
-	return g
+	return asset("amonite")
 
 
-## A lump of meteorite: dark, faceted, pitted.
+## A lump of meteorite on a black stand (art/meteorito.blend).
 func _rock() -> Node3D:
-	var g := Node3D.new()
-	var s := SphereMesh.new()
-	s.radius = 0.17
-	s.height = 0.26
-	s.radial_segments = 7
-	s.rings = 4
-	_mesh(g, s, C.stone, Vector3(0, 0.12, 0))
-	return g
+	return asset("meteorito")
 
 
-## A mounted skull, facing the gallery: the eye sockets read from above.
-func _skull(parent: Node3D, yaw: float) -> void:
-	var g := _pivot(parent, Vector3(0, CASE_HEIGHT - 0.06, 0), yaw)
-	var cranium := SphereMesh.new()
-	cranium.radius = 0.15
-	cranium.height = 0.26
-	_mesh(g, cranium, C.bone, Vector3(0, 0.12, 0))
-	_mesh(g, _box(Vector3(0.16, 0.1, 0.16)), C.bone, Vector3(0, 0.06, 0.13))
-	for dx in [-0.06, 0.06]:
-		var eye := SphereMesh.new()
-		eye.radius = 0.035
-		eye.height = 0.07
-		_mesh(g, eye, C.ink, Vector3(dx, 0.14, 0.12), true)
-	# Teeth: a pale row along the jaw.
-	_mesh(g, _box(Vector3(0.12, 0.025, 0.02)), Color.WHITE, Vector3(0, 0.02, 0.21), true)
+## A mounted skull, facing the gallery (art/craneo.blend), or a toy one: a
+## minifigure's head with a skull printed on it (art/craneo_lego.blend).
+func _skull(parent: Node3D, yaw: float, toy := false) -> void:
+	_pivot(parent, Vector3(0, CASE_HEIGHT - 0.06, 0), yaw).add_child(asset("craneo_lego" if toy else "craneo"))
 
 
 ## A habitat diorama: ferns and a stone in a planter, no glass.
@@ -351,193 +412,19 @@ func _diorama(parent: Node3D, seed: int) -> void:
 	_mesh(parent, s, C.stone, Vector3(0.2, 0.46, -0.15))
 
 
-## A Greek amphora: a turned body, neck and lip, two handles and a painted
-## band of black figures round its belly.
-func _amphora(parent: Node3D, on: float, seed: int) -> void:
-	var clay := Color("#c8733c")
-	var black := Color("#241a14")
-	var body := SphereMesh.new()
-	body.radius = 0.17
-	body.height = 0.36
-	_mesh(parent, body, clay, Vector3(0, on + 0.2, 0))
-	var band := CylinderMesh.new()
-	band.top_radius = 0.172
-	band.bottom_radius = 0.172
-	band.height = 0.07
-	_mesh(parent, band, black, Vector3(0, on + 0.22, 0))
-	for k in 5:
-		var a := k * TAU / 5 + _hash01(seed, k) * 0.3
-		_mesh(parent, _box(Vector3(0.03, 0.05, 0.01)), clay.lightened(0.2), Vector3(cos(a) * 0.175, on + 0.22, sin(a) * 0.175), true).rotation.y = -a + PI / 2
-	var neck := CylinderMesh.new()
-	neck.top_radius = 0.07
-	neck.bottom_radius = 0.06
-	neck.height = 0.12
-	_mesh(parent, neck, clay, Vector3(0, on + 0.42, 0))
-	var lip := TorusMesh.new()
-	lip.inner_radius = 0.05
-	lip.outer_radius = 0.085
-	_mesh(parent, lip, black, Vector3(0, on + 0.48, 0))
-	var foot := CylinderMesh.new()
-	foot.top_radius = 0.06
-	foot.bottom_radius = 0.1
-	foot.height = 0.05
-	_mesh(parent, foot, black, Vector3(0, on + 0.025, 0))
-	for side in [-1, 1]:
-		var handle := TorusMesh.new()
-		handle.inner_radius = 0.045
-		handle.outer_radius = 0.065
-		var h := _mesh(parent, handle, clay, Vector3(side * 0.12, on + 0.38, 0))
-		h.rotation.x = PI / 2
+## A Greek amphora with a band of figures round its belly (art/anfora.blend).
+func _amphora(parent: Node3D, on: float) -> void:
+	_pivot(parent, Vector3(0, on, 0)).add_child(asset("anfora"))
 
 
-## A globe on a wooden stand in a brass meridian: blue seas, green lands.
+## A globe on a wooden stand in a brass meridian (art/globo.blend).
 func _globe(parent: Node3D) -> void:
-	var wood := Color("#6b4a2e")
-	for k in 3:
-		var a := k * TAU / 3
-		var leg := _mesh(parent, _box(Vector3(0.05, 0.45, 0.05)), wood, Vector3(cos(a) * 0.18, 0.22, sin(a) * 0.18))
-		leg.rotation = Vector3(sin(a) * 0.25, 0, -cos(a) * 0.25)
-	var ring := TorusMesh.new()
-	ring.inner_radius = 0.3
-	ring.outer_radius = 0.34
-	_mesh(parent, ring, wood, Vector3(0, 0.45, 0))
-	var sea := SphereMesh.new()
-	sea.radius = 0.28
-	sea.height = 0.56
-	_mesh(parent, sea, Color("#2f6f9f"), Vector3(0, 0.72, 0))
-	for k in 6:
-		var a := _hash01(k, 3) * TAU
-		var b := (_hash01(k, 5) - 0.5) * 1.8
-		var land := SphereMesh.new()
-		land.radius = 0.09 + _hash01(k, 7) * 0.06
-		land.height = land.radius * 0.8
-		var at := Vector3(cos(a) * cos(b), sin(b), sin(a) * cos(b)) * 0.25
-		var m := _mesh(parent, land, Color("#5aa050"), Vector3(0, 0.72, 0) + at, true)
-		m.basis = Basis.looking_at(at.normalized(), Vector3.UP if absf(b) < 1.2 else Vector3.RIGHT)
-	var meridian := TorusMesh.new()
-	meridian.inner_radius = 0.31
-	meridian.outer_radius = 0.33
-	var mer := _mesh(parent, meridian, C.gold, Vector3(0, 0.72, 0), true)
-	mer.rotation = Vector3(PI / 2, 0, 0.4)
+	parent.add_child(asset("globo"))
 
 
-## A suit of armour on a low stand, visor down, holding a lance.
-func _armour(parent: Node3D) -> void:
-	var steel := Color("#a9b2c3")
-	var dark := Color("#5c6370")
-	_mesh(parent, _box(Vector3(0.6, 0.08, 0.5)), C.case_dark, Vector3(0, 0.04, 0))
-	for side in [-1, 1]:
-		_mesh(parent, _box(Vector3(0.1, 0.36, 0.12)), steel, Vector3(side * 0.08, 0.26, 0))
-		_mesh(parent, _box(Vector3(0.12, 0.05, 0.18)), dark, Vector3(side * 0.08, 0.1, 0.03))
-		var shoulder := SphereMesh.new()
-		shoulder.radius = 0.08
-		shoulder.height = 0.12
-		_mesh(parent, shoulder, steel, Vector3(side * 0.17, 0.78, 0))
-		_mesh(parent, _box(Vector3(0.07, 0.3, 0.08)), steel, Vector3(side * 0.2, 0.6, 0.02))
-	_mesh(parent, _box(Vector3(0.28, 0.14, 0.18)), dark, Vector3(0, 0.49, 0))
-	_mesh(parent, _box(Vector3(0.3, 0.26, 0.2)), steel, Vector3(0, 0.68, 0))
-	_mesh(parent, _box(Vector3(0.04, 0.2, 0.01)), dark, Vector3(0, 0.68, 0.1), true)
-	var helm := CylinderMesh.new()
-	helm.top_radius = 0.09
-	helm.bottom_radius = 0.1
-	helm.height = 0.18
-	_mesh(parent, helm, steel, Vector3(0, 0.92, 0))
-	_mesh(parent, _box(Vector3(0.14, 0.015, 0.01)), C.ink, Vector3(0, 0.94, 0.1), true)
-	var plume := SphereMesh.new()
-	plume.radius = 0.05
-	plume.height = 0.14
-	_mesh(parent, plume, C.crimson, Vector3(0, 1.05, -0.03))
-	var lance := _mesh(parent, _box(Vector3(0.03, 1.1, 0.03)), Color("#6b4a2e"), Vector3(0.28, 0.6, 0.05))
-	lance.rotation.z = -0.08
-	var tip := CylinderMesh.new()
-	tip.top_radius = 0.0
-	tip.bottom_radius = 0.04
-	tip.height = 0.12
-	_mesh(parent, tip, steel, Vector3(0.325, 1.2, 0.05))
-
-
-## A totem pole: stacked painted heads, eyes and beaks, wings at the top.
-func _totem(parent: Node3D, seed: int) -> void:
-	var paints := [Color("#b5462f"), Color("#2f6f9f"), Color("#3d7a4a"), Color("#d9a441")]
-	var wood := Color("#7a5234")
-	var y := 0.0
-	for k in 3:
-		var h := 0.3
-		var drum := CylinderMesh.new()
-		drum.top_radius = 0.15
-		drum.bottom_radius = 0.16
-		drum.height = h
-		drum.radial_segments = 10
-		_mesh(parent, drum, wood, Vector3(0, y + h / 2, 0))
-		var paint: Color = paints[int(_hash01(seed, k) * 4) % 4]
-		for side in [-1, 1]:
-			var eye := SphereMesh.new()
-			eye.radius = 0.04
-			eye.height = 0.05
-			_mesh(parent, eye, Color.WHITE, Vector3(side * 0.06, y + h * 0.65, 0.14), true)
-			_mesh(parent, _box(Vector3(0.025, 0.025, 0.02)), C.ink, Vector3(side * 0.06, y + h * 0.65, 0.17), true)
-			_mesh(parent, _box(Vector3(0.07, 0.02, 0.02)), paint, Vector3(side * 0.06, y + h * 0.85, 0.15), true)
-		var beak := CylinderMesh.new()
-		beak.top_radius = 0.0
-		beak.bottom_radius = 0.04
-		beak.height = 0.1 if k % 2 == 0 else 0.05
-		var b := _mesh(parent, beak, paint, Vector3(0, y + h * 0.4, 0.18))
-		b.rotation.x = PI / 2
-		y += h
-	for side in [-1, 1]:
-		var wing := _mesh(parent, _box(Vector3(0.3, 0.1, 0.04)), paints[0], Vector3(side * 0.24, y - 0.08, 0))
-		wing.rotation.z = side * 0.35
-
-
-## A little dinosaur skeleton on a low platform: skull, spine, ribs, tail.
-func _dinosaur(parent: Node3D) -> void:
-	_mesh(parent, _box(Vector3(0.86, 0.1, 0.5)), C.case_dark, Vector3(0, 0.05, 0))
-	for side in [-1, 1]:
-		for leg in [-0.18, 0.14]:
-			_mesh(parent, _box(Vector3(0.03, 0.34, 0.03)), C.bone_dark, Vector3(leg, 0.27, side * 0.07))
-	# Spine: a curve of vertebrae from the tail tip to the neck.
-	var n := 14
-	for i in n:
-		var t := float(i) / (n - 1)
-		var x := lerpf(-0.42, 0.3, t)
-		var y := 0.45 + sin(t * PI) * 0.12 + (0.15 * t * t if t > 0.8 else 0.0)
-		var v := SphereMesh.new()
-		v.radius = 0.028 + sin(t * PI) * 0.02
-		v.height = v.radius * 2.0
-		_mesh(parent, v, C.bone, Vector3(x, y, 0))
-		if t > 0.3 and t < 0.75:
-			var rib := TorusMesh.new()
-			rib.inner_radius = 0.07
-			rib.outer_radius = 0.085
-			var r := _mesh(parent, rib, C.bone, Vector3(x, y - 0.07, 0), true)
-			r.rotation.z = PI / 2
-	var skull := _mesh(parent, _box(Vector3(0.16, 0.08, 0.08)), C.bone, Vector3(0.38, 0.66, 0))
-	skull.rotation.z = -0.3
-	_mesh(parent, _box(Vector3(0.1, 0.02, 0.06)), C.bone_dark, Vector3(0.4, 0.61, 0), true).rotation.z = -0.3
-	var eye := SphereMesh.new()
-	eye.radius = 0.018
-	eye.height = 0.03
-	_mesh(parent, eye, C.ink, Vector3(0.36, 0.68, 0.042), true)
-
-
-## A mummy's case lying in a vitrine: gold, a painted face, blue stripes.
-func _sarcophagus() -> Node3D:
-	var g := Node3D.new()
-	var gold := Color("#d9a441")
-	var body := CapsuleMesh.new()
-	body.radius = 0.13
-	body.height = 0.62
-	var b := _mesh(g, body, gold, Vector3(0, 0.1, 0))
-	b.rotation.x = PI / 2
-	b.scale = Vector3(1, 1, 0.6)
-	for k in 4:
-		var stripe := _mesh(g, _box(Vector3(0.24, 0.02, 0.025)), Color("#2f4f9f"), Vector3(0, 0.17, -0.12 + k * 0.08), true)
-		stripe.rotation.x = 0
-	_mesh(g, _box(Vector3(0.14, 0.02, 0.12)), Color("#e0b07a"), Vector3(0, 0.18, 0.2), true)
-	for side in [-1, 1]:
-		_mesh(g, _box(Vector3(0.03, 0.01, 0.015)), C.ink, Vector3(side * 0.035, 0.19, 0.22), true)
-	_mesh(g, _box(Vector3(0.2, 0.03, 0.05)), Color("#2f4f9f"), Vector3(0, 0.17, 0.27), true)
-	return g
+## A totem pole: stacked painted faces, a bird on top (art/totem.blend).
+func _totem(parent: Node3D) -> void:
+	parent.add_child(asset("totem"))
 
 
 ## A downloaded model, fitted to a height and a footprint and sat on its
@@ -632,7 +519,16 @@ static func _canvas(seed: int) -> ImageTexture:
 	var h := 36
 	var img := Image.create(w, h, false, Image.FORMAT_RGB8)
 	var r := func(k: int) -> float: return _hash01(seed, k, 71)
-	var kind := int(r.call(1) * 3)
+	var kind := int(r.call(1) * 6)
+	if kind == 3:
+		_pipe(img, r)
+		return ImageTexture.create_from_image(img)
+	if kind == 4:
+		_banana(img, r)
+		return ImageTexture.create_from_image(img)
+	if kind == 5:
+		_ice_cream(img, r)
+		return ImageTexture.create_from_image(img)
 	if kind == 0:
 		# Landscape: sky, a moon or low sun, hills in three planes.
 		var dusk: bool = r.call(2) > 0.5
@@ -673,6 +569,75 @@ static func _canvas(seed: int) -> ImageTexture:
 			else:
 				img.fill_rect(Rect2i(0, clampi(at * h / w, 0, h - 2), w, 2), Color("#141018"))
 	return ImageTexture.create_from_image(img)
+
+
+## "This is not a pipe": a brown pipe on cream, and a line of writing under it.
+static func _pipe(img: Image, r: Callable) -> void:
+	img.fill(Color("#e8dcc0"))
+	var wood := Color("#6b3a1e")
+	var dark := Color("#3a1e0e")
+	# The bowl, the shank and the stem, curving down to the mouthpiece.
+	img.fill_rect(Rect2i(30, 8, 9, 12), wood)
+	img.fill_rect(Rect2i(29, 9, 1, 10), dark)
+	img.fill_rect(Rect2i(31, 8, 7, 2), dark)
+	img.fill_rect(Rect2i(32, 18, 6, 3), wood)
+	for x in range(9, 31):
+		var y := 17 + int(2.0 * sin((x - 9) / 22.0 * PI))
+		img.fill_rect(Rect2i(x, y, 1, 3), wood)
+		img.set_pixel(x, y + 2, dark)
+	img.fill_rect(Rect2i(6, 16, 4, 2), Color("#1a1210"))
+	img.fill_rect(Rect2i(33, 11, 2, 5), Color("#8a5a32"))
+	# The caption, in a copperplate of dots.
+	var x := 10
+	while x < 38:
+		var word := 2 + int(r.call(80 + x) * 4)
+		img.fill_rect(Rect2i(x, 28, word, 1), Color("#2a1e14"))
+		img.set_pixel(x, 27, Color("#2a1e14"))
+		x += word + 2
+
+
+## A pop-art banana: yellow, curved, on white, with its brown tips.
+static func _banana(img: Image, r: Callable) -> void:
+	img.fill(Color("#f7f3ea") if r.call(3) > 0.3 else Color("#ff9ec7"))
+	var yellow := Color("#ffd23f")
+	var shade := Color("#e0a800")
+	for i in 60:
+		var t := i / 59.0
+		var a := lerpf(PI * 1.15, PI * 1.85, t)
+		var cx := 24.0 + cos(a) * 18.0
+		var cy := 6.0 - sin(a) * 18.0
+		var thick := 2.0 + sin(t * PI) * 3.5
+		for k in int(thick * 2):
+			var y := int(cy - thick + k)
+			img.set_pixel(clampi(int(cx), 0, 47), clampi(y, 0, 35), shade if k < 2 else yellow)
+		img.set_pixel(clampi(int(cx), 0, 47), clampi(int(cy + thick), 0, 35), Color("#1a1a1a"))
+	img.fill_rect(Rect2i(4, 12, 3, 3), Color("#5a3a1a"))
+	img.fill_rect(Rect2i(41, 12, 3, 2), Color("#5a3a1a"))
+	img.fill_rect(Rect2i(34, 31, 10, 1), Color("#1a1a1a"))
+
+
+## An ice cream: a crosshatched cone, three scoops and a cherry.
+static func _ice_cream(img: Image, r: Callable) -> void:
+	img.fill(Color("#a8e0f0") if r.call(4) > 0.5 else Color("#ffd6e8"))
+	var cone := Color("#d9954a")
+	for y in range(18, 34):
+		var half := int((34 - y) * 0.45)
+		img.fill_rect(Rect2i(24 - half, y, half * 2 + 1, 1), cone)
+		for x in range(24 - half, 25 + half):
+			if (x + y) % 4 == 0 or (x - y) % 4 == 0:
+				img.set_pixel(x, y, Color("#a8662a"))
+	var scoops := [Color("#ff8ab5"), Color("#8fe0b0"), Color("#6b3a2a")]
+	var at := [Vector2i(19, 16), Vector2i(29, 16), Vector2i(24, 10)]
+	for k in 3:
+		for dy in range(-6, 7):
+			for dx in range(-6, 7):
+				if dx * dx + dy * dy <= 30:
+					img.set_pixel(at[k].x + dx, at[k].y + dy, (scoops[k] as Color).lightened(0.25) if dx < -2 and dy < -2 else scoops[k])
+	for dy in range(-2, 3):
+		for dx in range(-2, 3):
+			if dx * dx + dy * dy <= 4:
+				img.set_pixel(24 + dx, 3 + dy, Color("#d62839"))
+	img.fill_rect(Rect2i(25, 0, 1, 2), Color("#3a6a2a"))
 
 
 # --- Emergency lights ------------------------------------------------------------
@@ -769,14 +734,14 @@ static func _box(size: Vector3) -> BoxMesh:
 ## One instanced mesh over a set of tiles. tint gives each its own shade of
 ## the colour, so a run of wall reads as panels; cap darkens the middle of
 ## big wall masses.
-func _instances(mesh: Mesh, tiles: Array[Vector2i], height: float, mat: StandardMaterial3D, tint := 0.0, cap := false, offset := Vector3.ZERO) -> void:
+func _instances(mesh: Mesh, tiles: Array[Vector2i], height: float, mat: Material, tint := 0.0, cap := false, offset := Vector3.ZERO) -> void:
 	var mm := MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
 	mm.use_colors = tint > 0 or cap
 	mm.mesh = mesh
 	mm.instance_count = tiles.size()
-	if mm.use_colors:
-		mat.vertex_color_use_as_albedo = true
+	if mm.use_colors and mat is StandardMaterial3D:
+		(mat as StandardMaterial3D).vertex_color_use_as_albedo = true
 	for i in tiles.size():
 		var t := tiles[i]
 		mm.set_instance_transform(i, Transform3D(Basis(), to_world(t.x + 0.5, t.y + 0.5, height) + offset))

@@ -1,0 +1,399 @@
+keys,es
+MENU_TITLE,"¡APAGA LA LUZ
+QUE TE PILLO!"
+MENU_STORY,HISTORIA
+MENU_STORY_TEXT,Veinte noches de aventura
+MENU_GENERATIVE,GENERATIVO
+MENU_GENERATIVE_TEXT,Un museo nuevo cada vez
+MENU_SETTINGS,SETTINGS
+MENU_QUIT,SALIR
+MENU_BACK,< VOLVER
+MENU_PREV,< ATRÁS
+MENU_NEXT,SIGUIENTE >
+MENU_SKIP,SALTAR ▶▶ (TAB)
+MENU_PREVIOUS,< ANTERIOR
+MENU_STORY_TITLE,MODO HISTORIA
+MENU_STORY_TAGLINE,La Banda del Calcetín contra el Barón Von Bostezo
+MENU_NIGHT_PIECE,NOCHE %d · %s
+MENU_PLAYERS_1,1 LADRÓN
+MENU_PLAYERS_1_TEXT,Tú solo contra el museo
+MENU_PLAYERS_2,2 LADRONES
+MENU_PLAYERS_2_TEXT,"Uno sujeta la alarma, otro abre"
+MENU_PLAYERS_3,3 LADRONES
+MENU_PLAYERS_3_TEXT,Alarma y dos cerraduras
+MENU_GENERATIVE_TITLE,MODO GENERATIVO
+MENU_DIFFICULTY_EASY,FÁCIL
+MENU_DIFFICULTY_MEDIUM,MEDIA
+MENU_DIFFICULTY_HARD,DIFÍCIL
+MENU_SIZE_SMALL,CHICO
+MENU_SIZE_MEDIUM,MEDIANO
+MENU_SIZE_LARGE,GRANDE
+MENU_PLAY_1,▶ 1 LADRÓN
+MENU_PLAY_2,▶ 2 LADRONES
+MENU_PLAY_3,▶ 3 LADRONES
+MENU_PAUSE,PAUSA
+MENU_RESUME,▶ SEGUIR
+MENU_TO_MENU,< MENÚ
+JOIN_TITLE,¿QUIÉN JUEGA?
+JOIN_PLAYER,JUGADOR %d
+JOIN_PRESS,Pulsa un botón
+JOIN_HOW,"Cada uno pulsa un botón de su mando, o una tecla de su parte del teclado (WASD, IJKL, flechas o teclado numérico)"
+JOIN_READY,¡LISTOS!
+JOIN_UNDO,Esc o B: quitar al último · volver
+SEAT_KB_LEFT,Teclado · WASD
+SEAT_KB_RIGHT,Teclado · flechas
+SEAT_KB_MID,Teclado · IJKL
+SEAT_ANY,Teclado y mandos
+SEAT_PAD,Mando %d · %s
+SETTINGS_TITLE,SETTINGS
+SETTINGS_SOUND_TITLE,SONIDO
+SETTINGS_SCREEN_TITLE,PANTALLA
+SETTINGS_PADS_TITLE,CONTROLES
+SETTINGS_SOUND_PAGE,SONIDO >
+SETTINGS_SCREEN_PAGE,PANTALLA >
+SETTINGS_PADS_PAGE,CONTROLES >
+SETTINGS_ASSETS_PAGE,ASSETS >
+SETTINGS_YES,SÍ
+SETTINGS_NO,NO
+SETTINGS_SOUND,SONIDO: %s  (N)
+SETTINGS_MUSIC,MÚSICA: %s
+SETTINGS_MUSIC_VOLUME,VOL. MÚSICA %s
+SETTINGS_EFFECTS_VOLUME,VOL. EFECTOS %s
+SETTINGS_FULLSCREEN,PANTALLA COMPLETA: %s
+SETTINGS_VSYNC,V-SYNC: %s
+SETTINGS_WINDOW,VENTANA: %d×%d
+SETTINGS_WINDOW_AUTO,VENTANA: AUTO %d×%d
+SETTINGS_UI_SCALE,TAMAÑO INTERFAZ: %d%%
+SETTINGS_IA,PANEL IA: %s
+SETTINGS_RUMBLE,VIBRACIÓN: %s
+SETTINGS_RUMBLE_STRENGTH,FUERZA %s
+SETTINGS_DEADZONE,ZONA MUERTA STICK: %d%%
+SETTINGS_SOUND_HELP,← y → para bajar y subir el volumen · N silencia todo
+SETTINGS_PADS_LIST,Mandos: %s
+SETTINGS_NO_PADS,No hay mandos conectados
+SETTINGS_KEYS_HELP,Teclado: P1 WASD y C (a gatas) · P2 flechas y - o /
+SETTINGS_PAD_HELP,"Mando: stick o cruceta, A o B a gatas, Start pausa"
+ASSETS_TITLE,ASSETS
+ASSETS_TAB_LOOT,PIEZAS
+ASSETS_TAB_PEOPLE,PERSONAJES
+ASSETS_TAB_PROPS,OBJETOS
+ASSETS_TAB_SOUNDS,SONIDOS
+ASSETS_TAB_MAP,MAPA
+ASSETS_FALL_METAL,Al caer: sonido metálico
+ASSETS_FALL_DRY,Al caer: sonido seco
+ASSETS_PEOPLE_THIEF,LADRÓN
+ASSETS_PEOPLE_TWO,DOS LADRONES
+ASSETS_PEOPLE_SLEEPY,GUARDIA DORMIDO
+ASSETS_PEOPLE_THREE,TRES GUARDIAS
+ASSETS_LISTEN,▶ ESCUCHAR
+ASSETS_MAP_TEXT,Las marcas del mapa y del plan
+ASSETS_MAP_MARKS,Sobre los guardias: ! algo raro · !! alerta · !!! va a por ti
+PROLOGUE_TITLE,HABÍA UNA VEZ...
+PROLOGUE_GO,▶ ¡VAMOS!
+ENDING_TITLE,"¡OPERACIÓN
+DEVOLVERLO TODO!"
+STORY_PROLOGUE,"Esta es la Banda del Calcetín: ladrones que solo roban lo que ya estaba robado.
+
+El Barón Von Bostezo, director del Museo de Cosas Rarísimas, se ha ido llevando las cosas más raras del pueblo para exponerlas en vitrinas. Veinte en total.
+
+Esta noche empieza la operación DEVOLVERLO TODO."
+STORY_ENDING,"¡Lo habéis conseguido!
+
+El abuelo Paco vuelve a masticar turrón, el pato canta a las siete en punto, el yeti tiene los pies calentitos y los lunes vuelven a durar lo normal.
+
+Al Barón Von Bostezo solo le quedó mirar su vitrina vacía... y bostezar. Se quedó dormido de pie. Dicen que todavía ronca.
+
+FIN (de momento)"
+BRIEF_TAB_LOOT,LA PIEZA
+BRIEF_TAB_NEWS,LO NUEVO
+BRIEF_TAB_PLAN,EL PLAN
+BRIEF_NEXT_TAB,%s >
+BRIEF_START,▶ EMPEZAR
+BRIEF_NIGHT_OF,NOCHE %d DE %d
+BRIEF_LEVEL,NIVEL %02d
+BRIEF_NEWS_TITLE,ESTA NOCHE
+BRIEF_NEWS_TEXT,Algo ha cambiado en el museo
+BRIEF_PLAN_TITLE,EL PLAN
+BRIEF_TEAM_ONE_LOCK,Uno sujeta el cuadro de la alarma (naranja) mientras el otro abre la vitrina
+BRIEF_TEAM_TWO_LOCKS,Uno sujeta el cuadro de la alarma (naranja) mientras los otros dos abren a la vez las dos cerraduras de la vitrina
+BRIEF_TEAM_ALL_OUT,"Para ganar tenéis que salir todos · si pillan a uno, se acaba la noche"
+BRIEF_HOW,Quieto %s junto a la pieza · la alarma atrae guardias · sal por la puerta verde
+BRIEF_PROPS,"Papeleras, bustos y paneles: tíralos con E (X en el mando) y los guardias irán a ver el ruido"
+BRIEF_SECONDS,%s segundos
+BRIEF_DECIMAL_POINT,","
+PLAN_ENTRY,Entrada
+PLAN_PIECE,Pieza
+PLAN_EXIT,Salida
+PLAN_DOOR_WEST,"Puerta del muro oeste, en %s"
+PLAN_DOOR_EAST,"Puerta del muro este, en %s"
+PLAN_DOOR_NORTH,"Puerta del muro norte, en %s"
+PLAN_DOOR_SOUTH,"Puerta del muro sur, en %s"
+LESSON_HEIST_TITLE,EL GOLPE
+LESSON_HEIST_TEXT,"Quieto junto a la vitrina hasta que se abra, y sal por la flecha verde."
+LESSON_HEIST2_TITLE,EL GOLPE EN EQUIPO
+LESSON_HEIST2_TEXT,Uno sujeta la alarma naranja; el otro abre la vitrina. Salid los dos.
+LESSON_HEIST3_TITLE,EL GOLPE EN EQUIPO
+LESSON_HEIST3_TEXT,Uno sujeta la alarma; dos abren las dos cerraduras a la vez. Salid todos.
+LESSON_GUARD_TITLE,EL GUARDIA
+LESSON_GUARD_TEXT,"Si su linterna te pilla, va a por ti. Espera tras una pared a que pase."
+LESSON_TORCH_TITLE,AGÁCHATE
+LESSON_TORCH_TEXT,"De lejos, su linterna solo ve a quien va de pie. Cruza agachado (C)."
+LESSON_NOISE_TITLE,EL RUIDO
+LESSON_NOISE_TEXT,"Corriendo te oyen lejos; andando, poco; a gatas, nada."
+LESSON_PROPS_TITLE,LA DISTRACCIÓN
+LESSON_PROPS_TEXT,"Tira algo lejos (E, o X): el guardia irá a mirar y la pieza quedará libre."
+LESSON_CASE_ALARM_TITLE,LA VITRINA CON ALARMA
+LESSON_TWO_TITLE,DOS GUARDIAS
+LESSON_TWO_TEXT,"Si uno te ve, grita y el otro viene corriendo."
+LESSON_LIGHTS_TITLE,LAS LUCES
+LESSON_LIGHTS_TEXT,"En alerta encienden la luz: entonces solo te tapan las vitrinas, a gatas."
+LESSON_BIG_TITLE,UN MUSEO GRANDE
+LESSON_BIG_TEXT,"Más salas, nada nuevo. Planea la ruta en el plano antes de entrar."
+LESSON_FINALE_TITLE,LA ÚLTIMA NOCHE
+LESSON_FINALE_TEXT,"Todos despiertos y sin calmarse. Todo lo que sabes, a la vez. Suerte."
+LESSON_CASE_ALARM_TEXT,"La vitrina pita mientras la abres. Si viene alguien, suéltala y escóndete."
+NIGHT_01_NAME,la dentadura del abuelo Paco
+NIGHT_01_BLURB,"Postiza, de porcelana. Brilla en la oscuridad."
+NIGHT_01_VERB,DESENROSCANDO EL TARRO
+NIGHT_01_TALE,Anoche el Barón le quitó la dentadura al abuelo Paco mientras roncaba. Desde entonces el abuelo solo come sopa y a todo contesta «mmmfff». Y hoy el guardia tiene la noche libre.
+NIGHT_02_NAME,el pato que canta ópera
+NIGHT_02_BLURB,"Amarillo, de goma, con voz de tenor."
+NIGHT_02_VERB,CALMANDO AL PATO
+NIGHT_02_TALE,"Cada mañana este pato cantaba ópera a las siete en punto y despertaba a todo el pueblo. Sin él nadie se levanta y el panadero ya ha quemado cuarenta barras de pan. Cuidado: si lo aprietas, da el do de pecho."
+NIGHT_03_NAME,la bufanda del caracol friolero
+NIGHT_03_BLURB,Seis metros de lana. Para un cuello muy largo... y muy lento.
+NIGHT_03_VERB,DESENROLLANDO LA BUFANDA
+NIGHT_03_TALE,El caracol Anselmo tardó once años en tejerla. El Barón se la quitó en diez segundos. Ahora Anselmo no sale de su concha y dice que hace frío hasta en agosto.
+NIGHT_04_NAME,el calcetín del yeti
+NIGHT_04_BLURB,Talla 98. Huele un poquito.
+NIGHT_04_VERB,DOBLANDO EL CALCETÍN
+NIGHT_04_TALE,Un yeti muy educado se lo dejó en la lavandería y el Barón lo expone como «alfombra prehistórica». Ahora el yeti tiene frío en un pie y cada vez que estornuda provoca una avalancha.
+NIGHT_05_NAME,el gnomo que baila claqué
+NIGHT_05_BLURB,"De barro, con zapatos de metal. Nunca para quieto."
+NIGHT_05_VERB,CALMANDO AL GNOMO
+NIGHT_05_TALE,"Era el gnomo del jardín de la señora Remedios, y por las noches bailaba claqué para espantar a los topos. Sin él, los topos han montado una discoteca bajo las lechugas."
+NIGHT_06_NAME,la tostada con la cara del Barón
+NIGHT_06_BLURB,Con mantequilla. El Barón dice que es arte.
+NIGHT_06_VERB,DESPEGANDO LA TOSTADA
+NIGHT_06_TALE,"En esta tostada se ve clavadita la cara del Barón. Él dice que es una obra de arte. En realidad era el desayuno del perro Bartolo, que lleva tres días mirando la vitrina y llorando."
+NIGHT_07_NAME,la bola de chicle del récord
+NIGHT_07_BLURB,Masticada por todo el pueblo durante cien años.
+NIGHT_07_VERB,DESPEGANDO EL CHICLE
+NIGHT_07_TALE,"Cada vecino le añadía un chicle el día de su cumpleaños. El Barón dice que es una escultura moderna. Los vecinos dicen que es suya, y que aún sabe a fresa."
+NIGHT_08_NAME,la corona de la Reina de los Pepinillos
+NIGHT_08_BLURB,"Verde, con granitos. Muy real."
+NIGHT_08_VERB,DESATORNILLANDO
+NIGHT_08_TALE,"La Reina de los Pepinillos manda en el huerto del pueblo. Sin su corona los pepinillos no le hacen caso, y se pasan la noche bailando la conga por las calles. Nadie consigue dormir."
+NIGHT_09_NAME,el trofeo del campeón de siestas
+NIGHT_09_BLURB,Oro de verdad. Pesa como un gato dormido.
+NIGHT_09_VERB,DESATORNILLANDO LA PEANA
+NIGHT_09_TALE,Don Anacleto ganó el campeonato mundial de siestas durmiendo tres días seguidos. El Barón se lo llevó mientras dormía la cuarta. Todavía no se ha enterado.
+NIGHT_10_NAME,el meteorito que huele a queso
+NIGHT_10_BLURB,Cayó del cielo sobre la quesería.
+NIGHT_10_VERB,ENGAÑANDO AL SENSOR
+NIGHT_10_TALE,Huele tanto a queso que los ratones de tres pueblos se han mudado al museo. Un astrónomo ratón lo necesita para demostrar por fin que la Luna es de queso.
+NIGHT_11_NAME,la máscara del dragón estornudón
+NIGHT_11_BLURB,"Verde, con escamas. Pica un poco la nariz."
+NIGHT_11_VERB,SOPLANDO EL POLVO
+NIGHT_11_TALE,"El dragón del monte la usa para no quemar nada cuando estornuda. Sin ella, ya ha tostado tres pajares y el sombrero del alcalde. ¡Achís!"
+NIGHT_12_NAME,la máscara del Pulpo Enmascarado
+NIGHT_12_BLURB,Del luchador más famoso del mundo.
+NIGHT_12_VERB,CORTANDO EL SELLO
+NIGHT_12_TALE,"El Pulpo Enmascarado tiene ocho brazos y ninguna gana de enseñar la cara. Sin su máscara no puede salir al ring, y lleva una semana escondido detrás de una maceta. Sus fans están desesperados."
+NIGHT_13_NAME,el despertador que canta tangos
+NIGHT_13_BLURB,Suena a las siete. Con bandoneón.
+NIGHT_13_VERB,PARANDO LA ALARMA
+NIGHT_13_TALE,"Despertaba a la panadera cada mañana con un tango muy dramático. Sin él, el pueblo lleva una semana desayunando a la hora de comer."
+NIGHT_14_NAME,el reloj que va hacia atrás
+NIGHT_14_BLURB,Hace tic-tac al revés: cat-cit.
+NIGHT_14_VERB,PARANDO LAS AGUJAS
+NIGHT_14_TALE,"Con este reloj el Barón consigue que los lunes duren el doble. Si no lo recuperáis, pronto la semana tendrá nueve lunes y ningún sábado. ¡Eso sí que no!"
+NIGHT_15_NAME,el huevo de chocolate que nunca se acaba
+NIGHT_15_BLURB,"Por mucho que comas, siempre queda la mitad."
+NIGHT_15_VERB,ABRIENDO EL ENVOLTORIO
+NIGHT_15_TALE,"La gallina Petronila lo puso un domingo de Pascua y alimenta a todos los niños del pueblo. El Barón se lo come a escondidas, pero como nunca se acaba, no le sirve de nada."
+NIGHT_16_NAME,el huevo del dinosaurio despistado
+NIGHT_16_BLURB,Setenta millones de años. Aún está calentito.
+NIGHT_16_VERB,SOLTANDO EL HUEVO
+NIGHT_16_TALE,"Una mamá diplodocus lo dejó en un aparcamiento hace setenta millones de años y ha vuelto a buscarlo. Está en la puerta del museo, muy seria, pisando coches sin querer. Devolvédselo antes de que pise el vuestro."
+NIGHT_17_NAME,los dientes de oro del pirata Mellado
+NIGHT_17_BLURB,Tres dientes. El cuarto se lo tragó una ballena.
+NIGHT_17_VERB,ABRIENDO EL COFRE
+NIGHT_17_TALE,"El pirata Mellado ya no puede decir «¡al abordaje!» sin silbar. Su loro se ríe de él cada vez, y un pirata sin dignidad no puede navegar."
+NIGHT_18_NAME,el pato de goma del almirante
+NIGHT_18_BLURB,Azul marino. Ha dado tres veces la vuelta al mundo.
+NIGHT_18_VERB,SOLTANDO LAS AMARRAS
+NIGHT_18_TALE,"El almirante se niega a bañarse sin su pato, y la flota entera está esperando en el puerto a que se bañe. Los peces se están aburriendo."
+NIGHT_19_NAME,la gema del faro que no se apaga
+NIGHT_19_BLURB,Da luz sin pilas desde hace doscientos años.
+NIGHT_19_VERB,DESCONECTANDO EL FARO
+NIGHT_19_TALE,"Sin su gema, el faro del pueblo está a oscuras y los barcos atracan donde pueden. Ayer uno aparcó en la plaza, justo delante de la heladería."
+NIGHT_20_NAME,el Diamante Bostezo
+NIGHT_20_BLURB,"Quien lo mira, bosteza y se duerme."
+NIGHT_20_VERB,ABRIENDO LA CAJA FUERTE
+NIGHT_20_TALE,Es el tesoro del Barón y su gran truco: con él dormía a todo el pueblo para llevarse lo que quería. Sin el diamante se le acabaron los trucos. Pero es la última noche... y os están esperando.
+LOOT_1_NAME,el Ojo de Medianoche
+LOOT_1_BLURB,Un zafiro del tamaño de un puño.
+LOOT_1_VERB,FORZANDO LA VITRINA
+LOOT_1_TALE,"Lo sacaron de una mina birmana en 1887 y desde entonces ha cambiado de dueño once veces, casi nunca por las buenas. Dicen que de noche brilla solo. Esta noche va a brillar en tu bolsillo."
+LOOT_2_NAME,el huevo de oviraptor
+LOOT_2_BLURB,Fósil de setenta millones de años.
+LOOT_2_VERB,SOLTANDO EL HUEVO
+LOOT_2_TALE,Un paleontólogo lo encontró en el desierto de Gobi dentro de una roca que usaba de pisapapeles. Pesa como un ladrillo y es más frágil que tu coartada. Llévalo con cariño.
+LOOT_3_NAME,la corona de la reina Urraca
+LOOT_3_BLURB,Oro batido y granates.
+LOOT_3_VERB,DESATORNILLANDO
+LOOT_3_TALE,La reina Urraca la mandó hacer con las joyas que robaba a sus propios invitados. Un coleccionista paga una fortuna por devolverla a la familia del oficio.
+LOOT_4_NAME,el meteorito de Tolva
+LOOT_4_BLURB,Hierro caído del cielo en 1911.
+LOOT_4_VERB,ENGAÑANDO EL SENSOR
+LOOT_4_TALE,Cayó sobre el granero de un tal Tolva y lo partió en dos. El museo lo compró por cuatro perras; un laboratorio lo quiere a cualquier precio. Pesa más de lo que parece.
+LOOT_5_NAME,la máscara de jade
+LOOT_5_BLURB,"Funeraria, doscientas teselas verdes."
+LOOT_5_VERB,CORTANDO EL SELLO
+LOOT_5_TALE,Doscientas teselas de jade cosidas con hilo de oro para un rey que no quería que nadie le viera la cara. Lleva cinco siglos mirando al público. Ya le toca descansar.
+LOOT_6_NAME,el ídolo de obsidiana
+LOOT_6_BLURB,La pieza estrella del museo.
+LOOT_6_VERB,ABRIENDO LA CERRADURA
+LOOT_6_TALE,La pieza estrella: nadie sabe quién la talló ni por qué todos los que la han tenido acabaron durmiendo con la luz encendida. Tu cliente dice que no cree en maldiciones.
+END_CAUGHT,TE HAN PILLADO
+END_BACK_IN_CASE,%s vuelve a su vitrina.
+END_STILL_THERE,%s sigue en su sitio.
+END_AGAIN,▶ OTRA VEZ
+END_PERFECT,¡GOLPE PERFECTO!
+END_HOME,%s vuelve a casa.
+END_LEVEL_DONE,Nivel %d superado: %s ya es tuyo.
+END_NEXT_NIGHT,▶ SIGUIENTE NOCHE
+END_NEXT_HEIST,▶ SIGUIENTE GOLPE
+END_TO_MENU,< VOLVER AL MENÚ
+HUD_HELP,P pausa · M mapa · E tirar cosas · C a gatas
+HUD_MAP_HIDE,M o Y para guardarlo
+HUD_COUNT_GO,GO!
+HUD_JOB_WAIT_PANEL,¡QUE TU COMPAÑERO SUJETE EL CUADRO DE ALARMA!
+HUD_JOB_TWO_LOCKS,¡DOS CERRADURAS: FALTA OTRO LADRÓN EN LA VITRINA!
+HUD_JOB_CARRYING,TIENES %s · ¡A LA SALIDA!
+HUD_JOB_DROPPED,%s ESTÁ EN EL SUELO
+HUD_JOB_PANEL_HELD,ALARMA DESCONECTADA · ¡A LA VITRINA!
+HUD_PUSH_HINT,%s / X: TIRAR %s
+HUD_SHOUT_1,¡ALTO!
+HUD_SHOUT_2,¡QUIETO!
+HUD_SHOUT_3,¡PARA!
+HUD_SHOUT_FAR,%s grita a lo lejos · %s
+HUD_SHOUT_NEAR,%s grita cerca · %s
+HUD_SIGN_EXIT,SALIDA
+HUD_SIGN_ALARM,ALARMA
+LEGEND_THIEF,vosotros
+LEGEND_GEM,la pieza
+LEGEND_EXIT,la salida
+LEGEND_GUARD,guardia
+LEGEND_PROP,se puede tirar
+LEGEND_ROUTE,ruta
+LEGEND_PANEL,alarma
+LOG_CRASH_EVERYWHERE,¡Menudo estruendo! %s se ha oído en todo el museo
+LOG_KNOCKED,¡Has tirado %s!
+LOG_CASE_ALARM,¡Salta la alarma de la vitrina!
+LOG_GOT_IT,"Tienes %s: ahora, a la salida"
+LOG_GOT_IT_TEAM,"Tenéis %s: ahora, todos a la salida"
+LOG_DROPPED,%s ha caído al suelo
+LOG_HEARD_BY,%s lo ha oído y viene
+LOG_AND, y 
+LOG_NOBODY_HEARD,nadie más lo ha oído
+LOG_SHOUT,%s: ¡Alto! — %s
+LOG_WARN,%s avisa a %s en voz baja
+LOG_LIGHTS,%s enciende las luces %s
+LOG_THE_ROOM_OF,de la sala
+LOG_OUT_WAITING,%s ya está fuera · faltan los demás
+LOG_DECISION,%s: %s · %d%%%s
+LOG_TORN, (duda)
+LOG_BRAIN_FAILED,IA: reglas de reserva (%s)
+BRAIN_SEND_FAILED,no se pudo enviar (%d)
+BRAIN_NO_CONNECTION,sin conexión con el cerebro
+BRAIN_NET_ERROR,error de red %d
+BRAIN_HTTP_CODE,el cerebro respondió %d
+BRAIN_UNREADABLE,respuesta ilegible
+MIND_SEEN,Te ha visto
+MIND_THINKING,pensando…
+MIND_NOTE,ritmo %d%% · %s%s
+MIND_TORN, · duda
+MIND_PLAN_CHASE,Acudir al grito
+MIND_PLAN_CUT_OFF,Cortarle el paso
+MIND_PLAN_FOLLOW,Seguir el rastro
+MIND_PLAN_SEARCH,Registrar la pista
+MIND_PLAN_CHECK_ZONE,Revisar otra zona
+MIND_PLAN_COVER,Cubrir el otro lado
+MIND_PLAN_PATROL,Seguir la ronda
+MIND_PLAN_WATCH,Vigilar el cruce
+MIND_LOOK_SWEEP,barre con la linterna
+MIND_LOOK_AHEAD,linterna al frente
+MIND_LOOK_CLUE,linterna hacia la pista
+GUARD_WHO_KNOCKED,¿Quién ha tirado %s?
+GUARD_ZONE_CLEAR,%s está despejada
+GUARD_THE_ZONE,la zona
+PROP_BIN,la papelera
+PROP_BUST,el busto
+PROP_PANEL,el panel
+PROP_ARMOUR,la armadura
+ZONE_MUSEUM,el museo
+ZONE_NUMBERED,%s (%d)
+ZONE_CORRIDOR,el pasillo
+ZONE_CORRIDOR_EAST,el pasillo al este %s
+ZONE_CORRIDOR_WEST,el pasillo al oeste %s
+ZONE_CORRIDOR_NORTH,el pasillo al norte %s
+ZONE_CORRIDOR_SOUTH,el pasillo al sur %s
+ZONE_STRETCH,%s (tramo %d)
+GALLERY_EGYPTIAN_GALLERY,la sala egipcia
+GALLERY_EGYPTIAN_GALLERY_OF,de la sala egipcia
+GALLERY_MINERAL_HALL,la sala de minerales
+GALLERY_MINERAL_HALL_OF,de la sala de minerales
+GALLERY_FOSSIL_GALLERY,la galería de fósiles
+GALLERY_FOSSIL_GALLERY_OF,de la galería de fósiles
+GALLERY_BUTTERFLY_ROOM,la sala de mariposas
+GALLERY_BUTTERFLY_ROOM_OF,de la sala de mariposas
+GALLERY_PORTRAIT_GALLERY,la galería de retratos
+GALLERY_PORTRAIT_GALLERY_OF,de la galería de retratos
+GALLERY_MAP_ROOM,la sala de mapas
+GALLERY_MAP_ROOM_OF,de la sala de mapas
+GALLERY_SCULPTURE_COURT,el patio de esculturas
+GALLERY_SCULPTURE_COURT_OF,del patio de esculturas
+GALLERY_ARMOURY,la armería
+GALLERY_ARMOURY_OF,de la armería
+GALLERY_CLOCK_ROOM,la sala de relojes
+GALLERY_CLOCK_ROOM_OF,de la sala de relojes
+GALLERY_CERAMICS_GALLERY,la sala de cerámica
+GALLERY_CERAMICS_GALLERY_OF,de la sala de cerámica
+GALLERY_METEORITE_ROOM,la sala de meteoritos
+GALLERY_METEORITE_ROOM_OF,de la sala de meteoritos
+GALLERY_BIRD_GALLERY,la sala de aves
+GALLERY_BIRD_GALLERY_OF,de la sala de aves
+GALLERY_COIN_CABINET,el gabinete de monedas
+GALLERY_COIN_CABINET_OF,del gabinete de monedas
+GALLERY_TEXTILE_GALLERY,la sala de tejidos
+GALLERY_TEXTILE_GALLERY_OF,de la sala de tejidos
+GALLERY_SHIP_MODEL_ROOM,la sala de maquetas navales
+GALLERY_SHIP_MODEL_ROOM_OF,de la sala de maquetas navales
+GALLERY_ROMAN_GALLERY,la sala romana
+GALLERY_ROMAN_GALLERY_OF,de la sala romana
+GALLERY_TAPESTRY_HALL,la sala de tapices
+GALLERY_TAPESTRY_HALL_OF,de la sala de tapices
+GALLERY_PRINTS_ROOM,el gabinete de grabados
+GALLERY_PRINTS_ROOM_OF,del gabinete de grabados
+GALLERY_INSTRUMENT_GALLERY,la sala de instrumentos
+GALLERY_INSTRUMENT_GALLERY_OF,de la sala de instrumentos
+GALLERY_WHALE_HALL,la sala de la ballena
+GALLERY_WHALE_HALL_OF,de la sala de la ballena
+GALLERY_JEWEL_ROOM,la sala de joyas
+GALLERY_JEWEL_ROOM_OF,de la sala de joyas
+GALLERY_INSECT_GALLERY,la sala de insectos
+GALLERY_INSECT_GALLERY_OF,de la sala de insectos
+GALLERY_VIKING_GALLERY,la sala vikinga
+GALLERY_VIKING_GALLERY_OF,de la sala vikinga
+GALLERY_GLOBE_ROOM,la sala de globos terráqueos
+GALLERY_GLOBE_ROOM_OF,de la sala de globos terráqueos
+MENU_PLAYERS_4,4 LADRONES
+MENU_PLAYERS_4_TEXT,Dos alarmas y dos cerraduras
+MENU_PLAY_4,▶ 4 LADRONES
+SEAT_KB_PAD,Teclado · numérico
+LESSON_HEIST4_TITLE,EL GOLPE EN EQUIPO
+LESSON_HEIST4_TEXT,Dos sujetan las dos alarmas; dos abren las cerraduras a la vez. Salid todos.
+BRIEF_TEAM_TWO_PANELS,Dos sujetan los dos cuadros de alarma (naranja) mientras los otros dos abren a la vez las dos cerraduras de la vitrina
+HUD_JOB_WAIT_PANELS,¡HAY QUE SUJETAR LOS DOS CUADROS DE ALARMA!

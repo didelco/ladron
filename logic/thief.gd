@@ -19,6 +19,8 @@ var sprinting := false
 var blocked := false
 ## caught: still drawn, no longer playing
 var out := false
+## out through the door with the job done, not caught: gone, and safe
+var safe := false
 ## 0 standing, 1 on all fours; eases over Sim.CROUCH_SECONDS
 var posture := 0.0
 ## which way the posture is heading: the crouch key toggles it

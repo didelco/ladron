@@ -8,11 +8,15 @@ extends RefCounted
 ## from Laya (Mind), or from the fallback rules while it is not there.
 
 ## How far and how wide a guard looks: a calm guard ambles with the torch at
-## its feet, an alert one sweeps the beam wide and far.
+## its feet, an alert one sweeps the beam wide and far. The torch has two
+## reaches: the bright pool up to `near` catches you whatever your posture;
+## the dim throw beyond it, out to `range`, only picks out someone standing.
 const VIEW := {
-	"calm": {"range": 5.5, "half": PI / 4.2},
-	"alert": {"range": 9.0, "half": PI / 2.8},
+	"calm": {"near": 3.5, "range": 7.0, "half": PI / 4.2},
+	"alert": {"near": 5.0, "range": 10.0, "half": PI / 2.8},
 }
+## Below this posture you still count as standing for the dim throw.
+const STANDING := 0.5
 ## In a lit room there is no torch to run out of: anything in line is seen.
 const LIT_RANGE := 40.0
 ## How long room lights stay on once switched, in ms.
@@ -23,8 +27,13 @@ const LOST_MS := 1500.0
 const RECHECK_MS := 15000.0
 ## Close enough to say it quietly.
 const WARN_RANGE := 1.3
-## An alarm raised only by sounds wears off after this long without another.
+## A hunch (suspicion 1) wears off after this long without another.
 const CALM_AFTER_S := 10.0
+## Once on alert (!!), a guard stays so at least this long past the last
+## thing that put it there, before it goes back to a mere hunch.
+const ALERT_HOLD_MS := 60000.0
+## A chase (!!!) that lost you this long ago goes back to plain alert.
+const CHASE_LOST_MS := 4000.0
 ## The sound that alarms a guard this many times is no longer a creak.
 const ALARMS_TO_STAY := 3
 const CATCH_RANGE := 0.75
@@ -68,6 +77,8 @@ const SCHEMES := {
 	"solo": {"up": ["w", "up"], "down": ["s", "down"], "left": ["a", "left"], "right": ["d", "right"], "crouch": ["c", "shift"]},
 	"wasd": {"up": ["w"], "down": ["s"], "left": ["a"], "right": ["d"], "crouch": ["c"]},
 	"arrows": {"up": ["up"], "down": ["down"], "left": ["left"], "right": ["right"], "crouch": ["minus", "slash"]},
+	"ijkl": {"up": ["i"], "down": ["k"], "left": ["j"], "right": ["l"], "crouch": ["u"]},
+	"numpad": {"up": ["kp8"], "down": ["kp5"], "left": ["kp4"], "right": ["kp6"], "crouch": ["kp0"]},
 }
 
 ## How hard the night is. Medium is the game as designed; easy and hard scale
@@ -79,7 +90,7 @@ const DIFFICULTIES := {
 	# alarms: how many sounds it takes to put a guard on alert for good.
 	"easy": {"view": 0.8, "hearing": 0.8, "speed": 0.7, "lock": 0.35, "calm_after": 7.0, "alarms": 3, "guards": 1},
 	"medium": {"view": 1.0, "hearing": 1.0, "speed": 1.0, "lock": 1.0, "calm_after": 10.0, "alarms": 2, "guards": 0},
-	"hard": {"view": 1.15, "hearing": 1.2, "speed": 1.1, "lock": 1.3, "calm_after": 14.0, "alarms": 1, "guards": 0},
+	"hard": {"view": 1.25, "hearing": 1.2, "speed": 1.1, "lock": 1.3, "calm_after": 14.0, "alarms": 1, "guards": 0},
 }
 static var difficulty := "medium"
 ## The story mode's night, when it sets its own: overrides the difficulty
@@ -87,16 +98,203 @@ static var difficulty := "medium"
 static var custom := {}
 
 
+## How many thieves are playing. Keeping two or three out of sight is
+## harder than one, so a gang gets the guards' senses and pace eased
+## (GANG_EASE) and, three of them, one guard fewer where there are three
+## or more; four, one fewer where there are two or more.
+static var gang := 1
+const GANG_EASE := {1: 1.0, 2: 0.92, 3: 0.85, 4: 0.8}
+
+
 static func tuning(key: String) -> float:
-	if custom.has(key):
-		return float(custom[key])
-	return float(DIFFICULTIES[difficulty][key])
+	var v := float(custom[key]) if custom.has(key) else float(DIFFICULTIES[difficulty][key])
+	if key in ["view", "speed", "hearing"]:
+		v *= GANG_EASE[clampi(gang, 1, 4)]
+	return v
 
 
-## How many guards a museum of this size gets on this night.
+## How many guards a museum of this size gets on this night. A story night
+## says exactly, none included.
 static func guard_count(size: String) -> int:
-	var fixed := int(tuning("guards"))
-	return fixed if fixed > 0 else int(Museum.SIZES[size].guards)
+	var n: int
+	if custom.has("guards"):
+		n = int(custom.guards)
+	else:
+		var fixed := int(tuning("guards"))
+		n = fixed if fixed > 0 else int(Museum.SIZES[size].guards)
+	if gang >= 4 and n >= 2:
+		return n - 1
+	return n - 1 if gang >= 3 and n >= 3 else n
+
+
+## Whether a part of the game is on tonight: the story's early nights leave
+## out what they have not taught yet ("props", "lights", "case_alarm").
+## Everything is on unless the night says otherwise.
+static func feature(key: String) -> bool:
+	return bool(custom.get(key, true))
+
+
+## How far either side of its post's heading a posted guard sweeps its torch.
+const POST_SWEEP := 0.8
+
+
+## Put the first guard on a post for the night's lesson, if the night asks,
+## somewhere the lesson cannot be dodged:
+##   "route": by your way, so that every way to the piece crosses its dim
+##     throw (seen standing) but one keeps out of its bright pool (fine
+##     crouched): you get past on all fours, or not at all;
+##   "quiet": its back to your way, so that every way passes where running
+##     is heard, but one is safe walking softly, out of its sight;
+##   "case": by the piece, so that not even crawling gets you to it unseen,
+##     with something to knock over, reachable unseen, near enough to lure
+##     it away: you need the distraction.
+## Returns 1 when such a post was found (the night teaches what it says), 0
+## when this museum has none — the night then tries another museum.
+static func assign_posts(guards: Array[Guard]) -> int:
+	var kind: String = custom.get("post", "")
+	if kind == "" or guards.is_empty() or Heist.route.is_empty():
+		return 0
+	var g := guards[0]
+	var stands := Heist._stand_tiles(Heist.at)
+	var view := view_of(g)
+	for c in _post_candidates(kind, view):
+		var post: Vector2i = c[0]
+		var dir: float = c[1]
+		if not _lesson_holds(kind, g, post, dir, stands):
+			continue
+		g.post = post
+		g.post_dir = dir
+		g.x = post.x + 0.5
+		g.y = post.y + 0.5
+		g.dir = dir
+		g.target = post
+		g.path.clear()
+		return 1
+	return 0
+
+
+## Where a posted guard could stand and which way it could look: [tile, dir].
+static func _post_candidates(kind: String, view: Dictionary) -> Array:
+	var out: Array = []
+	var way: Array = Heist.route
+	for t in Museum.open_tiles:
+		if Museum.tile_at(t.x + 0.5, t.y + 0.5) != Tiles.FLOOR or t == Heist.start:
+			continue
+		var nearest: Vector2i = way[0]
+		var clear := INF
+		for r in way:
+			var d := Museum.dist(t.x, t.y, r.x, r.y)
+			if d < clear:
+				clear = d
+				nearest = r
+		var to_way := atan2(nearest.y - t.y, nearest.x - t.x)
+		match kind:
+			"route":
+				if clear >= view.near + 0.5 and clear <= view.range - 0.5:
+					for turn in [0.0, -0.5, 0.5]:
+						out.append([t, to_way + turn])
+			"quiet":
+				if clear >= 1.5 and clear <= 3.5:
+					for turn in [0.0, -0.5, 0.5]:
+						out.append([t, to_way + PI + turn])
+			"case":
+				if Museum.dist(t.x, t.y, Heist.at.x, Heist.at.y) <= 3.0:
+					for k in 8:
+						out.append([t, k * PI / 4])
+	return out
+
+
+## Whether a guard standing at post, sweeping round dir, sees someone at t:
+## standing (its dim throw too, only walls in the way) or crouched (only its
+## bright pool, and the cases hide you). Always, right beside it.
+static func _post_sees(g: Guard, post: Vector2i, dir: float, t: Vector2i, low: bool) -> bool:
+	var view := view_of(g)
+	var d := Museum.dist(post.x, post.y, t.x, t.y)
+	if d < TOUCH_RANGE:
+		return true
+	if d > (view.near if low else view.range):
+		return false
+	if absf(_angle_diff(atan2(t.y - post.y, t.x - post.x) - dir)) > view.half + POST_SWEEP:
+		return false
+	return Museum.has_line_of_sight(post.x + 0.5, post.y + 0.5, t.x + 0.5, t.y + 0.5, not low)
+
+
+static func _lesson_holds(kind: String, g: Guard, post: Vector2i, dir: float, stands: Array[Vector2i]) -> bool:
+	var exit: Array[Vector2i] = [Heist.exit]
+	var start: Array[Vector2i] = [Heist.start]
+	var cache := {}
+	var seen := func(t: Vector2i, low: bool) -> bool:
+		var key := Vector3i(t.x, t.y, 1 if low else 0)
+		if not cache.has(key):
+			cache[key] = _post_sees(g, post, dir, t, low)
+		return cache[key]
+	var crouched := func(t: Vector2i) -> bool: return seen.call(t, true)
+	# Never where you come in or go out: the lesson is on the way, not a
+	# guard staring at you from the first moment.
+	for t in [Heist.start, Heist.exit]:
+		if seen.call(t, false):
+			return false
+	match kind:
+		"route":
+			if not (_way(start, stands, crouched) and _way(stands, exit, crouched)):
+				return false
+			return not _way(start, stands, func(t: Vector2i) -> bool: return seen.call(t, false))
+		"quiet":
+			var ear := Hearing.HEARING_CALM * tuning("hearing")
+			var soft := Hearing.step_loudness(CREEP, TOP_SPEED) * ear
+			var loud := Hearing.step_loudness(TOP_SPEED, TOP_SPEED) * ear
+			# Heard as the game hears it: the walls in between take their share.
+			var heard := func(t: Vector2i, reach: float) -> bool:
+				var muffled := reach - Hearing.WALL_DAMPING * Museum.muffle_between(post.x + 0.5, post.y + 0.5, t.x + 0.5, t.y + 0.5)
+				return Museum.dist(post.x, post.y, t.x, t.y) <= muffled
+			if heard.call(Heist.start, loud):
+				return false
+			var sneaking := func(t: Vector2i) -> bool: return seen.call(t, false) or heard.call(t, soft)
+			if not (_way(start, stands, sneaking) and _way(stands, exit, sneaking)):
+				return false
+			return not _way(start, stands, func(t: Vector2i) -> bool: return seen.call(t, false) or heard.call(t, loud))
+		"case":
+			if _way(start, stands, crouched):
+				return false
+			for p in Props.list:
+				var d := Museum.dist(p.x, p.y, post.x + 0.5, post.y + 0.5)
+				if d < 4.0 or d > 9.0:
+					continue
+				var by: Array[Vector2i] = [p.tile]
+				for dd in Museum.DIRS:
+					by.append(p.tile + dd)
+				if _way(start, by, crouched):
+					return true
+			return false
+	return false
+
+
+## Is there a way over the floor from any of from to any of to, never
+## stepping on a tile blocked says no to?
+static func _way(from: Array[Vector2i], to: Array[Vector2i], blocked: Callable) -> bool:
+	var goal := {}
+	for t in to:
+		goal[t] = true
+	var seen := {}
+	var queue: Array[Vector2i] = []
+	for t in from:
+		if not blocked.call(t):
+			queue.append(t)
+			seen[t] = true
+	var i := 0
+	while i < queue.size():
+		var t := queue[i]
+		i += 1
+		if goal.has(t):
+			return true
+		for d in Museum.DIRS:
+			var n: Vector2i = t + d
+			if seen.has(n) or Museum.tile_at(n.x + 0.5, n.y + 0.5) != Tiles.FLOOR:
+				continue
+			seen[n] = true
+			if not blocked.call(n):
+				queue.append(n)
+	return false
 
 
 ## Things that happened this frame, for the game loop's log and sound.
@@ -113,7 +311,13 @@ static func now_ms() -> float:
 static func view_of(g: Guard) -> Dictionary:
 	var v: Dictionary = VIEW.alert if g.alert else VIEW.calm
 	# Easier guards see less far; the width of the cone stays the same.
-	return {"range": v.range * tuning("view"), "half": v.half}
+	return {"near": v.near * tuning("view"), "range": v.range * tuning("view"), "half": v.half}
+
+
+## How strong this night's torches are: the same dial as how far guards
+## see, so a harder night's torches reach further and shine brighter.
+static func torch_power() -> float:
+	return tuning("view")
 
 
 static func _angle_diff(a: float) -> float:
@@ -160,22 +364,24 @@ static func _guard_starts(count: int) -> Array[Vector2i]:
 static func new_thief(id: String = "p1") -> Thief:
 	var t := Thief.new()
 	t.id = id
-	var s := Museum.spawn if id == "p1" else _second_spawn()
+	var s := Museum.spawn if id == "p1" else _spawn_beside(int(id.substr(1)) - 1)
 	t.x = s.x + 0.5
 	t.y = s.y + 0.5
 	return t
 
 
-## The nearest free tile to the spawn, so two thieves do not start inside each other.
-static func _second_spawn() -> Vector2i:
-	var best := Museum.spawn
-	var best_d := INF
+## A free tile next to the spawn for the k-th companion (1, 2...), nearest
+## first, so the gang do not start inside each other.
+static func _spawn_beside(k: int) -> Vector2i:
+	var near: Array = []
 	for t in Museum.open_tiles:
 		var d := Museum.dist(t.x, t.y, Museum.spawn.x, Museum.spawn.y)
-		if d >= 1 and d <= 3 and d < best_d:
-			best_d = d
-			best = t
-	return best
+		if d >= 1 and d <= 3:
+			near.append([t, d])
+	if near.is_empty():
+		return Museum.spawn
+	near.sort_custom(func(a, b): return a[1] < b[1])
+	return near[mini(k - 1, near.size() - 1)][0]
 
 
 static func new_guards(count: int = 2) -> Array[Guard]:
@@ -379,7 +585,11 @@ static func can_see(g: Guard, p: Thief) -> bool:
 	var d := Museum.dist(g.x, g.y, p.x, p.y)
 	var view := view_of(g)
 	# Under a lit ceiling you are visible from anywhere with a line to you.
-	if d > (LIT_RANGE if Museum.is_lit(p.x, p.y) else view.range):
+	var lit := Museum.is_lit(p.x, p.y)
+	if d > (LIT_RANGE if lit else view.range):
+		return false
+	# Past the bright pool the torch is too dim to pick out someone low down.
+	if not lit and d > view.near and p.posture >= STANDING:
 		return false
 	# The cases are waist-high: all the way down behind one, you are hidden.
 	var over_cover := p.posture < DOWN
@@ -462,17 +672,25 @@ static func needs_plan(g: Guard) -> bool:
 	return g.decision == null or g.path.is_empty() or g.planned_for != _situation_of(g)
 
 
-## What hearing something does to a guard's nerves: one more alarm from calm,
-## for good at the third or on top of a sighting; otherwise the countdown back
-## to calm restarts.
-static func _alarm(g: Guard) -> void:
-	if g.calm_in == INF:
+## What something odd does to a guard's nerves. From nothing, a hunch (!):
+## it goes to look, still calm. From a hunch — or straight away, if it was
+## unmistakable (a crash, a yell) — on alert (!!); the night's alarms-th time
+## that happens, it stays alert for good. Either way the clock back to calm
+## starts over.
+static func _alarm(g: Guard, now: float, unmistakable := false) -> void:
+	g.suspicion_at = now
+	if g.suspicion >= 2 or g.calm_in == INF:
+		g.suspicion = maxi(g.suspicion, 2)
 		g.alert = true
 		return
-	if not g.alert:
-		g.alarms += 1
+	if g.suspicion == 0 and not unmistakable:
+		g.suspicion = 1
+		return
+	g.suspicion = 2
+	g.alarms += 1
 	g.alert = true
-	g.calm_in = INF if g.alarms >= int(tuning("alarms")) else tuning("calm_after")
+	if g.alarms >= int(tuning("alarms")):
+		g.calm_in = INF
 
 
 ## Set off on a decision. Errands are finished first; a guard on its way
@@ -524,9 +742,11 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 	if player:
 		g.search_spot = Vector2i(-1, -1)
 		g.watching = 0
-		# Seeing is believing: alert for the rest of the round.
+		# Seeing is believing: after you, and alert for the rest of the round.
 		g.alert = true
 		g.calm_in = INF
+		g.suspicion = 3
+		g.suspicion_at = now
 		var m := Guard.Memory.new()
 		m.x = player.x
 		m.y = player.y
@@ -545,14 +765,17 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 			# The nearer of several noises wins the ear.
 			var spot = null
 			var spot_d := INF
+			var crash := false
 			for n in noises:
 				var at = Hearing.heard_at(g, n)
 				var d := Museum.dist(g.x, g.y, n.x, n.y)
 				if at != null and d < spot_d:
 					spot = at
 					spot_d = d
+					crash = n.kind in Hearing.CRASHES
 			if spot != null:
-				_alarm(g)
+				# A step is a maybe; something crashing over is not.
+				_alarm(g, now, crash)
 			# A fresh sighting, your own or yelled, beats a noise.
 			var told := g.memory != null and (g.memory.kind == "seen" or g.memory.kind == "called") and now - g.memory.at <= 2000
 			if spot != null and not told:
@@ -569,7 +792,7 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 	if not player:
 		var fallen := Props.spotted_by(g)
 		if fallen:
-			_alarm(g)
+			_alarm(g, now)
 			var fresh := g.memory != null and g.memory.kind != "noise" and now - g.memory.at <= 2000
 			if not fresh:
 				var m := Guard.Memory.new()
@@ -579,7 +802,7 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 				m.at = now
 				g.memory = m
 				g.planned_for = ""
-			thoughts.append({"by": g.name, "text": "¿Quién ha tirado %s?" % Props.NAMES[fallen.kind]})
+			thoughts.append({"by": g.name, "text": Text.t("GUARD_WHO_KNOCKED") % Props.name_of(fallen.kind)})
 
 	# Looked the clue's area over and nobody is there: noted, and the plan is
 	# open again, so the next decision goes somewhere else.
@@ -592,15 +815,25 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 		g.memory = null
 		g.search_spot = Vector2i(-1, -1)
 
-	# An alarm raised by sounds alone wears off.
-	if g.alert and g.calm_in != INF:
-		g.calm_in -= dt
-		if g.calm_in <= 0:
-			g.alert = false
-			g.calm_in = 0
-			g.memory = null
-			g.search_spot = Vector2i(-1, -1)
-			g.errand = ""
+	# Suspicion wears off a step at a time: a chase that lost you goes back to
+	# plain alert; alert holds a full minute past its last reason (for good
+	# once it is sure); a hunch fades after calm_after.
+	match g.suspicion:
+		3:
+			if not on_to(g, now) and now - g.suspicion_at > CHASE_LOST_MS:
+				g.suspicion = 2
+				g.suspicion_at = now
+		2:
+			if g.calm_in != INF and now - g.suspicion_at > ALERT_HOLD_MS:
+				g.suspicion = 1
+				g.suspicion_at = now
+				g.alert = false
+				g.memory = null
+				g.search_spot = Vector2i(-1, -1)
+				g.errand = ""
+		1:
+			if now - g.suspicion_at > tuning("calm_after") * 1000.0:
+				g.suspicion = 0
 
 	var dec := g.decision if g.decision else _default_decision(g)
 	var alert := g.alert
@@ -609,7 +842,7 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 	# colleague (warn_partners) beats lights; lights come last.
 	if on_to(g, now):
 		g.errand = ""
-	elif g.errand == "" and alert:
+	elif g.errand == "" and alert and feature("lights"):
 		var room := _switch_in_view(g, now)
 		if room:
 			g.errand = "lights"
@@ -633,6 +866,17 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 			g.path = Museum.bfs_path(_tile(g), room.switch_at)
 			if g.path.is_empty():
 				g.errand = ""
+
+	# On a post and nothing going on: back to it, and there, stand looking
+	# where it was told, the torch swinging a little either side.
+	if g.post.x >= 0 and g.suspicion == 0 and g.errand == "" and not on_to(g, now):
+		if _tile(g) == g.post:
+			g.path.clear()
+			g.dir = g.post_dir + sin(now / 1400.0) * 0.8
+			return
+		if g.path.is_empty() or g.target != g.post:
+			g.target = g.post
+			g.path = Museum.bfs_path(_tile(g), g.post)
 
 	# Standing still, sweeping the galleries in view.
 	if g.sweep > 0 and not g.sees_player:
@@ -754,7 +998,7 @@ static func _think(by: String, zone: Museum.Zone, now: float) -> void:
 	if now - _said_clear.get(key, -INF) < 20000:
 		return
 	_said_clear[key] = now
-	thoughts.append({"by": by, "text": "%s está despejada" % (zone.label if zone else "la zona")})
+	thoughts.append({"by": by, "text": Text.t("GUARD_ZONE_CLEAR") % (zone.label if zone else Text.t("GUARD_THE_ZONE"))})
 
 
 # --- Lights ------------------------------------------------------------------
@@ -824,7 +1068,8 @@ static func call_for_backup(saw_before: Dictionary, guards: Array[Guard], now: f
 			m.kind = "called"
 			m.at = now
 			g.memory = m
-			_alarm(g)
+			# A colleague yelling is no creak: straight on alert.
+			_alarm(g, now, true)
 			g.errand = ""
 			g.search_spot = Vector2i(-1, -1)
 			g.sweep = 0
@@ -874,8 +1119,10 @@ static func warn_partners(guards: Array[Guard], now: float) -> Array[Dictionary]
 			if me.calm_in == INF:
 				b.alert = true
 				b.calm_in = INF
+				b.suspicion = maxi(b.suspicion, 2)
+				b.suspicion_at = now
 			else:
-				_alarm(b)
+				_alarm(b, now, true)
 			if me.memory:
 				b.memory = me.memory.copy()
 				b.memory.kind = "called"

@@ -10,3 +10,6 @@ brain/__pycache__/
 
 .DS_Store
 /.claude/
+
+# Copias de seguridad de Blender
+*.blend1

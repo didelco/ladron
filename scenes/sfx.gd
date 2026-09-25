@@ -19,6 +19,10 @@ const BPM := 90.0
 const BARS := 8
 ## Sounds from the world that can ring at once; one more steals the oldest.
 const VOICES := 16
+## A noise this loud (Hearing's reach, in tiles) plays at full volume; the
+## loudest crashes go up to MAX_GAIN above it.
+const LOUD_REF := 14.0
+const MAX_GAIN := 2.0
 ## the music bus sits a little under the effects, at full volume
 const MUSIC_DB := -5.0
 
@@ -43,7 +47,8 @@ var _level := 0.6
 func _ready() -> void:
 	_buses()
 	_streams.step = _noise(0.05, 700.0, 0.35)
-	_streams.bump = _mix(_noise(0.14, 250.0, 0.8), _thump(0.25, 90.0, 50.0, 0.5))
+	# A shoulder into a wall: short, low and dry, no ring to it.
+	_streams.bump = _mix(_noise(0.045, 220.0, 0.7), _thump(0.09, 120.0, 60.0, 0.7))
 	_streams.shelf = _mix(_noise(0.3, 2600.0, 0.6), _bells([[1350.0, 0.0], [1720.0, 0.05], [2240.0, 0.11]], 0.35, 0.12))
 	_streams.alarm = _electric_bell(0.75)
 	_streams.shout = _mix(_tones([[420.0, 0.0, 0.16], [300.0, 0.18, 0.28]], "saw", 0.4, 0.72, 6.0), _noise(0.4, 1800.0, 0.12))
@@ -57,11 +62,27 @@ func _ready() -> void:
 	_streams.tick = _mix(_bells([[880.0, 0.0]], 0.25, 0.3), _noise(0.02, 3000.0, 0.3))
 	_streams.go = _mix(_bells([[587.3, 0.0], [740.0, 0.0], [880.0, 0.0], [1174.7, 0.0]], 0.9, 0.2), _thump(0.5, 110.0, 55.0, 0.6))
 	_streams.sting = _mix(_thump(0.9, 70.0, 38.0, 0.8), _tremolo_cluster(1.3, [1108.7, 1174.7, 1244.5], 0.06))
-	# Knocked over: a tin bin clattering and rolling, a bust smashing, a
-	# panel slapping flat on the floor.
-	_streams.bin = _mix(_mix(_noise(0.5, 3000.0, 0.55), _bells([[523.0, 0.0], [611.0, 0.12], [587.0, 0.26], [640.0, 0.38]], 0.3, 0.12)), _thump(0.3, 140.0, 70.0, 0.4))
-	_streams.bust = _mix(_mix(_thump(0.6, 90.0, 40.0, 0.9), _noise(0.7, 5000.0, 0.7)), _bells([[2637.0, 0.05], [3136.0, 0.09], [2349.0, 0.14], [3520.0, 0.2]], 0.25, 0.1))
-	_streams.panel = _mix(_thump(0.35, 180.0, 70.0, 0.8), _noise(0.25, 900.0, 0.8))
+	# Knocked over. Metal rings: the tin bin clangs, bounces and rattles to
+	# a stop. Stone and wood are dry: the bust cracks and smashes into a
+	# spray of chips, the panel slaps flat with a knock from its stand. The
+	# armour is a heavy crash of steel, then its pieces clanking all about.
+	_streams.bin = _mix(_mix(
+		_clang([[0.0, 1.0], [0.16, 0.55], [0.27, 0.35], [0.35, 0.22], [0.41, 0.14], [0.45, 0.09]], [612.0, 1587.0, 2291.0, 3413.0], 0.35, 0.5),
+		_debris(0.5, 14, 6000.0, 0.25, 1.0)), _thump(0.12, 170.0, 90.0, 0.4))
+	_streams.bust = _mix(_mix(_mix(
+		_thump(0.22, 110.0, 45.0, 1.0), _noise(0.07, 7000.0, 1.0)),
+		_debris(0.55, 26, 5000.0, 0.45, 0.8)), _debris(0.2, 6, 900.0, 0.8, 0.5))
+	_streams.panel = _mix(_mix(
+		_noise(0.06, 1600.0, 1.0), _thump(0.12, 150.0, 70.0, 0.9)),
+		_debris(0.18, 2, 1200.0, 0.6, 0.25))
+	_streams.armour = _mix(_mix(_mix(
+		_thump(0.2, 120.0, 55.0, 0.9),
+		_clang([[0.0, 1.0], [0.09, 0.7], [0.2, 0.5], [0.28, 0.45], [0.37, 0.3], [0.5, 0.22], [0.58, 0.12]], [431.0, 1123.0, 1874.0, 2710.0], 0.3, 0.45)),
+		_clang([[0.05, 0.6], [0.14, 0.4], [0.33, 0.35], [0.44, 0.2], [0.66, 0.1]], [789.0, 2040.0, 3150.0], 0.22, 0.3)),
+		_debris(0.7, 18, 4200.0, 0.3, 0.6))
+	# The same, knocked about once they are down: smaller, but a noise.
+	_streams.kick_metal = _clang([[0.0, 0.7], [0.1, 0.3], [0.16, 0.15]], [612.0, 1587.0, 2291.0], 0.2, 0.4)
+	_streams.kick_dry = _mix(_noise(0.04, 1400.0, 0.8), _debris(0.15, 4, 3000.0, 0.4, 0.2))
 	# A guard's boot on the marble: heavier and lower than a thief's step.
 	_streams.boot = _mix(_thump(0.14, 150.0, 70.0, 0.55), _noise(0.09, 520.0, 0.55))
 	# The menus: a soft wooden tick moving about, a two-note chime choosing,
@@ -133,8 +154,16 @@ func at(sound: String, pos: Vector3, volume := 1.0, unit := 6.0) -> void:
 	p.unit_size = unit
 	p.position = pos
 	# No two footsteps quite alike.
-	p.pitch_scale = randf_range(0.85, 1.15) if sound in ["step", "bump", "boot"] else 1.0
+	p.pitch_scale = randf_range(0.85, 1.15) if sound in ["step", "bump", "boot"] else (randf_range(0.93, 1.07) if sound in ["bin", "bust", "panel", "armour", "kick_metal", "kick_dry"] else 1.0)
 	p.play()
+
+
+## A noise the guards can hear, played as loud as it carries. Its loudness
+## is its reach in tiles (Hearing); a sound that reaches twice as far is
+## twice as loud here too, so what you hear is what they hear: a creeping
+## step is a whisper, a smashed bust is deafening.
+func noise(sound: String, pos: Vector3, loudness: float) -> void:
+	at(sound, pos, clampf(loudness / LOUD_REF, 0.03, MAX_GAIN), maxf(1.5, loudness * 0.4))
 
 
 ## A world player to use: an idle one, a new one while there are few, or
@@ -155,6 +184,13 @@ func _voice() -> AudioStreamPlayer3D:
 	_voices.erase(p)
 	_voices.append(p)
 	return p
+
+
+## Every sound there is, by name (the assets screen lists them).
+func sound_names() -> Array:
+	var out := _streams.keys()
+	out.sort()
+	return out
 
 
 ## Play a sound with no place: the interface, the end of a round.
@@ -501,6 +537,48 @@ func _tremolo_cluster(seconds: float, freqs: Array, gain: float) -> PackedFloat3
 		for f in freqs:
 			v += sin(TAU * f * t)
 		out[i] = v * gain * (0.5 + 0.5 * sin(TAU * 11.0 * t)) * exp(-t * 2.5)
+	return out
+
+
+## Metal struck and bouncing: every hit ([time, gain]) rings the same
+## inharmonic partials, the higher ones dying quickest, over a click.
+func _clang(hits: Array, partials: Array, ring: float, gain: float) -> PackedFloat32Array:
+	var total := 0.0
+	for h in hits:
+		total = maxf(total, h[0] + ring)
+	var out := PackedFloat32Array()
+	out.resize(int(total * RATE) + 1)
+	for h in hits:
+		var start := int(h[0] * RATE)
+		var n := int(ring * RATE)
+		var f_jitter := randf_range(0.98, 1.02)
+		for i in n:
+			var t := float(i) / RATE
+			var v := 0.0
+			for k in partials.size():
+				v += sin(TAU * partials[k] * f_jitter * t) * exp(-t * (6.0 + 5.0 * k) / ring) / (1.0 + 0.6 * k)
+			var click := (randf() * 2.0 - 1.0) * exp(-t * 900.0)
+			out[start + i] += (v * minf(1.0, t / 0.0015) + click) * h[1] * gain
+	return out
+
+
+## Dry debris: `count` tiny clicks of filtered noise scattered over the
+## first `seconds`, thinning out and dying away.
+func _debris(seconds: float, count: int, cutoff: float, gain: float, spread: float) -> PackedFloat32Array:
+	var out := PackedFloat32Array()
+	out.resize(int(seconds * RATE) + int(0.03 * RATE))
+	var a := 1.0 - exp(-TAU * cutoff / RATE)
+	for c in count:
+		# Bunched up at the start, like chips landing.
+		var at := pow(randf(), 1.8) * seconds * spread
+		var start := int(at * RATE)
+		var len := int(randf_range(0.006, 0.02) * RATE)
+		var g := gain * randf_range(0.4, 1.0) * (1.0 - at / seconds * 0.7)
+		var y := 0.0
+		for i in len:
+			y += a * (randf() * 2.0 - 1.0 - y)
+			if start + i < out.size():
+				out[start + i] += y * exp(-6.0 * i / len) * g * 2.0
 	return out
 
 

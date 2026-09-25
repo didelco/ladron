@@ -15,10 +15,11 @@ extends Node3D
 
 ## the guards think this often
 const THINK_EVERY_MS := 1100.0
-const SIZE_NAMES := {"small": "CHICO", "medium": "MEDIANO", "large": "GRANDE"}
-const DIFFICULTY_NAMES := {"easy": "FÁCIL", "medium": "MEDIA", "hard": "DIFÍCIL"}
+## The words on screen are keys into Text (locale/texts.csv).
+const SIZE_NAMES := {"small": "MENU_SIZE_SMALL", "medium": "MENU_SIZE_MEDIUM", "large": "MENU_SIZE_LARGE"}
+const DIFFICULTY_NAMES := {"easy": "MENU_DIFFICULTY_EASY", "medium": "MENU_DIFFICULTY_MEDIUM", "hard": "MENU_DIFFICULTY_HARD"}
 ## What a guard yells on spotting you.
-const SHOUTS := ["¡ALTO!", "¡QUIETO!", "¡PARA!"]
+const SHOUTS := ["HUD_SHOUT_1", "HUD_SHOUT_2", "HUD_SHOUT_3"]
 
 const COLOURS := {
 	"night": Color("#0f0d14"),
@@ -26,6 +27,10 @@ const COLOURS := {
 	"thief_dark": Color("#12705f"),
 	"thief2": Color("#f0a13a"),
 	"thief2_dark": Color("#8a5410"),
+	"thief3": Color("#b07cff"),
+	"thief3_dark": Color("#5b3a99"),
+	"thief4": Color("#4dabf7"),
+	"thief4_dark": Color("#1c5d99"),
 	"guard": Color("#9b2c3f"),
 	"guard_dark": Color("#5e1826"),
 	"ink": Color("#08070c"),
@@ -48,6 +53,13 @@ const KEYS := {
 ## A fixed handful of room lights, handed to the lit rooms nearest the camera.
 const ROOM_LIGHT_POOL := 4
 const CONE_RAYS := 40
+## The floor cone's dim throw, as a share of its bright pool.
+const CONE_DIM := 0.4
+## How soft the cone's edges are: between the two bands and at the far rim
+## (metres), and at the sides (share of the cone's width on each side).
+const CONE_BAND_FEATHER := 0.7
+const CONE_RIM_FEATHER := 1.8
+const CONE_SIDE_FEATHER := 0.2
 ## Air thin enough not to veil the plan from 16 m up; the lights make up for it
 ## by scattering several times their share into it, so the beams still show.
 const FOG_DENSITY := 0.012
@@ -92,6 +104,9 @@ var effects_volume := 100
 var settings_from := "title"
 ## the settings page on show: "" for the main one, or "sound", "screen", "pads"
 var settings_page := ""
+## the window's size (Settings.WINDOW_SIZES index, -1 auto) and the UI's
+var window := -1
+var ui_scale := 100
 var rumble := true
 var rumble_strength := 100
 var deadzone := 50
@@ -112,9 +127,11 @@ var level := 1
 var thieves: Array[Thief] = []
 var guards: Array[Guard] = []
 var phase := "title"
-var stride := [0.0, 0.0]
+var stride := [0.0, 0.0, 0.0, 0.0]
 ## the push key held last frame, per thief: one push per press
-var push_held := [false, false]
+var push_held := [false, false, false, false]
+## how many seats the player-select screen is filling
+var join_count := 2
 var last_think := 0.0
 var last_spread := 0.0
 var think_tick := 0
@@ -130,6 +147,9 @@ var guard_nodes: Array[Figure] = []
 var torches: Array[SpotLight3D] = []
 var room_lights: Array[OmniLight3D] = []
 var cones: Array[MeshInstance3D] = []
+## over each guard's head: its suspicion, and what was last drawn there
+var suspicion_marks: Array[Sprite3D] = []
+var suspicion_keys: Array[String] = []
 var switch_marks: Array[MeshInstance3D] = []
 var lit_washes: Array[MeshInstance3D] = []
 var loot_node: Node3D
@@ -140,15 +160,25 @@ var ear: AudioListener3D
 ## each guard's position last frame and the distance walked since its last step
 var guard_steps: Array = []
 ## the alarm panel, two thieves only: its lamp and glow, red till held
-var panel_mat: StandardMaterial3D
-var panel_glow: OmniLight3D
+## each alarm panel's lamp and its glow (two for a gang of four)
+var panel_mats: Array[StandardMaterial3D] = []
+var panel_glows: Array[OmniLight3D] = []
 ## the piece turning on its own stand, on the loot screen
 var preview: SubViewport
+var preview_cam: Camera3D
+## the assets screen: which tab, and which item of it
+var assets_tab := "loot"
+var assets_index := 0
 var preview_pivot: Node3D
+## the page of the prologue and of the briefing before a night on screen
+var prologue_page := 0
+var brief_page := 0
 var preview_spot: OmniLight3D
 
 
 func _ready() -> void:
+	# The words first: everything below builds some.
+	Text.setup()
 	# The map: Y or Select/Back on any pad (M on the keyboard, by hand).
 	if not InputMap.has_action("map"):
 		InputMap.add_action("map")
@@ -197,7 +227,7 @@ func _ready() -> void:
 		if "--two" in OS.get_cmdline_user_args():
 			players = 2
 			_new_round(1)
-		_show_mission()
+		_show_brief(_brief_pages().size() - 1)
 		get_tree().create_timer(2.0).timeout.connect(_start_playing)
 		# --map: and take the map out a moment later.
 		if "--map" in OS.get_cmdline_user_args():
@@ -210,15 +240,15 @@ func _show_title() -> void:
 	phase = "title"
 	_drop_preview()
 	hud.show_menu([
-		{"title": "¡APAGA LA LUZ\nQUE TE PILLO!", "size": 64},
+		{"title": Text.t("MENU_TITLE"), "size": 64},
 		{"cards": [
-			{"title": "HISTORIA", "text": "Diez noches de aventura", "stage": MenuStage.make("story"), "call": _show_story_menu, "colour": Hud.C.safe},
-			{"title": "GENERATIVO", "text": "Un museo nuevo cada vez", "stage": MenuStage.make("generative"), "call": _show_generative_menu, "colour": Hud.C.gold},
+			{"title": Text.t("MENU_STORY"), "text": Text.t("MENU_STORY_TEXT"), "stage": MenuStage.make("story"), "call": _show_story_menu, "colour": Hud.C.safe},
+			{"title": Text.t("MENU_GENERATIVE"), "text": Text.t("MENU_GENERATIVE_TEXT"), "stage": MenuStage.make("generative"), "call": _show_generative_menu, "colour": Hud.C.gold},
 		], "width": 250},
 		{"gap": 18},
-		{"buttons": [{"text": "SETTINGS", "call": _show_settings.bind("title"), "colour": Hud.C.dim}], "small": true},
+		{"buttons": [{"text": Text.t("MENU_SETTINGS"), "call": _show_settings.bind("title"), "colour": Hud.C.dim}], "small": true},
 		{"gap": 10},
-		{"buttons": [{"text": "SALIR", "call": _quit, "colour": Hud.C.dim}], "small": true},
+		{"buttons": [{"text": Text.t("MENU_QUIT"), "call": _quit, "colour": Hud.C.dim}], "small": true},
 	])
 
 
@@ -239,16 +269,18 @@ func _show_story_menu() -> void:
 	var loot: Dictionary = Story.level(story_pick).loot
 	_build_preview(loot)
 	hud.show_menu([
-		{"title": "MODO HISTORIA", "size": 44},
-		{"text": "La Banda del Calcetín contra el Barón Von Bostezo", "colour": Hud.C.gold, "size": 17},
+		{"title": Text.t("MENU_STORY_TITLE"), "size": 44},
+		{"text": Text.t("MENU_STORY_TAGLINE"), "colour": Hud.C.gold, "size": 17},
 		{"nights": nights},
 		{"picture": preview.get_texture(), "smooth": true, "height": 110},
-		{"text": "NOCHE %d · %s" % [story_pick, loot.name.to_upper()], "colour": Color(loot.colour), "size": 17, "id": "night"},
+		{"text": Text.t("MENU_NIGHT_PIECE") % [story_pick, loot.name.to_upper()], "colour": Color(loot.colour), "size": 17, "id": "night"},
 		{"cards": [
-			{"title": "1 LADRÓN", "text": "Tú solo contra el museo", "stage": MenuStage.make("players:1"), "call": _start.bind("story", 1), "colour": COLOURS.thief},
-			{"title": "2 LADRONES", "text": "Uno sujeta la alarma, otro abre", "stage": MenuStage.make("players:2"), "call": _start.bind("story", 2), "colour": COLOURS.thief2},
+			{"title": Text.t("MENU_PLAYERS_1"), "text": Text.t("MENU_PLAYERS_1_TEXT"), "stage": MenuStage.make("players:1"), "call": _start.bind("story", 1), "colour": COLOURS.thief},
+			{"title": Text.t("MENU_PLAYERS_2"), "text": Text.t("MENU_PLAYERS_2_TEXT"), "stage": MenuStage.make("players:2"), "call": _start.bind("story", 2), "colour": COLOURS.thief2},
+			{"title": Text.t("MENU_PLAYERS_3"), "text": Text.t("MENU_PLAYERS_3_TEXT"), "stage": MenuStage.make("players:3"), "call": _start.bind("story", 3), "colour": COLOURS.thief3},
+			{"title": Text.t("MENU_PLAYERS_4"), "text": Text.t("MENU_PLAYERS_4_TEXT"), "stage": MenuStage.make("players:4"), "call": _start.bind("story", 4), "colour": COLOURS.thief4},
 		], "width": 150},
-		{"buttons": [{"text": "< VOLVER", "call": _show_title, "colour": Hud.C.dim}], "row": true},
+		{"buttons": [{"text": Text.t("MENU_BACK"), "call": _show_title, "colour": Hud.C.dim}], "row": true},
 	])
 
 
@@ -260,30 +292,32 @@ func _pick_night(n: int) -> void:
 	story_pick = n
 	var loot: Dictionary = Story.level(n).loot
 	_preview_piece(loot)
-	hud.set_text("night", "NOCHE %d · %s" % [n, loot.name.to_upper()], Color(loot.colour))
+	hud.set_text("night", Text.t("MENU_NIGHT_PIECE") % [n, loot.name.to_upper()], Color(loot.colour))
 
 
 ## The generative mode: difficulty and museum size as cards, then play with
-## one thief or two.
+## one thief, two or three.
 func _show_generative_menu() -> void:
 	phase = "menu"
 	var levels: Array = []
 	for k in ["easy", "medium", "hard"]:
-		levels.append({"title": DIFFICULTY_NAMES[k], "stage": MenuStage.make("guards:" + k), "call": _pick_difficulty.bind(k),
+		levels.append({"title": Text.t(DIFFICULTY_NAMES[k]), "stage": MenuStage.make("guards:" + k), "call": _pick_difficulty.bind(k),
 			"colour": {"easy": Hud.C.green, "medium": Hud.C.gold, "hard": Hud.C.alert}[k], "selected": Sim.difficulty == k, "focus": Sim.difficulty == k, "title_size": 12})
 	var sizes: Array = []
 	for k in ["small", "medium", "large"]:
-		sizes.append({"title": SIZE_NAMES[k], "stage": MenuStage.make("museum:" + k), "call": _pick_size.bind(k),
+		sizes.append({"title": Text.t(SIZE_NAMES[k]), "stage": MenuStage.make("museum:" + k), "call": _pick_size.bind(k),
 			"colour": Hud.C.safe, "selected": size == k, "title_size": 12})
 	hud.show_menu([
-		{"title": "MODO GENERATIVO", "size": 40},
+		{"title": Text.t("MENU_GENERATIVE_TITLE"), "size": 40},
 		{"cards": levels, "width": 140},
 		{"cards": sizes, "width": 140},
 		{"cards": [
-			{"title": "▶ 1 LADRÓN", "stage": MenuStage.make("players:1"), "call": _start.bind("generative", 1), "colour": COLOURS.thief, "title_size": 12},
-			{"title": "▶ 2 LADRONES", "stage": MenuStage.make("players:2"), "call": _start.bind("generative", 2), "colour": COLOURS.thief2, "title_size": 12},
+			{"title": Text.t("MENU_PLAY_1"), "stage": MenuStage.make("players:1"), "call": _start.bind("generative", 1), "colour": COLOURS.thief, "title_size": 12},
+			{"title": Text.t("MENU_PLAY_2"), "stage": MenuStage.make("players:2"), "call": _start.bind("generative", 2), "colour": COLOURS.thief2, "title_size": 12},
+			{"title": Text.t("MENU_PLAY_3"), "stage": MenuStage.make("players:3"), "call": _start.bind("generative", 3), "colour": COLOURS.thief3, "title_size": 12},
+			{"title": Text.t("MENU_PLAY_4"), "stage": MenuStage.make("players:4"), "call": _start.bind("generative", 4), "colour": COLOURS.thief4, "title_size": 12},
 		], "width": 140},
-		{"buttons": [{"text": "< VOLVER", "call": _show_title, "colour": Hud.C.dim}], "row": true},
+		{"buttons": [{"text": Text.t("MENU_BACK"), "call": _show_title, "colour": Hud.C.dim}], "row": true},
 	])
 
 
@@ -300,9 +334,9 @@ func _pick_size(k: String) -> void:
 
 
 func _start(which: String, n: int, picked := false) -> void:
-	# Two thieves: first, each one says which controls are theirs.
-	if n == 2 and not picked:
-		_show_join(which)
+	# A gang: first, each one says which controls are theirs.
+	if n >= 2 and not picked:
+		_show_join(which, n)
 		return
 	mode = which
 	players = n
@@ -315,21 +349,26 @@ func _start(which: String, n: int, picked := false) -> void:
 			return
 	else:
 		_new_round(1)
-	_show_loot()
+	_show_brief(0)
 
 
 ## The keys on each side of a shared keyboard: pressing any of them on the
 ## player-select screen takes that side.
 const KB_LEFT := [KEY_W, KEY_A, KEY_S, KEY_D, KEY_C, KEY_E, KEY_Q, KEY_SPACE, KEY_SHIFT, KEY_TAB]
 const KB_RIGHT := [KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_ENTER, KEY_KP_ENTER, KEY_MINUS, KEY_SLASH, KEY_PERIOD, KEY_COMMA]
+## The middle of the keyboard, for a third thief: IJKL, U and O.
+const KB_MID := [KEY_I, KEY_J, KEY_K, KEY_L, KEY_U, KEY_O]
+## The number pad, for a fourth: 8 4 5 6, 0 and +.
+const KB_PAD := [KEY_KP_8, KEY_KP_4, KEY_KP_5, KEY_KP_6, KEY_KP_0, KEY_KP_ADD]
 
 
-## Player select, like Mario Kart 64: two seats, each taken by whoever
-## presses a button on their pad or a key on their side of the keyboard.
-## P1 is always teal and P2 always orange; the first to press is P1.
-func _show_join(which: String) -> void:
+## Player select, like Mario Kart 64: a seat a thief, each taken by whoever
+## presses a button on their pad or a key on their part of the keyboard.
+## P1 is always teal, P2 orange and P3 purple; the first to press is P1.
+func _show_join(which: String, count := 2) -> void:
 	phase = "join"
 	join_for = which
+	join_count = count
 	joining.clear()
 	joined_at = -INF
 	_draw_join()
@@ -337,26 +376,28 @@ func _show_join(which: String) -> void:
 
 func _draw_join() -> void:
 	var cards: Array = []
-	for i in 2:
+	for i in join_count:
 		var seat: String = joining[i] if i < joining.size() else ""
-		cards.append({"title": "JUGADOR %d" % (i + 1), "text": _seat_label(seat) if seat != "" else "Pulsa un botón",
-			"stage": MenuStage.make("seat:%d" % (i + 1)), "colour": COLOURS.thief if i == 0 else COLOURS.thief2,
+		cards.append({"title": Text.t("JOIN_PLAYER") % (i + 1), "text": _seat_label(seat) if seat != "" else Text.t("JOIN_PRESS"),
+			"stage": MenuStage.make("seat:%d" % (i + 1)), "colour": _thief_colours()[i],
 			"selected": seat != "", "static": true, "animate": seat != "", "dim": seat == "", "title_size": 12})
 	hud.show_menu([
-		{"title": "¿QUIÉN JUEGA?", "size": 40},
+		{"title": Text.t("JOIN_TITLE"), "size": 40},
 		{"cards": cards, "width": 200},
-		{"text": "Cada uno pulsa un botón de su mando, o una tecla de su lado del teclado (WASD o flechas)", "size": 16},
-		{"text": "¡LISTOS!" if joining.size() == 2 else "Esc o B: quitar al último · volver", "size": 16, "colour": Hud.C.gold if joining.size() == 2 else Hud.C.dim},
+		{"text": Text.t("JOIN_HOW"), "size": 16},
+		{"text": Text.t("JOIN_READY") if joining.size() == join_count else Text.t("JOIN_UNDO"), "size": 16, "colour": Hud.C.gold if joining.size() == join_count else Hud.C.dim},
 	])
 
 
 func _seat_label(seat: String) -> String:
 	match seat:
-		"kb_left": return "Teclado · WASD"
-		"kb_right": return "Teclado · flechas"
-		"any": return "Teclado y mandos"
+		"kb_left": return Text.t("SEAT_KB_LEFT")
+		"kb_right": return Text.t("SEAT_KB_RIGHT")
+		"kb_pad": return Text.t("SEAT_KB_PAD")
+		"kb_mid": return Text.t("SEAT_KB_MID")
+		"any": return Text.t("SEAT_ANY")
 	var pad := int(seat.substr(4))
-	return "Mando %d · %s" % [pad + 1, Input.get_joy_name(pad).left(18)]
+	return Text.t("SEAT_PAD") % [pad + 1, Input.get_joy_name(pad).left(18)]
 
 
 ## A press on the player-select screen: it takes a seat, or (Esc, B) frees
@@ -371,12 +412,16 @@ func _join_input(event: InputEvent) -> void:
 			seat = "kb_left"
 		elif event.physical_keycode in KB_RIGHT or event.keycode in KB_RIGHT:
 			seat = "kb_right"
+		elif join_count >= 3 and (event.physical_keycode in KB_MID or event.keycode in KB_MID):
+			seat = "kb_mid"
+		elif join_count >= 4 and (event.physical_keycode in KB_PAD or event.keycode in KB_PAD):
+			seat = "kb_pad"
 	elif event is InputEventJoypadButton and event.pressed:
 		if event.button_index == JOY_BUTTON_B:
 			_unjoin()
 			return
 		seat = "pad:%d" % event.device
-	if seat == "" or seat in joining or joining.size() >= 2:
+	if seat == "" or seat in joining or joining.size() >= join_count:
 		return
 	var now := Time.get_ticks_msec()
 	if now - joined_at < 450:
@@ -386,11 +431,11 @@ func _join_input(event: InputEvent) -> void:
 	sfx.ui("ok")
 	_rumble_pad(seat, 0.3, 0.15)
 	_draw_join()
-	if joining.size() == 2:
+	if joining.size() == join_count:
 		get_tree().create_timer(0.8).timeout.connect(func() -> void:
-			if phase == "join" and joining.size() == 2:
+			if phase == "join" and joining.size() == join_count:
 				seats.assign(joining)
-				_start(join_for, 2, true))
+				_start(join_for, join_count, true))
 
 
 func _unjoin() -> void:
@@ -405,63 +450,100 @@ func _unjoin() -> void:
 	_draw_join()
 
 
-func _show_prologue() -> void:
+## The tale, a paragraph a page, whole at once: turn back, go on, or skip
+## the lot and go straight to the night.
+func _show_prologue(page := 0) -> void:
 	phase = "prologue"
+	prologue_page = page
+	var pages := Story.prologue()
+	var last := page == pages.size() - 1
 	hud.show_menu([
-		{"title": "HABÍA UNA VEZ...", "size": 44},
-		{"text": Story.PROLOGUE, "size": 18, "wrap": true},
-		{"buttons": [{"text": "▶ ¡VAMOS!", "call": _show_loot}]},
+		{"title": Text.t("PROLOGUE_TITLE"), "size": 44},
+		{"stage": MenuStage.make("story"), "height": 220},
+		{"text": pages[page], "size": 19, "wrap": true},
+		{"text": _dots(page, pages.size()), "colour": Hud.C.dim, "size": 14},
+		{"buttons": [
+			{"text": Text.t("MENU_BACK") if page == 0 else Text.t("MENU_PREV"), "call": _prologue_back, "colour": Hud.C.dim},
+			{"text": Text.t("PROLOGUE_GO") if last else Text.t("MENU_NEXT"), "call": _show_brief.bind(0) if last else _show_prologue.bind(page + 1)},
+		], "row": true, "focus": 1},
+		{"buttons": [{"text": Text.t("MENU_SKIP"), "call": _skip_story, "colour": Hud.C.dim}], "small": true},
 	])
+
+
+## Straight to the night: past the tale and the briefing, into the countdown.
+func _skip_story() -> void:
+	_start_countdown()
+
+
+func _prologue_back() -> void:
+	if prologue_page > 0:
+		_show_prologue(prologue_page - 1)
+	else:
+		_show_story_menu()
+
+
+## ● ○ ○ : where you are in a run of pages.
+func _dots(at: int, count: int) -> String:
+	var out: Array[String] = []
+	for i in count:
+		out.append("●" if i == at else "○")
+	return " ".join(out)
 
 
 ## Sound and music, their volumes, the screen and the IA panel. Opens from
 ## the title and from the pause. Each line is a setting (Hud._stepper): Enter
 ## or a click moves it on, ← and → move it down and up; each change is saved.
 func _show_settings(from: String, page := "") -> void:
+	_drop_preview()
 	settings_from = from
 	settings_page = page
 	phase = "settings"
 	var keys: Array = {
 		"": ["ia"],
 		"sound": ["sound", "music", "music_volume", "effects_volume"],
-		"screen": ["fullscreen", "vsync"],
+		"screen": ["fullscreen", "window", "ui_scale", "vsync"],
 		"pads": ["rumble", "rumble_strength", "deadzone"],
 	}[page]
 	var rows: Array = []
 	if page == "":
-		rows.append({"text": "SONIDO >", "call": _show_settings.bind(from, "sound")})
-		rows.append({"text": "PANTALLA >", "call": _show_settings.bind(from, "screen")})
-		rows.append({"text": "CONTROLES >", "call": _show_settings.bind(from, "pads")})
+		rows.append({"text": Text.t("SETTINGS_SOUND_PAGE"), "call": _show_settings.bind(from, "sound")})
+		rows.append({"text": Text.t("SETTINGS_SCREEN_PAGE"), "call": _show_settings.bind(from, "screen")})
+		rows.append({"text": Text.t("SETTINGS_PADS_PAGE"), "call": _show_settings.bind(from, "pads")})
+		rows.append({"text": Text.t("SETTINGS_ASSETS_PAGE"), "call": _show_assets.bind("loot", 0)})
 	for k in keys:
 		rows.append({"text": _setting_text(k), "step": _step_setting.bind(k)})
-	rows.append({"text": "< VOLVER", "call": _settings_back, "colour": Hud.C.dim})
-	var title: String = {"": "SETTINGS", "sound": "SONIDO", "screen": "PANTALLA", "pads": "CONTROLES"}[page]
+	rows.append({"text": Text.t("MENU_BACK"), "call": _settings_back, "colour": Hud.C.dim})
+	var title := Text.t({"": "SETTINGS_TITLE", "sound": "SETTINGS_SOUND_TITLE", "screen": "SETTINGS_SCREEN_TITLE", "pads": "SETTINGS_PADS_TITLE"}[page])
 	var items: Array = [{"title": title, "size": 48}, {"buttons": rows}]
 	match page:
 		"sound":
-			items.append({"text": "← y → para bajar y subir el volumen · N silencia todo", "size": 16, "colour": Hud.C.dim})
+			items.append({"text": Text.t("SETTINGS_SOUND_HELP"), "size": 16, "colour": Hud.C.dim})
 		"pads":
 			var pads := Input.get_connected_joypads()
 			var names: Array = pads.map(func(d): return "%d: %s" % [d + 1, Input.get_joy_name(d)])
-			items.append({"text": ("Mandos: " + " · ".join(names)) if not pads.is_empty() else "No hay mandos conectados", "size": 16, "colour": Hud.C.gold})
-			items.append({"text": "Teclado: P1 WASD y C (a gatas) · P2 flechas y - o /", "size": 16})
-			items.append({"text": "Mando: stick o cruceta, A o B a gatas, Start pausa", "size": 16})
+			items.append({"text": (Text.t("SETTINGS_PADS_LIST") % " · ".join(names)) if not pads.is_empty() else Text.t("SETTINGS_NO_PADS"), "size": 16, "colour": Hud.C.gold})
+			items.append({"text": Text.t("SETTINGS_KEYS_HELP"), "size": 16})
+			items.append({"text": Text.t("SETTINGS_PAD_HELP"), "size": 16})
 	hud.show_menu(items)
 
 
 func _setting_text(key: String) -> String:
-	var yes := func(on: bool) -> String: return "SÍ" if on else "NO"
+	var yes := func(on: bool) -> String: return Text.t("SETTINGS_YES") if on else Text.t("SETTINGS_NO")
 	match key:
-		"sound": return "SONIDO: %s  (N)" % yes.call(sound_on)
-		"music": return "MÚSICA: %s" % yes.call(music_on)
-		"music_volume": return "VOL. MÚSICA %s" % _volume_bar(music_volume)
-		"effects_volume": return "VOL. EFECTOS %s" % _volume_bar(effects_volume)
-		"fullscreen": return "PANTALLA COMPLETA: %s" % yes.call(fullscreen)
-		"vsync": return "V-SYNC: %s" % yes.call(vsync)
-		"ia": return "PANEL IA: %s" % yes.call(show_ia)
-		"rumble": return "VIBRACIÓN: %s" % yes.call(rumble)
-		"rumble_strength": return "FUERZA %s" % _volume_bar(rumble_strength)
-		"deadzone": return "ZONA MUERTA STICK: %d%%" % deadzone
+		"sound": return Text.t("SETTINGS_SOUND") % yes.call(sound_on)
+		"music": return Text.t("SETTINGS_MUSIC") % yes.call(music_on)
+		"music_volume": return Text.t("SETTINGS_MUSIC_VOLUME") % _volume_bar(music_volume)
+		"effects_volume": return Text.t("SETTINGS_EFFECTS_VOLUME") % _volume_bar(effects_volume)
+		"fullscreen": return Text.t("SETTINGS_FULLSCREEN") % yes.call(fullscreen)
+		"vsync": return Text.t("SETTINGS_VSYNC") % yes.call(vsync)
+		"window":
+			var w := Settings.window_size(window)
+			return Text.t("SETTINGS_WINDOW_AUTO" if window < 0 else "SETTINGS_WINDOW") % [w.x, w.y]
+		"ui_scale": return Text.t("SETTINGS_UI_SCALE") % ui_scale
+		"ia": return Text.t("SETTINGS_IA") % yes.call(show_ia)
+		"rumble": return Text.t("SETTINGS_RUMBLE") % yes.call(rumble)
+		"rumble_strength": return Text.t("SETTINGS_RUMBLE_STRENGTH") % _volume_bar(rumble_strength)
+		"deadzone": return Text.t("SETTINGS_DEADZONE") % deadzone
 	return key
 
 
@@ -483,7 +565,15 @@ func _step_setting(dir: int, key: String) -> String:
 		"ia": _toggle_ia()
 		"fullscreen", "vsync":
 			set(key, not get(key))
-			Settings.apply_display(fullscreen, vsync)
+			Settings.apply_display(fullscreen, vsync, window, key == "fullscreen")
+		"window":
+			# Auto, then each size that fits, round again.
+			var count := Settings.fitting_sizes().size()
+			window = posmod(window + 1 + (1 if dir >= 0 else -1), count + 1) - 1
+			Settings.apply_display(fullscreen, vsync, window)
+		"ui_scale":
+			ui_scale = Settings.UI_SCALE_MIN if dir == 0 and ui_scale >= Settings.UI_SCALE_MAX else clampi(ui_scale + (10 if dir >= 0 else -10), Settings.UI_SCALE_MIN, Settings.UI_SCALE_MAX)
+			_apply_ui_scale()
 		"rumble":
 			rumble = not rumble
 			# Feel it straight away.
@@ -532,6 +622,8 @@ func _load_settings() -> void:
 	size = s.size
 	fullscreen = s.fullscreen
 	vsync = s.vsync
+	window = s.window
+	ui_scale = s.ui_scale
 	music_volume = s.music_volume
 	effects_volume = s.effects_volume
 	rumble = s.rumble
@@ -541,18 +633,118 @@ func _load_settings() -> void:
 	AudioServer.set_bus_mute(0, not sound_on)
 	sfx.set_music(music_on)
 	sfx.set_volumes(music_volume / 100.0, effects_volume / 100.0)
-	Settings.apply_display(fullscreen, vsync)
+	Settings.apply_display(fullscreen, vsync, window)
+	_apply_ui_scale()
+
+
+## Menus and HUD drawn bigger or smaller, whatever the window's size: the
+## 2D is laid out for 1280×720 and scaled to the window, times this.
+func _apply_ui_scale() -> void:
+	get_window().content_scale_factor = ui_scale / 100.0
 
 
 func _save_settings() -> void:
 	Settings.write({
 		"sound": sound_on, "music": music_on, "ia": show_ia,
 		"difficulty": Sim.difficulty, "size": size,
-		"fullscreen": fullscreen, "vsync": vsync,
+		"fullscreen": fullscreen, "vsync": vsync, "window": window, "ui_scale": ui_scale,
 		"music_volume": music_volume, "effects_volume": effects_volume,
 		"rumble": rumble, "rumble_strength": rumble_strength,
 		"deadzone": deadzone,
 	})
+
+
+## Everything the game is made of, to look at: the pieces, the characters,
+## the things that fall over, the sounds and the map's marks. Opens from the
+## settings; a tab a page, ← → (or the buttons) along the pieces and props.
+const ASSET_TABS := {"loot": "ASSETS_TAB_LOOT", "people": "ASSETS_TAB_PEOPLE", "props": "ASSETS_TAB_PROPS", "sounds": "ASSETS_TAB_SOUNDS", "map": "ASSETS_TAB_MAP"}
+
+
+func _asset_loot() -> Array:
+	var out: Array = []
+	var names := {}
+	for n in range(1, Story.count() + 1):
+		out.append(Story.level(n).loot)
+		names[Story.level(n).loot.name] = true
+	for raw in Heist.LOOT:
+		var l := Heist.translated(raw)
+		if not names.has(l.name):
+			out.append(l)
+	return out
+
+
+func _show_assets(tab: String, index: int) -> void:
+	phase = "assets"
+	assets_tab = tab
+	var tabs: Array = []
+	for k in ASSET_TABS:
+		tabs.append({"text": Text.t(ASSET_TABS[k]), "call": _show_assets.bind(k, 0), "colour": Hud.C.gold if k == tab else Hud.C.dim, "selected": k == tab})
+	var items: Array = [{"title": Text.t("ASSETS_TITLE"), "size": 44}, {"buttons": tabs, "row": true, "small": true, "width": 190, "focus": ASSET_TABS.keys().find(tab)}, {"gap": 8}]
+	var count := 0
+	match tab:
+		"loot":
+			var list := _asset_loot()
+			count = list.size()
+			index = posmod(index, count)
+			var loot: Dictionary = list[index]
+			_build_preview(loot)
+			items.append({"picture": preview.get_texture(), "smooth": true, "height": 260})
+			items.append({"title": loot.name.to_upper(), "size": 26, "colour": Color(loot.colour)})
+			items.append({"text": "%s · %s" % [loot.blurb, loot.shape], "colour": Hud.C.gold})
+		"props":
+			var kinds: Array = Props.KINDS
+			count = kinds.size()
+			index = posmod(index, count)
+			_build_preview()
+			_preview_node(PropsView.model(kinds[index]), Color("#b8a888"), 2.0, 0.6)
+			items.append({"picture": preview.get_texture(), "smooth": true, "height": 260})
+			items.append({"title": Props.name_of(kinds[index]).to_upper(), "size": 26})
+			items.append({"text": Text.t("ASSETS_FALL_METAL" if kinds[index] in ["bin", "armour"] else "ASSETS_FALL_DRY"), "colour": Hud.C.gold})
+		"people":
+			_drop_preview()
+			var cards: Array = []
+			for c in [["players:1", "ASSETS_PEOPLE_THIEF"], ["players:2", "ASSETS_PEOPLE_TWO"], ["guards:easy", "ASSETS_PEOPLE_SLEEPY"], ["guards:hard", "ASSETS_PEOPLE_THREE"]]:
+				cards.append({"title": Text.t(c[1]), "stage": MenuStage.make(c[0]), "static": true, "animate": true})
+			items.append({"cards": cards.slice(0, 2), "width": 300})
+			items.append({"cards": cards.slice(2), "width": 300})
+		"sounds":
+			_drop_preview()
+			# One sound at a time, like the pieces: its name and a button to hear it.
+			var names: Array = sfx.sound_names()
+			count = names.size()
+			index = posmod(index, count)
+			items.append({"gap": 60})
+			items.append({"title": names[index].to_upper(), "size": 40})
+			items.append({"gap": 30})
+			items.append({"buttons": [{"text": Text.t("ASSETS_LISTEN"), "call": sfx.ui.bind(names[index], 1.0)}], "big": true, "focus": 0})
+			items.append({"gap": 40})
+		"map":
+			_drop_preview()
+			items.append({"text": Text.t("ASSETS_MAP_TEXT"), "colour": Hud.C.dim})
+			items.append({"legend": ["thief", "gem", "exit", "guard"], "thieves": _thief_colours(), "loot": Color("#74c0fc")})
+			items.append({"legend": ["prop", "route", "panel"]})
+			items.append({"text": Text.t("ASSETS_MAP_MARKS"), "colour": Hud.C.gold})
+	assets_index = index
+	if count > 1:
+		items.append({"text": "%d / %d" % [index + 1, count], "colour": Hud.C.dim, "size": 14})
+		items.append({"buttons": [
+			{"text": Text.t("MENU_PREVIOUS"), "call": _show_assets.bind(tab, index - 1), "colour": Hud.C.dim},
+			{"text": Text.t("MENU_NEXT"), "call": _show_assets.bind(tab, index + 1)},
+		# On the sounds, Enter plays the one on screen; elsewhere it moves on.
+		], "row": true, "focus": -1 if tab == "sounds" else 1})
+	items.append({"buttons": [{"text": Text.t("MENU_BACK"), "call": _show_settings.bind(settings_from), "colour": Hud.C.dim}], "small": true})
+	hud.show_menu(items)
+
+
+## Put any model on the preview's stand, lit in this colour, framed to span.
+func _preview_node(node: Node3D, light: Color, span: float, lift: float) -> void:
+	for c in preview_pivot.get_children():
+		c.queue_free()
+	preview_spot.light_color = light
+	preview_cam.size = span
+	preview_cam.position = preview_cam.basis.z * 10.0 + Vector3(0, lift, 0)
+	node.position.y = -0.1
+	preview_pivot.add_child(node)
 
 
 func _settings_back() -> void:
@@ -571,11 +763,11 @@ func _pause() -> void:
 	phase = "paused"
 	get_tree().paused = true
 	hud.show_menu([
-		{"title": "PAUSA", "size": 56},
+		{"title": Text.t("MENU_PAUSE"), "size": 56},
 		{"buttons": [
-			{"text": "▶ SEGUIR", "call": _start_playing},
-			{"text": "SETTINGS", "call": _show_settings.bind("paused")},
-			{"text": "< MENÚ", "call": _quit_to_title},
+			{"text": Text.t("MENU_RESUME"), "call": _start_playing},
+			{"text": Text.t("MENU_SETTINGS"), "call": _show_settings.bind("paused")},
+			{"text": Text.t("MENU_TO_MENU"), "call": _quit_to_title},
 		]},
 	])
 
@@ -585,20 +777,101 @@ func _quit_to_title() -> void:
 	_show_title()
 
 
-## First the piece: turning under a light, its name, and the story of why
-## someone wants it.
-func _show_loot() -> void:
-	phase = "loot"
+## Before a night: a briefing of a few pages you can move between freely —
+## the piece and its story, what is new tonight (if anything is), and the
+## plan with its map — tabs along the top, back and next along the bottom.
+func _brief_pages() -> Array:
+	var pages := ["loot"]
+	if mode == "story" and not Story.news(level, players).is_empty():
+		pages.append("news")
+	pages.append("plan")
+	return pages
+
+
+func _show_brief(page: int) -> void:
+	var pages := _brief_pages()
+	page = clampi(page, 0, pages.size() - 1)
+	brief_page = page
+	phase = "brief"
+	var names := {"loot": Text.t("BRIEF_TAB_LOOT"), "news": Text.t("BRIEF_TAB_NEWS"), "plan": Text.t("BRIEF_TAB_PLAN")}
+	var tabs: Array = []
+	for i in pages.size():
+		tabs.append({"text": names[pages[i]], "call": _show_brief.bind(i), "colour": Hud.C.gold if i == page else Hud.C.dim, "selected": i == page})
+	var items: Array = [{"buttons": tabs, "row": true, "small": true}, {"gap": 14}]
+	match pages[page]:
+		"loot": items.append_array(_loot_items())
+		"news": items.append_array(_news_items())
+		"plan": items.append_array(_plan_items())
+	var last := page == pages.size() - 1
+	items.append({"buttons": [
+		{"text": Text.t("MENU_PREV") if page > 0 else Text.t("MENU_BACK"), "call": _brief_back, "colour": Hud.C.dim},
+		{"text": Text.t("BRIEF_START") if last else Text.t("BRIEF_NEXT_TAB") % names[pages[page + 1]], "call": _start_countdown if last else _show_brief.bind(page + 1)},
+	], "row": true, "focus": 1})
+	if not last:
+		items.append({"buttons": [{"text": Text.t("MENU_SKIP"), "call": _skip_story, "colour": Hud.C.dim}], "small": true})
+	hud.show_menu(items)
+
+
+func _brief_back() -> void:
+	if brief_page > 0:
+		_show_brief(brief_page - 1)
+	elif mode == "story" and level == 1:
+		_show_prologue(Story.prologue().size() - 1)
+	elif mode == "story":
+		_show_story_menu()
+	else:
+		_show_generative_menu()
+
+
+## The piece: turning under a light, its name, and the story of why someone
+## wants it.
+func _loot_items() -> Array:
+	# Rebuilt each time: the last round's piece may still be on the stand.
 	_build_preview()
-	hud.show_menu([
-		{"title": ("NOCHE %d DE %d" % [level, Story.count()]) if mode == "story" else ("NIVEL %02d" % level), "size": 40},
-		{"text": "ESTA NOCHE HAY QUE RECUPERAR" if mode == "story" else "ESTA NOCHE VAS A ROBAR", "size": 16, "colour": Hud.C.dim},
-		{"picture": preview.get_texture(), "smooth": true, "height": 250},
+	return [
+		{"text": (Text.t("BRIEF_NIGHT_OF") % [level, Story.count()]) if mode == "story" else (Text.t("BRIEF_LEVEL") % level), "size": 16, "colour": Hud.C.dim},
+		{"picture": preview.get_texture(), "smooth": true, "height": 230},
 		{"title": Heist.loot.name.to_upper(), "size": 30, "colour": Color(Heist.loot.colour)},
 		{"text": Heist.loot.blurb, "colour": Hud.C.gold},
 		{"text": Heist.loot.story, "size": 17, "wrap": true},
-		{"buttons": [{"text": "▶ VER EL PLAN", "call": _show_mission}]},
-	])
+	]
+
+
+## What changes tonight, a card for each, on the diorama that shows it.
+func _news_items() -> Array:
+	var cards: Array = []
+	for n in Story.news(level, players):
+		cards.append({"title": n.title, "text": n.text, "stage": MenuStage.make(n.stage), "static": true, "animate": true, "colour": Hud.C.gold})
+	return [
+		{"title": Text.t("BRIEF_NEWS_TITLE"), "size": 44},
+		{"text": Text.t("BRIEF_NEWS_TEXT"), "colour": Hud.C.dim},
+		{"cards": cards, "width": 330 if cards.size() < 3 else 290},
+	]
+
+
+## The plan: the map, and a line or two on how, the first nights.
+func _plan_items() -> Array:
+	# Little text: the map already says where you come in, where the piece
+	# is and the door.
+	var lines: Array[String] = []
+	if Heist.team:
+		lines.append(Text.t("BRIEF_TEAM_TWO_PANELS" if Heist.panel2.x >= 0 else ("BRIEF_TEAM_TWO_LOCKS" if Heist.hands > 1 else "BRIEF_TEAM_ONE_LOCK")))
+		lines.append(Text.t("BRIEF_TEAM_ALL_OUT"))
+	# In the story the nights teach this themselves (LO NUEVO).
+	if level == 1 and mode != "story":
+		lines.append(Text.t("BRIEF_HOW") % _seconds(Heist.loot.seconds))
+	if level <= 2 and mode != "story":
+		lines.append(Text.t("BRIEF_PROPS"))
+	var items: Array = [{"title": Text.t("BRIEF_PLAN_TITLE"), "size": 44}]
+	for l in lines:
+		items.append({"text": l})
+	var colours := _thief_colours().slice(0, thieves.size())
+	items.append({"map": Hud.plan_map(guards, colours), "height": 360})
+	var keys := ["thief", "gem", "exit", "guard", "prop", "route"]
+	if Heist.team:
+		keys.append("panel")
+	items.append({"legend": keys, "thieves": colours, "loot": Color(Heist.loot.colour)})
+	return items
 
 
 func _build_preview(loot: Dictionary = Heist.loot) -> void:
@@ -616,6 +889,7 @@ func _build_preview(loot: Dictionary = Heist.loot) -> void:
 	cam.position = cam.basis.z * 10.0 + Vector3(0, 0.08, 0)
 	cam.size = 0.62
 	preview.add_child(cam)
+	preview_cam = cam
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-40, 30, 0)
 	preview.add_child(sun)
@@ -657,35 +931,16 @@ func _drop_preview() -> void:
 		preview_spot = null
 
 
-func _show_mission() -> void:
-	phase = "mission"
-	# Little text: the piece, the map, and on the first level one line on how.
-	# The map already says where you come in, where the piece is and the door.
-	var lines := [Heist.first_upper(Heist.loot.name)]
-	if Heist.team:
-		lines.append("Uno sujeta el cuadro de la alarma (naranja) mientras el otro abre la vitrina")
-	if level == 1:
-		lines.append("Quieto %s junto a la pieza · la alarma atrae guardias · sal por la puerta verde" % _seconds(Heist.loot.seconds))
-	if level <= 2:
-		lines.append("Papeleras, bustos y paneles: tíralos con E (X en el mando) y los guardias irán a ver el ruido")
-	var items: Array = [{"title": "EL PLAN", "size": 52}]
-	for l in lines:
-		items.append({"text": l})
-	items.append({"map": Hud.plan_map(guards), "height": 400})
-	items.append({"buttons": [{"text": "▶ EMPEZAR", "call": _start_countdown}]})
-	hud.show_menu(items)
-
-
 func _show_end() -> void:
-	var title := "TE HAN PILLADO"
+	var title := Text.t("END_CAUGHT")
 	var colour: Color = Hud.C.alert
-	var line := "%s %s." % [Heist.first_upper(Heist.loot.name), "vuelve a su vitrina" if Heist.taken else "sigue en su sitio"]
-	var next := "▶ OTRA VEZ"
+	var line := Text.t("END_BACK_IN_CASE" if Heist.taken else "END_STILL_THERE") % Heist.first_upper(Heist.loot.name)
+	var next := Text.t("END_AGAIN")
 	if phase == "escaped":
-		title = "¡GOLPE PERFECTO!"
+		title = Text.t("END_PERFECT")
 		colour = Hud.C.safe
-		line = "%s vuelve a casa." % Heist.first_upper(Heist.loot.name) if mode == "story" else "Nivel %d superado: %s ya es tuyo." % [level, Heist.loot.name]
-		next = "▶ SIGUIENTE NOCHE" if mode == "story" else "▶ SIGUIENTE GOLPE"
+		line = Text.t("END_HOME") % Heist.first_upper(Heist.loot.name) if mode == "story" else Text.t("END_LEVEL_DONE") % [level, Heist.loot.name]
+		next = Text.t("END_NEXT_NIGHT" if mode == "story" else "END_NEXT_HEIST")
 		if mode == "story":
 			Story.unlock(level + 1)
 			story_pick = mini(level + 1, Story.count())
@@ -701,7 +956,7 @@ func _show_end() -> void:
 		picture,
 		{"text": line},
 		{"buttons": [{"text": next, "call": _again, "colour": colour}], "big": true},
-		{"buttons": [{"text": "< VOLVER AL MENÚ", "call": _show_title, "colour": Hud.C.dim}], "small": true},
+		{"buttons": [{"text": Text.t("END_TO_MENU"), "call": _show_title, "colour": Hud.C.dim}], "small": true},
 	])
 
 
@@ -709,19 +964,19 @@ func _show_ending() -> void:
 	phase = "ending"
 	sfx.ui("escaped")
 	hud.show_menu([
-		{"title": "¡OPERACIÓN\nDEVOLVERLO TODO!", "colour": Hud.C.safe, "size": 48},
-		{"text": Story.ENDING, "size": 18, "wrap": true},
-		{"buttons": [{"text": "< MENÚ", "call": _show_title}]},
+		{"title": Text.t("ENDING_TITLE"), "colour": Hud.C.safe, "size": 48},
+		{"text": Story.ending(), "size": 18, "wrap": true},
+		{"buttons": [{"text": Text.t("MENU_TO_MENU"), "call": _show_title}]},
 	])
 
 
 func _again() -> void:
 	_new_round(level + 1 if phase == "escaped" else level)
-	_show_loot()
+	_show_brief(0)
 
 
 func _seconds(s: float) -> String:
-	return ("%d segundos" % int(s)) if is_equal_approx(s, round(s)) else ("%s segundos" % str(s).replace(".", ","))
+	return Text.t("BRIEF_SECONDS") % (str(int(s)) if is_equal_approx(s, round(s)) else str(s).replace(".", Text.t("BRIEF_DECIMAL_POINT")))
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -754,24 +1009,34 @@ func _unhandled_input(event: InputEvent) -> void:
 					_show_story_menu()
 				else:
 					_show_generative_menu()
+		"prologue", "brief" when key == KEY_TAB:
+			_skip_story()
 		"prologue":
 			if key == KEY_SPACE:
-				_show_loot()
+				var pages := Story.prologue().size()
+				if prologue_page < pages - 1:
+					_show_prologue(prologue_page + 1)
+				else:
+					_show_brief(0)
 			elif key == KEY_ESCAPE:
-				_show_title()
+				_prologue_back()
 		"ending":
 			if key == KEY_ESCAPE or key == KEY_SPACE:
 				_show_title()
-		"loot":
+		"brief":
+			# Space goes on a page (the last one starts), Escape goes back one;
+			# Q and E, or the shoulder keys' letters, flick between the tabs.
 			if key == KEY_SPACE:
-				_show_mission()
+				if brief_page < _brief_pages().size() - 1:
+					_show_brief(brief_page + 1)
+				else:
+					_start_countdown()
 			elif key == KEY_ESCAPE:
-				_show_title()
-		"mission":
-			if key == KEY_SPACE:
-				_start_countdown()
-			elif key == KEY_ESCAPE:
-				_show_title()
+				_brief_back()
+			elif key == KEY_Q and brief_page > 0:
+				_show_brief(brief_page - 1)
+			elif key == KEY_E and brief_page < _brief_pages().size() - 1:
+				_show_brief(brief_page + 1)
 		"playing":
 			if key == KEY_ESCAPE or key == KEY_P:
 				_pause()
@@ -781,6 +1046,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		"settings":
 			if key == KEY_ESCAPE:
 				_settings_back()
+		"assets":
+			if key == KEY_ESCAPE:
+				_show_settings(settings_from)
+			elif key == KEY_Q or key == KEY_E:
+				_show_assets(assets_tab, assets_index + (1 if key == KEY_E else -1))
 		"caught", "escaped":
 			if key == KEY_SPACE:
 				_again()
@@ -825,6 +1095,35 @@ func _start_playing() -> void:
 
 # --- Rounds --------------------------------------------------------------------------
 
+## The museum, the gang, the guards, the job and the props for a round,
+## from one seed (the same seed, the same night). Returns what the night's
+## guard post watches (Sim.assign_posts).
+func _lay_out(n: int, map_seed: int) -> int:
+	seed(map_seed)
+	Sim.gang = players
+	if mode == "story":
+		var night := Story.level(n)
+		Sim.new_map(map_seed, night.size, -1, night.shape)
+	else:
+		Sim.new_map(map_seed, size)
+	thieves = [Sim.new_thief("p1")]
+	for k in range(2, players + 1):
+		thieves.append(Sim.new_thief("p%d" % k))
+	guards = Sim.new_guards(Sim.guard_count(Museum.size_name))
+	Heist.plan_job(level, Story.level(n).loot if mode == "story" else {}, players)
+	# Things to knock over: never on the tiles the job needs clear.
+	var stand := Heist.route[0]
+	for t in Heist.route:
+		if Museum.dist(t.x + 0.5, t.y + 0.5, Heist.at.x + 0.5, Heist.at.y + 0.5) < 1.1:
+			stand = t
+			break
+	if Sim.feature("props"):
+		Props.place(map_seed, [Heist.exit, Heist.panel, Heist.panel2, stand, Heist.start])
+	else:
+		Props.list.clear()
+	return Sim.assign_posts(guards)
+
+
 func _new_round(n: int) -> void:
 	_close_map()
 	if mode == "story":
@@ -833,24 +1132,21 @@ func _new_round(n: int) -> void:
 	if mode == "story":
 		var night := Story.level(n)
 		Sim.custom = Story.tuning(n)
-		Sim.new_map(Story.seed_for(n), night.size, -1, night.shape)
+		var base := Story.seed_for(n, players)
+		# A night that posts a guard for its lesson is built around it: the
+		# first of its museums where the lesson cannot be dodged.
+		var pick := base
+		if night.get("post", "") != "":
+			for k in Story.LESSON_TRIES:
+				if _lay_out(n, base + k * Story.SEED_STEP) > 0:
+					pick = base + k * Story.SEED_STEP
+					break
+		_lay_out(n, pick)
 	else:
 		Sim.custom = {}
-		Sim.new_map(randi() % 1000000000, size)
-	thieves = [Sim.new_thief("p1")]
-	if players == 2:
-		thieves.append(Sim.new_thief("p2"))
-	guards = Sim.new_guards(Sim.guard_count(Museum.size_name))
-	Heist.plan_job(level, Story.level(n).loot if mode == "story" else {}, players == 2)
-	# Things to knock over: never on the tiles the job needs clear.
-	var stand := Heist.route[0]
-	for t in Heist.route:
-		if Museum.dist(t.x + 0.5, t.y + 0.5, Heist.at.x + 0.5, Heist.at.y + 0.5) < 1.1:
-			stand = t
-			break
-	Props.place(Story.seed_for(n) if mode == "story" else randi(), [Heist.exit, Heist.panel, stand, Heist.start])
-	stride = [0.0, 0.0]
-	push_held = [false, false]
+		_lay_out(n, randi() % 1000000000)
+	stride = [0.0, 0.0, 0.0, 0.0]
+	push_held = [false, false, false, false]
 	guard_steps.clear()
 	prop_noises.clear()
 	last_think = 0.0
@@ -860,6 +1156,7 @@ func _new_round(n: int) -> void:
 	Sim.light_events.clear()
 	_build_world()
 	_snap_camera()
+	hud.set_gang(_thief_colours().slice(0, thieves.size()), _thief_darks().slice(0, thieves.size()), Heist.loot)
 
 
 ## The physics frame _pressed_keys last ran on: a gap means play (re)started.
@@ -875,7 +1172,7 @@ func _pressed_keys() -> Dictionary:
 	var resumed := Engine.get_physics_frames() != pad_frame + 1
 	pad_frame = Engine.get_physics_frames()
 	# Each thief's controls, as the key names Sim reads for that thief.
-	var names := [["w", "s", "a", "d", "c", "e"], ["up", "down", "left", "right", "minus", "period"]]
+	var names := [["w", "s", "a", "d", "c", "e"], ["up", "down", "left", "right", "minus", "period"], ["i", "k", "j", "l", "u", "o"], ["kp8", "kp5", "kp4", "kp6", "kp0", "kpadd"]]
 	for i in mini(seats.size(), thieves.size()):
 		var got := _seat_input(seats[i], resumed)
 		for k in 6:
@@ -893,6 +1190,14 @@ func _seat_input(seat: String, resumed: bool) -> Array:
 				out[pair[0]] = true
 	if seat == "any" or seat == "kb_right":
 		for pair in [[0, KEY_UP], [1, KEY_DOWN], [2, KEY_LEFT], [3, KEY_RIGHT], [4, KEY_MINUS], [4, KEY_SLASH], [5, KEY_PERIOD]]:
+			if Input.is_physical_key_pressed(pair[1]):
+				out[pair[0]] = true
+	if seat == "kb_mid":
+		for pair in [[0, KEY_I], [1, KEY_K], [2, KEY_J], [3, KEY_L], [4, KEY_U], [5, KEY_O]]:
+			if Input.is_physical_key_pressed(pair[1]):
+				out[pair[0]] = true
+	if seat == "kb_pad":
+		for pair in [[0, KEY_KP_8], [1, KEY_KP_5], [2, KEY_KP_4], [3, KEY_KP_6], [4, KEY_KP_0], [5, KEY_KP_ADD]]:
 			if Input.is_physical_key_pressed(pair[1]):
 				out[pair[0]] = true
 	var pads: Array = Input.get_connected_joypads() if seat == "any" else ([int(seat.substr(4))] if seat.begins_with("pad:") else [])
@@ -920,8 +1225,13 @@ func _seat_input(seat: String, resumed: bool) -> Array:
 ## your hands, so all of them shake.
 func _rumble(weak: float, strong: float, secs: float, at := Vector2.INF) -> void:
 	var who := -1
-	if thieves.size() == 2 and at != Vector2.INF:
-		who = 0 if Museum.dist(thieves[0].x, thieves[0].y, at.x, at.y) <= Museum.dist(thieves[1].x, thieves[1].y, at.x, at.y) else 1
+	if thieves.size() >= 2 and at != Vector2.INF:
+		var best := INF
+		for i in thieves.size():
+			var d := Museum.dist(thieves[i].x, thieves[i].y, at.x, at.y)
+			if d < best:
+				best = d
+				who = i
 	for i in seats.size():
 		if who < 0 or i == who:
 			_rumble_pad(seats[i], weak, secs, strong)
@@ -984,33 +1294,28 @@ func _on_prop_tipped(id: int, dir: float, at: Vector2, strength: float) -> void:
 	p.fallen = true
 	p.fall_dir = dir
 	p.fallen_at = Sim.now_ms()
-	var loud := Props.crash_loudness(p.kind, strength)
-	# A real crash carries through the whole building: every guard hears it,
-	# wherever they are, and comes.
-	if loud >= 20.0:
-		loud = 80.0
-	prop_noises.append(SoundEvent.make(p.x, p.y, p.kind, loud))
+	prop_noises.append(SoundEvent.make(p.x, p.y, p.kind, Props.crash_loudness(p.kind, strength)))
 	_prop_fell(p, strength)
 
 
 ## The crash of one going over, whoever did it.
 func _prop_fell(p: Props.Prop, strength := 0.6) -> void:
-	sfx.at(p.kind, _to_world(p.x, p.y), 0.45 + 0.55 * strength, 4.0 + 6.0 * strength)
-	_rumble(0.3 + 0.5 * strength, 0.4 * strength, 0.15 + 0.2 * strength, Vector2(p.x, p.y))
-	_shake((0.45 if p.kind == "bust" else 0.25) * (0.6 + 0.8 * strength))
 	var loud := Props.crash_loudness(p.kind, strength)
-	_log(("¡Menudo estruendo! %s se ha oído en todo el museo" % Heist.first_upper(Props.NAMES[p.kind])) if loud >= 20.0 else "¡Has tirado %s!" % Props.NAMES[p.kind])
+	sfx.noise(p.kind, _to_world(p.x, p.y), loud)
+	_rumble(0.3 + 0.5 * strength, 0.4 * strength, 0.15 + 0.2 * strength, Vector2(p.x, p.y))
+	_shake((0.45 if p.kind in ["bust", "armour"] else 0.25) * (0.6 + 0.8 * strength))
+	_log((Text.t("LOG_CRASH_EVERYWHERE") % Heist.first_upper(Props.name_of(p.kind))) if Props.heard_everywhere(loud) else Text.t("LOG_KNOCKED") % Props.name_of(p.kind))
 
 
 ## Something already down, sent rolling or rustling by a thief's feet: a
 ## smaller noise, but a noise — the tin bin clatters, paper whispers.
 func _on_prop_kicked(kind: String, at: Vector2, strength: float) -> void:
-	var loud: float = {"bin": 7.5, "bust": 6.0, "panel": 5.0, "paper": 2.5}.get(kind, 4.0) * (0.5 + 0.5 * strength)
+	var loud: float = {"bin": 7.5, "bust": 6.0, "panel": 5.0, "armour": 7.0, "paper": 2.5}.get(kind, 4.0) * (0.5 + 0.5 * strength)
 	prop_noises.append(SoundEvent.make(at.x, at.y, "kick", loud))
-	if kind == "paper":
-		sfx.at("whisper", _to_world(at.x, at.y), 0.5 + 0.5 * strength)
-	else:
-		sfx.at("bin" if kind == "bin" else "bump", _to_world(at.x, at.y), 0.35 + 0.4 * strength)
+	# The tin and the steel ring, the rubble and the board knock dry, the
+	# paper whispers.
+	var sound: String = {"bin": "kick_metal", "armour": "kick_metal", "paper": "whisper"}.get(kind, "kick_dry")
+	sfx.noise(sound, _to_world(at.x, at.y), loud)
 
 
 ## "E: TIRAR LA PAPELERA" when a thief has something within reach.
@@ -1021,7 +1326,7 @@ func _push_hint() -> String:
 		var p := Props.within_reach(thieves[i])
 		if p:
 			var key := "E" if i == 0 else "."
-			return "%s / X: TIRAR %s" % [key, (Props.NAMES[p.kind] as String).to_upper()]
+			return Text.t("HUD_PUSH_HINT") % [key, Props.name_of(p.kind).to_upper()]
 	return ""
 
 
@@ -1046,7 +1351,7 @@ func _guard_footsteps() -> void:
 func _toggle_map() -> void:
 	map_open = not map_open
 	if map_open:
-		hud.show_map(Hud.live_map(thieves, _thief_colours()))
+		hud.show_map(Hud.live_map(thieves, _thief_colours()), _thief_colours().slice(0, thieves.size()))
 		sfx.ui("pick")
 	else:
 		hud.hide_map()
@@ -1057,8 +1362,12 @@ func _close_map() -> void:
 	hud.hide_map()
 
 
+func _thief_darks() -> Array:
+	return [COLOURS.thief_dark, COLOURS.thief2_dark, COLOURS.thief3_dark, COLOURS.thief4_dark]
+
+
 func _thief_colours() -> Array:
-	return [COLOURS.thief, COLOURS.thief2]
+	return [COLOURS.thief, COLOURS.thief2, COLOURS.thief3, COLOURS.thief4]
 
 
 func _tick(dt: float) -> void:
@@ -1081,7 +1390,7 @@ func _tick(dt: float) -> void:
 		var px := p.x
 		var py := p.y
 		# On your own both pads drive you; with two, each pad is its own.
-		var scheme := "solo" if thieves.size() == 1 else ("wasd" if i == 0 else "arrows")
+		var scheme: String = "solo" if thieves.size() == 1 else ["wasd", "arrows", "ijkl", "numpad"][i]
 		var step := Sim.step_thief(p, keys, dt, scheme)
 		var noise := Hearing.thief_noise(px, py, p, step.entered_cover, step.bumped, Sim.TOP_SPEED)
 		# Footsteps land once per stride; a bump is its own event.
@@ -1094,9 +1403,8 @@ func _tick(dt: float) -> void:
 		if noise and not p.out:
 			noises.append(noise)
 			var what := "step" if noise.kind in ["walk", "sprint", "rustle"] else ("shelf" if noise.kind == "shelf" else "bump")
-			# A step as loud as you are fast, softer on all fours.
-			var vol := clampf(p.speed / Sim.TOP_SPEED, 0.12, 1.0) * (1.0 - 0.5 * p.posture) if what == "step" else clampf(noise.loudness / 9.0, 0.15, 1.0)
-			sfx.at(what, _to_world(p.x, p.y), vol, 3.0 if what == "step" else 6.0)
+			# As loud as the guards hear it.
+			sfx.noise(what, _to_world(p.x, p.y), noise.loudness)
 
 	# Walking into things: over they go, with a crash.
 	# Things knocked over: the physics decides (PropsView pushes them with
@@ -1105,11 +1413,11 @@ func _tick(dt: float) -> void:
 	Props.knocked.clear()
 	noises.append_array(prop_noises)
 	prop_noises.clear()
-	# On purpose: E (P2: . ), or X on the pad, next to one — over it goes,
+	# On purpose: E (P2: . , P3: O), or X on the pad, next to one — over it goes,
 	# and the guards come to see.
 	for i in thieves.size():
 		var t := thieves[i]
-		var pressed: bool = keys.has("e") or (thieves.size() == 1 and keys.has("period")) if i == 0 else keys.has("period")
+		var pressed: bool = keys.has(["e", "period", "o", "kpadd"][i]) or (thieves.size() == 1 and keys.has("period"))
 		if pressed and not push_held[i]:
 			var target := Props.within_reach(t)
 			if target:
@@ -1124,16 +1432,16 @@ func _tick(dt: float) -> void:
 	var took := Heist.step(thieves, dt, now, noises)
 	if noises.size() > before_alarms:
 		if Heist.progress < 0.1:
-			_log("¡Salta la alarma de la vitrina!")
+			_log(Text.t("LOG_CASE_ALARM"))
 		sfx.at("alarm", _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5), 0.8)
 	match took:
 		"stolen":
 			sfx.ui("stolen")
 			Fx.sparkle(world, _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5, 1.05), Color(Heist.loot.colour))
 			_punch_in()
-			_log("Tienes %s: ahora, a la salida" % Heist.loot.name)
+			_log(Text.t("LOG_GOT_IT_TEAM" if thieves.size() > 1 else "LOG_GOT_IT") % Heist.loot.name)
 		"dropped":
-			_log("%s ha caído al suelo" % Heist.first_upper(Heist.loot.name))
+			_log(Text.t("LOG_DROPPED") % Heist.first_upper(Heist.loot.name))
 		"picked":
 			sfx.ui("pick")
 
@@ -1151,26 +1459,26 @@ func _tick(dt: float) -> void:
 			_rumble(0.4, 0.8, 0.4)
 			_shake(0.6)
 			var heard_by: Array = s.heard_by
-			var heard: String = ("%s lo ha oído y viene" % " y ".join(heard_by)) if not heard_by.is_empty() else "nadie más lo ha oído"
+			var heard: String = (Text.t("LOG_HEARD_BY") % Text.t("LOG_AND").join(heard_by)) if not heard_by.is_empty() else Text.t("LOG_NOBODY_HEARD")
 			var ear := thieves[0]
 			var angle := atan2(s.y - ear.y, s.x - ear.x)
 			var d := Museum.dist(ear.x, ear.y, s.x, s.y)
-			hud.shout(SHOUTS[randi() % SHOUTS.size()], "%s grita %s · %s" % [s.from, "a lo lejos" if d > 9 else "cerca", heard], angle)
-			_log("%s: ¡Alto! — %s" % [s.from, heard])
+			hud.shout(Text.t(SHOUTS[randi() % SHOUTS.size()]), Text.t("HUD_SHOUT_FAR" if d > 9 else "HUD_SHOUT_NEAR") % [s.from, heard], angle)
+			_log(Text.t("LOG_SHOUT") % [s.from, heard])
 	for w in Sim.warn_partners(guards, now):
 		sfx.at("whisper", _to_world(w.x, w.y), 0.6)
-		_log("%s avisa a %s en voz baja" % [w.from, w.to])
+		_log(Text.t("LOG_WARN") % [w.from, w.to])
 	for t in Sim.thoughts:
 		_log("%s: %s" % [t.by, t.text])
 	Sim.thoughts.clear()
 	for e in Sim.light_events:
-		var label := "la sala"
+		var label := Text.t("LOG_THE_ROOM_OF")
 		for z in Museum.zones:
 			if z.room == e.room:
-				label = z.label
+				label = z.label_of
 		var r: Museum.Room = Museum.rooms[e.room]
 		sfx.at("lights", _to_world(r.switch_at.x + 0.5, r.switch_at.y + 0.5), 0.8)
-		_log("%s enciende las luces de %s" % [e.by, label])
+		_log(Text.t("LOG_LIGHTS") % [e.by, label])
 	Sim.light_events.clear()
 
 	if now - last_spread > 500:
@@ -1195,16 +1503,26 @@ func _tick(dt: float) -> void:
 			p.out = true
 			p.speed = 0
 			sfx.ui("caught")
-	# No clock: take as long as you like. Out of the door with the piece wins;
-	# everyone caught loses.
-	if took == "out":
+	# Once the piece is taken, whoever reaches the door slips out and is
+	# safe: out of sight, out of reach, waiting for the rest.
+	if Heist.taken:
+		for p in thieves:
+			if not p.out and Heist.at_door(p):
+				p.out = true
+				p.safe = true
+				p.speed = 0
+				if thieves.size() > 1 and not thieves.all(func(o): return o.safe):
+					_log(Text.t("LOG_OUT_WAITING") % ("P%d" % (thieves.find(p) + 1)))
+	# No clock: take as long as you like. The whole gang out of the door
+	# with the piece wins; one of you caught ends the night.
+	if thieves.any(func(p): return p.out and not p.safe):
+		phase = "caught"
+		_close_map()
+		_show_end()
+	elif thieves.all(func(p): return p.safe):
 		phase = "escaped"
 		_close_map()
 		sfx.ui("escaped")
-		_show_end()
-	elif thieves.all(func(p): return p.out):
-		phase = "caught"
-		_close_map()
 		_show_end()
 
 
@@ -1219,11 +1537,11 @@ func _on_decided(decisions: Dictionary, _ms: int) -> void:
 		# Log what it actually does: a committed guard keeps its plan.
 		if g.decision.label != before:
 			var p: float = g.decision.probabilities.get(g.decision.option, 0.0)
-			_log("%s: %s · %d%%%s" % [g.name, g.decision.label, roundi(p * 100), " (duda)" if g.decision.torn else ""])
+			_log(Text.t("LOG_DECISION") % [g.name, g.decision.label, roundi(p * 100), Text.t("LOG_TORN") if g.decision.torn else ""])
 
 
 func _on_brain_failed(reason: String) -> void:
-	_log("IA: reglas de reserva (%s)" % reason)
+	_log(Text.t("LOG_BRAIN_FAILED") % reason)
 
 
 func _log(line: String) -> void:
@@ -1339,6 +1657,8 @@ func _build_world() -> void:
 	torches.clear()
 	room_lights.clear()
 	cones.clear()
+	suspicion_marks.clear()
+	suspicion_keys.clear()
 	switch_marks.clear()
 	lit_washes.clear()
 
@@ -1372,7 +1692,7 @@ func _build_world() -> void:
 
 	for i in thieves.size():
 		# Second pad, second colour: two teal figures would be one figure.
-		var f := Figure.make("thief", COLOURS.thief if i == 0 else COLOURS.thief2, COLOURS.thief_dark if i == 0 else COLOURS.thief2_dark)
+		var f := Figure.make("thief", _thief_colours()[i], _thief_darks()[i])
 		world.add_child(f)
 		thief_nodes.append(f)
 	for i in ROOM_LIGHT_POOL:
@@ -1389,13 +1709,30 @@ func _build_world() -> void:
 		var f := Figure.make("guard", COLOURS.guard, COLOURS.guard_dark)
 		world.add_child(f)
 		guard_nodes.append(f)
+		# Over its head: how much it suspects (!, !!, !!!) and a bar for how
+		# long until it calms down a step. Seen through walls, always.
+		var mark := Sprite3D.new()
+		mark.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		mark.no_depth_test = true
+		mark.shaded = false
+		mark.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+		mark.pixel_size = 0.05
+		mark.render_priority = 10
+		mark.position = Vector3(0, 2.9, 0)
+		mark.visible = false
+		f.add_child(mark)
+		suspicion_marks.append(mark)
+		suspicion_keys.append("")
 		# A torch, not a bulb: narrow cone, soft edge, pointed where it looks.
 		# Bright hotspot, a quick falloff to the rim, and crisp shadows so the
 		# cases and figures it sweeps throw long ones across the floor.
 		var torch := SpotLight3D.new()
 		torch.light_color = TORCH_COLOUR
-		torch.spot_attenuation = 0.7
-		torch.spot_angle_attenuation = 0.9
+		# Falls off with distance quicker than a bulb, so the pool near the
+		# guard is bright and the throw beyond it dim; and a low angle exponent
+		# for a wide penumbra instead of a hard rim.
+		torch.spot_attenuation = 1.0
+		torch.spot_angle_attenuation = 0.5
 		torch.light_specular = 1.0
 		torch.shadow_enabled = true
 		torch.shadow_bias = 0.04
@@ -1411,7 +1748,9 @@ func _build_world() -> void:
 		torches.append(torch)
 		var cone := MeshInstance3D.new()
 		cone.mesh = ImmediateMesh.new()
-		var cm := _flat(Color(COLOURS.cone, 0.12))
+		# White: the colour and the fades ride on the vertices.
+		var cm := _flat(Color(1, 1, 1, 0.99))
+		cm.vertex_color_use_as_albedo = true
 		cm.cull_mode = BaseMaterial3D.CULL_DISABLED
 		cone.material_override = cm
 		world.add_child(cone)
@@ -1509,7 +1848,7 @@ func _build_job() -> void:
 	box.call(Vector3(0.74, 1.2, 0.04), panel, Vector3(0, 0.6, 0.02))
 	box.call(Vector3(0.06, 0.06, 0.05), MuseumView.toon(Color("#f0c46a")), Vector3(0.26, 0.6, 0.06))
 	var sign := Label3D.new()
-	sign.text = "SALIDA"
+	sign.text = Text.t("HUD_SIGN_EXIT")
 	sign.font = Hud.ARCADE
 	sign.font_size = 48
 	sign.pixel_size = 0.004
@@ -1517,10 +1856,12 @@ func _build_job() -> void:
 	sign.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	sign.position = Vector3(0, 1.75, 0.1)
 	door.add_child(sign)
-	panel_mat = null
-	panel_glow = null
+	panel_mats.clear()
+	panel_glows.clear()
 	if Heist.team:
-		_build_panel()
+		_build_panel(Heist.panel, Heist.panel_face)
+	if Heist.team and Heist.panel2.x >= 0:
+		_build_panel(Heist.panel2, Heist.panel2_face)
 	var exit_light := OmniLight3D.new()
 	exit_light.light_color = COLOURS.switch_on
 	exit_light.light_energy = 1.5
@@ -1531,10 +1872,10 @@ func _build_job() -> void:
 
 ## The alarm panel: a grey box on the wall with a big lamp, orange while it
 ## waits, green while someone holds it.
-func _build_panel() -> void:
+func _build_panel(at: Vector2i, face: Vector2i) -> void:
 	var node := Node3D.new()
-	node.position = _to_world(Heist.panel.x + 0.5 + Heist.panel_face.x * 0.5, Heist.panel.y + 0.5 + Heist.panel_face.y * 0.5)
-	node.rotation.y = atan2(-Heist.panel_face.x, -Heist.panel_face.y)
+	node.position = _to_world(at.x + 0.5 + face.x * 0.5, at.y + 0.5 + face.y * 0.5)
+	node.rotation.y = atan2(-face.x, -face.y)
 	world.add_child(node)
 	var box := MeshInstance3D.new()
 	var b := BoxMesh.new()
@@ -1543,9 +1884,10 @@ func _build_panel() -> void:
 	box.material_override = MuseumView.toon(Color("#5c6370"))
 	box.position = Vector3(0, 1.0, 0.07)
 	node.add_child(box)
-	panel_mat = StandardMaterial3D.new()
+	var panel_mat := StandardMaterial3D.new()
 	panel_mat.emission_enabled = true
 	panel_mat.emission_energy_multiplier = 2.0
+	panel_mats.append(panel_mat)
 	var lamp := MeshInstance3D.new()
 	var s := SphereMesh.new()
 	s.radius = 0.1
@@ -1561,13 +1903,14 @@ func _build_panel() -> void:
 	lever.material_override = MuseumView.toon(Color("#e03131"))
 	lever.position = Vector3(0.14, 0.88, 0.17)
 	node.add_child(lever)
-	panel_glow = OmniLight3D.new()
+	var panel_glow := OmniLight3D.new()
+	panel_glows.append(panel_glow)
 	panel_glow.light_energy = 1.2
 	panel_glow.omni_range = 2.5
 	panel_glow.position = Vector3(0, 1.1, 0.5)
 	node.add_child(panel_glow)
 	var sign := Label3D.new()
-	sign.text = "ALARMA"
+	sign.text = Text.t("HUD_SIGN_ALARM")
 	sign.font = Hud.ARCADE
 	sign.font_size = 40
 	sign.pixel_size = 0.004
@@ -1578,16 +1921,15 @@ func _build_panel() -> void:
 
 
 func _draw_panel() -> void:
-	if panel_mat == null:
-		return
-	var held := Heist.panel_by != ""
 	var t := Time.get_ticks_msec() / 1000.0
-	var c := COLOURS.switch_on if held else Color("#ff922b")
-	panel_mat.albedo_color = c
-	panel_mat.emission = c
-	panel_glow.light_color = c
-	# Blinks while someone waits at the case for it.
-	panel_glow.light_energy = 1.2 if held or not Heist.waiting else (0.4 + 1.2 * absf(sin(t * 6.0)))
+	for i in panel_mats.size():
+		var held := (Heist.panel_by if i == 0 else Heist.panel2_by) != ""
+		var c := COLOURS.switch_on if held else Color("#ff922b")
+		panel_mats[i].albedo_color = c
+		panel_mats[i].emission = c
+		panel_glows[i].light_color = c
+		# Blinks while someone waits at the case for it.
+		panel_glows[i].light_energy = 1.2 if held or not Heist.waiting else (0.4 + 1.2 * absf(sin(t * 6.0)))
 
 
 ## Each piece its own shape: a cut gem, an egg, a crown with points, a jade
@@ -1608,13 +1950,15 @@ func _draw_frame(dt: float) -> void:
 		var p := thieves[i]
 		var f := thief_nodes[i]
 		f.set_state(_to_world(p.x, p.y), p.dir, p.posture, dt)
+		# Gone out of the door: not in the museum any more.
+		f.visible = not p.safe
 		f.scale = Vector3.ONE * (0.75 if p.out else 1.0)
 		# Seen through the cases: your colour while nobody sees you, the
 		# alarm red the moment one does, all but gone once you are out.
 		if p.out:
 			f.set_ghost(COLOURS.ink, 0.35)
 		elif p.hidden:
-			f.set_ghost(COLOURS.thief if i == 0 else COLOURS.thief2, 0.75)
+			f.set_ghost(_thief_colours()[i], 0.75)
 		else:
 			f.set_ghost(COLOURS.alert, 1.0)
 	for i in guards.size():
@@ -1622,18 +1966,22 @@ func _draw_frame(dt: float) -> void:
 		var f := guard_nodes[i]
 		f.set_state(_to_world(g.x, g.y), g.dir, 0.0, dt)
 		f.set_ghost(COLOURS.alert if g.sees_player else COLOURS.guard, 0.75)
+		_draw_suspicion(i, g)
 		var view := Sim.view_of(g)
 		var torch := torches[i]
 		torch.light_color = COLOURS.alert if g.sees_player else TORCH_COLOUR
-		torch.spot_angle = rad_to_deg(view.half) * 0.85
+		# A touch wider than the cone: the soft rim spends the edge fading out.
+		torch.spot_angle = rad_to_deg(view.half) * 1.1
 		torch.spot_range = view.range + 1.0
 		# Under the ceiling lights a torch is pointless, and switched off.
-		torch.light_energy = 0.0 if Museum.is_lit(g.x, g.y) else (TORCH_ENERGY_ALERT if g.alert else TORCH_ENERGY)
+		# A harder night hands them stronger torches.
+		var power := Sim.torch_power()
+		torch.light_energy = 0.0 if Museum.is_lit(g.x, g.y) else (TORCH_ENERGY_ALERT if g.alert else TORCH_ENERGY) * power * power
 		_draw_cone(g, cones[i])
 	_draw_room_lights()
 	_draw_loot()
 	_follow_camera(dt)
-	_draw_hud()
+	_draw_hud(dt)
 
 
 func _draw_room_lights() -> void:
@@ -1676,37 +2024,127 @@ func _draw_loot() -> void:
 	loot_node.rotation.y = t * 1.2
 
 
+## The colour of each level of suspicion: a hunch, alert, after you.
+const SUSPICION_COLOURS := [Color.TRANSPARENT, Color("#ffd43b"), Color("#ff922b"), Color("#ff3048")]
+## The bar under the marks, in this many steps: redrawn only on a change.
+const SUSPICION_STEPS := 24
+
+
+## What a guard's head says: nothing when it suspects nothing; else its
+## marks and, under them, how much is left before it calms down a step —
+## full and still for a guard that is sure, or giving chase.
+func _draw_suspicion(i: int, g: Guard) -> void:
+	var mark := suspicion_marks[i]
+	if g.suspicion <= 0:
+		mark.visible = false
+		suspicion_keys[i] = ""
+		return
+	var now := Sim.now_ms()
+	var left := 1.0
+	if g.suspicion == 1:
+		left = 1.0 - (now - g.suspicion_at) / (Sim.tuning("calm_after") * 1000.0)
+	elif g.suspicion == 2 and g.calm_in != INF:
+		left = 1.0 - (now - g.suspicion_at) / Sim.ALERT_HOLD_MS
+	var step := clampi(ceili(clampf(left, 0.0, 1.0) * SUSPICION_STEPS), 0, SUSPICION_STEPS)
+	var key := "%d:%d" % [g.suspicion, step]
+	if key == suspicion_keys[i]:
+		return
+	var rose := suspicion_keys[i] == "" or int(suspicion_keys[i].get_slice(":", 0)) < g.suspicion
+	suspicion_keys[i] = key
+	mark.texture = ImageTexture.create_from_image(_suspicion_image(g.suspicion, float(step) / SUSPICION_STEPS))
+	mark.visible = true
+	# Going up a level: a pop, so you notice.
+	if rose:
+		mark.scale = Vector3.ONE * 1.8
+		create_tween().tween_property(mark, "scale", Vector3.ONE, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+## The marks (as many as the level) over a bar filled to `fill`, in pixels
+## with a dark outline so they read on floor, wall or torch light alike.
+static func _suspicion_image(level: int, fill: float) -> Image:
+	var w := 34
+	var h := 22
+	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var ink := Color("#1c1210")
+	var colour: Color = SUSPICION_COLOURS[level]
+	# "!": a 3-wide stroke over a dot, 5 apart.
+	var x0 := w / 2 - (level * 5 - 2) / 2
+	for k in level:
+		var x := x0 + k * 5
+		img.fill_rect(Rect2i(x - 1, 0, 5, 9), ink)
+		img.fill_rect(Rect2i(x - 1, 10, 5, 5), ink)
+		img.fill_rect(Rect2i(x, 1, 3, 7), colour)
+		img.fill_rect(Rect2i(x, 11, 3, 3), colour)
+	# The bar: how long before it calms down a step.
+	img.fill_rect(Rect2i(1, 16, w - 2, 5), ink)
+	img.fill_rect(Rect2i(2, 17, w - 4, 3), Color("#3a2a30"))
+	img.fill_rect(Rect2i(2, 17, int(round((w - 4) * fill)), 3), colour)
+	return img
+
+
 ## The view cone, rebuilt from rays every frame so it stops at the walls.
+## Two bands, like the torch: the bright pool that sees you however low you
+## are, and the dim throw beyond it that only catches you standing. Every
+## edge is feathered — between the bands, at the far rim and at the sides —
+## so it reads as light on the floor, not a cut-out.
 func _draw_cone(g: Guard, node: MeshInstance3D) -> void:
 	var im: ImmediateMesh = node.mesh
 	im.clear_surfaces()
 	var view := Sim.view_of(g)
-	var origin := _to_world(g.x, g.y, 0.03)
-	im.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
-	var prev := Vector3.ZERO
-	for i in CONE_RAYS:
-		var a: float = g.dir - view.half + 2.0 * view.half * i / (CONE_RAYS - 1)
-		# Painted over the cases: this is where someone standing is seen.
-		var far := Museum.cast_ray(g.x, g.y, a, Sim.LIT_RANGE, true)
-		var ex: float = g.x + cos(a) * view.range
-		var ey: float = g.y + sin(a) * view.range
-		var d: float = far if far > view.range and Museum.is_lit(ex, ey) else minf(far, view.range)
-		var pnt := _to_world(g.x + cos(a) * d, g.y + sin(a) * d, 0.03)
-		if i > 0:
-			im.surface_add_vertex(origin)
-			im.surface_add_vertex(prev)
-			im.surface_add_vertex(pnt)
-		prev = pnt
-	im.surface_end()
-	var m: StandardMaterial3D = node.material_override
 	var colour: Color = COLOURS.alert if g.sees_player else (COLOURS.cone_alert if g.alert else COLOURS.cone)
 	# Faint: the torch's beam in the fog does most of the showing, this just
-	# marks the edge of what the guard sees.
-	m.albedo_color = Color(colour, 0.16 if g.sees_player else (0.09 if g.alert else 0.045))
+	# marks what the guard sees.
+	var bright: float = (0.2 if g.sees_player else (0.13 if g.alert else 0.09)) * clampf(Sim.torch_power(), 0.7, 1.4)
+	var dim := bright * CONE_DIM
+	var near: float = view.near
+	var reach: float = view.range
+	im.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
+	var prev: Array = []
+	for i in CONE_RAYS:
+		var t := float(i) / (CONE_RAYS - 1)
+		var a: float = g.dir - view.half + 2.0 * view.half * t
+		# Soft sides: the light thins out towards the edge of the beam.
+		var side := smoothstep(0.0, CONE_SIDE_FEATHER, t) * smoothstep(1.0, 1.0 - CONE_SIDE_FEATHER, t)
+		# Painted over the cases: this is where someone standing is seen.
+		var far := Museum.cast_ray(g.x, g.y, a, Sim.LIT_RANGE, true)
+		var ex: float = g.x + cos(a) * reach
+		var ey: float = g.y + sin(a) * reach
+		var lit_beyond: bool = far > reach and Museum.is_lit(ex, ey)
+		var d: float = far if lit_beyond else minf(far, reach)
+		# (distance, alpha) from the guard out: bright pool, blend, dim throw,
+		# and a fade to nothing at the rim unless a lit room carries it on.
+		var rings := [
+			[0.0, bright],
+			[near - CONE_BAND_FEATHER, bright],
+			[near + CONE_BAND_FEATHER, dim],
+			[reach - CONE_RIM_FEATHER, dim],
+			[d if lit_beyond else reach, dim if lit_beyond else 0.0],
+		]
+		var ray: Array = []
+		for r in rings:
+			var at := clampf(r[0], 0.0, d)
+			ray.append([_to_world(g.x + cos(a) * at, g.y + sin(a) * at, 0.03), Color(colour, r[1] * side)])
+		if i > 0:
+			for k in ray.size() - 1:
+				_cone_tri(im, prev[k], prev[k + 1], ray[k])
+				_cone_tri(im, ray[k], prev[k + 1], ray[k + 1])
+		prev = ray
+	im.surface_end()
+
+
+func _cone_tri(im: ImmediateMesh, a: Array, b: Array, c: Array) -> void:
+	for v in [a, b, c]:
+		im.surface_set_color(v[1])
+		im.surface_add_vertex(v[0])
 
 
 ## Where the camera sits over what it looks at: high up and a little behind.
 const CAM_OFFSET := Vector3(0, 15.4, 6)
+## How far (m) the thief can wander from the middle before the camera moves.
+const CAM_SLACK := 0.9
+## Roughly how long (s) the camera takes to catch up: higher is lazier.
+const CAM_SMOOTH := 0.55
 ## The shake at full trauma: how far the view slides (in metres at the
 ## camera) and how far it rolls (radians).
 const SHAKE_MOVE := 0.45
@@ -1717,6 +2155,12 @@ const SHAKE_DECAY := 1.2
 ## where the camera is headed, followed smoothly; the shake and the punch are
 ## put on top of it every frame, so they never pile up in the follow
 var cam_rest := Vector3.ZERO
+## how fast cam_rest is moving: the follow is a spring, so it winds up when
+## you set off and runs on a little, easing to a stop, when you halt
+var cam_vel := Vector3.ZERO
+## the point the spring pulls towards: it only moves once the thief strays
+## past CAM_SLACK from it, so small moves do not drag the whole picture
+var cam_goal := Vector3.ZERO
 ## 0..1: how shaken the camera is. It is squared for the shake, so small
 ## knocks barely move it and big ones hit hard, and it decays by itself.
 var trauma := 0.0
@@ -1742,6 +2186,8 @@ func _camera_target() -> Vector3:
 func _snap_camera() -> void:
 	var t := _camera_target()
 	cam_rest = t + CAM_OFFSET
+	cam_goal = t
+	cam_vel = Vector3.ZERO
 	trauma = 0.0
 	punch = 0.0
 	if punch_tween:
@@ -1754,8 +2200,21 @@ func _snap_camera() -> void:
 
 func _follow_camera(dt: float) -> void:
 	var t := _camera_target()
-	var k := 1.0 - pow(0.0015, dt)
-	cam_rest = cam_rest.lerp(t + CAM_OFFSET, k)
+	# A loose leash: inside CAM_SLACK the thief moves about the frame and the
+	# camera stays put; past it, the goal is dragged along.
+	var off := Vector3(t.x - cam_goal.x, 0.0, t.z - cam_goal.z)
+	if off.length() > CAM_SLACK:
+		cam_goal += off - off.normalized() * CAM_SLACK
+	cam_goal.y = t.y
+	# A critically damped spring towards it (the SmoothDamp step): it starts
+	# slowly, catches up, and settles without overshooting.
+	var omega := 2.0 / CAM_SMOOTH
+	var x := omega * dt
+	var decay := 1.0 / (1.0 + x + 0.48 * x * x + 0.235 * x * x * x)
+	var change := cam_rest - (cam_goal + CAM_OFFSET)
+	var temp := (cam_vel + omega * change) * dt
+	cam_vel = (cam_vel - omega * temp) * decay
+	cam_rest = cam_goal + CAM_OFFSET + (change + temp) * decay
 	var focus := cam_rest - CAM_OFFSET
 	camera.position = focus + CAM_OFFSET * (1.0 - 0.22 * punch)
 	camera.look_at(focus)
@@ -1783,22 +2242,18 @@ func _punch_in() -> void:
 	punch_tween.tween_property(self, "punch", 0.0, 0.8).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
-func _draw_hud() -> void:
+func _draw_hud(dt: float) -> void:
 	if thieves.is_empty():
 		return
-	var ia := "IA: Laya %d ms" % brain.last_ms if brain.status == "laya" else "IA: reglas"
-	var parts := PackedStringArray()
-	for i in thieves.size():
-		var p := thieves[i]
-		var stance := "DE PIE"
-		if p.crouched:
-			stance = "A GATAS" if p.posture >= 1.0 else "BAJANDO"
-		elif p.posture > 0:
-			stance = "SUBIENDO"
-		var state := "PILLADO" if p.out else ("A CUBIERTO" if p.hidden else "A LA VISTA")
-		parts.append(("P%d " % (i + 1) if thieves.size() == 2 else "") + "%s · %s" % [state, stance])
-	parts.append(ia)
-	var any_seen := thieves.any(func(p): return not p.out and not p.hidden)
+	# The gang as they are: standing or down, carrying, seen, out.
+	var states: Array = []
+	for p in thieves:
+		states.append({"posture": p.posture, "speed": p.speed if p.moving else 0.0, "carrying": Heist.carrier == p.id,
+			"seen": not p.hidden, "out": p.out, "safe": p.safe})
+	hud.update_gang(states, dt)
+	var alarm := 0
+	for g in guards:
+		alarm = maxi(alarm, g.suspicion)
 	# The arrow at the screen edge, from whoever is nearest: to the piece, or
 	# to the door once someone has it.
 	var goal := Heist.objective()
@@ -1816,20 +2271,22 @@ func _draw_hud() -> void:
 		"dropped": Heist.dropped != Vector2.INF,
 		"name": Heist.loot.name,
 		"waiting": Heist.waiting,
-		"panel": Heist.panel_by != "" and not Heist.taken,
+		"short_hand": Heist.short_hand,
+		"panel": Heist.panels_held() and not Heist.taken,
+		"panels": 2 if Heist.panel2.x >= 0 else 1,
 		"hint": _push_hint(),
 	}
 	if not hud.menu_open():
-		hud.update_play("   ".join(parts), COLOURS.alert if any_seen else COLOURS.safe, log_lines, job, angle, COLOURS.switch_on if Heist.carrier != "" else Color(Heist.loot.colour))
+		hud.update_play(log_lines, job, angle, COLOURS.switch_on if Heist.carrier != "" else Color(Heist.loot.colour), alarm)
 	var cards: Array = []
 	for g in guards:
-		var card := {"name": g.name, "title": "Te ha visto" if g.sees_player else (g.decision.label if g.decision else "pensando…"), "colour": COLOURS.alert if g.sees_player else Hud.C.text}
+		var card := {"name": g.name, "title": Text.t("MIND_SEEN") if g.sees_player else (g.decision.label if g.decision else Text.t("MIND_THINKING")), "colour": COLOURS.alert if g.sees_player else Hud.C.text}
 		if g.decision and not g.sees_player:
 			var opts: Array = []
 			for k in g.decision.probabilities:
 				opts.append([g.decision.labels.get(k, k), g.decision.probabilities[k]])
 			opts.sort_custom(func(a, b): return a[1] > b[1])
 			card.options = opts
-			card.note = "ritmo %d%% · %s%s" % [roundi(g.decision.aggression * 100), Mind.LOOK_LABEL[g.decision.look], " · duda" if g.decision.torn else ""]
+			card.note = Text.t("MIND_NOTE") % [roundi(g.decision.aggression * 100), Mind.look_label(g.decision.look), Text.t("MIND_TORN") if g.decision.torn else ""]
 		cards.append(card)
 	hud.set_ia(show_ia and phase == "playing", cards)

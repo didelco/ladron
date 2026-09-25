@@ -27,6 +27,8 @@ var _lean := Vector2.ZERO
 var _push := Vector2.ZERO
 var _t := 0.0
 var _base: Image
+## Sheets already drawn, by size: every map of one museum shares its paper.
+static var _parchments := {}
 
 
 func _init() -> void:
@@ -146,7 +148,15 @@ func _sheet_mesh(fold: float) -> ArrayMesh:
 ## Old paper: warm and uneven, darker at the edges, a few stains, a double
 ## rule round the border and a compass rose in the corner.
 static func _parchment(w: int, h: int) -> Image:
-	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	var key := Vector2i(w, h)
+	if _parchments.has(key):
+		return _parchments[key]
+	# The grain is soft: worked out at a quarter of the size and blown up,
+	# so a big plan's sheet does not stall the screen that shows it.
+	var q := 4
+	var sw := ceili(float(w) / q)
+	var sh := ceili(float(h) / q)
+	var img := Image.create(sw, sh, false, Image.FORMAT_RGBA8)
 	var noise := FastNoiseLite.new()
 	noise.frequency = 0.012
 	noise.seed = 7
@@ -155,15 +165,18 @@ static func _parchment(w: int, h: int) -> Image:
 	stains.seed = 3
 	var light := Color("#ecdcb8")
 	var dark := Color("#c9ad7c")
-	for y in h:
-		for x in w:
+	for sy in sh:
+		for sx in sw:
+			var x := sx * q
+			var y := sy * q
 			var n := noise.get_noise_2d(x, y) * 0.5 + 0.5
 			var edge := minf(minf(x, w - 1 - x), minf(y, h - 1 - y)) / 40.0
 			var c := light.lerp(dark, n * 0.45 + (1.0 - clampf(edge, 0.0, 1.0)) * 0.45)
 			var s := stains.get_noise_2d(x, y)
 			if s > 0.35:
 				c = c.lerp(Color("#a9854f"), (s - 0.35) * 0.9)
-			img.set_pixel(x, y, c)
+			img.set_pixel(sx, sy, c)
+	img.resize(w, h, Image.INTERPOLATE_BILINEAR)
 	var ink := Color("#5a3a22")
 	for inset in [12, 17]:
 		var t := 3 if inset == 12 else 1
@@ -181,4 +194,5 @@ static func _parchment(w: int, h: int) -> Image:
 			for s2 in range(-width, width + 1):
 				var p := Vector2(cx, cy) + dir * r + dir.orthogonal() * s2
 				img.set_pixelv(Vector2i(p), Color("#8a2a2a") if k == 0 else ink)
+	_parchments[key] = img
 	return img

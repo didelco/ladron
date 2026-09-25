@@ -76,6 +76,12 @@ const FADE_S := 0.2
 const ARCADE := preload("res://assets/fonts/PressStart2P-Regular.ttf")
 
 var _status: Label
+## the guards' alarm, top centre: the most alarmed guard's ! !! !!!
+var _alarm: TextureRect
+var _alarm_level := -1
+## the gang, bottom centre: a live portrait of each thief (Hud.set_gang)
+var _gang: HBoxContainer
+var _portraits: Array[Dictionary] = []
 var _log: Label
 var _job: Label
 var _help: Label
@@ -106,6 +112,7 @@ var _map_picture: TextureRect
 var _map_stage: MapStage
 ## the folded map on the menu on show, if any, to lean with the arrows
 var _menu_map: MapStage
+var _map_legend: VBoxContainer
 var _ia: PanelContainer
 var _ia_box: VBoxContainer
 
@@ -173,9 +180,11 @@ func _ready() -> void:
 	_map_picture.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_map_picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(_map_picture)
-	var legend := _label(13, Color("#e8d6b4"), column)
-	legend.text = "● tú   ◆ la pieza   ■ salida (verde)   • cosas que tirar   ·   M o Y para guardarlo"
-	legend.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	# The legend is filled in when the map comes out (show_map): it knows
+	# how many thieves there are and the colour of the piece.
+	_map_legend = VBoxContainer.new()
+	_map_legend.add_theme_constant_override("separation", 6)
+	column.add_child(_map_legend)
 	_map.visible = false
 	_map_stage.process_mode = Node.PROCESS_MODE_DISABLED
 
@@ -195,12 +204,22 @@ func _ready() -> void:
 	centre.add_child(_panel_box)
 	# The keys worth remembering, small in the corner.
 	_help = _label(12, C.dim, self)
-	_help.text = "P pausa · M mapa · E tirar cosas · C a gatas"
+	_help.text = Text.t("HUD_HELP")
 	_help.anchor_top = 1.0
 	_help.anchor_bottom = 1.0
 	_help.offset_left = 24
 	_help.offset_top = -34
-	_play = [_status, _log, _job, _bar_back, _bar, _arrow, _help]
+	# Up top, only how alarmed the guards are; at the bottom, the gang.
+	_status.visible = false
+	_alarm = TextureRect.new()
+	_alarm.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_alarm.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_alarm)
+	_gang = HBoxContainer.new()
+	_gang.add_theme_constant_override("separation", 14)
+	_gang.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_gang)
+	_play = [_log, _job, _bar_back, _bar, _arrow, _help, _alarm, _gang]
 
 	# The model's reasoning, for whoever wants to watch it think: a card per
 	# guard with its plan and the probabilities Laya gave each option.
@@ -238,13 +257,15 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 ##   {"title": text, "colour": Color, "size": int}   the heading
 ##   {"text": text, "size"?, "colour"?, "wrap"?}      a line, or a paragraph
 ##   {"picture": Texture2D, "smooth"?, "height"?}     the map, the piece
-##   {"buttons": [{"text", "call", "icon"?, "colour"?}], "row": bool}
+##   {"buttons": [{"text", "call", "icon"?, "colour"?}], "row": bool, "focus"?: int}
 ##                                                    text buttons, all one width
 ##                                                    ("step" for "call": a setting, _stepper)
 ##   {"cards": [{"title", "text"?, "picture", "call", "colour"?, "selected"?,
 ##     "focus"?}], "width"?: int}                     big picture cards in a row
 ##   {"nights": [{"n", "colour", "locked", "selected", "call"}]}
 ##                                                    the story's path of nights
+##   {"legend": [keys], "thieves": [Color], "loot": Color}
+##                                                    the map's legend (LEGEND)
 ##   {"footer": text}                                 what to press
 ## Buttons work with the mouse, and with the arrows and Enter; the first one
 ## has the focus.
@@ -252,6 +273,7 @@ func show_menu(items: Array) -> void:
 	for c in _panel_box.get_children():
 		c.queue_free()
 	var first: Button = null
+	var focus_on: Button = null
 	# Rows of focusable controls, top to bottom, for the arrows.
 	var rows: Array = []
 	_named.clear()
@@ -303,6 +325,8 @@ func show_menu(items: Array) -> void:
 			_panel_box.add_child(r)
 			# The arrows lean it, as in play.
 			_menu_map = stage
+		elif item.has("legend"):
+			legend_row(_panel_box, item.legend, item.get("thieves", []), item.get("loot", Color.WHITE))
 		elif item.has("stage"):
 			var stage: MenuStage = item.stage
 			_panel_box.add_child(stage)
@@ -368,15 +392,19 @@ func show_menu(items: Array) -> void:
 			box.add_theme_constant_override("separation", 24 if item.get("row", false) else 10)
 			_panel_box.add_child(box)
 			var line: Array = []
-			for b in item.buttons:
+			for bi in item.buttons.size():
+				var b: Dictionary = item.buttons[bi]
 				var button := _button(b)
+				# The one to start on, when it is not the first.
+				if item.get("focus", -1) == bi:
+					focus_on = button
 				if not b.has("icon"):
 					# big: the one thing to do next; small: the way back.
 					if item.get("big", false):
 						button.custom_minimum_size = Vector2(380, 62)
 						button.add_theme_font_size_override("font_size", 17)
 					elif item.get("small", false):
-						button.custom_minimum_size = Vector2(240, 38)
+						button.custom_minimum_size = Vector2(item.get("width", 240), 38)
 						button.add_theme_font_size_override("font_size", 10)
 					else:
 						button.custom_minimum_size = Vector2(240 if item.get("row", false) else 400, 42)
@@ -412,6 +440,8 @@ func show_menu(items: Array) -> void:
 	# Once laid out, up and down go by where things are on screen.
 	_rows = rows
 	_rewire.call_deferred(rows)
+	if focus_on:
+		first = focus_on
 	if first:
 		# The focus a menu opens with is not a move: no sound for it.
 		_quiet = true
@@ -512,14 +542,16 @@ func _button(b: Dictionary) -> Button:
 	button.add_theme_font_override("font", ARCADE)
 	button.add_theme_font_size_override("font_size", 12)
 	var colour: Color = b.get("colour", C.safe)
+	# selected: the tab you are on, marked even without the focus.
+	var selected: bool = b.get("selected", false)
 	for state in ["normal", "hover", "pressed", "focus"]:
-		var st := _frame(colour, state != "normal", false, 22)
+		var st := _frame(colour, state != "normal", selected, 22)
 		st.set_content_margin_all(12)
 		st.content_margin_left = 28
 		st.content_margin_right = 28
 		button.add_theme_stylebox_override(state, st)
 	_lift(button)
-	button.add_theme_color_override("font_color", CREAM)
+	button.add_theme_color_override("font_color", C.gold if selected else CREAM)
 	for key in ["font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
 		button.add_theme_color_override(key, INK)
 	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -664,7 +696,9 @@ func _card(c: Dictionary, width: int) -> Button:
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		l.custom_minimum_size = Vector2(width - 24, 0)
-		height += 34
+		# Room for every line it wraps to (about 6.5 px a character).
+		var lines := ceili(l.text.length() * 6.5 / (width - 24))
+		height += 10 + 17 * maxi(2, lines)
 	b.custom_minimum_size = Vector2(width, height + 34)
 	# A card to look at, not to press (the player-select seats).
 	if c.get("static", false):
@@ -816,7 +850,16 @@ func set_ia(on: bool, entries: Array) -> void:
 
 
 ## Take the map out (or put it away) during play: it unfolds as it comes.
-func show_map(plan: Image) -> void:
+func show_map(plan: Image, thief_colours: Array = []) -> void:
+	for c in _map_legend.get_children():
+		c.queue_free()
+	var keys := ["thief", "gem", "exit", "prop"]
+	if Heist.team and not Heist.taken:
+		keys.append("panel")
+	legend_row(_map_legend, keys, thief_colours, Color(Heist.loot.colour))
+	var hint := _label(12, C.dim, _map_legend)
+	hint.text = Text.t("HUD_MAP_HIDE")
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_map_stage.print_plan(plan)
 	_map_stage.process_mode = Node.PROCESS_MODE_INHERIT
 	_map_stage.unfold()
@@ -840,73 +883,274 @@ func hide_map() -> void:
 ## The map as taken out mid-job, on parchment: the plan, where each thief is
 ## now, the piece (or where it lies), the door, and the alarm panel for two.
 ## No guards: a map does not know where they are.
+## The map you take out mid-job: the plan with its cases, the things you
+## can knock over, the piece, the way out and where the thieves are — the
+## important ones as icons, all of them in the legend under it.
 static func live_map(thieves: Array[Thief], colours: Array) -> Image:
-	var s := 8
+	var none: Array[Guard] = []
+	return _draw_map(thieves, colours, none, [])
+
+
+## The plan on parchment, before the job: the same map, with the route in
+## ink dots, where you come in (the thieves' icons) and where each guard
+## starts (a red cross).
+static func plan_map(guards: Array[Guard], colours: Array) -> Image:
+	var none: Array[Thief] = []
+	return _draw_map(none, [], guards, colours)
+
+
+## Pixels a tile: the plan fills about MAP_WIDTH whatever the museum's size,
+## so the icons (a fixed size in pixels) read the same on every map.
+const MAP_WIDTH := 720.0
+const MAP_INK := Color("#1c1210")
+const MAP_FLOOR := Color("#e8d6b4")
+const MAP_CASE := Color("#b89a70")
+const MAP_PROP := Color("#ff8c2e")
+const MAP_ROUTE := Color("#5a3a22")
+const MAP_WALL := Color("#4a2f22")
+const MAP_GUARD := Color("#c42a3c")
+
+## The alarm panel as a pixel mask: '#' orange, 'w' the dark mark.
+const ICON_PANEL := [
+	".#####.",
+	"###w###",
+	"###w###",
+	"###w###",
+	"#######",
+	"###w###",
+	".#####.",
+]
+
+
+static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard], start_colours: Array) -> Image:
+	var s := clampi(int(MAP_WIDTH / Museum.w), 8, 32)
 	var img := Image.create(Museum.w * s, Museum.h * s, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
+	# The plan in three tones: floor, the cases on it, walls.
 	for y in Museum.h:
 		for x in Museum.w:
 			if Museum.is_outside(x, y):
 				continue
 			var t := Museum.grid[y * Museum.w + x]
-			var c := Color("#4a2f22") if t == Tiles.WALL else (Color("#b89a70") if t == Tiles.COVER else Color("#e8d6b4"))
-			img.fill_rect(Rect2i(x * s, y * s, s, s), c)
-	# A mark in a shape: "circle" (a thief), "diamond" (the piece), "square".
-	var dot := func(at: Vector2, colour: Color, r: int, ring: Color, shape := "square") -> void:
-		var cx := int(at.x * s)
-		var cy := int(at.y * s)
-		for pass_n in 2:
-			var rr := r + 1 - pass_n
-			var c: Color = ring if pass_n == 0 else colour
-			for dy in range(-rr, rr + 1):
-				for dx in range(-rr, rr + 1):
-					var inside: bool = true
-					if shape == "circle":
-						inside = dx * dx + dy * dy <= rr * rr
-					elif shape == "diamond":
-						inside = absi(dx) + absi(dy) <= rr
-					if inside and cx + dx >= 0 and cy + dy >= 0 and cx + dx < img.get_width() and cy + dy < img.get_height():
-						img.set_pixel(cx + dx, cy + dy, c)
-	var ink := Color("#1c1210")
+			img.fill_rect(Rect2i(x * s, y * s, s, s), MAP_WALL if t == Tiles.WALL else (MAP_CASE if t == Tiles.COVER else MAP_FLOOR))
+	var at := func(p: Vector2) -> Vector2i: return Vector2i(int(p.x * s), int(p.y * s))
+	var mid := func(t: Vector2i) -> Vector2: return Vector2(t.x + 0.5, t.y + 0.5)
+	# The plan, before the job: the way from the way in to the piece to the door.
+	if not start_colours.is_empty():
+		var d := maxi(4, s / 3)
+		for i in Heist.route.size():
+			if i % 2 == 0:
+				var t: Vector2i = Heist.route[i]
+				img.fill_rect(Rect2i(t.x * s + s / 2 - d / 2, t.y * s + s / 2 - d / 2, d, d), MAP_ROUTE)
+	# What can be knocked over, still standing: an orange triangle each.
 	for p in Props.list:
 		if not p.fallen:
-			dot.call(Vector2(p.x, p.y), Color("#b8483a"), 2, ink, "circle")
-	dot.call(Vector2(Heist.exit.x + 0.5, Heist.exit.y + 0.5), C.green, 4, ink)
+			_triangle(img, at.call(Vector2(p.x, p.y)), 13, MAP_PROP)
+	# The door, in green, and its sign just inside it.
+	var door: Vector2i = Heist.exit + Heist.exit_face
+	img.fill_rect(Rect2i(door.x * s, door.y * s, s, s), C.green)
 	if Heist.team and not Heist.taken:
-		dot.call(Vector2(Heist.panel.x + 0.5, Heist.panel.y + 0.5), Color("#ff922b"), 3, ink)
+		_stamp(img, ICON_PANEL, at.call(mid.call(Heist.panel)), 4, {"#": Color("#ff922b"), "w": MAP_INK})
+		if Heist.panel2.x >= 0:
+			_stamp(img, ICON_PANEL, at.call(mid.call(Heist.panel2)), 4, {"#": Color("#ff922b"), "w": MAP_INK})
+	# The piece: a gem in its colour, sparkling, wherever it is.
+	# The piece: a diamond in its colour, giving off light.
+	var gem := func(p: Vector2, r: int) -> void:
+		var c: Vector2i = (at.call(p) as Vector2i).clamp(Vector2i(r * 2, r * 2), img.get_size() - Vector2i(r * 2, r * 2))
+		_diamond(img, c, r, Color(Heist.loot.colour))
 	if not Heist.taken:
-		dot.call(Vector2(Heist.at.x + 0.5, Heist.at.y + 0.5), Color(Heist.loot.colour), 6, ink, "diamond")
+		gem.call(mid.call(Heist.at), 20)
 	elif Heist.dropped != Vector2.INF:
-		dot.call(Heist.dropped, Color(Heist.loot.colour), 5, ink, "diamond")
+		gem.call(Heist.dropped, 16)
+	for g in guards:
+		_square(img, at.call(Vector2(g.x, g.y)), 12, MAP_GUARD)
+	# The way out: a green arrow through the door, pointing out.
+	_draw_arrow(img, at.call(mid.call(Heist.exit) + Vector2(Heist.exit_face) * 0.3), Vector2(Heist.exit_face), 64, C.green)
+	# Where you come in: a dot for each thief who will, side by side.
+	for i in start_colours.size():
+		var off := Vector2((i - (start_colours.size() - 1) / 2.0) * 34.0 / s, 0)
+		_dot(img, at.call(mid.call(Heist.start) + off), 14, start_colours[i], MAP_INK)
 	for i in thieves.size():
 		var p := thieves[i]
-		if not p.out:
-			dot.call(Vector2(p.x, p.y), colours[i], 5, Color.WHITE, "circle")
+		if p.out:
+			continue
+		var c: Vector2i = at.call(Vector2(p.x, p.y))
+		# The piece rides along with whoever has it, glowing behind them.
+		if Heist.carrier == p.id:
+			_glow(img, c, 44, Color(Heist.loot.colour))
+		_dot(img, c, 14, colours[i], Color.WHITE)
 	return img
 
 
-## The plan on parchment, for the folded 3D map before the job: the live
-## map's plan and marks, plus the route in ink dots, where you come in, and
-## where each guard starts (red crosses: the plan knows the rota).
-static func plan_map(guards: Array[Guard]) -> Image:
-	var none: Array[Thief] = []
-	var img := live_map(none, [])
-	var s := 8
-	var ink := Color("#5a3a22")
-	for i in Heist.route.size():
-		if i % 2 == 0:
-			var t: Vector2i = Heist.route[i]
-			img.fill_rect(Rect2i(t.x * s + s / 2 - 1, t.y * s + s / 2 - 1, 3, 3), ink)
-	for g in guards:
-		var cx := int(g.x * s)
-		var cy := int(g.y * s)
-		for k in range(-4, 5):
-			for w in [0, 1]:
-				img.set_pixel(clampi(cx + k, 0, img.get_width() - 1), clampi(cy + k + w, 0, img.get_height() - 1), Color("#b3263a"))
-				img.set_pixel(clampi(cx + k, 0, img.get_width() - 1), clampi(cy - k + w, 0, img.get_height() - 1), Color("#b3263a"))
-	var st := Heist.start
-	img.fill_rect(Rect2i(st.x * s + 1, st.y * s + 1, s - 2, s - 2), Color("#1f8fa8"))
-	return img
+## Something to knock over: a triangle on its base, outlined, a pale dot in it.
+static func _triangle(img: Image, c: Vector2i, r: int, colour: Color) -> void:
+	for pass_n in 2:
+		var rr := r + 4 - pass_n * 4
+		for dy in range(-rr, rr + 1):
+			# From the apex (top) widening to the base (bottom).
+			var half := int((dy + rr) * 0.58)
+			img.fill_rect(Rect2i(c.x - half, c.y + dy, half * 2 + 1, 1), MAP_INK if pass_n == 0 else colour)
+	img.fill_rect(Rect2i(c.x - 2, c.y + r / 3 - 2, 4, 4), Color("#fff3d6"))
+
+
+## A thief: a disc in its colour with a ring round it.
+static func _dot(img: Image, c: Vector2i, r: int, colour: Color, ring: Color) -> void:
+	_disc(img, c, r + 3, MAP_INK)
+	_disc(img, c, r + 1, ring)
+	_disc(img, c, r - 2, colour)
+
+
+## A guard: a red square, outlined.
+static func _square(img: Image, c: Vector2i, half: int, colour: Color) -> void:
+	img.fill_rect(Rect2i(c.x - half - 3, c.y - half - 3, half * 2 + 6, half * 2 + 6), MAP_INK)
+	img.fill_rect(Rect2i(c.x - half, c.y - half, half * 2, half * 2), colour)
+
+
+## Light spilling round something bright: blended over what is under it,
+## strongest in the middle and gone at r.
+static func _glow(img: Image, c: Vector2i, r: int, colour: Color) -> void:
+	var lit := colour.lightened(0.35)
+	for y in range(maxi(0, c.y - r), mini(img.get_height(), c.y + r + 1)):
+		for x in range(maxi(0, c.x - r), mini(img.get_width(), c.x + r + 1)):
+			var d := Vector2(x - c.x, y - c.y).length() / r
+			if d >= 1.0:
+				continue
+			var k := pow(1.0 - d, 1.6) * 0.85
+			var under := img.get_pixel(x, y)
+			var mixed := under.lerp(lit, k)
+			mixed.a = maxf(under.a, k)
+			img.set_pixel(x, y, mixed)
+
+
+## The piece: a diamond (a square on its point) in its colour, lighter on
+## its upper facets with a white glint, in a halo of its own light with
+## four rays.
+static func _diamond(img: Image, c: Vector2i, r: int, colour: Color) -> void:
+	_glow(img, c, r * 3, colour)
+	for k in 4:
+		var dir := Vector2.from_angle(k * PI / 2 + PI / 4)
+		for t in range(r + 4, r * 2 + 2):
+			var q := Vector2(c) + dir * t
+			img.fill_rect(Rect2i(int(q.x) - 1, int(q.y) - 1, 3, 3), Color(1, 1, 0.9).lerp(colour.lightened(0.5), float(t - r) / (r + 2)))
+	for pass_n in 2:
+		var rr := r + 3 - pass_n * 3
+		var fill: Color = MAP_INK if pass_n == 0 else colour
+		for dy in range(-rr, rr + 1):
+			var half := rr - absi(dy)
+			img.fill_rect(Rect2i(c.x - half, c.y + dy, half * 2 + 1, 1), fill)
+	for dy in range(-r + 2, 0):
+		var half := r - absi(dy) - 2
+		img.fill_rect(Rect2i(c.x - half, c.y + dy, half * 2 + 1, 1), colour.lightened(0.3))
+	img.fill_rect(Rect2i(c.x - r / 3, c.y - r / 2, r / 4 + 2, r / 4 + 2), Color.WHITE)
+
+
+## A fat arrow of length len centred on c, pointing along dir, outlined.
+static func _draw_arrow(img: Image, c: Vector2i, dir: Vector2, len: int, colour: Color) -> void:
+	dir = dir.normalized()
+	var side := dir.orthogonal()
+	var half := len / 2.0
+	var shaft := len * 0.16
+	var head := len * 0.4
+	var inside := func(p: Vector2, grow: float) -> bool:
+		var u := p.dot(dir)
+		var v := absf(p.dot(side))
+		if u < -half - grow or u > half + grow:
+			return false
+		if u < half - head:
+			return v <= shaft + grow
+		# The head: widest at its base, to a point at the tip.
+		var t := (u - (half - head)) / head
+		return v <= head * 0.9 * (1.0 - t) + grow
+	var reach := int(half + head) + 4
+	for y in range(maxi(0, c.y - reach), mini(img.get_height(), c.y + reach + 1)):
+		for x in range(maxi(0, c.x - reach), mini(img.get_width(), c.x + reach + 1)):
+			var p := Vector2(x - c.x, y - c.y)
+			if inside.call(p, 0.0):
+				img.set_pixel(x, y, colour)
+			elif inside.call(p, 3.5):
+				img.set_pixel(x, y, MAP_INK)
+
+
+## What the map's legend lists, in this order: the icon and its words (keys
+## into Text).
+const LEGEND := {
+	"thief": "LEGEND_THIEF", "gem": "LEGEND_GEM", "exit": "LEGEND_EXIT", "guard": "LEGEND_GUARD",
+	"prop": "LEGEND_PROP", "route": "LEGEND_ROUTE", "panel": "LEGEND_PANEL",
+}
+
+
+## A legend icon: the map's own mark, drawn small on its own.
+static func legend_icon(key: String, colour := Color.WHITE) -> ImageTexture:
+	var img := Image.create(64, 40, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var c := Vector2i(32, 20)
+	match key:
+		"thief":
+			img = Image.create(40, 40, false, Image.FORMAT_RGBA8)
+			img.fill(Color(0, 0, 0, 0))
+			_dot(img, Vector2i(20, 20), 11, colour, MAP_INK)
+		"gem": _diamond(img, c, 9, colour)
+		"guard": _square(img, c, 10, MAP_GUARD)
+		"panel": _stamp(img, ICON_PANEL, c, 4, {"#": Color("#ff922b"), "w": MAP_INK})
+		"prop": _triangle(img, c, 11, MAP_PROP)
+		"route":
+			for k in 3:
+				img.fill_rect(Rect2i(12 + k * 16, 17, 7, 7), Color("#e8d6b4"))
+		"exit": _draw_arrow(img, c, Vector2.RIGHT, 44, C.green)
+	return ImageTexture.create_from_image(img)
+
+
+## The legend as a row: each entry its icon and its words. thief_colours
+## paints the thieves' icon, loot_colour the gem.
+func legend_row(parent: Node, keys: Array, thief_colours: Array, loot_colour: Color) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 22)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(row)
+	for key in keys:
+		var entry := HBoxContainer.new()
+		entry.add_theme_constant_override("separation", 4)
+		row.add_child(entry)
+		var icons: Array = thief_colours if key == "thief" else [loot_colour if key == "gem" else Color.WHITE]
+		for colour in icons:
+			var r := TextureRect.new()
+			r.texture = legend_icon(key, colour)
+			r.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			r.custom_minimum_size = Vector2(r.texture.get_width(), r.texture.get_height()) * 0.8
+			entry.add_child(r)
+		var l := _label(14, Color("#e8d6b4"), entry)
+		l.text = Text.t(LEGEND[key])
+		l.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	return row
+
+
+static func _disc(img: Image, c: Vector2i, r: int, colour: Color) -> void:
+	for dy in range(-r, r + 1):
+		var half := int(sqrt(float(r * r - dy * dy)))
+		img.fill_rect(Rect2i(c.x - half, c.y + dy, half * 2 + 1, 1), colour)
+
+
+## A mask stamped centred on c, k pixels a cell; with an outline (ink by
+## default) round every filled cell so it stands off the plan.
+static func _stamp(img: Image, mask: Array, c: Vector2i, k: int, colours: Dictionary, outline := true, ring := MAP_INK) -> void:
+	var w: int = mask[0].length()
+	var h := mask.size()
+	var x0 := c.x - w * k / 2
+	var y0 := c.y - h * k / 2
+	var o := maxi(2, k / 2)
+	if outline:
+		for y in h:
+			for x in w:
+				if mask[y][x] != ".":
+					img.fill_rect(Rect2i(x0 + x * k - o, y0 + y * k - o, k + o * 2, k + o * 2), ring)
+	for y in h:
+		for x in w:
+			var ch: String = mask[y][x]
+			if colours.has(ch):
+				img.fill_rect(Rect2i(x0 + x * k, y0 + y * k, k, k), colours[ch])
 
 
 ## The mission map: the plan, the route from the way in to the piece to the
@@ -946,41 +1190,166 @@ static func mission_map(guards: Array[Guard]) -> ImageTexture:
 ## job is {"working": bool, "progress": float, "verb": String, "carrying":
 ## bool, "dropped": bool, "name": String}; objective_angle is in screen terms,
 ## or NAN to hide the arrow.
-func update_play(status: String, status_colour: Color, log_lines: Array[String], job: Dictionary, objective_angle: float, objective_colour: Color) -> void:
-	_status.text = status
-	_status.add_theme_color_override("font_color", status_colour)
-	_log.text = "\n".join(log_lines)
+func update_play(log_lines: Array[String], job: Dictionary, objective_angle: float, objective_colour: Color, alarm: int) -> void:
 	var view := get_viewport().get_visible_rect().size
-	var working: bool = job.get("working", false) and not job.get("waiting", false)
+	_log.text = "\n".join(log_lines)
+	# What happened lately: bottom left, over the keys.
+	_log.position = Vector2(24, view.y - 44 - _log.get_minimum_size().y)
+	_draw_alarm(alarm, view)
+	_gang.position = Vector2(view.x / 2 - _gang.get_combined_minimum_size().x / 2, view.y - PORTRAIT - 22)
+	var working: bool = job.get("working", false) and not job.get("waiting", false) and not job.get("short_hand", false)
 	_bar_back.visible = working
 	_bar.visible = working
 	if working:
 		var w := 360.0
-		_bar_back.position = Vector2(view.x / 2 - w / 2, view.y - 70)
+		_bar_back.position = Vector2(view.x / 2 - w / 2, view.y - PORTRAIT - 44)
 		_bar_back.size = Vector2(w, 14)
 		_bar.position = _bar_back.position
 		_bar.size = Vector2(w * float(job.progress), 14)
 	if job.get("waiting", false):
-		_job.text = "¡QUE TU COMPAÑERO SUJETE EL CUADRO DE ALARMA!"
+		_job.text = Text.t("HUD_JOB_WAIT_PANELS" if job.get("panels", 1) > 1 else "HUD_JOB_WAIT_PANEL")
+	elif job.get("short_hand", false):
+		_job.text = Text.t("HUD_JOB_TWO_LOCKS")
 	elif working:
 		_job.text = job.verb
 	elif job.get("carrying", false):
-		_job.text = "TIENES %s · ¡A LA SALIDA!" % String(job.name).to_upper()
+		_job.text = Text.t("HUD_JOB_CARRYING") % String(job.name).to_upper()
 	elif job.get("dropped", false):
-		_job.text = "%s ESTÁ EN EL SUELO" % String(job.name).to_upper()
+		_job.text = Text.t("HUD_JOB_DROPPED") % String(job.name).to_upper()
 	elif job.get("panel", false):
-		_job.text = "ALARMA DESCONECTADA · ¡A LA VITRINA!"
+		_job.text = Text.t("HUD_JOB_PANEL_HELD")
 	elif job.get("hint", "") != "":
 		_job.text = job.hint
 	else:
 		_job.text = ""
 	_job.size = Vector2(view.x, 30)
-	_job.position = Vector2(0, view.y - 108)
+	_job.position = Vector2(0, view.y - PORTRAIT - 84)
 	_arrow.visible = not is_nan(objective_angle)
 	if _arrow.visible:
 		_arrow.add_theme_color_override("font_color", objective_colour)
 		_arrow.position = view / 2 + Vector2(cos(objective_angle) * view.x * 0.45, sin(objective_angle) * view.y * 0.42) - Vector2(14, 28)
 		_arrow.rotation = objective_angle
+
+
+## Size of a thief's portrait, in pixels.
+const PORTRAIT := 110
+## The alarm's marks: one slot per level, lit up to the level in its colour.
+const ALARM_COLOURS := [Color("#3a2a40"), Color("#ffd43b"), Color("#ff922b"), Color("#ff3048")]
+
+
+## Top centre: three ! slots, lit up to how alarmed the most alarmed guard
+## is — none, something odd, alert, after you. Pops when it goes up.
+func _draw_alarm(level: int, view: Vector2) -> void:
+	if level != _alarm_level:
+		var rose := level > _alarm_level and _alarm_level >= 0
+		_alarm_level = level
+		var img := Image.create(23, 15, false, Image.FORMAT_RGBA8)
+		img.fill(Color(0, 0, 0, 0))
+		for k in 3:
+			var x := k * 8
+			var lit := k < level
+			var c: Color = ALARM_COLOURS[level] if lit else ALARM_COLOURS[0]
+			img.fill_rect(Rect2i(x, 0, 7, 10), Color("#1c1210"))
+			img.fill_rect(Rect2i(x, 11, 7, 4), Color("#1c1210"))
+			img.fill_rect(Rect2i(x + 2, 1, 3, 8), c)
+			img.fill_rect(Rect2i(x + 2, 12, 3, 2), c)
+		_alarm.texture = ImageTexture.create_from_image(img)
+		_alarm.size = Vector2(23, 15) * 3
+		_alarm.pivot_offset = _alarm.size / 2
+		if rose:
+			_alarm.scale = Vector2.ONE * 1.6
+			create_tween().tween_property(_alarm, "scale", Vector2.ONE, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_alarm.position = Vector2(view.x / 2 - _alarm.size.x / 2, 18)
+
+
+## The gang at the bottom: for each thief a little stage with its own
+## figure, in its colours, that stands, walks, crawls and carries the piece
+## just as the thief does (update_gang).
+func set_gang(colours: Array, darks: Array, loot: Dictionary) -> void:
+	for c in _gang.get_children():
+		c.queue_free()
+	_portraits.clear()
+	_alarm_level = -1
+	for i in colours.size():
+		var view := SubViewport.new()
+		view.size = Vector2i(PORTRAIT, PORTRAIT) * 2
+		view.own_world_3d = true
+		view.transparent_bg = true
+		view.msaa_3d = Viewport.MSAA_4X
+		var env := Environment.new()
+		env.background_mode = Environment.BG_CLEAR_COLOR
+		env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+		env.ambient_light_color = Color("#b8a8d8")
+		env.ambient_light_energy = 0.7
+		var we := WorldEnvironment.new()
+		we.environment = env
+		view.add_child(we)
+		var sun := DirectionalLight3D.new()
+		sun.rotation_degrees = Vector3(-40, 30, 0)
+		sun.light_energy = 1.2
+		view.add_child(sun)
+		var cam := Camera3D.new()
+		cam.projection = Camera3D.PROJECTION_ORTHOGONAL
+		# Looking a little down at it, its middle (0.65 m up) in the middle.
+		cam.size = 1.8
+		cam.rotation_degrees = Vector3(-18, 0, 0)
+		cam.position = Vector3(0, 0.65 + 4.0 * tan(deg_to_rad(18.0)), 4.0)
+		view.add_child(cam)
+		# The figure walks on the spot: its anchor slides back as it steps.
+		var anchor := Node3D.new()
+		view.add_child(anchor)
+		var fig := Figure.make("thief", colours[i], darks[i])
+		anchor.add_child(fig)
+		var piece := LootModels.build(loot.get("shape", "gem"), Color(loot.get("colour", "#ffffff")))
+		piece.scale = Vector3.ONE * 1.4
+		piece.visible = false
+		fig.add_child(piece)
+		var frame := PanelContainer.new()
+		frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var box := StyleBoxFlat.new()
+		box.bg_color = Color(0.07, 0.05, 0.1, 0.75)
+		box.set_corner_radius_all(18)
+		box.set_border_width_all(4)
+		box.border_color = colours[i]
+		frame.add_theme_stylebox_override("panel", box)
+		frame.add_child(view)
+		var pic := TextureRect.new()
+		pic.texture = view.get_texture()
+		pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		pic.custom_minimum_size = Vector2(PORTRAIT, PORTRAIT)
+		pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		frame.add_child(pic)
+		_gang.add_child(frame)
+		_portraits.append({"anchor": anchor, "fig": fig, "piece": piece, "frame": frame, "box": box, "colour": colours[i], "walked": 0.0})
+
+
+## Each thief as it is now: {posture, speed, carrying, seen, out, safe}. The
+## frame says how it is doing — its colour hidden, red seen, grey caught,
+## green out of the door.
+func update_gang(states: Array, dt: float) -> void:
+	for i in mini(states.size(), _portraits.size()):
+		var st: Dictionary = states[i]
+		var p: Dictionary = _portraits[i]
+		p.walked += float(st.speed) * dt
+		var fig: Figure = p.fig
+		fig.set_state(Vector3(p.walked, 0, 0), PI / 2 - 0.6, float(st.posture), dt)
+		(p.anchor as Node3D).position.x = -p.walked
+		var piece: Node3D = p.piece
+		piece.visible = st.carrying
+		# On its back, lower when it is down on all fours.
+		piece.position = Vector3(0, 1.1 - 0.45 * float(st.posture), -0.28)
+		var box: StyleBoxFlat = p.box
+		var frame: Control = p.frame
+		if st.safe:
+			box.border_color = C.green
+			frame.modulate = Color(1, 1, 1, 0.6)
+		elif st.out:
+			box.border_color = Color("#6d6a78")
+			frame.modulate = Color(0.5, 0.5, 0.5, 0.8)
+		else:
+			box.border_color = C.alert if st.seen else p.colour
+			frame.modulate = Color.WHITE
 
 
 ## A guard's yell: huge for a beat, leaning and pointing towards where it
@@ -996,7 +1365,7 @@ func shout(word: String, text: String, angle: float) -> void:
 ## 3, 2, 1, GO! in the middle of the screen, each one swelling and fading
 ## as it goes. on_step(i) is called as each appears (3 for GO!), on_done at
 ## the end.
-const COUNT := ["3", "2", "1", "GO!"]
+const COUNT := ["3", "2", "1", "HUD_COUNT_GO"]
 const COUNT_S := 0.8
 
 
@@ -1022,7 +1391,7 @@ func _draw_count(dt: float) -> void:
 	var i := mini(int(elapsed / COUNT_S), COUNT.size() - 1)
 	if i != _count_step:
 		_count_step = i
-		_count.text = COUNT[i]
+		_count.text = Text.t(COUNT[i])
 		var go := i == COUNT.size() - 1
 		_count.add_theme_color_override("font_color", C.safe if go else C.gold)
 		_count.add_theme_color_override("font_outline_color", Color("#0e7490") if go else Color("#b45309"))

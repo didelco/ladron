@@ -2,7 +2,7 @@ class_name Props
 extends RefCounted
 ## Things standing about the galleries that go over if you walk into them: a
 ## waste-paper bin (and its papers), a bust on a slim pedestal, an
-## information panel on its stand.
+## information panel on its stand, a suit of armour (that falls to pieces).
 ##
 ## They never block the way: you can walk right through where they stand,
 ## and that is the trouble — touching one while moving knocks it over, with
@@ -13,11 +13,12 @@ extends RefCounted
 ## Which is also the trick: push one over on purpose (Props.push) and the
 ## guards come running to it — away from where you are going.
 
-const KINDS := ["bin", "bust", "panel"]
-## How the kinds are shared out: mostly bins.
-const WEIGHTS := [0.45, 0.3, 0.25]
-## What a guard calls it when it sees it on the floor.
-const NAMES := {"bin": "la papelera", "bust": "el busto", "panel": "el panel"}
+const KINDS := ["bin", "bust", "panel", "armour"]
+## How the kinds are shared out: mostly bins, the odd suit of armour.
+const WEIGHTS := [0.4, 0.25, 0.2, 0.15]
+## What a guard calls it when it sees it on the floor: keys into Text
+## (name_of has the words).
+const NAMES := {"bin": "PROP_BIN", "bust": "PROP_BUST", "panel": "PROP_PANEL", "armour": "PROP_ARMOUR"}
 ## Closer than this to one, moving, and over it goes.
 const TOUCH := 0.45
 ## Close enough to push one over on purpose.
@@ -44,6 +45,11 @@ class Prop:
 static var list: Array[Prop] = []
 ## knocked over this frame, for the view and the sound
 static var knocked: Array[Prop] = []
+
+
+## What a kind is called on screen: "la papelera".
+static func name_of(kind: String) -> String:
+	return Text.t(NAMES[kind])
 
 
 ## Stand a few about the museum: against a wall, off the doorways, away from
@@ -103,7 +109,12 @@ static func place(seed: int, avoid: Array[Vector2i]) -> void:
 		var p := Prop.new()
 		p.id = list.size()
 		var roll := rand.next()
-		p.kind = KINDS[0] if roll < WEIGHTS[0] else (KINDS[1] if roll < WEIGHTS[0] + WEIGHTS[1] else KINDS[2])
+		p.kind = KINDS[-1]
+		for k in KINDS.size():
+			roll -= WEIGHTS[k]
+			if roll < 0.0:
+				p.kind = KINDS[k]
+				break
 		p.tile = t
 		p.face = s[1] if s[1] != Vector2i.ZERO else Vector2i(0, -1)
 		var pull := 0.22 if s[1] != Vector2i.ZERO else 0.0
@@ -159,11 +170,23 @@ static func push(p: Prop, t: Thief, now: float, noises: Array[SoundEvent]) -> vo
 	noises.append(SoundEvent.make(p.x, p.y, p.kind, crash_loudness(p.kind, 0.6)))
 
 
-## How loud it is going over: its kind's base loudness, from half of it for
-## a nudge to over twice as much for a crash at full tilt — a bust smashed
-## that hard is heard across the museum.
+## How much of the museum each kind fills at full tilt: the bust is heavy
+## stone, the bin rings out, the panel is mostly a slap, and a suit of armour
+## coming apart on the marble is the loudest thing in the building.
+const CARRY := {"bin": 0.9, "bust": 1.0, "panel": 0.8, "armour": 1.1}
+
+
+## How loud it is going over: never quiet — a nudge is already its kind's
+## base loudness — and the harder it goes, the further it carries, up to a
+## crash a calm guard hears from the far end of the building.
 static func crash_loudness(kind: String, strength: float) -> float:
-	return float(Hearing.LOUDNESS[kind]) * (0.55 + 1.6 * clampf(strength, 0.0, 1.0))
+	var whole := Vector2(Museum.w, Museum.h).length() / Hearing.HEARING_CALM
+	return lerpf(float(Hearing.LOUDNESS[kind]), whole * float(CARRY[kind]), clampf(strength, 0.0, 1.0))
+
+
+## Loud enough to be heard all over the museum.
+static func heard_everywhere(loudness: float) -> bool:
+	return loudness >= 0.6 * Vector2(Museum.w, Museum.h).length() / Hearing.HEARING_CALM
 
 
 ## A fallen one this guard sees for the first time, if any.

@@ -15,32 +15,34 @@ const SIZES := {
 	"large": {"w": 49, "h": 35, "guards": 5},
 }
 
-## The galleries of the collection, in English for Laya and Spanish for the HUD.
+## The galleries of the collection: in English for Laya, and the key of
+## their name on screen (Text), which has a GALLERY_*_OF form too ("of the
+## ...", for the corridors beside them).
 const GALLERIES := [
-	["the Egyptian gallery", "la sala egipcia"],
-	["the mineral hall", "la sala de minerales"],
-	["the fossil gallery", "la galería de fósiles"],
-	["the butterfly room", "la sala de mariposas"],
-	["the portrait gallery", "la galería de retratos"],
-	["the map room", "la sala de mapas"],
-	["the sculpture court", "el patio de esculturas"],
-	["the armoury", "la armería"],
-	["the clock room", "la sala de relojes"],
-	["the ceramics gallery", "la sala de cerámica"],
-	["the meteorite room", "la sala de meteoritos"],
-	["the bird gallery", "la sala de aves"],
-	["the coin cabinet", "el gabinete de monedas"],
-	["the textile gallery", "la sala de tejidos"],
-	["the ship model room", "la sala de maquetas navales"],
-	["the Roman gallery", "la sala romana"],
-	["the tapestry hall", "la sala de tapices"],
-	["the prints room", "el gabinete de grabados"],
-	["the instrument gallery", "la sala de instrumentos"],
-	["the whale hall", "la sala de la ballena"],
-	["the jewel room", "la sala de joyas"],
-	["the insect gallery", "la sala de insectos"],
-	["the Viking gallery", "la sala vikinga"],
-	["the globe room", "la sala de globos terráqueos"],
+	["the Egyptian gallery", "GALLERY_EGYPTIAN_GALLERY"],
+	["the mineral hall", "GALLERY_MINERAL_HALL"],
+	["the fossil gallery", "GALLERY_FOSSIL_GALLERY"],
+	["the butterfly room", "GALLERY_BUTTERFLY_ROOM"],
+	["the portrait gallery", "GALLERY_PORTRAIT_GALLERY"],
+	["the map room", "GALLERY_MAP_ROOM"],
+	["the sculpture court", "GALLERY_SCULPTURE_COURT"],
+	["the armoury", "GALLERY_ARMOURY"],
+	["the clock room", "GALLERY_CLOCK_ROOM"],
+	["the ceramics gallery", "GALLERY_CERAMICS_GALLERY"],
+	["the meteorite room", "GALLERY_METEORITE_ROOM"],
+	["the bird gallery", "GALLERY_BIRD_GALLERY"],
+	["the coin cabinet", "GALLERY_COIN_CABINET"],
+	["the textile gallery", "GALLERY_TEXTILE_GALLERY"],
+	["the ship model room", "GALLERY_SHIP_MODEL_ROOM"],
+	["the Roman gallery", "GALLERY_ROMAN_GALLERY"],
+	["the tapestry hall", "GALLERY_TAPESTRY_HALL"],
+	["the prints room", "GALLERY_PRINTS_ROOM"],
+	["the instrument gallery", "GALLERY_INSTRUMENT_GALLERY"],
+	["the whale hall", "GALLERY_WHALE_HALL"],
+	["the jewel room", "GALLERY_JEWEL_ROOM"],
+	["the insect gallery", "GALLERY_INSECT_GALLERY"],
+	["the Viking gallery", "GALLERY_VIKING_GALLERY"],
+	["the globe room", "GALLERY_GLOBE_ROOM"],
 ]
 
 ## Longest stretch of corridor that still counts as one place.
@@ -62,7 +64,9 @@ class Room:
 class Zone:
 	var id: int
 	var name: String
+	## the name on screen, and the same as "of ..." ("de la sala", "del patio")
 	var label: String
+	var label_of: String
 	var tiles: Array[Vector2i] = []
 	## the room this zone is, or -1
 	var room: int = -1
@@ -73,11 +77,15 @@ static var h := 17
 static var shape := "rect"
 ## "small", "medium" or "large"
 static var size_name := "small"
+## the seed this museum was built from (its look follows from it too)
+static var seed_used := 0
 static var grid := PackedInt32Array()
 static var outside := PackedByteArray()
 static var ring := PackedByteArray()
 static var open_tiles: Array[Vector2i] = []
 static var cover_tiles: Array[Vector2i] = []
+## the pieces that take a block of cover tiles: {"kind": ..., "rect": Rect2i}
+static var big_pieces: Array[Dictionary] = []
 ## the guards' round
 static var watchpoints: Array[Vector2i] = []
 static var rooms: Array[Room] = []
@@ -101,6 +109,7 @@ static var _zone_index := PackedInt32Array()
 ## Build a new museum: its size and outline, then everything in it. An empty
 ## outline picks one at random, from the seed.
 static func regenerate(seed: int, size: String = "small", outline: String = "") -> void:
+	seed_used = seed
 	var dims: Dictionary = SIZES[size]
 	var rand := Mulberry32.new(seed ^ 0x5bd1e995)
 	shape = outline if outline != "" else MapGen.SHAPES[rand.below(MapGen.SHAPES.size())]
@@ -113,6 +122,7 @@ static func regenerate(seed: int, size: String = "small", outline: String = "") 
 	outside = made.outside
 	ring = made.ring
 	spawn = made.spawn
+	big_pieces = made.big
 
 	open_tiles.clear()
 	cover_tiles.clear()
@@ -163,6 +173,14 @@ static func tile_at(x: float, y: float) -> int:
 
 static func is_wall(x: float, y: float) -> bool:
 	return tile_at(x, y) == Tiles.WALL
+
+
+## The big piece standing on this tile, or an empty dictionary.
+static func big_piece_at(t: Vector2i) -> Dictionary:
+	for b in big_pieces:
+		if (b.rect as Rect2i).has_point(t):
+			return b
+	return {}
 
 
 static func is_cover(x: float, y: float) -> bool:
@@ -219,7 +237,7 @@ static func zone_name(x: float, y: float) -> String:
 
 static func zone_label(x: float, y: float) -> String:
 	var z := _nearest_zone(x, y)
-	return z.label if z else "el museo"
+	return z.label if z else Text.t("ZONE_MUSEUM")
 
 
 static func _nearest_zone(x: float, y: float) -> Zone:
@@ -463,7 +481,11 @@ static func _build_zones(rand: Mulberry32) -> void:
 		var z := Zone.new()
 		z.id = zones.size()
 		z.name = (pair[0] as String).replace("the ", "the second ") if n > 0 else pair[0]
-		z.label = "%s (%d)" % [pair[1], n + 1] if n > 0 else pair[1]
+		z.label = Text.t(pair[1])
+		z.label_of = Text.t(pair[1] + "_OF")
+		if n > 0:
+			z.label = Text.t("ZONE_NUMBERED") % [z.label, n + 1]
+			z.label_of = Text.t("ZONE_NUMBERED") % [z.label_of, n + 1]
 		z.room = r.id
 		zones.append(z)
 	var room_zone := {}
@@ -554,25 +576,23 @@ static func _build_zones(rand: Mulberry32) -> void:
 				best_d = d
 				best = z
 		var zname := "the corridor"
-		var label := "el pasillo"
+		var label := Text.t("ZONE_CORRIDOR")
 		if best:
 			var rr := rooms[best.room].rect
 			var ox := cx - (rr.position.x + rr.size.x / 2.0)
 			var oy := cy - (rr.position.y + rr.size.y / 2.0)
-			var dirs: Array
+			var dir: String
 			if absf(ox) > absf(oy):
-				dirs = ["east", "al este"] if ox > 0 else ["west", "al oeste"]
+				dir = "east" if ox > 0 else "west"
 			else:
-				dirs = ["south", "al sur"] if oy > 0 else ["north", "al norte"]
-			zname = "the corridor %s of %s" % [dirs[0], best.name]
-			# "de el patio" is "del patio" in Spanish.
-			var of := ("del " + best.label.substr(3)) if best.label.begins_with("el ") else ("de " + best.label)
-			label = "el pasillo %s %s" % [dirs[1], of]
+				dir = "south" if oy > 0 else "north"
+			zname = "the corridor %s of %s" % [dir, best.name]
+			label = Text.t("ZONE_CORRIDOR_" + dir.to_upper()) % best.label_of
 		var n: int = used.get(zname, 0) + 1
 		used[zname] = n
 		if n > 1:
 			zname += " (stretch %d)" % n
-			label += " (tramo %d)" % n
+			label = Text.t("ZONE_STRETCH") % [label, n]
 		var z := Zone.new()
 		z.id = id
 		z.name = zname

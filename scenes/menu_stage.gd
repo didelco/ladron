@@ -11,7 +11,8 @@ extends SubViewport
 ## Kinds: "story" (the museum at night, a thief on the path), "generative"
 ## (a floor plan that keeps redrawing itself, dice rolling over it),
 ## "players:1" / "players:2" (on a podium), "guards:easy|medium|hard",
-## "museum:small|medium|large".
+## "museum:small|medium|large", and "lesson:<what>", one scene per thing a
+## night teaches (LessonStage).
 
 const SIZE := Vector2i(420, 280)
 const FOV := 22.0
@@ -45,6 +46,7 @@ const BACKDROP := {
 	"guards:medium": Color("#221a12"),
 	"guards:hard": Color("#2a1016"),
 	"museum": Color("#1a1422"),
+	"lesson": Color("#1a1422"),
 }
 
 ## One candy material per colour, shared by every stage: the menus build a
@@ -72,8 +74,9 @@ var _blocks: Array[Dictionary] = []
 
 
 static func make(what: String) -> MenuStage:
-	var s := MenuStage.new()
 	var parts := what.split(":")
+	# The nights' lessons each have a scene of their own (LessonStage).
+	var s: MenuStage = LessonStage.new() if parts[0] == "lesson" else MenuStage.new()
 	s.kind = parts[0]
 	s.arg = parts[1] if parts.size() > 1 else ""
 	s._setup()
@@ -129,6 +132,12 @@ func _setup() -> void:
 	_cam.fov = FOV
 	_cam.rotation_degrees = Vector3(-35.264, 45, 0)
 	add_child(_cam)
+	_build()
+	_pose(0.0)
+
+
+## The scene of this kind, on its island.
+func _build() -> void:
 	match kind:
 		"story": _story()
 		"generative": _generative()
@@ -136,7 +145,6 @@ func _setup() -> void:
 		"seat": _players(0, int(arg))
 		"guards": _guards(arg)
 		"museum": _museum(arg)
-	_pose(0.0)
 
 
 ## Point the camera so a span of this many units fills the card, looking at
@@ -272,12 +280,12 @@ func _players(n: int, seat := 0) -> void:
 	_root.add_child(spot)
 	# A seat on the player-select screen: that player's thief alone, in the
 	# colour it always has.
-	if seat == 2:
-		_figure("thief", Color("#f0a13a"), Color("#8a5410"), 1.0)
+	var gang := [[Color("#2ec4a6"), Color("#12705f")], [Color("#f0a13a"), Color("#8a5410")], [Color("#b07cff"), Color("#5b3a99")], [Color("#4dabf7"), Color("#1c5d99")]]
+	if seat > 0:
+		_figure("thief", gang[seat - 1][0], gang[seat - 1][1], 1.0)
 		return
-	_figure("thief", Color("#2ec4a6"), Color("#12705f"), 1.0)
-	if n == 2:
-		_figure("thief", Color("#f0a13a"), Color("#8a5410"), 1.0)
+	for i in maxi(1, n):
+		_figure("thief", gang[i][0], gang[i][1], 1.0)
 
 
 ## The guards of a difficulty: one dozing by a bench, two on their rounds
@@ -363,7 +371,7 @@ func _pose(dt: float) -> void:
 			_figures[0].set_state(Vector3(-0.35, 0, 1.0), PI / 4, 0.0, dt)
 		"players", "seat":
 			for i in _figures.size():
-				var x := 0.0 if _figures.size() == 1 else (i - 0.5) * 0.75
+				var x := (i - (_figures.size() - 1) / 2.0) * 0.75
 				_figures[i].set_state(Vector3(x, 0.52, -x * 0.3), PI / 4, 0.0, dt)
 		"guards":
 			var n := _figures.size()
@@ -401,7 +409,7 @@ func _animate(dt: float) -> void:
 		"players":
 			# Hopping for joy, one after the other, turning to show off.
 			for i in _figures.size():
-				var x := 0.0 if _figures.size() == 1 else (i - 0.5) * 0.75
+				var x := (i - (_figures.size() - 1) / 2.0) * 0.75
 				var f := _figures[i]
 				f.set_state(Vector3(x, 0.52, -x * 0.3), PI / 4 + sin(_t * 2.0 + i) * 0.6, 0.0, dt)
 				_hop(f, _t * 6.0 + i * PI * 0.5, 0.25)

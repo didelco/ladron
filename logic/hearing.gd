@@ -6,19 +6,22 @@ extends RefCounted
 ## How far a noise carries, in tiles, before walls are taken into account.
 ## Standing still makes none: staying put is the whole point of hiding.
 ## Things falling over: they carry through walls better (see heard_at).
-const CRASHES := ["bin", "bust", "panel"]
+const CRASHES := ["bin", "bust", "panel", "armour"]
 
 const LOUDNESS := {
 	"walk": 5.0,
-	## things knocked over (Props): the bin clatters, the bust smashes
-	"bin": 10.0,
-	"bust": 14.0,
-	"panel": 11.0,
+	## things knocked over (Props), at their gentlest: the tin bin clangs,
+	## the bust smashes, the panel slaps flat, the armour falls to pieces. A
+	## proper crash carries much further (Props.crash_loudness).
+	"bin": 16.0,
+	"bust": 20.0,
+	"panel": 14.0,
+	"armour": 22.0,
 	"sprint": 9.5,
 	## pushing through past a case at a run
 	"rustle": 7.0,
-	## walking into a wall in the dark
-	"bump": 4.0,
+	## walking into a wall in the dark: a dull, dry knock
+	"bump": 3.0,
 	## knocking a case: the loudest thing you can do
 	"shelf": 13.0,
 	## one guard telling another, under its breath
