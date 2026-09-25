@@ -58,6 +58,11 @@ var players := 1
 var sound_on := true
 var music_on := true
 var show_ia := false
+var fullscreen := false
+var vsync := true
+## percent, 0..100 in steps of ten
+var music_volume := 100
+var effects_volume := 100
 ## where the settings screen goes back to: "title" or "paused"
 var settings_from := "title"
 var level := 1
@@ -94,6 +99,10 @@ var preview_spot: OmniLight3D
 
 
 func _ready() -> void:
+	# The pause stops the tree (and the physics with it), but not the game
+	# itself: its keys, the menus and the music go on. The world only moves
+	# in _tick, which the pause does not run.
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	brain = BrainClient.new()
 	add_child(brain)
 	brain.decided.connect(_on_decided)
@@ -102,6 +111,7 @@ func _ready() -> void:
 	add_child(sfx)
 	hud = Hud.new()
 	add_child(hud)
+	_load_settings()
 	_build_environment()
 	# A museum behind the title screen, so it is not a black void.
 	_new_round(1)
@@ -203,11 +213,13 @@ func _show_generative_menu() -> void:
 
 func _pick_difficulty(k: String) -> void:
 	Sim.difficulty = k
+	_save_settings()
 	_show_generative_menu()
 
 
 func _pick_size(k: String) -> void:
 	size = k
+	_save_settings()
 	_show_generative_menu()
 
 
@@ -233,43 +245,110 @@ func _show_prologue() -> void:
 	])
 
 
-## Sound, the IA panel and the size of the museum. Opens from the title and
-## from the pause; the size takes effect on the next museum built.
+## Sound and music, their volumes, the screen and the IA panel. Opens from
+## the title and from the pause. Each line is a setting (Hud._stepper): Enter
+## or a click moves it on, ← and → move it down and up; each change is saved.
 func _show_settings(from: String) -> void:
 	settings_from = from
 	phase = "settings"
+	var rows: Array = []
+	for k in ["sound", "music", "music_volume", "effects_volume", "fullscreen", "vsync", "ia"]:
+		rows.append({"text": _setting_text(k), "step": _step_setting.bind(k)})
+	rows.append({"text": "◂ VOLVER", "call": _settings_back})
 	hud.show_menu([
 		{"title": "SETTINGS", "size": 48},
-		{"buttons": [
-			{"text": "SONIDO: %s  (M)" % ("SÍ" if sound_on else "NO"), "call": _toggle_sound},
-			{"text": "MÚSICA: %s" % ("SÍ" if music_on else "NO"), "call": _toggle_music},
-			{"text": "PANEL IA: %s" % ("SÍ" if show_ia else "NO"), "call": _toggle_ia},
-			{"text": "◂ VOLVER", "call": _settings_back},
-		]},
+		{"buttons": rows},
 		{"text": "P1: WASD · C para ponerse a gatas" if players == 1 or from == "title" else "P1: WASD · C    P2: flechas · - o /"},
 		{"text": "Con un solo jugador valen también las flechas y Shift."},
+		{"text": "Volúmenes: ← y → para bajar y subir.", "size": 16, "colour": Hud.C.dim},
 	])
 
 
-func _toggle_sound() -> void:
-	_set_sound(not sound_on)
-	_show_settings(settings_from)
+func _setting_text(key: String) -> String:
+	var yes := func(on: bool) -> String: return "SÍ" if on else "NO"
+	match key:
+		"sound": return "SONIDO: %s  (M)" % yes.call(sound_on)
+		"music": return "MÚSICA: %s" % yes.call(music_on)
+		"music_volume": return "VOL. MÚSICA %s" % _volume_bar(music_volume)
+		"effects_volume": return "VOL. EFECTOS %s" % _volume_bar(effects_volume)
+		"fullscreen": return "PANTALLA COMPLETA: %s" % yes.call(fullscreen)
+		"vsync": return "V-SYNC: %s" % yes.call(vsync)
+		"ia": return "PANEL IA: %s" % yes.call(show_ia)
+	return key
+
+
+## |||||····· 50%: a bar a step, in glyphs the arcade font has (it has no
+## blocks, and the fallback's come out as hairlines).
+func _volume_bar(percent: int) -> String:
+	var on: int = percent / Settings.VOLUME_STEP
+	return "%s%s %d%%" % ["|".repeat(on), "·".repeat(100 / Settings.VOLUME_STEP - on), percent]
+
+
+## One setting changed from its button: a yes/no flips whichever way; a
+## volume goes down or up a step with ← and → (stopping at the ends), and up
+## with Enter, round from 100 back to 0. Applied, saved, and the button's
+## new text returned.
+func _step_setting(dir: int, key: String) -> String:
+	match key:
+		"sound": _set_sound(not sound_on)
+		"music": _toggle_music()
+		"ia": _toggle_ia()
+		"fullscreen", "vsync":
+			set(key, not get(key))
+			Settings.apply_display(fullscreen, vsync)
+		"music_volume", "effects_volume":
+			var v: int = get(key)
+			if dir == 0:
+				v = 0 if v >= 100 else v + Settings.VOLUME_STEP
+			else:
+				v = Settings.volume(v + dir * Settings.VOLUME_STEP)
+			set(key, v)
+			sfx.set_volumes(music_volume / 100.0, effects_volume / 100.0)
+	_save_settings()
+	return _setting_text(key)
 
 
 func _set_sound(on: bool) -> void:
 	sound_on = on
 	AudioServer.set_bus_mute(0, not on)
+	_save_settings()
 
 
 func _toggle_music() -> void:
 	music_on = not music_on
 	sfx.set_music(music_on)
-	_show_settings(settings_from)
 
 
 func _toggle_ia() -> void:
 	show_ia = not show_ia
-	_show_settings(settings_from)
+
+
+## What was saved last time, applied: sound, music and volumes, the screen,
+## and the generative mode's last difficulty and size.
+func _load_settings() -> void:
+	var s := Settings.read()
+	sound_on = s.sound
+	music_on = s.music
+	show_ia = s.ia
+	Sim.difficulty = s.difficulty
+	size = s.size
+	fullscreen = s.fullscreen
+	vsync = s.vsync
+	music_volume = s.music_volume
+	effects_volume = s.effects_volume
+	AudioServer.set_bus_mute(0, not sound_on)
+	sfx.set_music(music_on)
+	sfx.set_volumes(music_volume / 100.0, effects_volume / 100.0)
+	Settings.apply_display(fullscreen, vsync)
+
+
+func _save_settings() -> void:
+	Settings.write({
+		"sound": sound_on, "music": music_on, "ia": show_ia,
+		"difficulty": Sim.difficulty, "size": size,
+		"fullscreen": fullscreen, "vsync": vsync,
+		"music_volume": music_volume, "effects_volume": effects_volume,
+	})
 
 
 func _settings_back() -> void:
@@ -279,16 +358,24 @@ func _settings_back() -> void:
 		_show_title()
 
 
+## A real pause: the tree stops, knocked-over props hang in mid-air, until
+## SEGUIR (or Esc, or P) or the way out to the title.
 func _pause() -> void:
 	phase = "paused"
+	get_tree().paused = true
 	hud.show_menu([
 		{"title": "PAUSA", "size": 56},
 		{"buttons": [
 			{"text": "▶ SEGUIR", "call": _start_playing},
 			{"text": "✦ SETTINGS", "call": _show_settings.bind("paused")},
-			{"text": "◂ MENÚ", "call": _show_title},
+			{"text": "◂ MENÚ", "call": _quit_to_title},
 		]},
 	])
+
+
+func _quit_to_title() -> void:
+	get_tree().paused = false
+	_show_title()
 
 
 ## First the piece: turning under a light, its name, and the story of why
@@ -500,6 +587,7 @@ func _count_beep(i: int) -> void:
 
 func _start_playing() -> void:
 	phase = "playing"
+	get_tree().paused = false
 	_drop_preview()
 	hud.hide_panel()
 
