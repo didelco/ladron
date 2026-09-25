@@ -1,6 +1,7 @@
 # Godot
 .godot/
 /export/
+/build/
 *.tmp
 
 # El cerebro (Python)
