@@ -985,6 +985,10 @@ func _on_prop_tipped(id: int, dir: float, at: Vector2, strength: float) -> void:
 	p.fall_dir = dir
 	p.fallen_at = Sim.now_ms()
 	var loud := Props.crash_loudness(p.kind, strength)
+	# A real crash carries through the whole building: every guard hears it,
+	# wherever they are, and comes.
+	if loud >= 20.0:
+		loud = 80.0
 	prop_noises.append(SoundEvent.make(p.x, p.y, p.kind, loud))
 	_prop_fell(p, strength)
 
@@ -1468,9 +1472,9 @@ func _build_job() -> void:
 	loot_spot.position = _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5, 4.2)
 	loot_spot.rotation = Vector3(-PI / 2, 0, 0)
 	loot_spot.light_color = Color("#fff0d6")
-	loot_spot.light_energy = 9.0
+	loot_spot.light_energy = 14.0
 	loot_spot.spot_range = 6.0
-	loot_spot.spot_angle = 14.0
+	loot_spot.spot_angle = 17.0
 	loot_spot.spot_angle_attenuation = 0.6
 	loot_spot.shadow_enabled = true
 	loot_spot.light_volumetric_fog_energy = 6.0
@@ -1656,7 +1660,7 @@ func _draw_room_lights() -> void:
 func _draw_loot() -> void:
 	# Once the piece is gone the spotlight has nothing to show: it dims.
 	if loot_spot:
-		loot_spot.light_energy = move_toward(loot_spot.light_energy, 0.0 if Heist.taken else 9.0, 0.15)
+		loot_spot.light_energy = move_toward(loot_spot.light_energy, 0.0 if Heist.taken else 14.0, 0.2)
 	_draw_panel()
 	var t := Time.get_ticks_msec() / 1000.0
 	if Heist.carrier != "":
