@@ -98,6 +98,8 @@ var _count_left := 0.0
 var _count_step := -1
 var _count_on_step: Callable
 var _count_on_done: Callable
+var _map: Control
+var _map_picture: TextureRect
 var _ia: PanelContainer
 var _ia_box: VBoxContainer
 
@@ -138,6 +140,39 @@ func _ready() -> void:
 	_count.add_theme_color_override("font_outline_color", Color("#b45309"))
 	_count.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_count.visible = false
+
+	# The map you can take out while playing: parchment in a walnut frame,
+	# centred, under the menus.
+	_map = CenterContainer.new()
+	_map.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_map.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_map)
+	var frame := PanelContainer.new()
+	var fs := StyleBoxFlat.new()
+	fs.bg_color = Color("#35211a", 0.96)
+	fs.border_color = Color("#d8ac5c")
+	fs.set_border_width_all(3)
+	fs.set_corner_radius_all(18)
+	fs.set_content_margin_all(16)
+	fs.shadow_color = Color(0, 0, 0, 0.6)
+	fs.shadow_size = 18
+	frame.add_theme_stylebox_override("panel", fs)
+	_map.add_child(frame)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 8)
+	frame.add_child(column)
+	var heading := _label(18, Color("#f0c46a"), column, true)
+	heading.text = "MAPA"
+	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_map_picture = TextureRect.new()
+	_map_picture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_map_picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_map_picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	column.add_child(_map_picture)
+	var legend := _label(13, Color("#e8d6b4"), column)
+	legend.text = "● tú   ◆ la pieza   ■ salida (verde)   ·   M o Y para guardarlo"
+	legend.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_map.visible = false
 
 	_panel = ColorRect.new()
 	_panel.color = C.panel
@@ -724,6 +759,70 @@ func set_ia(on: bool, entries: Array) -> void:
 		if e.has("note"):
 			var n := _label(13, C.dim, _ia_box)
 			n.text = "  " + e.note
+
+
+## Take the map out (or put it away) during play.
+func show_map(texture: Texture2D) -> void:
+	_map_picture.texture = texture
+	var size := Vector2(texture.get_size())
+	_map_picture.custom_minimum_size = size * minf(760.0 / size.x, 470.0 / size.y)
+	_map.visible = true
+	_map.scale = Vector2(0.9, 0.9)
+	_map.pivot_offset = get_viewport().get_visible_rect().size / 2
+	create_tween().tween_property(_map, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+func update_map(texture: Texture2D) -> void:
+	_map_picture.texture = texture
+
+
+func hide_map() -> void:
+	_map.visible = false
+
+
+## The map as taken out mid-job, on parchment: the plan, where each thief is
+## now, the piece (or where it lies), the door, and the alarm panel for two.
+## No guards: a map does not know where they are.
+static func live_map(thieves: Array[Thief], colours: Array) -> ImageTexture:
+	var s := 8
+	var img := Image.create(Museum.w * s, Museum.h * s, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	for y in Museum.h:
+		for x in Museum.w:
+			if Museum.is_outside(x, y):
+				continue
+			var t := Museum.grid[y * Museum.w + x]
+			var c := Color("#4a2f22") if t == Tiles.WALL else (Color("#b89a70") if t == Tiles.COVER else Color("#e8d6b4"))
+			img.fill_rect(Rect2i(x * s, y * s, s, s), c)
+	# A mark in a shape: "circle" (a thief), "diamond" (the piece), "square".
+	var dot := func(at: Vector2, colour: Color, r: int, ring: Color, shape := "square") -> void:
+		var cx := int(at.x * s)
+		var cy := int(at.y * s)
+		for pass_n in 2:
+			var rr := r + 1 - pass_n
+			var c: Color = ring if pass_n == 0 else colour
+			for dy in range(-rr, rr + 1):
+				for dx in range(-rr, rr + 1):
+					var inside: bool = true
+					if shape == "circle":
+						inside = dx * dx + dy * dy <= rr * rr
+					elif shape == "diamond":
+						inside = absi(dx) + absi(dy) <= rr
+					if inside and cx + dx >= 0 and cy + dy >= 0 and cx + dx < img.get_width() and cy + dy < img.get_height():
+						img.set_pixel(cx + dx, cy + dy, c)
+	var ink := Color("#1c1210")
+	dot.call(Vector2(Heist.exit.x + 0.5, Heist.exit.y + 0.5), C.green, 4, ink)
+	if Heist.team and not Heist.taken:
+		dot.call(Vector2(Heist.panel.x + 0.5, Heist.panel.y + 0.5), Color("#ff922b"), 3, ink)
+	if not Heist.taken:
+		dot.call(Vector2(Heist.at.x + 0.5, Heist.at.y + 0.5), Color(Heist.loot.colour), 6, ink, "diamond")
+	elif Heist.dropped != Vector2.INF:
+		dot.call(Heist.dropped, Color(Heist.loot.colour), 5, ink, "diamond")
+	for i in thieves.size():
+		var p := thieves[i]
+		if not p.out:
+			dot.call(Vector2(p.x, p.y), colours[i], 5, Color.WHITE, "circle")
+	return ImageTexture.create_from_image(img)
 
 
 ## The mission map: the plan, the route from the way in to the piece to the

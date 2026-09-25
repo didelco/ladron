@@ -25,6 +25,9 @@ const DEFAULTS := {
 	"deadzone": 50,
 	# pad 1 plays P1 and pad 0 plays P2
 	"swap_pads": false,
+	# two players: "keys" (both on the keyboard), "mixed" (keyboard and a pad),
+	# "pads" (a pad each)
+	"input_mode": "keys",
 }
 const VOLUME_STEP := 10
 const SECTION := "settings"
@@ -53,6 +56,8 @@ static func read() -> Dictionary:
 			out[k] = v
 	if not out.difficulty in ["easy", "medium", "hard"]:
 		out.difficulty = DEFAULTS.difficulty
+	if not out.input_mode in ["keys", "mixed", "pads"]:
+		out.input_mode = DEFAULTS.input_mode
 	if not out.size in ["small", "medium", "large"]:
 		out.size = DEFAULTS.size
 	for k in ["music_volume", "effects_volume", "rumble_strength"]:
@@ -75,9 +80,13 @@ static func volume(percent: int) -> int:
 
 ## The pads as set: how far the stick must go before it counts, and which
 ## pad plays which thief. Rewrites the p1_*/p2_* actions' joypad events.
-static func apply_pads(deadzone: int, swap: bool) -> void:
+## With the keyboard and one pad ("mixed"), the first pad is P2's and P1 has
+## none (a device number no pad has).
+static func apply_pads(deadzone: int, swap: bool, input_mode := "pads") -> void:
 	for player in ["p1", "p2"]:
 		var device := (0 if player == "p1" else 1) if not swap else (1 if player == "p1" else 0)
+		if input_mode == "mixed":
+			device = 0 if player == "p2" else 15
 		for dir in ["up", "down", "left", "right", "crouch"]:
 			var action := "%s_%s" % [player, dir]
 			if not InputMap.has_action(action):

@@ -102,6 +102,10 @@ var rumble := true
 var rumble_strength := 100
 var deadzone := 50
 var swap_pads := false
+## how two players share the controls: "keys", "mixed" or "pads"
+var input_mode := "keys"
+## the map is out: the thieves stand still to read it, the guards do not
+var map_open := false
 var level := 1
 var thieves: Array[Thief] = []
 var guards: Array[Guard] = []
@@ -136,6 +140,14 @@ var preview_spot: OmniLight3D
 
 
 func _ready() -> void:
+	# The map: Y or Select/Back on any pad (M on the keyboard, by hand).
+	if not InputMap.has_action("map"):
+		InputMap.add_action("map")
+		for button in [JOY_BUTTON_Y, JOY_BUTTON_BACK]:
+			var e := InputEventJoypadButton.new()
+			e.button_index = button
+			e.device = -1
+			InputMap.action_add_event("map", e)
 	# The pause stops the tree (and the physics with it), but not the game
 	# itself: its keys, the menus and the music go on. The world only moves
 	# in _tick, which the pause does not run.
@@ -163,6 +175,7 @@ func _ready() -> void:
 				"generative": _show_generative_menu()
 				"settings": _show_settings("title")
 				"pads": _show_settings("title", "pads")
+				"input": _show_input_pick("generative")
 				"end":
 					phase = "caught"
 					_show_end()
@@ -176,6 +189,9 @@ func _ready() -> void:
 			_new_round(1)
 		_show_mission()
 		get_tree().create_timer(2.0).timeout.connect(_start_playing)
+		# --map: and take the map out a moment later.
+		if "--map" in OS.get_cmdline_user_args():
+			get_tree().create_timer(3.0).timeout.connect(_toggle_map)
 
 
 # --- Screens -----------------------------------------------------------------------
@@ -273,9 +289,14 @@ func _pick_size(k: String) -> void:
 	_show_generative_menu()
 
 
-func _start(which: String, n: int) -> void:
+func _start(which: String, n: int, picked := false) -> void:
+	# Two thieves: first, who plays with what.
+	if n == 2 and not picked:
+		_show_input_pick(which)
+		return
 	mode = which
 	players = n
+	_apply_pads()
 	if mode == "story":
 		_new_round(story_pick)
 		if story_pick == 1:
@@ -284,6 +305,36 @@ func _start(which: String, n: int) -> void:
 	else:
 		_new_round(1)
 	_show_loot()
+
+
+## Two players: both on the keyboard, one on the keyboard and one on a pad,
+## or a pad each.
+func _show_input_pick(which: String) -> void:
+	phase = "input"
+	settings_from = which
+	var pads := Input.get_connected_joypads().size()
+	var cards: Array = []
+	for m in [["keys", "2 TECLADO", "P1 WASD · P2 flechas", 0], ["mixed", "TECLADO + MANDO", "P1 teclado · P2 mando", 1], ["pads", "2 MANDOS", "Un mando cada uno", 2]]:
+		var missing: int = m[3] - pads
+		cards.append({"title": m[1], "text": m[2] if missing <= 0 else "Conecta %d mando%s" % [missing, "" if missing == 1 else "s"],
+			"call": _pick_input.bind(which, m[0]), "colour": Hud.C.gold, "selected": input_mode == m[0], "focus": input_mode == m[0], "title_size": 12})
+	hud.show_menu([
+		{"title": "¿CÓMO JUGÁIS?", "size": 40},
+		{"cards": cards, "width": 215},
+		{"text": "Mandos conectados: %d" % pads, "size": 16, "colour": Hud.C.dim},
+		{"buttons": [{"text": "< VOLVER", "call": _show_story_menu if which == "story" else _show_generative_menu, "colour": Hud.C.dim}], "row": true},
+	])
+
+
+func _pick_input(which: String, how: String) -> void:
+	input_mode = how
+	_save_settings()
+	_start(which, 2, true)
+
+
+## The pads' devices for how this game is played: on your own, any pad.
+func _apply_pads() -> void:
+	Settings.apply_pads(deadzone, swap_pads, input_mode if players == 2 else "pads")
 
 
 func _show_prologue() -> void:
@@ -320,7 +371,7 @@ func _show_settings(from: String, page := "") -> void:
 	var items: Array = [{"title": title, "size": 48}, {"buttons": rows}]
 	match page:
 		"sound":
-			items.append({"text": "← y → para bajar y subir el volumen · M silencia todo", "size": 16, "colour": Hud.C.dim})
+			items.append({"text": "← y → para bajar y subir el volumen · N silencia todo", "size": 16, "colour": Hud.C.dim})
 		"pads":
 			var pads := Input.get_connected_joypads()
 			var names: Array = pads.map(func(d): return "%d: %s" % [d + 1, Input.get_joy_name(d)])
@@ -333,7 +384,7 @@ func _show_settings(from: String, page := "") -> void:
 func _setting_text(key: String) -> String:
 	var yes := func(on: bool) -> String: return "SÍ" if on else "NO"
 	match key:
-		"sound": return "SONIDO: %s  (M)" % yes.call(sound_on)
+		"sound": return "SONIDO: %s  (N)" % yes.call(sound_on)
 		"music": return "MÚSICA: %s" % yes.call(music_on)
 		"music_volume": return "VOL. MÚSICA %s" % _volume_bar(music_volume)
 		"effects_volume": return "VOL. EFECTOS %s" % _volume_bar(effects_volume)
@@ -368,7 +419,7 @@ func _step_setting(dir: int, key: String) -> String:
 			Settings.apply_display(fullscreen, vsync)
 		"rumble", "swap_pads":
 			set(key, not get(key))
-			Settings.apply_pads(deadzone, swap_pads)
+			_apply_pads()
 			# Feel it straight away.
 			if key == "rumble" and rumble:
 				_rumble(0.4, 0.4, 0.2)
@@ -377,7 +428,7 @@ func _step_setting(dir: int, key: String) -> String:
 			_rumble(0.4, 0.4, 0.2)
 		"deadzone":
 			deadzone = 20 if dir == 0 and deadzone >= 80 else clampi(deadzone + (10 if dir >= 0 else -10), 20, 80)
-			Settings.apply_pads(deadzone, swap_pads)
+			_apply_pads()
 		"music_volume", "effects_volume":
 			var v: int = get(key)
 			if dir == 0:
@@ -422,7 +473,8 @@ func _load_settings() -> void:
 	rumble_strength = s.rumble_strength
 	deadzone = s.deadzone
 	swap_pads = s.swap_pads
-	Settings.apply_pads(deadzone, swap_pads)
+	input_mode = s.input_mode
+	_apply_pads()
 	AudioServer.set_bus_mute(0, not sound_on)
 	sfx.set_music(music_on)
 	sfx.set_volumes(music_volume / 100.0, effects_volume / 100.0)
@@ -436,7 +488,7 @@ func _save_settings() -> void:
 		"fullscreen": fullscreen, "vsync": vsync,
 		"music_volume": music_volume, "effects_volume": effects_volume,
 		"rumble": rumble, "rumble_strength": rumble_strength,
-		"deadzone": deadzone, "swap_pads": swap_pads,
+		"deadzone": deadzone, "swap_pads": swap_pads, "input_mode": input_mode,
 	})
 
 
@@ -452,6 +504,7 @@ func _settings_back() -> void:
 ## A real pause: the tree stops, knocked-over props hang in mid-air, until
 ## SEGUIR (or Esc, or P) or the way out to the title.
 func _pause() -> void:
+	_close_map()
 	phase = "paused"
 	get_tree().paused = true
 	hud.show_menu([
@@ -621,7 +674,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 		key = event.keycode
 	# Menus are buttons (mouse, arrows and Enter); these are the shortcuts.
-	if key == KEY_M:
+	if key == KEY_M and phase == "playing":
+		_toggle_map()
+		return
+	if key == KEY_N:
 		_set_sound(not sound_on)
 		if phase == "settings":
 			_show_settings(settings_from, settings_page)
@@ -630,6 +686,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		"menu":
 			if key == KEY_ESCAPE:
 				_show_title()
+		"input":
+			if key == KEY_ESCAPE:
+				if settings_from == "story":
+					_show_story_menu()
+				else:
+					_show_generative_menu()
 		"prologue":
 			if key == KEY_SPACE:
 				_show_loot()
@@ -673,6 +735,8 @@ func _pad_as_key(event: InputEvent) -> Key:
 		return KEY_NONE
 	if event.is_action("pause"):
 		return KEY_P if phase in ["playing", "paused"] else KEY_SPACE
+	if event.is_action("map"):
+		return KEY_M if phase == "playing" else KEY_NONE
 	if event.is_action("ui_cancel") and phase != "playing":
 		return KEY_ESCAPE
 	return KEY_NONE
@@ -700,6 +764,7 @@ func _start_playing() -> void:
 # --- Rounds --------------------------------------------------------------------------
 
 func _new_round(n: int) -> void:
+	_close_map()
 	if mode == "story":
 		n = clampi(n, 1, Story.count())
 	level = n
@@ -740,9 +805,14 @@ var pad_stale := {}
 
 func _pressed_keys() -> Dictionary:
 	var keys := {}
+	# Keyboard and pad: the whole keyboard is P1's (arrows and WASD alike,
+	# C, Shift, - or / to crouch), so the arrows never move P2.
+	var mixed := thieves.size() == 2 and input_mode == "mixed"
+	var as_p1 := {"up": "w", "down": "s", "left": "a", "right": "d", "shift": "c", "minus": "c", "slash": "c"}
 	for k in KEYS:
 		if Input.is_physical_key_pressed(k):
-			keys[KEYS[k]] = true
+			var name: String = KEYS[k]
+			keys[as_p1.get(name, name) if mixed else name] = true
 	# A and B also press and back out of menus: one still held from there when
 	# the play starts (or resumes) is not a crouch until it is let go.
 	var resumed := Engine.get_physics_frames() != pad_frame + 1
@@ -804,9 +874,34 @@ func _music_mood() -> void:
 	sfx.mood(tension, 0.8 if in_game else 0.5)
 
 
+## Out comes the map, or away it goes.
+func _toggle_map() -> void:
+	map_open = not map_open
+	if map_open:
+		hud.show_map(Hud.live_map(thieves, _thief_colours()))
+		sfx.ui("pick")
+	else:
+		hud.hide_map()
+
+
+func _close_map() -> void:
+	map_open = false
+	hud.hide_map()
+
+
+func _thief_colours() -> Array:
+	return [COLOURS.thief, COLOURS.thief2]
+
+
 func _tick(dt: float) -> void:
 	var now := Sim.now_ms()
+	# Reading the map, nobody moves (the pads are still read, to keep their
+	# held-button bookkeeping); every few frames it is redrawn.
 	var keys := _pressed_keys()
+	if map_open:
+		keys = {}
+		if Engine.get_physics_frames() % 6 == 0:
+			hud.update_map(Hud.live_map(thieves, _thief_colours()))
 	var noises: Array[SoundEvent] = []
 	for i in thieves.size():
 		var p := thieves[i]
@@ -916,10 +1011,12 @@ func _tick(dt: float) -> void:
 	# everyone caught loses.
 	if took == "out":
 		phase = "escaped"
+		_close_map()
 		sfx.ui("escaped")
 		_show_end()
 	elif thieves.all(func(p): return p.out):
 		phase = "caught"
+		_close_map()
 		_show_end()
 
 
