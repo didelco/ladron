@@ -129,6 +129,8 @@ var cones: Array[MeshInstance3D] = []
 var switch_marks: Array[MeshInstance3D] = []
 var lit_washes: Array[MeshInstance3D] = []
 var loot_node: Node3D
+## the spotlight straight down on the piece's case, museum style
+var loot_spot: SpotLight3D
 var props_view: PropsView
 var ear: AudioListener3D
 ## each guard's position last frame and the distance walked since its last step
@@ -964,7 +966,7 @@ var prop_noises: Array[SoundEvent] = []
 
 ## A prop leaned past falling in the physics: if nobody pushed it on
 ## purpose, it was walked into — the crash, the rumble, the log.
-func _on_prop_tipped(id: int, dir: float, at: Vector2) -> void:
+func _on_prop_tipped(id: int, dir: float, at: Vector2, strength: float) -> void:
 	var p: Props.Prop = Props.list[id]
 	p.x = at.x
 	p.y = at.y
@@ -973,16 +975,18 @@ func _on_prop_tipped(id: int, dir: float, at: Vector2) -> void:
 	p.fallen = true
 	p.fall_dir = dir
 	p.fallen_at = Sim.now_ms()
-	prop_noises.append(SoundEvent.make(p.x, p.y, p.kind))
-	_prop_fell(p)
+	var loud := Props.crash_loudness(p.kind, strength)
+	prop_noises.append(SoundEvent.make(p.x, p.y, p.kind, loud))
+	_prop_fell(p, strength)
 
 
 ## The crash of one going over, whoever did it.
-func _prop_fell(p: Props.Prop) -> void:
-	sfx.at(p.kind, _to_world(p.x, p.y), 1.0)
-	_rumble(0.5, 0.0, 0.15, Vector2(p.x, p.y))
-	_shake(0.45 if p.kind == "bust" else 0.25)
-	_log("¡Has tirado %s!" % Props.NAMES[p.kind])
+func _prop_fell(p: Props.Prop, strength := 0.6) -> void:
+	sfx.at(p.kind, _to_world(p.x, p.y), 0.45 + 0.55 * strength, 4.0 + 6.0 * strength)
+	_rumble(0.3 + 0.5 * strength, 0.4 * strength, 0.15 + 0.2 * strength, Vector2(p.x, p.y))
+	_shake((0.45 if p.kind == "bust" else 0.25) * (0.6 + 0.8 * strength))
+	var loud := Props.crash_loudness(p.kind, strength)
+	_log(("¡Menudo estruendo! %s se ha oído en todo el museo" % Heist.first_upper(Props.NAMES[p.kind])) if loud >= 20.0 else "¡Has tirado %s!" % Props.NAMES[p.kind])
 
 
 ## Something already down, sent rolling or rustling by a thief's feet: a
@@ -1449,6 +1453,19 @@ func _build_job() -> void:
 	m.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
 	loot_node = LootModels.build(Heist.loot.shape, colour)
 	world.add_child(loot_node)
+	# The star of the collection gets a spotlight from the ceiling: a cone of
+	# warm white straight down on its case, its beam showing in the dust.
+	loot_spot = SpotLight3D.new()
+	loot_spot.position = _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5, 4.2)
+	loot_spot.rotation = Vector3(-PI / 2, 0, 0)
+	loot_spot.light_color = Color("#fff0d6")
+	loot_spot.light_energy = 9.0
+	loot_spot.spot_range = 6.0
+	loot_spot.spot_angle = 14.0
+	loot_spot.spot_angle_attenuation = 0.6
+	loot_spot.shadow_enabled = true
+	loot_spot.light_volumetric_fog_energy = 6.0
+	world.add_child(loot_spot)
 	var glow := OmniLight3D.new()
 	glow.light_color = colour
 	glow.light_energy = 1.2
@@ -1628,6 +1645,9 @@ func _draw_room_lights() -> void:
 
 ## The piece: turning over its case, on the thief's back, or on the floor.
 func _draw_loot() -> void:
+	# Once the piece is gone the spotlight has nothing to show: it dims.
+	if loot_spot:
+		loot_spot.light_energy = move_toward(loot_spot.light_energy, 0.0 if Heist.taken else 9.0, 0.15)
 	_draw_panel()
 	var t := Time.get_ticks_msec() / 1000.0
 	if Heist.carrier != "":

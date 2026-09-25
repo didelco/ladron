@@ -155,7 +155,15 @@ static func push(p: Prop, t: Thief, now: float, noises: Array[SoundEvent]) -> vo
 	p.fallen_at = now
 	p.fall_dir = atan2(p.y - t.y, p.x - t.x)
 	knocked.append(p)
-	noises.append(SoundEvent.make(p.x, p.y, p.kind))
+	# A shove sends it over properly: louder than a nudge.
+	noises.append(SoundEvent.make(p.x, p.y, p.kind, crash_loudness(p.kind, 0.6)))
+
+
+## How loud it is going over: its kind's base loudness, from half of it for
+## a nudge to over twice as much for a crash at full tilt — a bust smashed
+## that hard is heard across the museum.
+static func crash_loudness(kind: String, strength: float) -> float:
+	return float(Hearing.LOUDNESS[kind]) * (0.55 + 1.6 * clampf(strength, 0.0, 1.0))
 
 
 ## A fallen one this guard sees for the first time, if any.

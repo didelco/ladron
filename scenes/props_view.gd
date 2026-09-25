@@ -13,7 +13,8 @@ extends Node3D
 ## thief (the clatter of a rolling bin, the rustle of paper), for the game to
 ## turn into noise.
 
-signal tipped(id: int, dir: float, at: Vector2)
+## strength 0..1: how hard it went over (a nudge, or a full-tilt crash).
+signal tipped(id: int, dir: float, at: Vector2, strength: float)
 signal kicked(kind: String, at: Vector2, strength: float)
 
 ## Drawn this much bigger than life, to read from the camera up high.
@@ -134,7 +135,10 @@ func _physics_process(dt: float) -> void:
 			_tipped[id] = true
 			var lean := main_body.global_basis.y
 			var at := Vector2(main_body.global_position.x + Museum.w / 2.0, main_body.global_position.z + Museum.h / 2.0)
-			tipped.emit(id, atan2(lean.z, lean.x), at)
+			# How hard: the speed it is falling at, and the spin; a bust's
+			# pedestal going over drags the bust down harder still.
+			var force := main_body.linear_velocity.length() + main_body.angular_velocity.length() * 0.35
+			tipped.emit(id, atan2(lean.z, lean.x), at, clampf(force / 3.0, 0.0, 1.0))
 			var kind: String = _loose[main_body][0]
 			Fx.puff(self, main_body.global_position * Vector3(1, 0, 1), kind == "bust")
 			if kind == "bin":

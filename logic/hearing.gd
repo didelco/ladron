@@ -5,6 +5,9 @@ extends RefCounted
 
 ## How far a noise carries, in tiles, before walls are taken into account.
 ## Standing still makes none: staying put is the whole point of hiding.
+## Things falling over: they carry through walls better (see heard_at).
+const CRASHES := ["bin", "bust", "panel"]
+
 const LOUDNESS := {
 	"walk": 5.0,
 	## things knocked over (Props): the bin clatters, the bust smashes
@@ -50,8 +53,11 @@ static func crash_loudness(speed: float, top_speed: float, shelf: bool) -> float
 static func heard_at(g: Guard, noise: SoundEvent) -> Variant:
 	var d := Museum.dist(g.x, g.y, noise.x, noise.y)
 	# A guard on alert is listening for you; a calm one is half asleep.
+	# A crash (something knocked over) is a deep, carrying sound: walls take
+	# half as much off it as off footsteps.
+	var damping := WALL_DAMPING * (0.5 if noise.kind in CRASHES else 1.0)
 	var reach := noise.loudness * (HEARING_ALERT if g.alert else HEARING_CALM) * Sim.tuning("hearing") \
-		- WALL_DAMPING * Museum.muffle_between(g.x, g.y, noise.x, noise.y)
+		- damping * Museum.muffle_between(g.x, g.y, noise.x, noise.y)
 	if reach <= 0 or d > reach:
 		return null
 	# 0 at the guard's feet, 1 at the edge of hearing.
