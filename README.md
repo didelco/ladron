@@ -65,6 +65,11 @@ jugadores: P1 con WASD y `C`, P2 con flechas y `-` o `/`. `Esc` para la pausa. E
 la pieza (quieto a su lado unos segundos, mires hacia donde mires) y salir por la puerta verde. Sin reloj: se tarda lo que se
 quiera.
 
+Con mando: stick izquierdo o cruceta para moverse, A/B (✕/○) para ponerse a gatas y Start para la
+pausa; en los menús A acepta y B vuelve. Solo, vale cualquier mando; con dos, el mando 1 es P1 y el
+2 es P2 (el teclado sigue funcionando, así que un mando y teclado también). Vibra cuando te ven y
+cuando tiras algo.
+
 Para grabar o probar sin pulsar teclas: `godot -- --autostart` salta directamente a la partida
 (`-- --autostart --two` con dos ladrones), y `-- --intro` enseña el comienzo de la historia con la
 cuenta atrás (`--two` para dos, `--gen` para el modo generativo). `-- --menu=story` (o `generative`, `settings`) abre ese menú directamente.
