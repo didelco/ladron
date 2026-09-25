@@ -102,6 +102,8 @@ var _count_on_done: Callable
 var _map: Control
 var _map_picture: TextureRect
 var _map_stage: MapStage
+## the folded map on the menu on show, if any, to lean with the arrows
+var _menu_map: MapStage
 var _ia: PanelContainer
 var _ia_box: VBoxContainer
 
@@ -252,6 +254,7 @@ func show_menu(items: Array) -> void:
 	var rows: Array = []
 	_named.clear()
 	_nights.clear()
+	_menu_map = null
 	_titles.clear()
 	for item in items:
 		if item.has("title"):
@@ -279,6 +282,21 @@ func show_menu(items: Array) -> void:
 			if item.get("wrap", false):
 				l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 				l.custom_minimum_size = Vector2(560, 0)
+		elif item.has("map"):
+			# The plan on the folded paper map, unfolding as the screen opens.
+			var stage := MapStage.new()
+			_panel_box.add_child(stage)
+			stage.print_plan(item.map)
+			stage.unfold()
+			var r := TextureRect.new()
+			r.texture = stage.get_texture()
+			r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			r.custom_minimum_size = Vector2(MapStage.SIZE) * (float(item.get("height", 400.0)) / MapStage.SIZE.y)
+			r.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+			_panel_box.add_child(r)
+			# The arrows lean it, as in play.
+			_menu_map = stage
 		elif item.has("stage"):
 			var stage: MenuStage = item.stage
 			_panel_box.add_child(stage)
@@ -836,6 +854,30 @@ static func live_map(thieves: Array[Thief], colours: Array) -> Image:
 		var p := thieves[i]
 		if not p.out:
 			dot.call(Vector2(p.x, p.y), colours[i], 5, Color.WHITE, "circle")
+	return img
+
+
+## The plan on parchment, for the folded 3D map before the job: the live
+## map's plan and marks, plus the route in ink dots, where you come in, and
+## where each guard starts (red crosses: the plan knows the rota).
+static func plan_map(guards: Array[Guard]) -> Image:
+	var none: Array[Thief] = []
+	var img := live_map(none, [])
+	var s := 8
+	var ink := Color("#5a3a22")
+	for i in Heist.route.size():
+		if i % 2 == 0:
+			var t: Vector2i = Heist.route[i]
+			img.fill_rect(Rect2i(t.x * s + s / 2 - 1, t.y * s + s / 2 - 1, 3, 3), ink)
+	for g in guards:
+		var cx := int(g.x * s)
+		var cy := int(g.y * s)
+		for k in range(-4, 5):
+			for w in [0, 1]:
+				img.set_pixel(clampi(cx + k, 0, img.get_width() - 1), clampi(cy + k + w, 0, img.get_height() - 1), Color("#b3263a"))
+				img.set_pixel(clampi(cx + k, 0, img.get_width() - 1), clampi(cy - k + w, 0, img.get_height() - 1), Color("#b3263a"))
+	var st := Heist.start
+	img.fill_rect(Rect2i(st.x * s + 1, st.y * s + 1, s - 2, s - 2), Color("#1f8fa8"))
 	return img
 
 

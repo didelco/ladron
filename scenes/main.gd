@@ -132,7 +132,7 @@ var room_lights: Array[OmniLight3D] = []
 var cones: Array[MeshInstance3D] = []
 var switch_marks: Array[MeshInstance3D] = []
 var lit_washes: Array[MeshInstance3D] = []
-var loot_node: MeshInstance3D
+var loot_node: Node3D
 var props_view: PropsView
 ## the alarm panel, two thieves only: its lamp and glow, red till held
 var panel_mat: StandardMaterial3D
@@ -595,17 +595,9 @@ func _preview_piece(loot: Dictionary) -> void:
 	for c in preview_pivot.get_children():
 		c.queue_free()
 	preview_spot.light_color = Color(loot.colour)
-	var colour := Color(loot.colour)
-	var m := StandardMaterial3D.new()
-	m.albedo_color = colour
-	m.emission_enabled = true
-	m.emission = colour
-	m.emission_energy_multiplier = 0.5
-	m.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
-	var piece := MeshInstance3D.new()
-	piece.material_override = m
+	var piece := LootModels.build(loot.shape, Color(loot.colour))
+	piece.position.y = -0.1
 	preview_pivot.add_child(piece)
-	_loot_shape(piece, loot.shape, m)
 
 
 func _drop_preview() -> void:
@@ -623,14 +615,14 @@ func _show_mission() -> void:
 	var lines := [Heist.first_upper(Heist.loot.name)]
 	if Heist.team:
 		lines.append("Uno sujeta el cuadro de la alarma (naranja) mientras el otro abre la vitrina")
+	if level == 1:
+		lines.append("Quieto %s junto a la pieza · la alarma atrae guardias · sal por la puerta verde" % _seconds(Heist.loot.seconds))
 	if level <= 2:
 		lines.append("Papeleras, bustos y paneles: tíralos con E (X en el mando) y los guardias irán a ver el ruido")
-	elif level == 1:
-		lines.append("Quieto %s junto a la pieza · la alarma atrae guardias · sal por la puerta verde" % _seconds(Heist.loot.seconds))
 	var items: Array = [{"title": "EL PLAN", "size": 52}]
 	for l in lines:
 		items.append({"text": l})
-	items.append({"picture": Hud.mission_map(guards)})
+	items.append({"map": Hud.plan_map(guards), "height": 400})
 	items.append({"buttons": [{"text": "▶ EMPEZAR", "call": _start_countdown}]})
 	hud.show_menu(items)
 
@@ -1359,10 +1351,8 @@ func _build_job() -> void:
 	m.emission = colour
 	m.emission_energy_multiplier = 1.4
 	m.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
-	loot_node = MeshInstance3D.new()
-	loot_node.material_override = m
+	loot_node = LootModels.build(Heist.loot.shape, colour)
 	world.add_child(loot_node)
-	_loot_shape(loot_node, Heist.loot.shape, m)
 	var glow := OmniLight3D.new()
 	glow.light_color = colour
 	glow.light_energy = 1.2
@@ -1475,165 +1465,6 @@ func _draw_panel() -> void:
 
 
 ## Each piece its own shape: a cut gem, an egg, a crown with points, a jade
-## mask with eye holes, a pitted meteorite, an idol with a head.
-func _loot_shape(node: MeshInstance3D, shape: String, mat: Material) -> void:
-	var add := func(mesh: Mesh, at: Vector3, rot := Vector3.ZERO, colour := Color.TRANSPARENT) -> void:
-		var mi := MeshInstance3D.new()
-		mi.mesh = mesh
-		mi.position = at
-		mi.rotation = rot
-		mi.material_override = mat if colour == Color.TRANSPARENT else _flat(colour)
-		node.add_child(mi)
-	match shape:
-		"gem":
-			var s := SphereMesh.new()
-			s.radius = 0.15
-			s.height = 0.34
-			s.radial_segments = 6
-			s.rings = 2
-			node.mesh = s
-		"egg":
-			var s := SphereMesh.new()
-			s.radius = 0.13
-			s.height = 0.34
-			node.mesh = s
-		"crown":
-			var t := CylinderMesh.new()
-			t.top_radius = 0.16
-			t.bottom_radius = 0.15
-			t.height = 0.1
-			node.mesh = t
-			for i in 5:
-				var a := i * TAU / 5
-				var p := CylinderMesh.new()
-				p.top_radius = 0.0
-				p.bottom_radius = 0.035
-				p.height = 0.1
-				add.call(p, Vector3(cos(a) * 0.15, 0.1, sin(a) * 0.15))
-				var g := SphereMesh.new()
-				g.radius = 0.022
-				g.height = 0.044
-				add.call(g, Vector3(cos(a) * 0.155, 0.02, sin(a) * 0.155), Vector3.ZERO, Color("#c2185b"))
-		"mask":
-			var s := SphereMesh.new()
-			s.radius = 0.16
-			s.height = 0.34
-			node.mesh = s
-			node.scale = Vector3(1, 1, 0.45)
-			for dx in [-0.06, 0.06]:
-				var e := SphereMesh.new()
-				e.radius = 0.035
-				e.height = 0.05
-				add.call(e, Vector3(dx, 0.04, 0.15), Vector3.ZERO, Color("#08070c"))
-		"idol":
-			var c := CapsuleMesh.new()
-			c.radius = 0.08
-			c.height = 0.3
-			node.mesh = c
-			var h := SphereMesh.new()
-			h.radius = 0.08
-			h.height = 0.16
-			add.call(h, Vector3(0, 0.22, 0))
-			for side in [-1, 1]:
-				var a := CapsuleMesh.new()
-				a.radius = 0.025
-				a.height = 0.16
-				add.call(a, Vector3(side * 0.1, 0.03, 0), Vector3(0, 0, side * 0.4))
-		"teeth":
-			# Pink gums, a row of white teeth on top and one below.
-			var gum := CapsuleMesh.new()
-			gum.radius = 0.05
-			gum.height = 0.3
-			node.mesh = gum
-			node.rotation = Vector3(0, 0, PI / 2)
-			for row in [-1, 1]:
-				for k in 6:
-					var tooth := BoxMesh.new()
-					tooth.size = Vector3(0.035, 0.035, 0.04)
-					add.call(tooth, Vector3(row * 0.045, -0.1 + k * 0.04, 0.02), Vector3.ZERO, Color("#fffdf5"))
-		"duck":
-			var body := SphereMesh.new()
-			body.radius = 0.14
-			body.height = 0.2
-			node.mesh = body
-			var head := SphereMesh.new()
-			head.radius = 0.08
-			head.height = 0.16
-			add.call(head, Vector3(0.07, 0.14, 0))
-			var beak := CylinderMesh.new()
-			beak.top_radius = 0.0
-			beak.bottom_radius = 0.035
-			beak.height = 0.08
-			add.call(beak, Vector3(0.17, 0.13, 0), Vector3(0, 0, -PI / 2), Color("#ff8c1a"))
-			for dz in [-0.035, 0.035]:
-				var eye := SphereMesh.new()
-				eye.radius = 0.015
-				eye.height = 0.03
-				add.call(eye, Vector3(0.12, 0.17, dz), Vector3.ZERO, Color("#08070c"))
-		"sock":
-			var leg := CapsuleMesh.new()
-			leg.radius = 0.07
-			leg.height = 0.32
-			node.mesh = leg
-			node.position.y += 0.06
-			var foot := CapsuleMesh.new()
-			foot.radius = 0.07
-			foot.height = 0.24
-			add.call(foot, Vector3(0.07, -0.13, 0), Vector3(0, 0, PI / 2))
-			for k in 2:
-				var stripe := CylinderMesh.new()
-				stripe.top_radius = 0.073
-				stripe.bottom_radius = 0.073
-				stripe.height = 0.025
-				add.call(stripe, Vector3(0, 0.1 - k * 0.05, 0), Vector3.ZERO, Color("#e03131"))
-		"toast":
-			var bread := BoxMesh.new()
-			bread.size = Vector3(0.28, 0.3, 0.05)
-			node.mesh = bread
-			var crumb := BoxMesh.new()
-			crumb.size = Vector3(0.22, 0.24, 0.02)
-			add.call(crumb, Vector3(0, -0.01, 0.02), Vector3.ZERO, Color("#f3d9a4"))
-			# The Barón's face: two eyes and a moustache, in burn.
-			for dx in [-0.05, 0.05]:
-				var eye := SphereMesh.new()
-				eye.radius = 0.018
-				eye.height = 0.02
-				add.call(eye, Vector3(dx, 0.04, 0.035), Vector3.ZERO, Color("#6b3d12"))
-			var tache := CapsuleMesh.new()
-			tache.radius = 0.015
-			tache.height = 0.14
-			add.call(tache, Vector3(0, -0.03, 0.035), Vector3(0, 0, PI / 2), Color("#6b3d12"))
-		"clock":
-			var face := CylinderMesh.new()
-			face.top_radius = 0.15
-			face.bottom_radius = 0.15
-			face.height = 0.05
-			node.mesh = face
-			node.rotation = Vector3(PI / 2, 0, 0)
-			var dial := CylinderMesh.new()
-			dial.top_radius = 0.125
-			dial.bottom_radius = 0.125
-			dial.height = 0.01
-			add.call(dial, Vector3(0, 0.026, 0), Vector3.ZERO, Color("#f8f9fa"))
-			for hand in [[0.09, 0.3], [0.06, 2.1]]:
-				var bar := BoxMesh.new()
-				bar.size = Vector3(0.012, 0.012, hand[0])
-				var a: float = hand[1]
-				add.call(bar, Vector3(sin(a) * hand[0] / 2, 0.034, cos(a) * hand[0] / 2), Vector3(0, a, 0), Color("#08070c"))
-			for side in [-1, 1]:
-				var bell := SphereMesh.new()
-				bell.radius = 0.045
-				bell.height = 0.05
-				add.call(bell, Vector3(side * 0.1, 0, -0.13), Vector3.ZERO, Color("#f0c46a"))
-		_:
-			var s := SphereMesh.new()
-			s.radius = 0.15
-			s.height = 0.24
-			s.radial_segments = 7
-			s.rings = 4
-			node.mesh = s
-
-
 # --- Drawing -------------------------------------------------------------------------
 
 func _draw_frame(dt: float) -> void:
