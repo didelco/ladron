@@ -154,6 +154,14 @@ func _process(dt: float) -> void:
 	_tense.volume_db = linear_to_db(maxf(0.001, _level * _tension))
 
 
+## Closing while the music is still being written: wait for the worker, or
+## it carries on into a freed node.
+func _exit_tree() -> void:
+	if _music_task >= 0:
+		WorkerThreadPool.wait_for_task_completion(_music_task)
+		_music_task = -1
+
+
 func _start_music() -> void:
 	var players: Array[AudioStreamPlayer] = []
 	for data in _music_data:
