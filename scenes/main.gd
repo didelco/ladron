@@ -57,8 +57,27 @@ const CONE_RAYS := 40
 ## Air thin enough not to veil the plan from 16 m up; the lights make up for it
 ## by scattering several times their share into it, so the beams still show.
 const FOG_DENSITY := 0.012
-const TORCH_FOG := 8.0
+const TORCH_FOG := 12.0
 const ROOM_FOG := 4.0
+## The torch is the hero light: a crisp near-white beam that owns the dark,
+## brighter when its guard is on the hunt. Its colour is warmer than the moon
+## and cooler than the lamps, so it never reads as either.
+const TORCH_COLOUR := Color("#fff1d8")
+const TORCH_ENERGY := 9.0
+const TORCH_ENERGY_ALERT := 13.0
+## Lit rooms glow warm, like a hotel lobby with the chandeliers on.
+const ROOM_LIGHT_COLOUR := Color("#ffc47e")
+const ROOM_LIGHT_ENERGY := 1.4
+## How much the flat wash over a lit room adds: the room must read as lit at
+## a glance, but through the tonemapper a strong wash burns it to cream.
+const ROOM_WASH := 0.07
+## The night, graded: deep blue-violet shadows and a cold moon, so the warm
+## practical lights and the torches are the only warm things on screen.
+const AMBIENT_COLOUR := Color("#6256aa")
+const AMBIENT_ENERGY := 0.6
+const MOON_COLOUR := Color("#8ea2ff")
+const MOON_ENERGY := 0.4
+const BACKGROUND := Color("#0a0918")
 
 ## "story" or "generative"
 var mode := "story"
@@ -882,20 +901,37 @@ func _flat(colour: Color) -> StandardMaterial3D:
 func _build_environment() -> void:
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
-	env.background_color = COLOURS.night
+	env.background_color = BACKGROUND
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	# The building is shut: what you see by is the torches, the room lights
-	# once switched on, and this faint blue night.
-	env.ambient_light_color = Color("#6f78a8")
-	env.ambient_light_energy = 0.6
+	# once switched on, the lamps, and this blue night. Blue, not grey: a
+	# haunted hotel, not a power cut.
+	env.ambient_light_color = AMBIENT_COLOUR
+	env.ambient_light_energy = AMBIENT_ENERGY
+	# Filmic curve: a torch hotspot rolls off to white instead of clipping, and
+	# the lamps keep their colour at full blast. Exposure up to make up for the
+	# darker toe, then a push of saturation and contrast for the cartoon look.
+	env.tonemap_mode = Environment.TONE_MAPPER_ACES
+	env.tonemap_exposure = 1.25
+	env.tonemap_white = 6.0
+	env.adjustment_enabled = true
+	env.adjustment_saturation = 1.12
+	env.adjustment_contrast = 1.08
+	# Bloom only on what is really bright (lamps, the lit exit, the piece, the
+	# floor under a torch): a halo round each, the dark left dark.
 	env.glow_enabled = true
-	env.glow_intensity = 0.6
-	env.glow_hdr_threshold = 0.9
+	env.glow_intensity = 0.7
+	env.glow_bloom = 0.02
+	env.glow_hdr_threshold = 1.0
+	env.glow_blend_mode = Environment.GLOW_BLEND_MODE_SCREEN
+	env.set_glow_level(2, 1.0)
+	env.set_glow_level(3, 0.8)
+	env.set_glow_level(5, 0.5)
 	# A little dust in the air, so a torch is a beam you can see coming and a lit
 	# room glows. Thin and unlit by the ambient, or the whole plan turns to milk.
 	env.volumetric_fog_enabled = true
 	env.volumetric_fog_density = FOG_DENSITY
-	env.volumetric_fog_albedo = Color("#c9c4d8")
+	env.volumetric_fog_albedo = Color("#c4c8ec")
 	env.volumetric_fog_ambient_inject = 0.0
 	# The camera is ~17 m from the floor: no need to spend froxels any further.
 	env.volumetric_fog_length = 25.0
@@ -907,12 +943,30 @@ func _build_environment() -> void:
 	env.ssao_intensity = 2.0
 	env.ssil_enabled = true
 	env.ssil_radius = 3.0
+	# The polished floor mirrors the lamps and the lit exit (floor.gdshader
+	# keeps it glossy); a short march is plenty from straight above.
+	env.ssr_enabled = true
+	env.ssr_max_steps = 48
+	env.ssr_fade_in = 0.1
+	env.ssr_fade_out = 2.0
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)
+	# Moonlight through the high windows: cold and faint, from one side. It
+	# shades the tops of walls and cases apart from their faces, and draws the
+	# rim round the figures in the dark (Figure's materials).
 	var moon := DirectionalLight3D.new()
-	moon.rotation_degrees = Vector3(-60, 30, 0)
-	moon.light_energy = 0.12
+	moon.rotation_degrees = Vector3(-55, 30, 0)
+	moon.light_color = MOON_COLOUR
+	moon.light_energy = MOON_ENERGY
+	moon.light_volumetric_fog_energy = 0.0
+	# Its shadows lay the walls and cases down on the floor in blue, which is
+	# most of what gives the plan depth from above. The camera is never far
+	# from the floor, so two splits over a short distance are plenty.
+	moon.shadow_enabled = true
+	moon.shadow_opacity = 0.85
+	moon.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
+	moon.directional_shadow_max_distance = 35.0
 	add_child(moon)
 	camera = Camera3D.new()
 	camera.fov = 50
@@ -947,7 +1001,7 @@ func _build_world() -> void:
 		var p := PlaneMesh.new()
 		p.size = Vector2(r.rect.size.x, r.rect.size.y)
 		wash.mesh = p
-		var wm := _flat(Color(COLOURS.lit, 0.18))
+		var wm := _flat(Color(ROOM_LIGHT_COLOUR, ROOM_WASH))
 		wm.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
 		wash.material_override = wm
 		wash.position = _to_world(r.rect.position.x + r.rect.size.x / 2.0, r.rect.position.y + r.rect.size.y / 2.0, 0.02)
@@ -964,9 +1018,10 @@ func _build_world() -> void:
 		thief_nodes.append(f)
 	for i in ROOM_LIGHT_POOL:
 		var l := OmniLight3D.new()
-		l.light_color = COLOURS.lit
+		l.light_color = ROOM_LIGHT_COLOUR
 		l.light_energy = 0.0
 		l.omni_attenuation = 0.8
+		l.light_specular = 0.6
 		l.light_volumetric_fog_energy = ROOM_FOG
 		world.add_child(l)
 		Fx.dust_in(l)
@@ -976,10 +1031,17 @@ func _build_world() -> void:
 		world.add_child(f)
 		guard_nodes.append(f)
 		# A torch, not a bulb: narrow cone, soft edge, pointed where it looks.
+		# Bright hotspot, a quick falloff to the rim, and crisp shadows so the
+		# cases and figures it sweeps throw long ones across the floor.
 		var torch := SpotLight3D.new()
-		torch.light_color = COLOURS.cone
-		torch.spot_attenuation = 1.0
+		torch.light_color = TORCH_COLOUR
+		torch.spot_attenuation = 0.7
+		torch.spot_angle_attenuation = 0.9
+		torch.light_specular = 1.0
 		torch.shadow_enabled = true
+		torch.shadow_bias = 0.04
+		torch.shadow_normal_bias = 0.8
+		torch.shadow_blur = 0.6
 		torch.light_volumetric_fog_energy = TORCH_FOG
 		f.add_child(torch)
 		# Just ahead of the cap's peak (inside it, the shadowed head swallows the
@@ -1341,11 +1403,11 @@ func _draw_frame(dt: float) -> void:
 		f.set_ghost(COLOURS.alert if g.sees_player else COLOURS.guard, 0.75)
 		var view := Sim.view_of(g)
 		var torch := torches[i]
-		torch.light_color = COLOURS.alert if g.sees_player else COLOURS.cone
+		torch.light_color = COLOURS.alert if g.sees_player else TORCH_COLOUR
 		torch.spot_angle = rad_to_deg(view.half) * 0.85
 		torch.spot_range = view.range + 1.0
 		# Under the ceiling lights a torch is pointless, and switched off.
-		torch.light_energy = 0.0 if Museum.is_lit(g.x, g.y) else (6.0 if g.alert else 3.5)
+		torch.light_energy = 0.0 if Museum.is_lit(g.x, g.y) else (TORCH_ENERGY_ALERT if g.alert else TORCH_ENERGY)
 		_draw_cone(g, cones[i])
 	_draw_room_lights()
 	_draw_loot()
@@ -1368,7 +1430,7 @@ func _draw_room_lights() -> void:
 		if i < lit.size():
 			l.position = lit[i][0]
 			l.omni_range = lit[i][2] / 2.0 + 3.0
-			l.light_energy = 2.5
+			l.light_energy = ROOM_LIGHT_ENERGY
 		else:
 			l.light_energy = 0.0
 

@@ -6,8 +6,13 @@ shader_type spatial;
 // cut joint round every slab; and a soft shadow where the floor meets a wall
 // or a case, read from a one-texel-per-tile map of the plan with linear
 // filtering — the blur of that map *is* the contact shadow.
+//
+// Polished: the slabs are glossy so a torch pool gets a hot glint in it and
+// the lamps and the lit exit mirror in the marble; the joints are matt. Plain
+// Lambert, not toon: toon's cut-off is tied to roughness, and on a glossy
+// floor it turned a torch pool into a flat white slab with a hard far edge.
 
-render_mode diffuse_toon, specular_disabled;
+render_mode diffuse_lambert, specular_schlick_ggx;
 
 // r: how solid the tile is (1 wall, 0.6 case, 0 floor); g: 1 outside the building
 uniform sampler2D plan : filter_linear, repeat_disable;
@@ -15,7 +20,9 @@ uniform sampler2D veins : filter_linear_mipmap, repeat_enable;
 uniform vec2 size = vec2(23.0, 17.0);
 uniform vec3 stone = vec3(0.118, 0.110, 0.145);
 uniform vec3 joint = vec3(0.278, 0.263, 0.341);
-uniform vec3 night = vec3(0.059, 0.051, 0.078);
+uniform vec3 night = vec3(0.039, 0.035, 0.094);
+uniform float gloss_roughness = 0.22;
+uniform float joint_roughness = 0.75;
 
 float hash(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -41,7 +48,8 @@ void fragment() {
 
 	// The joint: a darker cut, with a pale lip on one side.
 	float edge = min(min(in_slab.x, 1.0 - in_slab.x), min(in_slab.y, 1.0 - in_slab.y)) * 2.0;
-	base = mix(joint * 0.55, base, smoothstep(0.012, 0.03, edge));
+	float slab_face = smoothstep(0.012, 0.03, edge);
+	base = mix(joint * 0.55, base, slab_face);
 	base += vec3(0.02) * (1.0 - smoothstep(0.03, 0.05, min(in_slab.x, in_slab.y) * 2.0));
 
 	// Contact shadow: the plan map, blurred by filtering and a few taps.
@@ -57,5 +65,8 @@ void fragment() {
 
 	float outside = texture(plan, tuv).g;
 	ALBEDO = mix(base, night, step(0.5, outside));
-	ROUGHNESS = 0.6;
+	// A little wear per slab, so the reflections do not look like one mirror.
+	float wear = hash(slab + 11.0) * 0.12 + vein * 0.1;
+	ROUGHNESS = mix(joint_roughness, gloss_roughness + wear, slab_face);
+	SPECULAR = 0.6;
 }

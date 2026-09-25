@@ -36,6 +36,10 @@ const TORSO := 0.42
 const CRAWL_STRIDE := 0.35
 ## How far out the ink outline sits from each part, in metres.
 const INK_GROW := 0.012
+## Rim light on every shaded part: how strong, and how much of the part's own
+## colour it takes (0 white, 1 fully tinted).
+const RIM := 1.0
+const RIM_TINT := 0.2
 
 ## Getting down on all fours, and back up, as key poses: down is squat with
 ## hands out, tip forward and plant, knees down and settle; up is push off and
@@ -240,6 +244,12 @@ func _material(colour: Color, detail: bool, glow: bool) -> StandardMaterial3D:
 		# Light either hits a surface or it does not: drawn, not rendered.
 		m.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
 		m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+		# A rim of whatever light is about (the moon, a torch, a lamp) round
+		# the silhouette, tinted by the body colour: the figures pop off the
+		# dark floor the way cartoon characters do.
+		m.rim_enabled = true
+		m.rim = RIM
+		m.rim_tint = RIM_TINT
 	if not detail:
 		var ink := StandardMaterial3D.new()
 		ink.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
