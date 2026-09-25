@@ -115,9 +115,19 @@ func _init() -> void:
 	var props_ok := Props.list.size() >= 2
 	for pr in Props.list:
 		var behind := pr.tile + pr.face
-		if Museum.tile_at(pr.tile.x + 0.5, pr.tile.y + 0.5) != Tiles.FLOOR or Museum.tile_at(behind.x + 0.5, behind.y + 0.5) != Tiles.WALL:
+		var on_floor := Museum.tile_at(pr.tile.x + 0.5, pr.tile.y + 0.5) == Tiles.FLOOR
+		var against_wall := Museum.tile_at(behind.x + 0.5, behind.y + 0.5) == Tiles.WALL
+		# Out in the open: nothing but floor all round.
+		var in_the_open := true
+		for dy in range(-1, 2):
+			for dx in range(-1, 2):
+				if Museum.tile_at(pr.tile.x + dx + 0.5, pr.tile.y + dy + 0.5) != Tiles.FLOOR:
+					in_the_open = false
+		# Never behind a wall as the camera sees it (a wall to its south).
+		var hidden := Museum.tile_at(pr.tile.x + 0.5, pr.tile.y + 1.5) == Tiles.WALL and not against_wall
+		if not on_floor or not (against_wall or in_the_open) or pr.face == Vector2i(0, 1) or hidden:
 			props_ok = false
-	check(props_ok, "%d objetos derribables, en suelo y contra una pared" % Props.list.size())
+	check(props_ok, "%d objetos derribables, en suelo, contra una pared o en mitad de una sala, nunca tapados" % Props.list.size())
 	var target := Props.list[0]
 	var walker := Sim.new_thief("p1")
 	walker.x = target.x
