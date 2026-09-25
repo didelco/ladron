@@ -54,6 +54,11 @@ const PAD_ACTIONS := {
 ## A fixed handful of room lights, handed to the lit rooms nearest the camera.
 const ROOM_LIGHT_POOL := 4
 const CONE_RAYS := 40
+## Air thin enough not to veil the plan from 16 m up; the lights make up for it
+## by scattering several times their share into it, so the beams still show.
+const FOG_DENSITY := 0.012
+const TORCH_FOG := 8.0
+const ROOM_FOG := 4.0
 
 ## "story" or "generative"
 var mode := "story"
@@ -794,6 +799,22 @@ func _build_environment() -> void:
 	env.glow_enabled = true
 	env.glow_intensity = 0.6
 	env.glow_hdr_threshold = 0.9
+	# A little dust in the air, so a torch is a beam you can see coming and a lit
+	# room glows. Thin and unlit by the ambient, or the whole plan turns to milk.
+	env.volumetric_fog_enabled = true
+	env.volumetric_fog_density = FOG_DENSITY
+	env.volumetric_fog_albedo = Color("#c9c4d8")
+	env.volumetric_fog_ambient_inject = 0.0
+	# The camera is ~17 m from the floor: no need to spend froxels any further.
+	env.volumetric_fog_length = 25.0
+	env.volumetric_fog_anisotropy = 0.3
+	# Contact shadows where cases and figures meet the floor and walls meet
+	# corners; SSIL lets a lit room or a torch pool spill a little colour round.
+	env.ssao_enabled = true
+	env.ssao_radius = 1.2
+	env.ssao_intensity = 2.0
+	env.ssil_enabled = true
+	env.ssil_radius = 3.0
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)
@@ -854,6 +875,7 @@ func _build_world() -> void:
 		l.light_color = COLOURS.lit
 		l.light_energy = 0.0
 		l.omni_attenuation = 0.8
+		l.light_volumetric_fog_energy = ROOM_FOG
 		world.add_child(l)
 		room_lights.append(l)
 	for g in guards:
@@ -865,9 +887,12 @@ func _build_world() -> void:
 		torch.light_color = COLOURS.cone
 		torch.spot_attenuation = 1.0
 		torch.shadow_enabled = true
+		torch.light_volumetric_fog_energy = TORCH_FOG
 		f.add_child(torch)
-		torch.position = Vector3(0, 1.15, 0.1)
-		torch.rotation.x = -0.35
+		# Just ahead of the cap's peak (inside it, the shadowed head swallows the
+		# beam), and turned round: a spot shines down its -Z, a figure faces +Z.
+		torch.position = Vector3(0, 1.15, 0.3)
+		torch.rotation = Vector3(-0.35, PI, 0)
 		torches.append(torch)
 		var cone := MeshInstance3D.new()
 		cone.mesh = ImmediateMesh.new()
@@ -1295,7 +1320,9 @@ func _draw_cone(g: Guard, node: MeshInstance3D) -> void:
 	im.surface_end()
 	var m: StandardMaterial3D = node.material_override
 	var colour: Color = COLOURS.alert if g.sees_player else (COLOURS.cone_alert if g.alert else COLOURS.cone)
-	m.albedo_color = Color(colour, 0.22 if g.sees_player else (0.14 if g.alert else 0.07))
+	# Faint: the torch's beam in the fog does most of the showing, this just
+	# marks the edge of what the guard sees.
+	m.albedo_color = Color(colour, 0.16 if g.sees_player else (0.09 if g.alert else 0.045))
 
 
 func _camera_target() -> Vector3:
