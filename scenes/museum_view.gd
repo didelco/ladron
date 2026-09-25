@@ -15,6 +15,13 @@ const TRIM_H := 0.025
 const SKIRT_H := 0.12
 const CASE_HEIGHT := 0.82
 const MAX_EMERGENCY := 10
+## Warm wall lamps, one on the north wall of a gallery: the warm pools in the
+## blue night. Few, small and shadowless, so they cost next to nothing.
+const MAX_SCONCES := 6
+const SCONCE_COLOUR := Color("#ffb45a")
+const SCONCE_ENERGY := 1.4
+const SCONCE_RANGE := 3.2
+const SCONCE_HEIGHT := 0.98
 
 const C := {
 	"night": Color("#0f0d14"),
@@ -38,6 +45,9 @@ const C := {
 	"emergency": Color("#4ade80"),
 }
 
+## The wall tiles with a painting on them, so a lamp is not hung over one.
+var _hung := {}
+
 
 func build() -> void:
 	_floor()
@@ -45,6 +55,7 @@ func build() -> void:
 	_exhibits()
 	_paintings()
 	_emergency_lights()
+	_sconces()
 
 
 static func to_world(x: float, y: float, height := 0.0) -> Vector3:
@@ -589,6 +600,7 @@ func _paintings() -> void:
 			frame.position = to_world(x + 0.5, y + 1.0, 0.0)
 			add_child(frame)
 			_painting(frame, x * 31 + y * 7)
+			_hung[Vector2i(x, y)] = true
 			hung += 1
 
 
@@ -690,6 +702,60 @@ func _emergency_lights() -> void:
 		box.material_override = fitting
 		box.position = light.position
 		add_child(box)
+
+
+# --- Wall lamps -----------------------------------------------------------
+
+## A brass wall lamp with a glowing shade on the north wall of each gallery,
+## where the camera sees the wall face. The wall tile nearest the middle of
+## that wall gets it, unless the room's switch or a painting is there.
+func _sconces() -> void:
+	var shade := StandardMaterial3D.new()
+	shade.albedo_color = SCONCE_COLOUR
+	shade.emission_enabled = true
+	shade.emission = SCONCE_COLOUR
+	shade.emission_energy_multiplier = 2.0
+	var placed := 0
+	for r in Museum.rooms:
+		if placed >= MAX_SCONCES:
+			return
+		var y := r.rect.position.y - 1
+		if y < 0:
+			continue
+		var mid := r.rect.position.x + r.rect.size.x / 2
+		var best := -1
+		for x in range(r.rect.position.x, r.rect.end.x):
+			if Museum.grid[y * Museum.w + x] != Tiles.WALL or Museum.grid[(y + 1) * Museum.w + x] != Tiles.FLOOR:
+				continue
+			if absi(x - r.switch_at.x) <= 1 and absi(y - r.switch_at.y) <= 1:
+				continue
+			if _hung.has(Vector2i(x, y)):
+				continue
+			if best < 0 or absi(x - mid) < absi(best - mid):
+				best = x
+		if best < 0:
+			continue
+		var at := to_world(best + 0.5, y + 1.0, SCONCE_HEIGHT)
+		_mesh(self, _box(Vector3(0.05, 0.14, 0.08)), C.gold_dim, at + Vector3(0, -0.02, 0.04), true)
+		var lamp := MeshInstance3D.new()
+		var cyl := CylinderMesh.new()
+		cyl.top_radius = 0.06
+		cyl.bottom_radius = 0.1
+		cyl.height = 0.12
+		lamp.mesh = cyl
+		lamp.material_override = shade
+		lamp.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		lamp.position = at + Vector3(0, 0.07, 0.12)
+		add_child(lamp)
+		var light := OmniLight3D.new()
+		light.light_color = SCONCE_COLOUR
+		light.light_energy = SCONCE_ENERGY
+		light.omni_range = SCONCE_RANGE
+		light.omni_attenuation = 1.2
+		light.light_volumetric_fog_energy = 2.0
+		light.position = at + Vector3(0, 0.05, 0.3)
+		add_child(light)
+		placed += 1
 
 
 # --- Helpers ---------------------------------------------------------------------
