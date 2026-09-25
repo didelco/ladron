@@ -81,6 +81,31 @@ uv pip install --python brain/.venv/bin/python -r brain/requirements.txt
 
 Sin el cerebro, los guardias deciden con reglas fijas: el juego siempre se puede jugar.
 
+## Exportar
+
+`export_presets.cfg` trae tres configuraciones: **Windows Desktop** (x86_64), **macOS** (universal,
+firma ad-hoc y sin notarizar, así que no hace falta certificado) y **Linux** (x86_64). Todo sale en
+`build/` (ignorado por git); `tests/` y `brain/` no se incluyen. El icono es `assets/icon.png`.
+
+Primero hay que instalar las plantillas de exportación de 4.7.2 una vez: en el editor,
+**Editor → Administrar plantillas de exportación → Descargar e instalar**
+(en inglés: *Editor → Manage Export Templates → Download and Install*) (quedan en
+`~/Library/Application Support/Godot/export_templates/4.7.2.stable/`). Después:
+
+```bash
+godot --headless --export-release "Windows Desktop" build/windows/Ladron.exe
+godot --headless --export-release "macOS" build/macos/Ladron.zip
+godot --headless --export-release "Linux" build/linux/Ladron.x86_64
+```
+
+(las carpetas `build/windows`, `build/macos` y `build/linux` tienen que existir: `mkdir -p` antes).
+
+Como no está notarizado, en macOS la primera vez hay que abrirlo con clic derecho → Abrir (o
+quitar la cuarentena con `xattr -dr com.apple.quarantine Ladron.app`).
+
+Las versiones exportadas no llevan el cerebro: los guardias usan las reglas fijas, salvo que el
+servicio de `brain/` esté corriendo en la misma máquina (puerto 8000).
+
 ## Créditos
 
 Recursos de terceros y sus licencias: `CREDITS.md`.
