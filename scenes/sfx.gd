@@ -62,6 +62,8 @@ func _ready() -> void:
 	_streams.bin = _mix(_mix(_noise(0.5, 3000.0, 0.55), _bells([[523.0, 0.0], [611.0, 0.12], [587.0, 0.26], [640.0, 0.38]], 0.3, 0.12)), _thump(0.3, 140.0, 70.0, 0.4))
 	_streams.bust = _mix(_mix(_thump(0.6, 90.0, 40.0, 0.9), _noise(0.7, 5000.0, 0.7)), _bells([[2637.0, 0.05], [3136.0, 0.09], [2349.0, 0.14], [3520.0, 0.2]], 0.25, 0.1))
 	_streams.panel = _mix(_thump(0.35, 180.0, 70.0, 0.8), _noise(0.25, 900.0, 0.8))
+	# A guard's boot on the marble: heavier and lower than a thief's step.
+	_streams.boot = _mix(_thump(0.14, 150.0, 70.0, 0.55), _noise(0.09, 520.0, 0.55))
 	# The menus: a soft wooden tick moving about, a two-note chime choosing,
 	# a falling blip going back.
 	_streams.nav = _mix(_bells([[1568.0, 0.0]], 0.12, 0.08), _noise(0.02, 2500.0, 0.2))
@@ -121,13 +123,17 @@ func _db(level: float) -> float:
 
 
 ## Play a sound where it happens in the world. volume 0..1.
-func at(sound: String, pos: Vector3, volume := 1.0) -> void:
+## unit is how far (in metres from the listener, which sits on the thief)
+## the sound keeps its full volume: small for footsteps, so they swell as a
+## guard comes near and die away as it goes.
+func at(sound: String, pos: Vector3, volume := 1.0, unit := 6.0) -> void:
 	var p := _voice()
 	p.stream = _streams[sound]
 	p.volume_db = linear_to_db(maxf(volume, 0.01))
+	p.unit_size = unit
 	p.position = pos
 	# No two footsteps quite alike.
-	p.pitch_scale = randf_range(0.85, 1.15) if sound == "step" or sound == "bump" else 1.0
+	p.pitch_scale = randf_range(0.85, 1.15) if sound in ["step", "bump", "boot"] else 1.0
 	p.play()
 
 

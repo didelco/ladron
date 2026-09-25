@@ -284,6 +284,10 @@ func show_menu(items: Array) -> void:
 			if item.get("wrap", false):
 				l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 				l.custom_minimum_size = Vector2(560, 0)
+		elif item.has("gap"):
+			var gap := Control.new()
+			gap.custom_minimum_size = Vector2(0, item.gap)
+			_panel_box.add_child(gap)
 		elif item.has("map"):
 			# The plan on the folded paper map, unfolding as the screen opens.
 			var stage := MapStage.new()
@@ -372,7 +376,7 @@ func show_menu(items: Array) -> void:
 						button.custom_minimum_size = Vector2(380, 62)
 						button.add_theme_font_size_override("font_size", 17)
 					elif item.get("small", false):
-						button.custom_minimum_size = Vector2(200, 36)
+						button.custom_minimum_size = Vector2(240, 38)
 						button.add_theme_font_size_override("font_size", 10)
 					else:
 						button.custom_minimum_size = Vector2(240 if item.get("row", false) else 400, 42)

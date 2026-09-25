@@ -130,6 +130,9 @@ var switch_marks: Array[MeshInstance3D] = []
 var lit_washes: Array[MeshInstance3D] = []
 var loot_node: Node3D
 var props_view: PropsView
+var ear: AudioListener3D
+## each guard's position last frame and the distance walked since its last step
+var guard_steps: Array = []
 ## the alarm panel, two thieves only: its lamp and glow, red till held
 var panel_mat: StandardMaterial3D
 var panel_glow: OmniLight3D
@@ -206,10 +209,10 @@ func _show_title() -> void:
 			{"title": "HISTORIA", "text": "Diez noches de aventura", "stage": MenuStage.make("story"), "call": _show_story_menu, "colour": Hud.C.safe},
 			{"title": "GENERATIVO", "text": "Un museo nuevo cada vez", "stage": MenuStage.make("generative"), "call": _show_generative_menu, "colour": Hud.C.gold},
 		], "width": 250},
-		{"buttons": [
-			{"text": "SETTINGS", "call": _show_settings.bind("title"), "colour": Hud.C.dim},
-			{"text": "SALIR", "call": _quit, "colour": Hud.C.dim},
-		], "row": true, "small": true},
+		{"gap": 18},
+		{"buttons": [{"text": "SETTINGS", "call": _show_settings.bind("title"), "colour": Hud.C.dim}], "small": true},
+		{"gap": 10},
+		{"buttons": [{"text": "SALIR", "call": _quit, "colour": Hud.C.dim}], "small": true},
 	])
 
 
@@ -837,6 +840,7 @@ func _new_round(n: int) -> void:
 	Props.place(Story.seed_for(n) if mode == "story" else randi(), [Heist.exit, Heist.panel, stand, Heist.start])
 	stride = [0.0, 0.0]
 	push_held = [false, false]
+	guard_steps.clear()
 	prop_noises.clear()
 	last_think = 0.0
 	think_tick = 0
@@ -1004,6 +1008,23 @@ func _push_hint() -> String:
 	return ""
 
 
+## Each guard's boots, a step every stride: heard from where they are, so
+## louder the nearer (the listener rides on the thief), harder when on alert.
+func _guard_footsteps() -> void:
+	if guard_steps.size() != guards.size():
+		guard_steps = guards.map(func(g): return [Vector2(g.x, g.y), 0.0])
+	for i in guards.size():
+		var g := guards[i]
+		var here := Vector2(g.x, g.y)
+		var entry: Array = guard_steps[i]
+		entry[1] += here.distance_to(entry[0])
+		entry[0] = here
+		var stride := 0.62 if g.alert else 0.55
+		if entry[1] >= stride:
+			entry[1] = 0.0
+			sfx.at("boot", _to_world(g.x, g.y), 1.0 if g.alert else 0.75, 2.2)
+
+
 ## Out comes the map, or away it goes.
 func _toggle_map() -> void:
 	map_open = not map_open
@@ -1056,7 +1077,9 @@ func _tick(dt: float) -> void:
 		if noise and not p.out:
 			noises.append(noise)
 			var what := "step" if noise.kind in ["walk", "sprint", "rustle"] else ("shelf" if noise.kind == "shelf" else "bump")
-			sfx.at(what, _to_world(p.x, p.y), clampf(noise.loudness / 9.0, 0.15, 1.0))
+			# A step as loud as you are fast, softer on all fours.
+			var vol := clampf(p.speed / Sim.TOP_SPEED, 0.12, 1.0) * (1.0 - 0.5 * p.posture) if what == "step" else clampf(noise.loudness / 9.0, 0.15, 1.0)
+			sfx.at(what, _to_world(p.x, p.y), vol, 3.0 if what == "step" else 6.0)
 
 	# Walking into things: over they go, with a crash.
 	# Things knocked over: the physics decides (PropsView pushes them with
@@ -1103,6 +1126,7 @@ func _tick(dt: float) -> void:
 		saw_before[g.id] = g.sees_player
 	for g in guards:
 		Sim.step_guard(g, thieves, noises, now, dt)
+	_guard_footsteps()
 	for s in Sim.call_for_backup(saw_before, guards, now):
 		sfx.at("shout", _to_world(s.x, s.y), 1.0 if s.first else 0.5)
 		if s.first:
@@ -1263,6 +1287,9 @@ func _build_environment() -> void:
 	# shades the tops of walls and cases apart from their faces, and draws the
 	# rim round the figures in the dark (Figure's materials).
 	var moon := DirectionalLight3D.new()
+	# The moon lights the room, not the dust in the air (Fx.Dust): motes only
+	# show where a torch or a lamp catches them.
+	moon.light_cull_mask = 0xFFFFF & ~Fx.DUST_LAYER
 	moon.rotation_degrees = Vector3(-55, 30, 0)
 	moon.light_color = MOON_COLOUR
 	moon.light_energy = MOON_ENERGY
@@ -1278,6 +1305,11 @@ func _build_environment() -> void:
 	camera = Camera3D.new()
 	camera.fov = 50
 	add_child(camera)
+	# The ears are the thief's, not the camera's (high above): a guard's
+	# steps grow as it comes near you, from the side it comes from.
+	ear = AudioListener3D.new()
+	add_child(ear)
+	ear.make_current()
 
 
 func _build_world() -> void:
@@ -1532,6 +1564,16 @@ func _draw_panel() -> void:
 # --- Drawing -------------------------------------------------------------------------
 
 func _draw_frame(dt: float) -> void:
+	# The ears between the thieves still in, facing the way the camera does
+	# (so left on screen is left in the ear).
+	if ear and camera:
+		var at := Vector3.ZERO
+		var n := 0
+		for t in thieves:
+			if not t.out:
+				at += _to_world(t.x, t.y, 1.2)
+				n += 1
+		ear.global_transform = Transform3D(camera.global_basis, at / n if n > 0 else camera.global_position)
 	for i in thieves.size():
 		var p := thieves[i]
 		var f := thief_nodes[i]

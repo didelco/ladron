@@ -20,8 +20,15 @@ static func dust_in(light: Light3D) -> void:
 	light.add_child(Dust.new())
 
 
-## Motes hanging in a light. They sit where the light shines (local to it, so
-## a torch carries its beam of dust along), and fade out when it goes off.
+## The visual layer dust lives on: lit by torches and lamps, not by the moon.
+const DUST_LAYER := 1 << 10
+
+
+## Motes hanging in the air. They are born where a light shines, then stay
+## put in the room (world space), all but still: a torch sweeping past
+## lights them up and leaves them behind in the dark, where they fade, while
+## new ones appear in the beam. They are lit, not glowing, so only the light
+## that falls on them shows them — and the moon does not reach them.
 class Dust extends GPUParticles3D:
 	var _process_mat := ParticleProcessMaterial.new()
 	var _look := Fx.speck_material(false)
@@ -29,10 +36,11 @@ class Dust extends GPUParticles3D:
 	var _tint := Color.BLACK
 
 	func _init() -> void:
-		amount = 28
-		lifetime = 5.0
-		preprocess = 5.0
-		local_coords = true
+		amount = 60
+		lifetime = 4.0
+		preprocess = 4.0
+		local_coords = false
+		layers = DUST_LAYER
 		# Big enough to cover a whole beam: the default box is two metres wide.
 		visibility_aabb = AABB(Vector3(-6, -4, -12), Vector3(12, 6, 13))
 		cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -40,20 +48,24 @@ class Dust extends GPUParticles3D:
 		m.gravity = Vector3.ZERO
 		m.direction = Vector3.UP
 		m.spread = 180.0
-		m.initial_velocity_min = 0.02
-		m.initial_velocity_max = 0.08
-		# A slow swirl, so they drift rather than slide in straight lines.
+		# Hanging in the air: the barest drift, a slow swirl.
+		m.initial_velocity_min = 0.0
+		m.initial_velocity_max = 0.012
 		m.turbulence_enabled = true
-		m.turbulence_noise_strength = 0.4
+		m.turbulence_noise_strength = 0.2
 		m.turbulence_noise_scale = 3.0
-		m.turbulence_noise_speed_random = 0.1
-		m.turbulence_influence_min = 0.02
-		m.turbulence_influence_max = 0.05
+		m.turbulence_noise_speed_random = 0.05
+		m.turbulence_influence_min = 0.005
+		m.turbulence_influence_max = 0.015
 		m.scale_min = 0.05
 		m.scale_max = 0.09
 		# In, hang, out: a mote never pops.
 		m.color_ramp = Fx.fade(Color(1, 1, 1, 0.0), Color(1, 1, 1, 1.0), 0.3)
 		process_material = m
+		# Lit by what shines on them, and only that: no ambient, no glow.
+		_look.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+		_look.disable_ambient_light = true
+		_look.albedo_color = Color(1, 1, 1, 0.55)
 		draw_pass_1 = Fx.quad(_look)
 
 	func _process(_dt: float) -> void:
@@ -63,9 +75,6 @@ class Dust extends GPUParticles3D:
 		emitting = light.light_energy > 0.0
 		if not emitting:
 			return
-		if light.light_color != _tint:
-			_tint = light.light_color
-			_look.albedo_color = Color(_tint, 0.3)
 		if light is SpotLight3D:
 			var spot := light as SpotLight3D
 			var shape := Vector2(spot.spot_angle, spot.spot_range)
