@@ -46,6 +46,7 @@ func knock(p: Props.Prop) -> void:
 	var yaw := node.rotation.y
 	node.queue_free()
 	var push := Vector3(cos(p.fall_dir), 0, sin(p.fall_dir))
+	Fx.puff(self, at, p.kind == "bust")
 	match p.kind:
 		"bin":
 			var body := _body(at + Vector3(0, 0.21, 0), yaw, 1.2)
