@@ -1,14 +1,20 @@
 class_name PropsView
 extends Node3D
-## The things you can knock over (Props), drawn standing, and when knocked,
-## handed to the physics engine: the standing model is swapped for rigid
-## bodies pushed the way you were going. The bin rolls and spills its
-## papers, which float down; the bust's pedestal topples and the bust rolls
-## off; the panel falls flat on its face.
+## The things you can knock over (Props), as real rigid bodies from the
+## start: a bin, a bust on its pedestal, a panel on its stand, standing at
+## rest until something shoves them. Each thief carries an invisible body
+## (moved with the thief, never pushed back) that shoves whatever it walks
+## into: a bin you bump tips over and rolls, and spills its papers; one
+## already down gets kicked along when you walk over it.
 ##
-## Only the view moves: the game knows that it fell and where it stood, and
-## nothing about where the pieces end up. The walls and cases near each
-## prop get simple colliders so the pieces stop against them.
+## The physics is the truth here, and the game hears about it: `tipped`
+## when a prop first leans past falling (the game marks it fallen, with the
+## crash guards hear), `kicked` whenever a fallen piece is sent moving by a
+## thief (the clatter of a rolling bin, the rustle of paper), for the game to
+## turn into noise.
+
+signal tipped(id: int, dir: float, at: Vector2)
+signal kicked(kind: String, at: Vector2, strength: float)
 
 ## Drawn this much bigger than life, to read from the camera up high.
 const K := 1.35
@@ -18,106 +24,175 @@ const PAPER := Color("#f1ecdc")
 const MARBLE := Color("#ddd6c6")
 const MARBLE_DARK := Color("#a89f8c")
 const WOOD := Color("#6b4a2e")
+## Leaning further than this from upright, it has fallen.
+const TIPPED := 0.64
+## A piece faster than this near a thief makes a sound; not again for a while.
+const KICK_SPEED := 0.55
+const KICK_EVERY := 0.35
+## The thief's shoving body: a capsule about a person wide.
+const THIEF_RADIUS := 0.24
 
-var _standing := {}
+## prop id -> the bodies that make it up; the first one decides "tipped"
+var _bodies := {}
+var _tipped := {}
+## every loose body (a prop's, and each paper) -> [kind, seconds to the next kick]
+var _loose := {}
+var _movers: Array[AnimatableBody3D] = []
 
 
 func build() -> void:
 	_colliders()
 	for p in Props.list:
-		var node := Node3D.new()
-		node.position = MuseumView.to_world(p.x, p.y)
-		node.rotation.y = atan2(-p.face.x, -p.face.y)
-		node.scale = Vector3.ONE * K
-		add_child(node)
+		var at := MuseumView.to_world(p.x, p.y)
+		var yaw := atan2(-p.face.x, -p.face.y)
+		var parts: Array[RigidBody3D] = []
 		match p.kind:
-			"bin": _bin(node)
+			"bin":
+				var body := _body(at + Vector3(0, 0.21 * K, 0), yaw, 1.0)
+				_bin(_look(body), -0.21)
+				var shape := CylinderShape3D.new()
+				shape.radius = 0.16 * K
+				shape.height = 0.42 * K
+				_shape(body, shape, Vector3.ZERO)
+				parts.append(body)
 			"bust":
-				_pedestal(node)
-				_bust(node, 0.72)
-			_: _panel(node, p.id)
-		_standing[p.id] = node
+				var column := _body(at + Vector3(0, 0.36 * K, 0), yaw, 2.5)
+				_pedestal(_look(column), -0.36)
+				var box := BoxShape3D.new()
+				box.size = Vector3(0.26, 0.72, 0.26) * K
+				_shape(column, box, Vector3.ZERO)
+				var bust := _body(at + Vector3(0, 0.765 * K, 0), yaw, 0.8)
+				_bust(_look(bust), -0.045)
+				var base := BoxShape3D.new()
+				base.size = Vector3(0.24, 0.09, 0.13) * K
+				_shape(bust, base, Vector3.ZERO)
+				var head := SphereShape3D.new()
+				head.radius = 0.09 * K
+				_shape(bust, head, Vector3(0, 0.18, 0) * K)
+				parts.append_array([column, bust])
+			_:
+				var stand := _body(at + Vector3(0, 0.5 * K, 0), yaw, 1.2)
+				_panel(_look(stand), p.id, -0.5)
+				var post := BoxShape3D.new()
+				post.size = Vector3(0.06, 0.9, 0.06) * K
+				_shape(stand, post, Vector3(0, -0.05, 0) * K)
+				var board := BoxShape3D.new()
+				board.size = Vector3(0.5, 0.36, 0.05) * K
+				_shape(stand, board, Vector3(0, 0.3, 0.02) * K)
+				var foot := BoxShape3D.new()
+				foot.size = Vector3(0.34, 0.04, 0.26) * K
+				_shape(stand, foot, Vector3(0, -0.48, 0) * K)
+				parts.append(stand)
+		for b in parts:
+			# Asleep until something touches it: dozens of props cost nothing.
+			b.sleeping = true
+			_loose[b] = [p.kind, 0.0]
+		_bodies[p.id] = parts
 
 
-## Knock one over: the standing model goes, rigid bodies take its place.
-func knock(p: Props.Prop) -> void:
-	var node: Node3D = _standing.get(p.id)
-	if node == null:
-		return
-	_standing.erase(p.id)
-	var at := node.position
-	var yaw := node.rotation.y
-	# Bodies are never scaled (physics does not like it): their shapes and
-	# offsets are multiplied by K, and the models hang from a scaled child.
-	var look := func(body: Node3D) -> Node3D:
-		var l := Node3D.new()
-		l.scale = Vector3.ONE * K
-		body.add_child(l)
-		return l
-	node.queue_free()
+## One shoving body per thief, following them.
+func set_thieves(count: int) -> void:
+	for m in _movers:
+		m.queue_free()
+	_movers.clear()
+	for i in count:
+		var m := AnimatableBody3D.new()
+		m.sync_to_physics = true
+		var capsule := CapsuleShape3D.new()
+		capsule.radius = THIEF_RADIUS
+		capsule.height = 1.0
+		var c := CollisionShape3D.new()
+		c.shape = capsule
+		c.position = Vector3(0, 0.5, 0)
+		m.add_child(c)
+		add_child(m)
+		_movers.append(m)
+
+
+## Where the thieves are this frame (world positions), out ones far away.
+func move_thieves(positions: Array[Vector3]) -> void:
+	for i in mini(positions.size(), _movers.size()):
+		_movers[i].global_position = positions[i]
+
+
+## Push one over on purpose: a shove at the top, away from the thief.
+func shove(p: Props.Prop) -> void:
 	var push := Vector3(cos(p.fall_dir), 0, sin(p.fall_dir))
-	Fx.puff(self, at, p.kind == "bust")
-	match p.kind:
-		"bin":
-			var body := _body(at + Vector3(0, 0.21 * K, 0), yaw, 1.2)
-			_bin(look.call(body), -0.21)
-			var shape := CylinderShape3D.new()
-			shape.radius = 0.16 * K
-			shape.height = 0.42 * K
-			_shape(body, shape, Vector3.ZERO)
-			body.apply_impulse(push * 1.3, Vector3(0, 0.18 * K, 0))
-			# The papers: sheets that drift down, and a few screwed-up balls.
-			for i in 7:
-				var sheet := i < 4
-				var b := _body(at + Vector3(randf_range(-0.05, 0.05), 0.4 * K, randf_range(-0.05, 0.05)), randf() * TAU, 0.05)
-				if sheet:
-					_piece(b, MuseumView._box(Vector3(0.15, 0.004, 0.2)), PAPER.darkened(randf() * 0.15), Vector3.ZERO)
-					var box := BoxShape3D.new()
-					box.size = Vector3(0.15, 0.01, 0.2)
-					_shape(b, box, Vector3.ZERO)
-					b.gravity_scale = 0.25
-					b.linear_damp = 3.0
-					b.angular_damp = 2.0
-				else:
-					var ball := SphereMesh.new()
-					ball.radius = 0.04
-					ball.height = 0.08
-					ball.radial_segments = 5
-					ball.rings = 3
-					_piece(b, ball, PAPER, Vector3.ZERO)
-					var sphere := SphereShape3D.new()
-					sphere.radius = 0.04
-					_shape(b, sphere, Vector3.ZERO)
-				var spread := push.rotated(Vector3.UP, randf_range(-0.9, 0.9))
-				b.apply_impulse(spread * randf_range(0.015, 0.035) + Vector3(0, 0.012, 0))
-				b.angular_velocity = Vector3(randf() - 0.5, randf() - 0.5, randf() - 0.5) * 4.0
-		"bust":
-			var column := _body(at + Vector3(0, 0.36 * K, 0), yaw, 3.0)
-			_pedestal(look.call(column), -0.36)
+	for b in _bodies.get(p.id, []):
+		var body := b as RigidBody3D
+		body.sleeping = false
+		body.apply_impulse(push * body.mass * 1.6, Vector3(0, 0.3 * K, 0))
+
+
+func _physics_process(dt: float) -> void:
+	# Fallen yet? The first body of each prop decides.
+	for id in _bodies:
+		if _tipped.has(id):
+			continue
+		var main_body: RigidBody3D = _bodies[id][0]
+		if main_body.global_basis.y.dot(Vector3.UP) < cos(TIPPED):
+			_tipped[id] = true
+			var lean := main_body.global_basis.y
+			var at := Vector2(main_body.global_position.x + Museum.w / 2.0, main_body.global_position.z + Museum.h / 2.0)
+			tipped.emit(id, atan2(lean.z, lean.x), at)
+			var kind: String = _loose[main_body][0]
+			Fx.puff(self, main_body.global_position * Vector3(1, 0, 1), kind == "bust")
+			if kind == "bin":
+				_spill(main_body.global_position, Vector3(lean.x, 0, lean.z).normalized())
+	# Kicked about by a thief: a sound, now and then.
+	for b in _loose:
+		var entry: Array = _loose[b]
+		entry[1] = maxf(0.0, entry[1] - dt)
+		var body := b as RigidBody3D
+		if entry[1] > 0.0 or body.sleeping or body.linear_velocity.length() < KICK_SPEED:
+			continue
+		var near := false
+		for m in _movers:
+			if m.global_position.distance_to(body.global_position * Vector3(1, 0, 1)) < 0.9:
+				near = true
+		if not near:
+			continue
+		entry[1] = KICK_EVERY
+		kicked.emit(entry[0], Vector2(body.global_position.x + Museum.w / 2.0, body.global_position.z + Museum.h / 2.0), minf(1.0, body.linear_velocity.length() / 2.5))
+
+
+## The bin's papers, out on the floor: sheets that drift down, a few
+## screwed-up balls. They stay about to be kicked (and rustle when they are).
+func _spill(at: Vector3, towards: Vector3) -> void:
+	for i in 8:
+		var sheet := i < 5
+		var b := _body(at + Vector3(randf_range(-0.08, 0.08), 0.25, randf_range(-0.08, 0.08)), randf() * TAU, 0.05)
+		if sheet:
+			_piece(b, MuseumView._box(Vector3(0.15, 0.004, 0.2) * K), PAPER.darkened(randf() * 0.15), Vector3.ZERO)
 			var box := BoxShape3D.new()
-			box.size = Vector3(0.26, 0.72, 0.26) * K
-			_shape(column, box, Vector3.ZERO)
-			column.apply_impulse(push * 1.9, Vector3(0, 0.3 * K, 0))
-			var bust := _body(at + Vector3(0, 0.86 * K, 0), yaw, 1.0)
-			_bust(look.call(bust), -0.14)
+			box.size = Vector3(0.15, 0.01, 0.2) * K
+			_shape(b, box, Vector3.ZERO)
+			b.gravity_scale = 0.3
+			b.linear_damp = 2.5
+			b.angular_damp = 2.0
+		else:
+			var ball := SphereMesh.new()
+			ball.radius = 0.045 * K
+			ball.height = 0.09 * K
+			ball.radial_segments = 5
+			ball.rings = 3
+			_piece(b, ball, PAPER, Vector3.ZERO)
 			var sphere := SphereShape3D.new()
-			sphere.radius = 0.13 * K
-			_shape(bust, sphere, Vector3.ZERO)
-			bust.apply_impulse(push * 0.9 + Vector3(0, 0.3, 0))
-			bust.angular_velocity = push.cross(Vector3.UP) * -5.0
-		_:
-			var stand := _body(at + Vector3(0, 0.5 * K, 0), yaw, 1.5)
-			_panel(look.call(stand), p.id, -0.5)
-			var post := BoxShape3D.new()
-			post.size = Vector3(0.06, 0.9, 0.06) * K
-			_shape(stand, post, Vector3(0, -0.05, 0) * K)
-			var board := BoxShape3D.new()
-			board.size = Vector3(0.5, 0.36, 0.05) * K
-			_shape(stand, board, Vector3(0, 0.3, 0.02) * K)
-			var foot := BoxShape3D.new()
-			foot.size = Vector3(0.34, 0.04, 0.26) * K
-			_shape(stand, foot, Vector3(0, -0.48, 0) * K)
-			stand.apply_impulse(push * 1.2, Vector3(0, 0.4 * K, 0))
+			sphere.radius = 0.045 * K
+			_shape(b, sphere, Vector3.ZERO)
+		var spread := towards.rotated(Vector3.UP, randf_range(-1.0, 1.0))
+		b.apply_impulse(spread * randf_range(0.03, 0.06) + Vector3(0, 0.015, 0))
+		b.angular_velocity = Vector3(randf() - 0.5, randf() - 0.5, randf() - 0.5) * 4.0
+		_loose[b] = ["paper", 0.3]
+
+
+## Models hang from a scaled child: bodies themselves are never scaled
+## (physics does not like it), their shapes are sized by K instead.
+func _look(body: Node3D) -> Node3D:
+	var l := Node3D.new()
+	l.scale = Vector3.ONE * K
+	body.add_child(l)
+	return l
 
 
 # --- Models: drawn with their foot at y = base ---------------------------------------

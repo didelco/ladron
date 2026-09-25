@@ -805,6 +805,7 @@ func _new_round(n: int) -> void:
 	Props.place(Story.seed_for(n) if mode == "story" else randi(), [Heist.exit, Heist.panel, stand, Heist.start])
 	stride = [0.0, 0.0]
 	push_held = [false, false]
+	prop_noises.clear()
 	last_think = 0.0
 	think_tick = 0
 	log_lines.clear()
@@ -872,6 +873,11 @@ func _physics_process(dt: float) -> void:
 	if preview_pivot:
 		preview_pivot.rotate_y(dt * 0.9)
 	_music_mood()
+	if props_view and not thieves.is_empty():
+		var at: Array[Vector3] = []
+		for t in thieves:
+			at.append(_to_world(t.x, t.y) if not t.out else Vector3(0, -50, 0))
+		props_view.move_thieves(at)
 	if phase == "playing":
 		_tick(dt)
 	_draw_frame(dt)
@@ -889,6 +895,44 @@ func _music_mood() -> void:
 			elif g.alert:
 				tension = maxf(tension, 0.55)
 	sfx.mood(tension, 0.8 if in_game else 0.5)
+
+
+## Noises the physics made since the last frame, for the next tick.
+var prop_noises: Array[SoundEvent] = []
+
+
+## A prop leaned past falling in the physics: if nobody pushed it on
+## purpose, it was walked into — the crash, the rumble, the log.
+func _on_prop_tipped(id: int, dir: float, at: Vector2) -> void:
+	var p: Props.Prop = Props.list[id]
+	p.x = at.x
+	p.y = at.y
+	if p.fallen:
+		return
+	p.fallen = true
+	p.fall_dir = dir
+	p.fallen_at = Sim.now_ms()
+	prop_noises.append(SoundEvent.make(p.x, p.y, p.kind))
+	_prop_fell(p)
+
+
+## The crash of one going over, whoever did it.
+func _prop_fell(p: Props.Prop) -> void:
+	sfx.at(p.kind, _to_world(p.x, p.y), 1.0)
+	_rumble(0.5, 0.0, 0.15, Vector2(p.x, p.y))
+	_shake(0.45 if p.kind == "bust" else 0.25)
+	_log("¡Has tirado %s!" % Props.NAMES[p.kind])
+
+
+## Something already down, sent rolling or rustling by a thief's feet: a
+## smaller noise, but a noise — the tin bin clatters, paper whispers.
+func _on_prop_kicked(kind: String, at: Vector2, strength: float) -> void:
+	var loud: float = {"bin": 7.5, "bust": 6.0, "panel": 5.0, "paper": 2.5}.get(kind, 4.0) * (0.5 + 0.5 * strength)
+	prop_noises.append(SoundEvent.make(at.x, at.y, "kick", loud))
+	if kind == "paper":
+		sfx.at("whisper", _to_world(at.x, at.y), 0.5 + 0.5 * strength)
+	else:
+		sfx.at("bin" if kind == "bin" else "bump", _to_world(at.x, at.y), 0.35 + 0.4 * strength)
 
 
 ## "E: TIRAR LA PAPELERA" when a thief has something within reach.
@@ -959,7 +1003,12 @@ func _tick(dt: float) -> void:
 			sfx.at(what, _to_world(p.x, p.y), clampf(noise.loudness / 9.0, 0.15, 1.0))
 
 	# Walking into things: over they go, with a crash.
-	Props.step(thieves, now, noises)
+	# Things knocked over: the physics decides (PropsView pushes them with
+	# the thieves' bodies and tells us what fell or got kicked about), and
+	# what it heard since last frame joins this frame's noises.
+	Props.knocked.clear()
+	noises.append_array(prop_noises)
+	prop_noises.clear()
 	# On purpose: E (P2: . ), or X on the pad, next to one — over it goes,
 	# and the guards come to see.
 	for i in thieves.size():
@@ -971,11 +1020,8 @@ func _tick(dt: float) -> void:
 				Props.push(target, t, now, noises)
 		push_held[i] = pressed
 	for p in Props.knocked:
-		props_view.knock(p)
-		sfx.at(p.kind, _to_world(p.x, p.y), 1.0)
-		_rumble(0.5, 0.0, 0.15, Vector2(p.x, p.y))
-		_shake(0.45 if p.kind == "bust" else 0.25)
-		_log("¡Has tirado %s!" % Props.NAMES[p.kind])
+		props_view.shove(p)
+		_prop_fell(p)
 
 	# The job: working the case (and its alarm), carrying, dropping, the door.
 	var before_alarms := noises.size()
@@ -1198,6 +1244,9 @@ func _build_world() -> void:
 	props_view = PropsView.new()
 	world.add_child(props_view)
 	props_view.build()
+	props_view.set_thieves(thieves.size())
+	props_view.tipped.connect(_on_prop_tipped)
+	props_view.kicked.connect(_on_prop_kicked)
 
 	# Switches, and the white wash that fills a lit room.
 	for r in Museum.rooms:
