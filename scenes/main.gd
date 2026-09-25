@@ -43,6 +43,7 @@ const KEYS := {
 	KEY_W: "w", KEY_A: "a", KEY_S: "s", KEY_D: "d",
 	KEY_UP: "up", KEY_DOWN: "down", KEY_LEFT: "left", KEY_RIGHT: "right",
 	KEY_C: "c", KEY_SHIFT: "shift", KEY_MINUS: "minus", KEY_SLASH: "slash",
+	KEY_E: "e", KEY_PERIOD: "period",
 }
 ## Gamepads come through the InputMap (project.godot: pad 0 is p1_*, pad 1 is
 ## p2_*) and are read as that player's keys, so Sim only ever sees key names.
@@ -50,6 +51,7 @@ const KEYS := {
 const PAD_ACTIONS := {
 	"p1_up": "w", "p1_down": "s", "p1_left": "a", "p1_right": "d", "p1_crouch": "c",
 	"p2_up": "up", "p2_down": "down", "p2_left": "left", "p2_right": "right", "p2_crouch": "minus",
+	"p1_push": "e", "p2_push": "period",
 }
 ## A fixed handful of room lights, handed to the lit rooms nearest the camera.
 const ROOM_LIGHT_POOL := 4
@@ -111,6 +113,8 @@ var thieves: Array[Thief] = []
 var guards: Array[Guard] = []
 var phase := "title"
 var stride := [0.0, 0.0]
+## the push key held last frame, per thief: one push per press
+var push_held := [false, false]
 var last_think := 0.0
 var last_spread := 0.0
 var think_tick := 0
@@ -140,6 +144,16 @@ var preview_spot: OmniLight3D
 
 
 func _ready() -> void:
+	# Pushing things over on purpose: X on each player's pad (the devices are
+	# set by Settings.apply_pads, like the rest of p1_*/p2_*).
+	for player in ["p1", "p2"]:
+		var action: String = player + "_push"
+		if not InputMap.has_action(action):
+			InputMap.add_action(action)
+			var e := InputEventJoypadButton.new()
+			e.button_index = JOY_BUTTON_X
+			e.device = 0 if player == "p1" else 1
+			InputMap.action_add_event(action, e)
 	# The map: Y or Select/Back on any pad (M on the keyboard, by hand).
 	if not InputMap.has_action("map"):
 		InputMap.add_action("map")
@@ -609,6 +623,8 @@ func _show_mission() -> void:
 	var lines := [Heist.first_upper(Heist.loot.name)]
 	if Heist.team:
 		lines.append("Uno sujeta el cuadro de la alarma (naranja) mientras el otro abre la vitrina")
+	if level <= 2:
+		lines.append("Papeleras, bustos y paneles: tíralos con E (X en el mando) y los guardias irán a ver el ruido")
 	elif level == 1:
 		lines.append("Quieto %s junto a la pieza · la alarma atrae guardias · sal por la puerta verde" % _seconds(Heist.loot.seconds))
 	var items: Array = [{"title": "EL PLAN", "size": 52}]
@@ -788,6 +804,7 @@ func _new_round(n: int) -> void:
 			break
 	Props.place(Story.seed_for(n) if mode == "story" else randi(), [Heist.exit, Heist.panel, stand, Heist.start])
 	stride = [0.0, 0.0]
+	push_held = [false, false]
 	last_think = 0.0
 	think_tick = 0
 	log_lines.clear()
@@ -808,7 +825,7 @@ func _pressed_keys() -> Dictionary:
 	# Keyboard and pad: the whole keyboard is P1's (arrows and WASD alike,
 	# C, Shift, - or / to crouch), so the arrows never move P2.
 	var mixed := thieves.size() == 2 and input_mode == "mixed"
-	var as_p1 := {"up": "w", "down": "s", "left": "a", "right": "d", "shift": "c", "minus": "c", "slash": "c"}
+	var as_p1 := {"up": "w", "down": "s", "left": "a", "right": "d", "shift": "c", "minus": "c", "slash": "c", "period": "e"}
 	for k in KEYS:
 		if Input.is_physical_key_pressed(k):
 			var name: String = KEYS[k]
@@ -874,6 +891,18 @@ func _music_mood() -> void:
 	sfx.mood(tension, 0.8 if in_game else 0.5)
 
 
+## "E: TIRAR LA PAPELERA" when a thief has something within reach.
+func _push_hint() -> String:
+	if phase != "playing":
+		return ""
+	for i in thieves.size():
+		var p := Props.within_reach(thieves[i])
+		if p:
+			var key := "E" if i == 0 else "."
+			return "%s / X: TIRAR %s" % [key, (Props.NAMES[p.kind] as String).to_upper()]
+	return ""
+
+
 ## Out comes the map, or away it goes.
 func _toggle_map() -> void:
 	map_open = not map_open
@@ -931,6 +960,16 @@ func _tick(dt: float) -> void:
 
 	# Walking into things: over they go, with a crash.
 	Props.step(thieves, now, noises)
+	# On purpose: E (P2: . ), or X on the pad, next to one — over it goes,
+	# and the guards come to see.
+	for i in thieves.size():
+		var t := thieves[i]
+		var pressed: bool = keys.has("e") or (thieves.size() == 1 and keys.has("period")) if i == 0 else keys.has("period")
+		if pressed and not push_held[i]:
+			var target := Props.within_reach(t)
+			if target:
+				Props.push(target, t, now, noises)
+		push_held[i] = pressed
 	for p in Props.knocked:
 		props_view.knock(p)
 		sfx.at(p.kind, _to_world(p.x, p.y), 1.0)
@@ -1759,6 +1798,7 @@ func _draw_hud() -> void:
 		"name": Heist.loot.name,
 		"waiting": Heist.waiting,
 		"panel": Heist.panel_by != "" and not Heist.taken,
+		"hint": _push_hint(),
 	}
 	if not hud.menu_open():
 		hud.update_play("   ".join(parts), COLOURS.alert if any_seen else COLOURS.safe, log_lines, job, angle, COLOURS.switch_on if Heist.carrier != "" else Color(Heist.loot.colour))

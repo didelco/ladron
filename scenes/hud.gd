@@ -76,6 +76,7 @@ const ARCADE := preload("res://assets/fonts/PressStart2P-Regular.ttf")
 var _status: Label
 var _log: Label
 var _job: Label
+var _help: Label
 var _bar_back: ColorRect
 var _bar: ColorRect
 var _arrow: Label
@@ -169,7 +170,7 @@ func _ready() -> void:
 	_map_picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(_map_picture)
 	var legend := _label(13, Color("#e8d6b4"), column)
-	legend.text = "● tú   ◆ la pieza   ■ salida (verde)   ·   M o Y para guardarlo"
+	legend.text = "● tú   ◆ la pieza   ■ salida (verde)   • cosas que tirar   ·   M o Y para guardarlo"
 	legend.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_map.visible = false
 	_map_stage.process_mode = Node.PROCESS_MODE_DISABLED
@@ -188,7 +189,14 @@ func _ready() -> void:
 	_panel_box = VBoxContainer.new()
 	_panel_box.add_theme_constant_override("separation", 10)
 	centre.add_child(_panel_box)
-	_play = [_status, _log, _job, _bar_back, _bar, _arrow]
+	# The keys worth remembering, small in the corner.
+	_help = _label(12, C.dim, self)
+	_help.text = "P pausa · M mapa · E tirar cosas · C a gatas"
+	_help.anchor_top = 1.0
+	_help.anchor_bottom = 1.0
+	_help.offset_left = 24
+	_help.offset_top = -34
+	_play = [_status, _log, _job, _bar_back, _bar, _arrow, _help]
 
 	# The model's reasoning, for whoever wants to watch it think: a card per
 	# guard with its plan and the probabilities Laya gave each option.
@@ -814,6 +822,9 @@ static func live_map(thieves: Array[Thief], colours: Array) -> Image:
 					if inside and cx + dx >= 0 and cy + dy >= 0 and cx + dx < img.get_width() and cy + dy < img.get_height():
 						img.set_pixel(cx + dx, cy + dy, c)
 	var ink := Color("#1c1210")
+	for p in Props.list:
+		if not p.fallen:
+			dot.call(Vector2(p.x, p.y), Color("#b8483a"), 2, ink, "circle")
 	dot.call(Vector2(Heist.exit.x + 0.5, Heist.exit.y + 0.5), C.green, 4, ink)
 	if Heist.team and not Heist.taken:
 		dot.call(Vector2(Heist.panel.x + 0.5, Heist.panel.y + 0.5), Color("#ff922b"), 3, ink)
@@ -845,6 +856,9 @@ static func mission_map(guards: Array[Guard]) -> ImageTexture:
 		img.fill_rect(Rect2i(t.x * s + s / 2 - 1, t.y * s + s / 2 - 1, 2, 2), Color("#e8ddc0"))
 	var mark := func(t: Vector2i, colour: Color, r: int) -> void:
 		img.fill_rect(Rect2i(t.x * s + s / 2 - r, t.y * s + s / 2 - r, r * 2, r * 2), colour)
+	# Things to knock over, for planning a distraction.
+	for p in Props.list:
+		mark.call(p.tile, Color("#c9a15a"), 2)
 	# Guards first: the way in, the piece and the door go on top.
 	for g in guards:
 		mark.call(Vector2i(int(g.x), int(g.y)), C.alert, 3)
@@ -886,6 +900,8 @@ func update_play(status: String, status_colour: Color, log_lines: Array[String],
 		_job.text = "%s ESTÁ EN EL SUELO" % String(job.name).to_upper()
 	elif job.get("panel", false):
 		_job.text = "ALARMA DESCONECTADA · ¡A LA VITRINA!"
+	elif job.get("hint", "") != "":
+		_job.text = job.hint
 	else:
 		_job.text = ""
 	_job.size = Vector2(view.x, 30)

@@ -61,7 +61,9 @@ chocas con uno se cae (con física, `scenes/props_view.gd`) y hace ruido, y un g
 tirado sube su alarma y va a mirar.
 
 Durante la partida, `M` (o Y / Select en el mando) saca el mapa: el plano, dónde estás, la pieza
-y la salida, sin los guardias. Mientras lo miras no te mueves. `N` silencia el sonido. Con dos
+y la salida, sin los guardias. Mientras lo miras no te mueves. `N` silencia el sonido. `P` (o Start) pausa. Junto a una papelera, un busto o un panel, `E`
+(`.` para el segundo jugador con teclado, X en el mando) lo tira: hace ruido y los guardias van a
+ver, lo que sirve para despistarlos. Con dos
 ladrones se elige cómo se juega: los dos con teclado, teclado y mando, o un mando cada uno. En
 SETTINGS → CONTROLES: vibración y su fuerza, zona muerta del stick e intercambiar los mandos.
 

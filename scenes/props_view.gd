@@ -10,8 +10,10 @@ extends Node3D
 ## nothing about where the pieces end up. The walls and cases near each
 ## prop get simple colliders so the pieces stop against them.
 
-const METAL := Color("#59606e")
-const METAL_DARK := Color("#3a3f4a")
+## Drawn this much bigger than life, to read from the camera up high.
+const K := 1.35
+const METAL := Color("#b8483a")
+const METAL_DARK := Color("#6e2a22")
 const PAPER := Color("#f1ecdc")
 const MARBLE := Color("#ddd6c6")
 const MARBLE_DARK := Color("#a89f8c")
@@ -26,6 +28,7 @@ func build() -> void:
 		var node := Node3D.new()
 		node.position = MuseumView.to_world(p.x, p.y)
 		node.rotation.y = atan2(-p.face.x, -p.face.y)
+		node.scale = Vector3.ONE * K
 		add_child(node)
 		match p.kind:
 			"bin": _bin(node)
@@ -44,22 +47,29 @@ func knock(p: Props.Prop) -> void:
 	_standing.erase(p.id)
 	var at := node.position
 	var yaw := node.rotation.y
+	# Bodies are never scaled (physics does not like it): their shapes and
+	# offsets are multiplied by K, and the models hang from a scaled child.
+	var look := func(body: Node3D) -> Node3D:
+		var l := Node3D.new()
+		l.scale = Vector3.ONE * K
+		body.add_child(l)
+		return l
 	node.queue_free()
 	var push := Vector3(cos(p.fall_dir), 0, sin(p.fall_dir))
 	Fx.puff(self, at, p.kind == "bust")
 	match p.kind:
 		"bin":
-			var body := _body(at + Vector3(0, 0.21, 0), yaw, 1.2)
-			_bin(body, -0.21)
+			var body := _body(at + Vector3(0, 0.21 * K, 0), yaw, 1.2)
+			_bin(look.call(body), -0.21)
 			var shape := CylinderShape3D.new()
-			shape.radius = 0.16
-			shape.height = 0.42
+			shape.radius = 0.16 * K
+			shape.height = 0.42 * K
 			_shape(body, shape, Vector3.ZERO)
-			body.apply_impulse(push * 1.1, Vector3(0, 0.18, 0))
+			body.apply_impulse(push * 1.3, Vector3(0, 0.18 * K, 0))
 			# The papers: sheets that drift down, and a few screwed-up balls.
 			for i in 7:
 				var sheet := i < 4
-				var b := _body(at + Vector3(randf_range(-0.05, 0.05), 0.4, randf_range(-0.05, 0.05)), randf() * TAU, 0.05)
+				var b := _body(at + Vector3(randf_range(-0.05, 0.05), 0.4 * K, randf_range(-0.05, 0.05)), randf() * TAU, 0.05)
 				if sheet:
 					_piece(b, MuseumView._box(Vector3(0.15, 0.004, 0.2)), PAPER.darkened(randf() * 0.15), Vector3.ZERO)
 					var box := BoxShape3D.new()
@@ -82,32 +92,32 @@ func knock(p: Props.Prop) -> void:
 				b.apply_impulse(spread * randf_range(0.015, 0.035) + Vector3(0, 0.012, 0))
 				b.angular_velocity = Vector3(randf() - 0.5, randf() - 0.5, randf() - 0.5) * 4.0
 		"bust":
-			var column := _body(at + Vector3(0, 0.36, 0), yaw, 3.0)
-			_pedestal(column, -0.36)
+			var column := _body(at + Vector3(0, 0.36 * K, 0), yaw, 3.0)
+			_pedestal(look.call(column), -0.36)
 			var box := BoxShape3D.new()
-			box.size = Vector3(0.26, 0.72, 0.26)
+			box.size = Vector3(0.26, 0.72, 0.26) * K
 			_shape(column, box, Vector3.ZERO)
-			column.apply_impulse(push * 1.6, Vector3(0, 0.3, 0))
-			var bust := _body(at + Vector3(0, 0.86, 0), yaw, 1.0)
-			_bust(bust, -0.14)
+			column.apply_impulse(push * 1.9, Vector3(0, 0.3 * K, 0))
+			var bust := _body(at + Vector3(0, 0.86 * K, 0), yaw, 1.0)
+			_bust(look.call(bust), -0.14)
 			var sphere := SphereShape3D.new()
-			sphere.radius = 0.13
+			sphere.radius = 0.13 * K
 			_shape(bust, sphere, Vector3.ZERO)
 			bust.apply_impulse(push * 0.9 + Vector3(0, 0.3, 0))
 			bust.angular_velocity = push.cross(Vector3.UP) * -5.0
 		_:
-			var stand := _body(at + Vector3(0, 0.5, 0), yaw, 1.5)
-			_panel(stand, p.id, -0.5)
+			var stand := _body(at + Vector3(0, 0.5 * K, 0), yaw, 1.5)
+			_panel(look.call(stand), p.id, -0.5)
 			var post := BoxShape3D.new()
-			post.size = Vector3(0.06, 0.9, 0.06)
-			_shape(stand, post, Vector3(0, -0.05, 0))
+			post.size = Vector3(0.06, 0.9, 0.06) * K
+			_shape(stand, post, Vector3(0, -0.05, 0) * K)
 			var board := BoxShape3D.new()
-			board.size = Vector3(0.5, 0.36, 0.05)
-			_shape(stand, board, Vector3(0, 0.3, 0.02))
+			board.size = Vector3(0.5, 0.36, 0.05) * K
+			_shape(stand, board, Vector3(0, 0.3, 0.02) * K)
 			var foot := BoxShape3D.new()
-			foot.size = Vector3(0.34, 0.04, 0.26)
-			_shape(stand, foot, Vector3(0, -0.48, 0))
-			stand.apply_impulse(push * 1.0, Vector3(0, 0.4, 0))
+			foot.size = Vector3(0.34, 0.04, 0.26) * K
+			_shape(stand, foot, Vector3(0, -0.48, 0) * K)
+			stand.apply_impulse(push * 1.2, Vector3(0, 0.4 * K, 0))
 
 
 # --- Models: drawn with their foot at y = base ---------------------------------------

@@ -87,7 +87,7 @@ static func apply_pads(deadzone: int, swap: bool, input_mode := "pads") -> void:
 		var device := (0 if player == "p1" else 1) if not swap else (1 if player == "p1" else 0)
 		if input_mode == "mixed":
 			device = 0 if player == "p2" else 15
-		for dir in ["up", "down", "left", "right", "crouch"]:
+		for dir in ["up", "down", "left", "right", "crouch", "push"]:
 			var action := "%s_%s" % [player, dir]
 			if not InputMap.has_action(action):
 				continue

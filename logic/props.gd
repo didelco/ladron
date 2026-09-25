@@ -9,6 +9,9 @@ extends RefCounted
 ## a crash every guard in earshot hears. And once down it stays down: a guard
 ## who later sees it lying there knows something is wrong, raises the alarm
 ## a notch and goes to look.
+##
+## Which is also the trick: push one over on purpose (Props.push) and the
+## guards come running to it — away from where you are going.
 
 const KINDS := ["bin", "bust", "panel"]
 ## How the kinds are shared out: mostly bins.
@@ -16,7 +19,9 @@ const WEIGHTS := [0.45, 0.3, 0.25]
 ## What a guard calls it when it sees it on the floor.
 const NAMES := {"bin": "la papelera", "bust": "el busto", "panel": "el panel"}
 ## Closer than this to one, moving, and over it goes.
-const TOUCH := 0.42
+const TOUCH := 0.45
+## Close enough to push one over on purpose.
+const REACH := 1.1
 
 
 class Prop:
@@ -63,14 +68,28 @@ static func place(seed: int, avoid: Array[Vector2i]) -> void:
 		for d in Museum.DIRS:
 			if wall.call(d):
 				faces.append(d)
+		# Out in the open, in the middle of a gallery: right in the way.
+		if faces.is_empty():
+			var clear := true
+			for dy in range(-1, 2):
+				for dx in range(-1, 2):
+					if Museum.tile_at(t.x + dx + 0.5, t.y + dy + 0.5) != Tiles.FLOOR:
+						clear = false
+			if clear and Museum.room_at(t.x + 0.5, t.y + 0.5) != null:
+				spots.append([t, Vector2i.ZERO])
+			continue
 		if faces.size() != 1:
+			continue
+		# Never with the wall between it and the camera (to the south): it
+		# would stand behind it, out of sight.
+		if faces[0] == Vector2i(0, 1):
 			continue
 		# Nor right beside a gap in its own wall.
 		var along := Vector2i(faces[0].y, faces[0].x)
 		if not (wall.call(faces[0] + along) and wall.call(faces[0] - along)):
 			continue
 		spots.append([t, faces[0]])
-	var wanted := maxi(2, Museum.open_tiles.size() / 55)
+	var wanted := maxi(3, Museum.open_tiles.size() / 40)
 	var taken := {}
 	var tries := 0
 	while list.size() < wanted and tries < 400 and not spots.is_empty():
@@ -86,9 +105,10 @@ static func place(seed: int, avoid: Array[Vector2i]) -> void:
 		var roll := rand.next()
 		p.kind = KINDS[0] if roll < WEIGHTS[0] else (KINDS[1] if roll < WEIGHTS[0] + WEIGHTS[1] else KINDS[2])
 		p.tile = t
-		p.face = s[1]
-		p.x = t.x + 0.5 + p.face.x * 0.22
-		p.y = t.y + 0.5 + p.face.y * 0.22
+		p.face = s[1] if s[1] != Vector2i.ZERO else Vector2i(0, -1)
+		var pull := 0.22 if s[1] != Vector2i.ZERO else 0.0
+		p.x = t.x + 0.5 + p.face.x * pull
+		p.y = t.y + 0.5 + p.face.y * pull
 		list.append(p)
 
 
@@ -111,6 +131,31 @@ static func step(thieves: Array[Thief], now: float, noises: Array[SoundEvent]) -
 			knocked.append(p)
 			noises.append(SoundEvent.make(p.x, p.y, p.kind))
 			break
+
+
+## The standing one within reach of this thief, nearest first, or null.
+static func within_reach(t: Thief) -> Prop:
+	var best: Prop = null
+	var best_d := REACH
+	for p in list:
+		if p.fallen or t.out:
+			continue
+		var d := Museum.dist(t.x, t.y, p.x, p.y)
+		if d <= best_d:
+			best_d = d
+			best = p
+	return best
+
+
+## Push it over on purpose: away from the thief, with the same crash.
+static func push(p: Prop, t: Thief, now: float, noises: Array[SoundEvent]) -> void:
+	if p.fallen:
+		return
+	p.fallen = true
+	p.fallen_at = now
+	p.fall_dir = atan2(p.y - t.y, p.x - t.x)
+	knocked.append(p)
+	noises.append(SoundEvent.make(p.x, p.y, p.kind))
 
 
 ## A fallen one this guard sees for the first time, if any.
