@@ -9,3 +9,4 @@ brain/.venv/
 brain/__pycache__/
 
 .DS_Store
+/.claude/
