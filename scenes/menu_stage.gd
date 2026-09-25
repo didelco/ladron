@@ -585,6 +585,12 @@ func _figure(what: String, colour: Color, accent: Color, scale_by: float) -> Fig
 	var f := Figure.make(what, colour, accent)
 	f.set_meta("scale", scale_by)
 	f.scale = Vector3.ONE * scale_by
+	# The rim the game gives figures against its dark rooms washes them out
+	# under the dioramas' daylight: toned down here.
+	for m in f.find_children("*", "MeshInstance3D", true, false):
+		var mat := (m as MeshInstance3D).material_override as StandardMaterial3D
+		if mat and mat.rim_enabled:
+			mat.rim = 0.2
 	_root.add_child(f)
 	_figures.append(f)
 	return f

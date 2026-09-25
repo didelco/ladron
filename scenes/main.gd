@@ -176,9 +176,9 @@ func _show_title() -> void:
 	hud.show_menu([
 		{"title": "¡APAGA LA LUZ\nQUE TE PILLO!", "size": 64},
 		{"cards": [
-			{"title": "HISTORIA", "text": "Diez noches con la Banda del Calcetín", "stage": MenuStage.make("story"), "call": _show_story_menu, "colour": Hud.C.safe},
+			{"title": "HISTORIA", "text": "Diez noches de aventura", "stage": MenuStage.make("story"), "call": _show_story_menu, "colour": Hud.C.safe},
 			{"title": "GENERATIVO", "text": "Un museo nuevo cada vez", "stage": MenuStage.make("generative"), "call": _show_generative_menu, "colour": Hud.C.gold},
-		], "width": 340},
+		], "width": 200},
 		{"buttons": [{"text": "✦ SETTINGS", "call": _show_settings.bind("title"), "colour": Hud.C.dim}]},
 	])
 
@@ -197,7 +197,7 @@ func _show_story_menu() -> void:
 		{"title": "MODO HISTORIA", "size": 44},
 		{"text": "La Banda del Calcetín contra el Barón Von Bostezo", "colour": Hud.C.gold, "size": 17},
 		{"nights": nights},
-		{"picture": preview.get_texture(), "smooth": true, "height": 130},
+		{"picture": preview.get_texture(), "smooth": true, "height": 110},
 		{"text": "NOCHE %d · %s" % [story_pick, loot.name.to_upper()], "colour": Color(loot.colour), "size": 17, "id": "night"},
 		{"cards": [
 			{"title": "1 LADRÓN", "text": "Tú solo contra el museo", "stage": MenuStage.make("players:1"), "call": _start.bind("story", 1), "colour": COLOURS.thief},
@@ -225,19 +225,19 @@ func _show_generative_menu() -> void:
 	var levels: Array = []
 	for k in ["easy", "medium", "hard"]:
 		levels.append({"title": DIFFICULTY_NAMES[k], "stage": MenuStage.make("guards:" + k), "call": _pick_difficulty.bind(k),
-			"colour": {"easy": Hud.C.green, "medium": Hud.C.gold, "hard": Hud.C.alert}[k], "selected": Sim.difficulty == k, "focus": Sim.difficulty == k, "title_size": 14})
+			"colour": {"easy": Hud.C.green, "medium": Hud.C.gold, "hard": Hud.C.alert}[k], "selected": Sim.difficulty == k, "focus": Sim.difficulty == k, "title_size": 12})
 	var sizes: Array = []
 	for k in ["small", "medium", "large"]:
 		sizes.append({"title": SIZE_NAMES[k], "stage": MenuStage.make("museum:" + k), "call": _pick_size.bind(k),
-			"colour": Hud.C.safe, "selected": size == k, "title_size": 14})
+			"colour": Hud.C.safe, "selected": size == k, "title_size": 12})
 	hud.show_menu([
 		{"title": "MODO GENERATIVO", "size": 40},
-		{"cards": levels, "width": 180},
-		{"cards": sizes, "width": 180},
+		{"cards": levels, "width": 150},
+		{"cards": sizes, "width": 150},
 		{"cards": [
-			{"title": "▶ 1 LADRÓN", "stage": MenuStage.make("players:1"), "call": _start.bind("generative", 1), "colour": COLOURS.thief, "title_size": 14},
-			{"title": "▶ 2 LADRONES", "stage": MenuStage.make("players:2"), "call": _start.bind("generative", 2), "colour": COLOURS.thief2, "title_size": 14},
-		], "width": 240},
+			{"title": "▶ 1 LADRÓN", "stage": MenuStage.make("players:1"), "call": _start.bind("generative", 1), "colour": COLOURS.thief, "title_size": 12},
+			{"title": "▶ 2 LADRONES", "stage": MenuStage.make("players:2"), "call": _start.bind("generative", 2), "colour": COLOURS.thief2, "title_size": 12},
+		], "width": 170},
 		{"buttons": [{"text": "◂ VOLVER", "call": _show_title, "colour": Hud.C.dim}], "row": true},
 	])
 
@@ -522,10 +522,10 @@ func _show_end() -> void:
 			if level >= Story.count():
 				_show_ending()
 				return
-	var picture: Dictionary = {"stage": MenuStage.make("guards:hard"), "height": 170}
+	var picture: Dictionary = {"stage": MenuStage.make("guards:hard"), "height": 140}
 	if phase == "escaped":
 		_build_preview()
-		picture = {"picture": preview.get_texture(), "smooth": true, "height": 170}
+		picture = {"picture": preview.get_texture(), "smooth": true, "height": 140}
 	hud.show_menu([
 		{"title": title, "colour": colour, "size": 52},
 		picture,

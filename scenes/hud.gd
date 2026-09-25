@@ -139,7 +139,7 @@ func _ready() -> void:
 	centre.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_panel.add_child(centre)
 	_panel_box = VBoxContainer.new()
-	_panel_box.add_theme_constant_override("separation", 14)
+	_panel_box.add_theme_constant_override("separation", 10)
 	centre.add_child(_panel_box)
 	_play = [_status, _log, _job, _bar_back, _bar, _arrow]
 
@@ -201,7 +201,7 @@ func show_menu(items: Array) -> void:
 	for item in items:
 		if item.has("title"):
 			# Pixel faces run wide: the arcade title at about two thirds the size.
-			var t := _label(int(item.get("size", 56) * 0.66), item.get("colour", C.gold), _panel_box, true)
+			var t := _label(int(item.get("size", 56) * 0.55), item.get("colour", C.gold), _panel_box, true)
 			t.text = item.title
 			t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			t.add_theme_constant_override("outline_size", 14)
@@ -211,15 +211,19 @@ func show_menu(items: Array) -> void:
 			t.add_theme_constant_override("shadow_offset_y", 7)
 			t.resized.connect(func() -> void: t.pivot_offset = t.size / 2)
 			_titles.append(t)
+			# Room for it to bob without brushing what comes next.
+			var gap := Control.new()
+			gap.custom_minimum_size = Vector2(0, 6)
+			_panel_box.add_child(gap)
 		elif item.has("text"):
-			var l := _label(item.get("size", 20), item.get("colour", C.text), _panel_box)
+			var l := _label(int(item.get("size", 20) * 0.85), item.get("colour", C.text), _panel_box)
 			l.text = item.text
 			if item.has("id"):
 				_named[item.id] = l
 			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			if item.get("wrap", false):
 				l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-				l.custom_minimum_size = Vector2(640, 0)
+				l.custom_minimum_size = Vector2(560, 0)
 		elif item.has("stage"):
 			var stage: MenuStage = item.stage
 			_panel_box.add_child(stage)
@@ -244,7 +248,7 @@ func show_menu(items: Array) -> void:
 		elif item.has("cards"):
 			var row := HBoxContainer.new()
 			row.alignment = BoxContainer.ALIGNMENT_CENTER
-			row.add_theme_constant_override("separation", 22)
+			row.add_theme_constant_override("separation", 16)
 			_panel_box.add_child(row)
 			var line: Array = []
 			for c in item.cards:
@@ -288,7 +292,7 @@ func show_menu(items: Array) -> void:
 			for b in item.buttons:
 				var button := _button(b)
 				if not b.has("icon"):
-					button.custom_minimum_size = Vector2(300 if item.get("row", false) else 520, 54)
+					button.custom_minimum_size = Vector2(240 if item.get("row", false) else 400, 42)
 				box.add_child(button)
 				if item.get("row", false):
 					line.append(button)
@@ -414,11 +418,11 @@ func _button(b: Dictionary) -> Button:
 	button.text = b.get("text", "")
 	button.focus_mode = Control.FOCUS_ALL
 	button.add_theme_font_override("font", ARCADE)
-	button.add_theme_font_size_override("font_size", 15)
+	button.add_theme_font_size_override("font_size", 12)
 	var colour: Color = b.get("colour", C.safe)
 	for state in ["normal", "hover", "pressed", "focus"]:
-		var st := _frame(colour, state != "normal")
-		st.set_content_margin_all(16)
+		var st := _frame(colour, state != "normal", false, 22)
+		st.set_content_margin_all(12)
 		st.content_margin_left = 28
 		st.content_margin_right = 28
 		button.add_theme_stylebox_override(state, st)
@@ -553,20 +557,20 @@ func _card(c: Dictionary, width: int) -> Button:
 		_round_corners(r, r.custom_minimum_size, 16.0)
 		height += r.custom_minimum_size.y
 		box.add_child(r)
-	var t := _label(c.get("title_size", 16), INK, box, true)
+	var t := _label(c.get("title_size", 13), INK, box, true)
 	t.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
 	t.text = c.title
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	height += 30
+	height += 24
 	if c.has("text"):
-		var l := _label(15, INK_SOFT, box)
+		var l := _label(12, INK_SOFT, box)
 		l.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
 		l.text = c.text
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		l.custom_minimum_size = Vector2(width - 24, 0)
-		height += 44
-	b.custom_minimum_size = Vector2(width, height + 40)
+		height += 34
+	b.custom_minimum_size = Vector2(width, height + 34)
 	b.pressed.connect(c.call)
 	_lift(b)
 	return b
@@ -580,8 +584,8 @@ func _night(n: Dictionary) -> Button:
 	b.text = "?" if n.locked else str(n.n)
 	b.disabled = n.locked
 	b.add_theme_font_override("font", ARCADE)
-	b.add_theme_font_size_override("font_size", 14)
-	b.custom_minimum_size = Vector2(54, 54)
+	b.add_theme_font_size_override("font_size", 12)
+	b.custom_minimum_size = Vector2(42, 42)
 	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	b.set_meta("colour", n.colour)
 	b.set_meta("locked", n.locked)
@@ -609,7 +613,7 @@ func _night_look(b: Button, picked: bool) -> void:
 	var locked: bool = b.get_meta("locked")
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
 		var st := StyleBoxFlat.new()
-		st.set_corner_radius_all(27)
+		st.set_corner_radius_all(21)
 		st.anti_aliasing = true
 		st.shadow_size = 1
 		st.shadow_offset = Vector2(0, 5)
