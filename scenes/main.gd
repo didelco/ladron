@@ -44,6 +44,13 @@ const KEYS := {
 	KEY_UP: "up", KEY_DOWN: "down", KEY_LEFT: "left", KEY_RIGHT: "right",
 	KEY_C: "c", KEY_SHIFT: "shift", KEY_MINUS: "minus", KEY_SLASH: "slash",
 }
+## Gamepads come through the InputMap (project.godot: pad 0 is p1_*, pad 1 is
+## p2_*) and are read as that player's keys, so Sim only ever sees key names.
+## The keyboard stays on KEYS: physical keys, exactly as before.
+const PAD_ACTIONS := {
+	"p1_up": "w", "p1_down": "s", "p1_left": "a", "p1_right": "d", "p1_crouch": "c",
+	"p2_up": "up", "p2_down": "down", "p2_left": "left", "p2_right": "right", "p2_crouch": "minus",
+}
 ## A fixed handful of room lights, handed to the lit rooms nearest the camera.
 const ROOM_LIGHT_POOL := 4
 const CONE_RAYS := 40
@@ -439,9 +446,11 @@ func _seconds(s: float) -> String:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not (event is InputEventKey and event.pressed and not event.echo):
-		return
-	var key: int = event.keycode
+	var key := _pad_as_key(event)
+	if key == KEY_NONE:
+		if not (event is InputEventKey and event.pressed and not event.echo):
+			return
+		key = event.keycode
 	# Menus are buttons (mouse, arrows and Enter); these are the shortcuts.
 	if key == KEY_M:
 		_set_sound(not sound_on)
@@ -484,6 +493,20 @@ func _unhandled_input(event: InputEvent) -> void:
 				_again()
 			elif key == KEY_ESCAPE:
 				_show_title()
+
+
+## A pad button as the key it stands for, so the shortcuts above are written
+## once. Start pauses and resumes (P) and elsewhere moves on (Space); B backs
+## out (Escape), except while playing, where it crouches. A is ui_accept and
+## presses the focused button by itself.
+func _pad_as_key(event: InputEvent) -> Key:
+	if not (event is InputEventJoypadButton and event.pressed):
+		return KEY_NONE
+	if event.is_action("pause"):
+		return KEY_P if phase in ["playing", "paused"] else KEY_SPACE
+	if event.is_action("ui_cancel") and phase != "playing":
+		return KEY_ESCAPE
+	return KEY_NONE
 
 
 ## 3, 2, 1, GO! over the museum, everyone frozen in place until it is over.
@@ -539,12 +562,46 @@ func _new_round(n: int) -> void:
 	_snap_camera()
 
 
+## The physics frame _pressed_keys last ran on: a gap means play (re)started.
+var pad_frame := -1
+## Pad crouch actions held over from a menu, ignored until released.
+var pad_stale := {}
+
+
 func _pressed_keys() -> Dictionary:
 	var keys := {}
 	for k in KEYS:
 		if Input.is_physical_key_pressed(k):
 			keys[KEYS[k]] = true
+	# A and B also press and back out of menus: one still held from there when
+	# the play starts (or resumes) is not a crouch until it is let go.
+	var resumed := Engine.get_physics_frames() != pad_frame + 1
+	pad_frame = Engine.get_physics_frames()
+	for a in PAD_ACTIONS:
+		var held := Input.is_action_pressed(a)
+		if a.ends_with("crouch"):
+			if held and resumed:
+				pad_stale[a] = true
+			elif not held:
+				pad_stale.erase(a)
+		if held and not pad_stale.has(a):
+			keys[PAD_ACTIONS[a]] = true
+	# On your own either pad is yours, and "solo" crouches on C, not on -.
+	if thieves.size() == 1 and Input.is_action_pressed("p2_crouch") and not pad_stale.has("p2_crouch"):
+		keys["c"] = true
 	return keys
+
+
+## Shakes the pads: every one, or with `at` only the pad of the thief nearest
+## to it (pad 0 is P1, pad 1 is P2). On your own any pad may be the one in
+## your hands, so all of them shake.
+func _rumble(weak: float, strong: float, secs: float, at := Vector2.INF) -> void:
+	var who := -1
+	if thieves.size() == 2 and at != Vector2.INF:
+		who = 0 if Museum.dist(thieves[0].x, thieves[0].y, at.x, at.y) <= Museum.dist(thieves[1].x, thieves[1].y, at.x, at.y) else 1
+	for pad in Input.get_connected_joypads():
+		if who < 0 or pad == who:
+			Input.start_joy_vibration(pad, weak, strong, secs)
 
 
 # --- The loop ------------------------------------------------------------------------
@@ -601,6 +658,7 @@ func _tick(dt: float) -> void:
 	for p in Props.knocked:
 		props_view.knock(p)
 		sfx.at(p.kind, _to_world(p.x, p.y), 1.0)
+		_rumble(0.5, 0.0, 0.15, Vector2(p.x, p.y))
 		_log("¡Has tirado %s!" % Props.NAMES[p.kind])
 
 	# The job: working the case (and its alarm), carrying, dropping, the door.
@@ -629,6 +687,7 @@ func _tick(dt: float) -> void:
 		sfx.at("shout", _to_world(s.x, s.y), 1.0 if s.first else 0.5)
 		if s.first:
 			sfx.ui("sting", 0.7)
+			_rumble(0.4, 0.8, 0.4)
 			var heard_by: Array = s.heard_by
 			var heard: String = ("%s lo ha oído y viene" % " y ".join(heard_by)) if not heard_by.is_empty() else "nadie más lo ha oído"
 			var ear := thieves[0]
