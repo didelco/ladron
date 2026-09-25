@@ -40,6 +40,7 @@ const BACKDROP := {
 	"story": Color("#15112a"),
 	"generative": Color("#1b1526"),
 	"players": Color("#221510"),
+	"seat": Color("#221510"),
 	"guards:easy": Color("#161b24"),
 	"guards:medium": Color("#221a12"),
 	"guards:hard": Color("#2a1016"),
@@ -132,6 +133,7 @@ func _setup() -> void:
 		"story": _story()
 		"generative": _generative()
 		"players": _players(int(arg))
+		"seat": _players(0, int(arg))
 		"guards": _guards(arg)
 		"museum": _museum(arg)
 	_pose(0.0)
@@ -236,7 +238,7 @@ func _build_plan(seed: int) -> void:
 
 
 ## One thief or two on a podium, under confetti colours.
-func _players(n: int) -> void:
+func _players(n: int, seat := 0) -> void:
 	_frame(2.5, 0.85)
 	var tiers := [[1.25, 0.26, WOOD], [1.05, 0.18, VELVET], [0.9, 0.08, GOLD]]
 	var y := 0.0
@@ -268,6 +270,11 @@ func _players(n: int) -> void:
 	spot.light_color = Color("#fff1c8")
 	spot.shadow_enabled = true
 	_root.add_child(spot)
+	# A seat on the player-select screen: that player's thief alone, in the
+	# colour it always has.
+	if seat == 2:
+		_figure("thief", Color("#f0a13a"), Color("#8a5410"), 1.0)
+		return
 	_figure("thief", Color("#2ec4a6"), Color("#12705f"), 1.0)
 	if n == 2:
 		_figure("thief", Color("#f0a13a"), Color("#8a5410"), 1.0)
@@ -354,7 +361,7 @@ func _pose(dt: float) -> void:
 	match kind:
 		"story":
 			_figures[0].set_state(Vector3(-0.35, 0, 1.0), PI / 4, 0.0, dt)
-		"players":
+		"players", "seat":
 			for i in _figures.size():
 				var x := 0.0 if _figures.size() == 1 else (i - 0.5) * 0.75
 				_figures[i].set_state(Vector3(x, 0.52, -x * 0.3), PI / 4, 0.0, dt)

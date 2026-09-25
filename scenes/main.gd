@@ -45,14 +45,6 @@ const KEYS := {
 	KEY_C: "c", KEY_SHIFT: "shift", KEY_MINUS: "minus", KEY_SLASH: "slash",
 	KEY_E: "e", KEY_PERIOD: "period",
 }
-## Gamepads come through the InputMap (project.godot: pad 0 is p1_*, pad 1 is
-## p2_*) and are read as that player's keys, so Sim only ever sees key names.
-## The keyboard stays on KEYS: physical keys, exactly as before.
-const PAD_ACTIONS := {
-	"p1_up": "w", "p1_down": "s", "p1_left": "a", "p1_right": "d", "p1_crouch": "c",
-	"p2_up": "up", "p2_down": "down", "p2_left": "left", "p2_right": "right", "p2_crouch": "minus",
-	"p1_push": "e", "p2_push": "period",
-}
 ## A fixed handful of room lights, handed to the lit rooms nearest the camera.
 const ROOM_LIGHT_POOL := 4
 const CONE_RAYS := 40
@@ -103,9 +95,13 @@ var settings_page := ""
 var rumble := true
 var rumble_strength := 100
 var deadzone := 50
-var swap_pads := false
-## how two players share the controls: "keys", "mixed" or "pads"
-var input_mode := "keys"
+## Who plays with what: one entry per thief — "any" (on your own: the whole
+## keyboard and every pad), "kb_left" (WASD side), "kb_right" (arrows side)
+## or "pad:N". Picked on the player-select screen, Mario Kart style.
+var seats: Array[String] = ["any"]
+## the seats taken so far on the player-select screen, and for which mode
+var joining: Array[String] = []
+var join_for := "story"
 ## the map is out: the thieves stand still to read it, the guards do not
 var map_open := false
 var level := 1
@@ -144,16 +140,6 @@ var preview_spot: OmniLight3D
 
 
 func _ready() -> void:
-	# Pushing things over on purpose: X on each player's pad (the devices are
-	# set by Settings.apply_pads, like the rest of p1_*/p2_*).
-	for player in ["p1", "p2"]:
-		var action: String = player + "_push"
-		if not InputMap.has_action(action):
-			InputMap.add_action(action)
-			var e := InputEventJoypadButton.new()
-			e.button_index = JOY_BUTTON_X
-			e.device = 0 if player == "p1" else 1
-			InputMap.action_add_event(action, e)
 	# The map: Y or Select/Back on any pad (M on the keyboard, by hand).
 	if not InputMap.has_action("map"):
 		InputMap.add_action("map")
@@ -174,6 +160,7 @@ func _ready() -> void:
 	add_child(sfx)
 	hud = Hud.new()
 	add_child(hud)
+	hud.ui_sound.connect(func(kind: String) -> void: sfx.ui(kind, 0.6))
 	_load_settings()
 	_build_environment()
 	# A museum behind the title screen, so it is not a black void.
@@ -189,7 +176,7 @@ func _ready() -> void:
 				"generative": _show_generative_menu()
 				"settings": _show_settings("title")
 				"pads": _show_settings("title", "pads")
-				"input": _show_input_pick("generative")
+				"input": _show_join("generative")
 				"end":
 					phase = "caught"
 					_show_end()
@@ -304,13 +291,14 @@ func _pick_size(k: String) -> void:
 
 
 func _start(which: String, n: int, picked := false) -> void:
-	# Two thieves: first, who plays with what.
+	# Two thieves: first, each one says which controls are theirs.
 	if n == 2 and not picked:
-		_show_input_pick(which)
+		_show_join(which)
 		return
 	mode = which
 	players = n
-	_apply_pads()
+	if n == 1:
+		seats = ["any"]
 	if mode == "story":
 		_new_round(story_pick)
 		if story_pick == 1:
@@ -321,34 +309,86 @@ func _start(which: String, n: int, picked := false) -> void:
 	_show_loot()
 
 
-## Two players: both on the keyboard, one on the keyboard and one on a pad,
-## or a pad each.
-func _show_input_pick(which: String) -> void:
-	phase = "input"
-	settings_from = which
-	var pads := Input.get_connected_joypads().size()
+## The keys on each side of a shared keyboard: pressing any of them on the
+## player-select screen takes that side.
+const KB_LEFT := [KEY_W, KEY_A, KEY_S, KEY_D, KEY_C, KEY_E, KEY_Q, KEY_SPACE, KEY_SHIFT, KEY_TAB]
+const KB_RIGHT := [KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_ENTER, KEY_KP_ENTER, KEY_MINUS, KEY_SLASH, KEY_PERIOD, KEY_COMMA]
+
+
+## Player select, like Mario Kart 64: two seats, each taken by whoever
+## presses a button on their pad or a key on their side of the keyboard.
+## P1 is always teal and P2 always orange; the first to press is P1.
+func _show_join(which: String) -> void:
+	phase = "join"
+	join_for = which
+	joining.clear()
+	_draw_join()
+
+
+func _draw_join() -> void:
 	var cards: Array = []
-	for m in [["keys", "2 TECLADO", "P1 WASD · P2 flechas", 0], ["mixed", "TECLADO + MANDO", "P1 teclado · P2 mando", 1], ["pads", "2 MANDOS", "Un mando cada uno", 2]]:
-		var missing: int = m[3] - pads
-		cards.append({"title": m[1], "text": m[2] if missing <= 0 else "Conecta %d mando%s" % [missing, "" if missing == 1 else "s"],
-			"call": _pick_input.bind(which, m[0]), "colour": Hud.C.gold, "selected": input_mode == m[0], "focus": input_mode == m[0], "title_size": 12})
+	for i in 2:
+		var seat: String = joining[i] if i < joining.size() else ""
+		cards.append({"title": "JUGADOR %d" % (i + 1), "text": _seat_label(seat) if seat != "" else "Pulsa un botón",
+			"stage": MenuStage.make("seat:%d" % (i + 1)), "colour": COLOURS.thief if i == 0 else COLOURS.thief2,
+			"selected": seat != "", "static": true, "animate": seat != "", "dim": seat == "", "title_size": 12})
 	hud.show_menu([
-		{"title": "¿CÓMO JUGÁIS?", "size": 40},
-		{"cards": cards, "width": 215},
-		{"text": "Mandos conectados: %d" % pads, "size": 16, "colour": Hud.C.dim},
-		{"buttons": [{"text": "< VOLVER", "call": _show_story_menu if which == "story" else _show_generative_menu, "colour": Hud.C.dim}], "row": true},
+		{"title": "¿QUIÉN JUEGA?", "size": 40},
+		{"cards": cards, "width": 200},
+		{"text": "Cada uno pulsa un botón de su mando, o una tecla de su lado del teclado (WASD o flechas)", "size": 16},
+		{"text": "¡LISTOS!" if joining.size() == 2 else "Esc o B: quitar al último · volver", "size": 16, "colour": Hud.C.gold if joining.size() == 2 else Hud.C.dim},
 	])
 
 
-func _pick_input(which: String, how: String) -> void:
-	input_mode = how
-	_save_settings()
-	_start(which, 2, true)
+func _seat_label(seat: String) -> String:
+	match seat:
+		"kb_left": return "Teclado · WASD"
+		"kb_right": return "Teclado · flechas"
+		"any": return "Teclado y mandos"
+	var pad := int(seat.substr(4))
+	return "Mando %d · %s" % [pad + 1, Input.get_joy_name(pad).left(18)]
 
 
-## The pads' devices for how this game is played: on your own, any pad.
-func _apply_pads() -> void:
-	Settings.apply_pads(deadzone, swap_pads, input_mode if players == 2 else "pads")
+## A press on the player-select screen: it takes a seat, or (Esc, B) frees
+## the last one — or goes back when none is taken.
+func _join_input(event: InputEvent) -> void:
+	var seat := ""
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_ESCAPE:
+			_unjoin()
+			return
+		if event.physical_keycode in KB_LEFT or event.keycode in KB_LEFT:
+			seat = "kb_left"
+		elif event.physical_keycode in KB_RIGHT or event.keycode in KB_RIGHT:
+			seat = "kb_right"
+	elif event is InputEventJoypadButton and event.pressed:
+		if event.button_index == JOY_BUTTON_B:
+			_unjoin()
+			return
+		seat = "pad:%d" % event.device
+	if seat == "" or seat in joining or joining.size() >= 2:
+		return
+	joining.append(seat)
+	sfx.ui("ok")
+	_rumble_pad(seat, 0.3, 0.15)
+	_draw_join()
+	if joining.size() == 2:
+		get_tree().create_timer(0.8).timeout.connect(func() -> void:
+			if phase == "join" and joining.size() == 2:
+				seats.assign(joining)
+				_start(join_for, 2, true))
+
+
+func _unjoin() -> void:
+	sfx.ui("back")
+	if joining.is_empty():
+		if join_for == "story":
+			_show_story_menu()
+		else:
+			_show_generative_menu()
+		return
+	joining.pop_back()
+	_draw_join()
 
 
 func _show_prologue() -> void:
@@ -371,7 +411,7 @@ func _show_settings(from: String, page := "") -> void:
 		"": ["ia"],
 		"sound": ["sound", "music", "music_volume", "effects_volume"],
 		"screen": ["fullscreen", "vsync"],
-		"pads": ["rumble", "rumble_strength", "deadzone", "swap_pads"],
+		"pads": ["rumble", "rumble_strength", "deadzone"],
 	}[page]
 	var rows: Array = []
 	if page == "":
@@ -408,7 +448,6 @@ func _setting_text(key: String) -> String:
 		"rumble": return "VIBRACIÓN: %s" % yes.call(rumble)
 		"rumble_strength": return "FUERZA %s" % _volume_bar(rumble_strength)
 		"deadzone": return "ZONA MUERTA STICK: %d%%" % deadzone
-		"swap_pads": return "INTERCAMBIAR MANDOS: %s" % yes.call(swap_pads)
 	return key
 
 
@@ -431,9 +470,8 @@ func _step_setting(dir: int, key: String) -> String:
 		"fullscreen", "vsync":
 			set(key, not get(key))
 			Settings.apply_display(fullscreen, vsync)
-		"rumble", "swap_pads":
-			set(key, not get(key))
-			_apply_pads()
+		"rumble":
+			rumble = not rumble
 			# Feel it straight away.
 			if key == "rumble" and rumble:
 				_rumble(0.4, 0.4, 0.2)
@@ -442,7 +480,6 @@ func _step_setting(dir: int, key: String) -> String:
 			_rumble(0.4, 0.4, 0.2)
 		"deadzone":
 			deadzone = 20 if dir == 0 and deadzone >= 80 else clampi(deadzone + (10 if dir >= 0 else -10), 20, 80)
-			_apply_pads()
 		"music_volume", "effects_volume":
 			var v: int = get(key)
 			if dir == 0:
@@ -486,9 +523,7 @@ func _load_settings() -> void:
 	rumble = s.rumble
 	rumble_strength = s.rumble_strength
 	deadzone = s.deadzone
-	swap_pads = s.swap_pads
-	input_mode = s.input_mode
-	_apply_pads()
+
 	AudioServer.set_bus_mute(0, not sound_on)
 	sfx.set_music(music_on)
 	sfx.set_volumes(music_volume / 100.0, effects_volume / 100.0)
@@ -502,7 +537,7 @@ func _save_settings() -> void:
 		"fullscreen": fullscreen, "vsync": vsync,
 		"music_volume": music_volume, "effects_volume": effects_volume,
 		"rumble": rumble, "rumble_strength": rumble_strength,
-		"deadzone": deadzone, "swap_pads": swap_pads, "input_mode": input_mode,
+		"deadzone": deadzone,
 	})
 
 
@@ -676,6 +711,11 @@ func _seconds(s: float) -> String:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if phase == "join":
+		_join_input(event)
+		return
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE and phase not in ["playing", "countdown"]:
+		sfx.ui("back")
 	var key := _pad_as_key(event)
 	if key == KEY_NONE:
 		if not (event is InputEventKey and event.pressed and not event.echo):
@@ -815,48 +855,73 @@ var pad_stale := {}
 
 func _pressed_keys() -> Dictionary:
 	var keys := {}
-	# Keyboard and pad: the whole keyboard is P1's (arrows and WASD alike,
-	# C, Shift, - or / to crouch), so the arrows never move P2.
-	var mixed := thieves.size() == 2 and input_mode == "mixed"
-	var as_p1 := {"up": "w", "down": "s", "left": "a", "right": "d", "shift": "c", "minus": "c", "slash": "c", "period": "e"}
-	for k in KEYS:
-		if Input.is_physical_key_pressed(k):
-			var name: String = KEYS[k]
-			keys[as_p1.get(name, name) if mixed else name] = true
 	# A and B also press and back out of menus: one still held from there when
 	# the play starts (or resumes) is not a crouch until it is let go.
 	var resumed := Engine.get_physics_frames() != pad_frame + 1
 	pad_frame = Engine.get_physics_frames()
-	for a in PAD_ACTIONS:
-		var held := Input.is_action_pressed(a)
-		if a.ends_with("crouch"):
-			if held and resumed:
-				pad_stale[a] = true
-			elif not held:
-				pad_stale.erase(a)
-		if held and not pad_stale.has(a):
-			keys[PAD_ACTIONS[a]] = true
-	# On your own either pad is yours, and "solo" crouches on C, not on -.
-	if thieves.size() == 1 and Input.is_action_pressed("p2_crouch") and not pad_stale.has("p2_crouch"):
-		keys["c"] = true
+	# Each thief's controls, as the key names Sim reads for that thief.
+	var names := [["w", "s", "a", "d", "c", "e"], ["up", "down", "left", "right", "minus", "period"]]
+	for i in mini(seats.size(), thieves.size()):
+		var got := _seat_input(seats[i], resumed)
+		for k in 6:
+			if got[k]:
+				keys[names[i][k]] = true
 	return keys
+
+
+## One seat's controls this frame: [up, down, left, right, crouch, push].
+func _seat_input(seat: String, resumed: bool) -> Array:
+	var out := [false, false, false, false, false, false]
+	if seat == "any" or seat == "kb_left":
+		for pair in [[0, KEY_W], [1, KEY_S], [2, KEY_A], [3, KEY_D], [4, KEY_C], [4, KEY_SHIFT], [5, KEY_E]]:
+			if Input.is_physical_key_pressed(pair[1]):
+				out[pair[0]] = true
+	if seat == "any" or seat == "kb_right":
+		for pair in [[0, KEY_UP], [1, KEY_DOWN], [2, KEY_LEFT], [3, KEY_RIGHT], [4, KEY_MINUS], [4, KEY_SLASH], [5, KEY_PERIOD]]:
+			if Input.is_physical_key_pressed(pair[1]):
+				out[pair[0]] = true
+	var pads: Array = Input.get_connected_joypads() if seat == "any" else ([int(seat.substr(4))] if seat.begins_with("pad:") else [])
+	var dz := deadzone / 100.0
+	for pad in pads:
+		var x := Input.get_joy_axis(pad, JOY_AXIS_LEFT_X)
+		var y := Input.get_joy_axis(pad, JOY_AXIS_LEFT_Y)
+		out[0] = out[0] or y < -dz or Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_UP)
+		out[1] = out[1] or y > dz or Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_DOWN)
+		out[2] = out[2] or x < -dz or Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_LEFT)
+		out[3] = out[3] or x > dz or Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_RIGHT)
+		var stale_key := "pad:%d" % pad
+		var crouch := Input.is_joy_button_pressed(pad, JOY_BUTTON_A) or Input.is_joy_button_pressed(pad, JOY_BUTTON_B)
+		if crouch and resumed:
+			pad_stale[stale_key] = true
+		elif not crouch:
+			pad_stale.erase(stale_key)
+		out[4] = out[4] or (crouch and not pad_stale.has(stale_key))
+		out[5] = out[5] or Input.is_joy_button_pressed(pad, JOY_BUTTON_X)
+	return out
 
 
 ## Shakes the pads: every one, or with `at` only the pad of the thief nearest
 ## to it (pad 0 is P1, pad 1 is P2). On your own any pad may be the one in
 ## your hands, so all of them shake.
 func _rumble(weak: float, strong: float, secs: float, at := Vector2.INF) -> void:
-	if not rumble or rumble_strength == 0:
-		return
-	var k := rumble_strength / 100.0
-	weak *= k
-	strong *= k
 	var who := -1
 	if thieves.size() == 2 and at != Vector2.INF:
 		who = 0 if Museum.dist(thieves[0].x, thieves[0].y, at.x, at.y) <= Museum.dist(thieves[1].x, thieves[1].y, at.x, at.y) else 1
-	for pad in Input.get_connected_joypads():
-		if who < 0 or pad == (who if not swap_pads else 1 - who):
-			Input.start_joy_vibration(pad, weak, strong, secs)
+	for i in seats.size():
+		if who < 0 or i == who:
+			_rumble_pad(seats[i], weak, secs, strong)
+
+
+## Shake one seat's pad (every pad for "any"; keyboards do not shake).
+func _rumble_pad(seat: String, weak: float, secs: float, strong := -1.0) -> void:
+	if not rumble or rumble_strength == 0:
+		return
+	if strong < 0.0:
+		strong = weak
+	var k := rumble_strength / 100.0
+	var pads: Array = Input.get_connected_joypads() if seat == "any" else ([int(seat.substr(4))] if seat.begins_with("pad:") else [])
+	for pad in pads:
+		Input.start_joy_vibration(pad, weak * k, strong * k, secs)
 
 
 # --- The loop ------------------------------------------------------------------------
@@ -968,7 +1033,6 @@ func _tick(dt: float) -> void:
 		var push := Vector2.ZERO
 		for pair in [["a", "d", "w", "s"], ["left", "right", "up", "down"]]:
 			push += Vector2(float(keys.has(pair[1])) - float(keys.has(pair[0])), float(keys.has(pair[3])) - float(keys.has(pair[2])))
-		push += Input.get_vector("p1_left", "p1_right", "p1_up", "p1_down") + Input.get_vector("p2_left", "p2_right", "p2_up", "p2_down")
 		hud.push_map(push)
 		keys = {}
 		if Engine.get_physics_frames() % 6 == 0:

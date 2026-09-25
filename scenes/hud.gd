@@ -66,6 +66,8 @@ const C := {
 }
 ## How long the yell fills the screen.
 const SHOUT_S := 1.4
+## A menu sound to play: "nav" moving about, "ok" choosing, "back" going back.
+signal ui_sound(kind: String)
 ## How long a full-screen menu takes to fade in or out over the game.
 const FADE_S := 0.2
 ## The arcade face, for titles, buttons, the clock and the yell only: it is a
@@ -407,11 +409,16 @@ func show_menu(items: Array) -> void:
 	_rows = rows
 	_rewire.call_deferred(rows)
 	if first:
+		# The focus a menu opens with is not a move: no sound for it.
+		_quiet = true
 		first.grab_focus.call_deferred()
+		set_deferred("_quiet", false)
 
 
 ## Labels a menu gave an id, to change without rebuilding it.
 var _named := {}
+## while a menu takes its first focus
+var _quiet := false
 ## the menu's titles, bobbing gently
 var _titles: Array[Label] = []
 var _clock := 0.0
@@ -524,8 +531,11 @@ func _button(b: Dictionary) -> Button:
 		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
 	if b.has("step"):
 		_stepper(button, b.step)
+		button.pressed.connect(func() -> void: ui_sound.emit("ok"))
 	else:
 		button.pressed.connect(b.call)
+		var back: bool = String(b.get("text", "")).begins_with("<")
+		button.pressed.connect(func() -> void: ui_sound.emit("back" if back else "ok"))
 	return button
 
 
@@ -574,6 +584,9 @@ func _round_corners(r: TextureRect, box: Vector2, radius: float) -> void:
 ## Grows a little under the mouse or the focus; the mouse takes the focus,
 ## so the arrows and the mouse never point at two different things.
 func _lift(c: Control) -> void:
+	c.focus_entered.connect(func() -> void:
+		if not _quiet:
+			ui_sound.emit("nav"))
 	c.resized.connect(func() -> void: c.pivot_offset = c.size / 2)
 	c.mouse_entered.connect(func() -> void:
 		if c is BaseButton and not (c as BaseButton).disabled:
@@ -649,7 +662,18 @@ func _card(c: Dictionary, width: int) -> Button:
 		l.custom_minimum_size = Vector2(width - 24, 0)
 		height += 34
 	b.custom_minimum_size = Vector2(width, height + 34)
+	# A card to look at, not to press (the player-select seats).
+	if c.get("static", false):
+		b.focus_mode = Control.FOCUS_NONE
+		b.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		if c.has("stage"):
+			(c.stage as MenuStage).active = c.get("animate", false)
+		# Waiting for someone: dimmed.
+		if c.get("dim", false):
+			b.modulate = Color(1, 1, 1, 0.5)
+		return b
 	b.pressed.connect(c.call)
+	b.pressed.connect(func() -> void: ui_sound.emit("ok"))
 	_lift(b)
 	return b
 

@@ -64,8 +64,9 @@ Durante la partida, `M` (o Y / Select en el mando) saca el mapa: el plano, dónd
 y la salida, sin los guardias. Mientras lo miras no te mueves. `N` silencia el sonido. `P` (o Start) pausa. Junto a una papelera, un busto o un panel, `E`
 (`.` para el segundo jugador con teclado, X en el mando) lo tira: hace ruido y los guardias van a
 ver, lo que sirve para despistarlos. Con dos
-ladrones se elige cómo se juega: los dos con teclado, teclado y mando, o un mando cada uno. En
-SETTINGS → CONTROLES: vibración y su fuerza, zona muerta del stick e intercambiar los mandos.
+ladrones, cada uno ocupa su plaza pulsando un botón de su mando o una tecla de su lado del teclado
+(WASD o flechas), como en Mario Kart 64; P1 es siempre turquesa y P2 naranja. En
+SETTINGS → CONTROLES: vibración y su fuerza, y zona muerta del stick.
 
 SETTINGS (se guardan en `user://settings.cfg`): sonido (`N`), música, volumen de música y de efectos (0–100 %, `←`/`→`), pantalla completa, v-sync y panel de IA; también se recuerdan la dificultad y el tamaño del modo generativo. La música (sintetizada, de misterio) sube de tensión cuando los guardias están en alerta o te ven. Solo: WASD o flechas, `C` o `Shift` para ponerse a gatas. Dos
 jugadores: P1 con WASD y `C`, P2 con flechas y `-` o `/`. `Esc` para la pausa. El objetivo: robar

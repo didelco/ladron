@@ -62,6 +62,11 @@ func _ready() -> void:
 	_streams.bin = _mix(_mix(_noise(0.5, 3000.0, 0.55), _bells([[523.0, 0.0], [611.0, 0.12], [587.0, 0.26], [640.0, 0.38]], 0.3, 0.12)), _thump(0.3, 140.0, 70.0, 0.4))
 	_streams.bust = _mix(_mix(_thump(0.6, 90.0, 40.0, 0.9), _noise(0.7, 5000.0, 0.7)), _bells([[2637.0, 0.05], [3136.0, 0.09], [2349.0, 0.14], [3520.0, 0.2]], 0.25, 0.1))
 	_streams.panel = _mix(_thump(0.35, 180.0, 70.0, 0.8), _noise(0.25, 900.0, 0.8))
+	# The menus: a soft wooden tick moving about, a two-note chime choosing,
+	# a falling blip going back.
+	_streams.nav = _mix(_bells([[1568.0, 0.0]], 0.12, 0.08), _noise(0.02, 2500.0, 0.2))
+	_streams.ok = _bells([[1046.5, 0.0], [1568.0, 0.07]], 0.35, 0.16)
+	_streams.back = _tones([[784.0, 0.0, 0.07], [523.3, 0.07, 0.12]], "sine", 0.22)
 	# Every stream is built as samples, then packed once for the engine.
 	for k in _streams.keys():
 		_streams[k] = _wav(_streams[k])
