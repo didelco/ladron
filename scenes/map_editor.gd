@@ -336,7 +336,7 @@ func _build() -> void:
 		var b := _button(Text.t("EDITOR_KIND_" + k.to_upper()), _pick_kind.bind(k), kinds if big else acts, Hud.C.safe, false, k)
 		b.custom_minimum_size = Vector2(56, 56) if big else Vector2(42, 36)
 		b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-		b.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		b.add_theme_constant_override("icon_max_width", 36 if big else 20)
 		b.tooltip_text = Text.t("EDITOR_KIND_" + k.to_upper())
 		b.text = ""
@@ -410,7 +410,7 @@ func _icon_button(icon: String, key: String, call: Callable, parent: Node, colou
 	var b := _button("", call, parent, colour, false, icon)
 	b.custom_minimum_size = Vector2(42, 36)
 	b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	b.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	b.add_theme_constant_override("icon_max_width", 20)
 	b.tooltip_text = Text.t(key)
 	return b
@@ -587,12 +587,13 @@ func _fill_catalogue() -> void:
 				tab.set_meta("filter", id)
 			_tabs.add_child(VSeparator.new())
 			for type in [""] + Themes.TYPES:
-				var tab := _button(Text.t("EDITOR_TYPE_" + (String(type).to_upper() if type != "" else "ALL")), _pick_type.bind(type), _tabs, Hud.C.safe)
-				tab.custom_minimum_size = Vector2(0, 26)
+				# An icon each, its name on hover.
+				var tab := _button("", _pick_type.bind(type), _tabs, Hud.C.safe, false, "type_" + (type if type != "" else "all"))
+				tab.custom_minimum_size = Vector2(46, 28)
 				tab.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-				tab.autowrap_mode = TextServer.AUTOWRAP_OFF
-				tab.alignment = HORIZONTAL_ALIGNMENT_CENTER
-				tab.add_theme_font_size_override("font_size", 8)
+				tab.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				tab.add_theme_constant_override("icon_max_width", 24)
+				tab.tooltip_text = Text.t("EDITOR_TYPE_" + (String(type).to_upper() if type != "" else "ALL"))
 				tab.set_meta("type", type)
 			for entry in Themes.catalogue():
 				var t: String = entry[0]
