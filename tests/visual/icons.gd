@@ -3,8 +3,8 @@ extends Node
 ## each one, built the way the
 ## museum builds it, turned three-quarters under a warm light on a clear
 ## background, saved to assets/icons/objects/<tool>.png. Run it again after
-## a model changes:
-##   godot --path . tests/visual/icons.tscn
+## a model changes (--only= a few of them, by name, the rest untouched):
+##   godot --path . tests/visual/icons.tscn [-- --only=big_bear,exhibit_bear]
 
 const SIZE := 128
 const OUT := "res://assets/icons/objects/"
@@ -19,6 +19,12 @@ func _ready() -> void:
 			view._vitrine(p, null),
 		"big_dinosaur": func(p: Node3D) -> void: p.add_child(MuseumView.asset("dinosaurio")),
 		"big_sarcophagus": func(p: Node3D) -> void: p.add_child(MuseumView.asset("sarcofago")),
+		"big_bear": func(p: Node3D) -> void:
+			view._long_plinth(p, MuseumView.BEAR_PLINTH)
+			var up := Node3D.new()
+			up.position.y = MuseumView.BEAR_PLINTH.y
+			p.add_child(up)
+			up.add_child(MuseumView.asset("oso")),
 	}
 	for e in MuseumView.EXHIBITS:
 		items["exhibit_" + e] = func(p: Node3D) -> void:
@@ -44,7 +50,13 @@ func _ready() -> void:
 	for k in ["bust", "bin", "panel", "armour"]:
 		items["prop_" + k] = func(p: Node3D) -> void: p.add_child(PropsView.model(k))
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT))
+	var only: Array = []
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--only="):
+			only = a.trim_prefix("--only=").split(",")
 	for name in items:
+		if not only.is_empty() and not name in only:
+			continue
 		await _shoot(name, items[name])
 	print("icons: ", items.size())
 	get_tree().quit()

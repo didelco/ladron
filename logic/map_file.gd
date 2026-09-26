@@ -232,8 +232,8 @@ func _bare_wall(t: Vector2i) -> bool:
 
 
 ## Stamp a ready-made room down, its top left corner at `corner`: rows of
-## characters as on disk, and 'D' and 'S' for the dinosaur's and the
-## sarcophagus' cases, 'b' for a bust on its pedestal. Whatever was under it
+## characters as on disk, and 'D', 'S' and 'O' for the dinosaur's, the
+## sarcophagus' and the bear's cases, 'b' for a bust on its pedestal. Whatever was under it
 ## goes; the plan's own edge stays as it was. gallery: its inside is a room
 ## (a light, a switch, a name), not corridor.
 func stamp(rows: Array, corner: Vector2i, gallery: bool) -> void:
@@ -258,9 +258,9 @@ func stamp(rows: Array, corner: Vector2i, gallery: bool) -> void:
 					put(t, Tiles.WALL)
 				"o":
 					put(t, Tiles.COVER)
-				"D", "S":
+				"D", "S", "O":
 					put(t, Tiles.COVER)
-					var kind := "dinosaur" if c == "D" else "sarcophagus"
+					var kind: String = {"D": "dinosaur", "S": "sarcophagus", "O": "bear"}[c]
 					blocks[kind] = (blocks[kind] as Rect2i).merge(Rect2i(t, Vector2i.ONE)) if blocks.has(kind) else Rect2i(t, Vector2i.ONE)
 				"b":
 					put(t, Tiles.FLOOR)

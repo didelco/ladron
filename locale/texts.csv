@@ -561,6 +561,7 @@ EDITOR_TOOL_EXHIBIT_TOTEM,TOTEM
 EDITOR_TOOL_EXHIBIT_BEAR,OSO
 EDITOR_TOOL_BIG_DINOSAUR,DINOSAURIO
 EDITOR_TOOL_BIG_SARCOPHAGUS,SARCOFAGO
+EDITOR_TOOL_BIG_BEAR,OSO
 EDITOR_HINT_EXHIBIT,"Clic: esta pieza en una vitrina (en el suelo, pone la vitrina); otra vez, la quita. Clic derecho: borrar."
 EDITOR_HINT_BIG,"Clic: la pieza grande, sobre sus vitrinas · R: girarla · Clic derecho: borrar"
 EDITOR_KIND_HEIST,EL ROBO

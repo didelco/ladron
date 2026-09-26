@@ -47,9 +47,10 @@ const ALL := {
 	"naturaleza": {
 		"gallery": ["the natural history gallery", "GALLERY_NATURE"],
 		"case": ["@butterflies"],
-		"plinth": ["@bear"],
+		"plinth": [],
 		"floor": ["@diorama"],
 		"paintings": ["landscape"],
+		"big": "bear",
 	},
 	"moderna": {
 		"gallery": ["the modern age gallery", "GALLERY_MODERN"],

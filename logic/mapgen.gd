@@ -36,8 +36,9 @@ const MIN_LEAF := 5
 const MIN_ARM := 9
 const DIRS: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
 ## The pieces that take more than one tile, in tiles across and along: the
-## dinosaur skeleton on its platform, the sarcophagus on its bier.
-const BIG := {"dinosaur": Vector2i(2, 3), "sarcophagus": Vector2i(1, 3)}
+## dinosaur skeleton on its platform, the sarcophagus on its bier, the bear
+## standing up on its long plinth, arms spread.
+const BIG := {"dinosaur": Vector2i(2, 3), "sarcophagus": Vector2i(1, 3), "bear": Vector2i(1, 2)}
 
 var w: int
 var h: int
@@ -777,7 +778,7 @@ func _scatter_cover() -> void:
 
 ## The big pieces, each standing on a block of case tiles in a gallery with
 ## floor all round it (a free tile on every side, so no way is ever shut): a
-## dinosaur, and a sarcophagus or two in a big museum. They draw from a
+## dinosaur, a sarcophagus or two in a big museum, and a bear. They draw from a
 ## generator of their own, so the rest of the museum is the same as without
 ## them; one to a gallery, and a piece that finds no room is left out.
 func _big_pieces(seed: int) -> void:
@@ -786,6 +787,8 @@ func _big_pieces(seed: int) -> void:
 	var wanted := ["dinosaur", "sarcophagus"]
 	if w * h >= 1000:
 		wanted.append("sarcophagus")
+	# Last, so the others land where they always did.
+	wanted.append("bear")
 	var order: Array[int] = []
 	for i in rooms.size():
 		order.append(i)

@@ -269,8 +269,7 @@ func _cap_shade(t: Vector2i) -> float:
 # --- The collection ------------------------------------------------------------
 
 ## What stands on each piece of cover: a glass case of butterflies, minerals or
-## a fossil, a skull or a statue on a plinth, a fern diorama — and one bear
-## standing up (a bronze), in the roomiest gallery. The big pieces (a dinosaur, sarcophagi) stand on
+## a fossil, a skull or a statue on a plinth, a fern diorama. The big pieces (a dinosaur, sarcophagi, a bear) stand on
 ## blocks of cover of their own. Which piece a tile gets comes from a hash of its
 ## coordinates, so a gallery looks the same every time. All waist-high: the
 ## rules hide someone on all fours behind any of them. The job's own case is
@@ -348,23 +347,46 @@ func _exhibit(piece: Node3D, what: String, t: Vector2i, yaw: float) -> void:
 		"plinth": _empty_plinth(piece)
 		"totem": _totem(_pivot(piece, Vector3.ZERO, round(yaw / (PI / 2)) * PI / 2))
 		"bear":
+			# A map from before the bear took two tiles: at its old size, on one.
 			var p := _pivot(piece, Vector3.ZERO, yaw)
 			_plinth(p, 0.3, 0.98)
-			_pivot(p, Vector3(0, 0.3, 0)).add_child(asset("oso"))
+			var small := _pivot(p, Vector3(0, 0.3, 0))
+			small.scale = Vector3(0.5, 1.0 / 2.4, 0.5)
+			small.add_child(asset("oso"))
 		_ when "/" in what: _themed(piece, Themes.where_of(what), what, t, yaw)
 		_: _vitrine(piece, null)
 
 
 ## A piece standing on a block of tiles (Museum.big_pieces): the dinosaur on
-## its 3x2 platform, the sarcophagus on its 3x1 bier. The models lie along
-## their length (the dinosaur along x, the sarcophagus along z); either end
-## may face either way.
+## its 3x2 platform, the sarcophagus on its 3x1 bier, the bear on a 2x1
+## plinth. The models lie along their length (the dinosaur and the bear's
+## spread arms along x, the sarcophagus along z); either end may face either
+## way.
 func _big_piece(kind: String, r: Rect2i) -> void:
 	var along_x := r.size.x > r.size.y
 	var flip := PI if _hash01(r.position.x, r.position.y, 17) < 0.5 else 0.0
-	var yaw := (0.0 if along_x else PI / 2) if kind == "dinosaur" else (PI / 2 if along_x else 0.0)
+	var yaw := (PI / 2 if along_x else 0.0) if kind == "sarcophagus" else (0.0 if along_x else PI / 2)
 	var at := to_world(r.position.x + r.size.x / 2.0, r.position.y + r.size.y / 2.0)
-	_pivot(self, at, yaw + flip).add_child(asset("dinosaurio" if kind == "dinosaur" else "sarcofago"))
+	var p := _pivot(self, at, yaw + flip)
+	match kind:
+		"bear":
+			_long_plinth(p, BEAR_PLINTH)
+			_pivot(p, Vector3(0, BEAR_PLINTH.y, 0)).add_child(asset("oso"))
+		"dinosaur":
+			p.add_child(asset("dinosaurio"))
+		_:
+			p.add_child(asset("sarcofago"))
+
+
+## The bear's plinth (m: long, high, deep): low, as long as its two tiles.
+const BEAR_PLINTH := Vector3(1.84, 0.3, 0.9)
+
+
+## A long plinth: stone, a brass band round the top, a label on the front (+z).
+func _long_plinth(parent: Node3D, size: Vector3) -> void:
+	_mesh(parent, _box(size), C.wall_top, Vector3(0, size.y / 2, 0))
+	_mesh(parent, _box(Vector3(size.x + 0.02, 0.03, size.z + 0.02)), C.gold_dim, Vector3(0, size.y - 0.04, 0))
+	_mesh(parent, _box(Vector3(0.24, 0.06, 0.01)), C.bone, Vector3(0, size.y * 0.6, size.z / 2 + 0.006))
 
 
 ## The slab under every exhibit: there is always something visible where the
