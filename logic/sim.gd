@@ -29,11 +29,13 @@ const RECHECK_MS := 15000.0
 const WARN_RANGE := 1.3
 ## A hunch (suspicion 1) wears off after this long without another.
 const CALM_AFTER_S := 10.0
-## Once on alert (!!), a guard stays so at least this long past the last
-## thing that put it there, before it goes back to a mere hunch.
-const ALERT_HOLD_MS := 60000.0
-## A chase (!!!) that lost you this long ago goes back to plain alert.
-const CHASE_LOST_MS := 4000.0
+## How long each level of alert lasts past the last thing that fed it (seen
+## or heard), before it drops a step: a hunch (!) passes at once — a share of
+## the night's calm_after; on alert (!!) holds about half a minute; after a
+## chase (!!!) it takes about a minute and a half.
+const HUNCH_SHARE := 0.35
+const ALERT_HOLD_MS := 30000.0
+const CHASE_LOST_MS := 90000.0
 ## The sound that alarms a guard this many times is no longer a creak.
 const ALARMS_TO_STAY := 3
 const CATCH_RANGE := 0.75
@@ -863,9 +865,10 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 		g.memory = null
 		g.search_spot = Vector2i(-1, -1)
 
-	# Suspicion wears off a step at a time: a chase that lost you goes back to
-	# plain alert; alert holds a full minute past its last reason (for good
-	# once it is sure); a hunch fades after calm_after.
+	# Suspicion wears off a step at a time, each level past the last thing
+	# that fed it: a chase that lost you, back to plain alert after a minute
+	# and a half; alert, back to a hunch after half a minute (not once it is
+	# sure: then it stays); a hunch, gone in a moment.
 	match g.suspicion:
 		3:
 			if not on_to(g, now) and now - g.suspicion_at > CHASE_LOST_MS:
@@ -880,7 +883,7 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 				g.search_spot = Vector2i(-1, -1)
 				g.errand = ""
 		1:
-			if now - g.suspicion_at > tuning("calm_after") * 1000.0:
+			if now - g.suspicion_at > tuning("calm_after") * HUNCH_SHARE * 1000.0:
 				g.suspicion = 0
 
 	var dec := g.decision if g.decision else _default_decision(g)
