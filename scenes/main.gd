@@ -143,6 +143,11 @@ var log_lines: Array[String] = []
 var brain: BrainClient
 var sfx: Sfx
 var hud: Hud
+## The minigames being played, by thief id (Minigame), on their own layer,
+## and each one's controls last frame (to tell a tap from a hold).
+var minigame_layer: CanvasLayer
+var minigames := {}
+var minigame_held := {}
 var world: Node3D
 var camera: Camera3D
 var thief_nodes: Array[Figure] = []
@@ -207,6 +212,10 @@ func _ready() -> void:
 	add_child(sfx)
 	hud = Hud.new()
 	add_child(hud)
+	# The minigames' boxes, beside their thieves, under the menus.
+	minigame_layer = CanvasLayer.new()
+	minigame_layer.layer = 1
+	add_child(minigame_layer)
 	hud.ui_sound.connect(func(kind: String) -> void: sfx.ui(kind, 0.6))
 	_load_settings()
 	_build_environment()
@@ -246,6 +255,12 @@ func _ready() -> void:
 			_new_round(1)
 		_show_brief(_brief_pages().size() - 1)
 		get_tree().create_timer(2.0).timeout.connect(_start_playing)
+		# --safe: and P1 is put beside the case, to see its dial open.
+		if "--safe" in OS.get_cmdline_user_args():
+			get_tree().create_timer(2.6).timeout.connect(func() -> void:
+				var stand: Vector2i = Heist._stand_tiles(Heist.at)[0]
+				thieves[0].x = stand.x + 0.5
+				thieves[0].y = stand.y + 0.5)
 		# --smoke: and a smoke bomb goes off at P1's feet a moment in.
 		if "--smoke" in OS.get_cmdline_user_args():
 			get_tree().create_timer(3.5).timeout.connect(func() -> void:
@@ -1462,6 +1477,8 @@ func _new_round(n: int) -> void:
 	push_held = [false, false, false, false]
 	smoke_held = [false, false, false, false]
 	Smoke.reset(thieves)
+	_close_minigames()
+	Heist.by_game = true
 	guard_steps.clear()
 	prop_noises.clear()
 	last_think = 0.0
@@ -1700,6 +1717,8 @@ func _tick(dt: float) -> void:
 		keys = {}
 		if Engine.get_physics_frames() % 6 == 0:
 			hud.update_map(Hud.live_map(thieves, _thief_colours()))
+	# A thief at a minigame plays it with its controls, and stands still.
+	_minigame_controls(keys, dt)
 	var noises: Array[SoundEvent] = []
 	for i in thieves.size():
 		var p := thieves[i]
@@ -1760,6 +1779,7 @@ func _tick(dt: float) -> void:
 	# The job: working the case (and its alarm), carrying, dropping, the door.
 	var before_alarms := noises.size()
 	var took := Heist.step(thieves, dt, now, noises)
+	_open_safe()
 	if noises.size() > before_alarms:
 		if Heist.progress < 0.1:
 			_log(Text.t("LOG_CASE_ALARM"))
@@ -2591,7 +2611,8 @@ func _draw_hud(dt: float) -> void:
 	var d := Museum.dist(ref.x, ref.y, goal.x, goal.y)
 	var angle := atan2(goal.y - ref.y, goal.x - ref.x) if d > 6 and phase == "playing" else NAN
 	var job := {
-		"working": Heist.by != "",
+		# At the dial, its box says how it goes: no bar of its own over it.
+		"working": Heist.by != "" and not minigames.has(Heist.by),
 		"progress": Heist.progress,
 		"verb": Heist.loot.verb,
 		"carrying": Heist.carrier != "",
@@ -2617,3 +2638,81 @@ func _draw_hud(dt: float) -> void:
 			card.note = Text.t("MIND_NOTE") % [roundi(g.decision.aggression * 100), Mind.look_label(g.decision.look), Text.t("MIND_TORN") if g.decision.torn else ""]
 		cards.append(card)
 	hud.set_ia(show_ia and phase == "playing", cards)
+
+
+# --- Minigames -----------------------------------------------------------------------
+
+## The safe: a thief standing still at the case, with nothing holding the
+## job up (a partner's panel, a second pair of hands), opens its dial.
+func _open_safe() -> void:
+	if Heist.taken:
+		return
+	for i in thieves.size():
+		var t := thieves[i]
+		if minigames.has(t.id) or Heist.by != t.id or Heist.waiting or Heist.short_hand or not Heist.at_case(t):
+			continue
+		var g := MgSafe.new(Heist.safe_numbers()).setup(randi(), _shaking())
+		g.colour = _thief_colours()[i]
+		g.feel.connect(func(k: float) -> void: _rumble_pad(seats[i] if i < seats.size() else "any", k * 0.6, 0.06))
+		minigame_layer.add_child(g)
+		minigames[t.id] = g
+		minigame_held[t.id] = {}
+		_place_minigame(t, g)
+
+
+## Hands shake with the guards on edge: the highest alert, 0..1.
+func _shaking() -> float:
+	var worst := 0
+	for g in guards:
+		worst = maxi(worst, g.suspicion)
+	return clampf((worst - 1) / 2.0, 0.0, 1.0)
+
+
+## Each thief's minigame this frame: its controls go to the box, not the
+## legs (the keys are taken out of `keys`); the job hears how far along it
+## is; done or left, the box goes.
+func _minigame_controls(keys: Dictionary, dt: float) -> void:
+	var names := [["w", "s", "a", "d", "c", "e"], ["up", "down", "left", "right", "minus", "period"], ["i", "k", "j", "l", "u", "o"], ["kp8", "kp5", "kp4", "kp6", "kp0", "kpadd"]]
+	for i in thieves.size():
+		var t := thieves[i]
+		if not minigames.has(t.id):
+			continue
+		var g: Minigame = minigames[t.id]
+		var n: Array = names[i]
+		var now := {"left": keys.has(n[2]), "right": keys.has(n[3]), "up": keys.has(n[0]), "down": keys.has(n[1]),
+			"act": keys.has(n[5]), "leave": keys.has(n[4])}
+		for k in n:
+			keys.erase(k)
+		# On your own the other side of the keyboard works too.
+		if thieves.size() == 1:
+			for k in names[1]:
+				keys.erase(k)
+		var was: Dictionary = minigame_held[t.id]
+		var tap := Vector2i(int(now.right and not was.get("right", false)) - int(now.left and not was.get("left", false)),
+			int(now.down and not was.get("down", false)) - int(now.up and not was.get("up", false)))
+		minigame_held[t.id] = now
+		g.pressure = _shaking()
+		g.feed({"tap": tap, "hold": Vector2(float(now.right) - float(now.left), float(now.down) - float(now.up)),
+			"act": now.act and not was.get("act", false), "act_held": now.act, "leave": now.leave and not was.get("leave", false)}, dt)
+		Heist.game_progress[t.id] = g.progress
+		_place_minigame(t, g)
+		if t.out or g.over:
+			if g.left or t.out:
+				Heist.game_progress.erase(t.id)
+			minigames.erase(t.id)
+			# A moment to see it flash, then gone.
+			get_tree().create_timer(0.35).timeout.connect(g.queue_free)
+
+
+## Beside its thief on screen, wherever the camera is.
+func _place_minigame(t: Thief, g: Minigame) -> void:
+	var at := camera.unproject_position(_to_world(t.x, t.y, 1.2))
+	Minigame.place(g, at, get_viewport().get_visible_rect().size)
+
+
+func _close_minigames() -> void:
+	for id in minigames:
+		(minigames[id] as Minigame).queue_free()
+	minigames.clear()
+	minigame_held.clear()
+	Heist.game_progress.clear()

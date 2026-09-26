@@ -72,6 +72,12 @@ static var waiting := false
 static var hands := 1
 static var short_hand := false
 
+## The case is opened by a minigame (MgSafe), not by standing still for the
+## piece's seconds: the game plays it and reports how far along each thief
+## is (0..1, by thief id); at 1 the piece is out. Off, the old timer.
+static var by_game := false
+static var game_progress := {}
+
 
 ## The piece for night n (1-based) of a run nobody wrote: made up from the
 ## heist's seed (LootGen), a little slower each night.
@@ -106,6 +112,7 @@ static func plan_job(n: int, piece: Dictionary = {}, gang: int = 1, fixed: Dicti
 	panel = Vector2i(-1, -1)
 	panel_by = ""
 	waiting = false
+	game_progress.clear()
 	start = Museum.spawn
 	progress = 0.0
 	by = ""
@@ -380,7 +387,10 @@ static func step(thieves: Array[Thief], dt: float, now: float, noises: Array[Sou
 			_last_alarm = now
 			noises.append(SoundEvent.make(at.x + 0.5, at.y + 0.5, "alarm"))
 		# Swapping who is at it is stepping away.
-		progress = (progress if worker.id == by else 0.0) + dt / float(loot.seconds)
+		if by_game:
+			progress = float(game_progress.get(worker.id, 0.0))
+		else:
+			progress = (progress if worker.id == by else 0.0) + dt / float(loot.seconds)
 		by = worker.id
 		if progress >= 1.0:
 			progress = 1.0
@@ -416,3 +426,10 @@ static func objective() -> Vector2:
 	if dropped != Vector2.INF:
 		return dropped
 	return Vector2(at.x + 0.5, at.y + 0.5)
+
+
+## The combination's length for the piece: a quick case a number, a slow
+## one three (the piece's seconds stand for how hard its case is).
+static func safe_numbers() -> int:
+	var sec := float(loot.seconds)
+	return 1 if sec <= 2.0 else (2 if sec <= 4.0 else 3)
