@@ -18,10 +18,13 @@ const MODELS := {
 	"thief": preload("res://assets/models/ninja.glb"),
 	"guard": preload("res://assets/models/guardia.glb"),
 }
+## Size of each model in the game: the ninja is drawn a little bigger, as tall
+## as the guard's cap.
+const SIZE := {"thief": 1.1, "guard": 1.0}
 ## Ground speed (m/s) at which each clip's feet keep up with the floor at
 ## normal playback; the clip plays faster or slower to match the figure.
 const PACE := {
-	"thief": {"andar": 1.3, "correr": 4.2, "gatear": 0.8},
+	"thief": {"andar": 1.4, "correr": 4.6, "gatear": 0.9},
 	"guard": {"andar": 0.8, "correr": 3.0},
 }
 ## From this speed a figure runs rather than walks.
@@ -101,6 +104,7 @@ func _build(colour: Color) -> void:
 	_ghost_colour = colour * 0.75
 	_ghost_colour.a = 1.0
 	var model: Node3D = MODELS[_kind].instantiate()
+	model.scale = Vector3.ONE * SIZE[_kind]
 	add_child(model)
 	_player = model.find_child("AnimationPlayer", true, false)
 	# Every clip is a cycle.

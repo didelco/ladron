@@ -245,31 +245,9 @@ func _build_plan(seed: int) -> void:
 	_plan_blocks(plan, 3.2 / plan.w, 0.3, 0.16)
 
 
-## One thief or two on a podium, under confetti colours.
+## One thief or more, standing in a spotlight.
 func _players(n: int, seat := 0) -> void:
 	_frame(2.5, 0.85)
-	var tiers := [[1.25, 0.26, WOOD], [1.05, 0.18, VELVET], [0.9, 0.08, GOLD]]
-	var y := 0.0
-	for tier in tiers:
-		var c := CylinderMesh.new()
-		c.top_radius = tier[0]
-		c.bottom_radius = tier[0]
-		c.height = tier[1]
-		c.radial_segments = 48
-		_mesh(_root, c, tier[2], Vector3(0, y + tier[1] / 2.0, 0))
-		y += tier[1]
-	var ring := TorusMesh.new()
-	ring.inner_radius = 1.02
-	ring.outer_radius = 1.1
-	ring.ring_segments = 48
-	_mesh(_root, ring, GOLD, Vector3(0, 0.27, 0))
-	# Confetti stars stuck round the rim.
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 11
-	for i in 16:
-		var a := i * TAU / 16
-		var bit := _box(_root, Vector3(0.08, 0.02, 0.08), [GOLD, CREAM, GOLD, LILAC][i % 4], Vector3(cos(a) * 1.15, 0.53, sin(a) * 1.15))
-		bit.rotation.y = rng.randf() * TAU
 	var spot := SpotLight3D.new()
 	spot.position = Vector3(0, 3.2, 0.3)
 	spot.rotation_degrees = Vector3(-84, 0, 0)
@@ -372,7 +350,7 @@ func _pose(dt: float) -> void:
 		"players", "seat":
 			for i in _figures.size():
 				var x := (i - (_figures.size() - 1) / 2.0) * 0.75
-				_figures[i].set_state(Vector3(x, 0.52, -x * 0.3), PI / 4, 0.0, dt)
+				_figures[i].set_state(Vector3(x, 0, -x * 0.3), PI / 4, 0.0, dt)
 		"guards":
 			var n := _figures.size()
 			for i in n:
@@ -411,7 +389,7 @@ func _animate(dt: float) -> void:
 			for i in _figures.size():
 				var x := (i - (_figures.size() - 1) / 2.0) * 0.75
 				var f := _figures[i]
-				f.set_state(Vector3(x, 0.52, -x * 0.3), PI / 4 + sin(_t * 2.0 + i) * 0.6, 0.0, dt)
+				f.set_state(Vector3(x, 0, -x * 0.3), PI / 4 + sin(_t * 2.0 + i) * 0.6, 0.0, dt)
 				_hop(f, _t * 6.0 + i * PI * 0.5, 0.25)
 		"guards":
 			var n := _figures.size()

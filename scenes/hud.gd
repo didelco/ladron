@@ -363,21 +363,16 @@ func show_menu(items: Array) -> void:
 					first = card
 			rows.append(line)
 		elif item.has("nights"):
-			var row := HBoxContainer.new()
-			row.alignment = BoxContainer.ALIGNMENT_CENTER
-			row.add_theme_constant_override("separation", 0)
-			_panel_box.add_child(row)
+			# The nights as stops on a map, the road winding through them.
+			var map := NightMap.new()
+			map.custom_minimum_size = Vector2(item.get("width", 1120), item.get("height", 190))
+			map.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+			_panel_box.add_child(map)
 			var nights: Array = item.nights
 			var line: Array = []
 			for i in nights.size():
-				if i > 0:
-					var link := ColorRect.new()
-					link.custom_minimum_size = Vector2(16, 4)
-					link.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-					link.color = Color("#3b3470") if nights[i].locked else Color("#8a80d0")
-					row.add_child(link)
 				var node := _night(nights[i])
-				row.add_child(node)
+				map.add_stop(node, nights[i].locked)
 				if not nights[i].locked:
 					line.append(node)
 					node.set_meta("selected", nights[i].selected)
@@ -684,7 +679,10 @@ func _card(c: Dictionary, width: int) -> Button:
 		_round_corners(r, r.custom_minimum_size, 16.0)
 		height += r.custom_minimum_size.y
 		box.add_child(r)
-	var t := _label(c.get("title_size", 13), CREAM, box, true)
+	# The title on one line: the pixel font is one em a character, so a long
+	# title on a narrow card takes a smaller size.
+	var title_size: int = mini(c.get("title_size", 13), floori((width - 30.0) / maxi(1, String(c.title).length())))
+	var t := _label(title_size, CREAM, box, true)
 	t.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
 	t.text = c.title
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -725,15 +723,11 @@ func _night(n: Dictionary) -> Button:
 	b.disabled = n.locked
 	b.add_theme_font_override("font", ARCADE)
 	b.add_theme_font_size_override("font_size", 12)
-	b.custom_minimum_size = Vector2(42, 42)
 	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	b.set_meta("colour", n.colour)
 	b.set_meta("locked", n.locked)
-	_night_look(b, n.selected)
-	b.add_theme_color_override("font_color", CREAM)
-	b.add_theme_color_override("font_focus_color", INK)
-	b.add_theme_color_override("font_hover_color", INK)
 	b.add_theme_color_override("font_disabled_color", Color("#6d5a78"))
+	_night_look(b, n.selected)
 	if not n.locked:
 		# Landing on a night picks it; the picked look moves with it.
 		b.focus_entered.connect(func() -> void:
@@ -753,7 +747,7 @@ func _night_look(b: Button, picked: bool) -> void:
 	var locked: bool = b.get_meta("locked")
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
 		var st := StyleBoxFlat.new()
-		st.set_corner_radius_all(21)
+		st.set_corner_radius_all(25 if picked and not locked else 21)
 		st.anti_aliasing = true
 		st.shadow_size = 1
 		st.shadow_offset = Vector2(0, 5)
@@ -762,13 +756,31 @@ func _night_look(b: Button, picked: bool) -> void:
 			st.border_color = Color("#3d2c40")
 			st.set_border_width_all(2)
 			st.shadow_color = WALNUT_EDGE
+		elif picked:
+			# The night in force: in full colour, a thick brass ring and a glow
+			# of its own colour round it, so it stands out from the rest.
+			st.bg_color = colour
+			st.border_color = BRASS.lightened(0.25)
+			st.set_border_width_all(5)
+			st.shadow_color = Color(colour.lightened(0.3), 0.8)
+			st.shadow_size = 12
+			st.shadow_offset = Vector2.ZERO
 		else:
-			var lit: bool = picked or state != "normal"
-			st.bg_color = colour.darkened(0.1) if lit else colour.darkened(0.5)
-			st.border_color = CREAM if lit else colour.darkened(0.15)
-			st.set_border_width_all(3)
+			# The others stay back: dim, a thin rim, lit only while the
+			# cursor is on them.
+			var lit: bool = state != "normal"
+			st.bg_color = colour.darkened(0.25) if lit else colour.darkened(0.6)
+			st.border_color = CREAM if lit else colour.darkened(0.35)
+			st.set_border_width_all(3 if lit else 2)
 			st.shadow_color = WALNUT_EDGE
 		b.add_theme_stylebox_override(state, st)
+	# Dark numbers on the picked night (light ones vanish on a pale colour).
+	b.add_theme_color_override("font_color", INK if picked else CREAM.darkened(0.15))
+	b.add_theme_color_override("font_focus_color", INK)
+	b.add_theme_color_override("font_hover_color", INK if picked else CREAM)
+	# And bigger than the rest, whether or not the cursor is on it.
+	b.pivot_offset = b.size / 2
+	b.custom_minimum_size = Vector2(50, 50) if picked else Vector2(42, 42)
 
 
 ## The thief on the title screen, as the web draws it: a hooded figure in
@@ -1290,10 +1302,11 @@ func set_gang(colours: Array, darks: Array, loot: Dictionary) -> void:
 		view.add_child(sun)
 		var cam := Camera3D.new()
 		cam.projection = Camera3D.PROJECTION_ORTHOGONAL
-		# Looking a little down at it, its middle (0.65 m up) in the middle.
-		cam.size = 1.8
+		# Looking a little down at it, its middle (0.62 m up) in the middle,
+		# with room round it for the piece on its back.
+		cam.size = 2.4
 		cam.rotation_degrees = Vector3(-18, 0, 0)
-		cam.position = Vector3(0, 0.65 + 4.0 * tan(deg_to_rad(18.0)), 4.0)
+		cam.position = Vector3(0, 0.62 + 4.0 * tan(deg_to_rad(18.0)), 4.0)
 		view.add_child(cam)
 		# The figure walks on the spot: its anchor slides back as it steps.
 		var anchor := Node3D.new()

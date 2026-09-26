@@ -78,8 +78,8 @@ func build() -> void:
 				look.position.y = -ARMOUR_MID
 				suit.add_child(look)
 				var box := BoxShape3D.new()
-				box.size = Vector3(0.5, 1.05, 0.4)
-				_shape(suit, box, Vector3(0, 0.525 - ARMOUR_MID, 0))
+				box.size = Vector3(0.6, 1.15, 0.45)
+				_shape(suit, box, Vector3(0, 0.575 - ARMOUR_MID, 0))
 				parts.append(suit)
 			_:
 				var stand := _body(at + Vector3(0, 0.5 * K, 0), yaw, 1.2)
