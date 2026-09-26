@@ -128,11 +128,19 @@ static func painting(theme: String, a: float) -> String:
 const PROP_THEMES := {"bust": "antiguo", "armour": "edad_media", "bin": "", "panel": ""}
 
 
+## The kinds of piece, as the editor filters them: in a glass case, small
+## (on a plinth), big (on the floor, or on a block of cases), and what the
+## thieves knock over.
+const TYPES := ["case", "small", "big", "prop"]
+
+
 ## Every piece there is, in order, as the editor's tools name them —
 ## "exhibit:<MuseumView's own>", "exhibit:<model path>", "big:<kind>",
-## "prop:<kind>" — each with the themes it belongs to: [[tool, [themes]]].
+## "prop:<kind>" — each with the themes it belongs to and its type (TYPES):
+## [[tool, [themes], type]].
 static func catalogue() -> Array:
-	var out: Array = [["case", []]]
+	var out: Array = [["case", [], "case"]]
+	var type_of := {"case": "case", "plinth": "small", "floor": "big"}
 	var at := {}
 	for id in ALL:
 		var s: Dictionary = ALL[id]
@@ -143,12 +151,12 @@ static func catalogue() -> Array:
 					(out[at[tool]][1] as Array).append(id)
 				else:
 					at[tool] = out.size()
-					out.append([tool, [id]])
+					out.append([tool, [id], type_of[where]])
 	for kind in MapGen.BIG:
 		var theme := for_big(kind)
-		out.append(["big:" + kind, [theme] if theme != "" else []])
+		out.append(["big:" + kind, [theme] if theme != "" else [], "big"])
 	for kind in PROP_THEMES:
-		out.append(["prop:" + kind, [PROP_THEMES[kind]] if PROP_THEMES[kind] != "" else []])
+		out.append(["prop:" + kind, [PROP_THEMES[kind]] if PROP_THEMES[kind] != "" else [], "prop"])
 	return out
 
 

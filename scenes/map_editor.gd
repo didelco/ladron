@@ -8,8 +8,8 @@ extends CanvasLayer
 ## with the tool in hand, the right one rubs out (what stands on a tile
 ## first, then the tile, back to floor). Along the bottom, as in a building
 ## game: a compact block at the left, what to do (the 3D view, play it,
-## undo, save, leave) over the kinds of tool (wall and floor, the
-## characters, the objects, the rooms, the options); and the rest of the
+## undo, leave, the options — saving among them) over the four kinds of tool
+## (wall and floor, the characters, the objects, the rooms); and the rest of the
 ## bar the catalogue of the kind in hand — the objects with a row of tabs to
 ## show one theme or all; the options, the building's size and look, rolling
 ## a museum or clearing it, the difficulty, the guards and the heist (what
@@ -29,7 +29,9 @@ signal preview(map: MapFile)
 ## "nav", "ok", "back", as the menus make.
 signal ui_sound(kind: String)
 
-## The kinds of tool, left to right; all but wall and floor fill the catalogue.
+## The kinds of tool: the four big ones left to right, and the options (a
+## small button up with what to do); all but wall and floor fill the
+## catalogue.
 const KINDS := ["wall", "main", "objects", "rooms", "options"]
 ## The bottom bar's height.
 const BAR := 168
@@ -168,8 +170,9 @@ var _kind_name: Label
 ## the catalogue along the bottom: its tabs (the objects' themes) and its row
 var _tabs: HBoxContainer
 var _catalogue: HBoxContainer
-## the theme the objects are shown for ("" all)
+## the theme and the type (Themes.TYPES) the objects are shown for ("" all)
 var filter := ""
+var filter_type := ""
 ## the panel of choices over the bar (the options, or leaving unsaved)
 var _flyout: PanelContainer
 var _flyout_scroll: ScrollContainer
@@ -324,17 +327,17 @@ func _build() -> void:
 	_view_button = _icon_button("view3d", "EDITOR_PREVIEW", _toggle_3d, acts, Hud.C.safe)
 	_icon_button("play", "EDITOR_PLAY", _ask_play, acts, Hud.C.green)
 	_icon_button("undo", "EDITOR_UNDO", _undo, acts, Hud.C.dim)
-	_icon_button("save", "EDITOR_SAVE", _save, acts, Hud.C.green)
 	_exit_button = _icon_button("exit", "EDITOR_EXIT", _leave, acts, Hud.C.dim)
 	var kinds := HBoxContainer.new()
 	kinds.add_theme_constant_override("separation", 6)
 	left.add_child(kinds)
 	for k in KINDS:
-		var b := _button(Text.t("EDITOR_KIND_" + k.to_upper()), _pick_kind.bind(k), kinds, Hud.C.safe, false, k)
-		b.custom_minimum_size = Vector2(42, 42)
+		var big: bool = k != "options"
+		var b := _button(Text.t("EDITOR_KIND_" + k.to_upper()), _pick_kind.bind(k), kinds if big else acts, Hud.C.safe, false, k)
+		b.custom_minimum_size = Vector2(56, 56) if big else Vector2(42, 36)
 		b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		b.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		b.add_theme_constant_override("icon_max_width", 24)
+		b.add_theme_constant_override("icon_max_width", 36 if big else 20)
 		b.tooltip_text = Text.t("EDITOR_KIND_" + k.to_upper())
 		b.text = ""
 		_kind_buttons[k] = b
@@ -582,10 +585,21 @@ func _fill_catalogue() -> void:
 				tab.alignment = HORIZONTAL_ALIGNMENT_CENTER
 				tab.add_theme_font_size_override("font_size", 8)
 				tab.set_meta("filter", id)
+			_tabs.add_child(VSeparator.new())
+			for type in [""] + Themes.TYPES:
+				var tab := _button(Text.t("EDITOR_TYPE_" + (String(type).to_upper() if type != "" else "ALL")), _pick_type.bind(type), _tabs, Hud.C.safe)
+				tab.custom_minimum_size = Vector2(0, 26)
+				tab.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+				tab.autowrap_mode = TextServer.AUTOWRAP_OFF
+				tab.alignment = HORIZONTAL_ALIGNMENT_CENTER
+				tab.add_theme_font_size_override("font_size", 8)
+				tab.set_meta("type", type)
 			for entry in Themes.catalogue():
 				var t: String = entry[0]
 				var themes: Array = entry[1]
 				if filter != "" and not themes.has(filter):
+					continue
+				if filter_type != "" and entry[2] != filter_type:
 					continue
 				var id := t.replace(":", "_").replace("/", "_")
 				var name := Text.t("EDITOR_TOOL_CASE") if t == "case" else (Themes.label(t.substr(8)) if t.begins_with("exhibit:") else Text.t("EDITOR_TOOL_" + id.to_upper()))
@@ -619,6 +633,12 @@ func _pick_filter(id: String) -> void:
 	_refresh()
 
 
+func _pick_type(type: String) -> void:
+	filter_type = type
+	_fill_catalogue()
+	_refresh()
+
+
 ## The options: the pages down the left, and the one open to their right,
 ## its choices as cards, the one in force lit.
 func _options() -> void:
@@ -627,12 +647,14 @@ func _options() -> void:
 	list.add_theme_constant_override("h_separation", 4)
 	list.add_theme_constant_override("v_separation", 4)
 	_catalogue.add_child(list)
-	for page in OPTION_PAGES:
-		var b := _button(Text.t("EDITOR_PAGE_" + page.to_upper()), _open_page.bind(page), list, Hud.C.gold, false, OPTION_ICONS[page])
+	for page in ["save"] + OPTION_PAGES:
+		var b := _button(Text.t("EDITOR_SAVE" if page == "save" else "EDITOR_PAGE_" + page.to_upper()), _save if page == "save" else _open_page.bind(page),
+			list, Hud.C.green if page == "save" else Hud.C.gold, false, "save" if page == "save" else OPTION_ICONS[page])
 		b.custom_minimum_size = Vector2(150, 30)
 		b.add_theme_constant_override("icon_max_width", 16)
 		b.add_theme_font_size_override("font_size", 8)
-		b.set_meta("page", page)
+		if page != "save":
+			b.set_meta("page", page)
 	_catalogue.add_child(VSeparator.new())
 	match option_page:
 		"size":
@@ -1238,7 +1260,10 @@ func _refresh() -> void:
 		_look(_kind_buttons[k], kind == k)
 	_kind_name.text = Text.t("EDITOR_KIND_" + kind.to_upper())
 	for tab in _tabs.get_children():
-		_look(tab, tab.get_meta("filter", "") == filter)
+		if tab.has_meta("filter"):
+			_look(tab, tab.get_meta("filter") == filter)
+		elif tab.has_meta("type"):
+			_look(tab, tab.get_meta("type") == filter_type)
 	for t in _tool_buttons:
 		_look(_tool_buttons[t], tool == t)
 	for i in _template_buttons.size():
