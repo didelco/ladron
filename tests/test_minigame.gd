@@ -201,7 +201,14 @@ func _init() -> void:
 		up += balance(0.1, 0.0, 400 + s, 60.0)
 		pressed_up += balance(0.1, 1.0, 400 + s, 20.0)
 		fell += balance(-1.0, 0.0, 400 + s, 20.0)
-	check(up / 8 >= 59.0, "atento a izquierda y derecha aguanta %.1f s de media: no se complica con el tiempo" % (up / 8))
+	check(up / 8 >= 59.0, "atento a izquierda y derecha aguanta %.1f s de media: con el tiempo se complica, pero muy despacio" % (up / 8))
+	var tire := Minigame.make("balance", "plinth", 1, {}, 5, 1)
+	tire.t = 60.0
+	check(tire.tired() > 1.3 and tire.tired() < 2.0, "al minuto cuesta %.2f veces lo del principio" % tire.tired())
+	var lasts := 0.0
+	for s in 4:
+		lasts += balance(0.1, 0.0, 400 + s, 600.0)
+	check(lasts / 4 < 600.0, "pero no para siempre: atento, sin guardias, cae a los %.0f s de media" % (lasts / 4))
 	check(fell / 8 < 5.0, "sin tocar nada se cae en %.1f s de media" % (fell / 8))
 	var held_down := 0.0
 	for s in 8:
