@@ -104,7 +104,6 @@ El abuelo Paco vuelve a masticar turrón, el pato canta a las siete en punto, el
 Al Barón Von Bostezo solo le quedó mirar su vitrina vacía... y bostezar. Se quedó dormido de pie. Dicen que todavía ronca.
 
 FIN (de momento)"
-BRIEF_TAB_LOOT,LA PIEZA
 BRIEF_TAB_NEWS,LO NUEVO
 BRIEF_TAB_PLAN,EL PLAN
 BRIEF_NEXT_TAB,%s >
@@ -113,11 +112,9 @@ BRIEF_NIGHT_OF,NOCHE %d DE %d
 BRIEF_LEVEL,NIVEL %02d
 BRIEF_NEWS_TITLE,ESTA NOCHE
 BRIEF_NEWS_TEXT,Algo ha cambiado en el museo
-BRIEF_PLAN_TITLE,EL PLAN
 BRIEF_TEAM_ONE_LOCK,Uno sujeta el cuadro de la alarma (naranja) mientras el otro abre la vitrina
 BRIEF_TEAM_TWO_LOCKS,Uno sujeta el cuadro de la alarma (naranja) mientras los otros dos abren a la vez las dos cerraduras de la vitrina
 BRIEF_TEAM_ALL_OUT,"Para ganar tenéis que salir todos · si pillan a uno, se acaba la noche"
-BRIEF_HOW,Quieto %s junto a la pieza · la alarma atrae guardias · sal por la puerta verde
 BRIEF_PROPS,"Papeleras, bustos y paneles: tíralos con E (X en el mando) y los guardias irán a ver el ruido"
 BRIEF_SECONDS,%s segundos
 BRIEF_DECIMAL_POINT,","
@@ -232,30 +229,6 @@ NIGHT_20_NAME,el Diamante Bostezo
 NIGHT_20_BLURB,"Quien lo mira, bosteza y se duerme."
 NIGHT_20_VERB,ABRIENDO LA CAJA FUERTE
 NIGHT_20_TALE,Es el tesoro del Barón y su gran truco: con él dormía a todo el pueblo para llevarse lo que quería. Sin el diamante se le acabaron los trucos. Pero es la última noche... y os están esperando.
-LOOT_1_NAME,el Ojo de Medianoche
-LOOT_1_BLURB,Un zafiro del tamaño de un puño.
-LOOT_1_VERB,FORZANDO LA VITRINA
-LOOT_1_TALE,"Lo sacaron de una mina birmana en 1887 y desde entonces ha cambiado de dueño once veces, casi nunca por las buenas. Dicen que de noche brilla solo. Esta noche va a brillar en tu bolsillo."
-LOOT_2_NAME,el huevo de oviraptor
-LOOT_2_BLURB,Fósil de setenta millones de años.
-LOOT_2_VERB,SOLTANDO EL HUEVO
-LOOT_2_TALE,Un paleontólogo lo encontró en el desierto de Gobi dentro de una roca que usaba de pisapapeles. Pesa como un ladrillo y es más frágil que tu coartada. Llévalo con cariño.
-LOOT_3_NAME,la corona de la reina Urraca
-LOOT_3_BLURB,Oro batido y granates.
-LOOT_3_VERB,DESATORNILLANDO
-LOOT_3_TALE,La reina Urraca la mandó hacer con las joyas que robaba a sus propios invitados. Un coleccionista paga una fortuna por devolverla a la familia del oficio.
-LOOT_4_NAME,el meteorito de Tolva
-LOOT_4_BLURB,Hierro caído del cielo en 1911.
-LOOT_4_VERB,ENGAÑANDO EL SENSOR
-LOOT_4_TALE,Cayó sobre el granero de un tal Tolva y lo partió en dos. El museo lo compró por cuatro perras; un laboratorio lo quiere a cualquier precio. Pesa más de lo que parece.
-LOOT_5_NAME,la máscara de jade
-LOOT_5_BLURB,"Funeraria, doscientas teselas verdes."
-LOOT_5_VERB,CORTANDO EL SELLO
-LOOT_5_TALE,Doscientas teselas de jade cosidas con hilo de oro para un rey que no quería que nadie le viera la cara. Lleva cinco siglos mirando al público. Ya le toca descansar.
-LOOT_6_NAME,el ídolo de obsidiana
-LOOT_6_BLURB,La pieza estrella del museo.
-LOOT_6_VERB,ABRIENDO LA CERRADURA
-LOOT_6_TALE,La pieza estrella: nadie sabe quién la talló ni por qué todos los que la han tenido acabaron durmiendo con la luz encendida. Tu cliente dice que no cree en maldiciones.
 END_CAUGHT,TE HAN PILLADO
 END_BACK_IN_CASE,%s vuelve a su vitrina.
 END_STILL_THERE,%s sigue en su sitio.
@@ -397,3 +370,357 @@ LESSON_HEIST4_TITLE,EL GOLPE EN EQUIPO
 LESSON_HEIST4_TEXT,Dos sujetan las dos alarmas; dos abren las cerraduras a la vez. Salid todos.
 BRIEF_TEAM_TWO_PANELS,Dos sujetan los dos cuadros de alarma (naranja) mientras los otros dos abren a la vez las dos cerraduras de la vitrina
 HUD_JOB_WAIT_PANELS,¡HAY QUE SUJETAR LOS DOS CUADROS DE ALARMA!
+STORY_REACHED,Noche %d de %d
+STORY_MAP_TITLE,LA CIUDAD
+STORY_GANG_1,Tú solo por la ciudad
+STORY_GANG_2,La banda de 2
+STORY_GANG_3,La banda de 3
+STORY_GANG_4,La banda de 4
+STORY_MUSEUM_LINE,%s · %d/%d NOCHES
+STORY_PLAY,▶ ¡A ROBAR!
+MUSEUM_1_NAME,El Desván del Barón
+MUSEUM_1_TEXT,"Trastos, polvo y crujidos: el sitio perfecto para empezar"
+MUSEUM_2_NAME,El Invernadero
+MUSEUM_2_TEXT,"Entre helechos y macetas, cuidado con lo que se cae"
+MUSEUM_3_NAME,El Observatorio
+MUSEUM_3_TEXT,Estrellas en el techo y vitrinas con alarma
+MUSEUM_4_NAME,La Torre del Reloj
+MUSEUM_4_TEXT,"Tic, tac: ahora vigilan de dos en dos"
+MUSEUM_5_NAME,El Palacio Bostezo
+MUSEUM_5_TEXT,"La casa del Barón. Grande, oscura y llena de guardias"
+MENU_CHALLENGE,RETOS
+MENU_CHALLENGE_TEXT,Mapas hechos a mano y tu editor
+CHALLENGE_TITLE,RETOS
+CHALLENGE_TEXT,Elige un mapa o dibuja el tuyo
+CHALLENGE_NEW,+ NUEVO MAPA
+CHALLENGE_EDIT,EDITAR
+CHALLENGE_DELETE,BORRAR
+CHALLENGE_DELETE_SURE,¿SEGURO? BORRAR
+CHALLENGE_BUILT_IN,De serie
+CHALLENGE_MINE,Tuyo
+CHALLENGE_UNPLAYABLE,Sin terminar: ábrelo en el editor
+CHALLENGE_INFO,%s · %s · %d guardias
+CHALLENGE_EMPTY,Aún no hay mapas: crea uno.
+CHALLENGE_PAGE,Página %d de %d
+EDITOR_TITLE,EDITOR
+EDITOR_NAME,Nombre del mapa
+EDITOR_UNTITLED,Mi museo
+EDITOR_TOOLS,HERRAMIENTAS
+EDITOR_TOOL_FLOOR,SUELO
+EDITOR_TOOL_WALL,MURO / SUELO
+EDITOR_TOOL_CASE,VITRINA AL AZAR
+EDITOR_TOOL_OUT,EXTERIOR
+EDITOR_TOOL_SPAWN,ENTRADA
+EDITOR_TOOL_PIECE,EN QUE VITRINA ESTA
+EDITOR_TOOL_EXIT,SALIDA
+EDITOR_TOOL_GUARD,GUARDIA
+EDITOR_TOOL_PROP,OBJETO
+EDITOR_TOOL_ROOM,MARCAR SALA
+EDITOR_ROOMS,SALAS HECHAS
+EDITOR_T_EMPTY,GALERIA
+EDITOR_T_CASES,VITRINAS
+EDITOR_T_BUSTS,PEDESTALES
+EDITOR_T_COLUMNS,COLUMNAS
+EDITOR_T_SHELVES,ESTANTES
+EDITOR_T_DINOSAUR,DINOSAURIO
+EDITOR_T_SARCOPHAGUS,SARCOFAGO
+EDITOR_T_CORRIDOR,PASILLO
+EDITOR_TURN,GIRAR SALA (R)
+EDITOR_NIGHT,LA NOCHE
+EDITOR_SIZE,TAMAÑO: %s
+EDITOR_DIFFICULTY,DIFICULTAD: %s
+EDITOR_GUARDS,GUARDIAS: %s
+EDITOR_GUARDS_AUTO,AUTO (%d)
+EDITOR_MAP,EL MAPA
+EDITOR_RANDOM,GENERAR MAPA ALEATORIO
+EDITOR_RANDOM_DONE,Un museo nuevo del generador: retócalo a tu gusto.
+EDITOR_CLEAR,VACIAR
+EDITOR_UNDO,DESHACER
+EDITOR_PREVIEW,VER EN 3D
+EDITOR_PLAY,PROBAR
+EDITOR_SAVE,GUARDAR
+EDITOR_EXIT,SALIR
+EDITOR_SAVED,Guardado: %s
+EDITOR_SAVED_UNPLAYABLE,Guardado: %s (aún no se puede jugar)
+EDITOR_SAVE_FAILED,No se ha podido guardar.
+EDITOR_CANNOT_PLAY,Antes hay que arreglar lo que sale en rojo.
+EDITOR_UNSAVED,HAY CAMBIOS SIN GUARDAR
+EDITOR_OK,Se puede jugar.
+EDITOR_PREVIEW_HELP,Arrastra o flechas: girar · Rueda: acercar · Esc: volver
+EDITOR_BACK_TO_EDITOR,VOLVER AL EDITOR
+EDITOR_ERR_SIZE,El plano tiene un tamaño imposible.
+EDITOR_ERR_OPEN,El edificio no está cerrado: hay suelo en el borde o junto al exterior.
+EDITOR_ERR_SPAWN,La entrada tiene que estar en el suelo.
+EDITOR_ERR_CLOSED,Hay suelo al que no se llega desde la entrada (tachado).
+EDITOR_ERR_PIECE,Falta una vitrina para la pieza a la que se pueda llegar.
+EDITOR_ERR_EXIT,"Falta la salida: suelo junto al muro exterior, lejos de la entrada."
+EDITOR_ERR_GUARD,Hay un guardia fuera del suelo al que se llega.
+EDITOR_ERR_GUARDS,"Demasiados guardias: cinco, como mucho."
+EDITOR_ERR_BIG,Una pieza grande no está sobre vitrinas.
+EDITOR_HINT_FLOOR,Clic: suelo (arrastra para pintar seguido) · Clic derecho: borrar · Ctrl+Z: deshacer
+EDITOR_HINT_WALL,"Clic: muro ↔ suelo (arrastra para seguir pintando lo mismo) · Clic derecho: borrar · Ctrl+Z: deshacer"
+EDITOR_HINT_CASE,Clic: vitrina. Tapan a quien se agacha detrás; en una va la pieza.
+EDITOR_HINT_OUT,Clic: exterior (sin edificio). Entre el exterior y el suelo tiene que haber muro.
+EDITOR_HINT_SPAWN,Clic: por dónde entran los ladrones.
+EDITOR_HINT_PIECE,"Clic: la vitrina con la pieza. Sin marcar, la elige el juego."
+EDITOR_HINT_EXIT,"Clic: la puerta de salida, en el muro exterior. Sin marcar, la elige el juego."
+EDITOR_HINT_GUARD,"Clic: poner o quitar un guardia (hasta cinco). Sin ninguno, salen en su ronda."
+EDITOR_HINT_PROP,"Clic: pone este objeto; otra vez en el mismo sitio, lo quita. Sin ninguno, los pone el juego."
+EDITOR_HINT_ROOM,"Arrastra un rectángulo: una sala, con su luz y su nombre. Clic derecho: quitarla."
+EDITOR_HINT_STAMP,Clic: poner la sala (lo de debajo se va) · R: girarla · Clic derecho: borrar
+EDITOR_TAB_EDIT,EDITAR
+EDITOR_TAB_OPTIONS,OPCIONES DEL MAPA
+EDITOR_KIND_WALL,MURO / SUELO
+EDITOR_KIND_MAIN,PERSONAJES
+EDITOR_KIND_OBJECTS,OBJETOS
+EDITOR_KIND_ROOMS,SALAS
+EDITOR_KIND_ACTIONS,HERRAMIENTAS
+EDITOR_KIND_OPTIONS,OPCIONES
+EDITOR_TOOL_PROP_BUST,BUSTO
+EDITOR_TOOL_PROP_BIN,PAPELERA
+EDITOR_TOOL_PROP_PANEL,PANEL
+EDITOR_TOOL_PROP_ARMOUR,ARMADURA
+EDITOR_SAVE_AND_EXIT,GUARDAR Y SALIR
+EDITOR_EXIT_NO_SAVE,SALIR SIN GUARDAR
+EDITOR_KEEP_EDITING,SEGUIR EDITANDO
+EDITOR_FLOOR,SUELO: %s
+EDITOR_WALLS,PAREDES: %s
+EDITOR_LOOK_AUTO,AUTO
+EDITOR_LOOK_0,MARMOL GRIS
+EDITOR_LOOK_1,HORMIGON
+EDITOR_LOOK_2,ROBLE
+EDITOR_LOOK_3,TABLONES
+EDITOR_LOOK_4,BALDOSA VERDE
+EDITOR_LOOK_5,MARMOL AZUL
+EDITOR_LOOK_6,TERRACOTA
+EDITOR_LOOK_7,MARMOL NEGRO
+EDITOR_WALL_LOOK_0,DAMASCO CARMESI
+EDITOR_WALL_LOOK_1,YESO
+EDITOR_WALL_LOOK_2,RAYAS VERDES
+EDITOR_WALL_LOOK_3,RAYAS AZULES
+EDITOR_WALL_LOOK_4,DAMASCO VERDE
+EDITOR_WALL_LOOK_5,DAMASCO VIOLETA
+EDITOR_WALL_LOOK_6,RAYAS MOSTAZA
+EDITOR_WALL_LOOK_7,CARMESI REAL
+EDITOR_SECTION_CASES,EN VITRINA
+EDITOR_SECTION_BIG,PIEZAS GRANDES (R: GIRAR)
+EDITOR_SECTION_PROPS,PARA TIRAR
+EDITOR_TOOL_EXHIBIT_BUTTERFLIES,MARIPOSAS
+EDITOR_TOOL_EXHIBIT_MINERALS,MINERALES
+EDITOR_TOOL_EXHIBIT_AMMONITE,AMONITE
+EDITOR_TOOL_EXHIBIT_METEORITE,METEORITO
+EDITOR_TOOL_EXHIBIT_STATUE,ESTATUA
+EDITOR_TOOL_EXHIBIT_SKULL,CRANEO
+EDITOR_TOOL_EXHIBIT_LEGO_SKULL,CABEZA LEGO
+EDITOR_TOOL_EXHIBIT_DIORAMA,DIORAMA
+EDITOR_TOOL_EXHIBIT_AMPHORA,ANFORA
+EDITOR_TOOL_EXHIBIT_GLOBE,GLOBO
+EDITOR_TOOL_EXHIBIT_TOTEM,TOTEM
+EDITOR_TOOL_EXHIBIT_BEAR,OSO
+EDITOR_TOOL_BIG_DINOSAUR,DINOSAURIO
+EDITOR_TOOL_BIG_SARCOPHAGUS,SARCOFAGO
+EDITOR_HINT_EXHIBIT,"Clic: esta pieza en una vitrina (en el suelo, pone la vitrina); otra vez, la quita. Clic derecho: borrar."
+EDITOR_HINT_BIG,"Clic: la pieza grande, sobre sus vitrinas · R: girarla · Clic derecho: borrar"
+EDITOR_KIND_HEIST,EL ROBO
+EDITOR_LOOT_WHAT,QUE SE ROBA
+EDITOR_LOOT_RANDOM,AL AZAR (LO ELIGE EL JUEGO)
+EDITOR_LOOT_NONE,"Sin elegir: el juego pone una pieza y su historia. Elige una para escribir la tuya."
+EDITOR_LOOT_COLOUR,COLOR
+EDITOR_LOOT_NAME,NOMBRE
+EDITOR_LOOT_BLURB,EN UNA LINEA
+EDITOR_LOOT_BLURB_HINT,De oro macizo. Pesa como un ladrillo.
+EDITOR_LOOT_STORY,LA HISTORIA DEL ROBO
+EDITOR_LOOT_STORY_HINT,"Quién la tenía, por qué hay que llevársela, algo gracioso…"
+EDITOR_LOOT_SECONDS,FORZAR LA VITRINA: %s S
+EDITOR_LOOT_VERB,FORZANDO LA VITRINA
+EDITOR_SHAPE_GEM,GEMA
+EDITOR_SHAPE_TEETH,DENTADURA
+EDITOR_SHAPE_DUCK,PATITO
+EDITOR_SHAPE_SOCK,CALCETIN
+EDITOR_SHAPE_TOAST,TOSTADA
+EDITOR_SHAPE_CROWN,CORONA
+EDITOR_SHAPE_ROCK,QUESO LUNAR
+EDITOR_SHAPE_MASK,MASCARA
+EDITOR_SHAPE_CLOCK,DESPERTADOR
+EDITOR_SHAPE_EGG,HUEVO
+EDITOR_SHAPE_IDOL,IDOLO
+EDITOR_PLAN,VER EL PLANO
+EDITOR_3D_HELP,3D: botón derecho arrastrando gira · rueda acerca · Esc: al plano
+EDITOR_3D_WAITS,"Arregla lo que sale en rojo: en cuanto se pueda jugar, el museo se vuelve a construir."
+GEN_OWNER_1_WHO,la abuela Remedios
+GEN_OWNER_1_OF,de la abuela Remedios
+GEN_OWNER_2_WHO,el abuelo Fermín
+GEN_OWNER_2_OF,del abuelo Fermín
+GEN_OWNER_3_WHO,la panadera Lola
+GEN_OWNER_3_OF,de la panadera Lola
+GEN_OWNER_4_WHO,el alcalde Bigotes
+GEN_OWNER_4_OF,del alcalde Bigotes
+GEN_OWNER_5_WHO,la maestra Pili
+GEN_OWNER_5_OF,de la maestra Pili
+GEN_OWNER_6_WHO,el cartero Tomás
+GEN_OWNER_6_OF,del cartero Tomás
+GEN_OWNER_7_WHO,el farero Ramón
+GEN_OWNER_7_OF,del farero Ramón
+GEN_OWNER_8_WHO,la bruja Maruja
+GEN_OWNER_8_OF,de la bruja Maruja
+GEN_OWNER_9_WHO,la vaca Paquita
+GEN_OWNER_9_OF,de la vaca Paquita
+GEN_OWNER_10_WHO,el pequeño Lucas
+GEN_OWNER_10_OF,del pequeño Lucas
+GEN_OWNER_11_WHO,la capitana Olivia
+GEN_OWNER_11_OF,de la capitana Olivia
+GEN_OWNER_12_WHO,el mago Chispas
+GEN_OWNER_12_OF,del mago Chispas
+GEN_HOW_1,El Barón Von Bostezo se llevó {thing} mientras {who} dormía la siesta.
+GEN_HOW_2,El Barón Von Bostezo se coló en el cumpleaños de {who} y se llevó {thing} entre la tarta y las velas.
+GEN_HOW_3,"El Barón Von Bostezo cambió {thing} por una patata pintada, y {who} tardó una semana en darse cuenta."
+GEN_HOW_4,"Un martes de lluvia, el Barón Von Bostezo bajó por la chimenea de {who} y se llevó {thing} en su sombrero de copa."
+GEN_HOW_5,"El Barón Von Bostezo dijo que se llevaba {thing} «solo un ratito», y {who} lleva tres años esperando."
+GEN_HOW_6,"Disfrazado de repartidor de pizzas, el Barón Von Bostezo llamó a la puerta de {who} y salió corriendo con {thing}."
+GEN_SINCE_1,"Desde entonces, {who} no sonríe ni en las fotos."
+GEN_SINCE_2,"Desde entonces, {who} se pasa el día suspirando junto a la ventana."
+GEN_SINCE_3,"Desde entonces, {who} cuenta ovejas cada noche y no hay manera de dormirse."
+GEN_SINCE_4,"Todo el pueblo firmó una carta para que volviera a casa de {who}, pero el Barón la usó de servilleta."
+GEN_SINCE_5,La Banda del Calcetín le ha prometido a {who} que esta noche vuelve a casa.
+GEN_SINCE_6,"Desde entonces, {who} no tiene ganas de nada, ni siquiera de comer croquetas."
+GEN_TEETH_NOUN_1,la dentadura de los domingos
+GEN_TEETH_NOUN_2,la dentadura postiza
+GEN_TEETH_NOUN_3,la sonrisa de porcelana
+GEN_TEETH_BLURB_1,Con encías rosas. Brilla en la oscuridad.
+GEN_TEETH_BLURB_2,Recién cepillada. Huele a menta.
+GEN_TEETH_VERB,ABRIENDO EL TARRO
+GEN_TEETH_DETAIL_1,Ojo: de vez en cuando castañetea sin avisar.
+GEN_TEETH_DETAIL_2,Dicen que por la noche se ríe sola.
+GEN_DUCK_NOUN_1,el pato de goma
+GEN_DUCK_NOUN_2,el patito de la bañera
+GEN_DUCK_NOUN_3,el pato que canta boleros
+GEN_DUCK_BLURB_1,"De goma, con pajarita."
+GEN_DUCK_BLURB_2,Flota hasta en la sopa.
+GEN_DUCK_VERB,CALMANDO AL PATO
+GEN_DUCK_DETAIL_1,"Cuidado: si se aprieta, suelta un cuac que se oye en todo el museo."
+GEN_DUCK_DETAIL_2,"Nunca se ha hundido, ni siquiera en una tormenta."
+GEN_SOCK_NOUN_1,el calcetín de la suerte
+GEN_SOCK_NOUN_2,el calcetín de rayas
+GEN_SOCK_NOUN_3,el calcetín que nunca se pierde
+GEN_SOCK_BLURB_1,"De lana, a rayas. Talla gigante."
+GEN_SOCK_BLURB_2,Recién lavado... hace un año.
+GEN_SOCK_VERB,DOBLANDO EL CALCETÍN
+GEN_SOCK_DETAIL_1,"Huele un poquito a queso, pero trae muchísima suerte."
+GEN_SOCK_DETAIL_2,Tiene un agujero justo en el dedo gordo.
+GEN_TOAST_NOUN_1,la tostada del desayuno eterno
+GEN_TOAST_NOUN_2,la tostada con forma de corazón
+GEN_TOAST_NOUN_3,la tostada que nunca se enfría
+GEN_TOAST_BLURB_1,Con mantequilla y un poco quemada.
+GEN_TOAST_BLURB_2,"Crujiente por fuera, blandita por dentro."
+GEN_TOAST_VERB,DESPEGANDO LA TOSTADA
+GEN_TOAST_DETAIL_1,Todavía huele a mantequilla recién untada.
+GEN_TOAST_DETAIL_2,Nadie se ha atrevido nunca a darle un mordisco.
+GEN_CROWN_NOUN_1,la corona de las fiestas
+GEN_CROWN_NOUN_2,la corona de reina por un día
+GEN_CROWN_NOUN_3,la corona de cartón dorado
+GEN_CROWN_BLURB_1,Dorada y con piedras de colores.
+GEN_CROWN_BLURB_2,Brilla más que el sol del mediodía.
+GEN_CROWN_VERB,DESATORNILLANDO LA CORONA
+GEN_CROWN_DETAIL_1,Se cae en cuanto alguien estornuda cerca.
+GEN_CROWN_DETAIL_2,"Por detrás lleva un chicle pegado, pero no se nota."
+GEN_ROCK_NOUN_1,el meteorito de queso
+GEN_ROCK_NOUN_2,la piedra lunar agujereada
+GEN_ROCK_NOUN_3,el pedrusco que cayó del cielo
+GEN_ROCK_BLURB_1,Tiene más agujeros que un colador.
+GEN_ROCK_BLURB_2,Cayó de la luna una noche de verano.
+GEN_ROCK_VERB,ENGAÑANDO AL SENSOR
+GEN_ROCK_DETAIL_1,Huele a queso de cabra a tres salas de distancia.
+GEN_ROCK_DETAIL_2,"Si pegas la oreja, se oye roncar a los marcianos."
+GEN_MASK_NOUN_1,la máscara del luchador
+GEN_MASK_NOUN_2,el antifaz de carnaval
+GEN_MASK_NOUN_3,la máscara de la risa
+GEN_MASK_BLURB_1,Con purpurina y plumas de colores.
+GEN_MASK_BLURB_2,Con cejas pintadas y bigote de purpurina.
+GEN_MASK_VERB,CORTANDO EL SELLO
+GEN_MASK_DETAIL_1,Por dentro todavía huele a colonia de luchador.
+GEN_MASK_DETAIL_2,Quien se asoma a sus ojos se echa a reír.
+GEN_CLOCK_NOUN_1,el despertador más puntual del mundo
+GEN_CLOCK_NOUN_2,el reloj de cuco sin cuco
+GEN_CLOCK_NOUN_3,el despertador que canta rancheras
+GEN_CLOCK_BLURB_1,Suena a las siete. Siempre.
+GEN_CLOCK_BLURB_2,Hace tic-tac al revés: cat-cit.
+GEN_CLOCK_VERB,PARANDO LAS AGUJAS
+GEN_CLOCK_DETAIL_1,Da las horas con un estornudo.
+GEN_CLOCK_DETAIL_2,"Si se le da cuerda, baila un poquito."
+GEN_EGG_NOUN_1,el huevo de dragón
+GEN_EGG_NOUN_2,el huevo de oro
+GEN_EGG_NOUN_3,el huevo de pascua gigante
+GEN_EGG_BLURB_1,Todavía está calentito.
+GEN_EGG_BLURB_2,Pesa como una sandía.
+GEN_EGG_VERB,SOLTANDO EL HUEVO
+GEN_EGG_DETAIL_1,A veces algo se mueve dentro y hace «pío».
+GEN_EGG_DETAIL_2,Hay que llevarlo con muchísimo cuidado: es su primer viaje.
+GEN_GEM_NOUN_1,el diamante de la suerte
+GEN_GEM_NOUN_2,la piedra que brilla de noche
+GEN_GEM_NOUN_3,el cristal de los deseos
+GEN_GEM_BLURB_1,Tallado a mano. Brilla solo.
+GEN_GEM_BLURB_2,Hace arcoíris en la pared.
+GEN_GEM_VERB,FORZANDO LA VITRINA
+GEN_GEM_DETAIL_1,De noche brilla tanto que sirve de lámpara.
+GEN_GEM_DETAIL_2,"Si le da la luna, llena la sala de arcoíris."
+GEN_IDOL_NOUN_1,el gnomo del jardín
+GEN_IDOL_NOUN_2,el trofeo de la carrera de sacos
+GEN_IDOL_NOUN_3,el muñeco de piedra
+GEN_IDOL_BLURB_1,Negro y muy brillante.
+GEN_IDOL_BLURB_2,"Cabe en una mano, pero pesa como un gato dormido."
+GEN_IDOL_VERB,ABRIENDO LA CERRADURA
+GEN_IDOL_DETAIL_1,"Si nadie mira, cambia de postura."
+GEN_IDOL_DETAIL_2,Tiene cara de estar aguantando un estornudo.
+BRIEF_TIPS_TITLE,PARA ESTA NOCHE
+BRIEF_TAKES,Para sacarla: quieto %s junto a la vitrina
+BRIEF_DIFFICULTY,%s · %s
+TIP_GUARDS_NONE,Esta noche no hay guardias: ¡aprovecha para practicar!
+TIP_GUARDS_ONE,Hay un guardia
+TIP_GUARDS_MANY,Hay %d guardias
+TIP_AND,y
+TIP_TRAIT_FAST_ONE,es rápido
+TIP_TRAIT_FAST_MANY,son rápidos
+TIP_TRAIT_SLOW_ONE,es lento
+TIP_TRAIT_SLOW_MANY,son lentos
+TIP_TRAIT_SHARP_EARS_ONE,oye muy bien
+TIP_TRAIT_SHARP_EARS_MANY,oyen muy bien
+TIP_TRAIT_DULL_EARS_ONE,oye poco
+TIP_TRAIT_DULL_EARS_MANY,oyen poco
+TIP_TRAIT_FAR_EYES_ONE,ve muy lejos
+TIP_TRAIT_FAR_EYES_MANY,ven muy lejos
+TIP_TRAIT_SHORT_EYES_ONE,ve poco
+TIP_TRAIT_SHORT_EYES_MANY,ven poco
+TIP_TRAIT_SMART_ONE,es muy listo
+TIP_TRAIT_SMART_MANY,son muy listos
+TIP_CROUCH,"Cerca de un guardia, ve a gatas: haces menos ruido."
+TIP_CROUCH_SHARP_ONE,"Tiene un oído finísimo: cerca de él, ve siempre a gatas."
+TIP_CROUCH_SHARP_MANY,"Tienen un oído finísimo: cerca de ellos, ve siempre a gatas."
+TIP_EARS_DULL_ONE,"Está medio sordo: puedes correr, pero que no te vea."
+TIP_EARS_DULL_MANY,"Están medio sordos: puedes correr, pero que no te vean."
+TIP_EYES_FAR_ONE,Su linterna llega muy lejos: escóndete tras vitrinas y paredes.
+TIP_EYES_FAR_MANY,Sus linternas llegan muy lejos: escóndete tras vitrinas y paredes.
+TIP_EYES_SHORT_ONE,Su linterna no llega lejos: puedes pasar cerca si no te pones delante.
+TIP_EYES_SHORT_MANY,Sus linternas no llegan lejos: puedes pasar cerca si no te pones delante.
+TIP_FAST_ONE,"Si te ve, te alcanza enseguida: mejor que no te vea."
+TIP_FAST_MANY,"Si te ven, te alcanzan enseguida: mejor que no te vean."
+TIP_SLOW_ONE,"Es lento: si te ve, corre y escóndete."
+TIP_SLOW_MANY,"Son lentos: si te ven, corre y escóndete."
+TIP_POST,Un guardia no se mueve de su sitio: fíjate hacia dónde mira y pasa cuando mire a otro lado.
+TIP_JUMPY,Un solo ruido raro basta para que den la alarma.
+TIP_GRUDGE_ONE,"Cuando se mosquea, tarda mucho en calmarse: si te busca, espera bien escondido."
+TIP_GRUDGE_MANY,"Cuando se mosquean, tardan mucho en calmarse: si te buscan, espera bien escondido."
+TIP_LIGHTS_ONE,"Si se pone en alerta, enciende las luces de la sala."
+TIP_LIGHTS_MANY,"Si se ponen en alerta, encienden las luces de la sala."
+TIP_CASE_ALARM,"La vitrina tiene alarma: cuando la abras sonará y vendrán los guardias. ¡Luego, corre a la salida!"
+TIP_CASE_QUIET,La vitrina no tiene alarma: se abre sin hacer ruido.
+TIP_MAP,El museo es muy grande: pulsa M (Y en el mando) para mirar el mapa.
+GALLERY_ANCIENT,la sala del mundo antiguo
+GALLERY_ANCIENT_OF,de la sala del mundo antiguo
+GALLERY_MEDIEVAL,la sala medieval
+GALLERY_MEDIEVAL_OF,de la sala medieval
+GALLERY_PREHISTORY,la sala de la prehistoria
+GALLERY_PREHISTORY_OF,de la sala de la prehistoria
+GALLERY_NATURE,la sala de la naturaleza
+GALLERY_NATURE_OF,de la sala de la naturaleza
+GALLERY_MODERN,la sala de la edad moderna
+GALLERY_MODERN_OF,de la sala de la edad moderna

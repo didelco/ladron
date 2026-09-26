@@ -254,16 +254,24 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 # --- Panels --------------------------------------------------------------------
 
 ## A full-screen menu. items, top to bottom, each one of:
-##   {"title": text, "colour": Color, "size": int}   the heading
-##   {"text": text, "size"?, "colour"?, "wrap"?}      a line, or a paragraph
+##   {"title": text, "colour": Color, "size": int, "align"?}
+##                                                    the heading ("left" for
+##                                                    against the left edge)
+##   {"text": text, "size"?, "colour"?, "wrap"?, "width"?, "align"?}
+##                                                    a line, or a paragraph
+##                                                    (wrap at width)
+##   {"columns": [{"items", "width"?}], "separation"?}
+##                                                    items side by side (_columns)
 ##   {"picture": Texture2D, "smooth"?, "height"?}     the map, the piece
 ##   {"buttons": [{"text", "call", "icon"?, "colour"?}], "row": bool, "focus"?: int}
 ##                                                    text buttons, all one width
 ##                                                    ("step" for "call": a setting, _stepper)
 ##   {"cards": [{"title", "text"?, "picture", "call", "colour"?, "selected"?,
 ##     "focus"?}], "width"?: int}                     big picture cards in a row
-##   {"nights": [{"n", "colour", "locked", "selected", "call"}]}
-##                                                    the story's path of nights
+##   {"nights": [{"n", "colour", "locked", "selected", "call", "open"?}],
+##     "style"?, "width"?, "height"?}                 the story's maps (NightMap):
+##                                                    landing on a stop calls
+##                                                    "call", pressing it "open"
 ##   {"legend": [keys], "thieves": [Color], "loot": Color}
 ##                                                    the map's legend (LEGEND)
 ##   {"footer": text}                                 what to press
@@ -272,150 +280,18 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 func show_menu(items: Array) -> void:
 	for c in _panel_box.get_children():
 		c.queue_free()
-	var first: Button = null
-	var focus_on: Button = null
-	# Rows of focusable controls, top to bottom, for the arrows.
-	var rows: Array = []
+	# What the items leave behind: rows of focusable controls, top to
+	# bottom, for the arrows, and the control to start on.
+	var st := MenuState.new()
 	_named.clear()
 	_nights.clear()
 	_menu_map = null
 	_titles.clear()
 	for item in items:
-		if item.has("title"):
-			# Pixel faces run wide: the arcade title at about two thirds the size.
-			var t := _label(int(item.get("size", 56) * 0.55), item.get("colour", Color("#f0c46a")), _panel_box, true)
-			t.text = item.title
-			t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			t.add_theme_constant_override("outline_size", 14)
-			t.add_theme_color_override("font_outline_color", Color("#2a150c"))
-			t.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.7))
-			t.add_theme_constant_override("shadow_offset_x", 0)
-			t.add_theme_constant_override("shadow_offset_y", 7)
-			t.resized.connect(func() -> void: t.pivot_offset = t.size / 2)
-			_titles.append(t)
-			# Room for it to bob without brushing what comes next.
-			var gap := Control.new()
-			gap.custom_minimum_size = Vector2(0, 6)
-			_panel_box.add_child(gap)
-		elif item.has("text"):
-			var l := _label(int(item.get("size", 20) * 0.85), item.get("colour", C.text), _panel_box)
-			l.text = item.text
-			if item.has("id"):
-				_named[item.id] = l
-			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			if item.get("wrap", false):
-				l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-				l.custom_minimum_size = Vector2(560, 0)
-		elif item.has("gap"):
-			var gap := Control.new()
-			gap.custom_minimum_size = Vector2(0, item.gap)
-			_panel_box.add_child(gap)
-		elif item.has("map"):
-			# The plan on the folded paper map, unfolding as the screen opens.
-			var stage := MapStage.new()
-			_panel_box.add_child(stage)
-			stage.print_plan(item.map)
-			stage.unfold()
-			var r := TextureRect.new()
-			r.texture = stage.get_texture()
-			r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			r.custom_minimum_size = Vector2(MapStage.SIZE) * (float(item.get("height", 400.0)) / MapStage.SIZE.y)
-			r.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-			_panel_box.add_child(r)
-			# The arrows lean it, as in play.
-			_menu_map = stage
-		elif item.has("legend"):
-			legend_row(_panel_box, item.legend, item.get("thieves", []), item.get("loot", Color.WHITE))
-		elif item.has("stage"):
-			var stage: MenuStage = item.stage
-			_panel_box.add_child(stage)
-			stage.active = true
-			var r := TextureRect.new()
-			r.texture = stage.get_texture()
-			r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			r.custom_minimum_size = Vector2(stage.size) * (float(item.get("height", 200.0)) / stage.size.y)
-			_panel_box.add_child(r)
-		elif item.has("picture"):
-			var picture: Texture2D = item.picture
-			var r := TextureRect.new()
-			r.texture = picture
-			r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			var size := Vector2(picture.get_size())
-			var k := minf(720.0 / size.x, float(item.get("height", 420.0)) / size.y)
-			r.custom_minimum_size = size * k
-			r.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if item.get("smooth", false) else CanvasItem.TEXTURE_FILTER_NEAREST
-			_panel_box.add_child(r)
-		elif item.has("cards"):
-			var row := HBoxContainer.new()
-			row.alignment = BoxContainer.ALIGNMENT_CENTER
-			row.add_theme_constant_override("separation", 16)
-			_panel_box.add_child(row)
-			var line: Array = []
-			for c in item.cards:
-				var card := _card(c, item.get("width", 300))
-				row.add_child(card)
-				card.set_meta("selected", c.get("selected", false) or c.get("focus", false))
-				line.append(card)
-				if first == null or c.get("focus", false):
-					first = card
-			rows.append(line)
-		elif item.has("nights"):
-			# The nights as stops on a map, the road winding through them.
-			var map := NightMap.new()
-			map.custom_minimum_size = Vector2(item.get("width", 1120), item.get("height", 190))
-			map.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-			_panel_box.add_child(map)
-			var nights: Array = item.nights
-			var line: Array = []
-			for i in nights.size():
-				var node := _night(nights[i])
-				map.add_stop(node, nights[i].locked)
-				if not nights[i].locked:
-					line.append(node)
-					node.set_meta("selected", nights[i].selected)
-				if nights[i].get("selected", false):
-					first = node
-			for node in line:
-				node.set_meta("sticky", true)
-			rows.append(line)
-		elif item.has("buttons"):
-			var box: BoxContainer = HBoxContainer.new() if item.get("row", false) else VBoxContainer.new()
-			box.alignment = BoxContainer.ALIGNMENT_CENTER
-			box.add_theme_constant_override("separation", 24 if item.get("row", false) else 10)
-			_panel_box.add_child(box)
-			var line: Array = []
-			for bi in item.buttons.size():
-				var b: Dictionary = item.buttons[bi]
-				var button := _button(b)
-				# The one to start on, when it is not the first.
-				if item.get("focus", -1) == bi:
-					focus_on = button
-				if not b.has("icon"):
-					# big: the one thing to do next; small: the way back.
-					if item.get("big", false):
-						button.custom_minimum_size = Vector2(380, 62)
-						button.add_theme_font_size_override("font_size", 17)
-					elif item.get("small", false):
-						button.custom_minimum_size = Vector2(item.get("width", 240), 38)
-						button.add_theme_font_size_override("font_size", 10)
-					else:
-						button.custom_minimum_size = Vector2(240 if item.get("row", false) else 400, 42)
-				box.add_child(button)
-				if item.get("row", false):
-					line.append(button)
-				else:
-					rows.append([button])
-				if first == null:
-					first = button
-			if not line.is_empty():
-				rows.append(line)
-		elif item.has("footer"):
-			var f := _label(14, C.gold, _panel_box, true)
-			f.text = item.footer
-			f.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_menu_item(item, _panel_box, st)
+	var rows := st.rows
+	var first := st.first
+	var focus_on := st.focus_on
 	# Only a menu coming up over the game fades in; one replacing another
 	# (a difficulty picked, a night chosen) is rebuilt in place, at once.
 	if not _shown:
@@ -442,6 +318,172 @@ func show_menu(items: Array) -> void:
 		_quiet = true
 		first.grab_focus.call_deferred()
 		set_deferred("_quiet", false)
+
+
+## A menu being built: its rows of focusable controls, top to bottom, the
+## first one and the one to start on, if not the first.
+class MenuState:
+	var rows: Array = []
+	var first: Button = null
+	var focus_on: Button = null
+
+
+## One item of a menu (show_menu), added to parent.
+func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
+	if item.has("columns"):
+		_columns(item, parent, st)
+	elif item.has("title"):
+		# Pixel faces run wide: the arcade title at about two thirds the size.
+		var t := _label(int(item.get("size", 56) * 0.55), item.get("colour", Color("#f0c46a")), parent, true)
+		t.text = item.title
+		t.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT if item.get("align", "") == "left" else HORIZONTAL_ALIGNMENT_CENTER
+		t.add_theme_constant_override("outline_size", 14)
+		t.add_theme_color_override("font_outline_color", Color("#2a150c"))
+		t.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.7))
+		t.add_theme_constant_override("shadow_offset_x", 0)
+		t.add_theme_constant_override("shadow_offset_y", 7)
+		t.resized.connect(func() -> void: t.pivot_offset = t.size / 2)
+		_titles.append(t)
+		# Room for it to bob without brushing what comes next.
+		var gap := Control.new()
+		gap.custom_minimum_size = Vector2(0, 6)
+		parent.add_child(gap)
+	elif item.has("text"):
+		var l := _label(int(item.get("size", 20) * 0.85), item.get("colour", C.text), parent)
+		l.text = item.text
+		if item.has("id"):
+			_named[item.id] = l
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT if item.get("align", "") == "left" else HORIZONTAL_ALIGNMENT_CENTER
+		if item.get("wrap", false):
+			l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			l.custom_minimum_size = Vector2(item.get("width", 560), 0)
+	elif item.has("gap"):
+		var gap := Control.new()
+		gap.custom_minimum_size = Vector2(0, item.gap)
+		parent.add_child(gap)
+	elif item.has("map"):
+		# The plan on the folded paper map, unfolding as the screen opens.
+		var stage := MapStage.new()
+		parent.add_child(stage)
+		stage.print_plan(item.map)
+		stage.unfold()
+		var r := TextureRect.new()
+		r.texture = stage.get_texture()
+		r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		r.custom_minimum_size = Vector2(MapStage.SIZE) * (float(item.get("height", 400.0)) / MapStage.SIZE.y)
+		r.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		parent.add_child(r)
+		# The arrows lean it, as in play.
+		_menu_map = stage
+	elif item.has("legend"):
+		legend_row(parent, item.legend, item.get("thieves", []), item.get("loot", Color.WHITE))
+	elif item.has("stage"):
+		var stage: MenuStage = item.stage
+		parent.add_child(stage)
+		stage.active = true
+		var r := TextureRect.new()
+		r.texture = stage.get_texture()
+		r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		r.custom_minimum_size = Vector2(stage.size) * (float(item.get("height", 200.0)) / stage.size.y)
+		parent.add_child(r)
+	elif item.has("picture"):
+		var picture: Texture2D = item.picture
+		var r := TextureRect.new()
+		r.texture = picture
+		r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		var size := Vector2(picture.get_size())
+		var k := minf(720.0 / size.x, float(item.get("height", 420.0)) / size.y)
+		r.custom_minimum_size = size * k
+		r.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if item.get("smooth", false) else CanvasItem.TEXTURE_FILTER_NEAREST
+		parent.add_child(r)
+	elif item.has("cards"):
+		var row := HBoxContainer.new()
+		row.alignment = BoxContainer.ALIGNMENT_CENTER
+		row.add_theme_constant_override("separation", 16)
+		parent.add_child(row)
+		var line: Array = []
+		for c in item.cards:
+			var card := _card(c, item.get("width", 300))
+			row.add_child(card)
+			card.set_meta("selected", c.get("selected", false) or c.get("focus", false))
+			line.append(card)
+			if st.first == null or c.get("focus", false):
+				st.first = card
+		st.rows.append(line)
+	elif item.has("nights"):
+		# The nights as stops on a map, the road winding through them.
+		var map := NightMap.new(item)
+		map.custom_minimum_size = Vector2(item.get("width", 1120), item.get("height", 190))
+		map.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		parent.add_child(map)
+		var nights: Array = item.nights
+		var line: Array = []
+		for i in nights.size():
+			var node := _night(nights[i])
+			map.add_stop(node, nights[i].locked)
+			if not nights[i].locked:
+				line.append(node)
+				node.set_meta("selected", nights[i].selected)
+			if nights[i].get("selected", false):
+				st.first = node
+		for node in line:
+			node.set_meta("sticky", true)
+		st.rows.append(line)
+	elif item.has("buttons"):
+		var box: BoxContainer = HBoxContainer.new() if item.get("row", false) else VBoxContainer.new()
+		box.alignment = BoxContainer.ALIGNMENT_CENTER
+		box.add_theme_constant_override("separation", 24 if item.get("row", false) else 10)
+		parent.add_child(box)
+		var line: Array = []
+		for bi in item.buttons.size():
+			var b: Dictionary = item.buttons[bi]
+			var button := _button(b)
+			# The one to start on, when it is not the first.
+			if item.get("focus", -1) == bi:
+				st.focus_on = button
+			if not b.has("icon"):
+				# big: the one thing to do next; small: the way back.
+				if item.get("big", false):
+					button.custom_minimum_size = Vector2(380, 62)
+					button.add_theme_font_size_override("font_size", 17)
+				elif item.get("small", false):
+					button.custom_minimum_size = Vector2(item.get("width", 240), 38)
+					button.add_theme_font_size_override("font_size", 10)
+				else:
+					button.custom_minimum_size = Vector2(240 if item.get("row", false) else 400, 42)
+			box.add_child(button)
+			if item.get("row", false):
+				line.append(button)
+			else:
+				st.rows.append([button])
+			if st.first == null:
+				st.first = button
+		if not line.is_empty():
+			st.rows.append(line)
+	elif item.has("footer"):
+		var f := _label(14, C.gold, parent, true)
+		f.text = item.footer
+		f.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+
+
+## Items side by side: {"columns": [{"items": [...], "width"?: int}, ...],
+## "separation"?: int}, each column its own stack of menu items.
+func _columns(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", item.get("separation", 40))
+	parent.add_child(row)
+	for col in item.columns:
+		var box := VBoxContainer.new()
+		box.add_theme_constant_override("separation", col.get("separation", 10))
+		box.alignment = BoxContainer.ALIGNMENT_CENTER if col.get("middle", false) else BoxContainer.ALIGNMENT_BEGIN
+		box.custom_minimum_size.x = col.get("width", 0)
+		row.add_child(box)
+		for sub in col.items:
+			_menu_item(sub, box, st)
 
 
 ## Labels a menu gave an id, to change without rebuilding it.
@@ -736,7 +778,7 @@ func _night(n: Dictionary) -> Button:
 				other.set_meta("selected", other == b)
 			_rewire(_rows)
 			n.call.call())
-		b.pressed.connect(n.call)
+		b.pressed.connect(n.get("open", n.call))
 		_nights.append(b)
 	_lift(b)
 	return b

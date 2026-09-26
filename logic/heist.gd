@@ -14,17 +14,6 @@ extends RefCounted
 ## case opens in silence; let go, the work stops where it was. Only if the
 ## partner is caught does the one left force it alone, alarm and all.
 
-## Each piece's name, blurb, verb (on screen while forcing it) and story
-## are keys into Text: translated() has them in words.
-const LOOT := [
-	{"name": "LOOT_1_NAME", "blurb": "LOOT_1_BLURB", "verb": "LOOT_1_VERB", "seconds": 3.0, "colour": "#5b8cff", "shape": "gem", "story": "LOOT_1_TALE"},
-	{"name": "LOOT_2_NAME", "blurb": "LOOT_2_BLURB", "verb": "LOOT_2_VERB", "seconds": 4.0, "colour": "#e8c89a", "shape": "egg", "story": "LOOT_2_TALE"},
-	{"name": "LOOT_3_NAME", "blurb": "LOOT_3_BLURB", "verb": "LOOT_3_VERB", "seconds": 4.5, "colour": "#f0c46a", "shape": "crown", "story": "LOOT_3_TALE"},
-	{"name": "LOOT_4_NAME", "blurb": "LOOT_4_BLURB", "verb": "LOOT_4_VERB", "seconds": 5.0, "colour": "#9aa3b5", "shape": "rock", "story": "LOOT_4_TALE"},
-	{"name": "LOOT_5_NAME", "blurb": "LOOT_5_BLURB", "verb": "LOOT_5_VERB", "seconds": 5.5, "colour": "#3ddc84", "shape": "mask", "story": "LOOT_5_TALE"},
-	{"name": "LOOT_6_NAME", "blurb": "LOOT_6_BLURB", "verb": "LOOT_6_VERB", "seconds": 6.0, "colour": "#b07cff", "shape": "idol", "story": "LOOT_6_TALE"},
-]
-
 ## The words of a piece, as keys into Text.
 const TEXT_FIELDS := ["name", "blurb", "verb", "story"]
 
@@ -42,7 +31,7 @@ const ALARM_EVERY_MS := 900.0
 
 # The job for the current level.
 static var level := 1
-static var loot: Dictionary = LOOT[0]
+static var loot: Dictionary = {}
 ## the case tile
 static var at := Vector2i.ZERO
 static var start := Vector2i.ONE
@@ -84,16 +73,16 @@ static var hands := 1
 static var short_hand := false
 
 
-## The piece for a level (1-based): past the list it loops, a second slower each lap.
-static func loot_for(n: int) -> Dictionary:
-	var l := translated(LOOT[(n - 1) % LOOT.size()])
-	l.seconds += (n - 1) / LOOT.size()
+## The piece for night n (1-based) of a run nobody wrote: made up from the
+## heist's seed (LootGen), a little slower each night.
+static func loot_for(n: int, seed := 0) -> Dictionary:
+	var l := LootGen.make(seed, n)
 	# Harder locks on a harder night, in half seconds.
 	l.seconds = maxf(0.5, snappedf(l.seconds * Sim.tuning("lock"), 0.5))
 	return l
 
 
-## A piece (from LOOT or a story night) with its words translated.
+## A story night's piece with its words translated.
 static func translated(piece: Dictionary) -> Dictionary:
 	return Text.fields(piece, TEXT_FIELDS)
 
@@ -102,9 +91,13 @@ static func translated(piece: Dictionary) -> Dictionary:
 ## gallery, among the furthest from the entrance. The door: on the outer
 ## wall, far from the piece and not beside the entrance. Both at random among
 ## the good candidates, so two museums that look alike do not play alike.
-static func plan_job(n: int, piece: Dictionary = {}, gang: int = 1) -> void:
+## fixed: what a saved map (MapFile.job) has already decided — "at", the
+## case, and "exit", the floor tile before the door.
+static func plan_job(n: int, piece: Dictionary = {}, gang: int = 1, fixed: Dictionary = {}) -> void:
 	level = n
-	loot = loot_for(n) if piece.is_empty() else piece.duplicate()
+	# No piece given: one made up from the museum's seed, so the same
+	# museum always hides the same thing.
+	loot = loot_for(n, Museum.seed_used) if piece.is_empty() else piece.duplicate()
 	team = gang >= 2
 	hands = 2 if gang >= 3 else 1
 	panel2 = Vector2i(-1, -1)
@@ -139,6 +132,7 @@ static func plan_job(n: int, piece: Dictionary = {}, gang: int = 1) -> void:
 	cases.sort_custom(func(a, b): return a[1] > b[1])
 	var top := cases.slice(0, maxi(1, ceili(cases.size() / 4.0)))
 	at = top[randi() % top.size()][0] if not top.is_empty() else Vector2i.ONE
+	at = fixed.get("at", at)
 
 	# The tile you will stand on: the nearest to the entrance.
 	var stand := start
@@ -171,7 +165,12 @@ static func plan_job(n: int, piece: Dictionary = {}, gang: int = 1) -> void:
 			doors.append([t, d, dl + ds * 0.5])
 	doors.sort_custom(func(a, b): return a[2] > b[2])
 	var good := doors.slice(0, maxi(1, ceili(doors.size() / 5.0)))
-	if good.is_empty():
+	if fixed.has("exit"):
+		exit = fixed.exit
+		for d in Museum.DIRS:
+			if Museum.is_wall(exit.x + d.x + 0.5, exit.y + d.y + 0.5) and Museum.is_outside(exit.x + d.x * 2, exit.y + d.y * 2):
+				exit_face = d
+	elif good.is_empty():
 		exit = start
 		exit_face = Vector2i(-1, 0)
 	else:

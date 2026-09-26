@@ -4,7 +4,8 @@ extends RefCounted
 ##
 ## Static state, like the module it comes from: the simulation, the guards'
 ## minds and the scene all read the one museum being played. regenerate()
-## builds a new one; everything else here answers questions about it — what
+## builds a new one, load_grid() one from a plan made elsewhere (a saved
+## map, MapFile); everything else here answers questions about it — what
 ## is at a tile, what a guard can see, how a sound carries, the way from here
 ## to there.
 
@@ -15,9 +16,10 @@ const SIZES := {
 	"large": {"w": 49, "h": 35, "guards": 5},
 }
 
-## The galleries of the collection: in English for Laya, and the key of
-## their name on screen (Text), which has a GALLERY_*_OF form too ("of the
-## ...", for the corridors beside them).
+## Galleries by name alone, from before the collection went by themes (their
+## names now come from Themes): in English for Laya, and the key of their
+## name on screen (Text), which has a GALLERY_*_OF form too ("of the ...",
+## for the corridors beside them).
 const GALLERIES := [
 	["the Egyptian gallery", "GALLERY_EGYPTIAN_GALLERY"],
 	["the mineral hall", "GALLERY_MINERAL_HALL"],
@@ -45,6 +47,9 @@ const GALLERIES := [
 	["the globe room", "GALLERY_GLOBE_ROOM"],
 ]
 
+## A second, third... gallery of the same theme, in Laya's English.
+const ORDINALS := ["second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth"]
+
 ## Longest stretch of corridor that still counts as one place.
 const STRETCH := 12
 const DIRS: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
@@ -57,6 +62,8 @@ class Room:
 	var rect: Rect2i
 	var switch_at: Vector2i
 	var face: Vector2i
+	## what it shows (Themes): its pieces, its paintings, its name
+	var theme: String = ""
 
 
 ## A place guards think and talk in: a gallery by its own name, or a stretch
@@ -93,6 +100,8 @@ static var zones: Array[Zone] = []
 ## milliseconds each room's lights stay on for; 0 is dark
 static var lights_left: Array[float] = []
 static var spawn := Vector2i(1, 1)
+## A museum of one theme (Themes), every gallery the same; "" mixes them.
+static var only_theme := ""
 ## bumped on every regenerate, so views can rebuild what they cached
 static var version := 0
 static var _room_index := PackedInt32Array()
@@ -109,20 +118,27 @@ static var _zone_index := PackedInt32Array()
 ## Build a new museum: its size and outline, then everything in it. An empty
 ## outline picks one at random, from the seed.
 static func regenerate(seed: int, size: String = "small", outline: String = "") -> void:
-	seed_used = seed
 	var dims: Dictionary = SIZES[size]
 	var rand := Mulberry32.new(seed ^ 0x5bd1e995)
 	shape = outline if outline != "" else MapGen.SHAPES[rand.below(MapGen.SHAPES.size())]
 	size_name = size
-	w = dims.w
-	h = dims.h
+	var made := MapGen.generate(seed, dims.w, dims.h, shape)
+	load_grid(seed, made.w, made.h, made.grid, made.outside, made.ring, made.spawn, made.big, made.rooms, rand)
 
-	var made := MapGen.generate(seed, w, h, shape)
-	grid = made.grid
-	outside = made.outside
-	ring = made.ring
-	spawn = made.spawn
-	big_pieces = made.big
+
+## A museum from a plan made elsewhere — the generator, or a saved map
+## (MapFile) — and everything built on it: the round, the rooms and their
+## switches, the named places. The rooms' names draw from rand.
+static func load_grid(seed: int, width: int, height: int, tiles: PackedInt32Array, out: PackedByteArray,
+		edge: PackedByteArray, start: Vector2i, big: Array[Dictionary], rects: Array[Rect2i], rand: Mulberry32) -> void:
+	seed_used = seed
+	w = width
+	h = height
+	grid = tiles
+	outside = out
+	ring = edge
+	spawn = start
+	big_pieces = big
 
 	open_tiles.clear()
 	cover_tiles.clear()
@@ -140,7 +156,7 @@ static func regenerate(seed: int, size: String = "small", outline: String = "") 
 	_room_index = PackedInt32Array()
 	_room_index.resize(w * h)
 	_room_index.fill(-1)
-	for r in made.rooms:
+	for r in rects:
 		var sw := _place_switch(r)
 		if sw.is_empty():
 			continue
@@ -461,6 +477,37 @@ static func _place_switch(r: Rect2i) -> Dictionary:
 	return spots[0]
 
 
+## Each gallery's theme. A museum of one theme (only_theme) has it in every
+## gallery; otherwise the themes go round in a shuffled order, and a gallery
+## with a big piece in it takes the theme the piece belongs to (the dinosaur
+## to prehistory), swapping with whichever gallery had it.
+static func _room_themes(rand: Mulberry32) -> Array:
+	var out: Array = []
+	if only_theme != "":
+		for r in rooms:
+			out.append(only_theme)
+		return out
+	var order: Array = Themes.ids()
+	for i in range(order.size() - 1, 0, -1):
+		var j := int(floor(rand.next() * (i + 1)))
+		var tmp = order[i]
+		order[i] = order[j]
+		order[j] = tmp
+	for r in rooms:
+		out.append(order[r.id % order.size()])
+	for b in big_pieces:
+		var want := Themes.for_big(b.kind)
+		var rr: Rect2i = b.rect
+		var here := room_at(rr.position.x + rr.size.x / 2.0, rr.position.y + rr.size.y / 2.0)
+		if want == "" or here == null or out[here.id] == want:
+			continue
+		var other := out.find(want)
+		if other >= 0:
+			out[other] = out[here.id]
+		out[here.id] = want
+	return out
+
+
 ## Split the museum into named places: each gallery whole, the corridors into
 ## stretches of up to STRETCH tiles, each named after the gallery it runs past.
 static func _build_zones(rand: Mulberry32) -> void:
@@ -469,18 +516,18 @@ static func _build_zones(rand: Mulberry32) -> void:
 	_zone_index.resize(w * h)
 	_zone_index.fill(-1)
 
-	var names := GALLERIES.duplicate()
-	for i in range(names.size() - 1, 0, -1):
-		var j := int(floor(rand.next() * (i + 1)))
-		var tmp = names[i]
-		names[i] = names[j]
-		names[j] = tmp
+	var themes := _room_themes(rand)
+	var count := {}
 	for r in rooms:
-		var pair: Array = names[r.id % names.size()]
-		var n := r.id / names.size()
+		r.theme = themes[r.id]
+		var pair: Array = Themes.gallery(r.theme)
+		var n: int = count.get(r.theme, 0)
+		count[r.theme] = n + 1
 		var z := Zone.new()
 		z.id = zones.size()
-		z.name = (pair[0] as String).replace("the ", "the second ") if n > 0 else pair[0]
+		z.name = (pair[0] as String).replace("the ", "the %s " % ORDINALS[mini(n - 1, ORDINALS.size() - 1)]) if n > 0 else pair[0]
+		if n > ORDINALS.size():
+			z.name += " %d" % (n + 1)
 		z.label = Text.t(pair[1])
 		z.label_of = Text.t(pair[1] + "_OF")
 		if n > 0:

@@ -402,6 +402,25 @@ static func new_guards(count: int = 2) -> Array[Guard]:
 	return out
 
 
+## Guards where a saved map stands them (MapFile.guards), in order; the rest
+## keep the stops new_guards gave them. Each walks its round from the stop
+## nearest where it stands.
+static func place_guards(guards: Array[Guard], at: Array[Vector2i]) -> void:
+	for i in mini(guards.size(), at.size()):
+		var g := guards[i]
+		var t := at[i]
+		g.x = t.x + 0.5
+		g.y = t.y + 0.5
+		g.target = t
+		var best := INF
+		for k in Museum.watchpoints.size():
+			var w := Museum.watchpoints[k]
+			var d := Museum.dist(w.x, w.y, t.x, t.y)
+			if d < best:
+				best = d
+				g.stop = k
+
+
 # --- Moving ----------------------------------------------------------------
 
 ## Push a circle out of every solid tile it overlaps: past the corner of a case

@@ -11,8 +11,9 @@ extends Node3D
 ## Drawing: the model's own materials, with a rim of whatever light is about,
 ## an ink outline from an inflated inside-out copy (the material's next pass)
 ## and Godot's stencil x-ray: where something covers the figure it shows
-## through as a flat silhouette in its state colour. A thief's headband, belt
-## and cuffs take the player's colour.
+## through as a flat silhouette in its state colour. A thief's suit is the
+## player's colour, its lapels a shade darker, and the headband, belt and
+## cuffs black: a bright figure on a dark floor.
 
 const MODELS := {
 	"thief": preload("res://assets/models/ninja.glb"),
@@ -44,7 +45,11 @@ const RIM_TINT := 0.35
 ## Materials too small or too bright for an outline (eyes, brows, badges).
 const NO_INK := ["ojo", "pupila", "ceja", "vello", "oro", "lente", "piloto", "rejilla"]
 ## The thief's materials in the player's colour.
-const PLAYER_COLOUR := ["cinta"]
+const PLAYER_COLOUR := ["traje"]
+## A shade of the player's colour, and what is black on a coloured suit.
+const PLAYER_SHADE := ["solapa"]
+const BLACK := ["cinta"]
+const BELT := Color("#141418")
 
 var guard := false
 var _kind := "thief"
@@ -116,7 +121,7 @@ func _build(colour: Color) -> void:
 
 
 ## Each surface gets its own copy of its material, with the rim, the ink and
-## the x-ray added (and the player's colour on a thief's headband and belt).
+## the x-ray added (and the player's colours on a thief's suit).
 func _dress(mi: MeshInstance3D, colour: Color) -> void:
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 	for i in mi.mesh.get_surface_count():
@@ -127,6 +132,10 @@ func _dress(mi: MeshInstance3D, colour: Color) -> void:
 		var name := src.resource_name
 		if not guard and name in PLAYER_COLOUR:
 			m.albedo_color = colour
+		elif not guard and name in PLAYER_SHADE:
+			m.albedo_color = colour.darkened(0.3)
+		elif not guard and name in BLACK:
+			m.albedo_color = BELT
 		if m.shading_mode != BaseMaterial3D.SHADING_MODE_UNSHADED and not m.emission_enabled:
 			m.rim_enabled = true
 			m.rim = RIM

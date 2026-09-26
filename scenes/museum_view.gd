@@ -65,14 +65,45 @@ const THEMES := [
 		"cap": Color("#5a4a36"), "trim": Color("#9a7a3c"), "skirt": Color("#140c07")},
 ]
 
+## Every look there is, the generator's and the story museums': the floor
+## of one and the walls of another can be mixed (the map editor does).
+static func looks() -> Array:
+	var all: Array = THEMES.duplicate()
+	for m in Story.MUSEUMS:
+		all.append(m.palette)
+	return all
+
+
+const FLOOR_KEYS := ["floor", "stone", "stone2", "joint", "gloss"]
+const WALL_KEYS := ["paper", "paper2", "wallpaper", "wainscot", "dado", "cap", "trim", "skirt"]
+
+
+## The floor of look `floor_i` and the walls of look `wall_i` (looks()).
+static func mix(floor_i: int, wall_i: int) -> Dictionary:
+	var all := looks()
+	var out := {}
+	for k in FLOOR_KEYS:
+		out[k] = all[floor_i][k]
+	for k in WALL_KEYS:
+		out[k] = all[wall_i][k]
+	return out
+
+
 ## The wall tiles with a painting on them, so a lamp is not hung over one.
 var _hung := {}
 ## this museum's style (THEMES), from its seed: the same night, the same look
 var theme: Dictionary = THEMES[0]
+## A style to build in instead (THEMES keys): the story's museums each have
+## their own (Story.palette). Empty, the style comes from the seed.
+static var palette := {}
+## What stands on a case, chosen by hand (a map from the editor): tile to one
+## of EXHIBITS. The rest, and every case when empty, as the hash says.
+static var exhibits := {}
+const EXHIBITS := ["butterflies", "minerals", "ammonite", "meteorite", "statue", "skull", "lego_skull", "diorama", "amphora", "globe", "totem", "bear"]
 
 
 func build() -> void:
-	theme = THEMES[posmod(Museum.seed_used, THEMES.size())]
+	theme = palette if not palette.is_empty() else THEMES[posmod(Museum.seed_used, THEMES.size())]
 	_floor()
 	_walls()
 	_exhibits()
@@ -245,22 +276,8 @@ func _cap_shade(t: Vector2i) -> float:
 ## rules hide someone on all fours behind any of them. The job's own case is
 ## an empty vitrine: the piece itself is drawn by the game, glowing.
 func _exhibits() -> void:
-	var bear := Vector2i(-1, -1)
-	var best_room := 12
-	for t in Museum.cover_tiles:
-		if t == Heist.at:
-			continue
-		var room := 0
-		for dy in range(-2, 3):
-			for dx in range(-2, 3):
-				if Museum.tile_at(t.x + dx + 0.5, t.y + dy + 0.5) == Tiles.FLOOR:
-					room += 1
-		if room > best_room:
-			best_room = room
-			bear = t
 	for b in Museum.big_pieces:
 		_big_piece(b.kind, b.rect)
-	var i := 0
 	for t in Museum.cover_tiles:
 		if not Museum.big_piece_at(t).is_empty():
 			continue
@@ -269,43 +286,67 @@ func _exhibits() -> void:
 		add_child(piece)
 		_base(piece)
 		var yaw := _hash01(t.x, t.y, 3) * TAU
-		var kind := int(_hash01(t.x, t.y) * 12)
 		if t == Heist.at:
 			_vitrine(piece, null)
-		elif t == bear:
-			var p := _pivot(piece, Vector3.ZERO, yaw)
-			_plinth(p, 0.3, 0.98)
-			_pivot(p, Vector3(0, 0.3, 0)).add_child(asset("oso"))
-		elif kind == 0:
-			_vitrine(piece, _butterflies(t.x + t.y))
-		elif kind == 1:
-			_vitrine(piece, _minerals(t.x + t.y))
-		elif kind == 2:
-			_vitrine(piece, _ammonite() if i % 2 == 0 else _rock())
-		elif kind == 3:
+		elif exhibits.has(t):
+			_exhibit(piece, exhibits[t], t, yaw)
+		else:
+			# What the gallery's theme shows (a corridor, a bit of everything).
+			var room := Museum.room_at(t.x + 0.5, t.y + 0.5)
+			var pick := Themes.pick(room.theme if room else "", _hash01(t.x, t.y), _hash01(t.x, t.y, 29))
+			_themed(piece, pick[0], pick[1], t, yaw)
+
+
+## A piece of a theme in its place: in a glass case, on a plinth, or
+## standing on the slab. One of MuseumView's own ("@...") has its own stand.
+func _themed(piece: Node3D, where: String, what: String, t: Vector2i, yaw: float) -> void:
+	if what.begins_with("@"):
+		_exhibit(piece, what.substr(1), t, yaw)
+		return
+	var model := asset(what)
+	# Turned to a quarter, a little off square: the front is seen from most sides.
+	var turn: float = round(yaw / (PI / 2)) * PI / 2 + (_hash01(t.x, t.y, 13) - 0.5) * 0.5
+	match where:
+		"case":
+			var inside := Node3D.new()
+			inside.rotation.y = turn
+			inside.add_child(model)
+			_vitrine(piece, inside)
+		"plinth":
+			var p := _pivot(piece, Vector3.ZERO, turn)
+			_plinth(p, 0.5, 0.64)
+			_pivot(p, Vector3(0, 0.5, 0)).add_child(model)
+		_:
+			_pivot(piece, Vector3(0, 0.16, 0), turn).add_child(model)
+
+
+## One of EXHIBITS on its case, as a map asks for it.
+func _exhibit(piece: Node3D, what: String, t: Vector2i, yaw: float) -> void:
+	var odd := _hash01(t.x, t.y, 5) < 0.5
+	match what:
+		"butterflies": _vitrine(piece, _butterflies(t.x + t.y))
+		"minerals": _vitrine(piece, _minerals(t.x + t.y))
+		"ammonite": _vitrine(piece, _ammonite())
+		"meteorite": _vitrine(piece, _rock())
+		"statue":
 			var p := _pivot(piece, Vector3.ZERO, yaw)
 			_plinth(p, 0.5, 0.64)
-			_specimen(p, "res://assets/models/statue-%s.glb" % ("a" if i % 2 == 0 else "b"), 0.5, 0.88, 0.8, C.bone_dark)
-		elif kind == 4:
+			_specimen(p, "res://assets/models/statue-%s.glb" % ("a" if odd else "b"), 0.5, 0.88, 0.8, C.bone_dark)
+		"skull", "lego_skull":
 			_plinth(piece, CASE_HEIGHT - 0.16, 0.64)
-			_skull(piece, yaw, i % 2 == 1)
-		elif kind == 5:
-			_diorama(piece, t.x + t.y)
-		elif kind == 6 or kind == 8:
-			# 8 was the suit of armour: it stands about the galleries now, a
-			# prop that goes over and falls to pieces (Props, PropsView).
+			_skull(piece, yaw, what == "lego_skull")
+		"diorama": _diorama(piece, t.x + t.y)
+		"amphora":
 			var p := _pivot(piece, Vector3.ZERO, yaw)
 			_plinth(p, 0.42, 0.6)
 			_amphora(p, 0.42)
-		elif kind == 7:
-			_globe(_pivot(piece, Vector3.ZERO, yaw))
-		elif kind == 9:
-			_totem(_pivot(piece, Vector3.ZERO, round(yaw / (PI / 2)) * PI / 2))
-		elif kind == 10:
-			_vitrine(piece, _minerals(t.x * 3 + t.y))
-		else:
-			_vitrine(piece, _rock() if i % 2 == 0 else _ammonite())
-		i += 1
+		"globe": _globe(_pivot(piece, Vector3.ZERO, yaw))
+		"totem": _totem(_pivot(piece, Vector3.ZERO, round(yaw / (PI / 2)) * PI / 2))
+		"bear":
+			var p := _pivot(piece, Vector3.ZERO, yaw)
+			_plinth(p, 0.3, 0.98)
+			_pivot(p, Vector3(0, 0.3, 0)).add_child(asset("oso"))
+		_: _vitrine(piece, null)
 
 
 ## A piece standing on a block of tiles (Museum.big_pieces): the dinosaur on
@@ -486,12 +527,13 @@ func _paintings() -> void:
 			var frame := Node3D.new()
 			frame.position = to_world(x + 0.5, y + 1.0, 0.0)
 			add_child(frame)
-			_painting(frame, x * 31 + y * 7)
+			var room := Museum.room_at(x + 0.5, y + 1.5)
+			_painting(frame, x * 31 + y * 7, Themes.painting(room.theme if room else "", _hash01(x, y, 37)))
 			_hung[Vector2i(x, y)] = true
 			hung += 1
 
 
-func _painting(parent: Node3D, seed: int) -> void:
+func _painting(parent: Node3D, seed: int, kind := "") -> void:
 	var fw := 0.7
 	var fh := 0.5
 	var cy := 0.8
@@ -505,7 +547,7 @@ func _painting(parent: Node3D, seed: int) -> void:
 	# Unlit and a little dim: most hang where no light reaches, and a lit
 	# canvas in the dark was a black rectangle.
 	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	m.albedo_texture = _canvas(seed)
+	m.albedo_texture = Canvases.paint(kind, seed) if kind != "" else _canvas(seed)
 	m.albedo_color = Color(0.62, 0.6, 0.58)
 	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 	canvas.material_override = m
@@ -514,12 +556,12 @@ func _painting(parent: Node3D, seed: int) -> void:
 	_mesh(parent, _box(Vector3(0.16, 0.05, 0.012)), C.bone, Vector3(0, cy - fh / 2 - 0.08, 0.01))
 
 
-static func _canvas(seed: int) -> ImageTexture:
+static func _canvas(seed: int, forced := -1) -> ImageTexture:
 	var w := 48
 	var h := 36
 	var img := Image.create(w, h, false, Image.FORMAT_RGB8)
 	var r := func(k: int) -> float: return _hash01(seed, k, 71)
-	var kind := int(r.call(1) * 6)
+	var kind := int(r.call(1) * 6) if forced < 0 else forced
 	if kind == 3:
 		_pipe(img, r)
 		return ImageTexture.create_from_image(img)

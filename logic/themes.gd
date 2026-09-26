@@ -1,0 +1,118 @@
+class_name Themes
+extends RefCounted
+## The collection by themes. Each gallery of a museum takes one theme (or a
+## whole museum just one, only), and what stands and hangs in it comes from
+## that theme: what goes in the glass cases, what stands on a plinth, what
+## stands on the floor, which paintings, and the big piece it would rather
+## have. Corridors show a little of everything.
+##
+## A piece is a model under assets/models/ ("temas/antiguo/escarabajo",
+## modelled by art/temas/*.py) or, with an @, one of the pieces MuseumView
+## builds itself ("@butterflies": MuseumView.EXHIBITS). Paintings are kinds
+## of canvas (Canvases).
+##
+## Themes still to model: Japón, América, Europa, África, automoción,
+## oficios, ropa, famosos. The modern age (moderna) is contemporary art and
+## everyday things of today shown as museum pieces: a telly, a toaster.
+
+const ALL := {
+	"antiguo": {
+		"gallery": ["the ancient world gallery", "GALLERY_ANCIENT"],
+		"case": ["temas/antiguo/escarabajo", "temas/antiguo/canopos", "temas/antiguo/amuletos", "temas/antiguo/papiro"],
+		"plinth": ["temas/antiguo/busto_faraon", "temas/antiguo/gato_bastet", "temas/antiguo/obelisco", "@amphora", "@statue"],
+		"floor": ["temas/antiguo/anubis", "temas/antiguo/barca"],
+		"paintings": ["pyramids", "hieroglyphs", "nile"],
+		"big": "sarcophagus",
+	},
+	"edad_media": {
+		"gallery": ["the medieval hall", "GALLERY_MEDIEVAL"],
+		"case": ["temas/edad_media/corona", "temas/edad_media/caliz", "temas/edad_media/manuscrito", "temas/edad_media/llave_sello"],
+		"plinth": ["temas/edad_media/yelmo", "temas/edad_media/escudo", "temas/edad_media/castillo"],
+		"floor": ["temas/edad_media/espada_piedra", "temas/edad_media/trono"],
+		"paintings": ["castle", "dragon", "tapestry"],
+	},
+	"prehistoria": {
+		"gallery": ["the prehistory gallery", "GALLERY_PREHISTORY"],
+		"case": ["@ammonite", "@minerals", "@meteorite"],
+		"plinth": ["@skull"],
+		"floor": [],
+		"paintings": ["landscape"],
+		"big": "dinosaur",
+	},
+	# Animals, plants and trees, and life under water.
+	"naturaleza": {
+		"gallery": ["the natural history gallery", "GALLERY_NATURE"],
+		"case": ["@butterflies"],
+		"plinth": ["@bear"],
+		"floor": ["@diorama"],
+		"paintings": ["landscape"],
+	},
+	"moderna": {
+		"gallery": ["the modern age gallery", "GALLERY_MODERN"],
+		"case": [],
+		"plinth": ["@lego_skull"],
+		"floor": ["@globe", "@totem"],
+		"paintings": ["abstract", "pipe", "banana", "ice_cream", "portrait"],
+	},
+}
+
+## Of what stands on a case in a themed gallery, this much is in a glass
+## case, this much on a plinth; the rest on the floor.
+const CASE_SHARE := 0.45
+const PLINTH_SHARE := 0.35
+
+
+## The themes in their order.
+static func ids() -> Array:
+	return ALL.keys()
+
+
+## The gallery's name for a theme: [English, key into Text].
+static func gallery(theme: String) -> Array:
+	return ALL[theme].gallery
+
+
+## The theme that wants this big piece ("dinosaur", "sarcophagus"), or "".
+static func for_big(kind: String) -> String:
+	for id in ALL:
+		if ALL[id].get("big", "") == kind:
+			return id
+	return ""
+
+
+## What stands on a case in a gallery of this theme ("" for a corridor: a
+## bit of everything), from two numbers in 0..1 (the tile's hashes):
+## [where, piece] with where "case", "plinth" or "floor".
+static func pick(theme: String, a: float, b: float) -> Array:
+	var sets: Array = [ALL[theme]] if theme != "" else ALL.values()
+	var case: Array = []
+	var plinth: Array = []
+	var floor_: Array = []
+	for s in sets:
+		case.append_array(s.case)
+		plinth.append_array(s.plinth)
+		floor_.append_array(s.floor)
+	# The share of each place, among the places this theme has pieces for.
+	var shares := [[CASE_SHARE, "case", case], [PLINTH_SHARE, "plinth", plinth], [1.0 - CASE_SHARE - PLINTH_SHARE, "floor", floor_]]
+	shares = shares.filter(func(s): return not (s[2] as Array).is_empty())
+	var total := 0.0
+	for s in shares:
+		total += s[0]
+	var at := a * total
+	for s in shares:
+		if at < s[0] or s == shares[-1]:
+			var list: Array = s[2]
+			return [s[1], list[mini(int(b * list.size()), list.size() - 1)]]
+		at -= s[0]
+	return ["case", "@minerals"]
+
+
+## A kind of painting for a wall of this theme's gallery ("" for a corridor).
+static func painting(theme: String, a: float) -> String:
+	var kinds: Array = []
+	if theme != "":
+		kinds = ALL[theme].paintings
+	else:
+		for s in ALL.values():
+			kinds.append_array(s.paintings)
+	return kinds[mini(int(a * kinds.size()), kinds.size() - 1)]

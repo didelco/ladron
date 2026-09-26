@@ -1,6 +1,7 @@
 class_name Story
 extends RefCounted
-## The story mode: twenty nights, each a fixed museum and a fixed piece,
+## The story mode: twenty nights in five museums (MUSEUMS), each night a
+## fixed museum plan and a fixed piece,
 ## from an empty little museum to four wide-awake guards in a big one. Now
 ## and then a night teaches one new thing, and is built around it; the ones
 ## in between practise it, each a little harder than the last.
@@ -126,6 +127,41 @@ const LESSONS := {
 }
 
 const SAVE := "user://progress.cfg"
+## where the progress is kept: SAVE, but the tests keep theirs apart
+static var save := SAVE
+
+## The town's museums, each a stop on the city map with a few of the nights
+## inside, in order: the first museum holds the first nights, the last one
+## the finale. Four nights a museum, and each keeps to one size: two small
+## ones, two medium, and the large one for the end. Each has its own floor and
+## walls (MuseumView.THEMES keys), and a colour for its stop on the map.
+const MUSEUMS := [
+	# The Barón's attic of odds and ends: creaky boards, faded blue stripes.
+	{"name": "MUSEUM_1_NAME", "text": "MUSEUM_1_TEXT", "nights": 4, "colour": "#4dabf7",
+		"palette": {"floor": 2, "stone": Color("#3a2a1c"), "stone2": Color("#46321f"), "joint": Color("#150d08"), "gloss": 0.45,
+			"paper": Color("#1f2e4a"), "paper2": Color("#27395a"), "wallpaper": 2, "wainscot": Color("#3b2a1a"), "dado": 0.5,
+			"cap": Color("#5c5040"), "trim": Color("#b08d4a"), "skirt": Color("#150d08")}},
+	# The greenhouse of the Queen of Pickles: green tiles, leafy damask.
+	{"name": "MUSEUM_2_NAME", "text": "MUSEUM_2_TEXT", "nights": 4, "colour": "#7bc043",
+		"palette": {"floor": 1, "stone": Color("#23352a"), "stone2": Color("#2a3f31"), "joint": Color("#0e1611"), "gloss": 0.3,
+			"paper": Color("#1e4a2c"), "paper2": Color("#285c38"), "wallpaper": 1, "wainscot": Color("#2e2418"), "dado": 0.45,
+			"cap": Color("#5a6a4a"), "trim": Color("#c9a34a"), "skirt": Color("#0e1611")}},
+	# The observatory: night-blue marble, violet stars on the walls.
+	{"name": "MUSEUM_3_NAME", "text": "MUSEUM_3_TEXT", "nights": 4, "colour": "#9b5de5",
+		"palette": {"floor": 0, "stone": Color("#25243a"), "stone2": Color("#2e2d46"), "joint": Color("#5a5488"), "gloss": 0.18,
+			"paper": Color("#3a2656"), "paper2": Color("#462f66"), "wallpaper": 1, "wainscot": Color("#1c1636"), "dado": 0.5,
+			"cap": Color("#5e5670"), "trim": Color("#a8a0d8"), "skirt": Color("#0a0818")}},
+	# The clock tower: warm terracotta, mustard stripes, dark oak.
+	{"name": "MUSEUM_4_NAME", "text": "MUSEUM_4_TEXT", "nights": 4, "colour": "#e8590c",
+		"palette": {"floor": 1, "stone": Color("#5c3420"), "stone2": Color("#683c25"), "joint": Color("#1c0f0a"), "gloss": 0.35,
+			"paper": Color("#5a4418"), "paper2": Color("#6b521e"), "wallpaper": 2, "wainscot": Color("#3a1e12"), "dado": 0.55,
+			"cap": Color("#6a4a36"), "trim": Color("#d9a441"), "skirt": Color("#1c0f0a")}},
+	# The Barón's own palace, for the finale: black marble, royal crimson.
+	{"name": "MUSEUM_5_NAME", "text": "MUSEUM_5_TEXT", "nights": 4, "colour": "#e03131",
+		"palette": {"floor": 0, "stone": Color("#1a1618"), "stone2": Color("#262024"), "joint": Color("#8a6a3a"), "gloss": 0.15,
+			"paper": Color("#5e1222"), "paper2": Color("#74182c"), "wallpaper": 1, "wainscot": Color("#1a1014"), "dado": 0.5,
+			"cap": Color("#7a6040"), "trim": Color("#f0c46a"), "skirt": Color("#08070c")}},
+]
 
 
 static func count() -> int:
@@ -171,18 +207,59 @@ static func tuning(n: int) -> Dictionary:
 	return out
 
 
-## The furthest night reached, saved between sessions.
-static func unlocked() -> int:
+## The furthest night reached, saved between sessions: each size of gang
+## has its own, since a night done alone is not a night done as four. The
+## save from before gangs kept one, with no count: that one is the lone
+## thief's.
+static func unlocked(players := 1) -> int:
 	var cfg := ConfigFile.new()
-	if cfg.load(SAVE) != OK:
+	if cfg.load(save) != OK:
 		return 1
-	return clampi(int(cfg.get_value("story", "unlocked", 1)), 1, LEVELS.size())
+	var old: int = cfg.get_value("story", "unlocked", 1) if players == 1 else 1
+	return clampi(int(cfg.get_value("story", _key(players), old)), 1, LEVELS.size())
 
 
-static func unlock(n: int) -> void:
-	if n <= unlocked():
+static func unlock(n: int, players := 1) -> void:
+	if n <= unlocked(players):
 		return
 	var cfg := ConfigFile.new()
-	cfg.load(SAVE)
-	cfg.set_value("story", "unlocked", clampi(n, 1, LEVELS.size()))
-	cfg.save(SAVE)
+	cfg.load(save)
+	cfg.set_value("story", _key(players), clampi(n, 1, LEVELS.size()))
+	cfg.save(save)
+
+
+static func _key(players: int) -> String:
+	return "unlocked_%d" % clampi(players, 1, 4)
+
+
+# --- Museums ---------------------------------------------------------------------
+
+## The museum (0-based, MUSEUMS) night n is in.
+static func museum_of(n: int) -> int:
+	var last := 0
+	for m in MUSEUMS.size():
+		last += MUSEUMS[m].nights
+		if n <= last:
+			return m
+	return MUSEUMS.size() - 1
+
+
+## The nights (1-based) inside museum m, in order.
+static func nights_in(m: int) -> Array[int]:
+	var first := 1
+	for k in m:
+		first += MUSEUMS[k].nights
+	var out: Array[int] = []
+	for n in range(first, first + MUSEUMS[m].nights):
+		out.append(n)
+	return out
+
+
+## Museum m, its name and blurb in words.
+static func museum(m: int) -> Dictionary:
+	return Text.fields(MUSEUMS[clampi(m, 0, MUSEUMS.size() - 1)], ["name", "text"])
+
+
+## The floor and walls of night n's museum (MuseumView.THEMES keys).
+static func palette(n: int) -> Dictionary:
+	return MUSEUMS[museum_of(n)].palette

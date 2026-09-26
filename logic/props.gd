@@ -123,6 +123,25 @@ static func place(seed: int, avoid: Array[Vector2i]) -> void:
 		list.append(p)
 
 
+## Stand one by hand, where a saved map says (MapFile): against a wall of
+## its tile if it has one (never the south one, the camera's side).
+static func put(kind: String, t: Vector2i) -> void:
+	var p := Prop.new()
+	p.id = list.size()
+	p.kind = kind
+	p.tile = t
+	var face := Vector2i.ZERO
+	for d in Museum.DIRS:
+		if d != Vector2i(0, 1) and Museum.tile_at(t.x + d.x + 0.5, t.y + d.y + 0.5) == Tiles.WALL:
+			face = d
+			break
+	p.face = face if face != Vector2i.ZERO else Vector2i(0, -1)
+	var pull := 0.22 if face != Vector2i.ZERO else 0.0
+	p.x = t.x + 0.5 + p.face.x * pull
+	p.y = t.y + 0.5 + p.face.y * pull
+	list.append(p)
+
+
 ## One frame: anyone moving into one knocks it over. Its crash goes into
 ## noises; what fell is left in knocked for whoever draws it.
 static func step(thieves: Array[Thief], now: float, noises: Array[SoundEvent]) -> void:

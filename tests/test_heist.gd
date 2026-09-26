@@ -255,6 +255,65 @@ func _init() -> void:
 	Sim.custom = {}
 	Sim.gang = 1
 
+	# The generative piece: made up from the seed, never twice the same thing
+	# in a row of heists, always with a name and a tale in words.
+	var shapes := {}
+	var owners := {}
+	var worded := true
+	for k in 40:
+		var l := LootGen.make(1000 + k * 7919)
+		shapes[l.shape] = true
+		owners[l.name.split(" de")[-1]] = true
+		for f in ["name", "blurb", "verb", "story"]:
+			if String(l[f]).strip_edges() == "" or String(l[f]).contains("GEN_") or String(l[f]).contains("{"):
+				worded = false
+				check(false, "pieza %d: %s = «%s»" % [k, f, l[f]])
+		if not LootModels.SHAPES.has(l.shape) or l.seconds <= 0.0:
+			worded = false
+	check(worded, "40 piezas inventadas, todas con nombre, frase, verbo e historia")
+	check(shapes.size() >= 8 and owners.size() >= 6, "variadas: %d formas y %d dueños distintos" % [shapes.size(), owners.size()])
+	check(LootGen.make(777) == LootGen.make(777) and LootGen.make(777, 3).story == LootGen.make(777).story, "la misma semilla, la misma pieza y la misma historia")
+	check(LootGen.make(777, 5).seconds > LootGen.make(777, 1).seconds, "más noches seguidas, cerradura más lenta")
+	check(LootGen.samples().size() == LootGen.PIECES.size(), "una muestra de cada forma")
+	Sim.new_map(4242, "small")
+	Heist.plan_job(1)
+	var first: Dictionary = Heist.loot
+	Heist.plan_job(1)
+	check(Heist.loot == first and first.story != "", "sin pieza dada, el golpe inventa una por la semilla del museo: %s" % first.name)
+	Sim.new_map(4243, "small")
+	Heist.plan_job(1)
+	var other: Dictionary = Heist.loot
+	Sim.new_map(4244, "small")
+	Heist.plan_job(1)
+	check(other != first or Heist.loot != first, "otro museo, otra pieza")
+	Heist.plan_job(1, Story.level(3).loot)
+	check(Heist.loot.name == Story.level(3).loot.name, "la pieza dada (la de la historia o la del mapa) se respeta")
+
+	# The tips: worked out from the night.
+	Sim.gang = 1
+	Sim.difficulty = "hard"
+	Sim.new_map(4242, "medium")
+	var hard_guards := Sim.new_guards(3)
+	Heist.plan_job(1)
+	var hard := Briefing.tips(hard_guards)
+	check(hard[0].begins_with(Text.t("TIP_GUARDS_MANY") % 3) and hard[0].contains(Text.t("TIP_TRAIT_FAST_MANY")) and hard[0].contains(Text.t("TIP_TRAIT_SHARP_EARS_MANY")),
+		"difícil, tres guardias: «%s»" % hard[0])
+	check(hard.has(Text.t("TIP_CROUCH_SHARP_MANY")) and hard.has(Text.t("TIP_CASE_ALARM")), "difícil: a gatas cerca de ellos, y la vitrina con alarma")
+	Sim.difficulty = "easy"
+	var easy_guards := Sim.new_guards(1)
+	var easy := Briefing.tips(easy_guards)
+	check(easy[0].begins_with(Text.t("TIP_GUARDS_ONE")) and easy[0].contains(Text.t("TIP_TRAIT_SLOW_ONE")) and easy.has(Text.t("TIP_SLOW_ONE")), "fácil, un guardia lento: «%s»" % easy[0])
+	Sim.difficulty = "medium"
+	Sim.custom = Story.tuning(1)
+	var none: Array[Guard] = []
+	Props.list.clear()
+	var quiet := Briefing.tips(none)
+	check(quiet[0] == Text.t("TIP_GUARDS_NONE") and quiet.has(Text.t("TIP_CASE_QUIET")) and not quiet.has(Text.t("BRIEF_PROPS")), "primera noche: sin guardias, vitrina sin alarma, nada que tirar")
+	Heist.plan_job(1, {}, 2)
+	check(Briefing.tips(hard_guards).has(Text.t("BRIEF_TEAM_ONE_LOCK")), "con dos: uno sujeta el cuadro de la alarma")
+	check(hard.size() <= Briefing.MOST and Briefing.tips(hard_guards).size() <= Briefing.MOST, "nunca más de %d consejos" % Briefing.MOST)
+	Sim.custom = {}
+
 	if failures.is_empty():
 		print("OK: el golpe funciona")
 		quit(0)

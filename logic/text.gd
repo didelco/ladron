@@ -6,7 +6,7 @@ extends RefCounted
 ## translation, next to it); setup() loads ours and makes it the one in use.
 ##
 ## Code asks for Text.t("KEY"), and fills in the blanks with % as usual:
-## Text.t("MENU_NIGHT_PIECE") % [n, name]. Data tables (Story, Heist.LOOT,
+## Text.t("MENU_NIGHT_PIECE") % [n, name]. Data tables (Story, LootGen,
 ## Props.NAMES, Museum.GALLERIES, Mind's labels) hold keys, translated where
 ## they are read. A new language is a new column, and LOCALE pointing at it.
 

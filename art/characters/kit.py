@@ -360,6 +360,8 @@ def _superellipse(rx, ry, e, segs):
 
 
 def _subsurf(obj, levels=2):
+    if levels <= 0:
+        return smooth_shade(obj)
     m = obj.modifiers.new("subsurf", "SUBSURF")
     m.levels = levels
     m.render_levels = levels

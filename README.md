@@ -55,6 +55,8 @@ godot --headless --import
 godot --headless --script tests/test_mapgen.gd   # museos bien formados (306 de todos los tamaños y formas)
 godot --headless --script tests/test_sim.gd      # escenarios de la simulación
 godot --headless --script tests/test_heist.gd    # el golpe, el cuadro de alarma y las diez noches
+godot --headless --script tests/test_mapfile.gd  # mapas guardados: ida y vuelta, validación y que se juegan
+godot --headless --script tests/test_story.gd    # la historia: noches por museo, progreso por jugadores
 godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (necesita el cerebro)
 ```
 
@@ -69,9 +71,24 @@ En el título se elige el modo:
 
 - **Historia**: diez noches fijas, de muy fácil (un guardia medio dormido en un museo pequeño) a
   difícil (cinco guardias en uno grande). La Banda del Calcetín recupera las cosas que el Barón Von
-  Bostezo se llevó del pueblo (`logic/story.gd`). El progreso se guarda y se puede rejugar cualquier
-  noche ya alcanzada.
+  Bostezo se llevó del pueblo (`logic/story.gd`). Primero se elige cuántos ladrones; luego, en el
+  mapa de la ciudad, uno de los cinco museos (cada uno con sus colores de pared y suelo) y dentro,
+  una de sus cuatro noches. El progreso se guarda aparte para cada número de jugadores y se puede
+  rejugar cualquier noche ya alcanzada.
 - **Generativo**: un museo nuevo cada vez, con dificultad (fácil, media, difícil) y tamaño a elegir.
+  Cada golpe trae su pieza y su historia, inventadas a partir de la semilla (`logic/loot_gen.gd`):
+  algo que el Barón le quitó a alguien del pueblo.
+- **Retos**: mapas hechos a mano, los de serie (`maps/`) y los tuyos (`user://maps/*.json`,
+  `logic/map_file.gd`). Desde ahí se abre el **editor** (`scenes/map_editor.gd`): pintar suelo,
+  muro, vitrina o exterior, poner salas hechas (galería, vitrinas, pedestales, columnas,
+  dinosaurio...), la entrada, la pieza, la salida, guardias y objetos, o partir de un mapa
+  aleatorio del generador; tamaño, dificultad y guardias; vista 3D, probar y guardar. Solo deja
+  jugar mapas cerrados, sin espacios a los que no se llega, con pieza y salida alcanzables.
+  `-- --menu=challenges` (o `editor`) los abre directamente.
+
+Antes de cada golpe, el plan: el mapa a la izquierda y, a la derecha, la pieza, su historia y
+consejos sacados de cómo es la noche (`logic/briefing.gd`: cuántos guardias, si son rápidos u
+oyen bien, la alarma de la vitrina, qué se puede tirar...).
 
 En los dos, uno o dos ladrones. Con dos hay que colaborar: la vitrina solo cede mientras el otro
 sujeta el **cuadro de la alarma** (naranja, en una pared lejos de la pieza), y así se abre sin que
@@ -101,7 +118,7 @@ cuando tiras algo.
 
 Para grabar o probar sin pulsar teclas: `godot -- --autostart` salta directamente a la partida
 (`-- --autostart --two` con dos ladrones), y `-- --intro` enseña el comienzo de la historia con la
-cuenta atrás (`--two` para dos, `--gen` para el modo generativo). `-- --menu=story` (o `generative`, `settings`) abre ese menú directamente.
+cuenta atrás (`--two` para dos, `--gen` para el modo generativo, `--challenge` para el primer reto). `-- --menu=story` (o `map`, `museum`, `generative`, `settings`) abre ese menú directamente.
 
 ## El cerebro
 

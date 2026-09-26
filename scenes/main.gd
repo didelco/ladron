@@ -5,8 +5,9 @@ extends Node3D
 ## The generative: a new museum every time, at the difficulty and size you
 ## pick. Either with one thief or two; with two, the job takes both (Heist).
 ##
-## Screens: title (pick the mode) → the mode's menu (players, and the night or
-## the difficulty) → [prologue] → loot (the piece and its story) → mission
+## Screens: title (pick the mode) → the mode's menu (the story: players, the
+## town's map, a museum and its night; the generative: difficulty, size and
+## players) → [prologue] → loot (the piece and its story) → mission
 ## (the plan, a map) → countdown → playing ⇄ paused → caught, or escaped with the piece (next level). No
 ## clock: a round lasts as long as it takes. The loop is the web version's Game.tsx tick: thieves and their
 ## noise, the job and its alarm, guards, the yell, the warning, keeping apart,
@@ -85,7 +86,7 @@ const MOON_COLOUR := Color("#8ea2ff")
 const MOON_ENERGY := 0.4
 const BACKGROUND := Color("#0a0918")
 
-## "story" or "generative"
+## "story", "generative" or "challenge"
 var mode := "story"
 ## the story night picked on its menu
 var story_pick := 1
@@ -217,7 +218,11 @@ func _ready() -> void:
 		if arg.begins_with("--menu="):
 			match arg.substr(7):
 				"story": _show_story_menu()
+				"map": _show_story_map()
+				"museum": _show_museum(Story.museum_of(story_pick))
 				"generative": _show_generative_menu()
+				"challenges": _show_challenge_menu()
+				"editor": _show_editor(MapFile.generated(4242, "small"))
 				"settings": _show_settings("title")
 				"pads": _show_settings("title", "pads")
 				"input": _show_join("generative")
@@ -225,8 +230,13 @@ func _ready() -> void:
 					phase = "caught"
 					_show_end()
 	# --intro: the piece, then the countdown, for checking the way in.
+	# --challenge: the first of the saved maps instead.
 	if "--intro" in OS.get_cmdline_user_args():
-		_start("generative" if "--gen" in OS.get_cmdline_user_args() else "story", 2 if "--two" in OS.get_cmdline_user_args() else 1)
+		var which := "generative" if "--gen" in OS.get_cmdline_user_args() else "story"
+		if "--challenge" in OS.get_cmdline_user_args() and not MapFile.list().is_empty():
+			challenge_map = MapFile.list()[0]
+			which = "challenge"
+		_start(which, 2 if "--two" in OS.get_cmdline_user_args() else 1)
 		get_tree().create_timer(1.5).timeout.connect(_start_countdown)
 	if "--autostart" in OS.get_cmdline_user_args():
 		if "--two" in OS.get_cmdline_user_args():
@@ -243,12 +253,14 @@ func _ready() -> void:
 
 func _show_title() -> void:
 	phase = "title"
+	testing = null
 	_drop_preview()
 	hud.show_menu([
 		{"title": Text.t("MENU_TITLE"), "size": 64},
 		{"cards": [
 			{"title": Text.t("MENU_STORY"), "text": Text.t("MENU_STORY_TEXT"), "stage": MenuStage.make("story"), "call": _show_story_menu, "colour": Hud.C.safe},
 			{"title": Text.t("MENU_GENERATIVE"), "text": Text.t("MENU_GENERATIVE_TEXT"), "stage": MenuStage.make("generative"), "call": _show_generative_menu, "colour": Hud.C.gold},
+			{"title": Text.t("MENU_CHALLENGE"), "text": Text.t("MENU_CHALLENGE_TEXT"), "stage": MenuStage.make("museum:large"), "call": _show_challenge_menu, "colour": Hud.C.green},
 		], "width": 250},
 		{"gap": 18},
 		{"buttons": [{"text": Text.t("MENU_SETTINGS"), "call": _show_settings.bind("title"), "colour": Hud.C.dim}], "small": true},
@@ -257,36 +269,272 @@ func _show_title() -> void:
 	])
 
 
+# --- Challenges ------------------------------------------------------------------------
+
+## The challenges: museums made by hand (MapFile), the game's own and the
+## player's. The map picked, the page of the list on show, a delete waiting
+## for its second press, and the editor while it is open.
+const CHALLENGES_A_PAGE := 8
+var challenge_map: MapFile
+var challenge_page := 0
+var challenge_delete := false
+var editor: MapEditor
+
+
+## The maps, a card each — the plan, the name, what kind of night — and a
+## new one, which opens the editor.
+func _show_challenge_menu() -> void:
+	phase = "menu"
+	challenge_delete = false
+	_drop_preview()
+	var maps := MapFile.list()
+	var pages := maxi(1, ceili(maps.size() / float(CHALLENGES_A_PAGE)))
+	challenge_page = clampi(challenge_page, 0, pages - 1)
+	var items: Array = [
+		{"title": Text.t("CHALLENGE_TITLE"), "size": 40},
+		{"text": Text.t("CHALLENGE_TEXT"), "colour": Hud.C.dim},
+	]
+	var shown := maps.slice(challenge_page * CHALLENGES_A_PAGE, (challenge_page + 1) * CHALLENGES_A_PAGE)
+	if shown.is_empty():
+		items.append({"text": Text.t("CHALLENGE_EMPTY")})
+	for i in range(0, shown.size(), 4):
+		var cards: Array = []
+		for m in shown.slice(i, i + 4):
+			cards.append({"title": m.name.to_upper(), "text": _challenge_info(m), "picture": MapEditor.picture(m), "call": _show_challenge_map.bind(m),
+				"colour": Hud.C.gold if m.built_in else Hud.C.green, "title_size": 10})
+		items.append({"cards": cards, "width": 210})
+	var small := MapFile.blank(Museum.SIZES.small.w, Museum.SIZES.small.h)
+	var row: Array = [{"text": Text.t("CHALLENGE_NEW"), "call": _show_editor.bind(small), "colour": Hud.C.green}]
+	if pages > 1:
+		items.append({"text": Text.t("CHALLENGE_PAGE") % [challenge_page + 1, pages], "colour": Hud.C.dim, "size": 16})
+		row.push_front({"text": Text.t("MENU_PREVIOUS"), "call": _page_challenges.bind(-1), "colour": Hud.C.dim})
+		row.append({"text": Text.t("MENU_NEXT"), "call": _page_challenges.bind(1), "colour": Hud.C.dim})
+	items.append({"buttons": row, "row": true, "small": true, "focus": 1 if pages > 1 else 0})
+	items.append({"buttons": [{"text": Text.t("MENU_BACK"), "call": _show_title, "colour": Hud.C.dim}], "small": true})
+	hud.show_menu(items)
+
+
+func _page_challenges(dir: int) -> void:
+	var pages := maxi(1, ceili(MapFile.list().size() / float(CHALLENGES_A_PAGE)))
+	challenge_page = posmod(challenge_page + dir, pages)
+	_show_challenge_menu()
+
+
+## A map's line on its card: its size, difficulty and guards, or that it
+## cannot be played yet.
+func _challenge_info(m: MapFile) -> String:
+	if not m.check().is_empty():
+		return Text.t("CHALLENGE_UNPLAYABLE")
+	return Text.t("CHALLENGE_INFO") % [Heist.first_upper(Text.t(SIZE_NAMES[m.size_name()]).to_lower()),
+		Text.t(DIFFICULTY_NAMES[m.difficulty]).to_lower(), m.guards_tonight()]
+
+
+## One map: its plan, then play it with one to four thieves, edit it, or
+## (the player's own) delete it.
+func _show_challenge_map(m: MapFile) -> void:
+	phase = "challenge"
+	challenge_map = m
+	var items: Array = [
+		{"title": m.name.to_upper(), "size": 36, "colour": Hud.C.gold if m.built_in else Hud.C.green},
+		{"text": Text.t("CHALLENGE_BUILT_IN" if m.built_in else "CHALLENGE_MINE") + " · " + _challenge_info(m), "colour": Hud.C.dim, "size": 17},
+		{"picture": MapEditor.picture(m, 8), "height": 260},
+	]
+	if m.check().is_empty():
+		items.append({"cards": [
+			{"title": Text.t("MENU_PLAY_1"), "stage": MenuStage.make("players:1"), "call": _start.bind("challenge", 1), "colour": COLOURS.thief, "title_size": 12},
+			{"title": Text.t("MENU_PLAY_2"), "stage": MenuStage.make("players:2"), "call": _start.bind("challenge", 2), "colour": COLOURS.thief2, "title_size": 12},
+			{"title": Text.t("MENU_PLAY_3"), "stage": MenuStage.make("players:3"), "call": _start.bind("challenge", 3), "colour": COLOURS.thief3, "title_size": 12},
+			{"title": Text.t("MENU_PLAY_4"), "stage": MenuStage.make("players:4"), "call": _start.bind("challenge", 4), "colour": COLOURS.thief4, "title_size": 12},
+		], "width": 140})
+	var row: Array = [{"text": Text.t("CHALLENGE_EDIT"), "call": _show_editor.bind(m), "colour": Hud.C.gold}]
+	if not m.built_in:
+		row.append({"text": Text.t("CHALLENGE_DELETE_SURE" if challenge_delete else "CHALLENGE_DELETE"), "call": _delete_challenge.bind(m), "colour": Hud.C.alert})
+	row.append({"text": Text.t("MENU_BACK"), "call": _show_challenge_menu, "colour": Hud.C.dim})
+	items.append({"buttons": row, "row": true, "small": true})
+	hud.show_menu(items)
+
+
+## Twice to delete: the first press only asks.
+func _delete_challenge(m: MapFile) -> void:
+	if not challenge_delete:
+		challenge_delete = true
+		_show_challenge_map(m)
+		return
+	MapFile.remove(m)
+	_show_challenge_menu()
+
+
+## The map editor (MapEditor), over everything; back to the challenges when
+## it closes.
+func _show_editor(m: MapFile) -> void:
+	phase = "editor"
+	challenge_delete = false
+	_drop_preview()
+	hud.hide_panel()
+	hud.visible = false
+	editor = MapEditor.new()
+	add_child(editor)
+	editor.ui_sound.connect(func(kind: String) -> void: sfx.ui(kind, 0.6))
+	editor.closed.connect(func() -> void:
+		_drop_editor()
+		_show_challenge_menu())
+	editor.preview.connect(_editor_preview)
+	editor.play.connect(func(map: MapFile) -> void:
+		testing = map.copy()
+		testing_dirty = editor.dirty
+		_drop_editor()
+		challenge_map = map
+		_start("challenge", 1))
+	editor.open(m)
+
+
+## A map tried from the editor (PROBAR): every way out of the game goes
+## back to editing it, not to the menus. And whether it had changes unsaved.
+var testing: MapFile
+var testing_dirty := false
+
+
+func _back_to_editor() -> void:
+	get_tree().paused = false
+	var m := testing
+	testing = null
+	_show_editor(m)
+	editor.dirty = testing_dirty
+
+
+## Out of a game to where it was started from: the editor, if it was a try.
+func _leave_game(to: Callable) -> void:
+	if testing:
+		_back_to_editor()
+	else:
+		to.call()
+
+
+## The words on that way out.
+func _leave_text() -> String:
+	return Text.t("EDITOR_BACK_TO_EDITOR" if testing else "MENU_TO_MENU")
+
+
+func _drop_editor() -> void:
+	hud.visible = true
+	editor.queue_free()
+	editor = null
+
+
+## The map being edited, built in the game's world behind the editor, for
+## its camera to fly round.
+func _editor_preview(m: MapFile) -> void:
+	mode = "challenge"
+	challenge_map = m
+	players = 1
+	seats = ["any"]
+	_new_round(1)
+	editor.start_preview(world)
+
+
 ## Out of the game, from the title.
 func _quit() -> void:
 	_save_settings()
 	get_tree().quit()
 
 
-## The story: the path of nights (any reached so far can be picked), the
-## piece of the night picked turning under a light, and one thief or two.
+## The story, first: how many thieves. Each gang has its own way through
+## the nights (Story.unlocked), shown on its card. A gang then says which
+## controls are whose (_show_join), and on to the town (_show_story_map).
 func _show_story_menu() -> void:
-	phase = "menu"
-	story_pick = clampi(story_pick, 1, Story.unlocked())
-	var nights: Array = []
-	for n in range(1, Story.count() + 1):
-		nights.append({"n": n, "colour": Color(Story.level(n).loot.colour), "locked": n > Story.unlocked(), "selected": n == story_pick, "call": _pick_night.bind(n)})
-	var loot: Dictionary = Story.level(story_pick).loot
-	_build_preview(loot)
+	phase = "story_players"
+	var cards: Array = []
+	for n in range(1, 5):
+		cards.append({"title": Text.t("MENU_PLAYERS_%d" % n),
+			"text": Text.t("MENU_PLAYERS_%d_TEXT" % n) + "\n" + Text.t("STORY_REACHED") % [Story.unlocked(n), Story.count()],
+			"stage": MenuStage.make("players:%d" % n), "call": _story_players.bind(n), "colour": _thief_colours()[n - 1], "focus": n == players})
 	hud.show_menu([
 		{"title": Text.t("MENU_STORY_TITLE"), "size": 44},
 		{"text": Text.t("MENU_STORY_TAGLINE"), "colour": Hud.C.gold, "size": 17},
-		{"nights": nights},
-		{"picture": preview.get_texture(), "smooth": true, "height": 110},
-		{"text": Text.t("MENU_NIGHT_PIECE") % [story_pick, loot.name.to_upper()], "colour": Color(loot.colour), "size": 17, "id": "night"},
-		{"cards": [
-			{"title": Text.t("MENU_PLAYERS_1"), "text": Text.t("MENU_PLAYERS_1_TEXT"), "stage": MenuStage.make("players:1"), "call": _start.bind("story", 1), "colour": COLOURS.thief},
-			{"title": Text.t("MENU_PLAYERS_2"), "text": Text.t("MENU_PLAYERS_2_TEXT"), "stage": MenuStage.make("players:2"), "call": _start.bind("story", 2), "colour": COLOURS.thief2},
-			{"title": Text.t("MENU_PLAYERS_3"), "text": Text.t("MENU_PLAYERS_3_TEXT"), "stage": MenuStage.make("players:3"), "call": _start.bind("story", 3), "colour": COLOURS.thief3},
-			{"title": Text.t("MENU_PLAYERS_4"), "text": Text.t("MENU_PLAYERS_4_TEXT"), "stage": MenuStage.make("players:4"), "call": _start.bind("story", 4), "colour": COLOURS.thief4},
-		], "width": 150},
+		{"cards": cards, "width": 150},
 		{"buttons": [{"text": Text.t("MENU_BACK"), "call": _show_title, "colour": Hud.C.dim}], "row": true},
 	])
+
+
+func _story_players(n: int) -> void:
+	if n >= 2:
+		_show_join("story", n)
+		return
+	seats = ["any"]
+	_story_gang(1)
+
+
+## The gang is ready: on to the town, where it last got to.
+func _story_gang(n: int) -> void:
+	players = n
+	story_pick = Story.unlocked(n)
+	_show_story_map()
+
+
+## The town: the museums on their streets, the ones this gang has reached
+## open. Landing on one says what it is and how far into it you are;
+## pressing it goes in (_show_museum).
+func _show_story_map() -> void:
+	phase = "story_map"
+	var reached := Story.unlocked(players)
+	story_pick = clampi(story_pick, 1, reached)
+	var here := Story.museum_of(story_pick)
+	var stops: Array = []
+	for m in Story.MUSEUMS.size():
+		stops.append({"n": m + 1, "colour": Color(Story.MUSEUMS[m].colour), "locked": Story.nights_in(m)[0] > reached, "selected": m == here,
+			"look": Story.MUSEUMS[m].palette, "call": _pick_museum.bind(m), "open": _show_museum.bind(m)})
+	hud.show_menu([
+		{"title": Text.t("STORY_MAP_TITLE"), "size": 44},
+		{"text": Text.t("STORY_GANG_%d" % players), "colour": _thief_colours()[players - 1], "size": 15},
+		{"nights": stops, "style": "city", "height": 330},
+		{"text": "", "size": 18, "id": "museum"},
+		{"text": "", "size": 15, "id": "museum_text", "colour": Hud.C.dim},
+		{"buttons": [{"text": Text.t("MENU_BACK"), "call": _show_story_menu, "colour": Hud.C.dim}], "row": true},
+	])
+	_pick_museum(here)
+
+
+## Landing on a museum in the town: its name, how many of its nights are
+## done, and what it is.
+func _pick_museum(m: int) -> void:
+	var museum := Story.museum(m)
+	var nights := Story.nights_in(m)
+	var done := nights.filter(func(n: int) -> bool: return n < Story.unlocked(players)).size()
+	hud.set_text("museum", Text.t("STORY_MUSEUM_LINE") % [museum.name.to_upper(), done, nights.size()], Color(museum.colour))
+	hud.set_text("museum_text", museum.text, Hud.C.dim)
+
+
+## Inside a museum, in its own colours: its nights as rooms (any reached so
+## far can be picked), the piece of the one picked turning under a light.
+## Pressing a room, or ROBAR, plays it.
+func _show_museum(m: int) -> void:
+	phase = "museum"
+	var reached := Story.unlocked(players)
+	var nights := Story.nights_in(m)
+	if Story.museum_of(story_pick) != m:
+		story_pick = mini(nights[-1], reached)
+	var loot: Dictionary = Story.level(story_pick).loot
+	_build_preview(loot)
+	var stops: Array = []
+	for n in nights:
+		stops.append({"n": n, "colour": Color(Story.level(n).loot.colour), "locked": n > reached, "selected": n == story_pick,
+			"call": _pick_night.bind(n), "open": _play_night})
+	var museum := Story.museum(m)
+	hud.show_menu([
+		{"title": museum.name.to_upper(), "colour": Color(museum.colour).lightened(0.2), "size": 40},
+		{"text": museum.text, "colour": Hud.C.dim, "size": 15},
+		{"nights": stops, "style": "museum", "palette": museum.palette, "width": 720, "height": 170},
+		{"picture": preview.get_texture(), "smooth": true, "height": 110},
+		{"text": Text.t("MENU_NIGHT_PIECE") % [story_pick, loot.name.to_upper()], "colour": Color(loot.colour), "size": 17, "id": "night"},
+		{"buttons": [
+			{"text": Text.t("MENU_BACK"), "call": _show_story_map, "colour": Hud.C.dim},
+			{"text": Text.t("STORY_PLAY"), "call": _play_night, "colour": Hud.C.safe},
+		], "row": true},
+	])
+
+
+func _play_night() -> void:
+	_start("story", players, true)
 
 
 ## Moving along the path picks the night: the piece and its name change in
@@ -440,7 +688,11 @@ func _join_input(event: InputEvent) -> void:
 		get_tree().create_timer(0.8).timeout.connect(func() -> void:
 			if phase == "join" and joining.size() == join_count:
 				seats.assign(joining)
-				_start(join_for, join_count, true))
+				if join_for == "story":
+					# The story's gang goes on to the town, to pick a night.
+					_story_gang(join_count)
+				else:
+					_start(join_for, join_count, true))
 
 
 func _unjoin() -> void:
@@ -448,6 +700,8 @@ func _unjoin() -> void:
 	if joining.is_empty():
 		if join_for == "story":
 			_show_story_menu()
+		elif join_for == "challenge":
+			_show_challenge_map(challenge_map)
 		else:
 			_show_generative_menu()
 		return
@@ -484,7 +738,7 @@ func _prologue_back() -> void:
 	if prologue_page > 0:
 		_show_prologue(prologue_page - 1)
 	else:
-		_show_story_menu()
+		_show_museum(Story.museum_of(story_pick))
 
 
 ## ● ○ ○ : where you are in a run of pages.
@@ -671,8 +925,8 @@ func _asset_loot() -> Array:
 	for n in range(1, Story.count() + 1):
 		out.append(Story.level(n).loot)
 		names[Story.level(n).loot.name] = true
-	for raw in Heist.LOOT:
-		var l := Heist.translated(raw)
+	# And one of each shape the generative heists make up (LootGen).
+	for l in LootGen.samples():
 		if not names.has(l.name):
 			out.append(l)
 	return out
@@ -772,21 +1026,22 @@ func _pause() -> void:
 		{"buttons": [
 			{"text": Text.t("MENU_RESUME"), "call": _start_playing},
 			{"text": Text.t("MENU_SETTINGS"), "call": _show_settings.bind("paused")},
-			{"text": Text.t("MENU_TO_MENU"), "call": _quit_to_title},
+			{"text": _leave_text(), "call": _quit_to_title},
 		]},
 	])
 
 
 func _quit_to_title() -> void:
 	get_tree().paused = false
-	_show_title()
+	_leave_game(_show_title)
 
 
-## Before a night: a briefing of a few pages you can move between freely —
-## the piece and its story, what is new tonight (if anything is), and the
-## plan with its map — tabs along the top, back and next along the bottom.
+## Before a night: a briefing of a page or two you can move between freely —
+## what is new tonight (if anything is), and the plan: the map, the piece
+## and its story, and tips for the night — tabs along the top, back and
+## next along the bottom.
 func _brief_pages() -> Array:
-	var pages := ["loot"]
+	var pages := []
 	if mode == "story" and not Story.news(level, players).is_empty():
 		pages.append("news")
 	pages.append("plan")
@@ -798,13 +1053,13 @@ func _show_brief(page: int) -> void:
 	page = clampi(page, 0, pages.size() - 1)
 	brief_page = page
 	phase = "brief"
-	var names := {"loot": Text.t("BRIEF_TAB_LOOT"), "news": Text.t("BRIEF_TAB_NEWS"), "plan": Text.t("BRIEF_TAB_PLAN")}
+	var names := {"news": Text.t("BRIEF_TAB_NEWS"), "plan": Text.t("BRIEF_TAB_PLAN")}
 	var tabs: Array = []
 	for i in pages.size():
 		tabs.append({"text": names[pages[i]], "call": _show_brief.bind(i), "colour": Hud.C.gold if i == page else Hud.C.dim, "selected": i == page})
-	var items: Array = [{"buttons": tabs, "row": true, "small": true}, {"gap": 14}]
+	# Tabs only when there is more than one page.
+	var items: Array = [{"buttons": tabs, "row": true, "small": true}, {"gap": 6}] if pages.size() > 1 else []
 	match pages[page]:
-		"loot": items.append_array(_loot_items())
 		"news": items.append_array(_news_items())
 		"plan": items.append_array(_plan_items())
 	var last := page == pages.size() - 1
@@ -823,23 +1078,11 @@ func _brief_back() -> void:
 	elif mode == "story" and level == 1:
 		_show_prologue(Story.prologue().size() - 1)
 	elif mode == "story":
-		_show_story_menu()
+		_show_museum(Story.museum_of(level))
+	elif mode == "challenge":
+		_leave_game(_show_challenge_map.bind(challenge_map))
 	else:
 		_show_generative_menu()
-
-
-## The piece: turning under a light, its name, and the story of why someone
-## wants it.
-func _loot_items() -> Array:
-	# Rebuilt each time: the last round's piece may still be on the stand.
-	_build_preview()
-	return [
-		{"text": (Text.t("BRIEF_NIGHT_OF") % [level, Story.count()]) if mode == "story" else (Text.t("BRIEF_LEVEL") % level), "size": 16, "colour": Hud.C.dim},
-		{"picture": preview.get_texture(), "smooth": true, "height": 230},
-		{"title": Heist.loot.name.to_upper(), "size": 30, "colour": Color(Heist.loot.colour)},
-		{"text": Heist.loot.blurb, "colour": Hud.C.gold},
-		{"text": Heist.loot.story, "size": 17, "wrap": true},
-	]
 
 
 ## What changes tonight, a card for each, on the diorama that shows it.
@@ -854,29 +1097,56 @@ func _news_items() -> Array:
 	]
 
 
-## The plan: the map, and a line or two on how, the first nights.
+## The plan: the map on the left; on the right, the piece (turning under a
+## light, its name and how long it takes), its story when it has one, and
+## tips worked out from the night (Briefing).
 func _plan_items() -> Array:
-	# Little text: the map already says where you come in, where the piece
-	# is and the door.
-	var lines: Array[String] = []
-	if Heist.team:
-		lines.append(Text.t("BRIEF_TEAM_TWO_PANELS" if Heist.panel2.x >= 0 else ("BRIEF_TEAM_TWO_LOCKS" if Heist.hands > 1 else "BRIEF_TEAM_ONE_LOCK")))
-		lines.append(Text.t("BRIEF_TEAM_ALL_OUT"))
-	# In the story the nights teach this themselves (LO NUEVO).
-	if level == 1 and mode != "story":
-		lines.append(Text.t("BRIEF_HOW") % _seconds(Heist.loot.seconds))
-	if level <= 2 and mode != "story":
-		lines.append(Text.t("BRIEF_PROPS"))
-	var items: Array = [{"title": Text.t("BRIEF_PLAN_TITLE"), "size": 44}]
-	for l in lines:
-		items.append({"text": l})
 	var colours := _thief_colours().slice(0, thieves.size())
-	items.append({"map": Hud.plan_map(guards, colours), "height": 360})
 	var keys := ["thief", "gem", "exit", "guard", "prop", "route"]
 	if Heist.team:
 		keys.append("panel")
-	items.append({"legend": keys, "thieves": colours, "loot": Color(Heist.loot.colour)})
-	return items
+	var legend_loot := Color(Heist.loot.colour)
+	var left: Array = [
+		{"map": Hud.plan_map(guards, colours), "height": 390},
+		{"legend": keys.slice(0, 3), "thieves": colours, "loot": legend_loot},
+		{"legend": keys.slice(3), "thieves": colours, "loot": legend_loot},
+	]
+	# Rebuilt each time: the last round's piece may still be on the stand.
+	_build_preview()
+	var piece: Array = [
+		{"text": _brief_heading(), "size": 15, "colour": Hud.C.dim, "align": "left"},
+		{"text": Heist.first_upper(Heist.loot.name), "size": 26, "colour": Color(Heist.loot.colour), "wrap": true, "width": 330, "align": "left"},
+		{"text": Heist.loot.blurb, "size": 17, "colour": Hud.C.gold, "wrap": true, "width": 330, "align": "left"},
+		{"text": Text.t("BRIEF_TAKES") % _seconds(Heist.loot.seconds), "size": 15, "colour": Hud.C.dim, "wrap": true, "width": 330, "align": "left"},
+	]
+	var right: Array = [{"columns": [
+		{"items": [{"picture": preview.get_texture(), "smooth": true, "height": 120}], "middle": true},
+		{"items": piece, "separation": 4, "middle": true},
+	], "separation": 12}]
+	var story: String = Heist.loot.get("story", "")
+	if story.strip_edges() != "":
+		right.append({"text": story, "size": 17, "wrap": true, "width": 540, "align": "left"})
+	right.append({"gap": 4})
+	right.append({"title": Text.t("BRIEF_TIPS_TITLE"), "size": 24, "align": "left"})
+	for tip in Briefing.tips(guards):
+		right.append({"text": "• " + tip, "size": 17, "wrap": true, "width": 540, "align": "left"})
+	return [{"columns": [
+		{"items": left, "separation": 6, "middle": true},
+		{"items": right, "width": 540, "separation": 8, "middle": true},
+	], "separation": 36}]
+
+
+## Over the piece: which night, or which level and how hard, or which map.
+func _brief_heading() -> String:
+	match mode:
+		"story":
+			return Text.t("BRIEF_NIGHT_OF") % [level, Story.count()]
+		"challenge":
+			if challenge_map and challenge_map.name != "":
+				return challenge_map.name.to_upper()
+	if mode == "generative":
+		return Text.t("BRIEF_DIFFICULTY") % [Text.t("BRIEF_LEVEL") % level, Text.t(DIFFICULTY_NAMES[Sim.difficulty])]
+	return Text.t("BRIEF_LEVEL") % level
 
 
 func _build_preview(loot: Dictionary = Heist.loot) -> void:
@@ -947,7 +1217,7 @@ func _show_end() -> void:
 		line = Text.t("END_HOME") % Heist.first_upper(Heist.loot.name) if mode == "story" else Text.t("END_LEVEL_DONE") % [level, Heist.loot.name]
 		next = Text.t("END_NEXT_NIGHT" if mode == "story" else "END_NEXT_HEIST")
 		if mode == "story":
-			Story.unlock(level + 1)
+			Story.unlock(level + 1, players)
 			story_pick = mini(level + 1, Story.count())
 			if level >= Story.count():
 				_show_ending()
@@ -961,7 +1231,7 @@ func _show_end() -> void:
 		picture,
 		{"text": line},
 		{"buttons": [{"text": next, "call": _again, "colour": colour}], "big": true},
-		{"buttons": [{"text": Text.t("END_TO_MENU"), "call": _show_title, "colour": Hud.C.dim}], "small": true},
+		{"buttons": [{"text": Text.t("EDITOR_BACK_TO_EDITOR") if testing else Text.t("END_TO_MENU"), "call": _leave_game.bind({"story": _show_story_map, "challenge": _show_challenge_menu}.get(mode, _show_title)), "colour": Hud.C.dim}], "small": true},
 	])
 
 
@@ -1008,6 +1278,18 @@ func _unhandled_input(event: InputEvent) -> void:
 		"menu":
 			if key == KEY_ESCAPE:
 				_show_title()
+		"story_players":
+			if key == KEY_ESCAPE:
+				_show_title()
+		"challenge":
+			if key == KEY_ESCAPE:
+				_show_challenge_menu()
+		"story_map":
+			if key == KEY_ESCAPE:
+				_show_story_menu()
+		"museum":
+			if key == KEY_ESCAPE:
+				_show_story_map()
 		"input":
 			if key == KEY_ESCAPE:
 				if settings_from == "story":
@@ -1060,7 +1342,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			if key == KEY_SPACE:
 				_again()
 			elif key == KEY_ESCAPE:
-				_show_title()
+				_leave_game(_show_title)
 
 
 ## A pad button as the key it stands for, so the shortcuts above are written
@@ -1109,20 +1391,33 @@ func _lay_out(n: int, map_seed: int) -> int:
 	if mode == "story":
 		var night := Story.level(n)
 		Sim.new_map(map_seed, night.size, -1, night.shape)
+	elif mode == "challenge":
+		# A saved map: the way in, the piece, the door and the guards where
+		# its maker put them.
+		challenge_map.apply()
+		MuseumView.palette = challenge_map.palette()
+		MuseumView.exhibits = challenge_map.exhibits.duplicate()
+		Props.list.clear()
 	else:
 		Sim.new_map(map_seed, size)
 	thieves = [Sim.new_thief("p1")]
 	for k in range(2, players + 1):
 		thieves.append(Sim.new_thief("p%d" % k))
 	guards = Sim.new_guards(Sim.guard_count(Museum.size_name))
-	Heist.plan_job(level, Story.level(n).loot if mode == "story" else {}, players)
+	if mode == "challenge":
+		Sim.place_guards(guards, challenge_map.guards)
+	var piece: Dictionary = Story.level(n).loot if mode == "story" else (challenge_map.loot_piece() if mode == "challenge" else {})
+	Heist.plan_job(level, piece, players, challenge_map.job() if mode == "challenge" else {})
 	# Things to knock over: never on the tiles the job needs clear.
 	var stand := Heist.route[0]
 	for t in Heist.route:
 		if Museum.dist(t.x + 0.5, t.y + 0.5, Heist.at.x + 0.5, Heist.at.y + 0.5) < 1.1:
 			stand = t
 			break
-	if Sim.feature("props"):
+	# A saved map may stand its own, by hand.
+	if mode == "challenge" and not challenge_map.props.is_empty():
+		challenge_map.put_props()
+	elif Sim.feature("props"):
 		Props.place(map_seed, [Heist.exit, Heist.panel, Heist.panel2, stand, Heist.start])
 	else:
 		Props.list.clear()
@@ -1134,8 +1429,12 @@ func _new_round(n: int) -> void:
 	if mode == "story":
 		n = clampi(n, 1, Story.count())
 	level = n
+	# Each story museum in its own colours; the rest by their seed.
+	MuseumView.palette = {}
+	MuseumView.exhibits = {}
 	if mode == "story":
 		var night := Story.level(n)
+		MuseumView.palette = Story.palette(n)
 		Sim.custom = Story.tuning(n)
 		var base := Story.seed_for(n, players)
 		# A night that posts a guard for its lesson is built around it: the
@@ -1147,6 +1446,9 @@ func _new_round(n: int) -> void:
 					pick = base + k * Story.SEED_STEP
 					break
 		_lay_out(n, pick)
+	elif mode == "challenge":
+		Sim.custom = challenge_map.tuning()
+		_lay_out(n, challenge_map.seed + n)
 	else:
 		Sim.custom = {}
 		_lay_out(n, randi() % 1000000000)
