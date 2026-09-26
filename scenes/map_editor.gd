@@ -116,8 +116,9 @@ const SIZE_NAMES := {"small": "MENU_SIZE_SMALL", "medium": "MENU_SIZE_MEDIUM", "
 const DIFFICULTY_NAMES := {"easy": "MENU_DIFFICULTY_EASY", "medium": "MENU_DIFFICULTY_MEDIUM", "hard": "MENU_DIFFICULTY_HARD"}
 ## The options, a page each: a list down the left of the catalogue, and the
 ## page's choices to its right.
-const OPTION_PAGES := ["size", "floor", "wall", "difficulty", "guards", "map", "heist"]
-const OPTION_ICONS := {"size": "size", "floor": "rooms", "wall": "wall", "difficulty": "difficulty", "guards": "guard", "map": "random", "heist": "piece"}
+## (The guards are placed with the characters: how many there are is theirs.)
+const OPTION_PAGES := ["size", "floor", "wall", "difficulty", "map", "loot", "story"]
+const OPTION_ICONS := {"size": "size", "floor": "rooms", "wall": "wall", "difficulty": "difficulty", "map": "random", "loot": "piece", "story": "heist"}
 const PROP_ORDER := ["bust", "bin", "panel", "armour"]
 const UNDO_STEPS := 60
 
@@ -210,6 +211,9 @@ func _ready() -> void:
 				if what in KINDS:
 					_pick_kind(what)
 				elif what in OPTION_PAGES:
+					# With a piece chosen, to see its page whole.
+					if "--editor-loot" in OS.get_cmdline_user_args():
+						map.loot = {"shape": "crown", "colour": LOOT_COLOURS[0], "name": "", "blurb": "", "story": "", "seconds": 3.0}
 					_pick_kind("options")
 					_open_page(what)).call()
 
@@ -412,8 +416,9 @@ func _icon_button(icon: String, key: String, call: Callable, parent: Node, colou
 ## One of the bar's settings at the right: its value is its text.
 func _setting_button(call: Callable, parent: Node, icon: Variant) -> Button:
 	var b := _button("", call, parent, Hud.C.safe, false, icon)
-	b.custom_minimum_size = Vector2(200, 38)
+	b.custom_minimum_size = Vector2(220, 38)
 	b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	b.autowrap_mode = TextServer.AUTOWRAP_OFF
 	b.add_theme_constant_override("icon_max_width", 20)
 	b.add_theme_font_size_override("font_size", 8)
 	return b
@@ -642,16 +647,13 @@ func _options() -> void:
 		"difficulty":
 			for k in DIFFICULTIES:
 				_choice(Text.t(DIFFICULTY_NAMES[k]), "difficulty", _set_difficulty.bind(k), k, "difficulty")
-		"guards":
-			_choice(Text.t("EDITOR_GUARDS_AUTO") % map.guards_tonight(), "guards", _set_guards.bind(0), 0, "guard")
-			# Never fewer than the guards placed by hand.
-			for n in range(maxi(1, map.guards.size()), MapFile.MAX_GUARDS + 1):
-				_choice(str(n), "guards", _set_guards.bind(n), n, "guard")
 		"map":
 			_choice(Text.t("EDITOR_RANDOM"), "", _random, null, "random")
 			_choice(Text.t("EDITOR_CLEAR"), "", _clear, null, "clear")
-		"heist":
-			_heist_panel()
+		"loot":
+			_loot_page()
+		"story":
+			_story_page()
 
 
 ## One card of an options page: in force, it is lit (meta "choice" against
@@ -672,7 +674,6 @@ func _setting_value(setting: String) -> Variant:
 		"floor": return map.floor_look
 		"wall": return map.wall_look
 		"difficulty": return map.difficulty
-		"guards": return map.guard_count
 	return null
 
 
@@ -715,11 +716,11 @@ func _open(k: String) -> void:
 ## What is stolen and why: the piece (a picture each, AL AZAR to let the
 ## game pick), its colour, its name and a line on it, how long its case
 ## takes, and the tale told before the job.
-func _heist_panel() -> void:
-	# Where it is, the case, is picked with the characters (MAIN_TOOLS).
-	_catalogue.add_child(VSeparator.new())
+## What is stolen: the piece (AL AZAR leaves it to the game), its colour,
+## and how long its case takes.
+func _loot_page() -> void:
 	var col := _column()
-	_label(Text.t("EDITOR_KIND_HEIST") + " · " + Text.t("EDITOR_LOOT_WHAT"), 8, Hud.BRASS, col, true)
+	_label(Text.t("EDITOR_LOOT_WHAT"), 8, Hud.BRASS, col, true)
 	var grid := GridContainer.new()
 	grid.columns = 6
 	grid.add_theme_constant_override("h_separation", 4)
@@ -735,8 +736,7 @@ func _heist_panel() -> void:
 		b.tooltip_text = Text.t("EDITOR_LOOT_RANDOM" if shape == "" else "EDITOR_SHAPE_" + String(shape).to_upper())
 		b.set_meta("loot", shape)
 	if map.loot.is_empty():
-		var none := _label(Text.t("EDITOR_LOOT_NONE"), 12, Hud.C.dim, _column(260))
-		none.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_nothing_chosen()
 		return
 	col = _column(230)
 	_label(Text.t("EDITOR_LOOT_COLOUR"), 8, Hud.C.dim, col, true)
@@ -759,7 +759,14 @@ func _heist_panel() -> void:
 		b.set_meta("hex", hex)
 	var secs := _setting_button(_step_seconds, col, "difficulty")
 	secs.set_meta("seconds", true)
-	col = _column(240)
+
+
+## Its tale: the piece's name, a line on it, and the story told before the job.
+func _story_page() -> void:
+	if map.loot.is_empty():
+		_nothing_chosen()
+		return
+	var col := _column(260)
 	var name_edit := _field(Text.t("EDITOR_LOOT_NAME"), map.loot.name, Text.t("EDITOR_SHAPE_" + String(map.loot.shape).to_upper()).to_lower(), col)
 	name_edit.text_changed.connect(func(t: String) -> void:
 		map.loot.name = t
@@ -768,18 +775,24 @@ func _heist_panel() -> void:
 	blurb.text_changed.connect(func(t: String) -> void:
 		map.loot.blurb = t
 		dirty = true)
-	col = _column(320)
+	col = _column(460)
 	_label(Text.t("EDITOR_LOOT_STORY"), 8, Hud.C.dim, col, true)
 	var story := TextEdit.new()
 	story.text = map.loot.story
 	story.placeholder_text = Text.t("EDITOR_LOOT_STORY_HINT")
 	story.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
-	story.custom_minimum_size = Vector2(320, 104)
+	story.custom_minimum_size = Vector2(460, 104)
 	story.add_theme_font_size_override("font_size", 13)
 	story.text_changed.connect(func() -> void:
 		map.loot.story = story.text
 		dirty = true)
 	col.add_child(story)
+
+
+## No piece chosen: the game picks one, and its tale with it.
+func _nothing_chosen() -> void:
+	var none := _label(Text.t("EDITOR_LOOT_NONE"), 12, Hud.C.dim, _column(300))
+	none.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 
 
 ## A labelled line of text in the panel.
@@ -903,13 +916,6 @@ func _set_look(part: String, i: int) -> void:
 
 func _set_difficulty(k: String) -> void:
 	map.difficulty = k
-	dirty = true
-	_refresh()
-
-
-## 0 AUTO, or how many guards (never fewer than those placed by hand).
-func _set_guards(n: int) -> void:
-	map.guard_count = n
 	dirty = true
 	_refresh()
 
@@ -1244,7 +1250,7 @@ func _refresh() -> void:
 				_look(b, b.get_meta("page") == option_page)
 			elif b.has_meta("setting"):
 				_look(b, _setting_value(b.get_meta("setting")) == b.get_meta("choice"))
-	# The heist, in the options: the piece and the colour in hand lit, the seconds.
+	# What is stolen: the piece and the colour in hand lit, the seconds.
 	if kind == "options":
 		for b in _catalogue.find_children("*", "Button", true, false):
 			if b.has_meta("loot"):
