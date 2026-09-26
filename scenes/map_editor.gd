@@ -7,14 +7,15 @@ extends CanvasLayer
 ## The plan (or the museum in 3D) fills the screen: the left button draws
 ## with the tool in hand, the right one rubs out (what stands on a tile
 ## first, then the tile, back to floor). Along the bottom, as in a building
-## game: a compact block at the left, what to do (the 3D view, play it,
-## undo, leave, the options — saving among them) over the four kinds of tool
+## game: a compact block at the left, what to do (play it, undo, save,
+## leave, the options) over the four kinds of tool
 ## (wall and floor, the characters, the objects, the rooms); and the rest of the
 ## bar the catalogue of the kind in hand — the objects with a row of tabs to
 ## show one theme or all; the options, the building's size and look, rolling
 ## a museum or clearing it, the difficulty, the guards and the heist (what
 ## is stolen and its tale). Over the plan, the name and what still stops it
-## being played.
+## being played, and in the top right corner the switch between the plan
+## and the museum in 3D.
 ##
 ## Keyboard and pad: Tab (or the arrows off the edge) between the plan and
 ## the buttons; on the plan the arrows move a cursor, Space or A draws,
@@ -296,6 +297,13 @@ func _build() -> void:
 	_status = _label("", 14, Hud.C.alert, line)
 	_status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_status.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	# The plan or the museum in 3D: the switch in the top right corner.
+	_view_button = _button("", _toggle_3d, line, Hud.C.safe, false, "view3d")
+	_view_button.custom_minimum_size = Vector2(52, 40)
+	_view_button.size_flags_horizontal = Control.SIZE_SHRINK_END
+	_view_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_view_button.add_theme_constant_override("icon_max_width", 26)
+	_view_button.tooltip_text = Text.t("EDITOR_PREVIEW")
 	_hint = _label("", 13, Hud.C.dim, top)
 	for l in [_status, _hint]:
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -324,9 +332,9 @@ func _build() -> void:
 	var acts := HBoxContainer.new()
 	acts.add_theme_constant_override("separation", 6)
 	left.add_child(acts)
-	_view_button = _icon_button("view3d", "EDITOR_PREVIEW", _toggle_3d, acts, Hud.C.safe)
 	_icon_button("play", "EDITOR_PLAY", _ask_play, acts, Hud.C.green)
 	_icon_button("undo", "EDITOR_UNDO", _undo, acts, Hud.C.dim)
+	_icon_button("save", "EDITOR_SAVE", _save, acts, Hud.C.green)
 	_exit_button = _icon_button("exit", "EDITOR_EXIT", _leave, acts, Hud.C.dim)
 	var kinds := HBoxContainer.new()
 	kinds.add_theme_constant_override("separation", 6)
@@ -648,14 +656,12 @@ func _options() -> void:
 	list.add_theme_constant_override("h_separation", 4)
 	list.add_theme_constant_override("v_separation", 4)
 	_catalogue.add_child(list)
-	for page in ["save"] + OPTION_PAGES:
-		var b := _button(Text.t("EDITOR_SAVE" if page == "save" else "EDITOR_PAGE_" + page.to_upper()), _save if page == "save" else _open_page.bind(page),
-			list, Hud.C.green if page == "save" else Hud.C.gold, false, "save" if page == "save" else OPTION_ICONS[page])
+	for page in OPTION_PAGES:
+		var b := _button(Text.t("EDITOR_PAGE_" + page.to_upper()), _open_page.bind(page), list, Hud.C.gold, false, OPTION_ICONS[page])
 		b.custom_minimum_size = Vector2(150, 30)
 		b.add_theme_constant_override("icon_max_width", 16)
 		b.add_theme_font_size_override("font_size", 8)
-		if page != "save":
-			b.set_meta("page", page)
+		b.set_meta("page", page)
 	_catalogue.add_child(VSeparator.new())
 	match option_page:
 		"size":
