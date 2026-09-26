@@ -198,15 +198,15 @@ func _init() -> void:
 	var fell := 0.0
 	var pressed_up := 0.0
 	for s in 8:
-		up += balance(0.1, 0.0, 400 + s, 20.0)
+		up += balance(0.1, 0.0, 400 + s, 60.0)
 		pressed_up += balance(0.1, 1.0, 400 + s, 20.0)
 		fell += balance(-1.0, 0.0, 400 + s, 20.0)
-	check(up / 8 >= 8.0 and up / 8 < 20.0, "atento a izquierda y derecha aguanta %.1f s de media, pero no para siempre: la pierna se cansa" % (up / 8))
+	check(up / 8 >= 59.0, "atento a izquierda y derecha aguanta %.1f s de media: no se complica con el tiempo" % (up / 8))
 	check(fell / 8 < 5.0, "sin tocar nada se cae en %.1f s de media" % (fell / 8))
 	var held_down := 0.0
 	for s in 8:
 		held_down += balance(0.1, 0.0, 400 + s, 20.0, 1, 36)
-	check(held_down < up * 0.5, "pulsaciones largas (0,6 s) empujan demasiado y se cae: %.1f s frente a %.1f s a toques" % [held_down / 8, up / 8])
+	check(held_down / 8 < 10.0, "pulsaciones largas (0,6 s) empujan demasiado y se cae: %.1f s frente a %.1f s a toques" % [held_down / 8, up / 8])
 	var push := Minigame.make("balance", "plinth", 1, {}, 5, 1)
 	push.lean = 0.0
 	push.lean_v = 0.0
@@ -219,14 +219,29 @@ func _init() -> void:
 	for s in 8:
 		slack += balance(0.3, 0.0, 500 + s, 30.0)
 		slack_pressed += balance(0.3, 1.0, 500 + s, 30.0)
-	check(slack_pressed < slack, "con un guardia cerca o la luz encendida cuesta más: %.1f s frente a %.1f s" % [slack_pressed / 8, slack / 8])
+	check(slack_pressed < slack * 0.6, "con un guardia encima cuesta mucho más: %.1f s frente a %.1f s" % [slack_pressed / 8, slack / 8])
+	var by_near: Array[float] = []
+	for near in [0.0, 0.3, 0.6, 1.0]:
+		var sum := 0.0
+		for s in 8:
+			sum += balance(0.3, near, 500 + s, 30.0)
+		by_near.append(sum / 8)
+	check(by_near[0] >= by_near[1] and by_near[1] >= by_near[2] and by_near[2] >= by_near[3] and by_near[0] > by_near[3],
+		"cuanto más cerca el guardia, antes se cae: %.1f s, %.1f s, %.1f s, %.1f s" % by_near)
+	var far := Minigame.make("balance", "plinth", 1, {}, 5, 1)
+	var widest := 0.0
+	while far.tick({}, DT) != "fail":
+		widest = maxf(widest, absf(far.lean))
+		if absf(far.lean) < 1.0:
+			widest = 0.0
+	check(widest > 1.0, "se inclina más allá de donde antes caía (%.2f) antes de caerse" % widest)
 	var by_level: Array[float] = []
 	for level in 3:
 		var sum := 0.0
 		for s in 8:
-			sum += balance(0.1, 0.0, 600 + s, 60.0, level)
+			sum += balance(0.3, 0.6, 600 + s, 60.0, level)
 		by_level.append(sum / 8)
-	check(by_level[0] > by_level[1] and by_level[1] > by_level[2], "equilibrio por niveles: %.1f s fácil, %.1f s medio, %.1f s difícil" % by_level)
+	check(by_level[0] > by_level[1] and by_level[1] > by_level[2], "equilibrio por niveles, con un guardia a media distancia: %.1f s fácil, %.1f s medio, %.1f s difícil" % by_level)
 	var cup_level: Array[float] = []
 	for level in 3:
 		var sum := 0.0

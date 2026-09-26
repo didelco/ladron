@@ -106,11 +106,18 @@ static func climb(p: Thief, t: Vector2i, guards: Array[Guard]) -> void:
 
 
 ## How hard it is to keep the pose on one foot (Minigame "balance"), 0..1:
-## the gallery's lights on, a guard close by.
+## mostly the guards, harder the closer they come (from GUARD_NEAR tiles
+## away, full with one right by it), and a little the gallery's lights on.
+const GUARD_NEAR := 10.0
+const LIT_PRESSURE := 0.15
+
+
 static func pressure(p: Thief, guards: Array[Guard]) -> float:
-	var out := 0.5 if Museum.is_lit(p.x, p.y) else 0.0
+	var out := LIT_PRESSURE if Museum.is_lit(p.x, p.y) else 0.0
 	for g in guards:
-		out += clampf(1.0 - Museum.dist(g.x, g.y, p.x, p.y) / 8.0, 0.0, 1.0) * 0.8
+		var near := clampf(1.0 - Museum.dist(g.x, g.y, p.x, p.y) / GUARD_NEAR, 0.0, 1.0)
+		# Eased in: a guard far off barely counts, one close counts a lot.
+		out += near * near
 	return clampf(out, 0.0, 1.0)
 
 
