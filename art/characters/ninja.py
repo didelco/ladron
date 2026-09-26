@@ -247,7 +247,7 @@ def main():
     if "--rig" in ARGS or not ARGS or "--preview" in ARGS:
         import rig
         arm, _ = rig.skin(root, rules, "ninja")
-        rig.animate(arm, ["reposo", "andar", "correr", "gatear"])
+        rig.animate(arm, ["reposo", "andar", "correr", "gatear", "victoria", "estatua"])
         if "--preview" in ARGS:
             rig.preview(arm, ARGS[ARGS.index("--preview") + 1], ARGS[ARGS.index("--anims") + 1].split(",") if "--anims" in ARGS else ["andar", "correr", "gatear"])
             return

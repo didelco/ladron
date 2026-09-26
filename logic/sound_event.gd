@@ -6,7 +6,7 @@ extends RefCounted
 var x: float
 var y: float
 var loudness: float
-## walk, sprint, rustle, bump, shelf, shout, whisper, alarm
+## walk, sprint, rustle, bump, shelf, roll_bump, shout, whisper, alarm, switch
 var kind: String
 
 

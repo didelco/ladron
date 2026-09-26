@@ -168,7 +168,7 @@ static func within_reach(t: Thief) -> Prop:
 	var best: Prop = null
 	var best_d := REACH
 	for p in list:
-		if p.fallen or t.out:
+		if p.fallen or t.out or t.posing:
 			continue
 		var d := Museum.dist(t.x, t.y, p.x, p.y)
 		if d <= best_d:

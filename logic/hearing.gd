@@ -6,7 +6,7 @@ extends RefCounted
 ## How far a noise carries, in tiles, before walls are taken into account.
 ## Standing still makes none: staying put is the whole point of hiding.
 ## Things falling over: they carry through walls better (see heard_at).
-const CRASHES := ["bin", "bust", "panel", "armour"]
+const CRASHES := ["bin", "bust", "panel", "armour", "roll_bump", "tumble"]
 
 const LOUDNESS := {
 	"walk": 5.0,
@@ -24,12 +24,23 @@ const LOUDNESS := {
 	"bump": 3.0,
 	## knocking a case: the loudest thing you can do
 	"shelf": 13.0,
+	## a whole thief, curled in a ball, into a wall or a case (Roll): as loud
+	## as a suit of armour going over, and as sure a sign someone is about
+	"roll_bump": 22.0,
 	## one guard telling another, under its breath
 	"whisper": 2.5,
 	## a guard yelling "stop!"
 	"shout": 30.0,
 	"alarm": 14.0,
+	## a thief flipping a light switch: a small, dry click
+	"switch": 2.5,
+	## a statue losing its balance and landing on the floor (Plinths.fall)
+	"tumble": 12.0,
 }
+
+## Walking slowly on purpose (Sim.SLOW_SPEED) you place your feet: a step
+## carries this share of what the same speed would. Quiet, never silent.
+const SLOW_HUSH := 0.5
 
 ## A wall between you and a guard eats this much of a noise's reach.
 const WALL_DAMPING := 2.6
@@ -73,8 +84,12 @@ static func heard_at(g: Guard, noise: SoundEvent) -> Variant:
 ## The noise a thief made this frame, if any. prev_x/prev_y is where it stood
 ## before the step.
 static func thief_noise(prev_x: float, prev_y: float, after: Thief, entered_cover: bool, bumped: String, top_speed: float) -> SoundEvent:
-	# On all fours you place every step: no footfalls, no knocks, nothing.
-	if after.crouched:
+	# A ball into a wall is a thump, low as it is.
+	if bumped == "roll":
+		return SoundEvent.make(after.x, after.y, "roll_bump")
+	# On all fours you place every step: no footfalls, no knocks, nothing;
+	# a roll is as quiet, and so is lying down after it.
+	if after.crouched or after.rolling or after.dizzy > 0.0:
 		return null
 	# Running into something is loud even though it moved you nowhere.
 	if bumped != "":
@@ -84,4 +99,5 @@ static func thief_noise(prev_x: float, prev_y: float, after: Thief, entered_cove
 	if entered_cover and after.sprinting:
 		return SoundEvent.make(after.x, after.y, "rustle")
 	# Loudness follows the actual speed, so winding up is audibly riskier.
-	return SoundEvent.make(after.x, after.y, "sprint" if after.sprinting else "walk", step_loudness(after.speed, top_speed))
+	var loud := step_loudness(after.speed, top_speed) * (SLOW_HUSH if after.slow else 1.0)
+	return SoundEvent.make(after.x, after.y, "sprint" if after.sprinting else "walk", loud)

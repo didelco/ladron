@@ -274,6 +274,9 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 ##                                                    "call", pressing it "open"
 ##   {"legend": [keys], "thieves": [Color], "loot": Color}
 ##                                                    the map's legend (LEGEND)
+##   {"table": [[cell, ...], ...], "widths": [int], "heads"?: int}
+##                                                    short texts in rows and
+##                                                    columns on a board (_table)
 ##   {"footer": text}                                 what to press
 ## Buttons work with the mouse, and with the arrows and Enter; the first one
 ## has the focus.
@@ -463,10 +466,78 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 				st.first = button
 		if not line.is_empty():
 			st.rows.append(line)
+	elif item.has("table"):
+		_table(item, parent)
 	elif item.has("footer"):
 		var f := _label(14, C.gold, parent, true)
 		f.text = item.footer
 		f.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+
+
+## A board of short texts: {"table": [[cell, ...], ...], "widths": [int, ...],
+## "heads"?: int}. The first row is the heading, in gold arcade letters; the
+## "heads" - 1 rows after it say a little more under it, small and dim. Below
+## a brass rule, the first column names each row in the arcade face and the
+## rest are in the plain one, to be read at a glance, on alternate stripes.
+## A cell is a text, or {"text", "span"} to run across several columns.
+func _table(item: Dictionary, parent: BoxContainer) -> void:
+	var board := PanelContainer.new()
+	var st := _frame(BRASS, false, false, 18)
+	st.set_content_margin_all(14)
+	st.content_margin_left = 16
+	st.content_margin_right = 16
+	board.add_theme_stylebox_override("panel", st)
+	board.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	parent.add_child(board)
+	var lines := VBoxContainer.new()
+	lines.add_theme_constant_override("separation", 2)
+	board.add_child(lines)
+	var widths: Array = item.widths
+	var rows: Array = item.table
+	var heads: int = item.get("heads", 1)
+	for r in rows.size():
+		if r == heads:
+			var rule := ColorRect.new()
+			rule.color = BRASS_DARK
+			rule.custom_minimum_size = Vector2(0, 2)
+			lines.add_child(rule)
+		var stripe := PanelContainer.new()
+		var bg := StyleBoxFlat.new()
+		bg.bg_color = WALNUT_LIT if r >= heads and (r - heads) % 2 == 0 else Color(0, 0, 0, 0)
+		bg.set_corner_radius_all(8)
+		stripe.add_theme_stylebox_override("panel", bg)
+		lines.add_child(stripe)
+		var line := HBoxContainer.new()
+		line.add_theme_constant_override("separation", 0)
+		stripe.add_child(line)
+		var col := 0
+		for cell in rows[r]:
+			var c: Dictionary = cell if cell is Dictionary else {"text": cell}
+			var span: int = c.get("span", 1)
+			var w := 0
+			for k in span:
+				w += int(widths[mini(col + k, widths.size() - 1)])
+			var l: Label
+			if r == 0:
+				l = _label(11, C.gold, line, true)
+			elif r < heads:
+				l = _label(13, C.dim, line)
+			elif col == 0:
+				l = _label(11, CREAM, line, true)
+			else:
+				l = _label(18, C.text, line)
+			l.text = c.text
+			l.custom_minimum_size = Vector2(w, 20 if r < heads else 30)
+			l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT if col == 0 else HORIZONTAL_ALIGNMENT_CENTER
+			if col == 0:
+				# The row's name clear of the stripe's rounded end.
+				l.custom_minimum_size.x -= 12
+				var pad := Control.new()
+				pad.custom_minimum_size = Vector2(12, 0)
+				line.add_child(pad)
+				line.move_child(pad, 0)
+			col += span
 
 
 ## Items side by side: {"columns": [{"items": [...], "width"?: int}, ...],
@@ -1261,7 +1332,11 @@ func update_play(log_lines: Array[String], job: Dictionary, objective_angle: flo
 		_bar.position = _bar_back.position
 		_bar.size = Vector2(w * float(job.progress), 14)
 	if job.get("waiting", false):
-		_job.text = Text.t("HUD_JOB_WAIT_PANELS" if job.get("panels", 1) > 1 else "HUD_JOB_WAIT_PANEL")
+		var two: bool = job.get("panels", 1) > 1
+		if job.get("cut", false):
+			_job.text = Text.t("HUD_JOB_WAIT_CUTS" if two else "HUD_JOB_WAIT_CUT")
+		else:
+			_job.text = Text.t("HUD_JOB_WAIT_PANELS" if two else "HUD_JOB_WAIT_PANEL")
 	elif job.get("short_hand", false):
 		_job.text = Text.t("HUD_JOB_TWO_LOCKS")
 	elif working:
@@ -1355,8 +1430,8 @@ func set_gang(colours: Array, darks: Array, loot: Dictionary) -> void:
 		view.add_child(anchor)
 		var fig := Figure.make("thief", colours[i], darks[i])
 		anchor.add_child(fig)
-		var piece := LootModels.build(loot.get("shape", "gem"), Color(loot.get("colour", "#ffffff")))
-		piece.scale = Vector3.ONE * 1.4
+		var piece := LootModels.sack()
+		piece.scale = Vector3.ONE * 1.1
 		piece.visible = false
 		fig.add_child(piece)
 		var frame := PanelContainer.new()
@@ -1379,7 +1454,8 @@ func set_gang(colours: Array, darks: Array, loot: Dictionary) -> void:
 		_portraits.append({"anchor": anchor, "fig": fig, "piece": piece, "frame": frame, "box": box, "colour": colours[i], "walked": 0.0})
 
 
-## Each thief as it is now: {posture, speed, carrying, seen, out, safe}. The
+## Each thief as it is now: {posture, speed, carrying, seen, out, safe,
+## pose (Roll.pose)}. The
 ## frame says how it is doing — its colour hidden, red seen, grey caught,
 ## green out of the door.
 func update_gang(states: Array, dt: float) -> void:
@@ -1388,17 +1464,20 @@ func update_gang(states: Array, dt: float) -> void:
 		var p: Dictionary = _portraits[i]
 		p.walked += float(st.speed) * dt
 		var fig: Figure = p.fig
-		fig.set_state(Vector3(p.walked, 0, 0), PI / 2 - 0.6, float(st.posture), dt)
+		# Out of the door: jumping for joy on the spot, fists in the air.
+		var pose := "victory" if st.safe else str(st.get("pose", ""))
+		fig.set_state(Vector3(p.walked, 0, 0), PI / 2 - 0.6, float(st.posture), dt, pose)
 		(p.anchor as Node3D).position.x = -p.walked
 		var piece: Node3D = p.piece
 		piece.visible = st.carrying
-		# On its back, lower when it is down on all fours.
-		piece.position = Vector3(0, 1.1 - 0.45 * float(st.posture), -0.28)
+		# The sack on its back, lower when it is down on all fours.
+		# High enough to peek over the shoulder at the camera.
+		piece.position = Vector3(0, 0.62 - 0.25 * float(st.posture), -0.36)
 		var box: StyleBoxFlat = p.box
 		var frame: Control = p.frame
 		if st.safe:
 			box.border_color = C.green
-			frame.modulate = Color(1, 1, 1, 0.6)
+			frame.modulate = Color.WHITE
 		elif st.out:
 			box.border_color = Color("#6d6a78")
 			frame.modulate = Color(0.5, 0.5, 0.5, 0.8)

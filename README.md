@@ -57,6 +57,8 @@ godot --headless --script tests/test_sim.gd      # escenarios de la simulación
 godot --headless --script tests/test_heist.gd    # el golpe, el cuadro de alarma y las diez noches
 godot --headless --script tests/test_mapfile.gd  # mapas guardados: ida y vuelta, validación y que se juegan
 godot --headless --script tests/test_story.gd    # la historia: noches por museo, progreso por jugadores
+godot --headless --script tests/test_roll.gd     # rodar: ocho casillas, bajo y callado; limpia o contra la pared (golpe y estrellas)
+godot --headless --script tests/test_plinths.gd  # pedestales: subir con la acción, estatua invisible, bajar con una dirección
 godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (necesita el cerebro)
 ```
 
@@ -101,20 +103,39 @@ tirado sube su alarma y va a mirar.
 Durante la partida, `M` (o Y / Select en el mando) saca el mapa: el plano, dónde estás, la pieza
 y la salida, sin los guardias. Mientras lo miras no te mueves. `N` silencia el sonido. `P` (o Start) pausa. Junto a una papelera, un busto o un panel, `E`
 (`.` para el segundo jugador con teclado, X en el mando) lo tira: hace ruido y los guardias van a
-ver, lo que sirve para despistarlos. Con dos
+ver, lo que sirve para despistarlos. Junto al **interruptor** de una sala, la misma tecla apaga la luz si está encendida o la enciende si está apagada (`Sim.flip_switch`): hace un clic flojo y, si hay un guardia en esa sala, nota el cambio, sube su alarma y va a mirar el interruptor. Un guardia en alerta que vea el interruptor de una sala oscura volverá a encenderla. **Rodar** (`logic/roll.gd`): `Espacio` (`Enter` para el segundo,
+B en el mando) te hace una bola y ruedas ocho casillas hacia donde miras (en 1,1 s, más rápido que
+corriendo) y sin ruido de pasos; te ven igual que a gatas. No se puede girar ni parar
+a medias. Si la rodada acaba libre, te quedas un momento a gatas y te levantas: 1,8 s en el suelo,
+algo más que de gatas. Pero si ruedas contra una pared o una vitrina te paras en seco con un golpazo
+que se oye por todo el museo (tanto como una armadura que se cae) y te quedas tumbado, mareado y
+con estrellitas girando sobre la cabeza: 2,5 s, más 1 s para levantarte. Lo que pilles rodando se cae. Con varios
 ladrones, cada uno ocupa su plaza pulsando un botón de su mando o una tecla de su lado del teclado
-(WASD o flechas), como en Mario Kart 64; P1 es siempre turquesa y P2 naranja. En
+(WASD o flechas), como en Mario Kart 64; P1 es siempre turquesa y P2 naranja. En el teclado juegan
+dos como mucho: el tercero y el cuarto, con mando. En
 SETTINGS → CONTROLES: vibración y su fuerza, y zona muerta del stick.
 
-SETTINGS (se guardan en `user://settings.cfg`): sonido (`N`), música, volumen de música y de efectos (0–100 %, `←`/`→`), pantalla completa, v-sync y panel de IA; también se recuerdan la dificultad y el tamaño del modo generativo. La música (sintetizada, de misterio) sube de tensión cuando los guardias están en alerta o te ven. Solo: WASD o flechas, `C` o `Shift` para ponerse a gatas. Dos
-jugadores: P1 con WASD y `C`, P2 con flechas y `-` o `/`. `Esc` para la pausa. El objetivo: robar
+SETTINGS (se guardan en `user://settings.cfg`): sonido (`N`), música, volumen de música y de efectos (0–100 %, `←`/`→`), pantalla completa, v-sync y panel de IA; también se recuerdan la dificultad y el tamaño del modo generativo. La música (sintetizada, de misterio) sube de tensión cuando los guardias están en alerta o te ven. Solo: WASD o flechas, `C` o `Shift` para ponerse a gatas, `Espacio` o `Enter` para rodar. Dos
+jugadores: P1 con WASD, `C` y `Espacio`, P2 con flechas, `-` o `/` y `Enter`. `Esc` para la pausa. El objetivo: robar
 la pieza (quieto a su lado unos segundos, mires hacia donde mires) y salir por la puerta verde. Sin reloj: se tarda lo que se
 quiera.
 
-Con mando: stick izquierdo o cruceta para moverse, A/B (✕/○) para ponerse a gatas y Start para la
+Con mando: stick izquierdo o cruceta para moverse, A (✕) para ponerse a gatas, B (○) para rodar y Start para la
 pausa; en los menús A acepta y B vuelve. Solo, vale cualquier mando; con dos, el mando 1 es P1 y el
 2 es P2 (el teclado sigue funcionando, así que un mando y teclado también). Vibra cuando te ven y
 cuando tiras algo.
+
+**Andar lento**: mientras mantienes `Alt` (⌥ Option en Mac) andas despacio, 1,2 casillas/s, sin
+llegar nunca a correr, y tus pasos se oyen la mitad de lejos que andando a esa velocidad (un guardia
+tranquilo lo oye a 1,1 casillas; andando normal, a 2,4–4,4, y corriendo, hasta 7,5). Te ven de pie, pero
+no tienes que agacharte ni levantarte. P1 usa el `Alt` izquierdo (con el pulgar, junto al
+`Espacio`) y P2 el derecho (junto a la flecha izquierda); solo, cualquiera de los dos. Se eligió `Alt`
+porque no lo usa nada más: `Ctrl` choca en Mac con `Ctrl`+`Espacio` (cambiar de idioma del teclado)
+y `Ctrl`+flechas (escritorios), y `Cmd` con `Cmd`+`Q`. Godot no distingue los dos `Alt` al consultar
+el teclado, así que `scenes/main.gd` los sigue por `InputEventKey.location`. En el mando, mantener LB
+o inclinar el stick poco (pasada la zona muerta, menos de la mitad de lo que queda hasta el borde).
+**A gatas** se va a 1,5 casillas/s, algo más deprisa y sin ningún ruido, pero cuesta 1,5 s agacharse y
+otro tanto levantarse.
 
 Para grabar o probar sin pulsar teclas: `godot -- --autostart` salta directamente a la partida
 (`-- --autostart --two` con dos ladrones), y `-- --intro` enseña el comienzo de la historia con la

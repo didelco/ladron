@@ -21,6 +21,9 @@ const STANDING := 0.5
 const LIT_RANGE := 40.0
 ## How long room lights stay on once switched, in ms.
 const LIGHT_MS := 35000.0
+## Close enough to a room's switch for a thief to flip it: on its tile or
+## the next one.
+const SWITCH_REACH := 1.1
 ## Past this, a clue no longer says where the thief is *now*.
 const LOST_MS := 1500.0
 ## A zone looked over within this long does not need its lights on.
@@ -58,7 +61,13 @@ const DECEL := 7.0
 const RUN_THRESHOLD := 3.6
 ## Getting down on all fours, or back up, takes this long.
 const CROUCH_SECONDS := 1.5
-const CROUCH_SPEED := 0.8
+## On all fours you shuffle along about as fast as a tap creeps: silent and
+## low, but it takes CROUCH_SECONDS to get down and as long to get up.
+const CROUCH_SPEED := 1.5
+## Holding the slow key: heel to toe, never winding up. Slower than on all
+## fours and still seen standing, but quiet (Hearing.SLOW_HUSH) and with
+## nothing to get up from.
+const SLOW_SPEED := 1.2
 ## How far down counts as hidden behind a case: all the way.
 const DOWN := 0.95
 
@@ -72,13 +81,14 @@ const CALL_REFRESH_MS := 1500.0
 
 const GUARD_NAMES: Array[String] = ["Vela", "Rook", "Mora", "Quill", "Brasa", "Tejo", "Nube", "Sable"]
 
-## Which keys drive which thief. On your own the arrows work too.
+## Which keys drive which thief. On your own the arrows work too. "lalt" and
+## "ralt" are the left and right Alt (Option) keys, told apart by main.gd.
 const SCHEMES := {
-	"solo": {"up": ["w", "up"], "down": ["s", "down"], "left": ["a", "left"], "right": ["d", "right"], "crouch": ["c", "shift"]},
-	"wasd": {"up": ["w"], "down": ["s"], "left": ["a"], "right": ["d"], "crouch": ["c"]},
-	"arrows": {"up": ["up"], "down": ["down"], "left": ["left"], "right": ["right"], "crouch": ["minus", "slash"]},
-	"ijkl": {"up": ["i"], "down": ["k"], "left": ["j"], "right": ["l"], "crouch": ["u"]},
-	"numpad": {"up": ["kp8"], "down": ["kp5"], "left": ["kp4"], "right": ["kp6"], "crouch": ["kp0"]},
+	"solo": {"up": ["w", "up"], "down": ["s", "down"], "left": ["a", "left"], "right": ["d", "right"], "crouch": ["c", "shift"], "roll": ["space", "enter"], "slow": ["lalt", "ralt"]},
+	"wasd": {"up": ["w"], "down": ["s"], "left": ["a"], "right": ["d"], "crouch": ["c"], "roll": ["space"], "slow": ["lalt"]},
+	"arrows": {"up": ["up"], "down": ["down"], "left": ["left"], "right": ["right"], "crouch": ["minus", "slash"], "roll": ["enter"], "slow": ["ralt"]},
+	"ijkl": {"up": ["i"], "down": ["k"], "left": ["j"], "right": ["l"], "crouch": ["u"], "roll": ["y"], "slow": ["h"]},
+	"numpad": {"up": ["kp8"], "down": ["kp5"], "left": ["kp4"], "right": ["kp6"], "crouch": ["kp0"], "roll": ["kpmul"], "slow": ["kpsub"]},
 }
 
 ## How hard the night is. Medium is the game as designed; easy and hard scale
@@ -514,7 +524,9 @@ static func _touches_cover(x: float, y: float, r: float = 0.34) -> bool:
 
 
 ## Move a thief one frame. keys holds the pressed key names ("w", "up",
-## "shift"...). Returns {"bumped": "", "wall" or "shelf", "entered_cover": bool}.
+## "shift"...). Returns {"bumped": "", "wall", "shelf" or "roll" (a roll
+## ended in a wall or a case), "entered_cover": bool, "roll": "" or what the
+## roll did this frame (Roll.step, or "start")}.
 static func step_thief(p: Thief, keys: Dictionary, dt: float, scheme: String = "solo") -> Dictionary:
 	var pad: Dictionary = SCHEMES[scheme]
 	var dx := 0
@@ -524,6 +536,46 @@ static func step_thief(p: Thief, keys: Dictionary, dt: float, scheme: String = "
 		if _pressed(keys, pad.down): dy += 1
 		if _pressed(keys, pad.left): dx -= 1
 		if _pressed(keys, pad.right): dx += 1
+	# Up on a pedestal, a statue: nothing moves it but a way down.
+	if p.posing:
+		p.roll_key = _pressed(keys, pad.roll)
+		p.crouch_key = _pressed(keys, pad.crouch)
+		# Keeping its balance (Minigame), left and right are the balance's:
+		# up and down still step off.
+		if p.game and p.game.kind == "balance":
+			dx = 0
+		if (dx != 0 or dy != 0) and Plinths.step_down(p, dx, dy):
+			return {"bumped": "", "entered_cover": false, "roll": "", "plinth": "down"}
+		return {"bumped": "", "entered_cover": false, "roll": ""}
+	# Hands busy at a lock or a panel (Minigame): the keys are the job's, and
+	# the thief stays put, crouched or standing as it was.
+	if p.game:
+		p.moving = false
+		p.speed = 0.0
+		p.sprinting = false
+		p.roll_key = _pressed(keys, pad.roll)
+		p.crouch_key = _pressed(keys, pad.crouch)
+		return {"bumped": "", "entered_cover": false, "roll": ""}
+	# The slow key is held, not toggled; on all fours it changes nothing.
+	p.slow = not p.out and not p.crouched and _pressed(keys, pad.slow)
+	# The roll key starts one, on the press; rolling, and lying dizzy after,
+	# nothing else answers (Roll keeps it low meanwhile).
+	var roll_key := not p.out and _pressed(keys, pad.roll)
+	var rolled := ""
+	if roll_key and not p.roll_key and Roll.start(p):
+		rolled = "start"
+	p.roll_key = roll_key
+	if p.rolling or p.dizzy > 0.0:
+		var what := Roll.step(p, dt)
+		if rolled == "":
+			rolled = what
+		p.crouch_key = not p.out and _pressed(keys, pad.crouch)
+		if what != "up":
+			p.posture = 1.0
+			p.sprinting = false
+			if not p.rolling:
+				p.moving = false
+			return {"bumped": "roll" if what == "crash" else "", "entered_cover": false, "roll": rolled}
 	# The crouch key toggles, on the press.
 	var crouch_key := not p.out and _pressed(keys, pad.crouch)
 	if crouch_key and not p.crouch_key:
@@ -542,8 +594,14 @@ static func step_thief(p: Thief, keys: Dictionary, dt: float, scheme: String = "
 		p.moving = false
 		p.sprinting = false
 		p.blocked = false
-		return {"bumped": "", "entered_cover": false}
-	p.speed = CROUCH_SPEED if p.crouched else minf(TOP_SPEED, maxf(CREEP, p.speed + ACCEL * dt))
+		return {"bumped": "", "entered_cover": false, "roll": rolled}
+	if p.crouched:
+		p.speed = CROUCH_SPEED
+	elif p.slow:
+		# From a run it takes a moment to rein in: braking, not a wall.
+		p.speed = maxf(SLOW_SPEED, p.speed - DECEL * dt)
+	else:
+		p.speed = minf(TOP_SPEED, maxf(CREEP, p.speed + ACCEL * dt))
 
 	var len := sqrt(dx * dx + dy * dy)
 	var px := p.x
@@ -581,7 +639,7 @@ static func step_thief(p: Thief, keys: Dictionary, dt: float, scheme: String = "
 	p.moving = got > 0.0001
 	p.sprinting = p.speed > RUN_THRESHOLD
 	p.blocked = blocked
-	return {"bumped": bumped, "entered_cover": entered}
+	return {"bumped": bumped, "entered_cover": entered, "roll": rolled}
 
 
 # --- Seeing ------------------------------------------------------------------
@@ -601,6 +659,10 @@ static func visible_to(g: Guard, thieves: Array[Thief]) -> Thief:
 
 
 static func can_see(g: Guard, p: Thief) -> bool:
+	# Striking a pose on a pedestal: one more statue, unless seen getting up
+	# or wobbling on one foot (Minigame.wobbling).
+	if p.posing and not p.pose_blown and not (p.game and p.game.wobbling()):
+		return false
 	var d := Museum.dist(g.x, g.y, p.x, p.y)
 	var view := view_of(g)
 	# Under a lit ceiling you are visible from anywhere with a line to you.
@@ -668,7 +730,13 @@ static func caught(guards: Array[Guard], p: Thief) -> bool:
 	if p.out:
 		return false
 	for g in guards:
-		if Museum.dist(g.x, g.y, p.x, p.y) < CATCH_RANGE:
+		var d := Museum.dist(g.x, g.y, p.x, p.y)
+		# A statue is a statue — unless it knows it is you, and is right there.
+		if p.posing:
+			if p.pose_blown and d < Plinths.GRAB:
+				return true
+			continue
+		if d < CATCH_RANGE:
 			return true
 	return false
 
@@ -1048,7 +1116,48 @@ static func _switch_in_view(g: Guard, now: float) -> Museum.Room:
 
 static func _switch_on(room: int, by: String) -> void:
 	Museum.lights_left[room] = LIGHT_MS
-	light_events.append({"room": room, "by": by})
+	light_events.append({"room": room, "by": by, "on": true, "thief": false})
+
+
+## The room whose switch this thief can reach, or null: on its tile or the
+## next one, and not while rolling or lying dizzy after a roll.
+static func switch_within_reach(t: Thief) -> Museum.Room:
+	if t.out or t.posing or t.rolling or t.dizzy > 0.0 or not feature("lights"):
+		return null
+	var best: Museum.Room = null
+	var best_d := SWITCH_REACH
+	for r in Museum.rooms:
+		var d := Museum.dist(t.x, t.y, r.switch_at.x + 0.5, r.switch_at.y + 0.5)
+		if d <= best_d:
+			best_d = d
+			best = r
+	return best
+
+
+## A thief flips a room's switch: off if lit, on if dark. The click is a
+## quiet sound; a guard in that room sees its light change, and that is
+## one more alarm and the switch the spot to check.
+static func flip_switch(room: Museum.Room, t: Thief, guards: Array[Guard], now: float, noises: Array[SoundEvent]) -> void:
+	var on: bool = Museum.lights_left[room.id] <= 0
+	Museum.lights_left[room.id] = LIGHT_MS if on else 0.0
+	light_events.append({"room": room.id, "by": t.id, "on": on, "thief": true})
+	var sx := room.switch_at.x + 0.5
+	var sy := room.switch_at.y + 0.5
+	noises.append(SoundEvent.make(sx, sy, "switch"))
+	for g in guards:
+		if Museum.room_at(g.x, g.y) != room:
+			continue
+		_alarm(g, now)
+		var fresh := g.memory != null and g.memory.kind != "noise" and now - g.memory.at <= 2000
+		if not fresh:
+			var m := Guard.Memory.new()
+			m.x = sx
+			m.y = sy
+			m.kind = "noise"
+			m.at = now
+			g.memory = m
+			g.planned_for = ""
+		thoughts.append({"by": g.name, "text": Text.t("GUARD_WHO_LIGHTS_ON" if on else "GUARD_WHO_LIGHTS_OFF")})
 
 
 static func tick_lights(dt: float) -> void:

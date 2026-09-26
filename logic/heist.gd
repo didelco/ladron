@@ -71,6 +71,14 @@ static var waiting := false
 ## third holds the panel; short_hand while only one is at it.
 static var hands := 1
 static var short_hand := false
+## With minigames (Sim.feature("lockpick")) the panel is not held but its
+## glass cut with the suction cup (Minigame "steady"), and it stays off for
+## the rest of the night; the case is picked (Minigame "lockpick").
+static var panel_off := false
+static var panel2_off := false
+## The lamps of the suction cup on the panel's glass (Minigame.need): half a
+## second each.
+const PANEL_LAMPS := 5
 
 
 ## The piece for night n (1-based) of a run nobody wrote: made up from the
@@ -105,6 +113,8 @@ static func plan_job(n: int, piece: Dictionary = {}, gang: int = 1, fixed: Dicti
 	short_hand = false
 	panel = Vector2i(-1, -1)
 	panel_by = ""
+	panel_off = false
+	panel2_off = false
 	waiting = false
 	start = Museum.spawn
 	progress = 0.0
@@ -240,16 +250,47 @@ static func _place_panel(stand: Vector2i, from_start: PackedInt32Array, second :
 
 
 static func at_panel(p: Thief) -> bool:
-	return not p.out and Museum.dist(p.x, p.y, panel.x + 0.5, panel.y + 0.5) < PANEL_REACH
+	return not p.out and not p.posing and Museum.dist(p.x, p.y, panel.x + 0.5, panel.y + 0.5) < PANEL_REACH
 
 
 static func at_panel2(p: Thief) -> bool:
-	return panel2.x >= 0 and not p.out and Museum.dist(p.x, p.y, panel2.x + 0.5, panel2.y + 0.5) < PANEL_REACH
+	return panel2.x >= 0 and not p.out and not p.posing and Museum.dist(p.x, p.y, panel2.x + 0.5, panel2.y + 0.5) < PANEL_REACH
 
 
-## The alarm is off: its panel held — both of them, for a gang of four.
+## The alarm is off: its panel held — both of them, for a gang of four. With
+## minigames, its glass cut instead.
 static func panels_held() -> bool:
+	if minigames():
+		return panel_off and (panel2.x < 0 or panel2_off)
 	return panel_by != "" and (panel2.x < 0 or (panel2_by != "" and panel2_by != panel_by))
+
+
+## Tonight the case is picked and the panel cut by hand (Minigame), rather
+## than opened by standing still beside it and held by standing at it.
+static func minigames() -> bool:
+	return Sim.feature("lockpick")
+
+
+## The minigame this thief would start with the action key where it stands:
+## {kind, what, steps}, or empty if there is none to start.
+static func game_for(p: Thief) -> Dictionary:
+	if not minigames() or p.out or p.game or p.posing or p.rolling or p.dizzy > 0.0:
+		return {}
+	if not taken and Museum.dist(p.x, p.y, at.x + 0.5, at.y + 0.5) <= REACH:
+		return {"kind": "lockpick", "what": "case", "steps": Minigame.pins_for(float(loot.seconds))}
+	if team and not panel_off and at_panel(p):
+		return {"kind": "steady", "what": "panel", "steps": PANEL_LAMPS}
+	if team and not panel2_off and at_panel2(p):
+		return {"kind": "steady", "what": "panel2", "steps": PANEL_LAMPS}
+	return {}
+
+
+## Sets the thief to it: it stops where it is, hands busy.
+static func start_game(p: Thief, spec: Dictionary, input: Dictionary) -> void:
+	p.game = Minigame.make(spec.kind, spec.what, spec.steps, input)
+	p.moving = false
+	p.speed = 0.0
+	p.sprinting = false
 
 
 ## "el pasillo" -> "El pasillo". GDScript's capitalize() does every word.
@@ -323,7 +364,8 @@ static func _stand_tiles(t: Vector2i) -> Array[Vector2i]:
 
 ## Standing still next to the case?
 static func at_case(p: Thief) -> bool:
-	if p.out or p.moving or p.speed > 0.2:
+	# Down after a roll is not working the lock.
+	if p.out or p.posing or p.moving or p.speed > 0.2 or p.rolling or p.dizzy > 0.0:
 		return false
 	return Museum.dist(p.x, p.y, at.x + 0.5, at.y + 0.5) <= REACH
 
@@ -336,17 +378,33 @@ static func at_door(p: Thief) -> bool:
 ## picking up, leaving. Returns "", "stolen", "dropped", "picked" or "out";
 ## an alarm going off this frame is appended to noises.
 static func step(thieves: Array[Thief], dt: float, now: float, noises: Array[SoundEvent]) -> String:
-	# The panel: whoever stands at it holds it.
+	# Caught with a job in hand, or stepped off the pedestal it was keeping
+	# its balance on: it lets go of it.
+	for p in thieves:
+		if p.out or (p.game and p.game.kind == "balance" and not p.posing):
+			p.game = null
+	# The panel: whoever stands at it holds it; with minigames, whoever cuts
+	# its glass with the suction cup switches it off for good.
 	panel_by = ""
 	panel2_by = ""
 	waiting = false
 	short_hand = false
-	if team:
+	if team and minigames():
+		for p in thieves:
+			if p.game and p.game.what in ["panel", "panel2"] and p.game.done:
+				if p.game.what == "panel":
+					panel_off = true
+				else:
+					panel2_off = true
+				p.game = null
+	elif team:
 		for p in thieves:
 			if at_panel(p):
 				panel_by = p.id
 			elif at_panel2(p):
 				panel2_by = p.id
+	if not taken and minigames():
+		return _step_picking(thieves, now, noises)
 	if not taken:
 		var worker: Thief = null
 		for p in thieves:
@@ -406,6 +464,51 @@ static func step(thieves: Array[Thief], dt: float, now: float, noises: Array[Sou
 				carrier = p.id
 				dropped = Vector2.INF
 				return "picked"
+	return ""
+
+
+## The case with minigames: it opens when the lock is picked — both locks,
+## by two thieves at once, for a gang of three — and, with a partner still
+## in, not before the panel's glass is cut. Picked alone, it is forced: the
+## alarm rings while someone is at it.
+static func _step_picking(thieves: Array[Thief], now: float, noises: Array[SoundEvent]) -> String:
+	var pickers := thieves.filter(func(p): return p.game != null and p.game.what == "case")
+	if pickers.is_empty():
+		progress = 0.0
+		by = ""
+		_last_alarm = 0.0
+		return ""
+	pickers.sort_custom(func(a, b): return a.game.progress() > b.game.progress())
+	var worker: Thief = pickers[0]
+	by = worker.id
+	var partner_in := team and thieves.any(func(p): return p != worker and not p.out)
+	var needed := hands if partner_in else 1
+	var blocked := ""
+	if partner_in and not panels_held():
+		waiting = true
+		blocked = "panel"
+	elif pickers.size() < needed:
+		short_hand = true
+		blocked = "hands"
+	for p in pickers:
+		p.game.blocked = blocked
+	var sum := 0.0
+	for i in mini(needed, pickers.size()):
+		sum += pickers[i].game.progress()
+	progress = sum / needed
+	if blocked != "":
+		return ""
+	if not partner_in and Sim.feature("case_alarm") and now - _last_alarm > ALARM_EVERY_MS:
+		_last_alarm = now
+		noises.append(SoundEvent.make(at.x + 0.5, at.y + 0.5, "alarm"))
+	if pickers.filter(func(p): return p.game.done).size() >= needed:
+		progress = 1.0
+		by = ""
+		carrier = worker.id
+		taken = true
+		for p in pickers:
+			p.game = null
+		return "stolen"
 	return ""
 
 

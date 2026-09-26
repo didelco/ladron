@@ -180,6 +180,8 @@ func _plays() -> void:
 	seed(1)
 	Sim.gang = 1
 	Sim.custom = m.tuning()
+	# Standing still at the case (the pick: test_minigame).
+	Sim.custom.lockpick = false
 	m.apply()
 	var guards := Sim.new_guards(Sim.guard_count(Museum.size_name))
 	Sim.place_guards(guards, m.guards)

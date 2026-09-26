@@ -83,8 +83,20 @@ func _ready() -> void:
 	# The same, knocked about once they are down: smaller, but a noise.
 	_streams.kick_metal = _clang([[0.0, 0.7], [0.1, 0.3], [0.16, 0.15]], [612.0, 1587.0, 2291.0], 0.2, 0.4)
 	_streams.kick_dry = _mix(_noise(0.04, 1400.0, 0.8), _debris(0.15, 4, 3000.0, 0.4, 0.2))
+	# Rolling (Roll): the soft rush of a body tumbling over the marble, and
+	# the whole of it into a wall, a deep dull thump with plaster pattering.
+	_streams.roll = _mix(_noise(0.35, 500.0, 0.3), _thump(0.3, 70.0, 50.0, 0.15))
+	_streams.roll_bump = _mix(_mix(_thump(0.32, 95.0, 38.0, 1.0), _noise(0.09, 320.0, 1.0)),
+		_debris(0.35, 8, 2200.0, 0.3, 0.7))
 	# A guard's boot on the marble: heavier and lower than a thief's step.
 	_streams.boot = _mix(_thump(0.14, 150.0, 70.0, 0.55), _noise(0.09, 520.0, 0.55))
+	# Minigames (Minigame): a pin setting in the lock is a bright little
+	# click; the pick slipping, a dry scrape. The cutters: a snip, and the
+	# wrong wire, a crackle of sparks.
+	_streams.pin = _mix(_noise(0.015, 6000.0, 0.5), _bells([[2637.0, 0.0]], 0.12, 0.14))
+	_streams.slip = _noise(0.12, 2200.0, 0.3)
+	_streams.snip = _mix(_noise(0.03, 5000.0, 0.6), _thump(0.05, 900.0, 400.0, 0.3))
+	_streams.spark = _mix(_buzz(0.25, 0.12), _debris(0.25, 10, 7000.0, 0.2, 0.5))
 	# The menus: a soft wooden tick moving about, a two-note chime choosing,
 	# a falling blip going back.
 	_streams.nav = _mix(_bells([[1568.0, 0.0]], 0.12, 0.08), _noise(0.02, 2500.0, 0.2))
@@ -154,7 +166,7 @@ func at(sound: String, pos: Vector3, volume := 1.0, unit := 6.0) -> void:
 	p.unit_size = unit
 	p.position = pos
 	# No two footsteps quite alike.
-	p.pitch_scale = randf_range(0.85, 1.15) if sound in ["step", "bump", "boot"] else (randf_range(0.93, 1.07) if sound in ["bin", "bust", "panel", "armour", "kick_metal", "kick_dry"] else 1.0)
+	p.pitch_scale = randf_range(0.85, 1.15) if sound in ["step", "bump", "boot", "roll", "roll_bump"] else (randf_range(0.93, 1.07) if sound in ["bin", "bust", "panel", "armour", "kick_metal", "kick_dry"] else 1.0)
 	p.play()
 
 

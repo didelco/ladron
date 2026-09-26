@@ -139,6 +139,8 @@ static func load_grid(seed: int, width: int, height: int, tiles: PackedInt32Arra
 	ring = edge
 	spawn = start
 	big_pieces = big
+	# A new museum: no pedestals until the night picks them (Plinths.place).
+	Plinths.list.clear()
 
 	open_tiles.clear()
 	cover_tiles.clear()

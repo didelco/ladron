@@ -18,10 +18,18 @@ extends CanvasLayer
 ## being played, and in the top right corner the switch between the plan
 ## and the museum in 3D.
 ##
-## Keyboard and pad: Tab (or the arrows off the edge) between the plan and
-## the buttons; on the plan the arrows move a cursor, Space or A draws,
-## Delete or X rubs out. R turns a room round, Ctrl+Z undoes, Esc or B leaves
-## (asking first, if there are changes not saved).
+## Keyboard: Tab (or the arrows off the edge) between the plan and the
+## buttons; on the plan the arrows move a cursor, Space draws, Delete rubs
+## out. R turns a room round, Ctrl+Z undoes, Esc leaves (asking first, if
+## there are changes not saved).
+##
+## Pad, made to need nothing else (PAD_*): the cross or the left stick move
+## the cursor (held, it runs on); A puts down what is in hand and X rubs out
+## — held while moving, they go on painting or rubbing; B undoes; Y takes up
+## whatever stands on the tile (or turns a room); LB/RB the thing before or
+## after in the catalogue, LT/RT the kind of tool; Start over to the buttons
+## (and back), View between the plan and the 3D, where the right stick turns
+## the camera round.
 
 signal closed
 ## Play it now, as it is.
@@ -35,6 +43,14 @@ signal ui_sound(kind: String)
 ## small button up with what to do); all but wall and floor fill the
 ## catalogue.
 const KINDS := ["wall", "main", "objects", "rooms", "options"]
+## The kinds LT/RT go round (the options have no tool to hold).
+const PAD_KINDS := ["wall", "main", "objects", "rooms"]
+## A direction held on the pad: the first step at once, the next after this
+## long (s), then one every PAD_REPEAT.
+const PAD_DELAY := 0.24
+const PAD_REPEAT := 0.07
+## How far the stick or a trigger goes before it counts.
+const PAD_DEAD := 0.5
 ## The bottom bar's height.
 const BAR := 168
 ## Colours a piece to steal can be.
@@ -204,6 +220,17 @@ var _was_current: Camera3D
 var _yaw := 0.6
 var _pitch := 0.9
 var _span := 30.0
+## The pad: in use (the help shows its buttons), the direction held and the
+## time to its next step, A or X held down (1 puts, 2 rubs out) and whether
+## that stroke changed anything to build, the triggers past half way.
+var _pad := false
+var _pad_dir := Vector2i.ZERO
+var _pad_wait := 0.0
+var _pad_stroke := 0
+var _pad_marked := false
+var _pad_triggers := [false, false]
+var _cat_scroll: ScrollContainer
+var _play_button: Button
 
 
 func _ready() -> void:
@@ -221,6 +248,10 @@ func _ready() -> void:
 				elif what == "save":
 					if "--editor-loot" in OS.get_cmdline_user_args():
 						map.loot = {"shape": "crown", "colour": LOOT_COLOURS[0], "name": "", "blurb": "", "story": "", "seconds": 3.0}
+					# --editor-save=loot (or story): that page of it.
+					for a in OS.get_cmdline_user_args():
+						if a.begins_with("--editor-save=") and a.substr(14) in SAVE_PAGES:
+							save_page = a.substr(14)
 					_open("save")
 				elif what in OPTION_PAGES:
 					# With a piece chosen, to see its page whole.
@@ -335,7 +366,7 @@ func _build() -> void:
 	var acts := HBoxContainer.new()
 	acts.add_theme_constant_override("separation", 6)
 	left.add_child(acts)
-	_icon_button("play", "EDITOR_PLAY", _ask_play, acts, Hud.C.green)
+	_play_button = _icon_button("play", "EDITOR_PLAY", _ask_play, acts, Hud.C.green)
 	_icon_button("undo", "EDITOR_UNDO", _undo, acts, Hud.C.dim)
 	_save_button = _icon_button("save", "EDITOR_SAVE", _open.bind("save"), acts, Hud.C.green)
 	_exit_button = _icon_button("exit", "EDITOR_EXIT", _leave, acts, Hud.C.dim)
@@ -374,6 +405,7 @@ func _build() -> void:
 	tab_scroll.add_child(_tabs)
 	_tabs.visibility_changed.connect(func() -> void: tab_scroll.visible = _tabs.visible)
 	var scroll := ScrollContainer.new()
+	_cat_scroll = scroll
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.follow_focus = true
@@ -741,24 +773,47 @@ func _open(k: String) -> void:
 		_button(Text.t("EDITOR_KEEP_EDITING"), _stay, _sub, Hud.C.dim)
 	_refresh()
 	_place_flyout.call_deferred()
-	(_sub.get_child(0) as Control).grab_focus.call_deferred()
+	# The first thing to press: on the save panel, the page's own tab.
+	var first: Control = _sub.get_child(0) as Control
+	for b in _sub.find_children("*", "Button", true, false):
+		if not b.has_meta("save_page") or b.get_meta("save_page") == save_page:
+			first = b
+			break
+	first.grab_focus.call_deferred()
 
 
-## Saving: the map's name, what is stolen (the piece, its colour, how long
-## its case takes) and its tale; then save it, or go back to it.
+## Saving, a page at a time (SAVE_PAGES, tabs along the top): the map's
+## name; what is stolen (the piece and its colour in drop-downs, how long its
+## case takes on a slider); its tale. Then save it, or go back to it.
+const SAVE_PAGES := ["map", "loot", "story"]
+var save_page := "map"
+
+
 func _save_panel() -> void:
 	_sub_title.text = Text.t("EDITOR_SAVE")
-	var name_edit := _field(Text.t("EDITOR_NAME").to_upper(), map.name, Text.t("EDITOR_UNTITLED"), _sub)
-	name_edit.max_length = 32
-	name_edit.text_changed.connect(func(t: String) -> void:
-		map.name = t
-		_name.text = t
-		dirty = true)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 14)
-	_sub.add_child(row)
-	_loot_page(row)
-	_story_page(_sub)
+	var tabs := HBoxContainer.new()
+	tabs.add_theme_constant_override("separation", 6)
+	_sub.add_child(tabs)
+	for page in SAVE_PAGES:
+		var b := _button(Text.t("EDITOR_SAVE_TAB_" + page.to_upper()), func() -> void:
+			save_page = page
+			_open("save"), tabs, Hud.C.gold)
+		b.custom_minimum_size = Vector2(120, 34)
+		b.set_meta("save_page", page)
+	var body := _column(420, _sub)
+	body.add_theme_constant_override("separation", 6)
+	match save_page:
+		"map":
+			var name_edit := _field(Text.t("EDITOR_NAME").to_upper(), map.name, Text.t("EDITOR_UNTITLED"), body)
+			name_edit.max_length = 32
+			name_edit.text_changed.connect(func(t: String) -> void:
+				map.name = t
+				_name.text = t
+				dirty = true)
+		"loot":
+			_loot_page(body)
+		"story":
+			_story_page(body)
 	var buttons := HBoxContainer.new()
 	buttons.add_theme_constant_override("separation", 8)
 	_sub.add_child(buttons)
@@ -768,62 +823,102 @@ func _save_panel() -> void:
 	_button(Text.t("EDITOR_KEEP_EDITING"), _stay, buttons, Hud.C.dim)
 
 
-## What is stolen and why: the piece (a picture each, AL AZAR to let the
-## game pick), its colour, its name and a line on it, how long its case
-## takes, and the tale told before the job.
-## What is stolen: the piece (AL AZAR leaves it to the game), its colour,
-## and how long its case takes.
+## What is stolen: the piece (AL AZAR leaves it to the game) and its colour,
+## each in a drop-down, and how long its case takes, on a slider.
 func _loot_page(parent: Node) -> void:
-	var col := _column(0.0, parent)
-	_label(Text.t("EDITOR_LOOT_WHAT"), 8, Hud.BRASS, col, true)
-	var grid := GridContainer.new()
-	grid.columns = 6
-	grid.add_theme_constant_override("h_separation", 4)
-	grid.add_theme_constant_override("v_separation", 4)
-	col.add_child(grid)
+	_label(Text.t("EDITOR_LOOT_WHAT"), 8, Hud.BRASS, parent, true)
+	var piece := _dropdown(parent)
 	var shapes: Array = [""] + MapFile.LOOT_SHAPES
-	for shape in shapes:
-		var b := _button("?" if shape == "" else "", _pick_loot.bind(shape), grid, PIECE, false, null if shape == "" else load("res://assets/icons/objects/loot_%s.png" % shape))
-		b.custom_minimum_size = Vector2(46, 46)
-		b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-		b.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		b.add_theme_constant_override("icon_max_width", 38)
-		b.tooltip_text = Text.t("EDITOR_LOOT_RANDOM" if shape == "" else "EDITOR_SHAPE_" + String(shape).to_upper())
-		b.set_meta("loot", shape)
+	for i in shapes.size():
+		var shape: String = shapes[i]
+		var label := Text.t("EDITOR_LOOT_RANDOM" if shape == "" else "EDITOR_SHAPE_" + shape.to_upper())
+		if shape == "":
+			piece.add_item(label, i)
+		else:
+			piece.add_icon_item(load("res://assets/icons/objects/loot_%s.png" % shape), label, i)
+	piece.select(maxi(0, shapes.find(map.loot.get("shape", ""))))
+	piece.item_selected.connect(func(i: int) -> void: _pick_loot(shapes[i]))
 	if map.loot.is_empty():
 		_nothing_chosen(parent)
 		return
-	col = _column(230, parent)
-	_label(Text.t("EDITOR_LOOT_COLOUR"), 8, Hud.C.dim, col, true)
-	var colours := GridContainer.new()
-	colours.columns = 5
-	colours.add_theme_constant_override("h_separation", 4)
-	colours.add_theme_constant_override("v_separation", 4)
-	col.add_child(colours)
-	for hex in LOOT_COLOURS:
-		var c := Color(hex)
-		var img := Image.create(12, 12, false, Image.FORMAT_RGBA8)
-		img.fill(c)
-		var b := _button("", func() -> void:
-			map.loot.colour = hex
-			dirty = true
-			_refresh(), colours, c, false, ImageTexture.create_from_image(img))
-		b.custom_minimum_size = Vector2(40, 26)
+	_label(Text.t("EDITOR_LOOT_COLOUR"), 8, Hud.C.dim, parent, true)
+	var colour := _dropdown(parent)
+	for i in LOOT_COLOURS.size():
+		var img := Image.create(24, 24, false, Image.FORMAT_RGBA8)
+		img.fill(Color(LOOT_COLOURS[i]))
+		colour.add_icon_item(ImageTexture.create_from_image(img), Text.t("EDITOR_COLOUR_%d" % i), i)
+	colour.select(maxi(0, LOOT_COLOURS.find(map.loot.get("colour", ""))))
+	colour.item_selected.connect(func(i: int) -> void:
+		map.loot.colour = LOOT_COLOURS[i]
+		dirty = true
+		_refresh())
+	_label(Text.t("EDITOR_LOOT_FORCE"), 8, Hud.C.dim, parent, true)
+	_seconds_slider(parent)
+
+
+## A drop-down in the panel's look: walnut, cream words, the icons small.
+func _dropdown(parent: Node) -> OptionButton:
+	var o := OptionButton.new()
+	o.custom_minimum_size = Vector2(260, 38)
+	o.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	o.expand_icon = true
+	o.add_theme_constant_override("icon_max_width", 24)
+	o.add_theme_constant_override("h_separation", 10)
+	o.add_theme_font_override("font", Hud.ARCADE)
+	o.add_theme_font_size_override("font_size", 10)
+	o.set_meta("colour", Hud.C.gold)
+	# The pieces' pictures and the colours' swatches keep their own colours.
+	o.set_meta("photo", true)
+	_look(o, false)
+	var popup := o.get_popup()
+	popup.add_theme_constant_override("icon_max_width", 24)
+	popup.add_theme_font_override("font", Hud.ARCADE)
+	popup.add_theme_font_size_override("font_size", 10)
+	o.focus_entered.connect(func() -> void: ui_sound.emit("nav"))
+	o.item_selected.connect(func(_i: int) -> void: ui_sound.emit("ok"))
+	o.mouse_entered.connect(o.grab_focus)
+	parent.add_child(o)
+	return o
+
+
+## How long the case takes, as the sound settings show a volume: a bar of
+## steps with the value, ‹ and › to go down and up (← and → too, with it in
+## focus; a click on the bar goes up, round from the top back to the start).
+func _seconds_slider(parent: Node) -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	parent.add_child(row)
+	var less := _button("‹", _step_seconds.bind(-1), row, Hud.C.safe)
+	var bar := _button("", _step_seconds.bind(0), row, Hud.C.safe)
+	var more := _button("›", _step_seconds.bind(1), row, Hud.C.safe)
+	for b in [less, more]:
+		b.custom_minimum_size = Vector2(38, 38)
 		b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-		b.add_theme_constant_override("icon_max_width", 14)
-		b.set_meta("hex", hex)
-	var secs := _setting_button(_step_seconds, col, "difficulty")
-	secs.set_meta("seconds", true)
+		b.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	bar.custom_minimum_size = Vector2(176, 38)
+	bar.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	bar.autowrap_mode = TextServer.AUTOWRAP_OFF
+	bar.set_meta("seconds", true)
+	bar.gui_input.connect(func(e: InputEvent) -> void:
+		for pair in [["ui_left", -1], ["ui_right", 1]]:
+			if e.is_action_pressed(pair[0], true):
+				_step_seconds(pair[1])
+				bar.accept_event())
 
 
-## Its tale: the piece's name, a line on it, and the story told before the job.
+## The slider's text: a mark per step up to the one in force, dots after.
+func _seconds_bar() -> String:
+	var i := maxi(0, LOOT_SECONDS.find(float(map.loot.get("seconds", 3.0))))
+	return "%s%s %s S" % ["|".repeat(i + 1), "·".repeat(LOOT_SECONDS.size() - i - 1), str(LOOT_SECONDS[i])]
+
+
+## Its tale: the piece's name, a line on it, and the story told before the
+## job, one under the other. Without a piece chosen, the game tells its own.
 func _story_page(parent: Node) -> void:
 	if map.loot.is_empty():
+		_nothing_chosen(parent)
 		return
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 14)
-	parent.add_child(row)
-	var col := _column(240, row)
+	var col := parent
 	var name_edit := _field(Text.t("EDITOR_LOOT_NAME"), map.loot.name, Text.t("EDITOR_SHAPE_" + String(map.loot.shape).to_upper()).to_lower(), col)
 	name_edit.text_changed.connect(func(t: String) -> void:
 		map.loot.name = t
@@ -832,13 +927,12 @@ func _story_page(parent: Node) -> void:
 	blurb.text_changed.connect(func(t: String) -> void:
 		map.loot.blurb = t
 		dirty = true)
-	col = _column(360, row)
 	_label(Text.t("EDITOR_LOOT_STORY"), 8, Hud.C.dim, col, true)
 	var story := TextEdit.new()
 	story.text = map.loot.story
 	story.placeholder_text = Text.t("EDITOR_LOOT_STORY_HINT")
 	story.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
-	story.custom_minimum_size = Vector2(360, 120)
+	story.custom_minimum_size = Vector2(420, 120)
 	story.add_theme_font_size_override("font_size", 13)
 	story.text_changed.connect(func() -> void:
 		map.loot.story = story.text
@@ -878,9 +972,15 @@ func _pick_loot(shape: String) -> void:
 	_open("save")
 
 
-func _step_seconds() -> void:
-	var i := LOOT_SECONDS.find(map.loot.seconds)
-	map.loot.seconds = LOOT_SECONDS[(i + 1) % LOOT_SECONDS.size()]
+## One step down (-1) or up (1), stopping at the ends; 0 goes up, round
+## from the top back to the start.
+func _step_seconds(dir: int) -> void:
+	var i := maxi(0, LOOT_SECONDS.find(float(map.loot.seconds)))
+	if dir == 0:
+		i = (i + 1) % LOOT_SECONDS.size()
+	else:
+		i = clampi(i + dir, 0, LOOT_SECONDS.size() - 1)
+	map.loot.seconds = LOOT_SECONDS[i]
 	dirty = true
 	_refresh()
 
@@ -1092,6 +1192,12 @@ func _tile_at(p: Vector2) -> Vector2i:
 
 
 func _plan_input(event: InputEvent) -> void:
+	# The pad has its own way round the plan (and the 3D): all of it here,
+	# so none of it moves the focus off the plan.
+	if event is InputEventJoypadButton or event is InputEventJoypadMotion:
+		_pad_on_plan(event)
+		_plan.accept_event()
+		return
 	if in_3d:
 		_input_3d(event)
 		return
@@ -1116,7 +1222,7 @@ func _plan_input(event: InputEvent) -> void:
 			if tool == "room" and room_from != MapFile.NONE and hover != MapFile.NONE and room_from != hover:
 				_mark_room(hover)
 		_plan.accept_event()
-	elif event is InputEventKey or event is InputEventJoypadButton or event is InputEventJoypadMotion:
+	elif event is InputEventKey:
 		var move := Vector2i.ZERO
 		for pair in [["ui_left", Vector2i(-1, 0)], ["ui_right", Vector2i(1, 0)], ["ui_up", Vector2i(0, -1)], ["ui_down", Vector2i(0, 1)]]:
 			if event.is_action_pressed(pair[0], true):
@@ -1135,8 +1241,7 @@ func _plan_input(event: InputEvent) -> void:
 			else:
 				_press(hover, false)
 			_plan.accept_event()
-		elif (event is InputEventKey and event.pressed and event.keycode in [KEY_DELETE, KEY_BACKSPACE]) \
-				or (event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_X):
+		elif event.pressed and event.keycode in [KEY_DELETE, KEY_BACKSPACE]:
 			if hover != MapFile.NONE:
 				_press(hover, true)
 			_plan.accept_event()
@@ -1264,6 +1369,12 @@ func _mark_room(to: Vector2i) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
 		return
+	# B on the buttons, nothing open: back to the plan (B there undoes).
+	if event is InputEventJoypadButton and event.is_action_pressed("ui_cancel") and panel == "" and not _plan.has_focus():
+		ui_sound.emit("back")
+		_plan.grab_focus()
+		get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed("ui_cancel"):
 		ui_sound.emit("back")
 		# A panel open shuts first; then the 3D goes back to the plan; then out.
@@ -1309,15 +1420,13 @@ func _refresh() -> void:
 				_look(b, b.get_meta("page") == option_page)
 			elif b.has_meta("setting"):
 				_look(b, _setting_value(b.get_meta("setting")) == b.get_meta("choice"))
-	# What is stolen: the piece and the colour in hand lit, the seconds.
+	# Saving: the page open lit, the case's seconds on their slider.
 	if panel == "save":
 		for b in _sub.find_children("*", "Button", true, false):
-			if b.has_meta("loot"):
-				_look(b, b.get_meta("loot") == map.loot.get("shape", ""))
-			elif b.has_meta("hex"):
-				_look(b, b.get_meta("hex") == map.loot.get("colour", ""))
+			if b.has_meta("save_page"):
+				_look(b, b.get_meta("save_page") == save_page)
 			elif b.has_meta("seconds"):
-				b.text = Text.t("EDITOR_LOOT_SECONDS") % str(map.loot.seconds)
+				b.text = _seconds_bar()
 	var errors := map.check()
 	if errors.is_empty():
 		_status.text = Text.t("EDITOR_OK")
@@ -1326,7 +1435,9 @@ func _refresh() -> void:
 		_status.text = " · ".join(errors.map(func(e): return Text.t(e)))
 		_status.add_theme_color_override("font_color", Hud.C.alert)
 	_hint.text = Text.t("EDITOR_HINT_" + (tool.get_slice(":", 0) if ":" in tool else tool).to_upper())
-	if in_3d:
+	if _pad:
+		_hint.text = Text.t("EDITOR_PAD_HELP_3D" if in_3d else "EDITOR_PAD_HELP")
+	elif in_3d:
 		_hint.text = Text.t("EDITOR_3D_HELP") + " · " + _hint.text
 	_plan.queue_redraw()
 
@@ -1647,14 +1758,219 @@ func _place_camera() -> void:
 
 
 func _process(dt: float) -> void:
-	if not in_3d or not _plan.has_focus():
+	if not visible or map == null or not _plan.has_focus() or panel != "":
+		_pad_dir = Vector2i.ZERO
 		return
-	# The arrows or the stick turn it round and tilt it.
-	var turn := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	_pad_cursor(dt)
+	if not in_3d:
+		return
+	# The arrows or the right stick turn it round and tilt it (the left one
+	# moves the cursor).
+	var turn := Vector2(float(Input.is_physical_key_pressed(KEY_RIGHT)) - float(Input.is_physical_key_pressed(KEY_LEFT)),
+		float(Input.is_physical_key_pressed(KEY_DOWN)) - float(Input.is_physical_key_pressed(KEY_UP)))
+	for pad in Input.get_connected_joypads():
+		var r := Vector2(Input.get_joy_axis(pad, JOY_AXIS_RIGHT_X), Input.get_joy_axis(pad, JOY_AXIS_RIGHT_Y))
+		if r.length() > 0.25:
+			turn += r
 	if turn != Vector2.ZERO:
 		_yaw += turn.x * dt * 1.5
 		_pitch = clampf(_pitch - turn.y * dt * 1.0, 0.25, 1.45)
 		_place_camera()
+
+
+# --- The pad ---------------------------------------------------------------------
+
+## Whether the pad or the mouse and keyboard were used last: the help line
+## shows the buttons of whichever it is. The buttons that work anywhere in
+## the editor (not in a panel) are here too.
+func _input(event: InputEvent) -> void:
+	if not visible or map == null:
+		return
+	var pad := event is InputEventJoypadButton or (event is InputEventJoypadMotion and absf(event.axis_value) > PAD_DEAD)
+	if pad != _pad and (pad or event is InputEventMouseButton or event is InputEventKey):
+		_pad = pad
+		_refresh()
+	if panel != "":
+		return
+	if event is InputEventJoypadMotion and event.axis in [JOY_AXIS_TRIGGER_LEFT, JOY_AXIS_TRIGGER_RIGHT]:
+		var i := 0 if event.axis == JOY_AXIS_TRIGGER_LEFT else 1
+		var down: bool = event.axis_value > PAD_DEAD
+		if down and not _pad_triggers[i]:
+			_pad_kind(-1 if i == 0 else 1)
+			ui_sound.emit("nav")
+		_pad_triggers[i] = down
+		get_viewport().set_input_as_handled()
+	elif event is InputEventJoypadButton and event.pressed:
+		match event.button_index:
+			JOY_BUTTON_LEFT_SHOULDER: _pad_item(-1)
+			JOY_BUTTON_RIGHT_SHOULDER: _pad_item(1)
+			JOY_BUTTON_START:
+				# Over to the buttons, and back.
+				if _plan.has_focus():
+					_play_button.grab_focus()
+				else:
+					_plan.grab_focus()
+			JOY_BUTTON_BACK: _toggle_3d()
+			_: return
+		ui_sound.emit("nav")
+		get_viewport().set_input_as_handled()
+
+
+## A, X, B and Y on the plan (or the museum in 3D).
+func _pad_on_plan(event: InputEvent) -> void:
+	if not event is InputEventJoypadButton:
+		return
+	var b: int = event.button_index
+	if not event.pressed:
+		# A or X let go: the stroke is over, and the 3D builds what it painted.
+		if (b == JOY_BUTTON_A and _pad_stroke == 1) or (b == JOY_BUTTON_X and _pad_stroke == 2):
+			_pad_stroke = 0
+			if in_3d and _pad_marked:
+				_rebuild()
+			_pad_marked = false
+		return
+	if hover == MapFile.NONE:
+		hover = map.spawn
+	match b:
+		JOY_BUTTON_A:
+			if tool == "room" and room_from != MapFile.NONE:
+				_mark_room(hover)
+			else:
+				_press(hover, false)
+			_pad_stroke = 1
+			_pad_after_change()
+		JOY_BUTTON_X:
+			_press(hover, true)
+			_pad_stroke = 2
+			_pad_after_change()
+		JOY_BUTTON_B:
+			ui_sound.emit("back")
+			_undo()
+		JOY_BUTTON_Y:
+			if tool == "stamp":
+				_turn()
+			else:
+				_pick_up(hover)
+			ui_sound.emit("nav")
+
+
+## A change made on the tile under the cursor: in 3D, a stroke's tiles are
+## marked and built when it ends; anything else is built at once.
+func _pad_after_change() -> void:
+	if not in_3d:
+		return
+	if _paints() or _pad_stroke == 2:
+		_mark(hover)
+		_pad_marked = true
+	elif tool != "room":
+		_rebuild()
+
+
+## The cursor on the pad: the cross or the left stick, a step at once and
+## then running on while held. In 3D, up is away from the camera.
+func _pad_cursor(dt: float) -> void:
+	var v := Vector2.ZERO
+	for pad in Input.get_connected_joypads():
+		v += Vector2(Input.get_joy_axis(pad, JOY_AXIS_LEFT_X), Input.get_joy_axis(pad, JOY_AXIS_LEFT_Y))
+		v.x += float(Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_RIGHT)) - float(Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_LEFT))
+		v.y += float(Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_DOWN)) - float(Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_UP))
+	if v.length() < PAD_DEAD:
+		_pad_dir = Vector2i.ZERO
+		return
+	if in_3d:
+		# The camera looks at the middle from (cos, sin) of its yaw.
+		var c := cos(_yaw)
+		var s := sin(_yaw)
+		v = Vector2(s * v.x + c * v.y, -c * v.x + s * v.y)
+	var d := Vector2i(signi(roundi(v.x)) if absf(v.x) >= absf(v.y) else 0, signi(roundi(v.y)) if absf(v.y) > absf(v.x) else 0)
+	if d != _pad_dir:
+		_pad_dir = d
+		_pad_wait = PAD_DELAY
+	else:
+		_pad_wait -= dt
+		if _pad_wait > 0.0:
+			return
+		_pad_wait = PAD_REPEAT
+	var from := hover if hover != MapFile.NONE else map.spawn
+	var next := from + d
+	if not map.inside(next):
+		return
+	hover = next
+	# A or X held: the stroke goes on over the tile.
+	if _pad_stroke != 0 and (_paints() or _pad_stroke == 2):
+		_use(hover, _pad_stroke == 2)
+		_pad_after_change()
+		_refresh()
+	if in_3d:
+		_place_hover()
+	_plan.queue_redraw()
+
+
+## The thing before or after in the catalogue (round from the end to the
+## start), in hand at once and scrolled into sight.
+func _pad_item(step: int) -> void:
+	var items: Array[Button] = []
+	var at := -1
+	for c in _catalogue.get_children():
+		if c is Button and (c in _tool_buttons.values() or c in _template_buttons):
+			if (_tool_buttons.get(tool) == c) or (tool == "stamp" and template >= 0 and template < _template_buttons.size() and _template_buttons[template] == c):
+				at = items.size()
+			items.append(c)
+	if items.is_empty():
+		return
+	var b := items[posmod(at + step, items.size()) if at >= 0 else (0 if step > 0 else items.size() - 1)]
+	b.pressed.emit()
+	_cat_scroll.ensure_control_visible(b)
+	_say(b.tooltip_text, Hud.CREAM)
+
+
+## The kind of tool before or after (wall, characters, objects, rooms), with
+## its first thing in hand unless what is in hand is already one of its own.
+func _pad_kind(step: int) -> void:
+	var i := PAD_KINDS.find(kind)
+	_pick_kind(PAD_KINDS[posmod(i + step, PAD_KINDS.size())])
+	var own := tool in _tool_buttons or (tool == "stamp" and kind == "rooms")
+	if not own:
+		_pad_item(1)
+	else:
+		_say(Text.t("EDITOR_KIND_" + kind.to_upper()), Hud.CREAM)
+
+
+## Take up whatever stands on this tile: the same tool in hand, its kind's
+## catalogue open (and every theme shown, so it is there to see).
+func _pick_up(t: Vector2i) -> void:
+	var what := "wall"
+	var k := "wall"
+	var prop: Array = map.props.filter(func(p): return p.at == t)
+	var big := map.big_at(t)
+	if map.guards.has(t):
+		what = "guard"
+	elif t == map.spawn:
+		what = "spawn"
+	elif t == map.piece:
+		what = "piece"
+	elif t == map.exit:
+		what = "exit"
+	elif not prop.is_empty():
+		what = "prop:" + String(prop[0].kind)
+	elif not big.is_empty():
+		what = "big:" + String(big.kind)
+	elif map.exhibits.has(t):
+		what = "exhibit:" + String(map.exhibits[t])
+	elif map.at(t) == Tiles.COVER:
+		what = "case"
+	if what in MAIN_TOOLS:
+		k = "main"
+	elif what != "wall":
+		k = "objects"
+		filter = ""
+		filter_type = ""
+	kind = k
+	_fill_catalogue()
+	_pick_tool(what)
+	if _tool_buttons.has(what):
+		_cat_scroll.ensure_control_visible.call_deferred(_tool_buttons[what])
+		_say(_tool_buttons[what].tooltip_text, Hud.CREAM)
 
 
 # --- A picture of a map ---------------------------------------------------------------

@@ -36,6 +36,18 @@ static func build(shape: String, colour: Color) -> Node3D:
 	return root
 
 
+## The thief's sack: whatever was stolen goes in it and out of sight, so it
+## looks the same whatever the piece. Burlap, bulging at the bottom, its
+## neck tied with a cord and a tuft sticking out, a patch sewn on the side.
+## About 0.45 across, standing on its origin's floor.
+static func sack() -> Node3D:
+	var root := Node3D.new()
+	var m := LootModels.new()
+	m._root = root
+	m._sack()
+	return root
+
+
 var _root: Node3D
 var _colour: Color
 var _materials := {}
@@ -258,6 +270,21 @@ func _idol() -> void:
 	_part(_root, _box(Vector3(0.06, 0.012, 0.01)), Color("#e8b54a"), Vector3(0, 0.255, 0.072), Vector3.ZERO, 0.3, 0.6, 0.35)
 	for k in 5:
 		_part(_root, _cone(0.025, 0.08), _colour, Vector3(-0.07 + k * 0.035, 0.39, 0), Vector3.ZERO, 0.2, 0.5)
+
+
+func _sack() -> void:
+	var burlap := Color("#a8804f")
+	var cord := Color("#5a3a22")
+	# The bulk, full and heavy at the bottom.
+	_part(_root, _sphere(0.22, 0.4), burlap, Vector3(0, 0.2, 0), Vector3.ZERO, 0.95, 0.08).scale = Vector3(1.0, 1.0, 0.85)
+	# Tapering to the neck, tied, and the tuft over the knot.
+	_part(_root, _cylinder(0.06, 0.15, 0.14), burlap, Vector3(0, 0.42, 0), Vector3.ZERO, 0.95, 0.08)
+	_part(_root, _torus(0.05, 0.08), cord, Vector3(0, 0.47, 0), Vector3.ZERO, 0.9, 0.05)
+	_part(_root, _cylinder(0.1, 0.05, 0.08), burlap.lightened(0.08), Vector3(0, 0.53, 0), Vector3.ZERO, 0.95, 0.08)
+	# A patch sewn on the side facing out, and a dollar sign on it.
+	_part(_root, _box(Vector3(0.12, 0.12, 0.02)), burlap.darkened(0.25), Vector3(0.0, 0.2, 0.18), Vector3(0, 0, 0.15), 0.95, 0.06)
+	_part(_root, _box(Vector3(0.018, 0.1, 0.012)), Color("#f4ecd8"), Vector3(0.0, 0.2, 0.195), Vector3.ZERO, 0.8, 0.4)
+	_part(_root, _torus(0.02, 0.035), Color("#f4ecd8"), Vector3(0.0, 0.2, 0.195), Vector3(PI / 2, 0, 0), 0.8, 0.4).scale = Vector3(1, 1, 1.4)
 
 
 # --- Parts -------------------------------------------------------------------------

@@ -99,7 +99,7 @@ static var palette := {}
 ## What stands on a case, chosen by hand (a map from the editor): tile to one
 ## of EXHIBITS. The rest, and every case when empty, as the hash says.
 static var exhibits := {}
-const EXHIBITS := ["butterflies", "minerals", "ammonite", "meteorite", "statue", "skull", "lego_skull", "diorama", "amphora", "globe", "totem", "bear"]
+const EXHIBITS := ["butterflies", "minerals", "ammonite", "meteorite", "statue", "skull", "lego_skull", "diorama", "amphora", "globe", "totem", "bear", "plinth"]
 
 
 func build() -> void:
@@ -284,6 +284,10 @@ func _exhibits() -> void:
 		var piece := Node3D.new()
 		piece.position = to_world(t.x + 0.5, t.y + 0.5)
 		add_child(piece)
+		# An empty pedestal, low, for a thief to pose on (Plinths).
+		if Plinths.is_plinth(t) or exhibits.get(t, "") == "plinth":
+			_empty_plinth(piece)
+			continue
 		_base(piece)
 		var yaw := _hash01(t.x, t.y, 3) * TAU
 		if t == Heist.at:
@@ -341,6 +345,7 @@ func _exhibit(piece: Node3D, what: String, t: Vector2i, yaw: float) -> void:
 			_plinth(p, 0.42, 0.6)
 			_amphora(p, 0.42)
 		"globe": _globe(_pivot(piece, Vector3.ZERO, yaw))
+		"plinth": _empty_plinth(piece)
 		"totem": _totem(_pivot(piece, Vector3.ZERO, round(yaw / (PI / 2)) * PI / 2))
 		"bear":
 			var p := _pivot(piece, Vector3.ZERO, yaw)
@@ -373,6 +378,16 @@ func _plinth(parent: Node3D, h: float, w: float) -> void:
 	# A brass band round the top, and a label on the front.
 	_mesh(parent, _box(Vector3(w + 0.02, 0.03, w + 0.02)), C.gold_dim, Vector3(0, h - 0.04, 0))
 	_mesh(parent, _box(Vector3(0.18, 0.06, 0.01)), C.bone, Vector3(0, h * 0.6, w / 2 + 0.006))
+
+
+## A low pedestal with nothing on it (Plinths): pale stone that stands out
+## from the floor, a brass band, and a blank label.
+func _empty_plinth(parent: Node3D) -> void:
+	var h := Plinths.HEIGHT
+	_mesh(parent, _box(Vector3(0.84, 0.06, 0.84)), C.bone_dark, Vector3(0, 0.03, 0))
+	_mesh(parent, _box(Vector3(0.74, h, 0.74)), C.bone, Vector3(0, h / 2, 0))
+	_mesh(parent, _box(Vector3(0.76, 0.03, 0.76)), C.gold_dim, Vector3(0, h - 0.04, 0))
+	_mesh(parent, _box(Vector3(0.18, 0.06, 0.01)), C.bone_dark, Vector3(0, h * 0.5, 0.376))
 
 
 ## The glass case (one model for all of them, art/vitrina.blend), and

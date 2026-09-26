@@ -15,6 +15,8 @@ var hidden := false
 var speed := 0.0
 ## fast enough to be loud
 var sprinting := false
+## the slow key held, standing: walking heel to toe, quietly (Sim.SLOW_SPEED)
+var slow := false
 ## pressed against something: a bump fires once, not every frame
 var blocked := false
 ## caught: still drawn, no longer playing
@@ -27,3 +29,23 @@ var posture := 0.0
 var crouched := false
 ## crouch key held last frame, so holding it toggles once
 var crouch_key := false
+## curled in a ball and rolling (Roll): no steering, no stopping
+var rolling := false
+## tiles of the roll still to go
+var roll_left := 0.0
+## seconds left down after a roll, before getting up (Roll.SETTLE_SECONDS,
+## or Roll.DIZZY_SECONDS after a crash)
+var dizzy := 0.0
+## crashed at the end of the roll: lying on its back seeing stars
+var stars := false
+## roll key held last frame: one roll per press
+var roll_key := false
+## up on an empty pedestal, still as a statue (Plinths): which one
+var posing := false
+var perch := Vector2i(-1, -1)
+## a guard saw it climb up: the statue fools nobody until it is out of sight
+var pose_blown := false
+## at a job with the hands (Minigame): the lock or the alarm's glass, or
+## the balance on a pedestal; it
+## stands where it is until done or it lets go
+var game: Minigame = null

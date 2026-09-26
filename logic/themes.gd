@@ -152,6 +152,8 @@ static func catalogue() -> Array:
 				else:
 					at[tool] = out.size()
 					out.append([tool, [id], type_of[where]])
+	# The empty pedestal a thief poses on (Plinths): no theme's, any gallery's.
+	out.append(["exhibit:plinth", [], "small"])
 	for kind in MapGen.BIG:
 		var theme := for_big(kind)
 		out.append(["big:" + kind, [theme] if theme != "" else [], "big"])

@@ -154,6 +154,9 @@ var suspicion_keys: Array[String] = []
 var switch_marks: Array[MeshInstance3D] = []
 var lit_washes: Array[MeshInstance3D] = []
 var loot_node: Node3D
+## Once stolen the piece goes in this sack: on the carrier's back, or on the
+## floor where it was dropped.
+var sack_node: Node3D
 ## the spotlight straight down on the piece's case, museum style
 var loot_spot: SpotLight3D
 var props_view: PropsView
@@ -606,13 +609,10 @@ func _start(which: String, n: int, picked := false) -> void:
 
 
 ## The keys on each side of a shared keyboard: pressing any of them on the
-## player-select screen takes that side.
+## player-select screen takes that side. One keyboard seats two at most; a
+## third and fourth thief join with a pad.
 const KB_LEFT := [KEY_W, KEY_A, KEY_S, KEY_D, KEY_C, KEY_E, KEY_Q, KEY_SPACE, KEY_SHIFT, KEY_TAB]
 const KB_RIGHT := [KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_ENTER, KEY_KP_ENTER, KEY_MINUS, KEY_SLASH, KEY_PERIOD, KEY_COMMA]
-## The middle of the keyboard, for a third thief: IJKL, U and O.
-const KB_MID := [KEY_I, KEY_J, KEY_K, KEY_L, KEY_U, KEY_O]
-## The number pad, for a fourth: 8 4 5 6, 0 and +.
-const KB_PAD := [KEY_KP_8, KEY_KP_4, KEY_KP_5, KEY_KP_6, KEY_KP_0, KEY_KP_ADD]
 
 
 ## Player select, like Mario Kart 64: a seat a thief, each taken by whoever
@@ -646,8 +646,6 @@ func _seat_label(seat: String) -> String:
 	match seat:
 		"kb_left": return Text.t("SEAT_KB_LEFT")
 		"kb_right": return Text.t("SEAT_KB_RIGHT")
-		"kb_pad": return Text.t("SEAT_KB_PAD")
-		"kb_mid": return Text.t("SEAT_KB_MID")
 		"any": return Text.t("SEAT_ANY")
 	var pad := int(seat.substr(4))
 	return Text.t("SEAT_PAD") % [pad + 1, Input.get_joy_name(pad).left(18)]
@@ -665,10 +663,6 @@ func _join_input(event: InputEvent) -> void:
 			seat = "kb_left"
 		elif event.physical_keycode in KB_RIGHT or event.keycode in KB_RIGHT:
 			seat = "kb_right"
-		elif join_count >= 3 and (event.physical_keycode in KB_MID or event.keycode in KB_MID):
-			seat = "kb_mid"
-		elif join_count >= 4 and (event.physical_keycode in KB_PAD or event.keycode in KB_PAD):
-			seat = "kb_pad"
 	elif event is InputEventJoypadButton and event.pressed:
 		if event.button_index == JOY_BUTTON_B:
 			_unjoin()
@@ -781,9 +775,25 @@ func _show_settings(from: String, page := "") -> void:
 			var pads := Input.get_connected_joypads()
 			var names: Array = pads.map(func(d): return "%d: %s" % [d + 1, Input.get_joy_name(d)])
 			items.append({"text": (Text.t("SETTINGS_PADS_LIST") % " · ".join(names)) if not pads.is_empty() else Text.t("SETTINGS_NO_PADS"), "size": 16, "colour": Hud.C.gold})
-			items.append({"text": Text.t("SETTINGS_KEYS_HELP"), "size": 16})
-			items.append({"text": Text.t("SETTINGS_PAD_HELP"), "size": 16})
+			items.append(_controls_table())
+			items.append({"text": Text.t("CONTROLS_MORE"), "size": 15, "colour": Hud.C.dim})
 	hud.show_menu(items)
+
+
+## What does what, for the controls page: an action a row, and its key for
+## each keyboard half and its pad button across. A row's text is its cells
+## split by "|"; one with a single key for both keyboards (M, P, N) spans them.
+func _controls_table() -> Dictionary:
+	var rows: Array = [
+		["", Text.t("CONTROLS_P1"), Text.t("CONTROLS_P2"), Text.t("CONTROLS_PAD")],
+		["", Text.t("CONTROLS_P1_WHERE"), Text.t("CONTROLS_P2_WHERE"), Text.t("CONTROLS_PAD_WHERE")],
+	]
+	for key in ["CONTROLS_MOVE", "CONTROLS_SLOW", "CONTROLS_CROUCH", "CONTROLS_ROLL", "CONTROLS_PUSH", "CONTROLS_MAP", "CONTROLS_PAUSE", "CONTROLS_MUTE"]:
+		var cells: Array = Array(Text.t(key).split("|"))
+		if cells.size() == 3:
+			cells[1] = {"text": cells[1], "span": 2}
+		rows.append(cells)
+	return {"table": rows, "widths": [200, 170, 170, 240], "heads": 2}
 
 
 func _setting_text(key: String) -> String:
@@ -1347,7 +1357,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## A pad button as the key it stands for, so the shortcuts above are written
 ## once. Start pauses and resumes (P) and elsewhere moves on (Space); B backs
-## out (Escape), except while playing, where it crouches. A is ui_accept and
+## out (Escape), except while playing, where it rolls. A is ui_accept and
 ## presses the focused button by itself.
 func _pad_as_key(event: InputEvent) -> Key:
 	if not (event is InputEventJoypadButton and event.pressed):
@@ -1376,6 +1386,10 @@ func _count_beep(i: int) -> void:
 func _start_playing() -> void:
 	phase = "playing"
 	get_tree().paused = false
+	# Space and Enter also press menu buttons: one still held from there is
+	# not a roll until it is let go (Sim.step_thief rolls on the press).
+	for t in thieves:
+		t.roll_key = true
 	_drop_preview()
 	hud.hide_panel()
 
@@ -1421,6 +1435,20 @@ func _lay_out(n: int, map_seed: int) -> int:
 		Props.place(map_seed, [Heist.exit, Heist.panel, Heist.panel2, stand, Heist.start])
 	else:
 		Props.list.clear()
+	# Empty pedestals to pose on: where a saved map stood them by hand, or
+	# else a few on cases of their own — never the piece's, nor one a saved
+	# map filled by hand.
+	var by_hand: Array[Vector2i] = []
+	for t in MuseumView.exhibits:
+		if MuseumView.exhibits[t] == "plinth" and t != Heist.at:
+			by_hand.append(t)
+	if mode == "challenge" and not by_hand.is_empty():
+		Plinths.put(by_hand)
+	elif Sim.feature("plinths"):
+		var keep: Array[Vector2i] = [Heist.at]
+		for t in MuseumView.exhibits:
+			keep.append(t)
+		Plinths.place(map_seed, keep)
 	return Sim.assign_posts(guards)
 
 
@@ -1468,45 +1496,85 @@ func _new_round(n: int) -> void:
 
 ## The physics frame _pressed_keys last ran on: a gap means play (re)started.
 var pad_frame := -1
-## Pad crouch actions held over from a menu, ignored until released.
+## Pad crouch and roll buttons held over from a menu, ignored until released.
 var pad_stale := {}
 
 
 func _pressed_keys() -> Dictionary:
 	var keys := {}
 	# A and B also press and back out of menus: one still held from there when
-	# the play starts (or resumes) is not a crouch until it is let go.
+	# the play starts (or resumes) is not a crouch or a roll until it is let go.
 	var resumed := Engine.get_physics_frames() != pad_frame + 1
 	pad_frame = Engine.get_physics_frames()
-	# Each thief's controls, as the key names Sim reads for that thief.
-	var names := [["w", "s", "a", "d", "c", "e"], ["up", "down", "left", "right", "minus", "period"], ["i", "k", "j", "l", "u", "o"], ["kp8", "kp5", "kp4", "kp6", "kp0", "kpadd"]]
+	# Each thief's controls, as the key names Sim reads for that thief. P3's
+	# and P4's are only names now: they play with a pad, never those keys.
+	var names := [["w", "s", "a", "d", "c", "e", "space", "lalt"], ["up", "down", "left", "right", "minus", "period", "enter", "ralt"], ["i", "k", "j", "l", "u", "o", "y", "h"], ["kp8", "kp5", "kp4", "kp6", "kp0", "kpadd", "kpmul", "kpsub"]]
 	for i in mini(seats.size(), thieves.size()):
 		var got := _seat_input(seats[i], resumed)
-		for k in 6:
+		for k in 8:
 			if got[k]:
 				keys[names[i][k]] = true
 	return keys
 
 
-## One seat's controls this frame: [up, down, left, right, crouch, push].
+## Which Alt (Option) keys are down, by KeyLocation. Polling cannot tell the
+## left one (P1 walks slowly) from the right one (P2), so their key events
+## keep this up to date.
+var alt_down := {}
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.physical_keycode == KEY_ALT and not event.echo:
+		alt_down[event.location] = event.pressed
+	# On your own either the keyboard or a pad may be in your hands: the
+	# hints show whichever was touched last.
+	if event is InputEventKey and event.pressed:
+		last_pad = false
+	elif (event is InputEventJoypadButton and event.pressed) or (event is InputEventJoypadMotion and absf(event.axis_value) > 0.5):
+		last_pad = true
+
+
+## The last thing touched was a pad (for the hints of a thief on "any").
+var last_pad := false
+
+
+## The names of a thief's controls, for the hints: the directions ("move"),
+## left and right ("lr"), up and down ("ud"), the action key and the one to
+## let go ("cancel") — its keyboard side's keys, or its pad's.
+func _controls(i: int) -> Dictionary:
+	var seat: String = seats[i] if i < seats.size() else "any"
+	var pad := seat.begins_with("pad:") or (seat == "any" and last_pad)
+	if pad:
+		return {"move": Text.t("KEY_STICK"), "lr": "◀ ▶", "ud": "▲ ▼", "action": "X", "cancel": "B"}
+	if seat == "kb_right":
+		return {"move": "← ↑ → ↓", "lr": "← →", "ud": "↑ ↓", "action": ".", "cancel": Text.t("KEY_ENTER")}
+	return {"move": "WASD", "lr": "A D", "ud": "W S", "action": "E", "cancel": Text.t("KEY_SPACE")}
+
+
+## Is this side's Alt held? A key event that never said which side counts for
+## both; and with no Alt down at all (let go in another window), none is.
+func _alt_held(side: KeyLocation) -> bool:
+	if not Input.is_physical_key_pressed(KEY_ALT):
+		alt_down.clear()
+		return false
+	return alt_down.get(side, false) or alt_down.get(KEY_LOCATION_UNSPECIFIED, false)
+
+
+## One seat's controls this frame: [up, down, left, right, crouch, push, roll,
+## slow]. Slow is held: left Alt, right Alt; on a pad LB, or the stick only
+## tilted a little.
 func _seat_input(seat: String, resumed: bool) -> Array:
-	var out := [false, false, false, false, false, false]
+	var out := [false, false, false, false, false, false, false, false]
 	if seat == "any" or seat == "kb_left":
-		for pair in [[0, KEY_W], [1, KEY_S], [2, KEY_A], [3, KEY_D], [4, KEY_C], [4, KEY_SHIFT], [5, KEY_E]]:
+		for pair in [[0, KEY_W], [1, KEY_S], [2, KEY_A], [3, KEY_D], [4, KEY_C], [4, KEY_SHIFT], [5, KEY_E], [6, KEY_SPACE]]:
 			if Input.is_physical_key_pressed(pair[1]):
 				out[pair[0]] = true
+		out[7] = _alt_held(KEY_LOCATION_LEFT)
 	if seat == "any" or seat == "kb_right":
-		for pair in [[0, KEY_UP], [1, KEY_DOWN], [2, KEY_LEFT], [3, KEY_RIGHT], [4, KEY_MINUS], [4, KEY_SLASH], [5, KEY_PERIOD]]:
+		for pair in [[0, KEY_UP], [1, KEY_DOWN], [2, KEY_LEFT], [3, KEY_RIGHT], [4, KEY_MINUS], [4, KEY_SLASH], [5, KEY_PERIOD], [6, KEY_ENTER], [6, KEY_KP_ENTER]]:
 			if Input.is_physical_key_pressed(pair[1]):
 				out[pair[0]] = true
-	if seat == "kb_mid":
-		for pair in [[0, KEY_I], [1, KEY_K], [2, KEY_J], [3, KEY_L], [4, KEY_U], [5, KEY_O]]:
-			if Input.is_physical_key_pressed(pair[1]):
-				out[pair[0]] = true
-	if seat == "kb_pad":
-		for pair in [[0, KEY_KP_8], [1, KEY_KP_5], [2, KEY_KP_4], [3, KEY_KP_6], [4, KEY_KP_0], [5, KEY_KP_ADD]]:
-			if Input.is_physical_key_pressed(pair[1]):
-				out[pair[0]] = true
+		out[7] = out[7] or _alt_held(KEY_LOCATION_RIGHT)
 	var pads: Array = Input.get_connected_joypads() if seat == "any" else ([int(seat.substr(4))] if seat.begins_with("pad:") else [])
 	var dz := deadzone / 100.0
 	for pad in pads:
@@ -1516,14 +1584,21 @@ func _seat_input(seat: String, resumed: bool) -> Array:
 		out[1] = out[1] or y > dz or Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_DOWN)
 		out[2] = out[2] or x < -dz or Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_LEFT)
 		out[3] = out[3] or x > dz or Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_RIGHT)
-		var stale_key := "pad:%d" % pad
-		var crouch := Input.is_joy_button_pressed(pad, JOY_BUTTON_A) or Input.is_joy_button_pressed(pad, JOY_BUTTON_B)
-		if crouch and resumed:
-			pad_stale[stale_key] = true
-		elif not crouch:
-			pad_stale.erase(stale_key)
-		out[4] = out[4] or (crouch and not pad_stale.has(stale_key))
+		# A crouches, B rolls: each ignored while still held over from a menu.
+		for pair in [[4, JOY_BUTTON_A], [6, JOY_BUTTON_B]]:
+			var stale_key := "pad:%d:%d" % [pad, pair[1]]
+			var held := Input.is_joy_button_pressed(pad, pair[1])
+			if held and resumed:
+				pad_stale[stale_key] = true
+			elif not held:
+				pad_stale.erase(stale_key)
+			out[pair[0]] = out[pair[0]] or (held and not pad_stale.has(stale_key))
 		out[5] = out[5] or Input.is_joy_button_pressed(pad, JOY_BUTTON_X)
+		# LB held walks slowly; so does the stick past the dead zone but short
+		# of halfway from there to the rim (the cross has no half measures).
+		var tilt := Vector2(x, y).length()
+		var nudged := (absf(x) > dz or absf(y) > dz) and tilt < dz + (1.0 - dz) * 0.5
+		out[7] = out[7] or Input.is_joy_button_pressed(pad, JOY_BUTTON_LEFT_SHOULDER) or nudged
 	return out
 
 
@@ -1625,15 +1700,72 @@ func _on_prop_kicked(kind: String, at: Vector2, strength: float) -> void:
 	sfx.noise(sound, _to_world(at.x, at.y), loud)
 
 
+## The keys a thief's minigame reads this frame: its directions, action key
+## and roll key (Minigame.input_from).
+func _game_input(i: int, keys: Dictionary) -> Dictionary:
+	var scheme: String = "solo" if thieves.size() == 1 else ["wasd", "arrows", "ijkl", "numpad"][i]
+	var action: bool = keys.has(["e", "period", "o", "kpadd"][i]) or (thieves.size() == 1 and keys.has("period"))
+	return Minigame.input_from(keys, Sim.SCHEMES[scheme], action)
+
+
+## The little sounds of a job in hand, heard close by (the guards do not:
+## picking a lock is silent, the case's alarm aside).
+func _game_sounds(p: Thief) -> void:
+	var at := _to_world(p.x, p.y, 1.0)
+	for e in p.game.events:
+		match e:
+			"pin": sfx.at("pin", at, 0.7, 2.0)
+			"slip": sfx.at("slip", at, 0.6, 2.0)
+			"snip": sfx.at("snip", at, 0.7, 2.0)
+			"spark": sfx.at("spark", at, 0.6, 2.0)
+			"done": _rumble(0.3, 0.2, 0.12, Vector2(p.x, p.y))
+
+
+## Each thief's minigame box, beside it on screen.
+var game_boxes: Array[MinigameBox] = []
+
+
+func _draw_game_boxes() -> void:
+	while game_boxes.size() < thieves.size():
+		var box := MinigameBox.new()
+		hud.add_child(box)
+		game_boxes.append(box)
+	for i in game_boxes.size():
+		var p: Thief = thieves[i] if i < thieves.size() else null
+		var g: Minigame = p.game if p and phase in ["playing", "paused"] else null
+		var head := camera.unproject_position(_to_world(p.x, p.y, 1.6)) if g else Vector2.ZERO
+		game_boxes[i].follow(g, head, _thief_colours()[i], _controls(i))
+
+
+## How a thief's figure stands: curled in a roll, dizzy, posing as a statue.
+func _pose_of(p: Thief) -> String:
+	return "statue" if p.posing else Roll.pose(p)
+
+
 ## "E: TIRAR LA PAPELERA" when a thief has something within reach.
 func _push_hint() -> String:
 	if phase != "playing":
 		return ""
 	for i in thieves.size():
+		var job := Heist.game_for(thieves[i])
+		if not job.is_empty():
+			var hint: String = {"lockpick": "HUD_GAME_PICK_HINT", "steady": "HUD_GAME_STEADY_HINT"}.get(job.kind, "HUD_GAME_WIRES_HINT")
+			return Text.t(hint) % _controls(i).action
+	for i in thieves.size():
+		var keys := _controls(i)
+		if thieves[i].posing:
+			# Keeping its balance, the box says how; without, any way is down.
+			if not thieves[i].game:
+				return Text.t("HUD_PLINTH_DOWN")
+			continue
+		if Plinths.within_reach(thieves[i], thieves) != null:
+			return Text.t("HUD_PLINTH_HINT") % keys.action
+	for i in thieves.size():
 		var p := Props.within_reach(thieves[i])
 		if p:
-			var key := "E" if i == 0 else "."
-			return Text.t("HUD_PUSH_HINT") % [key, Props.name_of(p.kind).to_upper()]
+			return Text.t("HUD_PUSH_HINT") % [_controls(i).action, Props.name_of(p.kind).to_upper()]
+		if Sim.switch_within_reach(thieves[i]):
+			return Text.t("HUD_SWITCH_HINT") % _controls(i).action
 	return ""
 
 
@@ -1692,12 +1824,36 @@ func _tick(dt: float) -> void:
 		if Engine.get_physics_frames() % 6 == 0:
 			hud.update_map(Hud.live_map(thieves, _thief_colours()))
 	var noises: Array[SoundEvent] = []
+	# Hands at a lock or a panel (Minigame) shake as the guards grow alarmed.
+	var suspicion := 0
+	for g in guards:
+		suspicion = maxi(suspicion, g.suspicion)
 	for i in thieves.size():
 		var p := thieves[i]
 		var px := p.x
 		var py := p.y
 		# On your own both pads drive you; with two, each pad is its own.
 		var scheme: String = "solo" if thieves.size() == 1 else ["wasd", "arrows", "ijkl", "numpad"][i]
+		if p.game:
+			p.game.tremble = Minigame.tremble_for(suspicion)
+			p.game.pressure = Plinths.pressure(p, guards)
+			var lean := p.game.lean
+			match p.game.tick(_game_input(i, keys), dt):
+				"quit":
+					# Off the pedestal as well, if that is where it was.
+					if p.game.kind == "balance":
+						Plinths.get_down(p, lean)
+					p.game = null
+				"fail":
+					# Lost its balance: down it comes, and the guards hear it.
+					Plinths.fall(p, p.game.lean, noises)
+					p.game = null
+					sfx.noise("roll_bump", _to_world(p.x, p.y), Hearing.LOUDNESS["tumble"])
+					_rumble(0.5, 0.7, 0.25, Vector2(p.x, p.y))
+					_shake(0.3)
+					_log(Text.t("LOG_PLINTH_FELL"))
+				_:
+					_game_sounds(p)
 		var step := Sim.step_thief(p, keys, dt, scheme)
 		var noise := Hearing.thief_noise(px, py, p, step.entered_cover, step.bumped, Sim.TOP_SPEED)
 		# Footsteps land once per stride; a bump is its own event.
@@ -1707,9 +1863,18 @@ func _tick(dt: float) -> void:
 				noise = null
 			else:
 				stride[i] = 0.0
+		# Off in a ball: a rush over the floor (the guards hear nothing of it).
+		if step.roll == "start":
+			sfx.at("roll", _to_world(p.x, p.y), 0.7, 3.0)
+		# Rolled into a wall: the thump, a puff of plaster, and it hurts.
+		if step.bumped == "roll":
+			Fx.puff(world, _to_world(p.x + cos(p.dir) * Sim.BODY, p.y + sin(p.dir) * Sim.BODY), false)
+			_rumble(0.6, 0.9, 0.3, Vector2(p.x, p.y))
+			var case := Museum.is_cover(p.x + cos(p.dir) * (Sim.BODY + 0.1), p.y + sin(p.dir) * (Sim.BODY + 0.1))
+			_log(Text.t("LOG_ROLL_CASE" if case else "LOG_ROLL_WALL"))
 		if noise and not p.out:
 			noises.append(noise)
-			var what := "step" if noise.kind in ["walk", "sprint", "rustle"] else ("shelf" if noise.kind == "shelf" else "bump")
+			var what := "step" if noise.kind in ["walk", "sprint", "rustle"] else (noise.kind if noise.kind in ["shelf", "roll_bump"] else "bump")
 			# As loud as the guards hear it.
 			sfx.noise(what, _to_world(p.x, p.y), noise.loudness)
 
@@ -1721,13 +1886,28 @@ func _tick(dt: float) -> void:
 	noises.append_array(prop_noises)
 	prop_noises.clear()
 	# On purpose: E (P2: . , P3: O), or X on the pad, next to one — over it goes,
-	# and the guards come to see.
+	# and the guards come to see. At a room's switch the same key flips it.
 	for i in thieves.size():
 		var t := thieves[i]
 		var pressed: bool = keys.has(["e", "period", "o", "kpadd"][i]) or (thieves.size() == 1 and keys.has("period"))
-		if pressed and not push_held[i]:
+		if pressed and not push_held[i] and not t.game:
+			var room := Sim.switch_within_reach(t)
+			var plinth = Plinths.within_reach(t, thieves)
 			var target := Props.within_reach(t)
-			if target:
+			var job := Heist.game_for(t)
+			if not job.is_empty():
+				Heist.start_game(t, job, _game_input(i, keys))
+				sfx.at("pick", _to_world(t.x, t.y), 0.5, 2.0)
+			elif room:
+				Sim.flip_switch(room, t, guards, now, noises)
+			elif plinth != null:
+				Plinths.climb(t, plinth, guards)
+				# With minigames the pose is held on one foot (Minigame "balance").
+				if Heist.minigames():
+					t.game = Minigame.make("balance", "plinth", 1, _game_input(i, keys))
+				sfx.at("roll", _to_world(t.x, t.y), 0.4, 2.0)
+				_log(Text.t("LOG_PLINTH_BLOWN" if t.pose_blown else "LOG_PLINTH_UP"))
+			elif target:
 				Props.push(target, t, now, noises)
 		push_held[i] = pressed
 	for p in Props.knocked:
@@ -1736,7 +1916,11 @@ func _tick(dt: float) -> void:
 
 	# The job: working the case (and its alarm), carrying, dropping, the door.
 	var before_alarms := noises.size()
+	var cut_before := [Heist.panel_off, Heist.panel2_off]
 	var took := Heist.step(thieves, dt, now, noises)
+	if [Heist.panel_off, Heist.panel2_off] != cut_before:
+		sfx.ui("ok")
+		_log(Text.t("LOG_PANEL_CUT"))
 	if noises.size() > before_alarms:
 		if Heist.progress < 0.1:
 			_log(Text.t("LOG_CASE_ALARM"))
@@ -1785,7 +1969,10 @@ func _tick(dt: float) -> void:
 				label = z.label_of
 		var r: Museum.Room = Museum.rooms[e.room]
 		sfx.at("lights", _to_world(r.switch_at.x + 0.5, r.switch_at.y + 0.5), 0.8)
-		_log(Text.t("LOG_LIGHTS") % [e.by, label])
+		if e.thief:
+			_log(Text.t("LOG_YOU_LIGHTS_ON" if e.on else "LOG_YOU_LIGHTS_OFF") % label)
+		else:
+			_log(Text.t("LOG_LIGHTS") % [e.by, label])
 	Sim.light_events.clear()
 
 	if now - last_spread > 500:
@@ -1806,6 +1993,12 @@ func _tick(dt: float) -> void:
 
 	for p in thieves:
 		p.hidden = Sim.is_hidden(guards, p)
+		# Seen wobbling on one foot: the pose fools nobody any more.
+		if p.posing and not p.hidden and p.game and p.game.wobbling():
+			p.pose_blown = true
+		# Out of every guard's sight, the statue is a statue again.
+		if p.posing and p.pose_blown and p.hidden:
+			p.pose_blown = false
 		if Sim.caught(guards, p):
 			p.out = true
 			p.speed = 0
@@ -1906,8 +2099,9 @@ func _build_environment() -> void:
 	env.volumetric_fog_density = FOG_DENSITY
 	env.volumetric_fog_albedo = Color("#c4c8ec")
 	env.volumetric_fog_ambient_inject = 0.0
-	# The camera is ~17 m from the floor: no need to spend froxels any further.
-	env.volumetric_fog_length = 25.0
+	# The camera is ~17 m from the floor: no need to spend froxels any further
+	# (further when it pulls back to keep a gang in, _follow_camera).
+	env.volumetric_fog_length = FOG_LENGTH
 	env.volumetric_fog_anisotropy = 0.3
 	# Contact shadows where cases and figures meet the floor and walls meet
 	# corners; SSIL lets a lit room or a torch pool spill a little colour round.
@@ -1924,6 +2118,7 @@ func _build_environment() -> void:
 	env.ssr_fade_out = 2.0
 	var we := WorldEnvironment.new()
 	we.environment = env
+	world_env = env
 	add_child(we)
 	# Moonlight through the high windows: cold and faint, from one side. It
 	# shades the tops of walls and cases apart from their faces, and draws the
@@ -2109,6 +2304,11 @@ func _build_job() -> void:
 	m.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
 	loot_node = LootModels.build(Heist.loot.shape, colour)
 	world.add_child(loot_node)
+	sack_node = LootModels.sack()
+	# Big enough to read from the camera up high.
+	sack_node.scale = Vector3.ONE * 1.4
+	sack_node.visible = false
+	world.add_child(sack_node)
 	# The star of the collection gets a spotlight from the ceiling: a cone of
 	# warm white straight down on its case, its beam showing in the dust.
 	loot_spot = SpotLight3D.new()
@@ -2227,7 +2427,7 @@ func _build_panel(at: Vector2i, face: Vector2i) -> void:
 func _draw_panel() -> void:
 	var t := Time.get_ticks_msec() / 1000.0
 	for i in panel_mats.size():
-		var held := (Heist.panel_by if i == 0 else Heist.panel2_by) != ""
+		var held := (Heist.panel_by if i == 0 else Heist.panel2_by) != "" or (Heist.panel_off if i == 0 else Heist.panel2_off)
 		var c := COLOURS.switch_on if held else Color("#ff922b")
 		panel_mats[i].albedo_color = c
 		panel_mats[i].emission = c
@@ -2240,6 +2440,8 @@ func _draw_panel() -> void:
 # --- Drawing -------------------------------------------------------------------------
 
 func _draw_frame(dt: float) -> void:
+	if camera and hud:
+		_draw_game_boxes()
 	# The ears between the thieves still in, facing the way the camera does
 	# (so left on screen is left in the ear).
 	if ear and camera:
@@ -2253,7 +2455,9 @@ func _draw_frame(dt: float) -> void:
 	for i in thieves.size():
 		var p := thieves[i]
 		var f := thief_nodes[i]
-		f.set_state(_to_world(p.x, p.y), p.dir, p.posture, dt)
+		f.set_state(_to_world(p.x, p.y, Plinths.HEIGHT if p.posing else 0.0), p.dir, p.posture, dt, _pose_of(p))
+		# On one foot on a pedestal, the statue sways as its balance does.
+		f.set_lean(p.game.lean if p.posing and p.game and p.game.kind == "balance" else 0.0)
 		# Gone out of the door: not in the museum any more.
 		f.visible = not p.safe
 		f.scale = Vector3.ONE * (0.75 if p.out else 1.0)
@@ -2315,17 +2519,26 @@ func _draw_loot() -> void:
 		loot_spot.light_energy = move_toward(loot_spot.light_energy, 0.0 if Heist.taken else 14.0, 0.2)
 	_draw_panel()
 	var t := Time.get_ticks_msec() / 1000.0
+	# The piece shows only on its case; taken, it is in the sack.
+	loot_node.visible = not Heist.taken
+	loot_node.position = _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5, 1.05 + sin(t * 2.0) * 0.05)
+	loot_node.rotation.y = t * 1.2
+	sack_node.visible = false
 	if Heist.carrier != "":
 		var c: Thief = thieves[0]
 		for p in thieves:
 			if p.id == Heist.carrier:
 				c = p
-		loot_node.position = _to_world(c.x - cos(c.dir) * 0.2, c.y - sin(c.dir) * 0.2, 1.05 - c.posture * 0.5)
+		# Out of the door with it: gone with them.
+		if not c.safe:
+			sack_node.visible = true
+			# Slung on the back, lower when down on all fours.
+			sack_node.position = _to_world(c.x - cos(c.dir) * 0.32, c.y - sin(c.dir) * 0.32, 0.45 - c.posture * 0.2 + (Plinths.HEIGHT if c.posing else 0.0))
+			sack_node.rotation = Vector3(0, -c.dir + PI / 2, 0)
 	elif Heist.dropped != Vector2.INF:
-		loot_node.position = _to_world(Heist.dropped.x, Heist.dropped.y, 0.2)
-	else:
-		loot_node.position = _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5, 1.05 + sin(t * 2.0) * 0.05)
-	loot_node.rotation.y = t * 1.2
+		sack_node.visible = true
+		sack_node.position = _to_world(Heist.dropped.x, Heist.dropped.y, 0.0)
+		sack_node.rotation = Vector3.ZERO
 
 
 ## The colour of each level of suspicion: a hunch, alert, after you.
@@ -2455,6 +2668,18 @@ const SHAKE_MOVE := 0.45
 const SHAKE_ROLL := 0.025
 ## How much of the trauma wears off each second.
 const SHAKE_DECAY := 1.2
+## With several thieves the camera pulls back (along CAM_OFFSET) to keep them
+## all in: this share of the half-screen each way is where they may go, so
+## nobody reaches the edge while the follow catches up; never further back
+## than CAM_MAX_ZOOM times the usual.
+const CAM_MARGIN_X := 0.82
+const CAM_MARGIN_Y := 0.7
+const CAM_MAX_ZOOM := 4.0
+## How long (s) the pull back takes, and the coming back in: out quickly
+## (someone is about to leave the picture), in lazily.
+const CAM_ZOOM_OUT := 0.12
+const CAM_ZOOM_IN := 1.2
+const FOG_LENGTH := 25.0
 
 ## where the camera is headed, followed smoothly; the shake and the punch are
 ## put on top of it every frame, so they never pile up in the follow
@@ -2470,21 +2695,59 @@ var cam_goal := Vector3.ZERO
 var trauma := 0.0
 ## 0..1: how far the camera has swooped in towards the thief (the steal)
 var punch := 0.0
+## how far back the camera sits: 1 as usual, more to fit a spread-out gang
+var cam_zoom := 1.0
+## the Environment, for the fog to reach as far as the camera pulls back
+var world_env: Environment
 var punch_tween: Tween
 
 
-func _camera_target() -> Vector3:
+## The thieves the camera keeps in: those still in, or everyone at the end.
+func _watched() -> Array:
 	var live := thieves.filter(func(p): return not p.out)
-	var watched: Array = live if not live.is_empty() else thieves
-	var mx := 0.0
-	var my := 0.0
+	return live if not live.is_empty() else thieves
+
+
+func _camera_target() -> Vector3:
+	var watched := _watched()
+	# The middle of the box round them, not their average: three on one side
+	# must not push the fourth out of the picture.
+	var lo := Vector2(INF, INF)
+	var hi := Vector2(-INF, -INF)
 	for p in watched:
-		mx += p.x
-		my += p.y
-	mx /= watched.size()
-	my /= watched.size()
+		lo = Vector2(minf(lo.x, p.x), minf(lo.y, p.y))
+		hi = Vector2(maxf(hi.x, p.x), maxf(hi.y, p.y))
+	var mid := (lo + hi) / 2.0
 	# Keep the frame inside the building.
-	return _to_world(clampf(mx, 7, Museum.w - 7), clampf(my, 5.5, Museum.h - 5.5), 0.6)
+	return _to_world(clampf(mid.x, 7, Museum.w - 7), clampf(mid.y, 5.5, Museum.h - 5.5), 0.6)
+
+
+## How far back (1 = CAM_OFFSET) the camera must sit, looking at `focus`, for
+## every thief to be inside the margins. The camera only pulls straight back
+## along CAM_OFFSET (length D), so a point dx across and dz down the plan
+## from the focus lands dx across and dz·up up the screen, at depth
+## D·k - dz·back: nearer the camera the further down the plan it is. Keeping
+## each inside its margin of the view gives the bound on k below.
+func _zoom_to_fit(focus: Vector3) -> float:
+	var d := CAM_OFFSET.length()
+	var up := CAM_OFFSET.y / d  # how much of a step down the plan shows on screen
+	var back := CAM_OFFSET.z / d  # how much of it goes into depth instead
+	var tan_y := tan(deg_to_rad(camera.fov) / 2.0)
+	var size := get_viewport().get_visible_rect().size
+	var tan_x := tan_y * size.x / maxf(size.y, 1.0)
+	# On your own the usual follow does: the camera never pulls back.
+	var watched := _watched()
+	if watched.size() < 2:
+		return 1.0
+	var k := 1.0
+	for p in watched:
+		var w := _to_world(p.x, p.y)
+		var dx := absf(w.x - focus.x)
+		var dz := w.z - focus.z
+		var depth_y := up * absf(dz) / (tan_y * CAM_MARGIN_Y)
+		var depth_x := dx / (tan_x * CAM_MARGIN_X)
+		k = maxf(k, (maxf(depth_x, depth_y) + back * dz) / d)
+	return minf(k, CAM_MAX_ZOOM)
 
 
 func _snap_camera() -> void:
@@ -2492,14 +2755,22 @@ func _snap_camera() -> void:
 	cam_rest = t + CAM_OFFSET
 	cam_goal = t
 	cam_vel = Vector3.ZERO
+	cam_zoom = _zoom_to_fit(t)
 	trauma = 0.0
 	punch = 0.0
 	if punch_tween:
 		punch_tween.kill()
 	camera.h_offset = 0.0
 	camera.v_offset = 0.0
-	camera.position = cam_rest
+	camera.position = t + CAM_OFFSET * cam_zoom
 	camera.look_at(t)
+	_fog_follows_zoom()
+
+
+## The fog reaches as far as the floor, however far back the camera is.
+func _fog_follows_zoom() -> void:
+	if world_env:
+		world_env.volumetric_fog_length = FOG_LENGTH * cam_zoom
 
 
 func _follow_camera(dt: float) -> void:
@@ -2520,7 +2791,13 @@ func _follow_camera(dt: float) -> void:
 	cam_vel = (cam_vel - omega * temp) * decay
 	cam_rest = cam_goal + CAM_OFFSET + (change + temp) * decay
 	var focus := cam_rest - CAM_OFFSET
-	camera.position = focus + CAM_OFFSET * (1.0 - 0.22 * punch)
+	# Pull back as far as it takes to keep everyone in, measured from where
+	# the camera is really looking (it lags the target).
+	var want := _zoom_to_fit(focus)
+	var ease := CAM_ZOOM_OUT if want > cam_zoom else CAM_ZOOM_IN
+	cam_zoom = lerpf(cam_zoom, want, 1.0 - exp(-dt / ease))
+	_fog_follows_zoom()
+	camera.position = focus + CAM_OFFSET * cam_zoom * (1.0 - 0.22 * punch)
 	camera.look_at(focus)
 	# The shake slides the picture rather than moving the camera, so the
 	# lights nearest the camera do not flicker from room to room.
@@ -2553,7 +2830,7 @@ func _draw_hud(dt: float) -> void:
 	var states: Array = []
 	for p in thieves:
 		states.append({"posture": p.posture, "speed": p.speed if p.moving else 0.0, "carrying": Heist.carrier == p.id,
-			"seen": not p.hidden, "out": p.out, "safe": p.safe})
+			"seen": not p.hidden, "out": p.out, "safe": p.safe, "pose": _pose_of(p)})
 	hud.update_gang(states, dt)
 	var alarm := 0
 	for g in guards:
@@ -2575,6 +2852,7 @@ func _draw_hud(dt: float) -> void:
 		"dropped": Heist.dropped != Vector2.INF,
 		"name": Heist.loot.name,
 		"waiting": Heist.waiting,
+		"cut": Heist.minigames(),
 		"short_hand": Heist.short_hand,
 		"panel": Heist.panels_held() and not Heist.taken,
 		"panels": 2 if Heist.panel2.x >= 0 else 1,

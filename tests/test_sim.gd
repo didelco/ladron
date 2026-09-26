@@ -171,6 +171,27 @@ func _init() -> void:
 			secs += 1.0 / 60
 		check(Museum.lights_left[room.id] > 0, "ve el interruptor y enciende la luz en %.1f s" % secs)
 
+		# A thief at the same switch turns it off again; the guard in the
+		# room notices, and the switch is the spot to check.
+		var ninja := Sim.new_thief()
+		ninja.x = room.switch_at.x + 0.5
+		ninja.y = room.switch_at.y + 0.5
+		check(Sim.switch_within_reach(ninja) == room, "el ladrón llega al interruptor desde su casilla")
+		var onlooker := guard_at(room.rect.get_center().x + 0.5, room.rect.get_center().y + 0.5)
+		while Museum.room_at(onlooker.x, onlooker.y) != room:
+			onlooker.x -= room.face.x
+			onlooker.y -= room.face.y
+		var click: Array[SoundEvent] = []
+		Sim.flip_switch(room, ninja, [onlooker] as Array[Guard], clock, click)
+		check(Museum.lights_left[room.id] == 0, "el ladrón apaga la luz")
+		check(onlooker.suspicion > 0 and onlooker.memory != null and Museum.dist(onlooker.memory.x, onlooker.memory.y, ninja.x, ninja.y) < 0.1, "el guardia de la sala lo nota y va al interruptor")
+		check(click.size() == 1 and click[0].kind == "switch", "el interruptor hace clic")
+		Sim.flip_switch(room, ninja, [] as Array[Guard], clock, click)
+		check(Museum.lights_left[room.id] == Sim.LIGHT_MS, "y la vuelve a encender")
+		ninja.x += 3.0 * -room.face.x + 0.01
+		ninja.y += 3.0 * -room.face.y + 0.01
+		check(Sim.switch_within_reach(ninja) != room, "lejos no llega")
+
 	# Warning: a sees b, unaware, a few tiles away.
 	Sim.new_map(12345, "small")
 	gs = Sim.new_guards(2)

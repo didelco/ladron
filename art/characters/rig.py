@@ -272,6 +272,49 @@ def crawl(arm, u):
         rot(arm, f"pie.{side}", x=88)
 
 
+def victory(arm, u):
+    """¡Fuera y con el botín! Saltitos en el sitio con los dos puños en
+    alto: se agacha, bota y cae flexionando las rodillas."""
+    a = 2 * math.pi * u
+    # Dos botes por ciclo: arriba en el aire, abajo agachado al caer.
+    hop = max(0.0, math.sin(2 * a))
+    squat = max(0.0, -math.sin(2 * a))
+    move(arm, "cadera", dz=0.09 * hop - 0.05 * squat)
+    rot(arm, "cadera", x=4 * squat)
+    rot(arm, "pecho", x=-8 * hop, y=4 * math.sin(a))
+    rot(arm, "cabeza", x=-14 - 6 * hop, z=5 * math.sin(a))
+    for side, s_ in (("L", -1), ("R", 1)):
+        # Rodillas: dobladas al caer, estiradas en el aire.
+        _legs_flat(arm, side, -12 - 28 * squat, 20 + 50 * squat)
+        # Brazos arriba por los lados, puños al cielo, agitándolos.
+        wave = 10 * math.sin(2 * a + (0 if side == "L" else math.pi))
+        # Abiertos en V: la cabeza es grande y los puños no deben taparla.
+        rot(arm, f"brazo.{side}", y=s_ * (105 + wave), x=4)
+        rot(arm, f"antebrazo.{side}", y=s_ * 30, x=-10)
+        rot(arm, f"mano.{side}", x=-10)
+
+
+def statue(arm, u):
+    """Haciéndose pasar por estatua en un pedestal: la grulla, sobre una
+    pierna y la otra rodilla bien alta, un brazo abierto al lado con la mano
+    de canto y el otro en alto. Quieto como la piedra: la misma pose todo el
+    ciclo, y abierta para que se lea desde arriba."""
+    rot(arm, "cadera", y=-4)
+    rot(arm, "pecho", x=-6, y=4)
+    rot(arm, "cabeza", x=-12, z=-10)
+    # Apoya la derecha, casi recta; la izquierda, rodilla arriba y pie colgando.
+    _legs_flat(arm, "R", -4, 8)
+    rot(arm, "muslo.L", x=-105, y=-10)
+    rot(arm, "espinilla.L", x=75)
+    rot(arm, "pie.L", x=30)
+    # Brazo izquierdo abierto al lado, horizontal; el derecho arriba.
+    rot(arm, "brazo.L", y=-85, x=-10)
+    rot(arm, "antebrazo.L", y=-5)
+    rot(arm, "mano.L", x=90)
+    rot(arm, "brazo.R", y=112, x=-5)
+    rot(arm, "antebrazo.R", y=40)
+
+
 # --- El guardia: más sobrio ------------------------------------------------------
 #
 # Erguido, poco vaivén de cadera, pasos firmes. La mano izquierda (.L, x > 0)
@@ -344,6 +387,8 @@ ANIMATIONS = {
     "andar": (24, walk),
     "correr": (16, run),
     "gatear": (28, crawl),
+    "victoria": (24, victory),
+    "estatua": (24, statue),
 }
 
 GUARD_ANIMATIONS = {

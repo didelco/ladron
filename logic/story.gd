@@ -126,6 +126,10 @@ const LESSONS := {
 		"text": "LESSON_FINALE_TEXT"},
 }
 
+## From this night on the case is picked and the alarm panel's glass cut
+## with the suction cup (Minigame); before it, you stand still at the case and hold the panel.
+const LOCKPICK_NIGHT := 9
+
 const SAVE := "user://progress.cfg"
 ## where the progress is kept: SAVE, but the tests keep theirs apart
 static var save := SAVE
@@ -200,7 +204,9 @@ static func news(n: int, players := 1) -> Array:
 ## The senses and pace of the guards on night n, as Sim.custom.
 static func tuning(n: int) -> Dictionary:
 	var l := level(n)
-	var out := {"lock": 1.0}
+	# The pick and the wire cutters (Minigame) come with the third museum.
+	# The minigames' level (Minigame.level_now): a museum at a time from there.
+	var out := {"lock": 1.0, "lockpick": n >= LOCKPICK_NIGHT, "game_level": clampi((n - LOCKPICK_NIGHT) / 4, 0, 2)}
 	for k in ["guards", "view", "hearing", "speed", "calm_after", "alarms", "props", "lights", "case_alarm", "post"]:
 		if l.has(k):
 			out[k] = l[k]

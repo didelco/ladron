@@ -35,6 +35,9 @@ func lesson_layout(n: int, players: int, map_seed: int) -> int:
 
 
 func _init() -> void:
+	# Here the case opens standing still and the panel is held, as on the
+	# story's first nights; the pick and the cutters: test_minigame.
+	Sim.custom = {"lockpick": false}
 	var doors_off_bbox := 0
 	for size in ["small", "medium", "large"]:
 		for k in 6:
@@ -206,7 +209,7 @@ func _init() -> void:
 			last_view = view
 		print("  noche %2d: %-6s %-7s %d guardias · %s · %.1f s" % [n, night.size, Museum.shape, guards.size(), Heist.loot.name, Heist.loot.seconds])
 	check(harder and Story.count() == 20, "veinte noches jugables, cada una igual o más difícil")
-	Sim.custom = {}
+	Sim.custom = {"lockpick": false}
 
 	# Four thieves: two panels far apart, both held, and two at the case.
 	Sim.new_map(4242, "medium")
@@ -252,7 +255,7 @@ func _init() -> void:
 					found = k
 					break
 			check(found >= 0, "noche %d (%s), %d jugador(es): la lección no se puede esquivar (museo %d)" % [n, post, players, found])
-	Sim.custom = {}
+	Sim.custom = {"lockpick": false}
 	Sim.gang = 1
 
 	# The generative piece: made up from the seed, never twice the same thing
@@ -312,7 +315,7 @@ func _init() -> void:
 	Heist.plan_job(1, {}, 2)
 	check(Briefing.tips(hard_guards).has(Text.t("BRIEF_TEAM_ONE_LOCK")), "con dos: uno sujeta el cuadro de la alarma")
 	check(hard.size() <= Briefing.MOST and Briefing.tips(hard_guards).size() <= Briefing.MOST, "nunca más de %d consejos" % Briefing.MOST)
-	Sim.custom = {}
+	Sim.custom = {"lockpick": false}
 
 	if failures.is_empty():
 		print("OK: el golpe funciona")
