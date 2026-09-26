@@ -1,7 +1,11 @@
-"""Edad Media: corona, cáliz, manuscrito iluminado y llave con sello en
+"""Edad Media, con el gótico, el Renacimiento y los inventos de Leonardo.
+Medieval: corona, cáliz, manuscrito iluminado y llave con sello en
 vitrina; yelmo, escudo de armas y maqueta de castillo sobre peana; la espada
 en la piedra y el trono de pie. La armadura (art/armadura.blend) va suelta por
 las salas, como mueble que se cae.
+
+Gótico: gárgola y vidriera. Renacimiento y Leonardo: su códice, un
+astrolabio, la maqueta del carro blindado y la máquina voladora.
 
     Blender -b -P art/temas/edad_media.py [-- --sheet /ruta.png]
 """
@@ -11,6 +15,7 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import tema  # noqa: E402
+import bpy  # noqa: E402
 import kit  # noqa: E402
 from kit import Vector  # noqa: E402
 
@@ -32,7 +37,14 @@ WOOD_DARK = kit.mat("madera_oscura", "#4a2c16", rough=0.7)
 STONE = kit.mat("piedra", "#8a8a8e", rough=0.9)
 STONE_DARK = kit.mat("piedra_oscura", "#5e5e66", rough=0.9)
 ROOF = kit.mat("tejado", "#3f5fa8", rough=0.7)
+WHITE_FEATHER = kit.mat("pluma", "#f4f0e6", rough=0.8)
 MOSS = kit.mat("musgo", "#4e7a3a", rough=0.9)
+BRASS = kit.mat("laton", "#c9953a", rough=0.35, metal=0.6)
+CANVAS = kit.mat("lona", "#e8d8b0", rough=0.9)
+LEAD = kit.mat("plomo", "#2a2a30", rough=0.6)
+GLASS_COLOURS = [kit.mat("vidrio_rojo", "#d0263e", rough=0.2, emit=0.6), kit.mat("vidrio_azul", "#2f6fe0", rough=0.2, emit=0.6),
+                 kit.mat("vidrio_amarillo", "#f0c040", rough=0.2, emit=0.6), kit.mat("vidrio_verde", "#23a861", rough=0.2, emit=0.6),
+                 kit.mat("vidrio_morado", "#8a3fe0", rough=0.2, emit=0.6)]
 
 
 # --- En vitrina ---------------------------------------------------------------------
@@ -280,6 +292,236 @@ def trono():
     return out
 
 
+# --- Gótico, Renacimiento y Leonardo -------------------------------------------------
+
+def codice_leonardo():
+    """Un cuaderno de Leonardo abierto: letra en espejo, el dibujo de un
+    ala y de un engranaje en sepia; al lado, una pluma y el tintero."""
+    stand = kit.box("apoyo", (0, 0.02, 0.02), (0.44, 0.3, 0.04), bevel=0.01)
+    kit.paint(stand, WOOD_DARK)
+    out = [stand]
+    pages = []
+    for s in (-1, 1):
+        page = kit.box(f"hoja{s}", (s * 0.105, 0.0, 0.05), (0.2, 0.27, 0.014), bevel=0.004, rot=(0, s * -0.06, 0))
+        kit.paint(page, PARCHMENT)
+        pages.append(page)
+        out.append(page)
+    sepia = kit.mat("sepia", "#6b4a2a", rough=0.8)
+    # Página izquierda: renglones de letra en espejo.
+    for row in range(9):
+        w = 0.06 + (row * 37 % 5) * 0.008
+        line = kit.box(f"renglon{row}", (-0.105 + (0.075 - w) * 0.5, -0.1 + row * 0.024, 0.058), (w, 0.004, 0.002))
+        kit.paint(line, sepia)
+        out.append(line)
+    # Página derecha: el ala de murciélago y un engranaje.
+    for k in range(5):
+        a = -0.2 + k * 0.28
+        rib = kit.tube(f"varilla{k}", [(0.06, -0.02, 0.059), (0.06 + math.cos(a) * 0.09, -0.02 + math.sin(a) * 0.09, 0.059)],
+                       [(0.0022, 0.0022)] * 2, levels=0)
+        kit.paint(rib, sepia)
+        out.append(rib)
+    edge = kit.tube("borde_ala", [(0.06 + math.cos(-0.2 + k * 0.28) * 0.09, -0.02 + math.sin(-0.2 + k * 0.28) * 0.09, 0.059) for k in range(5)],
+                    [(0.0022, 0.0022)] * 5, levels=0)
+    kit.paint(edge, sepia)
+    gear = kit.lathe("engranaje", [(0.018, -0.001), (0.028, 0.0), (0.018, 0.001)], loc=(0.13, 0.08, 0.059), segs=12)
+    kit.paint(gear, sepia)
+    for k in range(8):
+        a = k / 8 * 2 * math.pi
+        tooth = kit.box(f"diente{k}", (0, 0, 0), (0.008, 0.008, 0.002))
+        tooth.location = (0.13 + math.cos(a) * 0.031, 0.08 + math.sin(a) * 0.031, 0.059)
+        tooth.rotation_euler.z = a
+        kit.paint(tooth, sepia)
+        out.append(tooth)
+    quill = kit.tube("pluma", [(0.2, 0.12, 0.05), (0.26, 0.02, 0.09), (0.28, -0.06, 0.13)], [(0.004, 0.004), (0.012, 0.004), (0.004, 0.002)], levels=1)
+    kit.paint(quill, WHITE_FEATHER)
+    well = kit.lathe("tintero", [(0.0, 0.0), (0.03, 0.0), (0.032, 0.03), (0.015, 0.045), (0.0, 0.045)], loc=(0.25, 0.1, 0.0), segs=20)
+    kit.paint(well, LEAD)
+    return out + [edge, gear, quill, well]
+
+
+def astrolabio():
+    """Un astrolabio de latón: el disco con su red calada, la alidada y la
+    anilla para colgarlo, de pie en su soporte."""
+    base = tema.stand_block("peana", 0.2, 0.12, 0.03, WOOD_DARK)
+    post = kit.cylinder("mastil", (0, 0, 0.06), 0.008, 0.06, segs=10)
+    kit.paint(post, BRASS)
+    disc = kit.cylinder("madre", (0, 0, 0.2), 0.12, 0.012, rot=(math.pi / 2, 0, 0), segs=40, bevel=0.003)
+    kit.paint(disc, BRASS)
+    rim = kit.lathe("limbo", [(0.11, -0.01), (0.125, -0.01), (0.125, 0.01), (0.11, 0.01)], loc=(0, 0, 0.2), rot=(math.pi / 2, 0, 0), segs=40)
+    kit.paint(rim, GOLD)
+    out = [base, post, disc, rim]
+    for k in range(24):
+        a = k / 24 * 2 * math.pi
+        tick = kit.box(f"marca{k}", (0, 0, 0), (0.004, 0.003, 0.012))
+        tick.location = (math.cos(a) * 0.1, -0.008, 0.2 + math.sin(a) * 0.1)
+        tick.rotation_euler.y = -a + math.pi / 2
+        kit.paint(tick, INK)
+        out.append(tick)
+    rete = kit.lathe("red", [(0.05, -0.002), (0.056, 0.0), (0.05, 0.002)], loc=(0.015, -0.01, 0.215), rot=(math.pi / 2, 0, 0), segs=32)
+    kit.paint(rete, GOLD)
+    alidade = kit.box("alidada", (0, -0.014, 0.2), (0.2, 0.004, 0.014), bevel=0.002, rot=(0, 0.5, 0))
+    kit.paint(alidade, BRASS)
+    pin = kit.cylinder("eje", (0, -0.016, 0.2), 0.008, 0.01, rot=(math.pi / 2, 0, 0), segs=12)
+    kit.paint(pin, GOLD)
+    ring = kit.lathe("anilla", [(0.014, -0.003), (0.02, 0.0), (0.014, 0.003)], loc=(0, 0, 0.335), rot=(math.pi / 2, 0, 0), segs=20)
+    kit.paint(ring, BRASS)
+    parts = out + [rete, alidade, pin, ring]
+    # A escala de vitrina.
+    for o in parts:
+        o.scale = o.scale * 0.62
+        o.location = o.location * 0.62
+    return parts
+
+
+def gargola():
+    """Una gárgola de catedral agazapada en su trozo de cornisa: alas
+    plegadas, cuernos, la boca abierta de caño."""
+    ledge = kit.box("cornisa", (0, 0.04, 0.05), (0.34, 0.3, 0.1), bevel=0.012)
+    kit.paint(ledge, STONE_DARK)
+    body = kit.loft("cuerpo", [(0.1, 0, 0.05, 0.09, 0.1, 2.3), (0.2, 0, 0.02, 0.1, 0.1, 2.3), (0.28, 0, -0.02, 0.08, 0.07, 2.2),
+                               (0.32, 0, -0.04, 0.05, 0.05, 2.0)], segs=24)
+    kit.paint(body, STONE)
+    head = kit.superellipsoid("cabeza", (0, -0.1, 0.34), (0.06, 0.07, 0.055), e=2.2)
+    kit.paint(head, STONE)
+    jaw = kit.superellipsoid("mandibula", (0, -0.15, 0.305), (0.04, 0.05, 0.018), e=2.2)
+    kit.paint(jaw, STONE)
+    mouth = kit.superellipsoid("boca", (0, -0.17, 0.325), (0.03, 0.02, 0.012), e=2.0)
+    kit.paint(mouth, LEAD)
+    out = [ledge, body, head, jaw, mouth]
+    for s in (-1, 1):
+        horn = kit.tube(f"cuerno{s}", [(s * 0.035, -0.08, 0.38), (s * 0.06, -0.05, 0.43), (s * 0.05, -0.0, 0.46)], [(0.014, 0.014), (0.009, 0.009), (0.003, 0.003)], levels=1)
+        kit.paint(horn, STONE_DARK)
+        wing = kit.slab(f"ala{s}", [(0.0, 0.0), (0.06, 0.12), (0.12, 0.18), (0.1, 0.06), (0.05, -0.04)], 0.018,
+                        loc=(s * 0.07, 0.07, 0.17), rot=(0.2, 0, s * 1.2 + (math.pi if s < 0 else 0)), bevel=0.004)
+        kit.paint(wing, STONE_DARK)
+        leg = kit.tube(f"pata{s}", [(s * 0.07, -0.05, 0.2), (s * 0.08, -0.1, 0.14), (s * 0.08, -0.11, 0.1)], [(0.025, 0.025), (0.02, 0.02), (0.022, 0.018)], levels=1)
+        kit.paint(leg, STONE)
+        eye = kit.superellipsoid(f"ojo{s}", (s * 0.028, -0.155, 0.36), (0.011, 0.006, 0.008), e=2.0)
+        kit.paint(eye, LEAD)
+        out += [horn, wing, leg, eye]
+    return out
+
+
+def carro_blindado():
+    """La maqueta del carro blindado de Leonardo: una tortuga de madera con
+    cañones asomando alrededor y la torreta arriba, sobre sus ruedas."""
+    base = tema.stand_block("peana", 0.4, 0.4, 0.03, WOOD_DARK)
+    shell = kit.lathe("caparazon", [(0.0, 0.0), (0.18, 0.0), (0.18, 0.03), (0.15, 0.1), (0.08, 0.16), (0.03, 0.18), (0.0, 0.18)],
+                      loc=(0, 0, 0.07), segs=16)
+    kit.paint_regions(shell, [(WOOD_DARK, lambda c, n: int(math.atan2(c.y, c.x) / (2 * math.pi) * 16 + 16) % 2 == 0)], WOOD)
+    turret = kit.cylinder("torreta", (0, 0, 0.27), 0.035, 0.05, segs=12, bevel=0.005)
+    kit.paint(turret, WOOD)
+    turret_top = kit.cylinder("torreta_tejado", (0, 0, 0.31), 0.045, 0.03, r2=0.0, segs=12)
+    kit.paint(turret_top, WOOD_DARK)
+    out = [base, shell, turret, turret_top]
+    for k in range(8):
+        a = k / 8 * 2 * math.pi
+        gun = kit.cylinder(f"canon{k}", (math.cos(a) * 0.185, math.sin(a) * 0.185, 0.09), 0.012, 0.06, rot=(0, math.pi / 2, a), segs=10)
+        kit.paint(gun, IRON)
+        out.append(gun)
+    for k in range(4):
+        a = k / 4 * 2 * math.pi + math.pi / 4
+        wheel = kit.cylinder(f"rueda{k}", (math.cos(a) * 0.12, math.sin(a) * 0.12, 0.06), 0.03, 0.015, rot=(0, math.pi / 2, a), segs=16, bevel=0.003)
+        kit.paint(wheel, WOOD_DARK)
+        out.append(wheel)
+    return out
+
+
+def maquina_voladora():
+    """El ornitóptero de Leonardo colgado sobre su caballete: armazón de
+    madera, alas de lona con varillas como las de un murciélago."""
+    out = []
+    for s in (-1, 1):
+        leg = kit.tube(f"pata{s}", [(s * 0.2, 0.15, 0.0), (0.0, 0.0, 0.62)], [(0.014, 0.014)] * 2, levels=0)
+        leg2 = kit.tube(f"pata_b{s}", [(s * 0.2, -0.15, 0.0), (0.0, 0.0, 0.62)], [(0.014, 0.014)] * 2, levels=0)
+        kit.paint(leg, WOOD_DARK)
+        kit.paint(leg2, WOOD_DARK)
+        out += [leg, leg2]
+    beam = kit.tube("quilla", [(0, -0.3, 0.62), (0, 0.3, 0.6)], [(0.014, 0.014)] * 2, levels=0)
+    kit.paint(beam, WOOD)
+    tail = kit.slab("cola", [(-0.1, 0.0), (0.1, 0.0), (0.0, 0.14)], 0.006, loc=(0, 0.3, 0.6), rot=(math.pi / 2, 0, 0))
+    kit.paint(tail, CANVAS)
+    out += [beam, tail]
+    for s in (-1, 1):
+        spar = kit.tube(f"larguero{s}", [(0, -0.05, 0.63), (s * 0.2, -0.04, 0.72), (s * 0.4, 0.0, 0.76)], [(0.01, 0.01), (0.008, 0.008), (0.005, 0.005)], levels=1)
+        kit.paint(spar, WOOD)
+        out.append(spar)
+        tips = [(s * (0.1 + k * 0.075), 0.12 + 0.05 * math.sin(k), 0.66 + k * 0.025) for k in range(5)]
+        membrane = [(0.0, 0.0)]
+        root = Vector((0, -0.05, 0.63))
+        for k, t in enumerate(tips):
+            rib = kit.tube(f"varilla{s}{k}", [(s * (0.08 + k * 0.08), -0.03, 0.66 + k * 0.025), t], [(0.004, 0.004)] * 2, levels=0)
+            kit.paint(rib, WOOD)
+            out.append(rib)
+        # La lona entre el larguero y las puntas de las varillas.
+        pts = [(0, -0.05, 0.63), (s * 0.2, -0.04, 0.72), (s * 0.4, 0.0, 0.76)] + [tuple(t) for t in reversed(tips)] + [(0, 0.12, 0.64)]
+        import bmesh
+        bm = bmesh.new()
+        vs = [bm.verts.new(p) for p in pts]
+        bm.faces.new(vs)
+        bmesh.ops.triangulate(bm, faces=bm.faces[:])
+        me = bpy.data.meshes.new(f"lona{s}")
+        bm.to_mesh(me)
+        bm.free()
+        sail = bpy.data.objects.new(f"lona{s}", me)
+        bpy.context.scene.collection.objects.link(sail)
+        sol = sail.modifiers.new("grosor", "SOLIDIFY")
+        sol.thickness = 0.004
+        kit.apply_mods(sail)
+        kit.paint(sail, CANVAS)
+        out.append(sail)
+    return out
+
+
+def vidriera():
+    """Una vidriera gótica en su bastidor: arco apuntado de piedra, parteluz,
+    y vidrios de colores emplomados con un rosetón arriba."""
+    foot = tema.stand_block("base", 0.62, 0.22, 0.06, STONE_DARK)
+    # El arco apuntado: dos arcos de círculo que se cruzan arriba.
+    w, spring, top = 0.26, 0.62, 1.02
+    rad = ((top - spring) ** 2 + w ** 2) / (2 * w)
+    outline = [(-w, 0.06), (w, 0.06)]
+    for k in range(13):
+        a = k / 12
+        ang = math.acos((rad - w) / rad) * a
+        outline.append((w - rad + rad * math.cos(ang), spring + rad * math.sin(ang)))
+    for k in range(12, -1, -1):
+        a = k / 12
+        ang = math.acos((rad - w) / rad) * a
+        outline.append((-(w - rad + rad * math.cos(ang)), spring + rad * math.sin(ang)))
+    frame = kit.slab("marco", [(x * 1.12, z if z < 0.1 else z * 1.03) for x, z in outline], 0.1, bevel=0.01)
+    kit.paint(frame, STONE)
+    glass = kit.slab("vidrio", [(x * 0.97, z * 0.99) for x, z in outline], 0.12, bevel=0.0)
+    kit.paint(glass, LEAD)
+    out = [foot, frame, glass]
+    # Los vidrios: una rejilla de paneles de colores y el rosetón.
+    rng = __import__("random").Random(9)
+    for col in range(4):
+        for row in range(6):
+            x = -0.2 + col * 0.13 + 0.01
+            z = 0.12 + row * 0.085
+            pane = kit.box(f"panel{col}{row}", (x + 0.055 - 0.065, -0.062, z + 0.035), (0.11, 0.006, 0.07), bevel=0.002)
+            kit.paint(pane, rng.choice(GLASS_COLOURS))
+            pane2 = kit.box(f"panel_b{col}{row}", (x + 0.055 - 0.065, 0.062, z + 0.035), (0.11, 0.006, 0.07), bevel=0.002)
+            kit.paint(pane2, pane.data.materials[0])
+            out += [pane, pane2]
+    for yy in (-0.064, 0.064):
+        rose = kit.cylinder(f"roseton{yy}", (0, yy, 0.82), 0.1, 0.006, rot=(math.pi / 2, 0, 0), segs=24)
+        kit.paint(rose, GLASS_COLOURS[1])
+        for k in range(8):
+            a = k / 8 * 2 * math.pi
+            petal = kit.cylinder(f"petalo{yy}{k}", (math.cos(a) * 0.06, yy * 1.05, 0.82 + math.sin(a) * 0.06), 0.028, 0.006,
+                                 rot=(math.pi / 2, 0, 0), segs=12)
+            kit.paint(petal, GLASS_COLOURS[k % 2 * 2])
+            out.append(petal)
+        centre = kit.cylinder(f"centro{yy}", (0, yy * 1.1, 0.82), 0.025, 0.006, rot=(math.pi / 2, 0, 0), segs=12)
+        kit.paint(centre, GLASS_COLOURS[2])
+        out += [rose, centre]
+    mullion = kit.box("parteluz", (0, 0, 0.4), (0.03, 0.14, 0.68), bevel=0.006)
+    kit.paint(mullion, STONE)
+    return out + [mullion]
+
+
 tema.run("edad_media", [
     ("corona", "case", corona),
     ("caliz", "case", caliz),
@@ -290,4 +532,10 @@ tema.run("edad_media", [
     ("castillo", "plinth", castillo),
     ("espada_piedra", "floor", espada_piedra),
     ("trono", "floor", trono),
+    ("codice_leonardo", "case", codice_leonardo),
+    ("astrolabio", "case", astrolabio),
+    ("gargola", "plinth", gargola),
+    ("carro_blindado", "plinth", carro_blindado),
+    ("maquina_voladora", "floor", maquina_voladora),
+    ("vidriera", "floor", vidriera),
 ])

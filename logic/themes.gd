@@ -12,7 +12,7 @@ extends RefCounted
 ## of canvas (Canvases).
 ##
 ## Five themes, and no more: the ancient world (Egypt, Greece and Rome), the
-## middle ages, prehistory (dinosaurs and early people), nature (animals,
+## middle ages (with the gothic, the Renaissance and Leonardo), prehistory (dinosaurs and early people), nature (animals,
 ## plants and trees, life under water) and the modern age — contemporary art
 ## and everyday things of today shown as museum pieces: a telly, a toaster.
 
@@ -27,10 +27,13 @@ const ALL := {
 	},
 	"edad_media": {
 		"gallery": ["the medieval hall", "GALLERY_MEDIEVAL"],
-		"case": ["temas/edad_media/corona", "temas/edad_media/caliz", "temas/edad_media/manuscrito", "temas/edad_media/llave_sello"],
-		"plinth": ["temas/edad_media/yelmo", "temas/edad_media/escudo", "temas/edad_media/castillo"],
-		"floor": ["temas/edad_media/espada_piedra", "temas/edad_media/trono"],
-		"paintings": ["castle", "dragon", "tapestry"],
+		# Castles and knights, the gothic, the Renaissance and Leonardo's inventions.
+		"case": ["temas/edad_media/corona", "temas/edad_media/caliz", "temas/edad_media/manuscrito", "temas/edad_media/llave_sello",
+			"temas/edad_media/codice_leonardo", "temas/edad_media/astrolabio"],
+		"plinth": ["temas/edad_media/yelmo", "temas/edad_media/escudo", "temas/edad_media/castillo", "temas/edad_media/gargola",
+			"temas/edad_media/carro_blindado"],
+		"floor": ["temas/edad_media/espada_piedra", "temas/edad_media/trono", "temas/edad_media/maquina_voladora", "temas/edad_media/vidriera"],
+		"paintings": ["castle", "dragon", "tapestry", "gioconda", "vitruvian"],
 	},
 	"prehistoria": {
 		"gallery": ["the prehistory gallery", "GALLERY_PREHISTORY"],

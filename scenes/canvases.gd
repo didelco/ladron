@@ -22,6 +22,8 @@ static func paint(kind: String, seed: int) -> ImageTexture:
 		"castle": _castle(img, r)
 		"dragon": _dragon(img, r)
 		"tapestry": _tapestry(img, r)
+		"gioconda": _gioconda(img, r)
+		"vitruvian": _vitruvian(img, r)
 		_: img.fill(Color("#3a2618"))
 	return ImageTexture.create_from_image(img)
 
@@ -233,3 +235,60 @@ static func _tapestry(img: Image, r: Callable) -> void:
 	for y in range(14, 22):
 		_dot(img, 18 - (y - 14) / 3, y, gold)
 	_dot(img, 27, 9, Color("#1c1b22"))
+
+
+# --- The Renaissance ---------------------------------------------------------------
+
+## A lady with a quiet smile, hands folded, a hazy landscape behind her.
+static func _gioconda(img: Image, r: Callable) -> void:
+	_sky(img, Color("#6a7a5a"), Color("#a8a070"), H)
+	for x in W:
+		var y := 14 + int(sin(x * 0.25 + r.call(2) * 4) * 2)
+		img.fill_rect(Rect2i(x, y, 1, 4), Color("#5a6a5a"))
+	img.fill_rect(Rect2i(2, 20, 4, 1), Color("#8a9a9a"))
+	img.fill_rect(Rect2i(40, 18, 5, 1), Color("#8a9a9a"))
+	var dress := Color("#2a2418")
+	for y in range(20, H):
+		var half := 8 + (y - 20) / 2
+		img.fill_rect(Rect2i(24 - half, y, half * 2, 1), dress)
+	img.fill_rect(Rect2i(19, 29, 10, 3), Color("#d8a878"))
+	img.fill_rect(Rect2i(18, 18, 12, 3), Color("#c89868"))
+	img.fill_rect(Rect2i(19, 6, 10, 13), Color("#1a140c"))
+	img.fill_rect(Rect2i(20, 8, 8, 11), Color("#d8a878"))
+	img.fill_rect(Rect2i(26, 8, 2, 11), Color("#b88858"))
+	img.set_pixel(22, 12, Color("#2a1e14"))
+	img.set_pixel(25, 12, Color("#2a1e14"))
+	img.fill_rect(Rect2i(22, 16, 4, 1), Color("#8a5a3a"))
+	img.set_pixel(26, 15, Color("#8a5a3a"))
+
+
+## Leonardo's man in a circle and a square, in sepia on old paper.
+static func _vitruvian(img: Image, r: Callable) -> void:
+	img.fill(Color("#e8d8a8"))
+	for k in 30:
+		_dot(img, int(r.call(10 + k) * W), int(r.call(50 + k) * H), Color("#d8c490"))
+	var ink := Color("#6b4a2a")
+	var cx := 24
+	var cy := 18
+	for a in 64:
+		var t := a / 64.0 * TAU
+		_dot(img, cx + int(cos(t) * 15), cy + int(sin(t) * 15), ink)
+	for k in range(-12, 13):
+		_dot(img, cx + k, cy - 12, ink)
+		_dot(img, cx + k, cy + 14, ink)
+		_dot(img, cx - 12, cy + k + 1, ink)
+		_dot(img, cx + 12, cy + k + 1, ink)
+	_disc(img, cx, cy - 8, 2, ink)
+	img.fill_rect(Rect2i(cx, cy - 6, 1, 11), ink)
+	for k in 13:
+		_dot(img, cx - k, cy - 4 - k / 3, ink)
+		_dot(img, cx + k, cy - 4 - k / 3, ink)
+		_dot(img, cx - k, cy - 3, ink)
+		_dot(img, cx + k, cy - 3, ink)
+	for k in 10:
+		_dot(img, cx - k / 2, cy + 5 + k, ink)
+		_dot(img, cx + k / 2, cy + 5 + k, ink)
+		_dot(img, cx - k, cy + 5 + k, ink)
+		_dot(img, cx + k, cy + 5 + k, ink)
+	for x in range(4, 44, 3):
+		img.fill_rect(Rect2i(x, 34, 2, 1), ink)
