@@ -1,119 +1,96 @@
 class_name Fx
 extends RefCounted
-## Particles, all GPUParticles3D built here: dust hanging in the lights, the
-## puff when something is knocked over, the sparkle when the piece comes out
-## of its case. Counts stay low: the camera is high above, and a handful of
+## Particles: dust hanging in the air (a MultiMesh, seen where a light falls)
+## and, as GPUParticles3D, the puff when something is knocked over and the
+## sparkle when the piece comes out of its case. Counts stay low: the camera is high above, and a handful of
 ## specks reads better than a cloud.
 ##
-## One-shot bursts free themselves once done; the dust lives on its light and
-## goes with it.
+## One-shot bursts free themselves once done; the dust lives with the world.
 
 ## A soft round speck, white: tinted per use through vertex colour.
 static var _soft: GradientTexture2D
 
 
-# --- Dust in the lights -------------------------------------------------------------
+# --- Dust in the air ---------------------------------------------------------------
 
-## Dust motes drifting in a light: inside the beam of a guard's torch, or
-## under a room's ceiling light. Only there while the light is on.
-static func dust_in(light: Light3D) -> void:
-	light.add_child(Dust.new())
-
-
-## The visual layer dust lives on: lit by torches and lamps, not by the moon.
+## The visual layer dust lives on. Only the torches reach it: a light made
+## with this meta keeps it in its cull mask, every other one drops it.
 const DUST_LAYER := 1 << 10
+const LIGHTS_DUST := &"lights_dust"
+
+## Motes per square metre of floor, between ankle and head height.
+const DUST_PER_M2 := 2.6
 
 
-## Motes hanging in the air. They are born where a light shines, then stay
-## put in the room (world space), all but still: a torch sweeping past
-## lights them up and leaves them behind in the dark, where they fade, while
-## new ones appear in the beam. They are lit, not glowing, so only the light
-## that falls on them shows them — and the moon does not reach them.
-class Dust extends GPUParticles3D:
-	var _process_mat := ParticleProcessMaterial.new()
-	var _look := Fx.speck_material(false)
-	var _shape := Vector2.ZERO
-	var _tint := Color.BLACK
+## Dust hanging in the air all over the museum, and staying there. It shows
+## only where a torch shines on it: a torch sweeping past picks out the motes
+## in its beam and leaves them in the dark again behind it, and coming back
+## finds the same ones. Nothing is born or dies; the air is just lit.
+static func dust_field(parent: Node3D) -> void:
+	var spots: Array[Vector3] = []
+	for y in Museum.h:
+		for x in Museum.w:
+			if Museum.is_wall(x + 0.5, y + 0.5):
+				continue
+			var n := int(DUST_PER_M2) + (1 if randf() < fmod(DUST_PER_M2, 1.0) else 0)
+			for i in n:
+				spots.append(MuseumView.to_world(x + randf(), y + randf(), randf_range(0.1, 1.8)))
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.use_custom_data = true
+	mm.mesh = QuadMesh.new()
+	mm.instance_count = spots.size()
+	for i in spots.size():
+		mm.set_instance_transform(i, Transform3D(Basis(), spots[i]))
+		# Where it is in its slow sway, and how big it is.
+		mm.set_instance_custom_data(i, Color(randf(), randf(), randf(), randf_range(0.05, 0.09)))
+	var node := MultiMeshInstance3D.new()
+	node.multimesh = mm
+	node.layers = DUST_LAYER
+	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var look := ShaderMaterial.new()
+	look.shader = _dust_shader()
+	node.material_override = look
+	parent.add_child(node)
 
-	func _init() -> void:
-		amount = 60
-		lifetime = 4.0
-		preprocess = 4.0
-		local_coords = false
-		layers = DUST_LAYER
-		# Big enough to cover a whole beam: the default box is two metres wide.
-		visibility_aabb = AABB(Vector3(-6, -4, -12), Vector3(12, 6, 13))
-		cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		var m := _process_mat
-		m.gravity = Vector3.ZERO
-		m.direction = Vector3.UP
-		m.spread = 180.0
-		# Hanging in the air: the barest drift, a slow swirl.
-		m.initial_velocity_min = 0.0
-		m.initial_velocity_max = 0.012
-		m.turbulence_enabled = true
-		m.turbulence_noise_strength = 0.2
-		m.turbulence_noise_scale = 3.0
-		m.turbulence_noise_speed_random = 0.05
-		m.turbulence_influence_min = 0.005
-		m.turbulence_influence_max = 0.015
-		m.scale_min = 0.05
-		m.scale_max = 0.09
-		# In, hang, out: a mote never pops.
-		m.color_ramp = Fx.fade(Color(1, 1, 1, 0.0), Color(1, 1, 1, 1.0), 0.3)
-		process_material = m
-		# Lit by what shines on them, and only that: no ambient, no glow.
-		_look.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
-		_look.disable_ambient_light = true
-		_look.albedo_color = Color(1, 1, 1, 0.55)
-		draw_pass_1 = Fx.quad(_look)
 
-	func _process(_dt: float) -> void:
-		var light := get_parent() as Light3D
-		if light == null:
-			return
-		emitting = light.light_energy > 0.0
-		if not emitting:
-			return
-		if light is SpotLight3D:
-			var spot := light as SpotLight3D
-			var shape := Vector2(spot.spot_angle, spot.spot_range)
-			if shape != _shape:
-				_shape = shape
-				_fill_cone(spot)
-		elif _shape == Vector2.ZERO:
-			# A ceiling light: a slab of air in the middle of the room.
-			_shape = Vector2.ONE
-			amount = 36
-			_process_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
-			_process_mat.emission_box_extents = Vector3(3.0, 0.8, 2.5)
-			position = Vector3(0, -1.5, 0)
+## A soft speck facing the camera, lit by the light that reaches it however
+## it faces it: from straight above a quad looks up, and a torch held at
+## waist height shines across it, so the usual shading would leave it black.
+static func _dust_shader() -> Shader:
+	var sh := Shader.new()
+	sh.code = """
+shader_type spatial;
+render_mode blend_add, depth_draw_never, cull_disabled, ambient_light_disabled, specular_disabled;
 
-	## Points scattered through the torch's cone, down to the floor: the beam
-	## is narrow and tilted, and a box would put motes outside it.
-	func _fill_cone(spot: SpotLight3D) -> void:
-		var tan_half := tan(deg_to_rad(spot.spot_angle)) * 0.8
-		var pts := PackedVector3Array()
-		var tries := 0
-		while pts.size() < 64 and tries < 2000:
-			tries += 1
-			# Farther out the cone is wider: weight the depth that way.
-			var d := spot.spot_range * sqrt(randf_range(0.02, 1.0)) * 0.8
-			var r := d * tan_half * sqrt(randf())
-			var a := randf() * TAU
-			var p := Vector3(cos(a) * r, sin(a) * r, -d)
-			# Keep to the air: above the floor, below the ceiling of the view.
-			var y := (spot.transform * p).y
-			if y > 0.08 and y < 1.8:
-				pts.append(p)
-		if pts.is_empty():
-			return
-		var img := Image.create(pts.size(), 1, false, Image.FORMAT_RGBF)
-		for i in pts.size():
-			img.set_pixel(i, 0, Color(pts[i].x, pts[i].y, pts[i].z))
-		_process_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_POINTS
-		_process_mat.emission_point_texture = ImageTexture.create_from_image(img)
-		_process_mat.emission_point_count = pts.size()
+// White, whatever the torch's own colour.
+uniform vec3 tint : source_color = vec3(1.0);
+uniform float strength = 1.0;
+
+void vertex() {
+	// A barely-there sway, a few centimetres, so the air is not frozen.
+	vec3 phase = INSTANCE_CUSTOM.xyz * 6.2832;
+	vec3 sway = 0.04 * vec3(sin(TIME * 0.31 + phase.x), sin(TIME * 0.23 + phase.y), sin(TIME * 0.27 + phase.z));
+	float size = INSTANCE_CUSTOM.w;
+	MODELVIEW_MATRIX = VIEW_MATRIX * mat4(
+		INV_VIEW_MATRIX[0] * size,
+		INV_VIEW_MATRIX[1] * size,
+		INV_VIEW_MATRIX[2] * size,
+		MODEL_MATRIX[3] + vec4(sway, 0.0));
+}
+
+void fragment() {
+	float r = length(UV - 0.5) * 2.0;
+	ALBEDO = tint;
+	// A solid little core with a short soft edge, not a faint smudge.
+	ALPHA = (1.0 - smoothstep(0.35, 1.0, r)) * strength;
+}
+
+void light() {
+	DIFFUSE_LIGHT += LIGHT_COLOR * ATTENUATION / PI;
+}
+"""
+	return sh
 
 
 # --- Bursts -------------------------------------------------------------------------

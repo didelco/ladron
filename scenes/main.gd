@@ -179,6 +179,11 @@ var preview_spot: OmniLight3D
 func _ready() -> void:
 	# The words first: everything below builds some.
 	Text.setup()
+	# The dust in the air (Fx.dust_field) is the torches' alone: every other
+	# light, however or wherever it is made, passes through it unseen.
+	get_tree().node_added.connect(func(n: Node) -> void:
+		if n is Light3D and not n.has_meta(Fx.LIGHTS_DUST):
+			(n as Light3D).light_cull_mask &= ~Fx.DUST_LAYER)
 	# The map: Y or Select/Back on any pad (M on the keyboard, by hand).
 	if not InputMap.has_action("map"):
 		InputMap.add_action("map")
@@ -1622,9 +1627,6 @@ func _build_environment() -> void:
 	# shades the tops of walls and cases apart from their faces, and draws the
 	# rim round the figures in the dark (Figure's materials).
 	var moon := DirectionalLight3D.new()
-	# The moon lights the room, not the dust in the air (Fx.Dust): motes only
-	# show where a torch or a lamp catches them.
-	moon.light_cull_mask = 0xFFFFF & ~Fx.DUST_LAYER
 	moon.rotation_degrees = Vector3(-55, 30, 0)
 	moon.light_color = MOON_COLOUR
 	moon.light_energy = MOON_ENERGY
@@ -1666,6 +1668,7 @@ func _build_world() -> void:
 	var view := MuseumView.new()
 	view.build()
 	world.add_child(view)
+	Fx.dust_field(world)
 	props_view = PropsView.new()
 	world.add_child(props_view)
 	props_view.build()
@@ -1703,7 +1706,6 @@ func _build_world() -> void:
 		l.light_specular = 0.6
 		l.light_volumetric_fog_energy = ROOM_FOG
 		world.add_child(l)
-		Fx.dust_in(l)
 		room_lights.append(l)
 	for g in guards:
 		var f := Figure.make("guard", COLOURS.guard, COLOURS.guard_dark)
@@ -1727,6 +1729,7 @@ func _build_world() -> void:
 		# Bright hotspot, a quick falloff to the rim, and crisp shadows so the
 		# cases and figures it sweeps throw long ones across the floor.
 		var torch := SpotLight3D.new()
+		torch.set_meta(Fx.LIGHTS_DUST, true)
 		torch.light_color = TORCH_COLOUR
 		# Falls off with distance quicker than a bulb, so the pool near the
 		# guard is bright and the throw beyond it dim; and a low angle exponent
@@ -1744,7 +1747,6 @@ func _build_world() -> void:
 		# beam), and turned round: a spot shines down its -Z, a figure faces +Z.
 		torch.position = Vector3(0, 1.15, 0.3)
 		torch.rotation = Vector3(-0.35, PI, 0)
-		Fx.dust_in(torch)
 		torches.append(torch)
 		var cone := MeshInstance3D.new()
 		cone.mesh = ImmediateMesh.new()
