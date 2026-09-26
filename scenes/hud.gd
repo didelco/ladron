@@ -262,7 +262,14 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 ##                                                    (wrap at width)
 ##   {"columns": [{"items", "width"?}], "separation"?}
 ##                                                    items side by side (_columns)
-##   {"picture": Texture2D, "smooth"?, "height"?}     the map, the piece
+##   {"picture": Texture2D, "smooth"?, "height"?, "id"?}
+##                                                    the map, the piece (an id:
+##                                                    set_picture changes it)
+##   {"list": [{"text", "call"?, "open", "colour"?, "selected"?} or {"head": text}],
+##     "width"?, "height"?}                           lines to go down with the
+##                                                    arrows, in a box that scrolls:
+##                                                    landing on one calls "call",
+##                                                    pressing it "open" (_list)
 ##   {"buttons": [{"text", "call", "icon"?, "colour"?}], "row": bool, "focus"?: int}
 ##                                                    text buttons, all one width
 ##                                                    ("step" for "call": a setting, _stepper)
@@ -287,6 +294,7 @@ func show_menu(items: Array) -> void:
 	# bottom, for the arrows, and the control to start on.
 	var st := MenuState.new()
 	_named.clear()
+	_pictures.clear()
 	_nights.clear()
 	_menu_map = null
 	_titles.clear()
@@ -402,6 +410,10 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 		r.custom_minimum_size = size * k
 		r.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if item.get("smooth", false) else CanvasItem.TEXTURE_FILTER_NEAREST
 		parent.add_child(r)
+		if item.has("id"):
+			_pictures[item.id] = r
+	elif item.has("list"):
+		_list(item, parent, st)
 	elif item.has("cards"):
 		var row := HBoxContainer.new()
 		row.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -557,8 +569,9 @@ func _columns(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 			_menu_item(sub, box, st)
 
 
-## Labels a menu gave an id, to change without rebuilding it.
+## Labels a menu gave an id, to change without rebuilding it; pictures too.
 var _named := {}
+var _pictures := {}
 ## while a menu takes its first focus
 var _quiet := false
 ## the menu's titles, bobbing gently
@@ -575,6 +588,80 @@ func set_text(id: String, text: String, colour: Color) -> void:
 		var l: Label = _named[id]
 		l.text = text
 		l.add_theme_color_override("font_color", colour)
+
+
+## A picture a menu gave an id, changed in place: the new one fits the room
+## the first took.
+func set_picture(id: String, picture: Texture2D) -> void:
+	if _pictures.has(id):
+		(_pictures[id] as TextureRect).texture = picture
+
+
+## A list in a box that scrolls with the focus: {"list": [...], "width"?,
+## "height"?}. Each line is {"text", "call"?, "open", "colour"?, "selected"?}:
+## landing on it (the arrows, the mouse) calls "call" — to show it beside the
+## list — and pressing it calls "open". {"head": text} is a heading between
+## lines. The line "selected" is the one the menu opens on.
+func _list(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
+	var width: int = item.get("width", 360)
+	var frame := PanelContainer.new()
+	var fs := _frame(BRASS, false, false, 18)
+	fs.set_content_margin_all(10)
+	frame.add_theme_stylebox_override("panel", fs)
+	frame.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	parent.add_child(frame)
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(width, item.get("height", 420))
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.follow_focus = true
+	frame.add_child(scroll)
+	var box := VBoxContainer.new()
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.add_theme_constant_override("separation", 4)
+	scroll.add_child(box)
+	for e in item.list:
+		if e.has("head"):
+			var h := _label(10, C.gold, box, true)
+			h.text = e.head
+			h.custom_minimum_size = Vector2(0, 30)
+			h.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+			continue
+		var b := Button.new()
+		b.text = e.text
+		b.focus_mode = Control.FOCUS_ALL
+		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		b.clip_text = true
+		b.custom_minimum_size = Vector2(width - 16, 34)
+		b.add_theme_font_override("font", ARCADE)
+		b.add_theme_font_size_override("font_size", 10)
+		var colour: Color = e.get("colour", CREAM)
+		for state in ["normal", "hover", "pressed", "focus"]:
+			var s := _frame(colour, state != "normal", false, 12)
+			if state == "normal":
+				s.bg_color = Color(0, 0, 0, 0)
+				s.border_color = Color(0, 0, 0, 0)
+				s.shadow_color = Color(0, 0, 0, 0)
+			s.set_content_margin_all(6)
+			s.content_margin_left = 14
+			b.add_theme_stylebox_override(state, s)
+		b.add_theme_color_override("font_color", colour)
+		for key in ["font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
+			b.add_theme_color_override(key, INK)
+		b.focus_entered.connect(func() -> void:
+			if not _quiet:
+				ui_sound.emit("nav")
+			if e.has("call"):
+				e.call.call())
+		b.mouse_entered.connect(func() -> void: b.grab_focus())
+		b.pressed.connect(e.open)
+		b.pressed.connect(func() -> void: ui_sound.emit("ok"))
+		box.add_child(b)
+		st.rows.append([b])
+		if st.first == null:
+			st.first = b
+		if e.get("selected", false):
+			st.focus_on = b
 
 
 ## The arrows go where the eye expects: left and right along a row (round

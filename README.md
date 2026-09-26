@@ -116,7 +116,13 @@ En el título se elige el modo:
   dinosaurio...), la entrada, la pieza, la salida, guardias y objetos, o partir de un mapa
   aleatorio del generador; tamaño, dificultad y guardias; vista 3D, probar y guardar. Solo deja
   jugar mapas cerrados, sin espacios a los que no se llega, con pieza y salida alcanzables.
-  `-- --menu=challenges` (o `editor`) los abre directamente.
+  `-- --menu=challenges` (o `editor`) los abre directamente. La pantalla es una lista (las noches
+  de la historia, luego los retos) con el plano del que está elegido a la derecha.
+  Las **noches de la historia** también se retocan ahí: se abre el museo tal como lo monta la
+  noche (`MapFile.from_museum`), se edita y se guarda en `maps/historia/noche_NN.json` (en
+  `user://maps/historia/` si el juego está exportado); desde entonces la noche juega ese museo,
+  con su pieza, sus guardias y su dificultad de siempre. *Volver al original* borra el fichero.
+  Probar una noche desde el editor no cuenta como partida de la historia.
 
 Antes de cada golpe, el plan: el mapa a la izquierda y, a la derecha, la pieza, su historia y
 consejos sacados de cómo es la noche (`logic/briefing.gd`: cuántos guardias, si son rápidos u
