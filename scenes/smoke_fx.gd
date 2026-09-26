@@ -200,7 +200,7 @@ func _build_fog() -> void:
 	_fog.shape = RenderingServer.FOG_VOLUME_SHAPE_ELLIPSOID
 	_fog_mat = FogMaterial.new()
 	_fog_mat.albedo = LIGHT
-	_fog_mat.emission = Color(0.06, 0.06, 0.07)
+	_fog_mat.emission = Color(0.22, 0.22, 0.26)
 	_fog_mat.edge_fade = 0.6
 	_fog_mat.density = 0.0
 	if _density == null:
@@ -353,6 +353,11 @@ func _puff_material() -> StandardMaterial3D:
 	# Light through it from behind, as smoke does.
 	mat.backlight_enabled = true
 	mat.backlight = Color(0.55, 0.55, 0.6)
+	# A glow of its own, faint: in the dark museum it still shows, pale, and a
+	# torch through it still lights it up far brighter.
+	mat.emission_enabled = true
+	mat.emission = Color(0.42, 0.42, 0.48)
+	mat.emission_energy_multiplier = 1.0
 	mat.proximity_fade_enabled = true
 	mat.proximity_fade_distance = 0.6
 	mat.cull_mode = BaseMaterial3D.CULL_DISABLED

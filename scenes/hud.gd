@@ -1375,11 +1375,42 @@ func set_gang(colours: Array, darks: Array, loot: Dictionary) -> void:
 		pic.custom_minimum_size = Vector2(PORTRAIT, PORTRAIT)
 		pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		frame.add_child(pic)
+		var smoke := _smoke_row()
+		frame.add_child(smoke)
 		_gang.add_child(frame)
-		_portraits.append({"anchor": anchor, "fig": fig, "piece": piece, "frame": frame, "box": box, "colour": colours[i], "walked": 0.0})
+		_portraits.append({"anchor": anchor, "fig": fig, "piece": piece, "frame": frame, "box": box, "colour": colours[i], "walked": 0.0, "smoke": smoke})
 
 
-## Each thief as it is now: {posture, speed, carrying, seen, out, safe}. The
+## The smoke bombs a thief has in hand (Smoke.PER_THIEF places, the used
+## ones dim), little grey puffs along the bottom of its portrait.
+const SMOKE_ICON := 16.0
+
+
+func _smoke_row() -> Control:
+	var row := Control.new()
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.custom_minimum_size = Vector2(SMOKE_ICON * Smoke.PER_THIEF + 4.0 * (Smoke.PER_THIEF - 1), SMOKE_ICON)
+	row.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	row.size_flags_vertical = Control.SIZE_SHRINK_END
+	row.set_meta("count", 0)
+	row.draw.connect(func() -> void:
+		var have: int = row.get_meta("count", 0)
+		for k in Smoke.PER_THIEF:
+			var mid := Vector2(SMOKE_ICON / 2.0 + k * (SMOKE_ICON + 4.0), SMOKE_ICON / 2.0)
+			var lit := k < have
+			var c := Color("#d9d6e0") if lit else Color(1, 1, 1, 0.16)
+			# A bomb: a round body, a fuse, a spark on it when it is there to use.
+			row.draw_circle(mid + Vector2(0, 1), SMOKE_ICON * 0.36, Color(0, 0, 0, 0.6))
+			row.draw_circle(mid + Vector2(0, 1), SMOKE_ICON * 0.3, c)
+			row.draw_line(mid + Vector2(2, -3), mid + Vector2(5, -7), c, 2.0)
+			if lit:
+				row.draw_circle(mid + Vector2(5.5, -7.5), 2.0, Color("#ffb347"))
+	)
+	return row
+
+
+## Each thief as it is now: {posture, speed, carrying, seen, out, safe,
+## smoke (bombs left)}. The
 ## frame says how it is doing — its colour hidden, red seen, grey caught,
 ## green out of the door.
 func update_gang(states: Array, dt: float) -> void:
@@ -1387,6 +1418,10 @@ func update_gang(states: Array, dt: float) -> void:
 		var st: Dictionary = states[i]
 		var p: Dictionary = _portraits[i]
 		p.walked += float(st.speed) * dt
+		var smoke: Control = p.smoke
+		if smoke.get_meta("count", -1) != int(st.get("smoke", 0)):
+			smoke.set_meta("count", int(st.get("smoke", 0)))
+			smoke.queue_redraw()
 		var fig: Figure = p.fig
 		fig.set_state(Vector3(p.walked, 0, 0), PI / 2 - 0.6, float(st.posture), dt)
 		(p.anchor as Node3D).position.x = -p.walked

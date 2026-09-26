@@ -601,6 +601,9 @@ static func visible_to(g: Guard, thieves: Array[Thief]) -> Thief:
 
 
 static func can_see(g: Guard, p: Thief) -> bool:
+	# Smoke between them (or round either): nothing to see, lit room or not.
+	if Smoke.blocks(g.x, g.y, p.x, p.y, now_ms()):
+		return false
 	var d := Museum.dist(g.x, g.y, p.x, p.y)
 	var view := view_of(g)
 	# Under a lit ceiling you are visible from anywhere with a line to you.
@@ -620,7 +623,8 @@ static func can_see(g: Guard, p: Thief) -> bool:
 
 
 ## A point in the guard's cone, in its torch's reach, nothing in the way.
-static func in_view(g: Guard, x: float, y: float) -> bool:
+## through_smoke: the smoke itself is what it is looking at (Smoke).
+static func in_view(g: Guard, x: float, y: float, through_smoke := false) -> bool:
 	var view := view_of(g)
 	var d := Museum.dist(g.x, g.y, x, y)
 	if d > view.range:
@@ -628,7 +632,7 @@ static func in_view(g: Guard, x: float, y: float) -> bool:
 	if d < TOUCH_RANGE:
 		return true
 	return absf(_angle_diff(atan2(y - g.y, x - g.x) - g.dir)) <= view.half \
-		and Museum.has_line_of_sight(g.x, g.y, x, y)
+		and Museum.has_line_of_sight(g.x, g.y, x, y) and (through_smoke or not Smoke.blocks(g.x, g.y, x, y, now_ms()))
 
 
 ## Write down what the guard can see right now: its picture of the museum.
@@ -645,6 +649,9 @@ static func _mark_seen(g: Guard, now: float) -> void:
 		while d < far:
 			var x := g.x + cos(a) * d
 			var y := g.y + sin(a) * d
+			# Smoke: what is in it, or behind it, has not been looked at.
+			if Smoke.covers(x, y, now):
+				break
 			if d <= view.range or Museum.is_lit(x, y):
 				_see(g, x, y, now)
 			d += 0.5
@@ -822,6 +829,28 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 				g.memory = m
 				g.planned_for = ""
 			thoughts.append({"by": g.name, "text": Text.t("GUARD_WHO_KNOCKED") % Props.name_of(fallen.kind)})
+
+	# Lost you in the smoke: it knows where it last saw you, not which way
+	# you went.
+	if not player and g.memory and g.memory.kind == "seen" and g.memory.has_heading \
+			and Smoke.covers(g.memory.x, g.memory.y, now):
+		g.memory.has_heading = false
+
+	# A cloud of smoke in the galleries: something is going on over there.
+	if not player:
+		var cloud := Smoke.spotted_by(g, now)
+		if cloud:
+			_alarm(g, now)
+			var fresh := g.memory != null and g.memory.kind != "noise" and now - g.memory.at <= 2000
+			if not fresh:
+				var m := Guard.Memory.new()
+				m.x = cloud.x
+				m.y = cloud.y
+				m.kind = "noise"
+				m.at = now
+				g.memory = m
+				g.planned_for = ""
+			thoughts.append({"by": g.name, "text": Text.t("GUARD_SMOKE")})
 
 	# Looked the clue's area over and nobody is there: noted, and the plan is
 	# open again, so the next decision goes somewhere else.

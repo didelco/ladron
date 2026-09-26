@@ -29,6 +29,8 @@ const LOUDNESS := {
 	## a guard yelling "stop!"
 	"shout": 30.0,
 	"alarm": 14.0,
+	## a smoke bomb going off (Smoke): a soft pop, heard close by
+	"smoke": 4.0,
 }
 
 ## A wall between you and a guard eats this much of a noise's reach.

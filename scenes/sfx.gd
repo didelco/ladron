@@ -61,6 +61,8 @@ func _ready() -> void:
 		_tones([[293.7, 0.36, 0.6], [440.0, 0.36, 0.6]], "saw", 0.12))
 	_streams.tick = _mix(_bells([[880.0, 0.0]], 0.25, 0.3), _noise(0.02, 3000.0, 0.3))
 	_streams.go = _mix(_bells([[587.3, 0.0], [740.0, 0.0], [880.0, 0.0], [1174.7, 0.0]], 0.9, 0.2), _thump(0.5, 110.0, 55.0, 0.6))
+	# A smoke bomb: a soft, deep pop and the long hiss of the cloud rushing out.
+	_streams.smoke = _mix(_mix(_thump(0.35, 140.0, 45.0, 0.9), _noise(0.05, 5000.0, 0.7)), _noise(1.4, 1200.0, 0.35))
 	_streams.sting = _mix(_thump(0.9, 70.0, 38.0, 0.8), _tremolo_cluster(1.3, [1108.7, 1174.7, 1244.5], 0.06))
 	# Knocked over. Metal rings: the tin bin clangs, bounces and rattles to
 	# a stop. Stone and wood are dry: the bust cracks and smashes into a

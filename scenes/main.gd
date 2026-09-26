@@ -131,6 +131,8 @@ var phase := "title"
 var stride := [0.0, 0.0, 0.0, 0.0]
 ## the push key held last frame, per thief: one push per press
 var push_held := [false, false, false, false]
+## the same for the smoke bomb key: one bomb per press
+var smoke_held := [false, false, false, false]
 ## how many seats the player-select screen is filling
 var join_count := 2
 var last_think := 0.0
@@ -244,6 +246,10 @@ func _ready() -> void:
 			_new_round(1)
 		_show_brief(_brief_pages().size() - 1)
 		get_tree().create_timer(2.0).timeout.connect(_start_playing)
+		# --smoke: and a smoke bomb goes off at P1's feet a moment in.
+		if "--smoke" in OS.get_cmdline_user_args():
+			get_tree().create_timer(3.5).timeout.connect(func() -> void:
+				Smoke.drop(thieves[0], Sim.now_ms(), prop_noises))
 		# --map: and take the map out a moment later.
 		if "--map" in OS.get_cmdline_user_args():
 			get_tree().create_timer(3.0).timeout.connect(_toggle_map)
@@ -1454,6 +1460,8 @@ func _new_round(n: int) -> void:
 		_lay_out(n, randi() % 1000000000)
 	stride = [0.0, 0.0, 0.0, 0.0]
 	push_held = [false, false, false, false]
+	smoke_held = [false, false, false, false]
+	Smoke.reset(thieves)
 	guard_steps.clear()
 	prop_noises.clear()
 	last_think = 0.0
@@ -1479,32 +1487,32 @@ func _pressed_keys() -> Dictionary:
 	var resumed := Engine.get_physics_frames() != pad_frame + 1
 	pad_frame = Engine.get_physics_frames()
 	# Each thief's controls, as the key names Sim reads for that thief.
-	var names := [["w", "s", "a", "d", "c", "e"], ["up", "down", "left", "right", "minus", "period"], ["i", "k", "j", "l", "u", "o"], ["kp8", "kp5", "kp4", "kp6", "kp0", "kpadd"]]
+	var names := [["w", "s", "a", "d", "c", "e", "f"], ["up", "down", "left", "right", "minus", "period", "apostrophe"], ["i", "k", "j", "l", "u", "o", "h"], ["kp8", "kp5", "kp4", "kp6", "kp0", "kpadd", "kpdot"]]
 	for i in mini(seats.size(), thieves.size()):
 		var got := _seat_input(seats[i], resumed)
-		for k in 6:
+		for k in 7:
 			if got[k]:
 				keys[names[i][k]] = true
 	return keys
 
 
-## One seat's controls this frame: [up, down, left, right, crouch, push].
+## One seat's controls this frame: [up, down, left, right, crouch, push, smoke].
 func _seat_input(seat: String, resumed: bool) -> Array:
-	var out := [false, false, false, false, false, false]
+	var out := [false, false, false, false, false, false, false]
 	if seat == "any" or seat == "kb_left":
-		for pair in [[0, KEY_W], [1, KEY_S], [2, KEY_A], [3, KEY_D], [4, KEY_C], [4, KEY_SHIFT], [5, KEY_E]]:
+		for pair in [[0, KEY_W], [1, KEY_S], [2, KEY_A], [3, KEY_D], [4, KEY_C], [4, KEY_SHIFT], [5, KEY_E], [6, KEY_F]]:
 			if Input.is_physical_key_pressed(pair[1]):
 				out[pair[0]] = true
 	if seat == "any" or seat == "kb_right":
-		for pair in [[0, KEY_UP], [1, KEY_DOWN], [2, KEY_LEFT], [3, KEY_RIGHT], [4, KEY_MINUS], [4, KEY_SLASH], [5, KEY_PERIOD]]:
+		for pair in [[0, KEY_UP], [1, KEY_DOWN], [2, KEY_LEFT], [3, KEY_RIGHT], [4, KEY_MINUS], [4, KEY_SLASH], [5, KEY_PERIOD], [6, KEY_APOSTROPHE]]:
 			if Input.is_physical_key_pressed(pair[1]):
 				out[pair[0]] = true
 	if seat == "kb_mid":
-		for pair in [[0, KEY_I], [1, KEY_K], [2, KEY_J], [3, KEY_L], [4, KEY_U], [5, KEY_O]]:
+		for pair in [[0, KEY_I], [1, KEY_K], [2, KEY_J], [3, KEY_L], [4, KEY_U], [5, KEY_O], [6, KEY_H]]:
 			if Input.is_physical_key_pressed(pair[1]):
 				out[pair[0]] = true
 	if seat == "kb_pad":
-		for pair in [[0, KEY_KP_8], [1, KEY_KP_5], [2, KEY_KP_4], [3, KEY_KP_6], [4, KEY_KP_0], [5, KEY_KP_ADD]]:
+		for pair in [[0, KEY_KP_8], [1, KEY_KP_5], [2, KEY_KP_4], [3, KEY_KP_6], [4, KEY_KP_0], [5, KEY_KP_ADD], [6, KEY_KP_PERIOD]]:
 			if Input.is_physical_key_pressed(pair[1]):
 				out[pair[0]] = true
 	var pads: Array = Input.get_connected_joypads() if seat == "any" else ([int(seat.substr(4))] if seat.begins_with("pad:") else [])
@@ -1524,6 +1532,7 @@ func _seat_input(seat: String, resumed: bool) -> Array:
 			pad_stale.erase(stale_key)
 		out[4] = out[4] or (crouch and not pad_stale.has(stale_key))
 		out[5] = out[5] or Input.is_joy_button_pressed(pad, JOY_BUTTON_X)
+		out[6] = out[6] or Input.is_joy_button_pressed(pad, JOY_BUTTON_LEFT_SHOULDER)
 	return out
 
 
@@ -1733,6 +1742,20 @@ func _tick(dt: float) -> void:
 	for p in Props.knocked:
 		props_view.shove(p)
 		_prop_fell(p)
+	# Smoke bombs: F (P2: ' , P3: H), or LB on the pad, at your feet.
+	for i in thieves.size():
+		var pressed: bool = keys.has(["f", "apostrophe", "h", "kpdot"][i]) or (thieves.size() == 1 and keys.has("apostrophe"))
+		if pressed and not smoke_held[i]:
+			if Smoke.drop(thieves[i], now, noises) == null and not thieves[i].out:
+				sfx.ui("back", 0.5)
+		smoke_held[i] = pressed
+	Smoke.step(now)
+	for c in Smoke.fresh:
+		SmokeFx.burst(world, _to_world(c.x, c.y), Smoke.RADIUS * 1.15, Smoke.SECONDS)
+		sfx.at("smoke", _to_world(c.x, c.y, 0.5), 0.9, 6.0)
+		_rumble(0.3, 0.5, 0.3, Vector2(c.x, c.y))
+		_log(Text.t("LOG_SMOKE"))
+	Smoke.clear_fresh()
 
 	# The job: working the case (and its alarm), carrying, dropping, the door.
 	var before_alarms := noises.size()
@@ -2553,7 +2576,7 @@ func _draw_hud(dt: float) -> void:
 	var states: Array = []
 	for p in thieves:
 		states.append({"posture": p.posture, "speed": p.speed if p.moving else 0.0, "carrying": Heist.carrier == p.id,
-			"seen": not p.hidden, "out": p.out, "safe": p.safe})
+			"seen": not p.hidden, "out": p.out, "safe": p.safe, "smoke": Smoke.count(p)})
 	hud.update_gang(states, dt)
 	var alarm := 0
 	for g in guards:
