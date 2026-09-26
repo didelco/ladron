@@ -11,9 +11,10 @@ extends RefCounted
 ## builds itself ("@butterflies": MuseumView.EXHIBITS). Paintings are kinds
 ## of canvas (Canvases).
 ##
-## Themes still to model: Japón, América, Europa, África, automoción,
-## oficios, ropa, famosos. The modern age (moderna) is contemporary art and
-## everyday things of today shown as museum pieces: a telly, a toaster.
+## Five themes, and no more: the ancient world (Egypt, Greece and Rome), the
+## middle ages, prehistory (dinosaurs and early people), nature (animals,
+## plants and trees, life under water) and the modern age — contemporary art
+## and everyday things of today shown as museum pieces: a telly, a toaster.
 
 const ALL := {
 	"antiguo": {
