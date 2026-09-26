@@ -223,7 +223,7 @@ func _spill(at: Vector3, towards: Vector3) -> void:
 		_loose[b] = ["paper", 0.3]
 
 
-## The suit of armour, going over: from here on each piece of it (art/armadura.blend:
+## The suit of armour, going over: from here on each piece of it (art/coleccion.blend:
 ## stand, legs, torso, arms, helm, lance) is a body of its own, moving as it
 ## was, nudged a little apart — the helm rolls off, the lance clatters away.
 ## The pieces never collide with each other: they start fitted together, and
@@ -286,17 +286,17 @@ static func model(kind: String) -> Node3D:
 	return root
 
 
-## A metal waste-paper bin, open at the top, paper showing (art/papelera.blend).
+## A metal waste-paper bin, open at the top, paper showing (art/museo.blend).
 func _bin(parent: Node3D, base := 0.0) -> void:
 	_model(parent, "papelera", base)
 
 
-## A marble pedestal: base, fluted shaft, cap (art/pedestal.blend).
+## A marble pedestal: base, fluted shaft, cap (art/museo.blend).
 func _pedestal(parent: Node3D, base := 0.0) -> void:
 	_model(parent, "pedestal", base)
 
 
-## What stands on a pedestal, one per prop: a bust (art/busto_*.blend), or
+## What stands on a pedestal, one per prop: a bust (art/coleccion.blend), or
 ## something that has no business being in a museum.
 const ON_PEDESTALS := ["busto_emperador", "busto_dama", "busto_filosofo", "busto_reina", "regadera", "vater"]
 
@@ -306,7 +306,7 @@ func _bust(parent: Node3D, base := 0.0, which := 0) -> void:
 
 
 ## An information panel on a stand, a printed board tilted to be read
-## (art/panel.blend); the print on its board is drawn here, one per panel.
+## (art/museo.blend); the print on its board is drawn here, one per panel.
 func _panel(parent: Node3D, seed: int, base := 0.0) -> void:
 	var stand := _model(parent, "panel", base)
 	var board := stand.find_child("board", true, false) as MeshInstance3D

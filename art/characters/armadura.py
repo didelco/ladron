@@ -6,7 +6,10 @@ desmonta (stand, leg_l, leg_r, torso, arm_l, arm_r, helm, lance).
 
     Blender -b -P art/characters/armadura.py                 # art/armadura.blend
     Blender -b -P art/characters/armadura.py -- --sheet /ruta/armadura
-y después: Blender -b -P art/export.py -- armadura
+
+Así se hizo la primera versión. Ahora la armadura se retoca a mano en
+art/coleccion.blend (su colección «armadura») y sale con art/export.py; lo que
+guarda esto es un fichero aparte, fuera del catálogo, que no se exporta.
 """
 import math
 import os

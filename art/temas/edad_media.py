@@ -1,7 +1,7 @@
 """Edad Media, con el gótico, el Renacimiento y los inventos de Leonardo.
 Medieval: corona, cáliz, manuscrito iluminado y llave con sello en
 vitrina; yelmo, escudo de armas y maqueta de castillo sobre peana; la espada
-en la piedra y el trono de pie. La armadura (art/armadura.blend) va suelta por
+en la piedra y el trono de pie. La armadura (art/coleccion.blend) va suelta por
 las salas, como mueble que se cae.
 
 Gótico: gárgola y vidriera. Renacimiento y Leonardo: su códice, un

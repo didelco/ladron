@@ -587,7 +587,7 @@ func _beam(near_seen: bool, far_seen: bool) -> void:
 ## A glass case on its stand with the piece glowing inside, and over it the
 ## meter(s) that fill while it is being opened.
 func _case(at: Vector3, two_locks: bool) -> void:
-	# The game's own case (art/vitrina.blend), at the dioramas' scale.
+	# The game's own case (art/museo.blend), at the dioramas' scale.
 	var v := MuseumView.asset("vitrina")
 	v.scale = Vector3.ONE * CASE_SCALE
 	v.position = at

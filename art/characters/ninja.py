@@ -2,8 +2,12 @@
 y el color del jugador en la cinta (con su lazo y colas) y en el cinturón. La
 cara no se ve: los ojos asoman sobre la tela negra.
 
-    Blender -b -P art/characters/ninja.py                       # art/ninja.blend
+    Blender -b -P art/characters/ninja.py                       # art/personajes/ninja.blend
     Blender -b -P art/characters/ninja.py -- --sheet /ruta/ninja --color azul
+
+Así se hizo el personaje. Ahora se retoca a mano en art/personajes/ninja.blend
+y sale con art/export.py (o el panel «Ladrón» de Blender): volver a ejecutar
+esto pisa esos retoques.
 """
 import math
 import os
@@ -255,7 +259,10 @@ def main():
         import sheet
         sheet.render(root, ARGS[ARGS.index("--sheet") + 1], only=ARGS[ARGS.index("--views") + 1].split(",") if "--views" in ARGS else None)
     else:
-        bpy.ops.wm.save_as_mainfile(filepath=os.path.join(ART, "ninja.blend"))
+        sys.path.append(ART)
+        import catalogo
+        catalogo.mark("personaje")
+        bpy.ops.wm.save_as_mainfile(filepath=os.path.join(ART, "personajes", "ninja.blend"))
         if "--glb" in ARGS or not ARGS:
             import rig
             rig.export(os.path.join(ART, "..", "assets", "models", "ninja.glb"))

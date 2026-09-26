@@ -1,6 +1,6 @@
 """Mundo antiguo, la parte de Egipto: escarabajo, vasos canopos, amuletos y papiro en vitrina; busto del
 faraón, gata Bastet y obelisco sobre peana; Anubis y la barca solar de pie.
-El sarcófago (art/sarcofago.blend) es su pieza grande.
+El sarcófago (art/coleccion.blend) es su pieza grande.
 
     Blender -b -P art/temas/egipto.py [-- --sheet /ruta.png]
 """

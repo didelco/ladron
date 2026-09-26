@@ -8,8 +8,13 @@ Medidas (1 unidad = una casilla, el pie en z = 0, el frente mirando a -Y):
   suelo ("floor"):   hasta 0,8 × 0,8 y 1,1 de alto (sobre la losa del hueco)
 Los materiales guardan su color base; el juego les pone el sombreado toon.
 
+    Blender -b -P art/temas/egipto.py -- --blend art/tema_antiguo.blend   # el .blend
     Blender -b -P art/temas/egipto.py                   # exporta todas
     Blender -b -P art/temas/egipto.py -- --sheet /ruta   # hoja de revisión
+
+Así se hizo la primera versión. Ahora las piezas se retocan a mano en
+art/tema_<tema>.blend y salen con art/export.py: volver a ejecutar esto pisa
+esos retoques (el .blend con --blend, los .glb sin nada).
 """
 import math
 import os
@@ -41,6 +46,9 @@ def run(theme, pieces):
     if "--sheet" in ARGS:
         _sheet(built, ARGS[ARGS.index("--sheet") + 1])
         return
+    if "--blend" in ARGS:
+        _blend(theme, built, ARGS[ARGS.index("--blend") + 1])
+        return
     out = os.path.join(MODELS, theme)
     os.makedirs(out, exist_ok=True)
     for name, where, root, objs in built:
@@ -51,6 +59,32 @@ def run(theme, pieces):
         bpy.ops.export_scene.gltf(filepath=os.path.join(out, name + ".glb"), export_format="GLB",
                                   use_selection=True, export_apply=True, export_yup=True)
         print("[export]", theme, name)
+
+
+def _blend(theme, built, path):
+    """Cada pieza en su colección, en fila (art/catalogo.py), y el fichero
+    guardado en path."""
+    sys.path.append(os.path.join(HERE, ".."))
+    import catalogo
+    scene = bpy.context.scene.collection
+    for name, where, root, objs in built:
+        coll = catalogo.add_piece(name)
+        coll["sitio"] = where
+        for o in objs:
+            world = o.matrix_world.copy()
+            o.parent = None
+            o.matrix_world = world
+            for c in list(o.users_collection):
+                c.objects.unlink(o)
+            coll.objects.link(o)
+        bpy.data.objects.remove(root, do_unlink=True)
+    left = [o.name for o in scene.objects]
+    if left:
+        print("[blend] objetos sueltos, fuera de las piezas:", ", ".join(left))
+    catalogo.mark("piezas", "temas/" + theme)
+    catalogo.arrange()
+    bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(path))
+    print("[blend]", path, len(built), "piezas")
 
 
 def _check(name, where, objs):

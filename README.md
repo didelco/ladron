@@ -12,12 +12,12 @@ logic/   lógica pura, sin nodos (GDScript con tipos): se prueba sola
 scenes/  lo visual: main (bucle y HUD), museum_view (museo), figure (personajes)
 brain/   el cerebro: FastAPI sobre Laya, igual que en la web
 tests/   pruebas sin ventana
-art/     fuentes en Blender (.blend) de las piezas del museo; se exportan a assets/models
+art/     el catálogo en Blender (.blend por grupos) y su exportador a assets/models
 ```
 
 ## Piezas modeladas
 
-Lo que tiene forma fija se modela en Blender (`art/<nombre>.blend`) y el juego carga el `.glb`
+Lo que tiene forma fija se modela en Blender y el juego carga el `.glb`
 de `assets/models/` con su sombreado toon (`MuseumView.asset`): vitrina (una para todas; el código
 pone dentro lo que toque), papelera, pedestal y lo que va encima (cuatro bustos, una regadera y un
 váter), panel, armadura (por piezas, para que se desmonte al caer), cráneo y cabeza de Lego, ánfora,
@@ -27,12 +27,36 @@ Lo que depende del mapa o de la semilla sigue en código: muros, suelo, plintos,
 minerales, dioramas, cuadros (paisaje, retrato, abstracto, pipa, plátano, helado), la lámina de
 cada panel y las luces.
 
-Tras retocar una pieza, guarda el `.blend` y reexporta (las convenciones están en `art/export.py`):
+### El catálogo en Blender
+
+Las piezas están agrupadas en pocos ficheros; dentro, cada pieza es una colección, en fila y con
+su nombre escrito delante, y sale a su propio `.glb`:
+
+| Fichero | Qué hay | Sale a |
+|---|---|---|
+| `art/museo.blend` | el mobiliario: vitrina, pedestal, panel, papelera | `assets/models/` |
+| `art/coleccion.blend` | bustos, regadera, váter, cráneos, ánfora, globo, tótem, amonite, meteorito, oso, armadura, sarcófago, dinosaurio | `assets/models/` |
+| `art/tema_antiguo.blend` | las piezas del tema antiguo (Egipto) | `assets/models/temas/antiguo/` |
+| `art/tema_edad_media.blend` | las piezas de la Edad Media | `assets/models/temas/edad_media/` |
+| `art/personajes/guardia.blend`, `ninja.blend` | un personaje con esqueleto y acciones cada uno | `assets/models/` |
+
+Para retocar: abre el fichero, cambia la pieza **sin moverla de su sitio en la fila** (la colección
+recuerda dónde está su origen) y exporta. Desde Blender, con el panel **Ladrón** de la barra lateral
+(tecla `N`): *Exportar pieza* (la del objeto seleccionado), *Exportar fichero*, *Exportar todo*,
+*Nueva pieza* y *Ordenar fila*; guarda, exporta y hace que Godot reimporte. Se instala una vez:
+Preferencias → Add-ons → Instalar desde disco… → `art/ladron_addon.py`. Desde la terminal:
 
 ```bash
-/Applications/Blender.app/Contents/MacOS/Blender -b -P art/export.py -- vitrina   # sin nombres: todas
-godot --headless --import
+B=/Applications/Blender.app/Contents/MacOS/Blender
+$B -b -P art/export.py                           # todo
+$B -b -P art/export.py -- vitrina anubis         # esas piezas
+$B -b -P art/export.py -- --godot tema_antiguo   # un fichero entero, y Godot reimporta
 ```
+
+Una pieza nueva: *Nueva pieza* en el fichero que le toque (o una colección nueva), modelar con el
+pie en z = 0 y el frente a -Y sobre el cursor, y exportar. Convenciones y nombres que busca el
+juego: `art/catalogo.py`. Los scripts de `art/characters/` y `art/temas/` son cómo se hizo la
+primera versión: volver a ejecutarlos pisa los retoques hechos a mano.
 
 ## Plan
 

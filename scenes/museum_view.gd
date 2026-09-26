@@ -124,7 +124,7 @@ static func toon(colour: Color) -> StandardMaterial3D:
 	return m
 
 
-## A piece modelled in Blender (art/<name>.blend, exported to
+## A piece modelled in Blender (a collection in art/*.blend, exported to
 ## assets/models/<name>.glb), in the same toon shading as the rest: each
 ## material keeps its colour, texture, glow and transparency. What is see-through
 ## casts no shadow.
@@ -390,7 +390,7 @@ func _empty_plinth(parent: Node3D) -> void:
 	_mesh(parent, _box(Vector3(0.18, 0.06, 0.01)), C.bone_dark, Vector3(0, h * 0.5, 0.376))
 
 
-## The glass case (one model for all of them, art/vitrina.blend), and
+## The glass case (one model for all of them, art/museo.blend), and
 ## whatever it holds sitting on its deck.
 func _vitrine(parent: Node3D, contents: Node3D) -> void:
 	parent.add_child(asset("vitrina"))
@@ -430,18 +430,18 @@ func _minerals(seed: int) -> Node3D:
 	return g
 
 
-## An ammonite on its little stand (art/amonite.blend).
+## An ammonite on its little stand (art/coleccion.blend).
 func _ammonite() -> Node3D:
 	return asset("amonite")
 
 
-## A lump of meteorite on a black stand (art/meteorito.blend).
+## A lump of meteorite on a black stand (art/coleccion.blend).
 func _rock() -> Node3D:
 	return asset("meteorito")
 
 
-## A mounted skull, facing the gallery (art/craneo.blend), or a toy one: a
-## minifigure's head with a skull printed on it (art/craneo_lego.blend).
+## A mounted skull, facing the gallery (art/coleccion.blend), or a toy one: a
+## minifigure's head with a skull printed on it (art/coleccion.blend).
 func _skull(parent: Node3D, yaw: float, toy := false) -> void:
 	_pivot(parent, Vector3(0, CASE_HEIGHT - 0.06, 0), yaw).add_child(asset("craneo_lego" if toy else "craneo"))
 
@@ -469,17 +469,17 @@ func _diorama(parent: Node3D, seed: int) -> void:
 	_mesh(parent, s, C.stone, Vector3(0.2, 0.46, -0.15))
 
 
-## A Greek amphora with a band of figures round its belly (art/anfora.blend).
+## A Greek amphora with a band of figures round its belly (art/coleccion.blend).
 func _amphora(parent: Node3D, on: float) -> void:
 	_pivot(parent, Vector3(0, on, 0)).add_child(asset("anfora"))
 
 
-## A globe on a wooden stand in a brass meridian (art/globo.blend).
+## A globe on a wooden stand in a brass meridian (art/coleccion.blend).
 func _globe(parent: Node3D) -> void:
 	parent.add_child(asset("globo"))
 
 
-## A totem pole: stacked painted faces, a bird on top (art/totem.blend).
+## A totem pole: stacked painted faces, a bird on top (art/coleccion.blend).
 func _totem(parent: Node3D) -> void:
 	parent.add_child(asset("totem"))
 
