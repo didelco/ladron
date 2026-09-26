@@ -550,48 +550,119 @@ static func _bounds(node: Node, xform: Transform3D) -> AABB:
 # --- Paintings -----------------------------------------------------------------
 
 ## Canvases on the wall faces the camera can see (facing south), each painted
-## procedurally: a moonlit landscape, a dark portrait or a block abstract.
+## procedurally, never on a wall with something in front of it (_blocked). A
+## stretch of free wall may take a big one: a painting across two modules, or
+## a triptych across three; a module may take two or three small ones side by
+## side instead of one. A bare module between one and the next.
 func _paintings() -> void:
 	var most := 6 + Museum.w * Museum.h / 120
 	var hung := 0
+	var blocked := _blocked()
 	for y in range(1, Museum.h - 1):
-		for x in range(1, Museum.w - 1):
+		var x := 1
+		while x < Museum.w - 1:
 			if hung >= most:
 				return
-			if Museum.grid[y * Museum.w + x] != Tiles.WALL or Museum.is_outside(x, y):
+			var run := _free_wall(x, y, blocked)
+			if run == 0 or _hash01(x, y, 23) < 0.72:
+				x += 1
 				continue
-			if Museum.grid[(y + 1) * Museum.w + x] != Tiles.FLOOR or _hash01(x, y, 23) < 0.72:
-				continue
-			var frame := Node3D.new()
-			frame.position = to_world(x + 0.5, y + 1.0, 0.0)
-			add_child(frame)
 			var room := Museum.room_at(x + 0.5, y + 1.5)
-			_painting(frame, x * 31 + y * 7, Themes.painting(room.theme if room else "", _hash01(x, y, 37)))
-			_hung[Vector2i(x, y)] = true
-			hung += 1
+			var theme := room.theme if room else ""
+			var pick := _hash01(x, y, 41)
+			var span := 3 if pick < 0.1 and run >= 3 else (2 if pick < 0.28 and run >= 2 else 1)
+			var frame := Node3D.new()
+			frame.position = to_world(x + span / 2.0, y + 1.0, 0.0)
+			add_child(frame)
+			var seed := x * 31 + y * 7
+			var kind := Themes.painting(theme, _hash01(x, y, 37))
+			if span == 3:
+				_painting(frame, seed, kind, TRIPTYCH)
+			elif span == 2:
+				_painting(frame, seed, kind, BIG_PAINTING)
+			elif pick < 0.46:
+				# Two small ones, or three, side by side on the one module.
+				var n := 2 if pick < 0.38 else 3
+				var size: Vector3 = SMALL_PAINTINGS[n]
+				for i in n:
+					var at := _pivot(frame, Vector3((i - (n - 1) / 2.0) * size.x * 1.25, 0, 0))
+					_painting(at, seed + i * 13, Themes.painting(theme, _hash01(x + i, y, 37)), size)
+			else:
+				_painting(frame, seed, kind)
+			for k in span:
+				_hung[Vector2i(x + k, y)] = true
+			hung += span
+			x += span + 1
 
 
-func _painting(parent: Node3D, seed: int, kind := "") -> void:
-	var fw := 0.7
-	var fh := 0.5
-	var cy := 0.8
+## Paintings (m): width, height, and the height of their middle on the wall.
+const PAINTING := Vector3(0.7, 0.5, 0.8)
+const BIG_PAINTING := Vector3(1.12, 0.8, 0.72)
+## Three canvases in one long frame, across three modules.
+const TRIPTYCH := Vector3(2.6, 0.62, 0.78)
+## Two or three small ones on one module.
+const SMALL_PAINTINGS := {2: Vector3(0.36, 0.3, 0.82), 3: Vector3(0.25, 0.22, 0.84)}
+
+
+## The floor in front of a wall with something on it or against it — a thing
+## to knock over, a light switch, an alarm panel — where no painting hangs.
+## (A case in front is not floor, so it has none either.)
+func _blocked() -> Dictionary:
+	var out := {}
+	for p in Props.list:
+		out[p.tile] = true
+	for r in Museum.rooms:
+		out[r.switch_at] = true
+	for t in [Heist.panel, Heist.panel2]:
+		if t.x >= 0:
+			out[t] = true
+	return out
+
+
+## How many wall faces in a row, from (x, y) on, a painting may hang on (up
+## to three): facing south onto clear floor of the same gallery.
+func _free_wall(x: int, y: int, blocked: Dictionary) -> int:
+	var room := Museum.room_at(x + 0.5, y + 1.5)
+	var n := 0
+	while n < 3 and x + n < Museum.w - 1:
+		var t := Vector2i(x + n, y)
+		var front := Vector2i(t.x, y + 1)
+		if Museum.grid[y * Museum.w + t.x] != Tiles.WALL or Museum.is_outside(t.x, y) or \
+				Museum.grid[front.y * Museum.w + front.x] != Tiles.FLOOR or blocked.has(front) or \
+				Museum.room_at(t.x + 0.5, y + 1.5) != room:
+			break
+		n += 1
+	return n
+
+
+## A painting in its frame: size is its width, height and middle's height on
+## the wall; a triptych (TRIPTYCH) has three canvases in the one frame.
+func _painting(parent: Node3D, seed: int, kind := "", size := PAINTING) -> void:
+	var fw := size.x
+	var fh := size.y
+	var cy := size.z
 	_mesh(parent, _box(Vector3(fw + 0.05, fh + 0.05, 0.03)), C.ink, Vector3(0, cy, 0.015))
 	_mesh(parent, _box(Vector3(fw, fh, 0.05)), C.gold_dim, Vector3(0, cy, 0.03))
-	var canvas := MeshInstance3D.new()
-	var q := QuadMesh.new()
-	q.size = Vector2(fw - 0.1, fh - 0.1)
-	canvas.mesh = q
-	var m := StandardMaterial3D.new()
-	# Unlit and a little dim: most hang where no light reaches, and a lit
-	# canvas in the dark was a black rectangle.
-	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	m.albedo_texture = Canvases.paint(kind, seed) if kind != "" else _canvas(seed)
-	m.albedo_color = Color(0.62, 0.6, 0.58)
-	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
-	canvas.material_override = m
-	canvas.position = Vector3(0, cy, 0.056)
-	parent.add_child(canvas)
-	_mesh(parent, _box(Vector3(0.16, 0.05, 0.012)), C.bone, Vector3(0, cy - fh / 2 - 0.08, 0.01))
+	var panels := 3 if size == TRIPTYCH else 1
+	# The border a frame leaves round the canvas, and between a triptych's.
+	var edge := clampf(fh * 0.2, 0.04, 0.1)
+	var cw := (fw - edge - (panels - 1) * 0.05) / panels
+	for i in panels:
+		var canvas := MeshInstance3D.new()
+		var q := QuadMesh.new()
+		q.size = Vector2(cw, fh - edge)
+		canvas.mesh = q
+		var m := StandardMaterial3D.new()
+		# Unlit and a little dim: most hang where no light reaches, and a lit
+		# canvas in the dark was a black rectangle.
+		m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		m.albedo_texture = Canvases.paint(kind, seed + i * 5) if kind != "" else _canvas(seed + i * 5)
+		m.albedo_color = Color(0.62, 0.6, 0.58)
+		m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+		canvas.material_override = m
+		canvas.position = Vector3((i - (panels - 1) / 2.0) * (cw + 0.05), cy, 0.056)
+		parent.add_child(canvas)
+	_mesh(parent, _box(Vector3(0.16 if fw > 0.5 else 0.08, 0.05 if fw > 0.5 else 0.03, 0.012)), C.bone, Vector3(0, cy - fh / 2 - (0.08 if fw > 0.5 else 0.05), 0.01))
 
 
 static func _canvas(seed: int, forced := -1) -> ImageTexture:

@@ -108,6 +108,7 @@ func _build(seed: int, width: int, height: int, shape: String) -> void:
 	_link_everything()
 	_clear_dead_ends()
 	_keep_galleries()
+	_unpinch_cases()
 
 	# The way in: floor against the outer wall.
 	for y in range(1, h - 1):
@@ -725,6 +726,23 @@ func _by_door(t: Vector2i, room: Rect2i) -> bool:
 	return false
 
 
+## A case never stands between two walls (left and right, or above and
+## below). _scatter_cover keeps to that, but the steps after it put walls
+## down too: once the plan is done the cases are looked at again, and one
+## caught between two walls goes (floor never shuts a way).
+func _unpinch_cases() -> void:
+	for y in range(1, h - 1):
+		for x in range(1, w - 1):
+			if at(x, y) == Tiles.COVER and pinched(x, y):
+				_put(x, y, Tiles.FLOOR)
+
+
+## Walls on two opposite sides of the tile: above and below, or left and right.
+func pinched(x: int, y: int) -> bool:
+	return (at(x, y - 1) == Tiles.WALL and at(x, y + 1) == Tiles.WALL) \
+		or (at(x - 1, y) == Tiles.WALL and at(x + 1, y) == Tiles.WALL)
+
+
 ## Cases to duck behind, mostly against walls and in corners.
 func _scatter_cover() -> void:
 	var candidates: Array[Vector2i] = []
@@ -745,9 +763,7 @@ func _scatter_cover() -> void:
 				if at(x + d.x, y + d.y) == Tiles.WALL:
 					walls += 1
 			# Never plug a corridor: walls on opposite sides mean the only way through.
-			var pinch := (at(x, y - 1) == Tiles.WALL and at(x, y + 1) == Tiles.WALL) \
-				or (at(x - 1, y) == Tiles.WALL and at(x + 1, y) == Tiles.WALL)
-			if pinch or walls > 2:
+			if pinched(x, y) or walls > 2:
 				continue
 			# Not in front of a door: a case there turns the door into a wall.
 			var at_door := false
