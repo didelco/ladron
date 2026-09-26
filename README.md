@@ -53,6 +53,12 @@ $B -b -P art/export.py -- vitrina anubis         # esas piezas
 $B -b -P art/export.py -- --godot tema_antiguo   # un fichero entero, y Godot reimporta
 ```
 
+**Claude dentro de Blender** (`art/claude_addon.py`, se instala igual): pestaña *Claude* de la barra
+lateral, un chat que va por Claude Code (la suscripción, sin clave de API). Con cada mensaje le llega
+un resumen de la escena (y, si se marca, una captura del visor); si hay que cambiar algo, contesta con
+código que se ejecuta ahí mismo como un solo paso (Ctrl+Z lo deshace; antes guarda una copia en la
+carpeta temporal). Si falla, *Pedir arreglo* le manda el error.
+
 Una pieza nueva: *Nueva pieza* en el fichero que le toque (o una colección nueva), modelar con el
 pie en z = 0 y el frente a -Y sobre el cursor, y exportar. Convenciones y nombres que busca el
 juego: `art/catalogo.py`. Los scripts de `art/characters/` y `art/temas/` son cómo se hizo la
