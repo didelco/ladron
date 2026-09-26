@@ -7,13 +7,14 @@ extends CanvasLayer
 ## The plan (or the museum in 3D) fills the screen: the left button draws
 ## with the tool in hand, the right one rubs out (what stands on a tile
 ## first, then the tile, back to floor). Along the bottom, as in a building
-## game: at the left, what to do (the 3D view, play it, undo, save, leave)
-## and the four kinds of tool (wall and floor, the characters, the objects,
-## the rooms); in the middle, the catalogue of the kind in hand — the
-## objects with a row of tabs to show one theme or all; at the right, the
-## size, the floor, the walls and the options (roll a museum, clear it, the
-## difficulty, the guards and the heist: what is stolen and its tale). Over
-## the plan, the name and what still stops it being played.
+## game: a compact block at the left, what to do (the 3D view, play it,
+## undo, save, leave) over the kinds of tool (wall and floor, the
+## characters, the objects, the rooms, the options); and the rest of the
+## bar the catalogue of the kind in hand — the objects with a row of tabs to
+## show one theme or all; the options, the building's size and look, rolling
+## a museum or clearing it, the difficulty, the guards and the heist (what
+## is stolen and its tale). Over the plan, the name and what still stops it
+## being played.
 ##
 ## Keyboard and pad: Tab (or the arrows off the edge) between the plan and
 ## the buttons; on the plan the arrows move a cursor, Space or A draws,
@@ -29,7 +30,7 @@ signal preview(map: MapFile)
 signal ui_sound(kind: String)
 
 ## The kinds of tool, left to right; all but wall and floor fill the catalogue.
-const KINDS := ["wall", "main", "objects", "rooms"]
+const KINDS := ["wall", "main", "objects", "rooms", "options"]
 ## The bottom bar's height.
 const BAR := 168
 ## Colours a piece to steal can be.
@@ -158,7 +159,7 @@ var _tool_buttons := {}
 var _template_buttons: Array[Button] = []
 var _kind_buttons := {}
 var _exit_button: Button
-var _options_button: Button
+var _kind_name: Label
 ## the catalogue along the bottom: its tabs (the objects' themes) and its row
 var _tabs: HBoxContainer
 var _catalogue: HBoxContainer
@@ -205,9 +206,7 @@ func _ready() -> void:
 			var what := arg.substr(9)
 			(func() -> void:
 				await get_tree().process_frame
-				if what == "options":
-					_open("options")
-				elif what in KINDS:
+				if what in KINDS:
 					_pick_kind(what)).call()
 
 
@@ -324,15 +323,15 @@ func _build() -> void:
 	left.add_child(kinds)
 	for k in KINDS:
 		var b := _button(Text.t("EDITOR_KIND_" + k.to_upper()), _pick_kind.bind(k), kinds, Hud.C.safe, false, k)
-		b.custom_minimum_size = Vector2(84, 78)
+		b.custom_minimum_size = Vector2(42, 42)
 		b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-		b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
 		b.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		b.add_theme_font_size_override("font_size", 7)
-		b.add_theme_constant_override("icon_max_width", 34)
-		b.text = Text.t("EDITOR_KIND_" + k.to_upper()).get_slice(" /", 0)
+		b.add_theme_constant_override("icon_max_width", 24)
+		b.tooltip_text = Text.t("EDITOR_KIND_" + k.to_upper())
+		b.text = ""
 		_kind_buttons[k] = b
+	# The name of the kind in hand, under its icons.
+	_kind_name = _label("", 8, Hud.BRASS, left, true)
 
 	row.add_child(VSeparator.new())
 
@@ -366,19 +365,6 @@ func _build() -> void:
 			scroll.scroll_horizontal += 80 * (1 if e.button_index == MOUSE_BUTTON_WHEEL_DOWN else -1)
 			scroll.accept_event())
 
-	row.add_child(VSeparator.new())
-
-	# Right: the building's size and look, and the options.
-	var right := GridContainer.new()
-	right.columns = 2
-	right.add_theme_constant_override("h_separation", 6)
-	right.add_theme_constant_override("v_separation", 6)
-	row.add_child(right)
-	_size_button = _setting_button(_step_size, right, "size")
-	_floor_button = _setting_button(_step_look.bind("floor"), right, _swatch("floor"))
-	_wall_button = _setting_button(_step_look.bind("wall"), right, _swatch("wall"))
-	_options_button = _setting_button(_open.bind("options"), right, "options")
-	_options_button.text = Text.t("EDITOR_KIND_OPTIONS")
 
 	# The panel of choices, floating over the bar.
 	_flyout = PanelContainer.new()
@@ -411,10 +397,10 @@ func _build() -> void:
 ## A small square button with a drawn icon, its name on hover.
 func _icon_button(icon: String, key: String, call: Callable, parent: Node, colour: Color) -> Button:
 	var b := _button("", call, parent, colour, false, icon)
-	b.custom_minimum_size = Vector2(48, 44)
+	b.custom_minimum_size = Vector2(42, 36)
 	b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	b.alignment = HORIZONTAL_ALIGNMENT_CENTER
-	b.add_theme_constant_override("icon_max_width", 26)
+	b.add_theme_constant_override("icon_max_width", 20)
 	b.tooltip_text = Text.t(key)
 	return b
 
@@ -422,7 +408,9 @@ func _icon_button(icon: String, key: String, call: Callable, parent: Node, colou
 ## One of the bar's settings at the right: its value is its text.
 func _setting_button(call: Callable, parent: Node, icon: Variant) -> Button:
 	var b := _button("", call, parent, Hud.C.safe, false, icon)
-	b.custom_minimum_size = Vector2(190, 62)
+	b.custom_minimum_size = Vector2(200, 38)
+	b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	b.add_theme_constant_override("icon_max_width", 20)
 	b.add_theme_font_size_override("font_size", 8)
 	return b
 
@@ -561,6 +549,11 @@ func _fill_catalogue() -> void:
 			c.queue_free()
 	_tool_buttons.clear()
 	_template_buttons.clear()
+	_size_button = null
+	_floor_button = null
+	_wall_button = null
+	_difficulty_button = null
+	_guards_button = null
 	_tabs.visible = kind == "objects"
 	match kind:
 		"wall":
@@ -587,6 +580,8 @@ func _fill_catalogue() -> void:
 				var id := t.replace(":", "_").replace("/", "_")
 				var name := Text.t("EDITOR_TOOL_CASE") if t == "case" else (Themes.label(t.substr(8)) if t.begins_with("exhibit:") else Text.t("EDITOR_TOOL_" + id.to_upper()))
 				_tool_buttons[t] = _item(load("res://assets/icons/objects/%s.png" % id), name, _choose_tool.bind("objects", t), _tool_colour(t))
+		"options":
+			_options()
 		"rooms":
 			for i in TEMPLATES.size():
 				_template_buttons.append(_item(_template_picture(i), Text.t(TEMPLATES[i].key), _choose_template.bind(i), Hud.C.gold))
@@ -614,41 +609,51 @@ func _pick_filter(id: String) -> void:
 	_refresh()
 
 
-## Fill the panel over the bar: "options", or "leave" (changes not saved);
-## "" shuts it, and the same one again too.
+## The options, across the catalogue in columns: the building (size,
+## floor, walls), the night (difficulty, guards), the whole map (roll one,
+## clear it), and the heist.
+func _options() -> void:
+	var col := _column()
+	_size_button = _setting_button(_step_size, col, "size")
+	_floor_button = _setting_button(_step_look.bind("floor"), col, _swatch("floor"))
+	_wall_button = _setting_button(_step_look.bind("wall"), col, _swatch("wall"))
+	col = _column()
+	_difficulty_button = _setting_button(_step_difficulty, col, "difficulty")
+	_guards_button = _setting_button(_step_guards, col, "guard")
+	col = _column()
+	_setting_button(_random, col, "random").text = Text.t("EDITOR_RANDOM")
+	_setting_button(_clear, col, "clear").text = Text.t("EDITOR_CLEAR")
+	_heist_panel()
+
+
+## A column in the catalogue.
+func _column(width := 0.0) -> VBoxContainer:
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", 4)
+	col.custom_minimum_size = Vector2(width, 0)
+	_catalogue.add_child(col)
+	return col
+
+
+## The panel over the bar, for leaving with changes not saved ("leave");
+## "" shuts it.
 func _open(k: String) -> void:
-	if k != "" and k == panel and k != "leave":
-		k = ""
 	panel = k
 	leaving = k == "leave"
 	for c in _sub.get_children():
 		_sub.remove_child(c)
 		c.queue_free()
-	_difficulty_button = null
-	_guards_button = null
 	_flyout.visible = k != ""
 	if k == "":
 		_refresh()
 		return
-	_sub_title.text = Text.t("EDITOR_UNSAVED" if k == "leave" else "EDITOR_KIND_OPTIONS")
-	match k:
-		"options":
-			_button(Text.t("EDITOR_RANDOM"), _random, _sub, Hud.C.safe, false, "random")
-			_button(Text.t("EDITOR_CLEAR"), _clear, _sub, Hud.C.alert, false, "clear")
-			_difficulty_button = _button("", _step_difficulty, _sub, Hud.C.safe, false, "difficulty")
-			_guards_button = _button("", _step_guards, _sub, Hud.C.safe, false, "guard")
-			_label(Text.t("EDITOR_KIND_HEIST"), 10, Hud.BRASS, _sub, true)
-			_heist_panel()
-		"leave":
-			_button(Text.t("EDITOR_SAVE_AND_EXIT"), _save_and_leave, _sub, Hud.C.green)
-			_button(Text.t("EDITOR_EXIT_NO_SAVE"), closed.emit, _sub, Hud.C.alert)
-			_button(Text.t("EDITOR_KEEP_EDITING"), _stay, _sub, Hud.C.dim)
+	_sub_title.text = Text.t("EDITOR_UNSAVED")
+	_button(Text.t("EDITOR_SAVE_AND_EXIT"), _save_and_leave, _sub, Hud.C.green)
+	_button(Text.t("EDITOR_EXIT_NO_SAVE"), closed.emit, _sub, Hud.C.alert)
+	_button(Text.t("EDITOR_KEEP_EDITING"), _stay, _sub, Hud.C.dim)
 	_refresh()
 	_place_flyout.call_deferred()
-	# The pad and the keyboard go on into the panel.
-	var first := _sub.find_children("*", "Button", true, false)
-	if not first.is_empty():
-		(first[0] as Control).grab_focus.call_deferred()
+	(_sub.get_child(0) as Control).grab_focus.call_deferred()
 
 
 ## What is stolen and why: the piece (a picture each, AL AZAR to let the
@@ -656,28 +661,34 @@ func _open(k: String) -> void:
 ## takes, and the tale told before the job.
 func _heist_panel() -> void:
 	# Where it is, the case, is picked with the characters (MAIN_TOOLS).
-	_label(Text.t("EDITOR_LOOT_WHAT"), 9, Hud.C.dim, _sub, true)
+	_catalogue.add_child(VSeparator.new())
+	var col := _column()
+	_label(Text.t("EDITOR_KIND_HEIST") + " · " + Text.t("EDITOR_LOOT_WHAT"), 8, Hud.BRASS, col, true)
 	var grid := GridContainer.new()
 	grid.columns = 6
 	grid.add_theme_constant_override("h_separation", 4)
 	grid.add_theme_constant_override("v_separation", 4)
-	_sub.add_child(grid)
+	col.add_child(grid)
 	var shapes: Array = [""] + MapFile.LOOT_SHAPES
 	for shape in shapes:
 		var b := _button("?" if shape == "" else "", _pick_loot.bind(shape), grid, PIECE, false, null if shape == "" else load("res://assets/icons/objects/loot_%s.png" % shape))
-		b.custom_minimum_size = Vector2(50, 50)
+		b.custom_minimum_size = Vector2(46, 46)
+		b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		b.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		b.add_theme_constant_override("icon_max_width", 42)
+		b.add_theme_constant_override("icon_max_width", 38)
 		b.tooltip_text = Text.t("EDITOR_LOOT_RANDOM" if shape == "" else "EDITOR_SHAPE_" + String(shape).to_upper())
 		b.set_meta("loot", shape)
-		b.mouse_entered.connect(func() -> void: _sub_title.text = b.tooltip_text)
 	if map.loot.is_empty():
-		_label(Text.t("EDITOR_LOOT_NONE"), 12, Hud.C.dim, _sub).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		var none := _label(Text.t("EDITOR_LOOT_NONE"), 12, Hud.C.dim, _column(260))
+		none.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		return
-	_label(Text.t("EDITOR_LOOT_COLOUR"), 9, Hud.C.dim, _sub, true)
-	var colours := HBoxContainer.new()
-	colours.add_theme_constant_override("separation", 4)
-	_sub.add_child(colours)
+	col = _column(230)
+	_label(Text.t("EDITOR_LOOT_COLOUR"), 8, Hud.C.dim, col, true)
+	var colours := GridContainer.new()
+	colours.columns = 5
+	colours.add_theme_constant_override("h_separation", 4)
+	colours.add_theme_constant_override("v_separation", 4)
+	col.add_child(colours)
 	for hex in LOOT_COLOURS:
 		var c := Color(hex)
 		var img := Image.create(12, 12, false, Image.FORMAT_RGBA8)
@@ -686,40 +697,44 @@ func _heist_panel() -> void:
 			map.loot.colour = hex
 			dirty = true
 			_refresh(), colours, c, false, ImageTexture.create_from_image(img))
-		b.custom_minimum_size = Vector2(28, 28)
-		b.add_theme_constant_override("icon_max_width", 16)
+		b.custom_minimum_size = Vector2(40, 26)
+		b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+		b.add_theme_constant_override("icon_max_width", 14)
 		b.set_meta("hex", hex)
-	var name_edit := _field(Text.t("EDITOR_LOOT_NAME"), map.loot.name, Text.t("EDITOR_SHAPE_" + String(map.loot.shape).to_upper()).to_lower())
+	var secs := _setting_button(_step_seconds, col, "difficulty")
+	secs.set_meta("seconds", true)
+	col = _column(240)
+	var name_edit := _field(Text.t("EDITOR_LOOT_NAME"), map.loot.name, Text.t("EDITOR_SHAPE_" + String(map.loot.shape).to_upper()).to_lower(), col)
 	name_edit.text_changed.connect(func(t: String) -> void:
 		map.loot.name = t
 		dirty = true)
-	var blurb := _field(Text.t("EDITOR_LOOT_BLURB"), map.loot.blurb, Text.t("EDITOR_LOOT_BLURB_HINT"))
+	var blurb := _field(Text.t("EDITOR_LOOT_BLURB"), map.loot.blurb, Text.t("EDITOR_LOOT_BLURB_HINT"), col)
 	blurb.text_changed.connect(func(t: String) -> void:
 		map.loot.blurb = t
 		dirty = true)
-	_button("", _step_seconds, _sub, Hud.C.safe, false, "difficulty").set_meta("seconds", true)
-	_label(Text.t("EDITOR_LOOT_STORY"), 9, Hud.C.dim, _sub, true)
+	col = _column(320)
+	_label(Text.t("EDITOR_LOOT_STORY"), 8, Hud.C.dim, col, true)
 	var story := TextEdit.new()
 	story.text = map.loot.story
 	story.placeholder_text = Text.t("EDITOR_LOOT_STORY_HINT")
 	story.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
-	story.custom_minimum_size = Vector2(300, 130)
-	story.add_theme_font_size_override("font_size", 14)
+	story.custom_minimum_size = Vector2(320, 104)
+	story.add_theme_font_size_override("font_size", 13)
 	story.text_changed.connect(func() -> void:
 		map.loot.story = story.text
 		dirty = true)
-	_sub.add_child(story)
+	col.add_child(story)
 
 
 ## A labelled line of text in the panel.
-func _field(title: String, text: String, hint: String) -> LineEdit:
-	_label(title, 9, Hud.C.dim, _sub, true)
+func _field(title: String, text: String, hint: String, parent: Node) -> LineEdit:
+	_label(title, 8, Hud.C.dim, parent, true)
 	var e := LineEdit.new()
 	e.text = text
 	e.placeholder_text = hint
 	e.max_length = 60
-	e.add_theme_font_size_override("font_size", 14)
-	_sub.add_child(e)
+	e.add_theme_font_size_override("font_size", 13)
+	parent.add_child(e)
 	return e
 
 
@@ -734,8 +749,8 @@ func _pick_loot(shape: String) -> void:
 	else:
 		map.loot.shape = shape
 	# Its colour row, name and tale appear, or go.
-	panel = ""
-	_open("options")
+	_fill_catalogue()
+	_refresh()
 
 
 func _step_seconds() -> void:
@@ -747,7 +762,7 @@ func _step_seconds() -> void:
 
 ## Over the bar, above the button that opened it, as tall as fits.
 func _place_flyout() -> void:
-	var from: Button = _exit_button if panel == "leave" else _options_button
+	var from: Button = _exit_button
 	if from == null:
 		return
 	var room := _ui.size.y - BAR - 30.0
@@ -756,7 +771,7 @@ func _place_flyout() -> void:
 	_flyout.size = Vector2.ZERO
 	var fs := _flyout.get_combined_minimum_size()
 	var r := from.get_global_rect()
-	var x := clampf(r.end.x - fs.x if panel != "leave" else r.position.x, 10.0, _ui.size.x - fs.x - 10.0)
+	var x := clampf(r.position.x, 10.0, _ui.size.x - fs.x - 10.0)
 	_flyout.position = Vector2(x, _ui.size.y - BAR - fs.y - 10.0)
 
 
@@ -1163,7 +1178,7 @@ func _refresh() -> void:
 	map.derive_outside()
 	for k in _kind_buttons:
 		_look(_kind_buttons[k], kind == k)
-	_look(_options_button, panel == "options")
+	_kind_name.text = Text.t("EDITOR_KIND_" + kind.to_upper())
 	for tab in _tabs.get_children():
 		_look(tab, tab.get_meta("filter", "") == filter)
 	for t in _tool_buttons:
@@ -1172,18 +1187,19 @@ func _refresh() -> void:
 		_look(_template_buttons[i], tool == "stamp" and template == i)
 	var dims := "%d×%d" % [map.w, map.h]
 	var named := SIZES.filter(func(k): return Museum.SIZES[k].w == map.w and Museum.SIZES[k].h == map.h)
-	# The building, always in the bar; the night's settings, with the options.
-	_size_button.text = Text.t("EDITOR_SIZE") % (Text.t(SIZE_NAMES[named[0]]) + " " + dims if not named.is_empty() else dims)
-	_floor_button.text = Text.t("EDITOR_FLOOR") % (Text.t("EDITOR_LOOK_%d" % map.floor_look) if map.floor_look >= 0 else Text.t("EDITOR_LOOK_AUTO"))
-	_wall_button.text = Text.t("EDITOR_WALLS") % (Text.t("EDITOR_WALL_LOOK_%d" % map.wall_look) if map.wall_look >= 0 else Text.t("EDITOR_LOOK_AUTO"))
-	_floor_button.icon = _swatch("floor")
-	_wall_button.icon = _swatch("wall")
+	# The options, when they are the catalogue.
+	if _size_button:
+		_size_button.text = Text.t("EDITOR_SIZE") % (Text.t(SIZE_NAMES[named[0]]) + " " + dims if not named.is_empty() else dims)
+		_floor_button.text = Text.t("EDITOR_FLOOR") % (Text.t("EDITOR_LOOK_%d" % map.floor_look) if map.floor_look >= 0 else Text.t("EDITOR_LOOK_AUTO"))
+		_wall_button.text = Text.t("EDITOR_WALLS") % (Text.t("EDITOR_WALL_LOOK_%d" % map.wall_look) if map.wall_look >= 0 else Text.t("EDITOR_LOOK_AUTO"))
+		_floor_button.icon = _swatch("floor")
+		_wall_button.icon = _swatch("wall")
 	if _difficulty_button:
 		_difficulty_button.text = Text.t("EDITOR_DIFFICULTY") % Text.t(DIFFICULTY_NAMES[map.difficulty])
 		_guards_button.text = Text.t("EDITOR_GUARDS") % (str(map.guard_count) if map.guard_count > 0 else Text.t("EDITOR_GUARDS_AUTO") % map.guards_tonight())
 	# The heist, in the options: the piece and the colour in hand lit, the seconds.
-	if panel == "options":
-		for b in _sub.find_children("*", "Button", true, false):
+	if kind == "options":
+		for b in _catalogue.find_children("*", "Button", true, false):
 			if b.has_meta("loot"):
 				_look(b, b.get_meta("loot") == map.loot.get("shape", ""))
 			elif b.has_meta("hex"):
