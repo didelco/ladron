@@ -10,10 +10,11 @@ extends CanvasLayer
 ## game: a compact block at the left, what to do (play it, undo, save,
 ## leave, the options) over the four kinds of tool
 ## (wall and floor, the characters, the objects, the rooms); and the rest of the
-## bar the catalogue of the kind in hand — the objects with a row of tabs to
-## show one theme or all; the options, the building's size and look, rolling
-## a museum or clearing it, the difficulty, the guards and the heist (what
-## is stolen and its tale). Over the plan, the name and what still stops it
+## bar the catalogue of the kind in hand — the objects with tabs to show one
+## theme or all, one type of piece or all; the options, the building's size
+## and look, rolling a museum or clearing it, the difficulty. Saving asks
+## for the map's name, what is stolen and its tale. Over the plan, the name
+## and what still stops it
 ## being played, and in the top right corner the switch between the plan
 ## and the museum in 3D.
 ##
@@ -120,8 +121,9 @@ const DIFFICULTY_NAMES := {"easy": "MENU_DIFFICULTY_EASY", "medium": "MENU_DIFFI
 ## The options, a page each: a list down the left of the catalogue, and the
 ## page's choices to its right.
 ## (The guards are placed with the characters: how many there are is theirs.)
-const OPTION_PAGES := ["size", "floor", "wall", "difficulty", "map", "loot", "story"]
-const OPTION_ICONS := {"size": "size", "floor": "rooms", "wall": "wall", "difficulty": "difficulty", "map": "random", "loot": "piece", "story": "heist"}
+## (What is stolen, and its tale, are written when saving: _save_panel.)
+const OPTION_PAGES := ["size", "floor", "wall", "difficulty", "map"]
+const OPTION_ICONS := {"size": "size", "floor": "rooms", "wall": "wall", "difficulty": "difficulty", "map": "random"}
 const PROP_ORDER := ["bust", "bin", "panel", "armour"]
 const UNDO_STEPS := 60
 
@@ -160,13 +162,15 @@ var leaving := false
 
 var _ui: Control
 var _plan: Control
-var _name: LineEdit
+## the map's name at the top (written in the save panel)
+var _name: Label
 var _status: Label
 var _hint: Label
 var _tool_buttons := {}
 var _template_buttons: Array[Button] = []
 var _kind_buttons := {}
 var _exit_button: Button
+var _save_button: Button
 var _kind_name: Label
 ## the catalogue along the bottom: its tabs (the objects' themes) and its row
 var _tabs: HBoxContainer
@@ -214,6 +218,10 @@ func _ready() -> void:
 				await get_tree().process_frame
 				if what in KINDS:
 					_pick_kind(what)
+				elif what == "save":
+					if "--editor-loot" in OS.get_cmdline_user_args():
+						map.loot = {"shape": "crown", "colour": LOOT_COLOURS[0], "name": "", "blurb": "", "story": "", "seconds": 3.0}
+					_open("save")
 				elif what in OPTION_PAGES:
 					# With a piece chosen, to see its page whole.
 					if "--editor-loot" in OS.get_cmdline_user_args():
@@ -285,15 +293,10 @@ func _build() -> void:
 	top.add_child(line)
 	var title := _label(Text.t("EDITOR_TITLE"), 16, Hud.BRASS, line, true)
 	title.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	_name = LineEdit.new()
-	_name.custom_minimum_size = Vector2(320, 0)
-	_name.max_length = 32
-	_name.placeholder_text = Text.t("EDITOR_NAME")
-	_name.add_theme_font_size_override("font_size", 16)
-	_name.text_changed.connect(func(t: String) -> void:
-		map.name = t
-		dirty = true)
-	line.add_child(_name)
+	_name = _label("", 16, Hud.CREAM, line)
+	_name.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_name.custom_minimum_size = Vector2(220, 0)
+
 	_status = _label("", 14, Hud.C.alert, line)
 	_status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_status.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -334,7 +337,7 @@ func _build() -> void:
 	left.add_child(acts)
 	_icon_button("play", "EDITOR_PLAY", _ask_play, acts, Hud.C.green)
 	_icon_button("undo", "EDITOR_UNDO", _undo, acts, Hud.C.dim)
-	_icon_button("save", "EDITOR_SAVE", _save, acts, Hud.C.green)
+	_save_button = _icon_button("save", "EDITOR_SAVE", _open.bind("save"), acts, Hud.C.green)
 	_exit_button = _icon_button("exit", "EDITOR_EXIT", _leave, acts, Hud.C.dim)
 	var kinds := HBoxContainer.new()
 	kinds.add_theme_constant_override("separation", 6)
@@ -679,10 +682,6 @@ func _options() -> void:
 		"map":
 			_choice(Text.t("EDITOR_RANDOM"), "", _random, null, "random")
 			_choice(Text.t("EDITOR_CLEAR"), "", _clear, null, "clear")
-		"loot":
-			_loot_page()
-		"story":
-			_story_page()
 
 
 ## One card of an options page: in force, it is lit (meta "choice" against
@@ -713,16 +712,16 @@ func _open_page(page: String) -> void:
 
 
 ## A column in the catalogue.
-func _column(width := 0.0) -> VBoxContainer:
+func _column(width := 0.0, parent: Node = null) -> VBoxContainer:
 	var col := VBoxContainer.new()
 	col.add_theme_constant_override("separation", 4)
 	col.custom_minimum_size = Vector2(width, 0)
-	_catalogue.add_child(col)
+	(parent if parent else _catalogue).add_child(col)
 	return col
 
 
-## The panel over the bar, for leaving with changes not saved ("leave");
-## "" shuts it.
+## The panel over the plan: saving ("save": the name, what is stolen and
+## its tale), or leaving with changes not saved ("leave"); "" shuts it.
 func _open(k: String) -> void:
 	panel = k
 	leaving = k == "leave"
@@ -733,13 +732,40 @@ func _open(k: String) -> void:
 	if k == "":
 		_refresh()
 		return
-	_sub_title.text = Text.t("EDITOR_UNSAVED")
-	_button(Text.t("EDITOR_SAVE_AND_EXIT"), _save_and_leave, _sub, Hud.C.green)
-	_button(Text.t("EDITOR_EXIT_NO_SAVE"), closed.emit, _sub, Hud.C.alert)
-	_button(Text.t("EDITOR_KEEP_EDITING"), _stay, _sub, Hud.C.dim)
+	if k == "save":
+		_save_panel()
+	else:
+		_sub_title.text = Text.t("EDITOR_UNSAVED")
+		_button(Text.t("EDITOR_SAVE_AND_EXIT"), _save_and_leave, _sub, Hud.C.green)
+		_button(Text.t("EDITOR_EXIT_NO_SAVE"), closed.emit, _sub, Hud.C.alert)
+		_button(Text.t("EDITOR_KEEP_EDITING"), _stay, _sub, Hud.C.dim)
 	_refresh()
 	_place_flyout.call_deferred()
 	(_sub.get_child(0) as Control).grab_focus.call_deferred()
+
+
+## Saving: the map's name, what is stolen (the piece, its colour, how long
+## its case takes) and its tale; then save it, or go back to it.
+func _save_panel() -> void:
+	_sub_title.text = Text.t("EDITOR_SAVE")
+	var name_edit := _field(Text.t("EDITOR_NAME").to_upper(), map.name, Text.t("EDITOR_UNTITLED"), _sub)
+	name_edit.max_length = 32
+	name_edit.text_changed.connect(func(t: String) -> void:
+		map.name = t
+		_name.text = t
+		dirty = true)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 14)
+	_sub.add_child(row)
+	_loot_page(row)
+	_story_page(_sub)
+	var buttons := HBoxContainer.new()
+	buttons.add_theme_constant_override("separation", 8)
+	_sub.add_child(buttons)
+	_button(Text.t("EDITOR_SAVE"), func() -> void:
+		_save()
+		_open(""), buttons, Hud.C.green, false, "save")
+	_button(Text.t("EDITOR_KEEP_EDITING"), _stay, buttons, Hud.C.dim)
 
 
 ## What is stolen and why: the piece (a picture each, AL AZAR to let the
@@ -747,8 +773,8 @@ func _open(k: String) -> void:
 ## takes, and the tale told before the job.
 ## What is stolen: the piece (AL AZAR leaves it to the game), its colour,
 ## and how long its case takes.
-func _loot_page() -> void:
-	var col := _column()
+func _loot_page(parent: Node) -> void:
+	var col := _column(0.0, parent)
 	_label(Text.t("EDITOR_LOOT_WHAT"), 8, Hud.BRASS, col, true)
 	var grid := GridContainer.new()
 	grid.columns = 6
@@ -765,9 +791,9 @@ func _loot_page() -> void:
 		b.tooltip_text = Text.t("EDITOR_LOOT_RANDOM" if shape == "" else "EDITOR_SHAPE_" + String(shape).to_upper())
 		b.set_meta("loot", shape)
 	if map.loot.is_empty():
-		_nothing_chosen()
+		_nothing_chosen(parent)
 		return
-	col = _column(230)
+	col = _column(230, parent)
 	_label(Text.t("EDITOR_LOOT_COLOUR"), 8, Hud.C.dim, col, true)
 	var colours := GridContainer.new()
 	colours.columns = 5
@@ -791,11 +817,13 @@ func _loot_page() -> void:
 
 
 ## Its tale: the piece's name, a line on it, and the story told before the job.
-func _story_page() -> void:
+func _story_page(parent: Node) -> void:
 	if map.loot.is_empty():
-		_nothing_chosen()
 		return
-	var col := _column(260)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 14)
+	parent.add_child(row)
+	var col := _column(240, row)
 	var name_edit := _field(Text.t("EDITOR_LOOT_NAME"), map.loot.name, Text.t("EDITOR_SHAPE_" + String(map.loot.shape).to_upper()).to_lower(), col)
 	name_edit.text_changed.connect(func(t: String) -> void:
 		map.loot.name = t
@@ -804,13 +832,13 @@ func _story_page() -> void:
 	blurb.text_changed.connect(func(t: String) -> void:
 		map.loot.blurb = t
 		dirty = true)
-	col = _column(460)
+	col = _column(360, row)
 	_label(Text.t("EDITOR_LOOT_STORY"), 8, Hud.C.dim, col, true)
 	var story := TextEdit.new()
 	story.text = map.loot.story
 	story.placeholder_text = Text.t("EDITOR_LOOT_STORY_HINT")
 	story.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
-	story.custom_minimum_size = Vector2(460, 104)
+	story.custom_minimum_size = Vector2(360, 120)
 	story.add_theme_font_size_override("font_size", 13)
 	story.text_changed.connect(func() -> void:
 		map.loot.story = story.text
@@ -819,8 +847,8 @@ func _story_page() -> void:
 
 
 ## No piece chosen: the game picks one, and its tale with it.
-func _nothing_chosen() -> void:
-	var none := _label(Text.t("EDITOR_LOOT_NONE"), 12, Hud.C.dim, _column(300))
+func _nothing_chosen(parent: Node) -> void:
+	var none := _label(Text.t("EDITOR_LOOT_NONE"), 12, Hud.C.dim, _column(240, parent))
 	none.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 
 
@@ -847,8 +875,7 @@ func _pick_loot(shape: String) -> void:
 	else:
 		map.loot.shape = shape
 	# Its colour row, name and tale appear, or go.
-	_fill_catalogue()
-	_refresh()
+	_open("save")
 
 
 func _step_seconds() -> void:
@@ -860,7 +887,7 @@ func _step_seconds() -> void:
 
 ## Over the bar, above the button that opened it, as tall as fits.
 func _place_flyout() -> void:
-	var from: Button = _exit_button
+	var from: Button = _save_button if panel == "save" else _exit_button
 	if from == null:
 		return
 	var room := _ui.size.y - BAR - 30.0
@@ -999,10 +1026,10 @@ func _undo() -> void:
 
 
 func _save() -> void:
-	map.name = _name.text.strip_edges()
+	map.name = map.name.strip_edges()
 	if map.name == "":
 		map.name = Text.t("EDITOR_UNTITLED")
-		_name.text = map.name
+	_name.text = map.name
 	if map.save() != OK:
 		_say(Text.t("EDITOR_SAVE_FAILED"), Hud.C.alert)
 		return
@@ -1283,8 +1310,8 @@ func _refresh() -> void:
 			elif b.has_meta("setting"):
 				_look(b, _setting_value(b.get_meta("setting")) == b.get_meta("choice"))
 	# What is stolen: the piece and the colour in hand lit, the seconds.
-	if kind == "options":
-		for b in _catalogue.find_children("*", "Button", true, false):
+	if panel == "save":
+		for b in _sub.find_children("*", "Button", true, false):
 			if b.has_meta("loot"):
 				_look(b, b.get_meta("loot") == map.loot.get("shape", ""))
 			elif b.has_meta("hex"):
