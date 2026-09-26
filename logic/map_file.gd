@@ -61,7 +61,8 @@ var exit := NONE
 ## shape), colour (hex), name, blurb, story, seconds to force the case.
 ## Empty: the job picks a piece, as in a generated museum.
 var loot := {}
-## what stands on a case, where chosen by hand: tile to a MuseumView.EXHIBITS
+## what stands on a case, where chosen by hand: tile to a piece (Themes.is_piece:
+## one of MuseumView.EXHIBITS or a theme's model)
 var exhibits := {}
 ## where each guard starts, in order
 var guards: Array[Vector2i] = []
@@ -606,7 +607,7 @@ static func from_dict(d: Variant) -> MapFile:
 		m.loot = {"shape": String(l.shape), "colour": String(l.get("colour", "#f0c46a")), "name": String(l.get("name", "")),
 			"blurb": String(l.get("blurb", "")), "story": String(l.get("story", "")), "seconds": clampf(float(l.get("seconds", 3.0)), 0.5, 10.0)}
 	for e in d.get("exhibits", []):
-		if e is Dictionary and MuseumView.EXHIBITS.has(e.get("kind", "")):
+		if e is Dictionary and Themes.is_piece(String(e.get("kind", ""))):
 			var t: Vector2i = pair.call(e.get("at"))
 			if m.inside(t) and m.at(t) == Tiles.COVER:
 				m.exhibits[t] = String(e.kind)

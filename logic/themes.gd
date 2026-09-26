@@ -120,3 +120,62 @@ static func painting(theme: String, a: float) -> String:
 		for s in ALL.values():
 			kinds.append_array(s.paintings)
 	return kinds[mini(int(a * kinds.size()), kinds.size() - 1)]
+
+
+# --- The pieces one by one (the editor's catalogue) ------------------------------
+
+## What the thieves knock over, and the big pieces, by theme ("" for none).
+const PROP_THEMES := {"bust": "antiguo", "armour": "edad_media", "bin": "", "panel": ""}
+
+
+## Every piece there is, in order, as the editor's tools name them —
+## "exhibit:<MuseumView's own>", "exhibit:<model path>", "big:<kind>",
+## "prop:<kind>" — each with the themes it belongs to: [[tool, [themes]]].
+static func catalogue() -> Array:
+	var out: Array = [["case", []]]
+	var at := {}
+	for id in ALL:
+		var s: Dictionary = ALL[id]
+		for where in ["case", "plinth", "floor"]:
+			for piece in s[where]:
+				var tool := "exhibit:" + String(piece).trim_prefix("@")
+				if at.has(tool):
+					(out[at[tool]][1] as Array).append(id)
+				else:
+					at[tool] = out.size()
+					out.append([tool, [id]])
+	for kind in MapGen.BIG:
+		var theme := for_big(kind)
+		out.append(["big:" + kind, [theme] if theme != "" else []])
+	for kind in PROP_THEMES:
+		out.append(["prop:" + kind, [PROP_THEMES[kind]] if PROP_THEMES[kind] != "" else []])
+	return out
+
+
+## Whether a map may stand this on a case: one of MuseumView's own pieces or
+## a theme's model.
+static func is_piece(kind: String) -> bool:
+	if MuseumView.EXHIBITS.has(kind):
+		return true
+	for s in ALL.values():
+		for where in ["case", "plinth", "floor"]:
+			if (s[where] as Array).has(kind):
+				return true
+	return false
+
+
+## Where a theme's model stands: "case", "plinth" or "floor".
+static func where_of(path: String) -> String:
+	for s in ALL.values():
+		for where in ["case", "plinth", "floor"]:
+			if (s[where] as Array).has(path):
+				return where
+	return "case"
+
+
+## A piece's name on screen: MuseumView's own have theirs in the editor's
+## words, a model's is PIECE_<its file name>.
+static func label(kind: String) -> String:
+	if "/" in kind:
+		return Text.t("PIECE_" + kind.get_file().to_upper())
+	return Text.t("EDITOR_TOOL_EXHIBIT_" + kind.to_upper())

@@ -300,8 +300,8 @@ func _exhibits() -> void:
 ## A piece of a theme in its place: in a glass case, on a plinth, or
 ## standing on the slab. One of MuseumView's own ("@...") has its own stand.
 func _themed(piece: Node3D, where: String, what: String, t: Vector2i, yaw: float) -> void:
-	if what.begins_with("@"):
-		_exhibit(piece, what.substr(1), t, yaw)
+	if what.begins_with("@") or not "/" in what:
+		_exhibit(piece, what.trim_prefix("@"), t, yaw)
 		return
 	var model := asset(what)
 	# Turned to a quarter, a little off square: the front is seen from most sides.
@@ -346,6 +346,7 @@ func _exhibit(piece: Node3D, what: String, t: Vector2i, yaw: float) -> void:
 			var p := _pivot(piece, Vector3.ZERO, yaw)
 			_plinth(p, 0.3, 0.98)
 			_pivot(p, Vector3(0, 0.3, 0)).add_child(asset("oso"))
+		_ when "/" in what: _themed(piece, Themes.where_of(what), what, t, yaw)
 		_: _vitrine(piece, null)
 
 

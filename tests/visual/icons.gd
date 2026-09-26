@@ -32,6 +32,12 @@ func _ready() -> void:
 	items["exhibit_meteorite"] = func(p: Node3D) -> void: p.add_child(view._rock())
 	items["exhibit_skull"] = func(p: Node3D) -> void: view._skull(p, 0.5)
 	items["exhibit_lego_skull"] = func(p: Node3D) -> void: view._skull(p, 0.5, true)
+	# The themes' models, on their own (MapEditor's catalogue).
+	for entry in Themes.catalogue():
+		var tool: String = entry[0]
+		var what := tool.trim_prefix("exhibit:")
+		if "/" in what:
+			items["exhibit_" + what.replace("/", "_")] = func(p: Node3D) -> void: p.add_child(MuseumView.asset(what))
 	# The pieces to steal, in the gold the editor starts them in.
 	for shape in ["teeth", "duck", "sock", "toast", "crown", "rock", "mask", "clock", "egg", "idol", "gem"]:
 		items["loot_" + shape] = func(p: Node3D) -> void: p.add_child(LootModels.build(shape, Color("#f0c46a")))
