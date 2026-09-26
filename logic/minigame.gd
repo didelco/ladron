@@ -89,10 +89,10 @@ const PUSH_MAX := 30.0
 const NUDGE := 0.9
 const NUDGE_S := 0.7
 ## By level: how quickly it tips over, and how much harder it gets with
-## every second on one foot (a share of what it was at the start: 0.01 is
-## 1.6 times as hard after a minute).
+## every second on one foot (a share of what it was at the start: 0.015 is
+## 1.9 times as hard after a minute).
 const TOPPLE_LEVEL := [0.8, 1.0, 1.2]
-const TIRE_LEVEL := [0.007, 0.01, 0.013]
+const TIRE_LEVEL := [0.01, 0.015, 0.02]
 ## At full pressure (the guards on top of it), how much harder it tips and
 ## how much harder the nudges come, as a share of what they are when calm.
 const PRESSURE_TOPPLE := 1.2
