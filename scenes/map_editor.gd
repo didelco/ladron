@@ -114,6 +114,10 @@ const DIFFICULTIES := ["easy", "medium", "hard"]
 ## Their names on screen, as the generative menu has them.
 const SIZE_NAMES := {"small": "MENU_SIZE_SMALL", "medium": "MENU_SIZE_MEDIUM", "large": "MENU_SIZE_LARGE"}
 const DIFFICULTY_NAMES := {"easy": "MENU_DIFFICULTY_EASY", "medium": "MENU_DIFFICULTY_MEDIUM", "hard": "MENU_DIFFICULTY_HARD"}
+## The options, a page each: a list down the left of the catalogue, and the
+## page's choices to its right.
+const OPTION_PAGES := ["size", "floor", "wall", "difficulty", "guards", "map", "heist"]
+const OPTION_ICONS := {"size": "size", "floor": "rooms", "wall": "wall", "difficulty": "difficulty", "guards": "guard", "map": "random", "heist": "piece"}
 const PROP_ORDER := ["bust", "bin", "panel", "armour"]
 const UNDO_STEPS := 60
 
@@ -170,11 +174,8 @@ var _flyout: PanelContainer
 var _flyout_scroll: ScrollContainer
 var _sub_title: Label
 var _sub: VBoxContainer
-var _size_button: Button
-var _difficulty_button: Button
-var _floor_button: Button
-var _wall_button: Button
-var _guards_button: Button
+## the options' page open (OPTION_PAGES)
+var option_page := "size"
 ## the 3D view: its bar, the camera flying round, and how it is held
 var _back: ColorRect
 var _view_button: Button
@@ -207,7 +208,10 @@ func _ready() -> void:
 			(func() -> void:
 				await get_tree().process_frame
 				if what in KINDS:
-					_pick_kind(what)).call()
+					_pick_kind(what)
+				elif what in OPTION_PAGES:
+					_pick_kind("options")
+					_open_page(what)).call()
 
 
 ## Start on a map (a copy of it: nothing changes until it is saved).
@@ -498,8 +502,14 @@ func _template_picture(i: int) -> ImageTexture:
 
 ## The floor's or the walls' colours as they are now: two tones of stone in
 ## a check, or the wallpaper's stripes over its wainscot.
-func _swatch(part: String) -> ImageTexture:
-	var look: Dictionary = map.palette() if map else {}
+## which: one of the looks (MuseumView.looks), -1 the seed's own, or -2
+## (the default) whatever the map has now.
+func _swatch(part: String, which := -2) -> ImageTexture:
+	var look: Dictionary = {}
+	if which >= 0:
+		look = MuseumView.looks()[which]
+	elif which == -2 and map:
+		look = map.palette()
 	if look.is_empty():
 		look = MuseumView.THEMES[posmod(map.seed if map else 0, MuseumView.THEMES.size())]
 	var img := Image.create(16, 16, false, Image.FORMAT_RGBA8)
@@ -549,11 +559,6 @@ func _fill_catalogue() -> void:
 			c.queue_free()
 	_tool_buttons.clear()
 	_template_buttons.clear()
-	_size_button = null
-	_floor_button = null
-	_wall_button = null
-	_difficulty_button = null
-	_guards_button = null
 	_tabs.visible = kind == "objects"
 	match kind:
 		"wall":
@@ -609,21 +614,72 @@ func _pick_filter(id: String) -> void:
 	_refresh()
 
 
-## The options, across the catalogue in columns: the building (size,
-## floor, walls), the night (difficulty, guards), the whole map (roll one,
-## clear it), and the heist.
+## The options: the pages down the left, and the one open to their right,
+## its choices as cards, the one in force lit.
 func _options() -> void:
-	var col := _column()
-	_size_button = _setting_button(_step_size, col, "size")
-	_floor_button = _setting_button(_step_look.bind("floor"), col, _swatch("floor"))
-	_wall_button = _setting_button(_step_look.bind("wall"), col, _swatch("wall"))
-	col = _column()
-	_difficulty_button = _setting_button(_step_difficulty, col, "difficulty")
-	_guards_button = _setting_button(_step_guards, col, "guard")
-	col = _column()
-	_setting_button(_random, col, "random").text = Text.t("EDITOR_RANDOM")
-	_setting_button(_clear, col, "clear").text = Text.t("EDITOR_CLEAR")
-	_heist_panel()
+	var list := GridContainer.new()
+	list.columns = 2
+	list.add_theme_constant_override("h_separation", 4)
+	list.add_theme_constant_override("v_separation", 4)
+	_catalogue.add_child(list)
+	for page in OPTION_PAGES:
+		var b := _button(Text.t("EDITOR_PAGE_" + page.to_upper()), _open_page.bind(page), list, Hud.C.gold, false, OPTION_ICONS[page])
+		b.custom_minimum_size = Vector2(150, 30)
+		b.add_theme_constant_override("icon_max_width", 16)
+		b.add_theme_font_size_override("font_size", 8)
+		b.set_meta("page", page)
+	_catalogue.add_child(VSeparator.new())
+	match option_page:
+		"size":
+			for k in SIZES:
+				var dims: Dictionary = Museum.SIZES[k]
+				_choice(Text.t(SIZE_NAMES[k]) + "\n%d×%d" % [dims.w, dims.h], "size", _set_size.bind(k), k, "size")
+		"floor", "wall":
+			_choice(Text.t("EDITOR_LOOK_AUTO"), option_page, _set_look.bind(option_page, -1), -1, _swatch(option_page, -1))
+			for i in MuseumView.looks().size():
+				var key := ("EDITOR_LOOK_%d" if option_page == "floor" else "EDITOR_WALL_LOOK_%d") % i
+				_choice(Text.t(key), option_page, _set_look.bind(option_page, i), i, _swatch(option_page, i))
+		"difficulty":
+			for k in DIFFICULTIES:
+				_choice(Text.t(DIFFICULTY_NAMES[k]), "difficulty", _set_difficulty.bind(k), k, "difficulty")
+		"guards":
+			_choice(Text.t("EDITOR_GUARDS_AUTO") % map.guards_tonight(), "guards", _set_guards.bind(0), 0, "guard")
+			# Never fewer than the guards placed by hand.
+			for n in range(maxi(1, map.guards.size()), MapFile.MAX_GUARDS + 1):
+				_choice(str(n), "guards", _set_guards.bind(n), n, "guard")
+		"map":
+			_choice(Text.t("EDITOR_RANDOM"), "", _random, null, "random")
+			_choice(Text.t("EDITOR_CLEAR"), "", _clear, null, "clear")
+		"heist":
+			_heist_panel()
+
+
+## One card of an options page: in force, it is lit (meta "choice" against
+## what the map has for `setting`).
+func _choice(text: String, setting: String, call: Callable, value: Variant, icon: Variant) -> Button:
+	var b := _item(icon, text, call, Hud.C.safe)
+	b.custom_minimum_size = Vector2(110, 100)
+	if setting != "":
+		b.set_meta("setting", setting)
+		b.set_meta("choice", value)
+	return b
+
+
+## What the map has for one of the options' settings, to light its card.
+func _setting_value(setting: String) -> Variant:
+	match setting:
+		"size": return map.size_name()
+		"floor": return map.floor_look
+		"wall": return map.wall_look
+		"difficulty": return map.difficulty
+		"guards": return map.guard_count
+	return null
+
+
+func _open_page(page: String) -> void:
+	option_page = page
+	_fill_catalogue()
+	_refresh()
 
 
 ## A column in the catalogue.
@@ -823,9 +879,10 @@ func _stamp_corner(at: Vector2i) -> Vector2i:
 	return at - Vector2i(String(rows[0]).length() / 2, rows.size() / 2)
 
 
-func _step_size() -> void:
-	var k := SIZES.find(map.size_name()) + 1
-	var dims: Dictionary = Museum.SIZES[SIZES[k % SIZES.size()]]
+func _set_size(k: String) -> void:
+	if k == map.size_name():
+		return
+	var dims: Dictionary = Museum.SIZES[k]
 	_remember()
 	map = map.resized(dims.w, dims.h)
 	hover = MapFile.NONE
@@ -833,31 +890,26 @@ func _step_size() -> void:
 	_rebuild()
 
 
-## The floor or the walls: AUTO (the seed's), then each look in turn.
-func _step_look(part: String) -> void:
-	var n := MuseumView.looks().size()
+## The floor's or the walls' look: -1 AUTO (the seed's), or one of the looks.
+func _set_look(part: String, i: int) -> void:
 	if part == "floor":
-		map.floor_look = (map.floor_look + 2) % (n + 1) - 1
+		map.floor_look = i
 	else:
-		map.wall_look = (map.wall_look + 2) % (n + 1) - 1
+		map.wall_look = i
 	dirty = true
 	_refresh()
 	_rebuild()
 
 
-func _step_difficulty() -> void:
-	map.difficulty = DIFFICULTIES[(DIFFICULTIES.find(map.difficulty) + 1) % DIFFICULTIES.size()]
+func _set_difficulty(k: String) -> void:
+	map.difficulty = k
 	dirty = true
 	_refresh()
 
 
-## AUTO, then from one more than the guards placed (fewer would leave some
-## out) up to the most there can be.
-func _step_guards() -> void:
-	var next := map.guard_count + 1
-	if next <= map.guards.size():
-		next = map.guards.size() + 1
-	map.guard_count = next if next <= MapFile.MAX_GUARDS else 0
+## 0 AUTO, or how many guards (never fewer than those placed by hand).
+func _set_guards(n: int) -> void:
+	map.guard_count = n
 	dirty = true
 	_refresh()
 
@@ -1185,18 +1237,13 @@ func _refresh() -> void:
 		_look(_tool_buttons[t], tool == t)
 	for i in _template_buttons.size():
 		_look(_template_buttons[i], tool == "stamp" and template == i)
-	var dims := "%d×%d" % [map.w, map.h]
-	var named := SIZES.filter(func(k): return Museum.SIZES[k].w == map.w and Museum.SIZES[k].h == map.h)
-	# The options, when they are the catalogue.
-	if _size_button:
-		_size_button.text = Text.t("EDITOR_SIZE") % (Text.t(SIZE_NAMES[named[0]]) + " " + dims if not named.is_empty() else dims)
-		_floor_button.text = Text.t("EDITOR_FLOOR") % (Text.t("EDITOR_LOOK_%d" % map.floor_look) if map.floor_look >= 0 else Text.t("EDITOR_LOOK_AUTO"))
-		_wall_button.text = Text.t("EDITOR_WALLS") % (Text.t("EDITOR_WALL_LOOK_%d" % map.wall_look) if map.wall_look >= 0 else Text.t("EDITOR_LOOK_AUTO"))
-		_floor_button.icon = _swatch("floor")
-		_wall_button.icon = _swatch("wall")
-	if _difficulty_button:
-		_difficulty_button.text = Text.t("EDITOR_DIFFICULTY") % Text.t(DIFFICULTY_NAMES[map.difficulty])
-		_guards_button.text = Text.t("EDITOR_GUARDS") % (str(map.guard_count) if map.guard_count > 0 else Text.t("EDITOR_GUARDS_AUTO") % map.guards_tonight())
+	# The options: the page open lit, and the card in force.
+	if kind == "options":
+		for b in _catalogue.find_children("*", "Button", true, false):
+			if b.has_meta("page"):
+				_look(b, b.get_meta("page") == option_page)
+			elif b.has_meta("setting"):
+				_look(b, _setting_value(b.get_meta("setting")) == b.get_meta("choice"))
 	# The heist, in the options: the piece and the colour in hand lit, the seconds.
 	if kind == "options":
 		for b in _catalogue.find_children("*", "Button", true, false):
