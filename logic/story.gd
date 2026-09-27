@@ -40,7 +40,7 @@ const LEVELS := [
 		"loot": {"name": "NIGHT_06_NAME", "blurb": "NIGHT_06_BLURB", "verb": "NIGHT_06_VERB", "seconds": 3.0, "colour": "#d4a15a", "shape": "toast",
 			"story": "NIGHT_06_TALE"}},
 	{"size": "small", "shape": "notched", "guards": 1, "view": 0.65, "hearing": 0.85, "speed": 0.55, "calm_after": 7.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "",
-		"loot": {"name": "NIGHT_07_NAME", "blurb": "NIGHT_07_BLURB", "verb": "NIGHT_07_VERB", "seconds": 3.0, "colour": "#f783ac", "shape": "rock",
+		"loot": {"name": "NIGHT_07_NAME", "blurb": "NIGHT_07_BLURB", "verb": "NIGHT_07_VERB", "seconds": 3.0, "colour": "#f783ac", "shape": "gum",
 			"story": "NIGHT_07_TALE"}},
 	{"size": "small", "shape": "rect", "guards": 1, "post": "case", "view": 0.7, "hearing": 0.85, "speed": 0.55, "calm_after": 7.0, "alarms": 3, "props": true, "lights": false, "case_alarm": false, "teach": "props",
 		"loot": {"name": "NIGHT_08_NAME", "blurb": "NIGHT_08_BLURB", "verb": "NIGHT_08_VERB", "seconds": 3.5, "colour": "#7bc043", "shape": "crown",

@@ -306,7 +306,6 @@ GAME_HOW_STEADY,{move} DENTRO DEL ARO
 GAME_HOW_WIRES,{move} COMO LA FLECHA
 GAME_HOW_BALANCE,{lr} QUE NO SE CAIGA
 GAME_LET_GO,{cancel} SOLTAR
-GAME_GET_DOWN,{ud} BAJAR DEL PEDESTAL
 KEY_STICK,STICK
 KEY_SPACE,ESPACIO
 KEY_ENTER,ENTER
@@ -630,6 +629,7 @@ EDITOR_SHAPE_SOCK,CALCETIN
 EDITOR_SHAPE_TOAST,TOSTADA
 EDITOR_SHAPE_CROWN,CORONA
 EDITOR_SHAPE_ROCK,QUESO LUNAR
+EDITOR_SHAPE_GUM,CHICLE
 EDITOR_SHAPE_MASK,MASCARA
 EDITOR_SHAPE_CLOCK,DESPERTADOR
 EDITOR_SHAPE_EGG,HUEVO
@@ -723,6 +723,14 @@ GEN_ROCK_BLURB_2,Cayó de la luna una noche de verano.
 GEN_ROCK_VERB,ENGAÑANDO AL SENSOR
 GEN_ROCK_DETAIL_1,Huele a queso de cabra a tres salas de distancia.
 GEN_ROCK_DETAIL_2,"Si pegas la oreja, se oye roncar a los marcianos."
+GEN_GUM_NOUN_1,la bola de chicle gigante
+GEN_GUM_NOUN_2,el chicle más mascado del mundo
+GEN_GUM_NOUN_3,la pompa de chicle que nunca explotó
+GEN_GUM_BLURB_1,Pegajosa y de todos los sabores.
+GEN_GUM_BLURB_2,"Rosa, redonda y todavía un poco blanda."
+GEN_GUM_VERB,DESPEGANDO EL CHICLE
+GEN_GUM_DETAIL_1,"Si la tocas, te quedas pegado hasta el martes."
+GEN_GUM_DETAIL_2,Huele a fresa aunque tenga treinta años.
 GEN_MASK_NOUN_1,la máscara del luchador
 GEN_MASK_NOUN_2,el antifaz de carnaval
 GEN_MASK_NOUN_3,la máscara de la risa

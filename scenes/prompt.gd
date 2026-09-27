@@ -13,7 +13,7 @@ extends Control
 ##    "verb": String, "progress": float (0..1, or left out)}
 
 const GLYPH_H := 26.0
-const PAD := Vector2(10, 7)
+const PAD := Vector2(22, 16)
 ## how far above the head the tail's tip keeps
 const LIFT := 14.0
 const TAIL := 8.0
@@ -50,7 +50,7 @@ func _init() -> void:
 	_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_frame)
 	_rows = VBoxContainer.new()
-	_rows.add_theme_constant_override("separation", 6)
+	_rows.add_theme_constant_override("separation", 10)
 	_rows.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_frame.add_child(_rows)
 	_rows.position = PAD
@@ -122,7 +122,7 @@ func _build(rows: Array, fresh: bool) -> void:
 		line.add_theme_constant_override("separation", 4)
 		line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 8)
+		row.add_theme_constant_override("separation", 12)
 		row.alignment = BoxContainer.ALIGNMENT_CENTER
 		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		line.add_child(row)
@@ -136,6 +136,7 @@ func _build(rows: Array, fresh: bool) -> void:
 		words.text = r.get("verb", "")
 		words.add_theme_font_override("font", Hud.ARCADE)
 		words.add_theme_font_size_override("font_size", FONT)
+		words.add_theme_constant_override("line_spacing", 6)
 		words.add_theme_color_override("font_color", Hud.CREAM)
 		words.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		words.custom_minimum_size.y = GLYPH_H if input != "" else 0.0

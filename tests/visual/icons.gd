@@ -39,7 +39,7 @@ func _ready() -> void:
 		if "/" in what:
 			items["exhibit_" + what.replace("/", "_")] = func(p: Node3D) -> void: p.add_child(MuseumView.asset(what))
 	# The pieces to steal, in the gold the editor starts them in.
-	for shape in ["teeth", "duck", "sock", "toast", "crown", "rock", "mask", "clock", "egg", "idol", "gem"]:
+	for shape in ["teeth", "duck", "sock", "toast", "crown", "rock", "gum", "mask", "clock", "egg", "idol", "gem"]:
 		items["loot_" + shape] = func(p: Node3D) -> void: p.add_child(LootModels.build(shape, Color("#f0c46a")))
 	for k in ["bust", "bin", "panel", "armour"]:
 		items["prop_" + k] = func(p: Node3D) -> void: p.add_child(PropsView.model(k))

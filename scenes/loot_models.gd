@@ -3,17 +3,17 @@ extends RefCounted
 ## The pieces to steal, modelled out of primitives, each with its own
 ## materials and a little character: the grandad's dentures with pink gums,
 ## the opera duck in a bow tie, the yeti's furry striped sock, the toast with
-## the Barón's burnt moustache, the pickle queen's crown, the cheese
-## meteorite with holes and a whiff, the octopus wrestler's mask, the alarm
-## clock that runs backwards, the dinosaur egg in its nest, a proper
-## brilliant-cut diamond, the obsidian idol.
+## the Barón's burnt moustache, the pickle queen's crown, the record ball
+## of chewing gum, the cheese meteorite with holes and a whiff, the octopus
+## wrestler's mask, the alarm clock that runs backwards, the dinosaur egg in
+## its nest, a proper brilliant-cut diamond, the obsidian idol.
 ##
 ## About 0.35 units across, standing on its origin's floor (y 0 at the
 ## bottom, give or take), to sit in a case or turn on a stand. Everything
 ## glows a touch, so it reads in the dark museum.
 
 ## The shapes this builds; anything else gets the gem.
-const SHAPES := ["teeth", "duck", "sock", "toast", "crown", "rock", "mask", "clock", "egg", "gem", "idol"]
+const SHAPES := ["teeth", "duck", "sock", "toast", "crown", "rock", "gum", "mask", "clock", "egg", "gem", "idol"]
 
 
 static func build(shape: String, colour: Color) -> Node3D:
@@ -28,6 +28,7 @@ static func build(shape: String, colour: Color) -> Node3D:
 		"toast": m._toast()
 		"crown": m._crown()
 		"rock": m._cheese_rock()
+		"gum": m._gum()
 		"mask": m._mask()
 		"clock": m._clock()
 		"egg": m._egg()
@@ -74,24 +75,51 @@ func _teeth() -> void:
 		_part(pivot, _box(Vector3(0.2, 0.012, 0.16)), gum.darkened(0.15), Vector3(0, y + 0.01 * jaw, 0.04), Vector3.ZERO, 0.5)
 
 
-## A yellow rubber duck with an opera singer's bow tie and a proud chest.
+## A rubber duck mid-aria: a fat body rising to a tail, a tuft on its head,
+## the beak wide open, eyes half shut with feeling, a bow tie at the throat
+## and two notes floating off. It faces +X, turned three-quarters to the front.
 func _duck() -> void:
 	var yellow := _colour
-	_part(_root, _sphere(0.14, 0.2), yellow, Vector3(0, 0.11, 0), Vector3.ZERO, 0.35).scale = Vector3(1.15, 1.0, 1.0)
-	_part(_root, _sphere(0.05, 0.08), yellow, Vector3(-0.14, 0.16, 0), Vector3(0, 0, 0.6), 0.35)
-	_part(_root, _sphere(0.09, 0.18), yellow, Vector3(0.07, 0.26, 0), Vector3.ZERO, 0.35)
-	# A wide flat beak, two lips.
-	for lip in [0.0, -0.022]:
-		_part(_root, _sphere(0.05, 0.03), Color("#ff8c1a"), Vector3(0.155, 0.245 + lip, 0), Vector3(0, 0, -0.15), 0.4).scale = Vector3(1.4, 1, 1.2)
+	var orange := Color("#ff8c1a")
+	var ink := Color("#1c1c24")
+	var d := Node3D.new()
+	d.rotation.y = -0.55
+	_root.add_child(d)
+	# The body: round at the chest, rising to a pointed tail at the back.
+	_part(d, _sphere(0.13, 0.26), yellow, Vector3(-0.01, 0.1, 0), Vector3.ZERO, 0.3).scale = Vector3(1.25, 0.78, 1.0)
+	_part(d, _sphere(0.1, 0.2), yellow, Vector3(0.06, 0.12, 0), Vector3.ZERO, 0.3)
+	_part(d, _sphere(0.06, 0.12), yellow, Vector3(-0.15, 0.17, 0), Vector3(0, 0, -0.67), 0.3).scale = Vector3(1.6, 0.8, 0.7)
 	for side in [-1, 1]:
-		_part(_root, _sphere(0.022, 0.04), Color.WHITE, Vector3(0.13, 0.29, side * 0.045), Vector3.ZERO, 0.2)
-		_part(_root, _sphere(0.012, 0.024), Color("#111"), Vector3(0.148, 0.292, side * 0.048), Vector3.ZERO, 0.1)
-		_part(_root, _sphere(0.06, 0.05), yellow.darkened(0.08), Vector3(-0.01, 0.13, side * 0.12), Vector3.ZERO, 0.35).scale = Vector3(1.3, 0.8, 0.5)
-	# The bow tie.
+		_part(d, _sphere(0.065, 0.13), yellow.darkened(0.07), Vector3(-0.04, 0.125, side * 0.1), Vector3(0, 0, -0.2), 0.3).scale = Vector3(1.4, 0.6, 0.3)
+	# The neck, the head and the tuft on top.
+	_part(d, _sphere(0.07, 0.14), yellow, Vector3(0.06, 0.2, 0), Vector3.ZERO, 0.3)
+	var head := Vector3(0.07, 0.27, 0)
+	_part(d, _sphere(0.085, 0.17), yellow, head, Vector3.ZERO, 0.3)
+	for tuft in [[-0.01, 0.35, 0.028], [-0.03, 0.75, 0.022]]:
+		_part(d, _cone(tuft[2], 0.07), yellow, head + Vector3(tuft[0], 0.095, 0), Vector3(0, 0, tuft[1]), 0.3).scale = Vector3(1, 1, 0.6)
+	# The beak, open on a high note, and the mouth inside.
+	_part(d, _sphere(0.03, 0.06), Color("#8a1c2b"), Vector3(0.135, 0.245, 0), Vector3.ZERO, 0.6)
+	_part(d, _sphere(0.045, 0.09), orange, Vector3(0.155, 0.268, 0), Vector3(0, 0, 0.25), 0.35).scale = Vector3(1.5, 0.45, 1.05)
+	_part(d, _sphere(0.04, 0.08), orange.darkened(0.08), Vector3(0.148, 0.222, 0), Vector3(0, 0, -0.35), 0.35).scale = Vector3(1.35, 0.4, 0.95)
+	# The eyes, the lids half down: singing with feeling.
 	for side in [-1, 1]:
-		var wing := _part(_root, _cone(0.035, 0.06), Color("#1c1c24"), Vector3(0.1, 0.19, side * 0.035), Vector3(PI / 2 * side, 0, 0), 0.6)
-		wing.scale = Vector3(1, 1, 0.5)
-	_part(_root, _sphere(0.016, 0.03), Color("#1c1c24"), Vector3(0.11, 0.19, 0), Vector3.ZERO, 0.6)
+		var dir := Vector3(0.55, 0.38, side * 0.72).normalized()
+		_part(d, _sphere(0.024, 0.048), Color.WHITE, head + dir * 0.07, Vector3.ZERO, 0.2)
+		_part(d, _sphere(0.012, 0.024), ink, head + dir * 0.089, Vector3.ZERO, 0.1)
+		_part(d, _sphere(0.004, 0.008), Color.WHITE, head + dir * 0.098 + Vector3(0, 0.005, 0), Vector3.ZERO, 0.1, 1.0)
+		_part(d, _sphere(0.027, 0.054), yellow.darkened(0.05), head + dir * 0.071 + Vector3(0, 0.013, 0), Vector3.ZERO, 0.3)
+	# The bow tie: two wings pointing in to the knot.
+	for side in [-1, 1]:
+		_part(d, _cone(0.035, 0.06), ink, Vector3(0.14, 0.195, side * 0.032), Vector3(-side * PI / 2, 0, 0), 0.6).scale = Vector3(0.4, 1, 1)
+	_part(d, _sphere(0.014, 0.028), ink, Vector3(0.145, 0.195, 0), Vector3.ZERO, 0.6)
+	# Two notes floating off the beak.
+	for note in [[Vector3(0.22, 0.34, 0.04), 1.0], [Vector3(0.27, 0.41, -0.03), 0.75]]:
+		var at: Vector3 = note[0]
+		var k: float = note[1]
+		var gold := Color("#ffe8a3")
+		_part(d, _sphere(0.017 * k, 0.026 * k), gold, at, Vector3(0, 0, 0.4), 0.3, 0.9).scale = Vector3(1.3, 1, 0.6)
+		_part(d, _box(Vector3(0.005, 0.065, 0.005) * k), gold, at + Vector3(0.017, 0.032, 0) * k, Vector3.ZERO, 0.3, 0.9)
+		_part(d, _box(Vector3(0.025, 0.006, 0.005) * k), gold, at + Vector3(0.028, 0.058, 0) * k, Vector3(0, 0, -0.5), 0.3, 0.9)
 
 
 ## The yeti's sock: long, furry at the cuff, red and white stripes, a patch
@@ -139,20 +167,101 @@ func _toast() -> void:
 	_part(_root, _box(Vector3(0.2, 0.02, 0.12)), Color("#d8ac5c"), Vector3(0, 0.01, 0), Vector3.ZERO, 0.35, 0.1, 0.35)
 
 
-## The Pickle Queen's crown: a gold band with five points, each tipped with a
-## little green pickle, and gems round the band.
+## The Pickle Queen's crown: an ermine rim, a gold band set with rubies and
+## sapphires, diamond points with a pearl and a warty pickle on each, and red
+## velvet under two gold arches, a gold orb and one more pickle on top.
 func _crown() -> void:
 	var gold := Color("#e8b54a")
-	_part(_root, _cylinder(0.15, 0.14, 0.09), gold, Vector3(0, 0.045, 0), Vector3.ZERO, 0.3, 0.1, 0.35)
-	_part(_root, _torus(0.14, 0.16), gold.darkened(0.15), Vector3(0, 0.005, 0), Vector3.ZERO, 0.3, 0.1, 0.35)
+	var pickle := _colour
+	var ermine := Color("#f6f1e7")
+	# The ermine: a fat white roll, black tail tips round it.
+	_part(_root, _torus(0.12, 0.175), ermine, Vector3(0, 0.03, 0), Vector3.ZERO, 0.95, 0.15).scale = Vector3(1, 1.1, 1)
+	for k in 10:
+		var a := k * TAU / 10 + 0.3
+		_part(_root, _capsule(0.007, 0.024), Color("#1c1c24"), Vector3(sin(a), 0, cos(a)) * 0.175 + Vector3(0, 0.035, 0), Vector3.ZERO, 0.8)
+	# The band, a twisted rope along each edge, and the velvet inside.
+	_part(_root, _cylinder(0.14, 0.14, 0.08), gold, Vector3(0, 0.09, 0), Vector3.ZERO, 0.3, 0.1, 0.4)
+	for y in [0.052, 0.128]:
+		_part(_root, _torus(0.134, 0.152), gold.darkened(0.12), Vector3(0, y, 0), Vector3.ZERO, 0.3, 0.1, 0.4).scale = Vector3(1, 0.7, 1)
+	_part(_root, _sphere(0.132, 0.2), Color("#8e1b3a"), Vector3(0, 0.13, 0), Vector3.ZERO, 1.0, 0.12)
+	# Two arches over the velvet, and on top an orb with the biggest pickle.
+	for turn in [0.0, PI / 2]:
+		var arch := _part(_root, _torus(0.128, 0.142), gold, Vector3(0, 0.13, 0), Vector3(PI / 2, turn, 0), 0.3, 0.1, 0.4)
+		arch.scale = Vector3(1, 1, 0.7)
+	_part(_root, _sphere(0.026, 0.052), gold, Vector3(0, 0.275, 0), Vector3.ZERO, 0.25, 0.15, 0.45)
+	_pickle(_root, Vector3(0, 0.33, 0), Vector3(0, 0, 0.15), 1.1, pickle)
+	# Round the band, each at its own angle, facing out: the points and the gems.
 	for k in 5:
-		var a := k * TAU / 5
-		var at := Vector3(cos(a) * 0.145, 0.13, sin(a) * 0.145)
-		_part(_root, _cone(0.035, 0.1), gold, at, Vector3.ZERO, 0.3, 0.1, 0.35)
-		var pickle := _part(_root, _capsule(0.022, 0.07), _colour, at + Vector3(0, 0.07, 0), Vector3(0, 0, 0.3), 0.5)
-		pickle.scale = Vector3(1, 1, 0.9)
-		var gem := _part(_root, _sphere(0.02, 0.03), Color("#c2185b") if k % 2 == 0 else Color("#2f6fd6"), Vector3(cos(a + 0.63) * 0.152, 0.05, sin(a + 0.63) * 0.152), Vector3.ZERO, 0.1, 0.4)
-		gem.scale = Vector3(1, 1, 0.6)
+		var p := Node3D.new()
+		p.rotation.y = k * TAU / 5
+		_root.add_child(p)
+		_part(p, _box(Vector3(0.075, 0.075, 0.014)), gold, Vector3(0, 0.14, 0.14), Vector3(0, 0, PI / 4), 0.3, 0.1, 0.4)
+		_part(p, _sphere(0.014, 0.028), Color("#fbf6ea"), Vector3(0, 0.196, 0.14), Vector3.ZERO, 0.15, 0.3)
+		_pickle(p, Vector3(0, 0.245, 0.145), Vector3(0.25, 0, 0), 1.0, pickle)
+		var q := Node3D.new()
+		q.rotation.y = (k + 0.5) * TAU / 5
+		_root.add_child(q)
+		_part(q, _box(Vector3(0.042, 0.042, 0.012)), gold, Vector3(0, 0.13, 0.14), Vector3(0, 0, PI / 4), 0.3, 0.1, 0.4)
+		_part(q, _sphere(0.01, 0.02), Color("#fbf6ea"), Vector3(0, 0.163, 0.14), Vector3.ZERO, 0.15, 0.3)
+		for g in [[p, Color("#c2185b")], [q, Color("#2f6fd6")]]:
+			_part(g[0], _cylinder(0.024, 0.024, 0.01), gold.darkened(0.1), Vector3(0, 0.09, 0.141), Vector3(PI / 2, 0, 0), 0.3, 0.1, 0.4)
+			_part(g[0], _facets(0.018), g[1], Vector3(0, 0.09, 0.148), Vector3(PI / 2, 0, 0), 0.08, 0.5, 0.2).scale = Vector3(1, 0.6, 1)
+
+
+## A little pickle standing up: green, a touch bent, covered in warts.
+func _pickle(parent: Node3D, at: Vector3, rot: Vector3, size: float, green: Color) -> void:
+	var holder := Node3D.new()
+	holder.position = at
+	holder.rotation = rot
+	parent.add_child(holder)
+	_part(holder, _capsule(0.02 * size, 0.075 * size), green, Vector3.ZERO, Vector3(0, 0, 0.12), 0.55, 0.2)
+	for k in 5:
+		var a := k * 2.4
+		var y := lerpf(-0.022, 0.022, k / 4.0) * size
+		_part(holder, _sphere(0.0045 * size, 0.009 * size), green.lightened(0.15), Vector3(cos(a) * 0.019 * size - y * 0.12, y, sin(a) * 0.019 * size), Vector3.ZERO, 0.6, 0.2)
+
+
+## The record-breaking ball of chewing gum: every neighbour pressed a piece
+## on for their birthday, so it is lumpy with wads of every colour (mostly
+## strawberry), strings hanging off, a bubble half blown out of one side. It
+## sits in a gold trophy cup on a wooden base with a plaque.
+func _gum() -> void:
+	var pink := _colour
+	var gold := Color("#e8b54a")
+	var wood := Color("#5a3a22")
+	_part(_root, _cylinder(0.085, 0.1, 0.03), wood, Vector3(0, 0.015, 0), Vector3.ZERO, 0.5, 0.1)
+	_part(_root, _box(Vector3(0.08, 0.018, 0.004)), gold, Vector3(0, 0.015, 0.093), Vector3(-0.59, 0, 0), 0.3, 0.3, 0.4)
+	_part(_root, _cylinder(0.03, 0.045, 0.04), gold, Vector3(0, 0.05, 0), Vector3.ZERO, 0.3, 0.1, 0.4)
+	_part(_root, _cylinder(0.08, 0.03, 0.04), gold, Vector3(0, 0.088, 0), Vector3.ZERO, 0.3, 0.1, 0.4)
+	var c := Vector3(0, 0.21, 0)
+	_part(_root, _sphere(0.12, 0.24), pink.darkened(0.1), c, Vector3.ZERO, 0.85)
+	# The wads, spread evenly round the ball, each pressed flat against it.
+	var shades := [pink, pink, pink, pink.lightened(0.18), pink.lightened(0.1), pink.darkened(0.1), pink.darkened(0.2),
+		Color("#ffc2d4"), Color("#e64980"), Color("#8ce0bd"), Color("#a5d8ff")]
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 7
+	var n := 70
+	for k in n:
+		var y := 1.0 - 2.0 * (k + 0.5) / n
+		var a := k * 2.39996
+		var dir := Vector3(cos(a) * sqrt(1.0 - y * y), y, sin(a) * sqrt(1.0 - y * y))
+		if dir.y < -0.75:
+			continue
+		var r := rng.randf_range(0.026, 0.04)
+		var wad := _part(_root, _sphere(r, r * 0.8), shades[rng.randi() % shades.size()], c + dir * (0.118 + rng.randf() * 0.008), Vector3.ZERO, 0.85)
+		wad.quaternion = Quaternion(Vector3.UP, dir) * Quaternion(Vector3.UP, rng.randf() * TAU)
+		wad.scale = Vector3(rng.randf_range(1.0, 1.5), 1.0, rng.randf_range(0.7, 1.0))
+	# Strings of gum hanging off, a drop at the end of each.
+	for s in [[Vector3(0.1, 0.19, 0.07), 0.07], [Vector3(-0.11, 0.2, 0.05), 0.05], [Vector3(0.03, 0.17, 0.12), 0.06]]:
+		var at: Vector3 = s[0]
+		var h: float = s[1]
+		_part(_root, _capsule(0.0035, h), pink.lightened(0.1), at - Vector3(0, h * 0.5, 0), Vector3.ZERO, 0.6)
+		_part(_root, _sphere(0.007, 0.016), pink.lightened(0.1), at - Vector3(0, h, 0), Vector3.ZERO, 0.6)
+	# The bubble, half blown.
+	var out := Vector3(0.75, 0.35, 0.55).normalized()
+	_part(_root, _sphere(0.02, 0.04), pink.darkened(0.1), c + out * 0.13, Vector3.ZERO, 0.4)
+	_part(_root, _sphere(0.065, 0.13), Color(pink.lightened(0.25), 0.6), c + out * 0.19, Vector3.ZERO, 0.1, 0.4)
+	_part(_root, _sphere(0.01, 0.02), Color.WHITE, c + out * 0.19 + Vector3(-0.025, 0.035, 0.03), Vector3.ZERO, 0.1, 1.2)
 
 
 ## A lump of meteorite that is mostly cheese: yellow, lumpy, full of holes,
@@ -322,6 +431,14 @@ func _sphere(r: float, h: float) -> SphereMesh:
 	s.height = h
 	s.radial_segments = 24
 	s.rings = 12
+	return s
+
+
+## A cut stone: a sphere with few sides, so it catches the light in facets.
+func _facets(r: float) -> SphereMesh:
+	var s := _sphere(r, r * 2.0)
+	s.radial_segments = 8
+	s.rings = 4
 	return s
 
 

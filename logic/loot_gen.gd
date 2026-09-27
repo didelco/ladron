@@ -20,6 +20,7 @@ const PIECES := {
 	"toast": {"nouns": 3, "blurbs": 2, "details": 2, "seconds": 2.5, "colours": ["#d4a15a", "#e8b86d"]},
 	"crown": {"nouns": 3, "blurbs": 2, "details": 2, "seconds": 3.5, "colours": ["#f0c46a", "#7bc043", "#fcc419"]},
 	"rock": {"nouns": 3, "blurbs": 2, "details": 2, "seconds": 3.5, "colours": ["#ffe066", "#f783ac", "#9aa3b5"]},
+	"gum": {"nouns": 3, "blurbs": 2, "details": 2, "seconds": 3.0, "colours": ["#f783ac", "#ff8fab", "#8ce0bd"]},
 	"mask": {"nouns": 3, "blurbs": 2, "details": 2, "seconds": 3.5, "colours": ["#3ddc84", "#9b5de5", "#e03131"]},
 	"clock": {"nouns": 3, "blurbs": 2, "details": 2, "seconds": 3.0, "colours": ["#e8590c", "#4dabf7", "#ffd43b"]},
 	"egg": {"nouns": 3, "blurbs": 2, "details": 2, "seconds": 3.0, "colours": ["#e8c89a", "#8b5a2b", "#fcc419", "#63e6be"]},
