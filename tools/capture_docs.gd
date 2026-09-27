@@ -163,6 +163,14 @@ func _in_sight(t: Thief, g: Guard) -> void:
 
 func _shots() -> void:
 	print("docs: pantallas")
+	# The cover, before the menus (only when there is a picture for it).
+	if TitleScreen.available():
+		main._show_cover()
+		await _wait(1.5)
+		await _shot("menu_portada", "menus", "Portada", "La primera imagen al abrir el juego; cualquier tecla lleva al título.")
+		for c in main.get_children():
+			if c is TitleScreen:
+				c.queue_free()
 	# Menus.
 	main._show_title()
 	await _wait(1.5)
@@ -273,9 +281,36 @@ func _shots() -> void:
 		["wires", "panel", 19, "Minijuego: los cables", "Desconectar el cuadro de alarma."],
 		["steady", "case", 19, "Minijuego: la ventosa", "Cortar el cristal sin moverse."],
 		["balance", "plinth", 21, "Minijuego: el equilibrio", "Hacerse pasar por estatua sobre un pedestal."],
-		["squeeze", "hideout", 11, "Minijuego: colarse", "Meterse en un escondite, de dos a cinco segundos a la vista."]]
+		["squeeze", "hideout", 11, "Minijuego: colarse", "Meterse en un escondite, de dos a cinco segundos a la vista."],
+		["sneeze", "hideout", 18, "Minijuego: el estornudo", "Escondido, aguantar el estornudo: pulsar cuando el polvo pasa por la barra."],
+		["arcade", "arcade", 21, "Minijuego: la recreativa", "Un pong de broma en la máquina: no se gana nada y los guardias siguen su ronda."]]
 	for g in games:
 		await _play("story", g[2], 1, 1.0)
+		if g[0] == "arcade":
+			# In front of a machine: the modern museum's, the first night that has one.
+			for n in range(g[2], Story.count() + 1):
+				if not Arcades.list.is_empty():
+					break
+				await _play("story", n + 1, 1, 1.0)
+			if Arcades.list.is_empty():
+				continue
+			var at: Vector2i = Arcades.list[0]
+			var front := MuseumView.front_of(at)
+			var t0: Thief = main.thieves[0]
+			t0.x = at.x + 0.5 + front.x * 0.95
+			t0.y = at.y + 0.5 + front.y * 0.95
+			t0.arcade = at
+			t0.dir = atan2(-front.y, -front.x)
+		if g[0] == "sneeze":
+			# Already in: the sneeze is what comes on after a while inside.
+			for n in range(g[2], Story.count() + 1):
+				if not Hideouts.all().is_empty():
+					break
+				await _play("story", n + 1, 1, 1.0)
+			if Hideouts.all().is_empty():
+				continue
+			var none: Array[Guard] = []
+			Hideouts.get_in(main.thieves[0], Hideouts.all()[0], none)
 		if g[0] == "balance":
 			# Up on a pedestal first: the balance is the pose's.
 			for n in range(g[2], Story.count() + 1):
@@ -616,11 +651,74 @@ func _data() -> void:
 		mu["n"] = m + 1
 		mu["nights_list"] = Story.nights_in(m)
 		museums.append(_plain(mu))
+	# A save from the story of twenty nights, night by night, as a heist of this one.
+	var old: Array = []
+	for n in range(1, 21):
+		old.append([n, Story.from_old(n)])
 	_save_json("data/historia.json", {"museums": museums, "nights": nights, "lessons": _plain(Story.LESSONS),
-		"prologue": Story.PROLOGUE, "ending": Story.ENDING})
+		"prologue": Story.PROLOGUE, "ending": Story.ENDING, "rooms": Story.ROOMS, "lockpick_night": Story.LOCKPICK_NIGHT,
+		"from_old": old, "played": _nights_laid_out()})
+	var hide := {}
+	for k in Hideouts.PIECES:
+		hide[k] = {"model": Hideouts.PIECES[k].model, "theme": Hideouts.PIECES[k].theme, "name": "HIDE_" + k.to_upper()}
 	_save_json("data/catalogo.json", {"themes": _plain(Themes.ALL), "exhibits": MuseumView.EXHIBITS, "big": MapGen.BIG.keys(),
 		"props": Props.KINDS, "prop_themes": Themes.PROP_THEMES, "model_of": MODEL_OF,
-		"unique": Themes.UNIQUE, "variants": Themes.VARIANTS})
+		"unique": Themes.UNIQUE, "variants": Themes.VARIANTS, "fronted": Themes.FRONTED,
+		"arcade_games": MuseumView.ARCADE_GAMES, "arcade_model": Arcades.MODEL,
+		"hideouts": {"pieces": hide, "big": Hideouts.BIG, "tight": Hideouts.TIGHT,
+			"big_names": Hideouts.BIG.map(func(k): return "HIDE_" + k.to_upper())},
+		"minigames": _minigames()})
+
+
+## Every minigame there is (logic/minigames/), with its lines on screen.
+func _minigames() -> Array:
+	var out: Array = []
+	for f in DirAccess.get_files_at("res://logic/minigames"):
+		if not f.ends_with(".gd"):
+			continue
+		var kind := f.get_basename()
+		var g := Minigame.make(kind, "", 3, {}, 1, 1)
+		out.append({"kind": kind, "class": (load("res://logic/minigames/" + f) as Script).get_global_name(),
+			"how": g.how(), "let_go": g.let_go(), "can_let_go": g.can_let_go(),
+			"logic": "logic/minigames/" + f, "view": "scenes/minigame_views/" + f})
+	return out
+
+
+## Each story night as it is laid out, for a lone thief: what its plan
+## screen says (Briefing.tips) and has (the pages), the heading over the
+## piece (Story.heading), the minigames' level, and what the museum has to
+## hide in, pose on and play (Hideouts, Plinths, Arcades).
+func _nights_laid_out() -> Array:
+	var out: Array = []
+	for n in range(1, Story.count() + 1):
+		_reset()
+		main.mode = "story"
+		main.players = 1
+		var seats: Array[String] = ["any"]
+		main.seats = seats
+		main.story_pick = n
+		main._new_round(n)
+		var hides := {}
+		for s in Hideouts.all():
+			hides[s.kind] = hides.get(s.kind, 0) + 1
+		var games: Array = []
+		for t in Arcades.list:
+			games.append(Collection.variant_at(t))
+		var icons: Array = []
+		for t in Collection.picks:
+			var piece: String = Collection.picks[t][1]
+			if Themes.is_unique(piece) and not piece in icons:
+				icons.append(piece)
+		for b in Museum.big_pieces:
+			if Themes.is_unique(b.kind) and not b.kind in icons:
+				icons.append(b.kind)
+		var tuning := Story.tuning(n)
+		out.append({"n": n, "heading": Story.heading(n, 1), "heading_gang": Story.heading(n, 2), "pages": main._brief_pages(),
+			"tips": Briefing.tips(main.guards, n), "game_level": tuning.game_level, "lockpick": tuning.lockpick,
+			"minigames": Heist.minigames(), "hideouts": hides, "plinths": Plinths.list.size(), "arcades": games, "icons": icons,
+			"size": Museum.size_name, "w": Museum.w, "h": Museum.h})
+	_reset()
+	return out
 
 
 ## The "## ..." lines right above each const, by name.

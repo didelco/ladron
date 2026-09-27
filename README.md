@@ -114,11 +114,34 @@ sonidos) y todos los textos, con la historia en orden. Todo sale del propio jueg
 
 ```bash
 python3 tools/docs.py build          # lo regenera todo (abre una ventana del juego unos minutos)
-python3 tools/docs.py build --fast   # solo datos y textos
+python3 tools/docs.py build --fast   # solo datos, textos y paleta propuesta
 python3 tools/docs.py serve          # http://localhost:8765: además, los textos se editan ahí
 ```
 
 Editar un texto en el visor lo cambia en `locale/texts.csv` (solo esa fila) y Godot lo reimporta.
+
+Además de pantallas, objetos, sonidos y textos, la web explica la historia (con el paso del progreso
+guardado de 20 noches), lo que sale antes de un robo, los minijuegos, los escondites y la colección:
+los valores, listas y textos salen del código (`docs/data/codigo.js`, `juego.js`) y lo que significan
+está escrito a mano en `docs/mecanicas.js`. `python3 tools/docs.py build palette` regenera sin Godot
+la **paleta propuesta** (`tools/palette.py`): el inventario de colores del código y de los `.glb`, y una
+propuesta de 16 colores, **pendiente de aprobar**: no está aplicada al juego.
+
+**Versiones**: la página «Versiones» enseña, por asunto (fondo de los menús, menús, icono, historia,
+recreativa…), los hitos de cómo se veía y cómo se ve, con cortina antes/después. Se guardan en
+`docs/versiones/<asunto>/<fecha>-<nombre>.webp` y se apuntan en `docs/versiones/versiones.json`. Solo
+hitos: un cambio muy visible, o una versión antigua cuando algo ha ido cambiando poco a poco y ya se
+parece poco al principio; nada se guarda solo. Mejor el mismo encuadre en todo un asunto.
+
+```bash
+python3 tools/docs.py version fondo-menus "La sala del museo" --why "…" --what "…"   # la imagen de siempre del asunto
+python3 tools/docs.py version menus "Cristal ahumado" --from menu_titulo             # una captura de docs/capturas
+python3 tools/docs.py version icono "Pixel art" --from assets/icon.png --commit ed1b2ac   # de un commit antiguo
+python3 tools/docs.py version --list
+```
+
+Las capturas lanzan Godot sin el dispositivo HID de Apple que algunos Mac enseñan como mando
+(`SDL_JOYSTICK_IGNORE_DEVICES=0x05ac/0x0004`, lo pone `docs.py`).
 
 ## Controles
 

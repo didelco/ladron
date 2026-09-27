@@ -13,6 +13,12 @@
 //   children las pantallas que cuelgan de esta
 window.PANTALLAS = [
   {
+    id: "portada", title: "«Portada»", fn: "_show_cover", phase: "cover",
+    text: "Lo primero al abrir el juego: la portada (assets/ui/portada.png) a pantalla completa, recortada por los lados o por arriba sin cortar nunca el título, y «pulsa para empezar» parpadeando abajo (scenes/title_screen.gd).",
+    shots: ["menu_portada"],
+    options: [{ key: "TITLE_PRESS", text: "Cualquier tecla, botón o clic.", to: "titulo" }],
+  },
+  {
     id: "titulo", title: "«Pantalla de título»", fn: "_show_title", phase: "title",
     text: "La primera pantalla: el título y los tres modos de juego como tarjetas con su diorama.",
     shots: ["menu_titulo"],
@@ -223,9 +229,10 @@ window.PANTALLAS = [
     children: [
       {
         id: "previa", title: "«La previa»", fn: "_show_brief", phase: "brief",
-        text: "Una o dos páginas antes de jugar. «Lo nuevo» sale solo en los robos de la historia que enseñan algo (la lección, con su escena); «El plan» siempre: el plano, la pieza, su historia y consejos para esa noche.",
+        text: "Hasta tres páginas antes de jugar, con la misma norma en todos los modos: «La historia» si la pieza tiene una, «Lo nuevo» solo en los robos de la historia que enseñan algo (la lección, con su escena) y «El plan» siempre: el plano, la pieza y las reglas de esa noche. Más en «Antes de un robo».",
         shots: ["previa_robo_01_story", "previa_robo_01_news", "previa_robo_01_plan", "previa_robo_02_news", "previa_robo_04_news", "previa_robo_05_story", "previa_robo_05_plan", "previa_robo_06_news", "previa_robo_08_news", "previa_robo_10_plan", "previa_robo_11_news", "previa_robo_13_news", "previa_robo_15_plan", "previa_robo_16_news", "previa_robo_20_plan", "previa_robo_21_news", "previa_robo_25_news", "previa_robo_25_plan", "previa_generativo_plan"],
         options: [
+          { key: "BRIEF_TAB_STORY", text: "La pieza en grande a la izquierda; la ficha y el cuento a la derecha.", doc: "previa" },
           { key: "BRIEF_TAB_NEWS", text: "La lección de la noche." },
           { key: "BRIEF_TAB_PLAN", text: "El plano y la pieza." },
           { key: "BRIEF_START", to: "cuenta" },
@@ -255,14 +262,18 @@ window.PANTALLAS = [
           },
           {
             id: "minijuegos", title: "«Minijuegos»", text: "Una caja al lado del ladrón (nunca encima), sin palabras. Tiemblan más cuanto más alarmados están los guardias. Cada uno es un fichero de lógica (logic/minigames/) y otro de vista (scenes/minigame_views/).",
-            shots: ["juego_minijuego_lockpick", "juego_minijuego_wires", "juego_minijuego_steady", "juego_minijuego_balance", "juego_minijuego_squeeze"],
+            shots: ["juego_minijuego_lockpick", "juego_minijuego_wires", "juego_minijuego_steady", "juego_minijuego_balance", "juego_minijuego_squeeze", "juego_minijuego_sneeze", "juego_minijuego_arcade"],
             options: [
-              { key: "GAME_HOW_LOCKPICK", text: "La ganzúa, en la vitrina." },
-              { key: "GAME_HOW_WIRES", text: "Los cables, en el cuadro de alarma." },
-              { key: "GAME_HOW_STEADY", text: "La ventosa, en el cristal." },
-              { key: "GAME_HOW_BALANCE", text: "El equilibrio, posando como estatua en un pedestal." },
-              { key: "GAME_HOW_SQUEEZE", text: "Colarse en un escondite: a un lado y a otro, con ritmo; de 2 a 5 s a la vista." },
+              { key: "GAME_HOW_LOCKPICK", text: "La ganzúa, en la vitrina.", doc: "minijuegos/lockpick" },
+              { key: "GAME_HOW_WIRES", text: "Los cables, en el cuadro de alarma.", doc: "minijuegos/wires" },
+              { key: "GAME_HOW_STEADY", text: "La ventosa, en el cristal.", doc: "minijuegos/steady" },
+              { key: "GAME_HOW_BALANCE", text: "El equilibrio, posando como estatua en un pedestal.", doc: "minijuegos/balance" },
+              { key: "GAME_HOW_SQUEEZE", text: "Colarse en un escondite: a un lado y a otro, con ritmo; de 2 a 5 s a la vista.", doc: "escondites" },
+              { key: "GAME_HOW_SNEEZE", text: "El estornudo, al rato de estar escondido; si se escapa, ¡ACHÍS! y fuera.", doc: "minijuegos/sneeze" },
+              { key: "GAME_HOW_ARCADE", text: "Un pong de broma en la recreativa: no se gana nada y nunca acaba.", doc: "minijuegos/arcade" },
               { key: "GAME_LET_GO" },
+              { key: "GAME_LET_GO_SNEEZE", text: "El estornudo no se suelta: se sale del escondite." },
+              { key: "GAME_LET_GO_ARCADE", text: "La recreativa se suelta con la tecla de siempre." },
             ],
           },
           {

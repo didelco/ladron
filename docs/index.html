@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ladrón · Documentación</title>
+<title>Ninja Karma · Documentación</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -52,7 +52,8 @@ nav a { display: block; text-decoration: none; padding: 2px 0; }
 nav a:hover { text-decoration: underline; }
 nav a.on { font-weight: 600; }
 nav .meta { margin-top: 24px; color: var(--claro); font-size: 12px; }
-main { padding: 26px clamp(16px, 4vw, 48px) 80px; max-width: 1640px; }
+main { padding: 26px clamp(16px, 4vw, 48px) 80px; max-width: 1640px; min-width: 0; }
+pre.mono { overflow-x: auto; background: var(--fondo2); border: 1px solid var(--suave); padding: 8px 10px; }
 .pagina { display: none; }
 .pagina.on { display: block; }
 
@@ -238,8 +239,114 @@ body.editable [data-key]:hover { background: #fff8d6; cursor: text; }
 .fuente { font-family: "Press Start 2P", monospace; font-size: 16px; line-height: 1.9; }
 .indice { columns: 2; column-gap: 32px; }
 
+/* Tablas anchas: se desplazan dentro, no la página */
+.tw { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 8px 0 16px; }
+.tw > table.tabla { margin: 0; }
+.tabla td.num, .tabla th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tabla td.val { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; white-space: nowrap; }
+.tabla td.en { color: var(--claro); font-size: 12.5px; font-style: italic; }
+.nota-cod { color: var(--claro); font-size: 12.5px; }
+
+/* Mecánicas: una ficha por minijuego, escondite o pieza */
+.mec { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 22px; padding: 16px 0 6px; border-top: 1px solid var(--suave); align-items: start; }
+.mec h2 { margin-top: 0; border: 0; padding: 0; }
+.mec .img img { width: 100%; display: block; border: 1px solid var(--linea); cursor: zoom-in; }
+.mec .sin { aspect-ratio: 16 / 9; display: grid; place-items: center; background: var(--fondo2); border: 1px solid var(--suave); color: var(--claro); font-size: 12px; }
+@media (max-width: 900px) { .mec { grid-template-columns: 1fr; } }
+.piezas-rej { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin: 10px 0 18px; }
+.piezas-rej a { text-decoration: none; font-size: 13px; }
+.piezas-rej img, .piezas-rej .sin { width: 100%; aspect-ratio: 1; object-fit: contain; background: var(--fondo2); border: 1px solid var(--suave); display: block; }
+.piezas-rej .t { font-weight: 600; margin-top: 4px; line-height: 1.25; }
+.piezas-rej .s { color: var(--tenue); font-size: 12px; }
+.juegos { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 16px; margin: 10px 0 20px; }
+.juego-rec { border: 1px solid var(--suave); padding: 10px; }
+.juego-rec .fila2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: center; }
+.juego-rec img { width: 100%; aspect-ratio: 1; object-fit: contain; background: var(--fondo2); cursor: zoom-in; }
+.pixel { display: grid; grid-template-columns: repeat(16, 1fr); aspect-ratio: 16 / 9; border: 6px solid #111; border-radius: 4px; overflow: hidden; }
+.pixel i { display: block; }
+.juego-rec .t { font-weight: 600; margin: 6px 0 2px; }
+.sw { display: inline-block; width: 14px; height: 14px; border: 1px solid rgba(0,0,0,0.25); vertical-align: -2px; margin-right: 3px; }
+.sw.g { width: 28px; height: 28px; vertical-align: middle; }
+.tags-noche .tag { margin: 1px 3px 1px 0; }
+ul.tips { margin: 0; padding-left: 18px; }
+ul.tips li { margin: 1px 0; }
+
+/* Propuesta pendiente */
+.propuesta { border: 2px dashed var(--texto); padding: 10px 14px; margin: 12px 0 18px; font-size: 14.5px; background: var(--fondo2); }
+.propuesta b { text-transform: uppercase; letter-spacing: 0.04em; font-size: 13px; }
+.cifras { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 14px 0; }
+.cifra { border: 1px solid var(--linea); padding: 10px 12px; }
+.cifra b { display: block; font-size: 26px; font-weight: 600; line-height: 1.1; }
+.cifra span { font-size: 12.5px; color: var(--tenue); }
+.dos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 18px; }
+.recuadro { border-left: 3px solid var(--texto); background: var(--fondo2); padding: 8px 14px; margin: 12px 0; }
+details.fam { border: 1px solid var(--suave); margin: 6px 0; }
+details.fam > summary { cursor: pointer; padding: 8px 10px; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+details.fam > summary .n { color: var(--tenue); font-size: 13px; }
+details.fam .dentro { padding: 0 10px 10px; }
+.grupo-c { display: grid; grid-template-columns: minmax(60px, 190px) 1fr; gap: 10px; padding: 6px 0; border-top: 1px dashed var(--suave); font-size: 13.5px; }
+.chips { display: inline-flex; flex-wrap: wrap; gap: 2px; vertical-align: middle; }
+.pal { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin: 6px 0 14px; }
+.pc { border: 1px solid var(--linea); }
+.pc .cara { height: 78px; padding: 8px 10px; display: flex; flex-direction: column; justify-content: flex-end; }
+.pc .cara b { font-size: 16px; }
+.pc .cara code { background: none; border: 0; padding: 0; color: inherit; opacity: 0.85; }
+.pc .pie { padding: 6px 10px 8px; font-size: 12.5px; }
+.cvd { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin: 8px 0 14px; }
+.cvd > div { background: #1c1433; color: #ece6fb; padding: 10px 12px; font-size: 13px; }
+.cvd .dot { display: inline-block; width: 16px; height: 16px; border-radius: 50%; vertical-align: -3px; margin-right: 6px; box-shadow: 0 0 0 2px #0e0a1a; }
+.cvd .mal { color: #ff8a9c; font-weight: 600; }
+.cvd .bien { color: #9df0b0; }
+.muro { position: relative; height: 110px; margin-bottom: 6px; background: var(--skirt); }
+.muro i { position: absolute; left: 0; right: 0; display: block; }
+.muro .pp { top: 0; height: 46%; background: repeating-linear-gradient(90deg, var(--paper) 0 14px, var(--paper2) 14px 28px); }
+.muro .tr { top: 46%; height: 5%; background: var(--trim); }
+.muro .wn { top: 51%; height: 21%; background: var(--wain); }
+.muro .sk { top: 72%; height: 4%; background: var(--skirt); }
+.muro .fl { top: 76%; bottom: 0; background: repeating-linear-gradient(45deg, var(--stone) 0 12px, var(--stone2) 12px 24px); }
+.maqueta { position: relative; overflow: hidden; min-height: 380px; padding: 16px; color: #ece6fb; background: #311f50 center / cover no-repeat; }
+.maqueta::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14,10,26,.55), rgba(14,10,26,.25) 40%, rgba(14,10,26,.6)); }
+.maqueta > * { position: relative; }
+.maqueta .et { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.8; margin-bottom: 10px; }
+.maqueta .bts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.maqueta .bt { border-radius: 24px; padding: 8px 16px; font-weight: 700; font-size: 13px; letter-spacing: 0.06em; }
+.maqueta .tj { border-radius: 16px; padding: 12px 14px; margin-bottom: 12px; max-width: 420px; }
+.maqueta .tj h4 { margin: 0 0 4px; font-size: 18px; }
+.maqueta .tj p { margin: 0 0 4px; font-size: 13px; }
+.maqueta .banda { display: flex; flex-wrap: wrap; gap: 10px 14px; border-radius: 12px; padding: 10px 12px; font-size: 11.5px; }
+.maqueta .quien { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.maqueta .quien i { width: 24px; height: 24px; border-radius: 50%; display: block; }
+.maqueta .quien i.gema { width: 18px; height: 18px; transform: rotate(45deg); border-radius: 3px; margin: 3px; }
+
+/* Versiones */
+.asunto { border-top: 1px solid var(--borde); padding-top: 6px; margin-top: 28px; }
+.comparar { margin: 10px 0 12px; }
+.comparar .mandos { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin-bottom: 8px; font-size: 13.5px; }
+.comparar label { display: flex; gap: 6px; align-items: center; min-width: 0; max-width: 100%; }
+.comparar select { font: inherit; font-size: 13px; border: 1px solid var(--borde); padding: 3px 6px; background: var(--blanco); color: var(--texto); min-width: 0; max-width: 100%; flex: 1; }
+.lado { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.lado figure img { background: repeating-conic-gradient(#eee 0 25%, #fff 0 50%) 0 0 / 16px 16px; }
+@media (max-width: 700px) { .lado { grid-template-columns: 1fr; } }
+.cortina { position: relative; overflow: hidden; border: 1px solid var(--linea); background: repeating-conic-gradient(#eee 0 25%, #fff 0 50%) 0 0 / 16px 16px; touch-action: pan-y; user-select: none; }
+.cortina img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.cortina .antes { position: absolute; inset: 0; }
+.cortina .raya { position: absolute; top: 0; bottom: 0; width: 2px; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,0.5); pointer-events: none; }
+.cortina .raya::after { content: "⇆"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; border: 1px solid #000; border-radius: 50%; width: 30px; height: 30px; display: grid; place-items: center; font-size: 15px; }
+.cortina .rot { position: absolute; top: 6px; background: rgba(0,0,0,0.7); color: #fff; font-size: 12px; padding: 1px 7px; pointer-events: none; }
+.cortina input[type=range] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; margin: 0; }
+.linea { display: flex; gap: 12px; overflow-x: auto; padding: 4px 2px 10px; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; }
+.hito { flex: 0 0 220px; border: 1px solid var(--suave); padding: 8px; font-size: 13px; scroll-snap-align: start; }
+.hito.sel { border-color: var(--texto); box-shadow: 0 0 0 1px var(--texto); }
+.hito img { width: 100%; aspect-ratio: 16 / 10; object-fit: contain; background: var(--fondo2); display: block; cursor: zoom-in; }
+.hito .f { color: var(--claro); font-size: 12px; margin-top: 4px; }
+.hito .t { font-weight: 600; line-height: 1.3; }
+.hito p { margin: 3px 0; }
+.hito .bs { display: flex; gap: 6px; margin-top: 6px; }
+.hito .bs .btn { font-size: 12px; padding: 1px 8px; }
+@media (max-width: 600px) { .hito { flex-basis: 78vw; } }
+
 @media (max-width: 860px) {
-  .layout { grid-template-columns: 1fr; }
+  .layout { grid-template-columns: minmax(0, 1fr); }
   nav { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--suave); }
   .ficha { float: none; width: 100%; margin: 12px 0; }
   .indice { columns: 1; }
@@ -259,6 +366,12 @@ body.editable [data-key]:hover { background: #fff8d6; cursor: text; }
     <section class="pagina" id="p-personajes"></section>
     <section class="pagina" id="p-sonidos"></section>
     <section class="pagina" id="p-historia"></section>
+    <section class="pagina" id="p-previa"></section>
+    <section class="pagina" id="p-minijuegos"></section>
+    <section class="pagina" id="p-escondites"></section>
+    <section class="pagina" id="p-coleccion"></section>
+    <section class="pagina" id="p-propuesta"></section>
+    <section class="pagina" id="p-versiones"></section>
     <section class="pagina" id="p-textos"></section>
   </main>
 </div>
@@ -268,7 +381,11 @@ body.editable [data-key]:hover { background: #fff8d6; cursor: text; }
 <script src="data/textos.js"></script>
 <script src="data/estilo.js"></script>
 <script src="data/funciones.js"></script>
+<script src="data/codigo.js"></script>
+<script src="data/paleta_propuesta.js"></script>
+<script src="data/versiones.js"></script>
 <script src="pantallas.js"></script>
+<script src="mecanicas.js"></script>
 <script>
 "use strict";
 const J = window.JUEGO || {};
@@ -334,10 +451,10 @@ function nav(pag, sel) {
     const ab = PLIEGUES["g:" + id] ?? true;
     return `<div class="grupo ${ab ? "" : "cerrado"}"><button class="cab" data-plegar="g:${id}"><span class="flecha ${ab ? "ab" : ""}">›</span>${titulo}${ab ? "" : `<span class="cuenta">${n}</span>`}</button><div class="dentro">${html}</div></div>`;
   };
-  $("#nav").innerHTML = `<div class="marca">Ladrón<small>Documentación del juego</small></div>
+  $("#nav").innerHTML = `<div class="marca">Ninja Karma<small>Documentación del juego</small></div>
     ${grupo("pantallas", "Pantallas", ORDEN.length, `${enlace("inicio", "Resumen")}${enlace("capturas", "Capturas")}<div class="arbol">${arbol(P, sel)}</div>`)}
-    ${grupo("juego", "El juego", ENTIDADES.length + 1, enlace("historia", "Historia") + ENTIDADES.map(([k, txt]) => enlace(k, txt)).join(""))}
-    ${grupo("referencia", "Referencia", 3, enlace("estilo", "Estilo") + enlace("paleta", "Paleta") + enlace("textos", "Textos"))}
+    ${grupo("juego", "El juego", ENTIDADES.length + 5, enlace("historia", "Historia") + enlace("previa", "Antes de un robo") + enlace("minijuegos", "Minijuegos") + enlace("escondites", "Escondites") + enlace("coleccion", "Colección") + ENTIDADES.map(([k, txt]) => enlace(k, txt)).join(""))}
+    ${grupo("referencia", "Referencia", 5, enlace("estilo", "Estilo") + enlace("paleta", "Paleta") + enlace("propuesta", "Paleta propuesta") + enlace("versiones", "Versiones") + enlace("textos", "Textos"))}
     <div class="meta">${esc(g.fecha || "—")} · ${esc(g.commit || "—")}${EDITABLE ? " · edición activa" : ""}</div>`;
 }
 let ACTUAL = [null, null];
@@ -356,7 +473,6 @@ function ir() {
   if (pag === "pantallas") pag = "inicio";
   // La antigua página de assets, repartida por entidades.
   if (pag === "assets") { pag = { modelos: "objetos" }[sub] || (ENTIDADES.some(([k]) => k === sub) ? sub : "piezas"); sub = null; }
-  if (pag === "coleccion") pag = "objetos";
   // Las piezas a robar viven ahora en objetos, como una categoría.
   if (pag === "piezas") { pag = "objetos"; filtroTipo = "loot"; objetos(); if (sub && !sub.startsWith("pieza-") && !sub.startsWith("objeto-")) sub = sub === "frases" ? "pieza-frases" : sub; }
   // #objetos/<elemento>: lo elige y lo enseña en la rejilla.
@@ -390,7 +506,7 @@ function inicio() {
   const g = J.generado || {};
   const todas = n => [n, ...(n.children || []).flatMap(todas)];
   $("#p-inicio").innerHTML = `
-    <div class="cabeza"><div><h1>Ladrón</h1><div class="sub">Todas las pantallas del juego · pulsa una para verla con las que cuelgan de ella</div></div></div>
+    <div class="cabeza"><div><h1>Ninja Karma</h1><div class="sub">Todas las pantallas del juego · pulsa una para verla con las que cuelgan de ella</div></div></div>
     ${P.map(r => `<div class="seccion"><h2><a href="#pantalla/${r.id}">${esc(nombre(r))}</a></h2><span class="nota">${todas(r).length} pantallas</span></div>
       <div class="tarjetas">${todas(r).map(tarjeta).join("")}</div>`).join("")}
     <details class="mas"><summary>Sobre esta documentación</summary>
@@ -691,14 +807,18 @@ function historia() {
   $("#p-historia").innerHTML = `<h1>Historia</h1>
     <div class="sub">Todo el texto de la historia, en el orden en que lo lee el jugador${EDITABLE ? " · pulsa un texto para cambiarlo" : ""}</div>
     <p class="lead">La Banda del Calcetín rescata las obras de los cinco museos de los que se ha adueñado el Barón Von Bostezo: 25 robos, cinco por museo, de fácil a difícil. Cada museo es de un tema; sus cuatro primeras salas son robos normales y la quinta, su gran golpe, tiene algo especial. Algunos robos enseñan algo nuevo (la lección de la previa); los demás lo practican.</p>
-    <div class="indice"><ul><li><a href="#historia/prologo">Prólogo</a></li>${museos.map(m => `<li><a href="#historia/museo${m.n}">${esc(tx(m.name))}</a></li>`).join("")}<li><a href="#historia/final">Final</a></li></ul></div>
+    <div class="indice"><ul><li><a href="#historia/prologo">Prólogo</a></li>${museos.map(m => `<li><a href="#historia/museo${m.n}">${esc(tx(m.name))}</a></li>`).join("")}<li><a href="#historia/final">Final</a></li><li><a href="#historia/progreso">El progreso guardado</a></li><li><a href="#previa">Antes de un robo</a></li></ul></div>
     <h2 id="historia-prologo">Prólogo</h2>
     <p style="white-space:pre-wrap">${t(h.prologue)}</p>
     ${museos.map(m => `<h2 id="historia-museo${m.n}"><span class="punto" style="background:${m.colour}"></span>${t(m.name)}</h2>
       <p class="lead">${t(m.text)}</p>
       ${(m.nights_list || []).map(n => noche(noches[n - 1], lecciones)).join("")}`).join("")}
     <h2 id="historia-final">Final</h2>
-    <p style="white-space:pre-wrap">${t(h.ending)}</p>`;
+    <p style="white-space:pre-wrap">${t(h.ending)}</p>
+    <h2 id="historia-progreso">El progreso guardado</h2>
+    <p>El progreso se guarda aparte para cada tamaño de banda (1, 2, 3 o 4 ladrones), como el robo más lejano alcanzado (<code>robo_&lt;banda&gt;</code> en <code>user://progress.cfg</code>); se puede rejugar cualquier robo ya alcanzado. Tras un gran golpe se abre el siguiente museo.</p>
+    <p>Una partida de la historia anterior, la de <b>20 noches en cinco museos de cuatro noches</b> (<code>unlocked_&lt;banda&gt;</code>, y antes de las bandas solo <code>unlocked</code>, la del ladrón solo), se lee con <code>Story.from_old</code> y no se pierde nada: cada museo hecho allí es un museo hecho aquí, y las noches hechas en el museo a medias son salas hechas en el suyo.</p>
+    ${tw(`<table class="tabla"><tr><th>Noche alcanzada (historia de 20)</th>${(h.from_old || []).map(([a]) => `<td class="num">${a}</td>`).join("")}</tr><tr><th>Robo alcanzado (historia de 25)</th>${(h.from_old || []).map(([, b]) => `<td class="num"><a href="#historia/museo${Math.floor((b - 1) / (h.rooms || 5)) + 1}">${b}</a></td>`).join("")}</tr></table>`)}`;
 }
 function noche(n, lecciones) {
   if (!n) return "";
@@ -706,11 +826,13 @@ function noche(n, lecciones) {
   const g = n.guards === 0 ? "sin guardias" : n.guards === 1 ? "1 guardia" : n.guards + " guardias";
   const tam = { small: "pequeño", medium: "mediano", large: "grande" }[n.size] || n.size;
   const p = ((J.assets || {}).piezas || [])[n.n - 1];
+  const hd = ((J.historia || {}).played || [])[n.n - 1];
   return `<div class="noche"><div class="n">${String(n.n).padStart(2, "0")}</div><div>${p ? `<img class="mini" loading="lazy" src="${p.file}" alt="" data-img="${p.file}" data-cap="${esc(tx(l.name))}">` : ""}
     <div class="pz"><span class="punto" style="background:${l.colour}"></span>${t(l.name)} <a class="estado" href="#objetos/pieza-${n.n}">ficha de la pieza</a></div>
     <p><span class="etq">Descripción</span>${t(l.blurb)}</p>
     <p><span class="etq">Mientras la coge</span>${t(l.verb)}</p>
     <p><span class="etq">Cuento</span>${t(l.story)}</p>
+    ${hd ? `<p><span class="etq">Encima de la pieza</span>${esc(hd.heading)}${hd.game_level != null && n.n >= ((J.historia || {}).lockpick_night || 99) ? ` · <a href="#minijuegos/niveles">minijuegos en nivel ${["fácil", "medio", "difícil"][hd.game_level]}</a>` : ""}</p>` : ""}
     ${les ? `<p><span class="etq">Enseña</span><b>${t(les.title)}</b>: ${t(les.text)}</p>` : ""}
     ${n.boss ? `<p><span class="etq">Gran golpe</span>${t(n.tip)}</p>` : ""}
     <div><span class="tag">museo ${tam}, forma ${n.shape}</span><span class="tag">${g}</span>${n.props ? '<span class="tag">objetos</span>' : ""}${n.lights ? '<span class="tag">luces</span>' : ""}${n.case_alarm ? '<span class="tag">vitrina con alarma</span>' : ""}<span class="tag">${n.alarms} alarma${n.alarms === 1 ? "" : "s"}</span><span class="tag">${l.seconds} s para cogerla</span></div>
@@ -742,6 +864,355 @@ function filas() {
     return `<tr class="${x.broken ? "roto" : ""}"><td class="k">${esc(x.key)}<small>${esc(x.group)} · ${esc(donde)}</small></td><td class="v" data-key="${esc(x.key)}" ${x.broken ? `data-valor="${esc(valor)}"` : ""}>${marcas(valor)}</td></tr>`;
   }).join("") + (lista.length > 600 ? `<tr><td colspan="2" class="estado">…y ${lista.length - 600} más: afina la búsqueda.</td></tr>` : "");
 }
+
+// --- Mecánicas: lo que se lee del código, con lo que significa (docs/mecanicas.js) ------
+const MEC = window.MECANICAS || {};
+const COD = window.CODIGO || {};
+const tw = html => `<div class="tw">${html}</div>`;
+const sw = (hex, grande = false, title = "") => `<span class="sw ${grande ? "g" : ""}" style="background:${hex}" title="${esc(title || hex)}"></span>`;
+const nombreTema = th => th ? tx("THEME_" + th.toUpperCase()) : "";
+// Las constantes de un fichero: primero las que se explican aquí, en su orden; luego
+// las que el código tiene y aún no se han explicado, con su comentario en inglés.
+function constantes(files, etiquetas, sin = []) {
+  const filas = [];
+  const vistas = new Set();
+  for (const [k, etq] of Object.entries(etiquetas || {})) {
+    const f = files.find(f => COD[f] && COD[f].consts[k]);
+    if (!f) { filas.push(`<tr><td><code>${esc(k)}</code></td><td>${esc(etq)}</td><td class="val">ya no está en el código</td><td></td></tr>`); continue; }
+    const c = COD[f].consts[k];
+    vistas.add(f + ":" + k);
+    filas.push(`<tr><td><code>${esc(k)}</code></td><td>${esc(etq)}</td><td class="val">${esc(c.value)}</td><td class="nota-cod">${esc(f)}:${c.line}</td></tr>`);
+  }
+  for (const f of files) for (const [k, c] of Object.entries((COD[f] || {}).consts || {})) {
+    if (vistas.has(f + ":" + k) || sin.includes(k) || k in (etiquetas || {})) continue;
+    if (c.value.length > 60) continue;
+    filas.push(`<tr><td><code>${esc(k)}</code></td><td class="en">${esc(c.note || "sin comentario")} (comentario del código)</td><td class="val">${esc(c.value)}</td><td class="nota-cod">${esc(f)}:${c.line}</td></tr>`);
+  }
+  return filas.length ? tw(`<table class="tabla"><tr><th>Constante</th><th>Qué es</th><th>Valor</th><th>Dónde</th></tr>${filas.join("")}</table>`) : "";
+}
+const constante = (f, k) => ((COD[f] || {}).consts || {})[k]?.value ?? "?";
+const NOCHES = () => (J.historia || {}).played || [];
+const museoDe = n => ((J.historia || {}).museums || []).find(m => (m.nights_list || []).includes(n));
+const celdaNoche = n => { const m = museoDe(n); return `<td class="num"><a href="#historia/museo${m ? m.n : 1}">${String(n).padStart(2, "0")}</a></td><td>${m ? `<span class="punto" style="background:${m.colour}"></span>${esc(tx(m.name))}` : ""}</td>`; };
+// La imagen y el enlace de un objeto del catálogo (página de objetos) por su herramienta del editor.
+const objeto = tool => elementos().find(e => e.id === "objeto-" + tool);
+function tarjetaObjeto(tool, nombre, sub = "") {
+  const e = objeto(tool);
+  const im = e && e.img ? `<img loading="lazy" src="${e.img}" alt="">` : `<div class="sin">sin imagen</div>`;
+  return `<a href="${e ? "#objetos/" + e.id : "#objetos"}">${im}<div class="t">${esc(frase(nombre || (e ? e.nombre : tool)))}</div>${sub ? `<div class="s">${sub}</div>` : ""}</a>`;
+}
+
+// --- Antes de un robo -------------------------------------------------------------
+function previa() {
+  const M = MEC.previa || {}, B = "logic/briefing.gd";
+  const regla = r => esc(r).replace(/\{(\w+)\}/g, (_, k) => constante(B, k));
+  const pag = { story: "la historia", news: "lo nuevo", plan: "el plan" };
+  const fotos = ["previa_robo_01_story", "previa_robo_01_news", "previa_robo_01_plan"].map(x => SHOTS[x]).filter(Boolean);
+  const noches = NOCHES();
+  const les = (J.historia || {}).lessons || {};
+  $("#p-previa").innerHTML = `<h1>Antes de un robo</h1>
+    <div class="sub">La historia, lo nuevo y el plan (<code>scenes/main.gd</code> <code>_brief_pages</code>, <code>logic/briefing.gd</code>) · las reglas de cada robo salen del juego</div>
+    <p class="lead">${esc(M.intro || "")}</p>
+    <div class="grandes">${fotos.map(fig).join("")}</div>
+    <p>Todas las previas capturadas, en la pantalla <a href="#pantalla/previa">«La previa»</a>.</p>
+    <h2 id="previa-reglas">Las reglas del plan</h2>
+    <p>${esc(M.reglas_titulo || "")}</p>
+    <ul>${(M.reglas || []).map(r => `<li>${regla(r)}</li>`).join("")}</ul>
+    ${constantes([B], M.consts, ["MECHANICS"])}
+    <h2 id="previa-robos">Robo a robo</h2>
+    <p class="estado">Para un ladrón solo. Encima de la pieza sale su rango y qué robo es (<code>Story.heading</code>); con banda, en plural («${esc((noches[0] || {}).heading_gang || "")}»).</p>
+    ${tw(`<table class="tabla tags-noche"><tr><th class="num">Robo</th><th>Museo</th><th>Encima de la pieza</th><th>Páginas</th><th>Lo nuevo</th><th>Reglas del plan</th></tr>
+      ${noches.map(p => { const n = (J.historia.nights || [])[p.n - 1] || {}; const l = les[n.teach];
+        return `<tr>${celdaNoche(p.n)}<td>${esc(p.heading)}</td><td>${p.pages.map(x => `<span class="tag">${pag[x] || x}</span>`).join("")}</td>
+        <td>${l ? t(l.title) : ""}</td><td><ul class="tips">${p.tips.map(x => `<li>${esc(x)}</li>`).join("")}</ul></td></tr>`; }).join("")}</table>`)}`;
+}
+
+// --- Minijuegos -----------------------------------------------------------------------
+function minijuegos() {
+  const M = MEC.minijuegos || {}, cat = J.catalogo || {}, h = J.historia || {};
+  const todos = cat.minigames || [];
+  const orden = [...(M.orden || []), ...todos.map(g => g.kind).filter(k => !(M.orden || []).includes(k))];
+  const lk = h.lockpick_night || 18;
+  const niveles = ["fácil", "medio", "difícil"];
+  const conJuegos = NOCHES().filter(p => p.minigames);
+  $("#p-minijuegos").innerHTML = `<h1>Minijuegos</h1>
+    <div class="sub">${todos.length} minijuegos, cada uno un fichero de lógica (<code>logic/minigames/</code>) y otro de vista (<code>scenes/minigame_views/</code>)</div>
+    <p class="lead">${esc(M.intro || "")}</p>
+    <p>${esc((M.comun || {}).lockpick_from || "").replace("{n}", lk)} ${esc((M.comun || {}).niveles || "")}</p>
+    <div class="indice"><ul>${orden.map(k => `<li><a href="#minijuegos/${k}">${esc((M.juegos[k] || {}).nombre || k)}</a></li>`).join("")}<li><a href="#minijuegos/niveles">El nivel de cada robo</a></li></ul></div>
+    ${orden.map(k => {
+      const g = todos.find(x => x.kind === k), d = (M.juegos || {})[k] || {}, s = SHOTS["juego_minijuego_" + k];
+      if (!g) return `<div class="mec" id="minijuegos-${k}"><div><h2>${esc(d.nombre || k)}</h2><p class="aviso">Ya no está en el juego (no hay <code>logic/minigames/${k}.gd</code>).</p></div></div>`;
+      return `<div class="mec" id="minijuegos-${k}"><div>
+        <h2>${esc(d.nombre || k)}</h2>
+        ${campo("Dónde", esc(d.donde || ""))}${campo("Tipo", esc(d.clase || ""))}
+        <p>${esc(d.texto || (COD[g.logic] || {}).doc || "")}</p>
+        ${campo("Bajo la caja", `${t(g.how, "span", "boton")} ${t(g.let_go, "span", "boton")}`)}
+        ${campo("Código", `<code>${esc(g.class)}</code> · <code>${esc(g.logic)}</code> · <code>${esc(g.view)}</code>`)}
+      </div><div class="img">${s ? `<img loading="lazy" src="${s.file}" alt="" data-img="${s.file}" data-cap="${esc(s.title)}">` : `<div class="sin">sin captura</div>`}</div></div>
+      <details class="mas"><summary>Sus números</summary>${constantes([g.logic], d.consts)}</details>`;
+    }).join("")}
+    <h2 id="minijuegos-niveles">El nivel de cada robo</h2>
+    <p class="estado">Desde el robo ${lk}, con ganzúa y cables; antes, la vitrina se abre quieto a su lado. El equilibrio, colarse, el estornudo y la recreativa van por su lado: salen donde haya pedestal, escondite o máquina.</p>
+    ${tw(`<table class="tabla"><tr><th class="num">Robo</th><th>Museo</th><th>Nivel de los minijuegos</th></tr>${conJuegos.map(p => `<tr>${celdaNoche(p.n)}<td>${niveles[p.game_level] || p.game_level}${Story_boss(p.n) ? " · gran golpe" : ""}</td></tr>`).join("")}</table>`)}
+    <details class="mas"><summary>Uno nuevo</summary><p>${esc((M.comun || {}).nuevo || "")}</p></details>`;
+}
+const Story_boss = n => !!(((J.historia || {}).nights || [])[n - 1] || {}).boss;
+
+// --- Escondites -------------------------------------------------------------------------
+function escondites() {
+  const M = MEC.escondites || {}, H = (J.catalogo || {}).hideouts || { pieces: {}, big: [], tight: {} };
+  const apretado = k => H.tight[k] ? `${H.tight[k]} meneo más para entrar` : "holgado";
+  const grandes = (H.big || []).map(k => tarjetaObjeto("big:" + k, frase(tx("HIDE_" + k.toUpperCase())), `pieza grande · ${apretado(k)}`));
+  const muebles = Object.entries(H.pieces || {}).map(([k, v]) => tarjetaObjeto("exhibit:" + k, frase(tx(v.name)), `${esc(nombreTema(v.theme))} · ${apretado(k)}`));
+  const armadura = tarjetaObjeto("prop:armour", frase(tx("PROP_ARMOUR")), `armadura de pie · ${apretado("armour")}`);
+  const nombreDe = k => frase(tx(k === "armour" ? "PROP_ARMOUR" : "HIDE_" + k.toUpperCase()));
+  const noches = NOCHES();
+  $("#p-escondites").innerHTML = `<h1>Escondites</h1>
+    <div class="sub">Dónde meterse (<code>logic/hideouts.gd</code>) y posar como estatua (<code>logic/plinths.gd</code>)</div>
+    <p class="lead">${esc(M.intro || "")}</p>
+    <div class="recuadro"><b>Funcionan siempre y salen pocos.</b> ${esc(M.siempre || "")}</div>
+    <p>${esc(M.tipos || "")}</p>
+    <div class="grandes">${["juego_minijuego_squeeze", "juego_minijuego_sneeze"].map(x => SHOTS[x]).filter(Boolean).map(fig).join("")}</div>
+    <h2 id="escondites-grandes">Piezas grandes</h2><div class="piezas-rej">${grandes.join("")}</div>
+    <h2 id="escondites-muebles">Muebles, uno por tema</h2><div class="piezas-rej">${muebles.join("")}</div>
+    <h2 id="escondites-armadura">Armaduras</h2><div class="piezas-rej">${armadura}</div>
+    <h2 id="escondites-numeros">Cuántos y dónde</h2>
+    ${constantes(["logic/hideouts.gd"], M.consts, ["BIG", "PIECES", "TIGHT"])}
+    <h3>Los pedestales</h3>
+    <p class="estado">Pedestales bajos y vacíos: subido a uno, a la pata coja (<a href="#minijuegos/balance">el equilibrio</a>), un guardia te toma por una pieza más. Se reparten junto con los escondites.</p>
+    ${constantes(["logic/plinths.gd"], M.pedestales)}
+    <h2 id="escondites-robos">En cada robo de la historia</h2>
+    <p class="estado">Lo que monta el juego en cada robo, para un ladrón solo.</p>
+    ${tw(`<table class="tabla"><tr><th class="num">Robo</th><th>Museo</th><th>Tamaño</th><th>Escondites</th><th class="num">Pedestales</th></tr>${noches.map(p => `<tr>${celdaNoche(p.n)}<td>${esc(p.size)} · ${p.w}×${p.h}</td>
+      <td>${Object.entries(p.hideouts).map(([k, n]) => `<span class="tag">${n} × ${esc(nombreDe(k))}</span>`).join("") || "—"}</td><td class="num">${p.plinths}</td></tr>`).join("")}</table>`)}`;
+}
+
+// --- Colección ---------------------------------------------------------------------------
+function coleccion() {
+  const M = MEC.coleccion || {}, cat = J.catalogo || {};
+  const unica = k => (cat.big || []).includes(k) ? "big:" + k : "exhibit:" + k;
+  const nombrePieza = k => { const e = objeto(unica(k)); return frase(e ? e.nombre : k); };
+  const juegos = cat.arcade_games || {}, orden = (cat.variants || {})[cat.arcade_model] || Object.keys(juegos);
+  const modelo = (J.modelos || []).find(m => m.name === cat.arcade_model) || {};
+  const pixel = g => { const art = g.art || [], ink = g.ink || {}; return `<div class="pixel" style="background:${g.screen}">${art.map(r => [...r].map(c => `<i style="background:${ink[c] || "transparent"}"></i>`).join("")).join("")}</div>`; };
+  const noches = NOCHES().filter(p => p.arcades.length || p.icons.length);
+  $("#p-coleccion").innerHTML = `<h1>Colección</h1>
+    <div class="sub">Qué hay en cada vitrina (<code>logic/collection.gd</code>), las piezas únicas y las que tienen variantes (<code>logic/themes.gd</code>)</div>
+    <p class="lead">${esc(M.intro || "")}</p>
+    <ul>${(M.reglas || []).map(r => `<li>${esc(r)}</li>`).join("")}</ul>
+    <p class="estado">${esc(M.fuera || "")}</p>
+    <h2 id="coleccion-unicas">Piezas únicas</h2>
+    <p class="estado">Una por museo como mucho (<code>Themes.UNIQUE</code>).</p>
+    <div class="piezas-rej">${(cat.unique || []).map(k => tarjetaObjeto(unica(k), nombrePieza(k))).join("")}</div>
+    <h2 id="coleccion-frente">Piezas con frente</h2>
+    <p class="estado">Nunca contra una pared: miran al suelo libre de al lado (<code>Themes.FRONTED</code>).</p>
+    <div class="piezas-rej">${(cat.fronted || []).map(k => tarjetaObjeto("exhibit:" + k)).join("")}</div>
+    <h2 id="coleccion-recreativa">La recreativa: seis juegos</h2>
+    <p>${esc(M.recreativa || "")}</p>
+    <div class="juegos">${orden.map(k => { const g = juegos[k] || {}, v = (modelo.variants || []).find(x => x.id === k);
+      return `<div class="juego-rec"><div class="fila2">${v ? `<img loading="lazy" src="${v.file}" alt="" data-img="${v.file}" data-cap="${esc(tx(v.name))}">` : `<div class="sin">sin imagen</div>`}${pixel(g)}</div>
+        <div class="t">${esc(frase(tx("PIECE_RECREATIVA_" + k.toUpperCase())))} <span class="estado"><code>${esc(k)}</code></span></div>
+        <div class="estado">${sw(g.mueble)}mueble ${sw(g.marquesina)}marquesina ${sw(g.screen)}pantalla</div></div>`; }).join("")}</div>
+    <p class="estado">Se juega en <a href="#minijuegos/arcade">la recreativa</a>. La ficha del modelo, en <a href="#objetos/objeto-exhibit:${esc(cat.arcade_model || "")}">objetos</a>.</p>
+    <h2 id="coleccion-numeros">Los números</h2>
+    ${constantes(["logic/collection.gd", "logic/themes.gd"], M.consts, ["ALL", "UNIQUE", "VARIANTS", "PROP_THEMES", "TYPES", "FRONTED"])}
+    <h2 id="coleccion-robos">En cada robo de la historia</h2>
+    <p class="estado">Las piezas únicas y las recreativas que salen en cada robo (un ladrón solo); en los demás no hay ninguna.</p>
+    ${tw(`<table class="tabla"><tr><th class="num">Robo</th><th>Museo</th><th>Piezas únicas</th><th>Recreativas</th></tr>${noches.map(p => `<tr>${celdaNoche(p.n)}
+      <td>${p.icons.map(k => `<span class="tag">${esc(nombrePieza(k))}</span>`).join("")}</td><td>${p.arcades.map(k => `<span class="tag">${esc(frase(tx("PIECE_RECREATIVA_" + String(k).toUpperCase())))}</span>`).join("")}</td></tr>`).join("")}</table>`)}`;
+}
+
+// --- Paleta propuesta (tools/palette.py) --------------------------------------------------
+function propuesta() {
+  const D = window.PALETA_PROPUESTA;
+  if (!D) { $("#p-propuesta").innerHTML = `<h1>Paleta propuesta</h1><p>Falta <code>docs/data/paleta_propuesta.js</code>: <code>python3 tools/docs.py build palette</code>.</p>`; return; }
+  const S = D.stats, C = D.classes, P = Object.fromEntries(D.palette.map(p => [p.id, p.hex]));
+  const tono = id => { const [pid, n] = id.split(":"); const p = D.palette.find(x => x.id === pid); return n ? p.tones[+n - 1][1] : p.hex; };
+  const tinta = h => { const c = h.replace("#", ""); const [r, g, b] = [0, 2, 4].map(i => parseInt(c.slice(i, i + 2), 16) / 255).map(v => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4); return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.28 ? "#0e0a1a" : "#f4f0ff"; };
+  const muro = p => `<div class="muro" style="--paper:${p.paper};--paper2:${p.paper2};--wain:${p.wainscot};--trim:${p.trim};--stone:${p.stone};--stone2:${p.stone2};--skirt:${p.skirt}"><i class="pp"></i><i class="tr"></i><i class="wn"></i><i class="sk"></i><i class="fl"></i></div>`;
+  const K = ["stone", "stone2", "joint", "paper", "paper2", "wainscot", "cap", "trim", "skirt"];
+  const cvd = lista => `<div class="cvd">${lista.map(c => `<div><b>${esc(c.name)}</b>${c.cells.map(([n, h]) => `<div><span class="dot" style="background:${h}"></span>${esc(n)}</div>`).join("")}
+    <div class="${c.worst[2] < 6 ? "mal" : "bien"}" style="margin-top:6px">par más parecido: ${esc(c.worst[0])} / ${esc(c.worst[1])} (ΔE ${String(c.worst[2]).replace(".", ",")})</div></div>`).join("")}</div>`;
+  const R = D.reference;
+  const fondo = R ? `url(${R.image})` : "none";
+  const g = D.generated || {};
+  const bt = (bg, bd, fg, glow) => `style="background:${bg};border:${bd};color:${fg}${glow ? ";box-shadow:0 0 16px " + glow : ""}"`;
+  const maqueta = (et, v) => `<div class="maqueta" style="background-image:${fondo}"><div class="et">${et}</div>
+    <div class="bts"><span class="bt" ${bt(v.glass, "2px solid " + v.edge, v.text)}>HISTORIA</span><span class="bt" ${bt(v.lit, "3px solid " + v.glow, v.glowText, v.glowSoft)}>DESAFÍO</span><span class="bt" ${bt(v.glass, "2px solid " + v.edge, v.l2)}>2 JUGADORES</span></div>
+    <div class="tj" style="background:${v.glass};border:2px solid ${v.edge}"><h4 style="color:${v.title}">La dentadura de Ugg</h4><p style="color:${v.text}">Sala 1 · La Gran Cueva</p>
+      <p style="color:${v.dim}"><b style="background:${v.key};color:${v.keyInk};padding:1px 5px;border-radius:4px">A</b> Robar la pieza y salir sin que te vean.</p>
+      <p style="color:${v.dim}"><b style="background:${v.key};color:${v.keyInk};padding:1px 5px;border-radius:4px">B</b> Si un guardia te ve, suena la <b style="color:${v.alarm}">alarma</b>.</p></div>
+    <div class="banda" style="background:${v.band}">${v.who.map(([n, c, extra]) => `<span class="quien"><i class="${n === "Pieza" ? "gema" : ""}" style="background:${c};${extra || ""}"></i>${n}</span>`).join("")}</div></div>`;
+  const hoy = { glass: "rgba(21,15,36,.84)", edge: "rgba(143,130,184,.5)", text: "#f1dfbd", lit: "rgba(36,24,56,.92)", glow: "#ffae42", glowText: "#fff0d6", glowSoft: "rgba(255,174,66,.45)", l2: "#f0a13a", title: "#f0c46a", dim: "#9aa0c8", key: "#f1dfbd", keyInk: "#2a160d", alarm: "#ff3d6e", band: "rgba(11,8,32,.92)",
+    who: [["L1", "#2ec4a6"], ["L2", "#f0a13a"], ["L3", "#b07cff"], ["L4", "#4dabf7"], ["Guardia", "#9b2c3f"], ["Pieza", "#74c0fc"], ["Salida", "#4ade80"], ["A salvo", "#22d3ee"]] };
+  const nueva = { glass: "rgba(28,20,51,.84)", edge: "rgba(154,140,200,.5)", text: P.lila, lit: "rgba(46,33,80,.92)", glow: P.oro, glowText: tono("oro:1"), glowSoft: "rgba(255,195,92,.45)", l2: P.l2, title: P.oro, dim: tono("lavanda:1"), key: P.lila, keyInk: P.noche, alarm: P.rojo, band: "rgba(28,20,51,.92)",
+    who: [["L1", P.l1], ["L2", P.l2], ["L3", P.l3], ["L4", P.l4], ["Guardia", P.vino, "box-shadow:0 0 0 3px " + P.rojo], ["Pieza", P.oro, "box-shadow:0 0 0 2px " + P.lila], ["Salida", P.menta]] };
+  const grupos = ["Morados", "Marrones", "Acento", "Juego"], tituloG = { Morados: "Base: morados", Marrones: "Secundarios: marrones del museo", Acento: "Acento", Juego: "Con significado de juego" };
+  const pasoMal = D.paso.filter(p => !p.present);
+  $("#p-propuesta").innerHTML = `<h1>Paleta propuesta</h1>
+    <div class="sub">Auditoría de colores y una paleta de 16 colores · <code>tools/palette.py</code>, regenerada con el código de ${esc(g.branch || "")} @ <code>${esc(g.commit || "")}</code> el ${esc(g.date || "")}</div>
+    <div class="propuesta"><b>Propuesta pendiente de aprobar.</b> Nada de esto se ha aplicado todavía al juego: los colores que usa hoy están en <a href="#paleta">Paleta</a>. El inventario se regenera con cada <code>build</code>; la propuesta (los 16 colores, la tabla de paso, la regla de los museos) está escrita en <code>tools/palette.py</code> y es lo que hay que decidir.</div>
+    <p class="lead">Qué colores tiene hoy el juego y una propuesta para reducirlos a 16 colores base: morados de noche como base, marrones de museo como secundarios, un oro de acento y seis colores con significado de juego.</p>
+    <div class="indice"><ul><li><a href="#propuesta/hoy">1. Lo que hay</a></li><li><a href="#propuesta/inventario">2. Inventario por familia</a></li><li><a href="#propuesta/paleta">3. La paleta propuesta</a></li><li><a href="#propuesta/daltonismo">4. Colores de juego y daltonismo</a></li><li><a href="#propuesta/paso">5. Tabla de paso</a></li><li><a href="#propuesta/museos">6. Museos y temas</a></li><li><a href="#propuesta/maqueta">7. Maqueta sobre el fondo</a></li><li><a href="#propuesta/centralizar">8. Dónde centralizarla</a></li><li><a href="#propuesta/riesgos">9. Riesgos</a></li><li><a href="#propuesta/dudas">Dudas para decidir</a></li></ul></div>
+
+    <h2 id="propuesta-hoy">1. Lo que hay</h2>
+    <div class="cifras"><div class="cifra"><b>${S.hex}</b><span>colores distintos escritos en el código (sin contar lo histórico)</span></div>
+      <div class="cifra"><b>${S.groups}</b><span>grupos al juntar los casi iguales (ΔE00 &lt; 5)</span></div>
+      <div class="cifra"><b>${S.core_hex} / ${S.core_groups}</b><span>solo interfaz, mundo y juego: colores / grupos</span></div>
+      <div class="cifra"><b>${S.glb_hex}</b><span>colores base en ${S.glb_models} modelos .glb (${S.glb_mats} materiales)</span></div></div>
+    <div class="dos"><div><h3>Por clase</h3>${tw(`<table class="tabla"><tr><th>Clase</th><th class="num">colores</th><th class="num">grupos</th></tr>
+      <tr><td>Interfaz: menús, HUD, textos, botones, escenitas de menú</td><td class="num">${S.bycls.ui[0]}</td><td class="num">${S.bycls.ui[1]}</td></tr>
+      <tr><td>Mundo: museo, suelos, paredes, luces, mapas, humo</td><td class="num">${S.bycls.mundo[0]}</td><td class="num">${S.bycls.mundo[1]}</td></tr>
+      <tr><td>Juego: ladrones, guardia, alerta, a salvo, piezas, salida</td><td class="num">${S.bycls.juego[0]}</td><td class="num">${S.bycls.juego[1]}</td></tr>
+      <tr><td>Ilustración: cuadros pintados píxel a píxel, carteles, pantallas de la recreativa</td><td class="num">${S.bycls.ilustracion[0]}</td><td class="num">·</td></tr>
+      <tr><td>Convención: los botones A B X Y y los de PlayStation (Glyph)</td><td class="num">${S.bycls.convencion[0]}</td><td class="num">·</td></tr></table>`)}
+      <p class="estado">Un mismo color puede estar en dos clases. Aparte quedan ${S.hist_hex} colores de <code>art/botin/primitivas.gd</code>: es historial y no se usa.</p></div>
+      <div><h3>Por familia</h3>${tw(`<table class="tabla"><tr><th>Familia</th><th class="num">colores</th><th class="num">grupos</th></tr>${D.families.map(f => `<tr><td>${esc(f.name)}</td><td class="num">${f.n_hex}</td><td class="num">${f.n_grp}</td></tr>`).join("")}</table>`)}</div></div>
+    <div class="recuadro"><b>El diagnóstico en tres líneas.</b> Conviven tres paletas que no se hablan: la «de juguete» de los menús antiguos (crema y tinta marrón, <code>Hud.CREAM/INK</code>, <code>MenuStage</code>); la del cristal ahumado nuevo (<code>GLASS</code>, <code>GLOW</code>); y una de estilo Tailwind u Open Color para el HUD y el juego (<code>#4ade80</code>, <code>#22d3ee</code>, <code>#ffd43b</code>, <code>#ff922b</code>…). Hay más de 8 cremas, una docena de dorados y latones, tres rojos de guardia (<code>#9b2c3f</code> en el mundo, <code>#c42a3c</code> en el plano, <code>#b8324c</code> en los menús) y otros dos de alerta. El violeta del ladrón 3 se pierde en el fondo morado, y el naranja del ladrón 2 es casi el del foco.</div>
+    ${R ? `<h3>La referencia: <code>assets/ui/fondo_menu.png</code></h3><div class="dos"><figure><img src="${R.image}" alt="" data-img="${R.image}" data-cap="El fondo de los menús"></figure>
+      <div><p class="estado">Color medio</p><p>${sw(R.mean, true)}<code>${R.mean}</code></p><p class="estado">Arriba · centro · abajo</p><p>${R.bands.map(h => sw(h, true)).join("")}</p>
+      <p class="estado">Dominantes</p><p class="chips">${R.dominant.map(h => sw(h, true)).join("")}</p>
+      <p>Índigo y berenjena de noche, un ámbar cálido en las vitrinas y los apliques y un vino en los estandartes. La paleta propuesta sale de aquí.</p></div></div>` : ""}
+
+    <h2 id="propuesta-inventario">2. Inventario por familia</h2>
+    <p>Cada familia muestra sus grupos: un grupo junta colores casi iguales (ΔE00 &lt; 5). Pasa el ratón por una muestra para ver el color. Dentro, cada aparición con su fichero y línea, su clase y el color de la paleta nueva al que pasaría: el más cercano de los permitidos para su clase, salvo los colores clave, que van a mano en la <a href="#propuesta/paso">tabla de paso</a>.</p>
+    ${D.families.map(f => `<details class="fam"><summary><span class="chips">${f.groups.slice(0, 14).map(x => sw(x.hexes[0][0])).join("")}</span><b>${esc(f.name)}</b><span class="n">${f.n_hex} colores · ${f.n_grp} grupos</span></summary><div class="dentro">
+      ${f.groups.map(x => `<div class="grupo-c"><span class="chips">${x.hexes.map(([h, n]) => sw(h, false, h + " · " + n + " usos")).join("")}</span><div><b>${x.hexes[0][0]}</b>${x.hexes.length > 1 ? ` +${x.hexes.length - 1} variantes` : ""} · ${x.uses} uso${x.uses === 1 ? "" : "s"} · <span class="estado">${x.classes.map(c => C[c]).join(", ")}</span><br><span class="estado">${esc(x.areas.join("; "))}${x.whats.length ? " — " + esc(x.whats.join(", ")) : ""}</span></div></div>`).join("")}
+      <details class="mas"><summary>Los ${f.rows.length} usos, uno a uno, con su paso a la paleta nueva</summary>${tw(`<table class="tabla"><tr><th></th><th>Color</th><th>Clase</th><th>Dónde</th><th>Fichero y nombre</th><th>Pasa a</th></tr>${f.rows.map(r => `<tr><td>${sw(r[0])}</td><td><code>${r[0]}</code></td><td>${C[r[1]]}</td><td>${esc(r[2])}</td><td><code>${esc(r[3])}:${r[4]}</code> ${esc(r[5])}</td><td>${r[7] ? sw(r[7]) + esc(r[6]) : `<span class="estado">se queda</span>`}</td></tr>`).join("")}</table>`)}</details>
+    </div></details>`).join("")}
+    <details class="fam"><summary><b>Modelos .glb: color base de cada material</b><span class="n">${S.glb_hex} colores · ${S.glb_models} modelos</span></summary><div class="dentro">
+      <p class="estado">Del <code>baseColorFactor</code> de cada material, en sRGB. ${S.glb_textured} materiales tienen textura. Por familia: ${D.glb.families.map(([k, n]) => esc(k) + " " + n).join(", ")}. En las piezas del botín, los materiales <code>color*</code> los tiñe <code>LootModels</code> con el color de la pieza; en la recreativa, <code>color_mueble</code> y <code>color_marquesina</code> los tiñe <code>MuseumView.arcade_game</code>.</p>
+      ${D.glb.models.map(m => `<div><code>${esc(m.file)}</code> <span class="chips">${m.mats.map(([n, h]) => sw(h, false, n + " " + h)).join("")}</span></div>`).join("")}</div></details>
+
+    <h2 id="propuesta-paleta">3. La paleta propuesta: 16 colores base</h2>
+    <p>Seis morados de la noche al lila, tres cálidos secundarios del museo (nogal, latón y vino), un oro de acento y seis colores de juego. Los de juego son más claros que cualquier morado y se separan entre sí también en claridad, no solo en tono: se siguen distinguiendo si el tono no se ve bien.</p>
+    ${grupos.map(gr => `<h3>${tituloG[gr]}</h3><div class="pal">${D.palette.filter(p => p.group === gr).map(p => `<div class="pc"><div class="cara" style="background:${p.hex};color:${tinta(p.hex)}"><b>${esc(p.name)}</b><code data-copy="${p.hex}">${p.hex}</code></div>
+      <div class="pie">${esc(p.use)}${p.tones.map(([n, h]) => `<div>${sw(h)}${esc(n)} <code>${h}</code></div>`).join("")}<div class="estado">${esc(p.contrast)}</div></div></div>`).join("")}</div>`).join("")}
+    <div class="recuadro"><b>Reglas de uso.</b> (1) La interfaz solo usa morados, Oro y Latón; los marrones, en la interfaz, solo en marcos y avisos. (2) El mundo usa morados, marrones, Vino y Oro, más el tono propio de cada museo mezclado con Berenjena (sección 6). (3) Los seis colores de juego no decoran nada: ni vitrinas, ni cuadros, ni suelos. Si en una vitrina hace falta un turquesa, va «pasado por la noche» (mezclado un 28 % con Violeta), más apagado que el del ladrón.</div>
+
+    <h2 id="propuesta-daltonismo">4. Colores de juego y daltonismo</h2>
+    <p>Simulación de Machado (2009) al 100 % sobre Ciruela, con la distancia ΔE00 del par más parecido. Por debajo de 6, el par se confunde con facilidad.</p>
+    <h3>Hoy</h3>${cvd(D.cvd.now)}
+    <h3>Propuesta</h3><p class="estado">Alerta es el mismo color que las marcas del guardia; Salida, el mismo que A salvo; y el panel y el primer aviso de sospecha van en Oro. Por eso el par más parecido se calcula entre los colores distintos.</p>${cvd(D.cvd.new)}
+    <p>Aun así, conviene que el número o la forma de cada ladrón siga diciendo quién es quién.</p>
+
+    <h2 id="propuesta-paso">5. Tabla de paso</h2>
+    <h3>Por familia</h3>
+    ${tw(`<table class="tabla"><tr><th>Hoy</th><th>Pasa a</th></tr>${D.famto.map(f => `<tr><td><span class="chips">${f.sample.map(h => sw(h)).join("")}</span><div><b>${esc(f.family)}</b> <span class="estado">${f.n_hex} colores · ${f.n_grp} grupos</span></div></td><td><span class="chips">${f.to.map(h => sw(h, true)).join("")}</span><div>${esc(f.text)}</div></td></tr>`).join("")}</table>`)}
+    <h3>Las constantes clave, una a una</h3>
+    ${pasoMal.length ? `<p class="aviso">Estas ya no tienen en el código el color de la tabla (ha cambiado desde la auditoría): ${pasoMal.map(p => `<code>${esc(p.key)}</code>`).join(", ")}.</p>` : ""}
+    ${tw(`<table class="tabla"><tr><th>Clase</th><th>Constante</th><th>Hoy</th><th>Pasa a</th><th>Nota</th></tr>${D.paso.map(p => `<tr><td>${esc(p.cls)}</td><td><code>${esc(p.key)}</code><div class="estado">${esc(p.file)}</div></td><td style="white-space:nowrap">${sw(p.hex, true)}<code>${p.hex}</code>${p.present ? "" : ` <span class="estado">(ya no)</span>`}</td><td style="white-space:nowrap">${sw(p.to_hex, true)}<b>${esc(p.to_name)}</b> <code>${p.to_hex}</code></td><td class="estado">${esc(p.note)}</td></tr>`).join("")}</table>`)}
+
+    <h2 id="propuesta-museos">6. Museos y temas</h2>
+    <p>Cada museo tiene un <b>tono</b>, y su suelo y su pared se sacan de él con una regla fija, siempre mezclándolo con los morados: la prehistoria sale ocre pero con sombra ciruela, y la Edad Media, vino sobre berenjena.</p>
+    <ul><li><code>paper = Berenjena.lerp(tono, 0.5)</code>, <code>paper2 = Berenjena.lerp(tono, 0.62)</code></li>
+      <li><code>stone = Ciruela.lerp(tono, 0.22)</code>, <code>stone2 = Berenjena.lerp(tono, 0.22)</code>, <code>joint = Noche.lerp(tono, 0.12)</code></li>
+      <li><code>wainscot = Nogal.lerp(tono, 0.15)</code>, <code>cap = Violeta.lerp(tono, 0.3)</code>, <code>skirt = Noche</code>, <code>trim = Latón</code> (Oro en el mundo antiguo y Lila en la edad moderna)</li>
+      <li>La parada del mapa de la ciudad: <code>tono.lerp(Lila, 0.35)</code>, clara y apagada, para no parecerse a los ladrones.</li></ul>
+    <p class="estado">Hoy, las paletas de los cinco museos de <code>logic/story.gd</code> (<code>MUSEUMS</code>); al lado, las de la regla.</p>
+    ${D.museums.map(m => `<div style="margin:14px 0"><p><b>${esc(m.name)}</b> · tono ${sw(m.tone_hex)}${esc(m.tone)} <code>${m.tone_hex}</code> · parada del mapa ${sw(m.colour_old, false, "hoy")}→${sw(m.colour_new, false, "propuesta")}</p>
+      <div class="dos"><div>${muro(m.old)}<span class="chips">${K.map(k => sw(m.old[k] || "#000", false, k + " " + m.old[k])).join("")}</span><div class="estado">hoy</div></div><div>${muro(m.new)}<span class="chips">${K.map(k => sw(m.new[k], false, k + " " + m.new[k])).join("")}</span><div class="estado">propuesta</div></div></div></div>`).join("")}
+    <h3>Colores de las vitrinas y telas por tema (<code>Themes.ALL</code>)</h3>
+    <p class="estado">Cada tema conserva sus cuatro colores, mezclados un 28 % con Violeta, para que sean manchas de color del museo de noche y no compitan con los ladrones. Las telas pasan a Pergamino, Vino, Latón viejo, un musgo oscuro y Lavanda clara.</p>
+    ${tw(`<table class="tabla"><tr><th>Tema</th><th>Hoy</th><th>Propuesta</th></tr>${D.themes.map(th => `<tr><td>${esc(th.name)}</td><td style="white-space:nowrap">${th.old.map(h => sw(h, true)).join("")} tela ${sw(th.cloth_old, true)}</td><td style="white-space:nowrap">${th.new.map(h => sw(h, true)).join("")} tela ${sw(th.cloth_new, true)}</td></tr>`).join("")}</table>`)}
+    <p><b>La recreativa</b> usa colores pop a propósito (${D.arcade.map(h => sw(h, false, h)).join("")}) y verdes de fósforo en la pantalla. Se propone dejarla como <b>ilustración</b>, igual que los cuadros: los muebles con la misma mezcla del 28 % hacia Violeta y la pantalla tal cual, porque brilla. Lo mismo para los botones del mando (Glyph), que siguen la convención de Xbox y PlayStation.</p>
+
+    <h2 id="propuesta-maqueta">7. Maqueta sobre el fondo</h2>
+    <div class="dos">${maqueta("Hoy", hoy)}${maqueta("Propuesta", nueva)}</div>
+
+    <h2 id="propuesta-centralizar">8. Dónde centralizarla</h2>
+    <ul><li><b>Un fichero nuevo, <code>logic/palette.gd</code></b> (<code>class_name Palette</code>, sin escena), como única fuente: las 16 constantes base (<code>NOCHE</code>, <code>CIRUELA</code>, <code>BERENJENA</code>, <code>VIOLETA</code>, <code>LAVANDA</code>, <code>LILA</code>, <code>NOGAL</code>, <code>LATON</code>, <code>VINO</code>, <code>ORO</code>, <code>TURQUESA</code>, <code>MANDARINA</code>, <code>ORQUIDEA</code>, <code>CIELO</code>, <code>ALARMA</code>, <code>MENTA</code>) y sus tonos (<code>MADERA</code>, <code>PERGAMINO</code>, <code>ORO_CLARO</code>…). Encima, los nombres por uso: <code>THIEVES</code>, <code>THIEVES_DARK</code>, <code>GUARD_BODY := VINO</code>, <code>GUARD_MARK := ALARMA</code>, <code>SAFE := MENTA</code>, <code>SUSPICION := [ORO, MANDARINA, ALARMA]</code>, <code>FOCUS := ORO</code>. Y dos funciones: <code>night(c, k)</code>, que mezcla un color con Violeta, y <code>museum(tono)</code>, que devuelve el suelo y la pared de la sección 6. En <code>logic/</code>, porque <code>Story</code> y <code>Themes</code> la necesitan sin cargar escenas.</li>
+      <li><b>Sobran</b> y pasan a leer de <code>Palette</code>: en <code>Hud</code>, <code>CREAM</code>, <code>INK</code>, <code>INK_SOFT</code>, <code>WALNUT*</code>, <code>BRASS*</code>, <code>GLASS*</code>, <code>GLOW*</code>, <code>C</code>, <code>MAP_*</code>, <code>ALARM_COLOURS</code> y <code>DIM_CARD</code>; en <code>MenuStage</code>, sus constantes y fondos; <code>Main.COLOURS</code>, <code>SUSPICION_COLOURS</code>, <code>AMBIENT/MOON/ROOM_LIGHT/TORCH_COLOUR</code> y <code>BACKGROUND</code>; <code>MuseumView.C</code> (salvo lo decorativo), <code>SCONCE_COLOUR</code> y <code>THEMES</code>; <code>LessonStage</code>, <code>MapEditor</code>, <code>MinigameView</code>, <code>NightMap</code>, <code>SmokeFx</code>, <code>TitleScreen.BACK</code> y <code>Prompt</code>.</li>
+      <li><b>Se quedan donde están</b>, como ilustración: <code>Canvases</code> (los cuadros), los carteles de <code>MuseumView</code> y <code>PropsView</code>, <code>Glyph</code> (botones del mando), <code>Bean</code> (piel y caras de los guardias; el uniforme sí pasa a Vino) y la pantalla de la recreativa (<code>MuseumView.ARCADE_GAMES</code>).</li>
+      <li><b>Datos:</b> en <code>Story.MUSEUMS</code>, cada museo guarda solo su <code>"tone"</code>, y la <code>palette</code> se calcula con <code>Palette.museum()</code>. Los <code>loot.colour</code> de <code>Story</code> y <code>LootGen</code> se eligen de una lista corta, <code>Palette.LOOT</code> (sección 9).</li>
+      <li><b>Una prueba</b> en <code>tests/</code> que busque <code>Color("#</code> fuera de <code>palette.gd</code> y de los ficheros de ilustración, para que no vuelvan a crecer.</li></ul>
+
+    <h2 id="propuesta-riesgos">9. Riesgos</h2>
+    <ul><li><b>Contraste de textos.</b> Lila sobre Ciruela da 14,4:1 y Lavanda 5,8:1, bien. Pero el cristal es translúcido (84 %) y detrás hay vitrinas ámbar muy brillantes: donde el fondo se aclara, la Lavanda puede bajar de 4,5:1. Conviene la Lavanda clara (<code>${tono("lavanda:1")}</code>) para el texto largo y dejar la Lavanda para pies y notas. Si todo pasa a Lila sobre cristal, se pierde el «botón de juguete» crema: es una decisión de estilo, no solo de color.</li>
+      <li><b>Piezas que tiñe <code>LootModels</code>.</b> Los materiales <code>color</code>, <code>color_claro_N</code> y <code>color_oscuro_N</code> se derivan del <code>loot.colour</code>, y cada pieza brilla con su propio color: con colores más apagados o más morados, se vería peor en la vitrina. Se propone una lista corta <code>Palette.LOOT</code> de colores claros y saturados y comprobar en Blender que cada <code>color_oscuro_N</code> no cae en el morado del fondo. Hoy, de los ${D.loot_count} colores de pieza de la historia, ${D.loot_low.length} quedan por debajo de 4,5:1 como texto sobre el cristal${D.loot_low.length ? ": " + D.loot_low.map(h => sw(h) + `<code>${h}</code>`).join(", ") : ""}. Algunas piezas se parecen a un ladrón; por eso, en el plano y la leyenda la pieza iría con una marca fija, el rombo Oro con borde Lila.</li>
+      <li><b>El mapa del plan.</b> Es papel pergamino (<code>MapStage</code>, <code>Hud.MAP_FLOOR</code>) y ahí los colores de juego claros no se ven: el Turquesa da 1,1:1 y la Alarma 2,3:1. Sobre el papel hay que usar los tonos oscuros (Alarma oscura 6,6:1, Cielo oscuro 6,0:1, Orquídea oscura 7,1:1). En tritanopia, Turquesa oscuro y Menta oscura se parecen (ΔE 2,3): en el papel, la salida debería ir con su icono. La otra salida es un «papel de noche» (Berenjena con líneas Lila).</li>
+      <li><b>La iluminación cambia el color.</b> Los tonos del museo se ven a través de la luz ambiente (<code>#6256aa</code>), la luna y los apliques cálidos: un suelo ocre puede acabar gris. Hay que ajustar la regla de museo mirando capturas, no solo los colores.</li>
+      <li><b>Ladrón 3 deja de ser violeta y el 2 cambia de naranja.</b> Es lo más visible para quien ya juega: van en los menús de jugadores, en las cajas de minijuego, en los avisos y en los «fantasmas».</li></ul>
+
+    <h2 id="propuesta-dudas">Dudas para decidir</h2>
+    <ul><li>¿Botones de menú en Lila sobre cristal, o seguir con el botón de juguete crema y tinta (que pasaría a Pergamino con Noche)?</li>
+      <li>¿Aceptas que el ladrón 3 pase de violeta a Orquídea, y el 2 a una Mandarina más roja, o preferís otros tonos?</li>
+      <li>El segundo aviso de sospecha («!!») usa Mandarina, el color del ladrón 2. ¿Se queda así, porque va sobre la cabeza del guardia y con sus signos, o pasa a un tono entre Oro y Alarma?</li>
+      <li>El mapa del plan, ¿en pergamino con tonos oscuros, o en papel de noche morado?</li>
+      <li>¿A salvo y Salida en un solo color (Menta)? Hoy son cian y verde.</li>
+      <li>Los cuadros, el mando y la recreativa quedan fuera de la paleta, como ilustración. ¿De acuerdo, o también se «pasan por la noche»?</li></ul>`;
+}
+
+// --- Versiones: hitos de las imágenes importantes (docs/versiones/) -------------------------
+const V = window.VERSIONES || { asuntos: [], versiones: [] };
+const ELEGIDAS = {};
+const kb = b => b >= 1048576 ? (b / 1048576).toFixed(1).replace(".", ",") + " MB" : Math.round(b / 1024) + " KB";
+const fechaV = f => { const [d, h] = f.split("T"); const [a, m, dd] = d.split("-"); return `${dd}-${m}-${a}${h ? " " + h : ""}`; };
+function versiones() {
+  const porAsunto = a => V.versiones.filter(v => v.asunto === a.id);
+  $("#p-versiones").innerHTML = `<h1>Versiones</h1>
+    <div class="sub">Cómo estaba y cómo está: hitos de las imágenes importantes, guardados en <code>docs/versiones/</code> · ${V.versiones.length} imágenes, ${kb(V.bytes || 0)}</div>
+    <p class="lead">No son todas las versiones: solo los hitos, los cambios muy visibles, o una versión muy antigua cuando algo ha cambiado poco a poco y ya se parece poco al principio. Elige dos para compararlas, lado a lado o con la cortina.</p>
+    <div class="indice"><ul>${V.asuntos.map(a => `<li><a href="#versiones/${a.id}">${esc(a.title)}</a> <span class="estado">· ${porAsunto(a).length}</span></li>`).join("")}<li><a href="#versiones/como">Cómo y cuándo guardar un hito</a></li></ul></div>
+    ${V.asuntos.map(a => `<section class="asunto" id="versiones-${a.id}"><h2 style="border:0;margin-top:0">${esc(a.title)}</h2>${a.text ? `<p>${esc(a.text)}</p>` : ""}
+      <div class="comparar" data-asunto="${a.id}"></div>
+      <div class="linea">${porAsunto(a).map((v, i) => `<div class="hito" data-v="${esc(v.file)}"><img loading="lazy" src="${v.file}" alt="" data-img="${v.file}" data-cap="${esc(v.titulo)} · ${fechaV(v.fecha)}">
+        <div class="f">${fechaV(v.fecha)} · <code>${esc(v.commit)}</code></div><div class="t">${i + 1}. ${esc(v.titulo)}</div>
+        ${v.cambio ? `<p>${esc(v.cambio)}</p>` : ""}${v.porque ? `<p class="estado">Por qué: ${esc(v.porque)}</p>` : ""}
+        <div class="estado">${v.size ? v.size.join("×") + " · " : ""}${kb(v.bytes || 0)}</div>
+        <div class="bs"><button class="btn" data-poner="${a.id}|0|${esc(v.file)}">antes</button><button class="btn" data-poner="${a.id}|1|${esc(v.file)}">después</button></div></div>`).join("")}</div></section>`).join("")}
+    <h2 id="versiones-como">Cómo y cuándo guardar un hito</h2>
+    <p><b>Cuándo:</b> cuando una imagen importante (el fondo de los menús, los menús, el icono, una pieza que se ve mucho, el mapa de la historia…) cambia de verdad: otro estilo, otro modelo, otra idea. No por cada retoque. Si algo va cambiando poco a poco, se guarda de vez en cuando la versión de antes, cuando ya se parezca poco a la del principio. Mejor el mismo encuadre en todas las de un asunto (la misma captura), para poder compararlas.</p>
+    <p><b>Cómo:</b> con <code>tools/docs.py version</code>, que convierte la imagen a webp (1280 px como mucho) y la apunta en <code>docs/versiones/versiones.json</code> con su fecha, su commit, el título, por qué se guarda y qué cambió:</p>
+    <pre class="mono">python3 tools/docs.py version fondo-menus "La sala del museo" --why "Cambia el fondo" --what "…"
+python3 tools/docs.py version menus "Cristal ahumado" --from menu_titulo          # una captura de docs/capturas
+python3 tools/docs.py version icono "Pixel art" --from assets/icon.png --commit ed1b2ac   # sacada de un commit
+python3 tools/docs.py version recreativa "Seis juegos" --from a.webp --from b.webp  # varias, en rejilla
+python3 tools/docs.py version --list</pre>
+    <p class="estado">Sin <code>--from</code>, la imagen de siempre del asunto (en el manifiesto, <code>source</code>). Con <code>--commit</code>, se saca con <code>git show &lt;commit&gt;:&lt;ruta&gt;</code> y toma la fecha del commit. El texto de cada asunto y cualquier hito se pueden corregir a mano en el manifiesto; <code>build</code> lo copia a <code>docs/data/versiones.js</code>. Nada guarda versiones solo.</p>`;
+  for (const a of V.asuntos) {
+    const lista = porAsunto(a);
+    if (!ELEGIDAS[a.id]) ELEGIDAS[a.id] = { antes: (lista[0] || {}).file, despues: (lista[lista.length - 1] || {}).file, modo: "cortina" };
+    comparar(a.id);
+  }
+}
+function comparar(id) {
+  const el = document.querySelector(`.comparar[data-asunto="${id}"]`);
+  if (!el) return;
+  const lista = V.versiones.filter(v => v.asunto === id), e = ELEGIDAS[id];
+  const va = lista.find(v => v.file === e.antes), vd = lista.find(v => v.file === e.despues);
+  document.querySelectorAll(`#versiones-${id} .hito`).forEach(h => h.classList.toggle("sel", h.dataset.v === e.antes || h.dataset.v === e.despues));
+  if (lista.length < 2 || !va || !vd) { el.innerHTML = lista.length === 1 ? `<p class="estado">Solo hay un hito: cuando cambie mucho, se guarda el siguiente.</p>` : ""; return; }
+  const opciones = sel => lista.map((v, i) => `<option value="${esc(v.file)}" ${v.file === sel ? "selected" : ""}>${i + 1}. ${esc(v.titulo)} (${fechaV(v.fecha).slice(0, 10)})</option>`).join("");
+  const [w, h] = vd.size || [16, 9];
+  el.innerHTML = `<div class="mandos"><label>Antes <select data-cmp="${id}|antes">${opciones(e.antes)}</select></label><label>Después <select data-cmp="${id}|despues">${opciones(e.despues)}</select></label>
+    <span><button class="btn ${e.modo === "cortina" ? "si" : ""}" data-modo="${id}|cortina">Cortina</button> <button class="btn ${e.modo === "lado" ? "si" : ""}" data-modo="${id}|lado">Lado a lado</button></span></div>
+    ${e.modo === "lado" ? `<div class="lado"><figure><img src="${va.file}" alt="" data-img="${va.file}" data-cap="${esc(va.titulo)}"><figcaption><b>Antes</b> · ${esc(va.titulo)}</figcaption></figure><figure><img src="${vd.file}" alt="" data-img="${vd.file}" data-cap="${esc(vd.titulo)}"><figcaption><b>Después</b> · ${esc(vd.titulo)}</figcaption></figure></div>`
+      : `<div class="cortina" style="aspect-ratio:${w} / ${h};max-width:${Math.min(960, w * 1.5)}px"><img src="${vd.file}" alt=""><div class="antes" style="clip-path:inset(0 50% 0 0)"><img src="${va.file}" alt=""></div><div class="raya" style="left:50%"></div>
+        <span class="rot" style="left:6px">Antes · ${esc(va.titulo)}</span><span class="rot" style="right:6px">Después · ${esc(vd.titulo)}</span>
+        <input type="range" min="0" max="100" value="50" aria-label="Cortina entre antes y después" data-cortina></div>`}`;
+}
+document.addEventListener("input", e => {
+  const r = e.target.closest("[data-cortina]");
+  if (!r) return;
+  const c = r.closest(".cortina"), v = r.value;
+  c.querySelector(".antes").style.clipPath = `inset(0 ${100 - v}% 0 0)`;
+  c.querySelector(".raya").style.left = v + "%";
+});
+document.addEventListener("change", e => {
+  const s = e.target.closest("[data-cmp]");
+  if (!s) return;
+  const [id, cual] = s.dataset.cmp.split("|");
+  ELEGIDAS[id][cual] = s.value;
+  comparar(id);
+});
+document.addEventListener("click", e => {
+  const m = e.target.closest("[data-modo]");
+  if (m) { const [id, modo] = m.dataset.modo.split("|"); ELEGIDAS[id].modo = modo; comparar(id); return; }
+  const p = e.target.closest("[data-poner]");
+  if (p) { const [id, cual, file] = p.dataset.poner.split("|"); ELEGIDAS[id][cual === "0" ? "antes" : "despues"] = file; comparar(id); document.getElementById("versiones-" + id).scrollIntoView({ behavior: "smooth" }); }
+});
 
 // --- Clics: copiar, ampliar, editar -------------------------------------------------------
 document.addEventListener("click", async e => {
@@ -802,6 +1273,7 @@ document.addEventListener("keydown", e => {
 
 function pintar() {
   inicio(); capturas(); estilo(); paleta(); objetos(); personajes(); sonidos(); historia(); textos();
+  previa(); minijuegos(); escondites(); coleccion(); propuesta(); versiones();
   document.body.classList.toggle("editable", EDITABLE);
 }
 pintar();
