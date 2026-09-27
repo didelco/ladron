@@ -1,4 +1,4 @@
-# Ladrón
+# Ninja Karma
 
 Un museo cerrado de noche, vigilantes que piensan con [Laya](https://huggingface.co/convaiinnovations/laya) y tú.
 
@@ -238,15 +238,15 @@ Primero hay que instalar las plantillas de exportación de 4.7.2 una vez: en el 
 `~/Library/Application Support/Godot/export_templates/4.7.2.stable/`). Después:
 
 ```bash
-godot --headless --export-release "Windows Desktop" build/windows/Ladron.exe
-godot --headless --export-release "macOS" build/macos/Ladron.zip
-godot --headless --export-release "Linux" build/linux/Ladron.x86_64
+godot --headless --export-release "Windows Desktop" build/windows/NinjaKarma.exe
+godot --headless --export-release "macOS" build/macos/NinjaKarma.zip
+godot --headless --export-release "Linux" build/linux/NinjaKarma.x86_64
 ```
 
 (las carpetas `build/windows`, `build/macos` y `build/linux` tienen que existir: `mkdir -p` antes).
 
 Como no está notarizado, en macOS la primera vez hay que abrirlo con clic derecho → Abrir (o
-quitar la cuarentena con `xattr -dr com.apple.quarantine Ladron.app`).
+quitar la cuarentena con `xattr -dr com.apple.quarantine NinjaKarma.app`).
 
 Las versiones exportadas no llevan el cerebro: los guardias usan las reglas fijas, salvo que el
 servicio de `brain/` esté corriendo en la misma máquina (puerto 8000).

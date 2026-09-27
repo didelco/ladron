@@ -18,10 +18,22 @@ const BRASS_DARK := Color("#7a5a32")
 ## Behind every menu: a museum wall at night — aubergine above, dark wood
 ## below, a faint striped wallpaper with a damask dot, the warm pool of a
 ## lamp from the top, a vignette round the edge.
+## Out of the game the cover (TitleScreen) shows through instead, blurred
+## (a tiny copy, stretched), darkened and tinted aubergine so the cards stay on
+## top, looking at a different part of it on each screen (focus) and drifting.
 const BACKDROP_SHADER := """
 shader_type canvas_item;
 uniform vec4 top : source_color = vec4(0.16, 0.09, 0.2, 0.97);
 uniform vec4 bottom : source_color = vec4(0.08, 0.045, 0.035, 0.98);
+uniform sampler2D picture : filter_linear, repeat_disable;
+uniform float cover = 0.0;
+uniform vec2 focus = vec2(0.5);
+const float ZOOM = 1.5;
+vec3 blurred(vec2 p) {
+	vec2 t = 0.5 / vec2(textureSize(picture, 0));
+	return (texture(picture, p + t).rgb + texture(picture, p - t).rgb
+		+ texture(picture, p + vec2(t.x, -t.y)).rgb + texture(picture, p + vec2(-t.x, t.y)).rgb) * 0.25;
+}
 void fragment() {
 	vec4 c = mix(top, bottom, smoothstep(0.0, 1.0, UV.y));
 	float stripe = step(0.5, fract(FRAGCOORD.x / 64.0));
@@ -30,6 +42,25 @@ void fragment() {
 	c.rgb += smoothstep(0.09, 0.06, length(g * vec2(1.0, 0.7))) * 0.018 * (1.0 - UV.y);
 	// A wainscot rail across the lower third.
 	c.rgb += smoothstep(0.004, 0.0, abs(UV.y - 0.72)) * 0.05;
+	if (cover > 0.0) {
+		vec2 pic = vec2(textureSize(picture, 0));
+		float screen = SCREEN_PIXEL_SIZE.y / SCREEN_PIXEL_SIZE.x;
+		float aspect = pic.x / pic.y;
+		vec2 span = vec2(screen / aspect, 1.0);
+		if (screen > aspect) {
+			span = vec2(1.0, aspect / screen);
+		}
+		span /= ZOOM;
+		vec2 drift = vec2(sin(TIME * 0.05), cos(TIME * 0.037)) * 0.02;
+		vec2 centre = clamp(focus + drift, span * 0.5, 1.0 - span * 0.5);
+		vec3 p = blurred(centre + (UV - 0.5) * span);
+		p = mix(vec3(dot(p, vec3(0.3, 0.59, 0.11))), p, 0.75) * 0.5;
+		p = mix(p, top.rgb, 0.2);
+		// Darker at the top, under the heading, and at the bottom, under the buttons.
+		p *= 1.0 - 0.3 * smoothstep(0.3, 0.0, UV.y);
+		p *= 1.0 - 0.45 * pow(clamp((UV.y - 0.55) / 0.45, 0.0, 1.0), 2.0);
+		c.rgb = mix(c.rgb, p, cover);
+	}
 	// The lamp: warm light pooling from the top centre, breathing slowly.
 	float lamp = exp(-pow(distance(UV * vec2(1.6, 1.0), vec2(0.8, 0.05)) * 1.9, 2.0));
 	c.rgb += vec3(0.45, 0.28, 0.12) * lamp * (0.3 + 0.03 * sin(TIME * 1.3));
@@ -100,6 +131,10 @@ var _panel_box: VBoxContainer
 ## starts fading out, while the panel itself is still visible
 var _shown := false
 var _fade: Tween
+## The backdrop panning or fading between the cover and the wall.
+var _backdrop: Tween
+## where in the cover it looks (the wall keeps the last, to fade from)
+var _focus := Vector2(0.5, 0.5)
 ## what is drawn over the game while playing; hidden behind a menu
 var _play: Array[Control] = []
 var _count: Label
@@ -1041,7 +1076,44 @@ func _fade_panel(to: float) -> void:
 	_fade = create_tween()
 	_fade.tween_property(_panel, "modulate:a", to, FADE_S * absf(to - _panel.modulate.a))
 	if to == 0.0:
-		_fade.tween_callback(func(): _panel.visible = false)
+		_fade.tween_callback(func() -> void:
+			_panel.visible = false
+			backdrop(null))
+
+
+## Behind the menus, the cover looking at focus (a point in the picture, see
+## TitleScreen.SPOTS), or the museum wall with null. Menu to menu it pans and
+## fades across; a menu coming up takes it at once. The wall comes back when
+## the menu goes away, so the menus over the game keep it.
+func backdrop(focus: Variant) -> void:
+	var m := _panel.material as ShaderMaterial
+	if focus != null and m.get_shader_parameter("picture") == null:
+		if not TitleScreen.available():
+			return
+		m.set_shader_parameter("picture", _blurred(load(TitleScreen.PICTURE)))
+	if _backdrop:
+		_backdrop.kill()
+	var cover := 0.0 if focus == null else 1.0
+	if focus != null:
+		_focus = focus
+	if not (_panel.visible and _panel.modulate.a > 0.5):
+		m.set_shader_parameter("cover", cover)
+		m.set_shader_parameter("focus", _focus)
+		return
+	_backdrop = create_tween().set_parallel().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_backdrop.tween_property(m, "shader_parameter/cover", cover, 0.5)
+	_backdrop.tween_property(m, "shader_parameter/focus", _focus, 1.4)
+
+
+## A tiny copy of a picture, halved (each pixel the mean of four) until it is
+## about fifty wide: stretched back over the screen, it is a soft blur.
+static func _blurred(picture: Texture2D) -> ImageTexture:
+	var img := picture.get_image()
+	if img.is_compressed():
+		img.decompress()
+	while img.get_width() > 64:
+		img.shrink_x2()
+	return ImageTexture.create_from_image(img)
 
 
 func menu_open() -> bool:
