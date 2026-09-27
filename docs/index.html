@@ -40,11 +40,17 @@ p { margin: 8px 0; }
 nav { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 20px 14px 40px 20px; border-right: 1px solid var(--suave); font-size: 14px; }
 nav .marca { font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
 nav .marca small { display: block; font-weight: 400; font-size: 13px; color: var(--tenue); }
-nav .grupo { margin-top: 18px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--claro); }
+nav .grupo { margin-top: 16px; }
+nav .flecha.ab { transform: rotate(90deg); }
+nav .cab { display: flex; align-items: baseline; gap: 4px; width: 100%; background: none; border: 0; padding: 0; margin-bottom: 4px; cursor: pointer; font: inherit; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--claro); text-align: left; }
+nav .cab:hover { color: var(--texto); }
+nav .grupo.cerrado .dentro { display: none; }
+nav .cuenta { margin-left: 6px; font-size: 11px; font-weight: 500; color: var(--claro); background: var(--suave); border-radius: 8px; padding: 0 6px; letter-spacing: 0; }
+nav .arbol { margin-top: 4px; }
+nav .arbol > ul { padding-left: 0; border: 0; margin-left: 0; }
 nav a { display: block; text-decoration: none; padding: 2px 0; }
 nav a:hover { text-decoration: underline; }
 nav a.on { font-weight: 600; }
-nav a.hijo { padding-left: 14px; }
 nav .meta { margin-top: 24px; color: var(--claro); font-size: 12px; }
 main { padding: 26px clamp(16px, 4vw, 48px) 80px; max-width: 1640px; }
 .pagina { display: none; }
@@ -55,8 +61,7 @@ main { padding: 26px clamp(16px, 4vw, 48px) 80px; max-width: 1640px; }
 .arbol ul { padding-left: 14px; border-left: 1px solid var(--suave); margin-left: 5px; }
 .arbol li { margin: 0; }
 .arbol .fila { display: flex; align-items: baseline; gap: 4px; }
-.arbol .flecha { width: 12px; flex: none; cursor: pointer; color: var(--claro); font-size: 10px; user-select: none; background: none; border: 0; padding: 0; font-family: inherit; }
-.arbol .flecha.vacia { cursor: default; }
+nav .flecha { width: 14px; display: inline-block; flex: none; cursor: pointer; color: var(--tenue); font-size: 17px; line-height: 1; text-align: center; transition: transform .12s; user-select: none; background: none; border: 0; padding: 0; font-family: inherit; }
 .arbol li.cerrado > ul { display: none; }
 .arbol a { padding: 1px 0; }
 .arbol a.on { font-weight: 600; }
@@ -104,7 +109,10 @@ figcaption b { color: var(--texto); font-weight: 600; }
 .grandes.una { grid-template-columns: minmax(0, 940px); }
 .grandes figcaption { font-size: 13px; }
 .seccion { display: flex; align-items: baseline; gap: 10px; margin: 30px 0 4px; padding-bottom: 4px; border-bottom: 1px solid var(--suave); }
-.seccion h2 { border: 0; margin: 0; padding: 0; font-size: 18px; }
+.seccion h2 { border: 0; margin: 0; padding: 0; font-size: 18px; flex: none; }
+.seccion { flex-wrap: wrap; }
+.saltos { margin: 4px 0 18px; }
+.saltos a { margin-right: 6px; }
 .seccion h2 a { text-decoration: none; }
 .seccion h2 a:hover { text-decoration: underline; }
 .seccion .nota { color: var(--claro); font-size: 13px; }
@@ -137,10 +145,6 @@ details.mas[open] summary { margin-bottom: 8px; }
 .color small { display: block; font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: var(--tenue); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* Assets */
-.tarjetas.assets { grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); }
-.tarjetas.assets .img { aspect-ratio: 1; display: grid; place-items: center; }
-.tarjetas.assets img { object-fit: contain; }
-.nota-musical { font-size: 64px; color: var(--claro); }
 .pieza { text-align: center; font-size: 13px; }
 .pieza img { width: 100%; aspect-ratio: 1; object-fit: contain; background: var(--fondo2); border: 1px solid var(--suave); cursor: zoom-in; }
 .pieza .t { font-weight: 600; margin-top: 4px; }
@@ -149,10 +153,58 @@ details.mas[open] summary { margin-bottom: 8px; }
 .sonido b { width: 130px; font-family: ui-monospace, Menlo, monospace; font-weight: 500; font-size: 13px; }
 .sonido audio { height: 30px; flex: 1; min-width: 0; }
 
+/* Fichas: la imagen y los textos de una cosa, juntos */
+.ent { display: grid; grid-template-columns: 170px 1fr; gap: 18px; padding: 14px 0; border-top: 1px solid var(--suave); }
+.ent .img img, .ent .sin { width: 100%; aspect-ratio: 1; object-fit: contain; background: var(--fondo2); border: 1px solid var(--suave); cursor: zoom-in; display: block; }
+.ent .sin, .pieza .sin { display: grid; place-items: center; color: var(--claro); font-size: 12px; cursor: default; aspect-ratio: 1; background: var(--fondo2); border: 1px solid var(--suave); }
+.ent .nom { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+.ent .nom .estado { font-weight: 400; margin-left: 6px; }
+.ent p { margin: 3px 0; }
+.ent .img { overflow: hidden; }
+/* Los objetos salen pequeños en su captura: se ven de cerca. */
+.ent.cerca .img img { transform: scale(1.8); transform-origin: 50% 58%; }
+.pieza .s { overflow-wrap: anywhere; }
+.varias { display: inline-flex; flex-direction: column; vertical-align: top; }
+.oir { display: inline-flex; align-items: center; gap: 6px; margin-right: 14px; }
+.oir audio { height: 28px; width: 200px; }
+a.tag { text-decoration: none; }
+a.tag:hover { border-color: var(--texto); }
+@media (max-width: 600px) { .ent { grid-template-columns: 1fr; } .ent .img { max-width: 220px; } }
+
+/* Objetos: a la izquierda (2/3) los filtros y la rejilla de tarjetas; a la derecha (1/3), fija, la ficha del elegido */
+.objs { display: grid; grid-template-columns: 2fr 1fr; gap: 28px; align-items: start; }
+.objs .rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 10px; margin-bottom: 8px; }
+.objs h2 { margin-top: 22px; }
+.oc { font: inherit; text-align: left; background: none; border: 1px solid var(--suave); padding: 6px; cursor: pointer; color: var(--texto); display: flex; flex-direction: column; gap: 5px; }
+.oc:hover { border-color: var(--linea); }
+.oc.on { border-color: var(--texto); box-shadow: 0 0 0 1px var(--texto); }
+.oc .im { aspect-ratio: 1; background: var(--fondo2); overflow: hidden; display: grid; place-items: center; color: var(--claro); font-size: 11px; }
+.oc .im img { width: 100%; height: 100%; object-fit: contain; }
+.oc.cerca .im img { transform: scale(1.8); transform-origin: 50% 58%; }
+.oc .n { font-size: 12.5px; line-height: 1.25; }
+.oc .n .punto { margin-right: 4px; }
+.ficha-obj { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto; border: 1px solid var(--suave); padding: 14px; background: var(--blanco, transparent); }
+.ficha-obj .imgs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.ficha-obj .imgs.una { grid-template-columns: 1fr; }
+.ficha-obj figure { margin: 0; }
+.ficha-obj figcaption { font-size: 11.5px; color: var(--claro); margin-top: 2px; }
+.ficha-obj img, .ficha-obj .sin { width: 100%; aspect-ratio: 1; object-fit: contain; background: var(--fondo2); border: 1px solid var(--suave); cursor: zoom-in; display: block; }
+.ficha-obj .sin { display: grid; place-items: center; color: var(--claro); font-size: 12px; cursor: default; }
+.ficha-obj .nom { font-weight: 600; font-size: 16px; margin-bottom: 6px; }
+.ficha-obj .nom .estado { font-weight: 400; }
+.ficha-obj p { margin: 4px 0; }
+.ficha-obj h3 { font-size: 13px; margin: 12px 0 4px; }
+.vacio { color: var(--claro); font-style: italic; }
+.filtros { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+.filtros .btn span { opacity: 0.7; margin-left: 2px; }
+@media (max-width: 900px) { .objs { grid-template-columns: 1fr; } .ficha-obj { position: static; max-height: none; } }
+
 /* Historia */
 .noche { display: grid; grid-template-columns: 44px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid var(--suave); }
 .noche .n { font-weight: 700; color: var(--claro); font-variant-numeric: tabular-nums; }
 .noche .pz { font-weight: 600; }
+.noche .pz a { font-weight: 400; margin-left: 6px; }
+.noche img.mini { float: right; width: 110px; aspect-ratio: 1; object-fit: contain; background: var(--fondo2); border: 1px solid var(--suave); margin: 0 0 8px 14px; cursor: zoom-in; }
 .noche p { margin: 3px 0; }
 .etq { color: var(--claro); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 6px; }
 .tag { display: inline-block; font-size: 12px; color: var(--tenue); border: 1px solid var(--linea); border-radius: 2px; padding: 0 6px; margin: 2px 4px 2px 0; }
@@ -203,11 +255,9 @@ body.editable [data-key]:hover { background: #fff8d6; cursor: text; }
     <section class="pagina" id="p-capturas"></section>
     <section class="pagina" id="p-estilo"></section>
     <section class="pagina" id="p-paleta"></section>
-    <section class="pagina" id="p-assets"></section>
-    <section class="pagina" id="p-assets-piezas"></section>
-    <section class="pagina" id="p-assets-modelos"></section>
-    <section class="pagina" id="p-assets-objetos"></section>
-    <section class="pagina" id="p-assets-sonidos"></section>
+    <section class="pagina" id="p-objetos"></section>
+    <section class="pagina" id="p-personajes"></section>
+    <section class="pagina" id="p-sonidos"></section>
     <section class="pagina" id="p-historia"></section>
     <section class="pagina" id="p-textos"></section>
   </main>
@@ -252,48 +302,80 @@ for (const n of Object.values(NODOS)) for (const o of n.options || []) if (o.to)
 const nombre = n => n.title.startsWith("«") ? n.title.slice(1, -1) : frase(tx(n.title));
 const ruta = id => { const r = []; for (let x = id; x; x = PADRE[x]) r.unshift(x); return r; };
 // Todas las pantallas en el orden del árbol, para ir a la anterior y la siguiente.
+// Una pantalla sin subpantallas no tiene página propia: sale entera en la de su padre.
+const PAGINA = n => (n.children || []).length > 0 || !PADRE[n.id];
+const paginaDe = id => NODOS[id] && !PAGINA(NODOS[id]) ? PADRE[id] : id;
 const ORDEN = [];
-(function aplanar(lista) { for (const n of lista) { ORDEN.push(n.id); aplanar(n.children || []); } })(P);
+(function aplanar(lista) { for (const n of lista) { if (PAGINA(n)) ORDEN.push(n.id); aplanar(n.children || []); } })(P);
 // Las capturas de una pantalla, o de la primera de sus subpantallas que tenga.
 const portadaDe = n => (n.shots || [])[0] || (n.children || []).map(portadaDe).find(Boolean);
 const SHOTS = Object.fromEntries((J.capturas || []).map(s => [s.id, s]));
 
 // --- Navegación ----------------------------------------------------------------------
+// Lo plegado en la barra se recuerda (en este navegador): grupos "g:<id>" y pantallas "n:<id>".
+let PLIEGUES = {};
+try { PLIEGUES = JSON.parse(localStorage.getItem("pliegues") || "{}"); } catch (e) {}
+const guardarPliegues = () => { try { localStorage.setItem("pliegues", JSON.stringify(PLIEGUES)); } catch (e) {} };
+const subpaginas = n => (n.children || []).filter(PAGINA);
+const cuenta = n => subpaginas(n).reduce((k, c) => k + 1 + cuenta(c), 0);
+// Una pantalla con hijas sale plegada, salvo si lleva a la que se está viendo.
+const abierta = (n, sel) => PLIEGUES["n:" + n.id] ?? (sel != null && ruta(sel).includes(n.id));
+const flecha = (k, abierto) => `<button class="flecha ${abierto ? "ab" : ""}" data-plegar="${esc(k)}">›</button>`;
 function arbol(lista, sel) {
   return `<ul>${lista.map(n => {
-    const hijos = n.children && n.children.length;
-    // Todo abierto: se pliega a mano.
-    const abierto = true;
-    return `<li class="${hijos && !abierto ? "cerrado" : ""}"><div class="fila"><button class="flecha ${hijos ? "" : "vacia"}" data-plegar>${hijos ? (abierto ? "▾" : "▸") : ""}</button><a href="#pantalla/${n.id}" class="${n.id === sel ? "on" : ""}">${esc(nombre(n))}</a></div>${hijos ? arbol(n.children, sel) : ""}</li>`;
+    const k = cuenta(n), ab = k && abierta(n, sel);
+    return `<li class="${k && !ab ? "cerrado" : ""}"><div class="fila">${k ? flecha("n:" + n.id, ab) : `<span class="flecha"></span>`}<a href="#pantalla/${n.id}" class="${n.id === sel ? "on" : ""}">${esc(nombre(n))}</a>${k && !ab ? `<span class="cuenta">${k}</span>` : ""}</div>${k ? arbol(subpaginas(n), sel) : ""}</li>`;
   }).join("")}</ul>`;
 }
 function nav(pag, sel) {
   const g = J.generado || {};
   const enlace = (h, txt) => `<a href="#${h}" class="${pag === h ? "on" : ""}">${txt}</a>`;
+  const grupo = (id, titulo, n, html) => {
+    const ab = PLIEGUES["g:" + id] ?? true;
+    return `<div class="grupo ${ab ? "" : "cerrado"}"><button class="cab" data-plegar="g:${id}"><span class="flecha ${ab ? "ab" : ""}">›</span>${titulo}${ab ? "" : `<span class="cuenta">${n}</span>`}</button><div class="dentro">${html}</div></div>`;
+  };
   $("#nav").innerHTML = `<div class="marca">Ladrón<small>Documentación del juego</small></div>
-    <div class="grupo">Pantallas</div>${enlace("inicio", "Todas las pantallas")}
-    <div class="arbol">${arbol(P, sel)}</div>
-    ${enlace("capturas", "Todas las capturas, por sección")}
-    <div class="grupo">Contenido</div>${enlace("estilo", "Estilo y decisiones")}${enlace("paleta", "Paleta de colores")}${enlace("assets", "Assets")}${ASSETS.map(([k, txt]) => `<a href="#assets/${k}" class="hijo ${pag === "assets-" + k ? "on" : ""}">${txt}</a>`).join("")}${enlace("historia", "Historia")}${enlace("textos", "Textos")}
-    <div class="meta">Generado el ${esc(g.fecha || "—")}<br>commit ${esc(g.commit || "—")} · ${EDITABLE ? "edición activa" : "solo lectura"}</div>`;
+    ${grupo("pantallas", "Pantallas", ORDEN.length, `${enlace("inicio", "Resumen")}${enlace("capturas", "Capturas")}<div class="arbol">${arbol(P, sel)}</div>`)}
+    ${grupo("juego", "El juego", ENTIDADES.length + 1, enlace("historia", "Historia") + ENTIDADES.map(([k, txt]) => enlace(k, txt)).join(""))}
+    ${grupo("referencia", "Referencia", 3, enlace("estilo", "Estilo") + enlace("paleta", "Paleta") + enlace("textos", "Textos"))}
+    <div class="meta">${esc(g.fecha || "—")} · ${esc(g.commit || "—")}${EDITABLE ? " · edición activa" : ""}</div>`;
 }
+let ACTUAL = [null, null];
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-plegar]");
-  if (!b || b.classList.contains("vacia")) return;
-  const li = b.closest("li");
-  li.classList.toggle("cerrado");
-  b.textContent = li.classList.contains("cerrado") ? "▸" : "▾";
+  if (!b) return;
+  const k = b.dataset.plegar;
+  const ahora = k.startsWith("g:") ? !b.closest(".grupo").classList.contains("cerrado") : !b.closest("li").classList.contains("cerrado");
+  PLIEGUES[k] = !ahora;
+  guardarPliegues();
+  nav(...ACTUAL);
 });
 
 function ir() {
   let [pag, sub] = decodeURIComponent(location.hash.slice(1) || "inicio").split("/");
   if (pag === "pantallas") pag = "inicio";
-  // Cada tipo de asset tiene su página: #assets/piezas se pinta en #p-assets-piezas.
-  if (pag === "assets" && ASSETS.some(([k]) => k === sub)) { pag = "assets-" + sub; sub = null; }
+  // La antigua página de assets, repartida por entidades.
+  if (pag === "assets") { pag = { modelos: "objetos" }[sub] || (ENTIDADES.some(([k]) => k === sub) ? sub : "piezas"); sub = null; }
+  if (pag === "coleccion") pag = "objetos";
+  // Las piezas a robar viven ahora en objetos, como una categoría.
+  if (pag === "piezas") { pag = "objetos"; filtroTipo = "loot"; objetos(); if (sub && !sub.startsWith("pieza-") && !sub.startsWith("objeto-")) sub = sub === "frases" ? "pieza-frases" : sub; }
+  // #objetos/<elemento>: lo elige y lo enseña en la rejilla.
+  if (pag === "objetos" && sub && elementos().some(x => x.id === sub)) {
+    if (filtroTipo && elementos().find(x => x.id === sub).cat !== filtroTipo) { filtroTipo = ""; objetos(); }
+    objSel = sub; fichaObj();
+    document.querySelectorAll(".pagina").forEach(p => p.classList.toggle("on", p.id === "p-objetos"));
+    ACTUAL = ["objetos", null]; nav(...ACTUAL);
+    document.getElementById(sub).scrollIntoView({ block: "center" });
+    return;
+  }
   document.querySelectorAll(".pagina").forEach(p => p.classList.toggle("on", p.id === "p-" + pag));
+  // Una pantalla sin página propia se ve en la de su padre, en su sitio.
+  let hoja = null;
+  if (pag === "pantalla" && paginaDe(sub) !== sub) { hoja = sub; sub = paginaDe(sub); }
   if (pag === "pantalla") pantalla(sub);
-  nav(pag, pag === "pantalla" ? sub : null);
-  const el = sub && pag !== "pantalla" ? document.getElementById(pag + "-" + sub) : null;
+  ACTUAL = [pag, pag === "pantalla" ? sub : null];
+  nav(...ACTUAL);
+  const el = hoja ? document.getElementById("pantalla-" + hoja) : sub && pag !== "pantalla" ? document.getElementById(pag + "-" + sub) : null;
   if (el) el.scrollIntoView(); else window.scrollTo(0, 0);
 }
 window.addEventListener("hashchange", ir);
@@ -319,15 +401,33 @@ function inicio() {
 }
 
 // --- Una pantalla y todas las que cuelgan de ella ------------------------------------
+// Las opciones y detalles de una pantalla: título, función, de dónde se llega y adónde lleva.
+function detalles(n) {
+  const llegan = [...(LLEGAN[n.id] || [])].filter(x => x !== PADRE[n.id]);
+  const lleva = [...new Set((n.options || []).filter(o => o.to).map(o => o.to))];
+  const titulo = n.title.startsWith("«") ? "" : tx(n.title);
+  const filas = [
+    titulo && `<tr><th style="width:22%">Título en el juego</th><td>${t(n.title, "span", "boton")}</td></tr>`,
+    n.fn && `<tr><th>Función</th><td><code>${esc(n.fn)}</code>${F[n.fn] ? ` <span class="estado">${esc(F[n.fn])}</span>` : ""}</td></tr>`,
+    n.phase && `<tr><th>Fase</th><td><code>${esc(n.phase)}</code></td></tr>`,
+    llegan.length && `<tr><th>También desde</th><td>${llegan.map(enlaceA).join(", ")}</td></tr>`,
+    lleva.length && `<tr><th>Lleva a</th><td>${lleva.map(enlaceA).join(", ")}</td></tr>`,
+  ].filter(Boolean);
+  const ops = n.options || [];
+  if (!filas.length && !ops.length) return "";
+  return `<details class="mas"><summary>Opciones y detalles${PAGINA(n) ? "" : ` de «${esc(nombre(n))}»`}</summary>
+    ${filas.length ? `<table class="tabla">${filas.join("")}</table>` : ""}
+    ${ops.length ? `<table class="tabla"><tr><th style="width:34%">En pantalla</th><th>Qué hace</th><th style="width:20%">Lleva a</th></tr>
+      ${ops.map(o => `<tr><td>${o.key ? t(o.key, "span", "boton") : `<i>${esc(o.label)}</i>`}</td><td>${esc(o.text || "")}${o.doc ? ` · <a href="#${o.doc}">en esta documentación</a>` : ""}</td><td>${o.to ? enlaceA(o.to) : ""}</td></tr>`).join("")}
+      </table>` : ""}
+  </details>`;
+}
+const enlaceA = id => NODOS[id] ? `<a href="#pantalla/${id}">${esc(nombre(NODOS[id]))}</a>` : esc(id);
 function pantalla(id) {
   const n = NODOS[id];
   const el = $("#p-pantalla");
-  if (!n) { el.innerHTML = `<h1>No existe</h1><p>No hay ninguna pantalla «${esc(id)}». <a href="#inicio">Todas las pantallas</a>.</p>`; return; }
+  if (!n) { el.innerHTML = `<h1>No existe</h1><p>No hay ninguna pantalla «${esc(id)}». <a href="#inicio">Resumen</a>.</p>`; return; }
   const r = ruta(id);
-  const llegan = [...(LLEGAN[id] || [])].filter(x => x !== PADRE[id]);
-  const lleva = [...new Set((n.options || []).filter(o => o.to).map(o => o.to))];
-  const ln = id2 => NODOS[id2] ? `<a href="#pantalla/${id2}">${esc(nombre(NODOS[id2]))}</a>` : esc(id2);
-  const titulo = n.title.startsWith("«") ? "" : tx(n.title);
   const i = ORDEN.indexOf(id), antes = ORDEN[i - 1], despues = ORDEN[i + 1];
   const paso = (x, txt) => x ? `<a href="#pantalla/${x}" title="${esc(nombre(NODOS[x]))}">${txt}</a>` : `<a class="no">${txt}</a>`;
   // Las capturas en grande: las suyas y, debajo, las de cada subpantalla.
@@ -335,27 +435,18 @@ function pantalla(id) {
     const shots = (m.shots || []).map(s => SHOTS[s]).filter(Boolean);
     return shots.length ? `<div class="grandes ${shots.length === 1 ? "una" : ""}">${shots.map(figCorta).join("")}</div>` : "";
   };
+  // Las subpantallas sin página, enteras (con sus detalles); las que tienen la suya, con un enlace.
   const debajo = (m, hondo) => (m.children || []).map(c => `
-    <div class="seccion ${hondo ? "hondo" : ""}"><h2><a href="#pantalla/${c.id}">${esc(nombre(c))}</a></h2>${c.text ? `<span class="nota">${esc(c.text)}</span>` : ""}</div>
-    ${grandes(c)}${debajo(c, true)}`).join("");
+    <div class="seccion ${hondo ? "hondo" : ""}" id="pantalla-${c.id}"><h2>${PAGINA(c) ? `<a href="#pantalla/${c.id}">${esc(nombre(c))}</a>` : esc(nombre(c))}</h2>${c.text ? `<span class="nota">${esc(c.text)}</span>` : ""}</div>
+    ${grandes(c)}${PAGINA(c) ? "" : detalles(c)}${debajo(c, true)}`).join("");
   el.innerHTML = `
-    <div class="ruta">${r.slice(0, -1).map(ln).join(" › ") || `<a href="#inicio">Todas las pantallas</a>`}</div>
+    <div class="ruta">${r.slice(0, -1).map(enlaceA).join(" › ") || `<a href="#inicio">Resumen</a>`}</div>
     <div class="cabeza"><div><h1>${esc(nombre(n))}</h1>${n.text ? `<div class="sub">${esc(n.text)}</div>` : ""}</div>
       <div class="pasos">${paso(antes, "← Anterior")}${paso(despues, "Siguiente →")}</div></div>
+    ${(n.children || []).length ? `<div class="saltos">${n.children.map(c => `<a class="tag" href="#pantalla/${c.id}">${esc(nombre(c))}</a>`).join("")}</div>` : ""}
     ${grandes(n)}
-    ${debajo(n, false)}
-    <details class="mas"><summary>Opciones y detalles</summary>
-      <table class="tabla">
-        ${titulo ? `<tr><th style="width:22%">Título en el juego</th><td>${t(n.title, "span", "boton")}</td></tr>` : ""}
-        ${n.fn ? `<tr><th>Función</th><td><code>${esc(n.fn)}</code>${F[n.fn] ? ` <span class="estado">${esc(F[n.fn])}</span>` : ""}</td></tr>` : ""}
-        ${n.phase ? `<tr><th>Fase</th><td><code>${esc(n.phase)}</code></td></tr>` : ""}
-        ${llegan.length ? `<tr><th>También desde</th><td>${llegan.map(ln).join(", ")}</td></tr>` : ""}
-        ${lleva.length ? `<tr><th>Lleva a</th><td>${lleva.map(ln).join(", ")}</td></tr>` : ""}
-      </table>
-      ${(n.options || []).length ? `<table class="tabla"><tr><th style="width:34%">En pantalla</th><th>Qué hace</th><th style="width:20%">Lleva a</th></tr>
-        ${n.options.map(o => `<tr><td>${o.key ? t(o.key, "span", "boton") : `<i>${esc(o.label)}</i>`}</td><td>${esc(o.text || "")}${o.doc ? ` · <a href="#${o.doc}">en esta documentación</a>` : ""}</td><td>${o.to ? ln(o.to) : ""}</td></tr>`).join("")}
-        </table>` : ""}
-    </details>`;
+    ${detalles(n)}
+    ${debajo(n, false)}`;
 }
 
 // --- Todas las capturas -----------------------------------------------------------------
@@ -430,32 +521,158 @@ function paleta() {
     <div class="colores">${(J.historia?.nights || []).map(n => chip(n.loot.colour, n.n + " " + tx(n.loot.name))).join("")}</div>`;
 }
 
-// --- Assets ---------------------------------------------------------------------------
-const ASSETS = [["piezas", "Piezas a robar"], ["modelos", "Modelos 3D"], ["objetos", "Objetos que se caen"], ["sonidos", "Sonidos"]];
-function assets() {
-  const a = J.assets || {}, m = J.modelos || [], s = J.sonidos || [];
-  const grupos = [...new Set(m.map(x => x.group))];
-  const nombreGrupo = { museo: "Museo y colección", antiguo: "Tema antiguo (Egipto)", edad_media: "Tema Edad Media" };
-  const cuantos = { piezas: (a.piezas || []).length, modelos: m.length, objetos: (a.objetos || []).length, sonidos: s.length };
-  const portada = { piezas: (a.piezas || [])[0], modelos: m[0], objetos: (a.objetos || [])[0] };
-  const cabeza = txt => `<div class="ruta"><a href="#assets">Assets</a></div><h1>${txt}</h1>`;
-  $("#p-assets").innerHTML = `<h1>Assets</h1>
-    <div class="sub">Lo que enseña la <a href="#pantalla/assets_juego">página de assets del juego</a>, fuera de él</div>
-    <div class="tarjetas assets">${ASSETS.map(([k, txt]) => `<a class="tarjeta" href="#assets/${k}"><div class="img">${portada[k] ? `<img loading="lazy" src="${portada[k].file}" alt="">` : `<span class="nota-musical">♪</span>`}</div>
-      <div class="t">${txt}</div><div class="estado">${cuantos[k]}</div></a>`).join("")}</div>`;
-  $("#p-assets-piezas").innerHTML = cabeza("Piezas a robar") + `
-    <p>Las veinte de la historia y una de cada forma que inventa el modo generativo (<code>LootGen</code>), en su peana, como las pinta el juego.</p>
-    <div class="galeria" style="--min:150px">${(a.piezas || []).map(p => `<div class="pieza"><img loading="lazy" src="${p.file}" alt="" data-img="${p.file}" data-cap="${esc(tx(p.name))}">
-      <div class="t">${t(p.name)}</div><div class="s"><span class="punto" style="background:${p.colour}"></span>${p.night ? "Noche " + p.night : "Generativo"} · <code>${esc(p.shape)}</code></div></div>`).join("")}</div>`;
-  $("#p-assets-modelos").innerHTML = cabeza("Modelos 3D") + `
-    <p>Cada <code>.glb</code> de <code>assets/models/</code>, exportado desde Blender (<code>art/*.blend</code>), en tres cuartos y con el sombreado toon del juego (<code>MuseumView.asset</code>).</p>
-    ${grupos.map(g => `<h2>${nombreGrupo[g] || g}</h2><div class="galeria" style="--min:140px">${m.filter(x => x.group === g).map(x => `<div class="pieza"><img loading="lazy" src="${x.file}" alt="" data-img="${x.file}" data-cap="${esc(x.name)}.glb">
-      <div class="t mono">${esc(x.name.split("/").pop())}</div><div class="s">${x.size.map(v => v.toFixed(2)).join(" × ")} m</div></div>`).join("")}</div>`).join("")}`;
-  $("#p-assets-objetos").innerHTML = cabeza("Objetos que se caen") + `
-    <div class="galeria" style="--min:150px">${(a.objetos || []).map(p => `<div class="pieza"><img loading="lazy" src="${p.file}" alt="" data-img="${p.file}" data-cap="${esc(p.name)}"><div class="t">${esc(p.name)}</div><div class="s"><code>${p.kind}</code></div></div>`).join("")}</div>`;
-  $("#p-assets-sonidos").innerHTML = cabeza("Sonidos") + `
-    <p>Generados en código (<code>scenes/sfx.gd</code>) y exportados a <code>.wav</code>.</p>
-    <div style="max-width:720px">${s.map(x => `<div class="sonido"><b>${esc(x.name)}</b><audio controls preload="none" src="${x.file}"></audio><span class="estado">${x.seconds} s</span></div>`).join("")}</div>`;
+// --- Lo que hay en el juego: cada cosa con su imagen y sus textos juntos ---------------
+const ENTIDADES = [["objetos", "Objetos y piezas"], ["personajes", "Personajes"], ["sonidos", "Sonidos"]];
+const MODELOS = Object.fromEntries((J.modelos || []).map(m => [m.name, m]));
+const SONIDOS = Object.fromEntries((J.sonidos || []).map(x => [x.name, x]));
+// Los sonidos que ya salen en la ficha de algo, y dónde.
+const SONIDO_DE = {};
+const img = (file, cap) => file ? `<img loading="lazy" src="${file}" alt="" data-img="${file}" data-cap="${esc(cap)}">` : `<div class="sin">sin imagen</div>`;
+const campo = (etq, html) => `<p><span class="etq">${etq}</span>${html}</p>`;
+const claves = pre => TX.filter(x => x.key.startsWith(pre)).map(x => x.key);
+const oir = n => SONIDOS[n] ? `<span class="oir"><audio controls preload="none" src="${SONIDOS[n].file}"></audio><code>${esc(n)}</code></span>` : "";
+const ficha = (imagen, cuerpo, id = "", cls = "") => `<div class="ent ${cls}" ${id ? `id="${id}"` : ""}><div class="img">${imagen}</div><div class="cuerpo">${cuerpo}</div></div>`;
+
+// Las piezas a robar, como elementos de la página de objetos (categoría «loot»): las de la
+// historia por museo, las formas del generativo y sus frases comunes.
+function piezasComoObjetos() {
+  const a = (J.assets || {}).piezas || [], h = J.historia || {}, noches = h.nights || [];
+  const gen = a.filter(p => !p.night);
+  const formas = gen.map(p => "GEN_" + p.shape.toUpperCase() + "_");
+  const comunes = claves("GEN_").filter(k => !formas.some(f => k.startsWith(f)));
+  const out = [];
+  for (const m of h.museums || []) for (const nn of m.nights_list || []) {
+    const n = noches[nn - 1];
+    if (!n) continue;
+    const p = a[n.n - 1] || {}, l = n.loot;
+    out.push({ id: "pieza-" + n.n, cat: "loot", grupo: "museo" + m.n, img: p.file, nombre: tx(l.name), color: l.colour,
+      detalle: () => `<div class="imgs una"><figure>${img(p.file, tx(l.name))}</figure></div>
+        <div class="nom"><span class="punto" style="background:${l.colour}"></span>${t(l.name)}</div>
+        ${campo("Descripción", t(l.blurb))}${campo("Mientras la coge", t(l.verb))}${campo("Cuento", t(l.story))}
+        <div><a class="tag" href="#historia/museo${n.museum}">noche ${n.n}</a><span class="tag">forma <code>${esc(l.shape)}</code></span><span class="tag">${l.seconds} s para cogerla</span></div>` });
+  }
+  for (const p of gen) {
+    const k = "GEN_" + p.shape.toUpperCase() + "_", ks = claves(k);
+    const de = suf => ks.filter(x => x.slice(k.length).replace(/_[0-9]+$/, "") === suf);
+    const lista = (etq, suf) => de(suf).length ? campo(etq, `<span class="varias">${de(suf).map(x => t(x)).join("")}</span>`) : "";
+    const otras = ks.filter(x => !["NOUN", "BLURB", "VERB", "DETAIL"].includes(x.slice(k.length).replace(/_[0-9]+$/, "")));
+    out.push({ id: "pieza-" + p.shape, cat: "loot", grupo: "generativo", img: p.file, nombre: tx("EDITOR_SHAPE_" + p.shape.toUpperCase()), color: p.colour,
+      detalle: () => `<div class="imgs una"><figure>${img(p.file, tx(p.name))}</figure></div>
+        <div class="nom"><span class="punto" style="background:${p.colour}"></span>${t("EDITOR_SHAPE_" + p.shape.toUpperCase())} <span class="estado">forma <code>${esc(p.shape)}</code> · en la imagen, «${esc(p.name)}»</span></div>
+        ${lista("Nombres", "NOUN")}${lista("Descripciones", "BLURB")}${lista("Mientras la coge", "VERB")}${lista("Detalles", "DETAIL")}${otras.map(x => campo(esc(x.slice(k.length).toLowerCase()), t(x))).join("")}` });
+  }
+  out.push({ id: "pieza-frases", cat: "loot", grupo: "generativo", img: "", nombre: "Frases del generativo",
+    detalle: () => `<div class="nom">Frases del generativo</div>
+      <p class="estado">Las que valen para cualquier forma: de quién es y cómo o desde cuándo la echa de menos.</p>
+      <h3>Dueños</h3>
+      <table class="tabla textos"><thead><tr><th>Quién</th><th>De quién</th></tr></thead><tbody>${comunes.filter(k => /^GEN_OWNER_[0-9]+_WHO$/.test(k)).map(k => `<tr><td>${t(k)}</td><td>${t(k.replace(/_WHO$/, "_OF"))}</td></tr>`).join("")}</tbody></table>
+      ${[["Cómo se la llevó", "GEN_HOW_"], ["Desde entonces", "GEN_SINCE_"]].map(([nom, pre]) => `<h3>${nom}</h3>${comunes.filter(k => k.startsWith(pre)).map(k => `<p>${t(k)}</p>`).join("")}`).join("")}
+      ${comunes.filter(k => !/^GEN_(OWNER|HOW|SINCE)_/.test(k)).map(k => campo(esc(k), t(k))).join("")}` });
+  return out;
+}
+
+// Cada objeto del catálogo del editor, con todo lo suyo: nombre, descripción, tamaño,
+// tipo, colección, su imagen y cómo se ve en el mapa (tools/capture_docs.gd, _objects);
+// y las piezas a robar, como una categoría más.
+const TIPOS = [["case", "EDITOR_TYPE_CASE"], ["small", "EDITOR_TYPE_SMALL"], ["big", "EDITOR_TYPE_BIG"], ["prop", "EDITOR_TYPE_PROP"], ["loot", ""]];
+const DONDE = { case: "en vitrina", small: "en peana", big: "en el suelo", prop: "en el suelo, se puede tirar" };
+const METAL = ["bin", "armour"];
+let filtroTipo = "";
+let objSel = "";
+// La descripción de un objeto se escribe aquí: si aún no la tiene, un hueco para escribirla.
+const descripcion = k => k in TEXT ? t(k) : `<span class="vacio" data-key="${esc(k)}" data-valor="">Sin descripción${EDITABLE ? " · pulsa para escribirla" : ""}</span>`;
+// Los sonidos de los objetos que se tiran salen en su ficha (y la página de sonidos lo dice).
+for (const o of J.objetos || []) if (o.tool.startsWith("prop:")) SONIDO_DE[o.kind] = SONIDO_DE[METAL.includes(o.kind) ? "kick_metal" : "kick_dry"] = "objetos";
+let ELEMENTOS = null;
+function elementos() {
+  if (ELEMENTOS) return ELEMENTOS;
+  const lista = J.objetos || [];
+  const tam = m => m ? m.size.map(v => v.toFixed(2)).join(" × ") + " m" : "";
+  const deObjeto = o => {
+    const m = MODELOS[o.model];
+    const prop = o.tool.startsWith("prop:"), K = o.kind.toUpperCase();
+    const foto = prop ? (((J.assets || {}).objetos || []).find(x => x.kind === o.kind) || {}).file : m ? m.file : o.cerca;
+    return { id: "objeto-" + o.tool, cat: o.type, grupo: o.themes[0] || "sin", img: foto, nombre: tx(o.name), cerca: !prop && !m,
+      detalle: () => {
+        const golpe = METAL.includes(o.kind) ? "kick_metal" : "kick_dry";
+        const sonidos = prop ? campo("Al caer", t(METAL.includes(o.kind) ? "ASSETS_FALL_METAL" : "ASSETS_FALL_DRY") + " " + oir(o.kind) + oir(golpe)) : "";
+        const col = o.themes.length ? o.themes.map(x => `<a href="#objetos/${x}">${t("THEME_" + x.toUpperCase())}</a>`).join(", ") : "cualquiera (también en los pasillos)";
+        return `<div class="imgs"><figure>${img(foto, tx(o.name))}<figcaption>Detalle</figcaption></figure><figure>${img(o.mapa, tx(o.name) + " — en el mapa")}<figcaption>En el mapa, 3 × 3 casillas</figcaption></figure></div>
+          <div class="nom">${t(o.name)}${prop ? ` <span class="estado">· en el editor ${t("EDITOR_TOOL_PROP_" + K)}</span>` : ""}</div>
+          ${campo("Descripción", descripcion(o.desc))}
+          ${campo("Tipo", `${t(TIPOS.find(x => x[0] === o.type)[1])} <span class="estado">${DONDE[o.type]}</span>`)}
+          ${campo("Colección", col)}
+          ${campo("Tamaño", `${o.tiles.join(" × ")} casilla${o.tiles[0] * o.tiles[1] > 1 ? "s" : ""}${m ? ` · ${tam(m)}` : ""}`)}
+          ${campo("Modelo", o.model ? `<code>${esc(o.model)}.glb</code>` : "hecho en código")}
+          ${sonidos}
+          <div class="estado"><code>${esc(o.tool)}</code></div>`;
+      } };
+  };
+  ELEMENTOS = [...lista.map(deObjeto), ...piezasComoObjetos()];
+  return ELEMENTOS;
+}
+// Los grupos, en orden: las colecciones del catálogo, lo de cualquier colección, los
+// museos de la historia y el generativo; cada uno con su título.
+function gruposObj() {
+  const temas = (J.catalogo || {}).themes || {}, h = J.historia || {};
+  return [
+    ...Object.keys(temas).map(id => [id, t("THEME_" + id.toUpperCase()), `<p class="estado">La sala: ${t(temas[id].gallery[1])}${(temas[id].paintings || []).length ? ` · cuadros: ${temas[id].paintings.map(x => `<code>${esc(x)}</code>`).join(" ")}` : ""}</p>`]),
+    ["sin", "De cualquier colección", ""],
+    ...(h.museums || []).map(m => ["museo" + m.n, `<span class="punto" style="background:${m.colour}"></span>Piezas a robar · ${t(m.name)}`, ""]),
+    ["generativo", "Piezas a robar · modo generativo", `<p class="estado">El generativo inventa la pieza de cada golpe (<code>LootGen</code>): una forma, uno de sus nombres, un dueño y una descripción. La imagen es un ejemplo.</p>`],
+  ];
+}
+const nombreTipo = k => k === "loot" ? "Piezas a robar" : esc(frase(tx(TIPOS.find(x => x[0] === k)[1])));
+function objetos() {
+  const todos = elementos();
+  const vis = todos.filter(e => !filtroTipo || e.cat === filtroTipo);
+  if (!vis.some(e => e.id === objSel)) objSel = (vis[0] || {}).id || "";
+  const cuantos = k => todos.filter(e => !k || e.cat === k).length;
+  const grupos = gruposObj().map(([id, titulo, nota]) => [id, titulo, nota, vis.filter(e => e.grupo === id)]).filter(g => g[3].length);
+  const tarjeta = e => `<button class="oc ${e.cerca ? "cerca" : ""} ${e.id === objSel ? "on" : ""}" data-sel="${esc(e.id)}" id="${esc(e.id)}">
+      <div class="im">${e.img ? `<img loading="lazy" src="${e.img}" alt="">` : "texto"}</div>
+      <div class="n">${e.color ? `<span class="punto" style="background:${e.color}"></span>` : ""}${esc(e.nombre)}</div></button>`;
+  $("#p-objetos").innerHTML = `<h1>Objetos</h1>
+    <div class="sub">Todo lo que se puede poner en un museo, como en el editor, y las piezas a robar: pulsa uno para ver su ficha${EDITABLE ? " · pulsa un texto de la ficha para cambiarlo" : ""}</div>
+    <div class="objs">
+      <div>
+        <div class="filtros"><button class="btn ${filtroTipo ? "" : "si"}" data-tipo="">Todos <span>${cuantos("")}</span></button>${TIPOS.map(([k]) => `<button class="btn ${filtroTipo === k ? "si" : ""}" data-tipo="${k}">${nombreTipo(k)} <span>${cuantos(k)}</span></button>`).join("")}</div>
+        ${grupos.map(([id, titulo, nota, es]) => `<h2 id="objetos-${id}">${titulo}</h2>${nota}<div class="rejilla">${es.map(tarjeta).join("")}</div>`).join("")}
+      </div>
+      <aside class="ficha-obj" id="ficha-obj"></aside>
+    </div>`;
+  fichaObj();
+}
+function fichaObj() {
+  const e = elementos().find(x => x.id === objSel);
+  $("#ficha-obj").innerHTML = e ? e.detalle() : `<p class="vacio">Nada que mostrar.</p>`;
+  document.querySelectorAll(".oc").forEach(b => b.classList.toggle("on", b.dataset.sel === objSel));
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest(".filtros [data-tipo]");
+  if (b) { filtroTipo = b.dataset.tipo; objetos(); return; }
+  const c = e.target.closest(".oc[data-sel]");
+  if (c) { objSel = c.dataset.sel; fichaObj(); }
+});
+
+function personajes() {
+  const m = k => MODELOS[k];
+  const shot = SHOTS["assets_people"];
+  $("#p-personajes").innerHTML = `<h1>Personajes</h1>
+    <div class="sub">Ladrones y guardias (<code>scenes/figure.gd</code>, modelados en <code>art/characters/</code>)</div>
+    ${ficha(img(m("ninja") && m("ninja").file, "ninja.glb"), `<div class="nom">Ladrón</div>${campo("Modelo", "<code>ninja.glb</code>")}
+      ${campo("En la página de assets", `${t("ASSETS_PEOPLE_THIEF")} · ${t("ASSETS_PEOPLE_TWO")}`)}`)}
+    ${ficha(img(m("guardia") && m("guardia").file, "guardia.glb"), `<div class="nom">Guardia</div>${campo("Modelo", "<code>guardia.glb</code>")}
+      ${campo("En la página de assets", `${t("ASSETS_PEOPLE_SLEEPY")} · ${t("ASSETS_PEOPLE_THREE")}`)}
+      ${campo("Lo que piensa y dice", `<a href="#textos">textos <code>GUARD_</code> y <code>MIND_</code></a>`)}`)}
+    ${shot ? `<h2>En la página de assets del juego</h2><div class="grandes una">${fig(shot)}</div>` : ""}`;
+}
+
+function sonidos() {
+  const s = J.sonidos || [];
+  $("#p-sonidos").innerHTML = `<h1>Sonidos</h1>
+    <div class="sub">Generados en código (<code>scenes/sfx.gd</code>) y exportados a <code>.wav</code></div>
+    <div style="max-width:760px">${s.map(x => `<div class="sonido"><b>${esc(x.name)}</b><audio controls preload="none" src="${x.file}"></audio><span class="estado">${x.seconds} s${SONIDO_DE[x.name] ? ` · <a href="#${SONIDO_DE[x.name]}">${esc(ENTIDADES.find(e => e[0] === SONIDO_DE[x.name])[1].toLowerCase())}</a>` : ""}</span></div>`).join("")}</div>`;
 }
 
 // --- Historia -------------------------------------------------------------------------
@@ -479,8 +696,9 @@ function noche(n, lecciones) {
   const l = n.loot, les = lecciones[n.teach];
   const g = n.guards === 0 ? "sin guardias" : n.guards === 1 ? "1 guardia" : n.guards + " guardias";
   const tam = { small: "pequeño", medium: "mediano", large: "grande" }[n.size] || n.size;
-  return `<div class="noche"><div class="n">${String(n.n).padStart(2, "0")}</div><div>
-    <div class="pz"><span class="punto" style="background:${l.colour}"></span>${t(l.name)}</div>
+  const p = ((J.assets || {}).piezas || [])[n.n - 1];
+  return `<div class="noche"><div class="n">${String(n.n).padStart(2, "0")}</div><div>${p ? `<img class="mini" loading="lazy" src="${p.file}" alt="" data-img="${p.file}" data-cap="${esc(tx(l.name))}">` : ""}
+    <div class="pz"><span class="punto" style="background:${l.colour}"></span>${t(l.name)} <a class="estado" href="#objetos/pieza-${n.n}">ficha de la pieza</a></div>
     <p><span class="etq">Descripción</span>${t(l.blurb)}</p>
     <p><span class="etq">Mientras la coge</span>${t(l.verb)}</p>
     <p><span class="etq">Cuento</span>${t(l.story)}</p>
@@ -566,14 +784,14 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape") $("#caja").classList.remove("on");
   else if (abierta && (e.key === "ArrowLeft" || e.key === "ArrowRight")) verOtra(e.key === "ArrowLeft" ? -1 : 1);
   else if (!abierta && location.hash.startsWith("#pantalla/") && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
-    const i = ORDEN.indexOf(decodeURIComponent(location.hash.split("/")[1]));
+    const i = ORDEN.indexOf(paginaDe(decodeURIComponent(location.hash.split("/")[1])));
     const x = ORDEN[i + (e.key === "ArrowLeft" ? -1 : 1)];
     if (x) location.hash = "pantalla/" + x;
   }
 });
 
 function pintar() {
-  inicio(); capturas(); estilo(); paleta(); assets(); historia(); textos();
+  inicio(); capturas(); estilo(); paleta(); objetos(); personajes(); sonidos(); historia(); textos();
   document.body.classList.toggle("editable", EDITABLE);
 }
 pintar();

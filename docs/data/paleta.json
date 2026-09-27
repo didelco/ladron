@@ -377,6 +377,61 @@
 	{
 		"colours": [
 			{
+				"hex": "#150f24d6",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "GLASS",
+		"note": "The menus' frames: dark smoked glass with a thin pale rim, and a warm glow round the one with the focus, lit like the cases in the hall behind."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#241838eb",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "GLASS_LIT",
+		"note": "The menus' frames: dark smoked glass with a thin pale rim, and a warm glow round the one with the focus, lit like the cases in the hall behind."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#8f82b880",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "GLASS_EDGE",
+		"note": "The menus' frames: dark smoked glass with a thin pale rim, and a warm glow round the one with the focus, lit like the cases in the hall behind."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ffae42",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "GLOW",
+		"note": "The menus' frames: dark smoked glass with a thin pale rim, and a warm glow round the one with the focus, lit like the cases in the hall behind."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#fff0d6",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "GLOW_TEXT",
+		"note": "The menus' frames: dark smoked glass with a thin pale rim, and a warm glow round the one with the focus, lit like the cases in the hall behind."
+	},
+	{
+		"colours": [
+			{
 				"hex": "#eef2ff",
 				"key": "text"
 			},
@@ -407,6 +462,17 @@
 		],
 		"file": "scenes/hud.gd",
 		"name": "C",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#b3b3cc",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "DIM_CARD",
 		"note": ""
 	},
 	{
@@ -1028,7 +1094,7 @@
 				"key": ""
 			}
 		],
-		"file": "scenes/minigame_stage.gd",
+		"file": "scenes/minigame_view.gd",
 		"name": "CREAM",
 		"note": ""
 	},
@@ -1039,7 +1105,7 @@
 				"key": ""
 			}
 		],
-		"file": "scenes/minigame_stage.gd",
+		"file": "scenes/minigame_view.gd",
 		"name": "INK",
 		"note": ""
 	},
@@ -1050,7 +1116,7 @@
 				"key": ""
 			}
 		],
-		"file": "scenes/minigame_stage.gd",
+		"file": "scenes/minigame_view.gd",
 		"name": "GOLD",
 		"note": ""
 	},
@@ -1061,7 +1127,7 @@
 				"key": ""
 			}
 		],
-		"file": "scenes/minigame_stage.gd",
+		"file": "scenes/minigame_view.gd",
 		"name": "WOOD",
 		"note": ""
 	},
@@ -1072,7 +1138,7 @@
 				"key": ""
 			}
 		],
-		"file": "scenes/minigame_stage.gd",
+		"file": "scenes/minigame_view.gd",
 		"name": "STEEL",
 		"note": ""
 	},
@@ -1083,7 +1149,7 @@
 				"key": ""
 			}
 		],
-		"file": "scenes/minigame_stage.gd",
+		"file": "scenes/minigame_view.gd",
 		"name": "GREEN",
 		"note": ""
 	},
@@ -1094,39 +1160,8 @@
 				"key": ""
 			}
 		],
-		"file": "scenes/minigame_stage.gd",
+		"file": "scenes/minigame_view.gd",
 		"name": "RED",
-		"note": ""
-	},
-	{
-		"colours": [
-			{
-				"hex": "#e8594f",
-				"key": "0"
-			},
-			{
-				"hex": "#4dabf7",
-				"key": "1"
-			},
-			{
-				"hex": "#ffd43b",
-				"key": "2"
-			},
-			{
-				"hex": "#5cc98a",
-				"key": "3"
-			},
-			{
-				"hex": "#c77dff",
-				"key": "4"
-			},
-			{
-				"hex": "#e8d6b4",
-				"key": "5"
-			}
-		],
-		"file": "scenes/minigame_stage.gd",
-		"name": "WIRE_COLOURS",
 		"note": ""
 	},
 	{

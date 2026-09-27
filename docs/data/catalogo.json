@@ -1,0 +1,236 @@
+{
+	"big": [
+		"dinosaur",
+		"sarcophagus",
+		"bear",
+		"trojan_horse",
+		"mammoth",
+		"log",
+		"car"
+	],
+	"exhibits": [
+		"colours",
+		"butterflies",
+		"minerals",
+		"ammonite",
+		"meteorite",
+		"statue",
+		"skull",
+		"lego_skull",
+		"diorama",
+		"amphora",
+		"globe",
+		"totem",
+		"bear",
+		"plinth"
+	],
+	"model_of": {
+		"big:bear": "oso",
+		"big:dinosaur": "dinosaurio",
+		"big:sarcophagus": "sarcofago",
+		"exhibit:ammonite": "amonite",
+		"exhibit:amphora": "anfora",
+		"exhibit:bear": "oso",
+		"exhibit:globe": "globo",
+		"exhibit:lego_skull": "craneo_lego",
+		"exhibit:meteorite": "meteorito",
+		"exhibit:plinth": "pedestal",
+		"exhibit:skull": "craneo",
+		"exhibit:statue": "statue-a",
+		"exhibit:totem": "totem"
+	},
+	"prop_themes": {
+		"armour": "edad_media",
+		"bin": "",
+		"bust": "antiguo",
+		"panel": ""
+	},
+	"props": [
+		"bin",
+		"bust",
+		"panel",
+		"armour"
+	],
+	"themes": {
+		"antiguo": {
+			"big": [
+				"sarcophagus",
+				"trojan_horse"
+			],
+			"case": [
+				"@colours"
+			],
+			"cloth": "#e6dcc2",
+			"colours": [
+				"#e8b53a",
+				"#2ec4b6",
+				"#2f5fd0",
+				"#d2643c"
+			],
+			"floor": [
+				"temas/antiguo/anubis",
+				"temas/antiguo/barca"
+			],
+			"gallery": [
+				"the ancient world gallery",
+				"GALLERY_ANCIENT"
+			],
+			"paintings": [
+				"pyramids",
+				"hieroglyphs",
+				"nile"
+			],
+			"plinth": [
+				"temas/antiguo/busto_faraon",
+				"temas/antiguo/gato_bastet",
+				"temas/antiguo/obelisco",
+				"@amphora",
+				"@statue",
+				"temas/antiguo/escarabajo",
+				"temas/antiguo/canopos",
+				"temas/antiguo/amuletos",
+				"temas/antiguo/papiro"
+			]
+		},
+		"edad_media": {
+			"case": [
+				"@colours"
+			],
+			"cloth": "#6a1f2e",
+			"colours": [
+				"#d0263e",
+				"#e8b53a",
+				"#d6dbe4",
+				"#23a861"
+			],
+			"floor": [
+				"temas/edad_media/espada_piedra",
+				"temas/edad_media/trono",
+				"temas/edad_media/maquina_voladora",
+				"temas/edad_media/vidriera"
+			],
+			"gallery": [
+				"the medieval hall",
+				"GALLERY_MEDIEVAL"
+			],
+			"paintings": [
+				"castle",
+				"dragon",
+				"tapestry",
+				"gioconda",
+				"vitruvian"
+			],
+			"plinth": [
+				"temas/edad_media/yelmo",
+				"temas/edad_media/escudo",
+				"temas/edad_media/castillo",
+				"temas/edad_media/gargola",
+				"temas/edad_media/carro_blindado",
+				"temas/edad_media/corona",
+				"temas/edad_media/caliz",
+				"temas/edad_media/manuscrito",
+				"temas/edad_media/llave_sello",
+				"temas/edad_media/codice_leonardo",
+				"temas/edad_media/astrolabio"
+			]
+		},
+		"moderna": {
+			"big": [
+				"car"
+			],
+			"case": [
+				"@colours"
+			],
+			"cloth": "#f2f2f2",
+			"colours": [
+				"#ff4f9a",
+				"#00c2d8",
+				"#ffd400",
+				"#8a4dff"
+			],
+			"floor": [
+				"@globe",
+				"@totem",
+				"temas/moderna/recreativa",
+				"temas/moderna/movil_calder",
+				"temas/moderna/semaforo"
+			],
+			"gallery": [
+				"the modern age gallery",
+				"GALLERY_MODERN"
+			],
+			"paintings": [
+				"abstract",
+				"pipe",
+				"banana",
+				"ice_cream",
+				"portrait"
+			],
+			"plinth": [
+				"@lego_skull",
+				"temas/moderna/tele",
+				"temas/moderna/tostadora",
+				"temas/moderna/rubik",
+				"temas/moderna/perro_globo"
+			]
+		},
+		"naturaleza": {
+			"big": [
+				"bear",
+				"log"
+			],
+			"case": [
+				"@colours",
+				"@butterflies"
+			],
+			"cloth": "#2e4a2a",
+			"colours": [
+				"#5cc85c",
+				"#ff6fa8",
+				"#5ac8fa",
+				"#ffd23f"
+			],
+			"floor": [
+				"@diorama"
+			],
+			"gallery": [
+				"the natural history gallery",
+				"GALLERY_NATURE"
+			],
+			"paintings": [
+				"landscape"
+			],
+			"plinth": []
+		},
+		"prehistoria": {
+			"big": [
+				"dinosaur",
+				"mammoth"
+			],
+			"case": [
+				"@colours",
+				"@minerals"
+			],
+			"cloth": "#b89a6a",
+			"colours": [
+				"#d08a3a",
+				"#efe3c8",
+				"#f4a81c",
+				"#4a4452"
+			],
+			"floor": [],
+			"gallery": [
+				"the prehistory gallery",
+				"GALLERY_PREHISTORY"
+			],
+			"paintings": [
+				"landscape"
+			],
+			"plinth": [
+				"@skull",
+				"@ammonite",
+				"@meteorite"
+			]
+		}
+	}
+}

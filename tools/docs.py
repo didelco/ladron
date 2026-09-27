@@ -3,6 +3,7 @@
 
     python3 tools/docs.py build           # capturas, assets, datos y textos (abre una ventana del juego)
     python3 tools/docs.py build --fast    # solo datos y textos, sin capturas ni renders
+    python3 tools/docs.py build objects   # solo unas partes: shots, assets, models, objects, sounds, data
     python3 tools/docs.py serve           # http://localhost:8765, con los textos editables
     python3 tools/docs.py texts           # solo textos y ESTILO.md (rápido, sin Godot)
 
@@ -38,6 +39,7 @@ GROUPS = [
     ("Historia", ["STORY_", "PROLOGUE_", "ENDING_", "NIGHT_", "MUSEUM_", "LESSON_"]),
     ("Menús", ["MENU_", "JOIN_", "SEAT_", "CHALLENGE_", "BRIEF_", "PLAN_", "NEWS_", "TIP_"]),
     ("Juego", ["HUD_", "LOG_", "END_", "GAME_", "GUARD_", "MIND_", "ZONE_", "PROP_", "PIECE_", "LEGEND_", "BRAIN_"]),
+    ("Descripciones", ["DESC_"]),
     ("Generador", ["GEN_", "GALLERY_", "THEME_"]),
     ("Ajustes y controles", ["SETTINGS_", "CONTROLS_", "ASSETS_"]),
     ("Editor de mapas", ["EDITOR_"]),
@@ -89,7 +91,13 @@ def set_text(key, value):
             r["raw"] = key + "," + encode_cell(value)
             break
     else:
-        raise KeyError(key)
+        # Las descripciones de los objetos se escriben aquí: la primera vez, fila nueva al final.
+        if not key.startswith("DESC_"):
+            raise KeyError(key)
+        while records and records[-1]["cells"] is None and records[-1]["raw"] == "":
+            records.pop()
+        records.append({"raw": key + "," + encode_cell(value), "cells": [key, value]})
+        trailing = True
     write_records(records, trailing)
 
 
@@ -206,9 +214,9 @@ def git(*args):
         return ""
 
 
-def build(fast):
+def build(fast, only=()):
     os.makedirs(DATA, exist_ok=True)
-    parts = ["data"] if fast else []
+    parts = ["data"] if fast else list(only)
     print("Godot: capturando" + (" (solo datos)" if fast else "") + "…")
     r = subprocess.run([GODOT, "--path", ROOT, "--script", "tools/capture_docs.gd", "--", *parts], cwd=ROOT)
     if r.returncode != 0:
@@ -218,9 +226,11 @@ def build(fast):
     write_js("juego.js", "JUEGO", {
         "paleta": load_json("paleta.json", []),
         "historia": load_json("historia.json", {}),
+        "catalogo": load_json("catalogo.json", {}),
         "capturas": load_json("capturas.json", []),
         "assets": load_json("assets.json", {}),
         "modelos": load_json("modelos.json", []),
+        "objetos": load_json("objetos.json", []),
         "sonidos": load_json("sonidos.json", []),
         "generado": {"fecha": datetime.now().strftime("%d-%m-%Y %H:%M"), "commit": git("rev-parse", "--short", "HEAD"),
                      "rama": git("rev-parse", "--abbrev-ref", "HEAD")},
@@ -286,7 +296,7 @@ def serve():
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "build"
     if cmd == "build":
-        build("--fast" in sys.argv)
+        build("--fast" in sys.argv, [a for a in sys.argv[2:] if not a.startswith("--")])
     elif cmd == "serve":
         serve()
     elif cmd == "texts":
