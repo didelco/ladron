@@ -1,86 +1,134 @@
 class_name Story
 extends RefCounted
-## The story mode: twenty nights in five museums (MUSEUMS), each night a
-## fixed museum plan and a fixed piece,
-## from an empty little museum to four wide-awake guards in a big one. Now
-## and then a night teaches one new thing, and is built around it; the ones
-## in between practise it, each a little harder than the last.
+## The story mode: five museums to rob, five heists in each, twenty-five in
+## all. Each museum keeps to one theme (Themes) and its own look: every
+## gallery shows that theme's pieces, and every piece taken fits it. The
+## first four heists of a museum are its rooms, each a little harder than
+## the last; the fifth is its big job (a boss): the museum's star piece,
+## with a twist of its own made of what the game already has. Take all
+## five and the next museum opens.
+##
+## Now and then a heist teaches one new thing, and is built around it; the
+## ones in between practise it. The big jobs teach nothing: they test.
 ##
 ## The tale, for kids: the Banda del Calcetín only steals what was stolen
-## first. The Barón Von Bostezo, director of the Museo de Cosas Rarísimas,
-## has taken twenty things from the town and put them in glass cases; one
-## a night, the gang takes them back.
+## first. The Barón Von Bostezo made the directors of the town's five
+## museums yawn with his diamond until they signed them over to him; now he
+## keeps their treasures for himself. One a night, the gang takes them
+## back, until the museums are everybody's again.
 
 const PROLOGUE := "STORY_PROLOGUE"
 
 const ENDING := "STORY_ENDING"
 
-## Each night: museum size and shape, how many guards, their senses and pace
+## Heists in a museum: four rooms and the big job, always the last.
+const ROOMS := 5
+
+## Each heist: museum size and shape, how many guards, their senses and pace
 ## (Sim.tuning keys), what is switched on yet (props, lights, the case's
-## alarm: Sim.feature), a guard's post if the lesson needs one, the one
-## thing it teaches (LESSONS), and the piece. Easy to hard, one new thing
-## at a time.
+## alarm: Sim.feature), a guard's post if the lesson or the big job needs
+## one, the one thing it teaches (LESSONS), and the piece. A big job says
+## so ("boss") and has a line of its own for the plan ("tip"). Easy to
+## hard, one new thing at a time; each museum's pieces fit its theme.
 const LEVELS := [
+	# --- La Gran Cueva: prehistory. Small museums, one guard at most.
 	{"size": "small", "shape": "rect", "guards": 0, "view": 0.45, "hearing": 0.2, "speed": 0.4, "calm_after": 5.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "heist",
 		"loot": {"name": "NIGHT_01_NAME", "blurb": "NIGHT_01_BLURB", "verb": "NIGHT_01_VERB", "seconds": 1.5, "colour": "#f4f1e6", "shape": "teeth",
 			"story": "NIGHT_01_TALE"}},
 	{"size": "small", "shape": "L", "guards": 1, "view": 0.45, "hearing": 0.2, "speed": 0.4, "calm_after": 5.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "guard",
-		"loot": {"name": "NIGHT_02_NAME", "blurb": "NIGHT_02_BLURB", "verb": "NIGHT_02_VERB", "seconds": 2.0, "colour": "#ffd43b", "shape": "duck",
+		"loot": {"name": "NIGHT_02_NAME", "blurb": "NIGHT_02_BLURB", "verb": "NIGHT_02_VERB", "seconds": 2.0, "colour": "#d08a3a", "shape": "idol",
 			"story": "NIGHT_02_TALE"}},
 	{"size": "small", "shape": "T", "guards": 1, "view": 0.5, "hearing": 0.25, "speed": 0.45, "calm_after": 5.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "",
-		"loot": {"name": "NIGHT_03_NAME", "blurb": "NIGHT_03_BLURB", "verb": "NIGHT_03_VERB", "seconds": 2.0, "colour": "#ff6b6b", "shape": "sock",
+		"loot": {"name": "NIGHT_03_NAME", "blurb": "NIGHT_03_BLURB", "verb": "NIGHT_03_VERB", "seconds": 2.0, "colour": "#f4a81c", "shape": "gem",
 			"story": "NIGHT_03_TALE"}},
 	{"size": "small", "shape": "rect", "guards": 1, "post": "route", "view": 0.95, "hearing": 0.25, "speed": 0.45, "calm_after": 6.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "torch",
-		"loot": {"name": "NIGHT_04_NAME", "blurb": "NIGHT_04_BLURB", "verb": "NIGHT_04_VERB", "seconds": 2.5, "colour": "#dee2e6", "shape": "sock",
+		"loot": {"name": "NIGHT_04_NAME", "blurb": "NIGHT_04_BLURB", "verb": "NIGHT_04_VERB", "seconds": 2.5, "colour": "#ffe066", "shape": "rock",
 			"story": "NIGHT_04_TALE"}},
-	{"size": "small", "shape": "U", "guards": 1, "view": 0.6, "hearing": 0.3, "speed": 0.5, "calm_after": 6.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "",
-		"loot": {"name": "NIGHT_05_NAME", "blurb": "NIGHT_05_BLURB", "verb": "NIGHT_05_VERB", "seconds": 2.5, "colour": "#e03131", "shape": "idol",
+	# The big job: the cave's keeper, alone, far-sighted and quick, in the
+	# first bigger museum. Seen, you lose it and hide (a mammoth, an egg).
+	{"size": "medium", "shape": "U", "guards": 1, "view": 1.12, "hearing": 0.3, "speed": 0.95, "calm_after": 8.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "",
+		"boss": true, "tip": "NIGHT_05_TIP",
+		"loot": {"name": "NIGHT_05_NAME", "blurb": "NIGHT_05_BLURB", "verb": "NIGHT_05_VERB", "seconds": 3.0, "colour": "#e8c89a", "shape": "egg",
 			"story": "NIGHT_05_TALE"}},
+	# --- La Casa de los Bichos: nature. The noise, then things to knock over.
 	{"size": "small", "shape": "L", "guards": 1, "post": "quiet", "view": 0.6, "hearing": 0.8, "speed": 0.5, "calm_after": 6.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "noise",
-		"loot": {"name": "NIGHT_06_NAME", "blurb": "NIGHT_06_BLURB", "verb": "NIGHT_06_VERB", "seconds": 3.0, "colour": "#d4a15a", "shape": "toast",
+		"loot": {"name": "NIGHT_06_NAME", "blurb": "NIGHT_06_BLURB", "verb": "NIGHT_06_VERB", "seconds": 3.0, "colour": "#ffd43b", "shape": "duck",
 			"story": "NIGHT_06_TALE"}},
 	{"size": "small", "shape": "notched", "guards": 1, "view": 0.65, "hearing": 0.85, "speed": 0.55, "calm_after": 7.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "",
-		"loot": {"name": "NIGHT_07_NAME", "blurb": "NIGHT_07_BLURB", "verb": "NIGHT_07_VERB", "seconds": 3.0, "colour": "#f783ac", "shape": "gum",
+		"loot": {"name": "NIGHT_07_NAME", "blurb": "NIGHT_07_BLURB", "verb": "NIGHT_07_VERB", "seconds": 3.0, "colour": "#7bc043", "shape": "crown",
 			"story": "NIGHT_07_TALE"}},
 	{"size": "small", "shape": "rect", "guards": 1, "post": "case", "view": 0.7, "hearing": 0.85, "speed": 0.55, "calm_after": 7.0, "alarms": 3, "props": true, "lights": false, "case_alarm": false, "teach": "props",
-		"loot": {"name": "NIGHT_08_NAME", "blurb": "NIGHT_08_BLURB", "verb": "NIGHT_08_VERB", "seconds": 3.5, "colour": "#7bc043", "shape": "crown",
+		"loot": {"name": "NIGHT_08_NAME", "blurb": "NIGHT_08_BLURB", "verb": "NIGHT_08_VERB", "seconds": 3.5, "colour": "#dee2e6", "shape": "teeth",
 			"story": "NIGHT_08_TALE"}},
 	{"size": "medium", "shape": "U", "guards": 1, "view": 0.68, "hearing": 0.9, "speed": 0.6, "calm_after": 7.0, "alarms": 3, "props": true, "lights": false, "case_alarm": false, "teach": "",
-		"loot": {"name": "NIGHT_09_NAME", "blurb": "NIGHT_09_BLURB", "verb": "NIGHT_09_VERB", "seconds": 3.5, "colour": "#fcc419", "shape": "idol",
+		"loot": {"name": "NIGHT_09_NAME", "blurb": "NIGHT_09_BLURB", "verb": "NIGHT_09_VERB", "seconds": 3.5, "colour": "#9ad0ec", "shape": "egg",
 			"story": "NIGHT_09_TALE"}},
-	{"size": "medium", "shape": "L", "guards": 1, "view": 0.72, "hearing": 0.9, "speed": 0.62, "calm_after": 8.0, "alarms": 3, "props": true, "lights": false, "case_alarm": false, "teach": "",
-		"loot": {"name": "NIGHT_10_NAME", "blurb": "NIGHT_10_BLURB", "verb": "NIGHT_10_VERB", "seconds": 4.0, "colour": "#ffe066", "shape": "rock",
+	# The big job: a guard that never leaves the pearl, sharp-eared and
+	# jumpy. One lure to move it, and only one: after that it is on alert.
+	{"size": "medium", "shape": "T", "guards": 1, "post": "case", "view": 0.8, "hearing": 1.15, "speed": 0.65, "calm_after": 9.0, "alarms": 1, "props": true, "lights": false, "case_alarm": false, "teach": "",
+		"boss": true, "tip": "NIGHT_10_TIP",
+		"loot": {"name": "NIGHT_10_NAME", "blurb": "NIGHT_10_BLURB", "verb": "NIGHT_10_VERB", "seconds": 4.0, "colour": "#f3eef7", "shape": "gum",
 			"story": "NIGHT_10_TALE"}},
-	{"size": "medium", "shape": "T", "guards": 1, "view": 0.72, "hearing": 0.9, "speed": 0.62, "calm_after": 8.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "case_alarm",
-		"loot": {"name": "NIGHT_11_NAME", "blurb": "NIGHT_11_BLURB", "verb": "NIGHT_11_VERB", "seconds": 4.0, "colour": "#2b8a3e", "shape": "mask",
+	# --- El Templo de las Momias: the ancient world. The case's alarm, then
+	# two guards.
+	{"size": "medium", "shape": "L", "guards": 1, "view": 0.72, "hearing": 0.9, "speed": 0.62, "calm_after": 8.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "case_alarm",
+		"loot": {"name": "NIGHT_11_NAME", "blurb": "NIGHT_11_BLURB", "verb": "NIGHT_11_VERB", "seconds": 4.0, "colour": "#d4a15a", "shape": "toast",
 			"story": "NIGHT_11_TALE"}},
 	{"size": "medium", "shape": "notched", "guards": 1, "view": 0.78, "hearing": 0.95, "speed": 0.68, "calm_after": 8.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "",
-		"loot": {"name": "NIGHT_12_NAME", "blurb": "NIGHT_12_BLURB", "verb": "NIGHT_12_VERB", "seconds": 4.5, "colour": "#9b5de5", "shape": "mask",
+		"loot": {"name": "NIGHT_12_NAME", "blurb": "NIGHT_12_BLURB", "verb": "NIGHT_12_VERB", "seconds": 4.5, "colour": "#e03131", "shape": "sock",
 			"story": "NIGHT_12_TALE"}},
 	{"size": "medium", "shape": "cross", "guards": 2, "view": 0.72, "hearing": 0.95, "speed": 0.65, "calm_after": 9.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "two",
-		"loot": {"name": "NIGHT_13_NAME", "blurb": "NIGHT_13_BLURB", "verb": "NIGHT_13_VERB", "seconds": 4.5, "colour": "#e8590c", "shape": "clock",
+		"loot": {"name": "NIGHT_13_NAME", "blurb": "NIGHT_13_BLURB", "verb": "NIGHT_13_VERB", "seconds": 4.5, "colour": "#4dabf7", "shape": "duck",
 			"story": "NIGHT_13_TALE"}},
 	{"size": "medium", "shape": "U", "guards": 2, "view": 0.78, "hearing": 1.0, "speed": 0.7, "calm_after": 9.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "",
-		"loot": {"name": "NIGHT_14_NAME", "blurb": "NIGHT_14_BLURB", "verb": "NIGHT_14_VERB", "seconds": 5.0, "colour": "#4dabf7", "shape": "clock",
+		"loot": {"name": "NIGHT_14_NAME", "blurb": "NIGHT_14_BLURB", "verb": "NIGHT_14_VERB", "seconds": 5.0, "colour": "#2b8a3e", "shape": "mask",
 			"story": "NIGHT_14_TALE"}},
-	{"size": "medium", "shape": "L", "guards": 2, "view": 0.8, "hearing": 1.0, "speed": 0.72, "calm_after": 10.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "lights",
-		"loot": {"name": "NIGHT_15_NAME", "blurb": "NIGHT_15_BLURB", "verb": "NIGHT_15_VERB", "seconds": 5.0, "colour": "#8b5a2b", "shape": "egg",
+	# The big job: three guards for the first time, one of them standing by
+	# the way in: past it on all fours, while the other two walk their rounds.
+	{"size": "medium", "shape": "T", "guards": 3, "post": "route", "view": 0.9, "hearing": 1.0, "speed": 0.75, "calm_after": 10.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "",
+		"boss": true, "tip": "NIGHT_15_TIP",
+		"loot": {"name": "NIGHT_15_NAME", "blurb": "NIGHT_15_BLURB", "verb": "NIGHT_15_VERB", "seconds": 5.5, "colour": "#d9a441", "shape": "idol",
 			"story": "NIGHT_15_TALE"}},
-	{"size": "medium", "shape": "T", "guards": 2, "view": 0.85, "hearing": 1.0, "speed": 0.78, "calm_after": 10.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
-		"loot": {"name": "NIGHT_16_NAME", "blurb": "NIGHT_16_BLURB", "verb": "NIGHT_16_VERB", "seconds": 5.5, "colour": "#e8c89a", "shape": "egg",
+	# --- El Castillo de los Inventos: the middle ages. The lights, then the
+	# pick and the cutters (LOCKPICK_NIGHT).
+	{"size": "medium", "shape": "L", "guards": 2, "view": 0.8, "hearing": 1.0, "speed": 0.72, "calm_after": 10.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "lights",
+		"loot": {"name": "NIGHT_16_NAME", "blurb": "NIGHT_16_BLURB", "verb": "NIGHT_16_VERB", "seconds": 5.0, "colour": "#e8590c", "shape": "clock",
 			"story": "NIGHT_16_TALE"}},
-	{"size": "large", "shape": "U", "guards": 2, "view": 0.82, "hearing": 1.0, "speed": 0.75, "calm_after": 11.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "big",
-		"loot": {"name": "NIGHT_17_NAME", "blurb": "NIGHT_17_BLURB", "verb": "NIGHT_17_VERB", "seconds": 5.5, "colour": "#ffd43b", "shape": "teeth",
+	{"size": "medium", "shape": "T", "guards": 2, "view": 0.85, "hearing": 1.0, "speed": 0.78, "calm_after": 10.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
+		"loot": {"name": "NIGHT_17_NAME", "blurb": "NIGHT_17_BLURB", "verb": "NIGHT_17_VERB", "seconds": 5.5, "colour": "#fcc419", "shape": "rock",
 			"story": "NIGHT_17_TALE"}},
-	{"size": "large", "shape": "notched", "guards": 3, "view": 0.9, "hearing": 1.05, "speed": 0.85, "calm_after": 12.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
-		"loot": {"name": "NIGHT_18_NAME", "blurb": "NIGHT_18_BLURB", "verb": "NIGHT_18_VERB", "seconds": 6.0, "colour": "#339af0", "shape": "duck",
+	# From here the case is picked: its seconds are the pick's pins now
+	# (Minigame.pins_for), one on the first night.
+	{"size": "medium", "shape": "notched", "guards": 2, "view": 0.85, "hearing": 1.0, "speed": 0.8, "calm_after": 11.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
+		"loot": {"name": "NIGHT_18_NAME", "blurb": "NIGHT_18_BLURB", "verb": "NIGHT_18_VERB", "seconds": 3.5, "colour": "#b197fc", "shape": "gum",
 			"story": "NIGHT_18_TALE"}},
-	{"size": "large", "shape": "T", "guards": 3, "view": 0.95, "hearing": 1.1, "speed": 0.92, "calm_after": 13.0, "alarms": 1, "props": true, "lights": true, "case_alarm": true, "teach": "",
-		"loot": {"name": "NIGHT_19_NAME", "blurb": "NIGHT_19_BLURB", "verb": "NIGHT_19_VERB", "seconds": 6.5, "colour": "#ffec99", "shape": "gem",
+	{"size": "medium", "shape": "U", "guards": 2, "view": 0.88, "hearing": 1.05, "speed": 0.82, "calm_after": 11.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
+		"loot": {"name": "NIGHT_19_NAME", "blurb": "NIGHT_19_BLURB", "verb": "NIGHT_19_VERB", "seconds": 4.0, "colour": "#d0263e", "shape": "gem",
 			"story": "NIGHT_19_TALE"}},
-	{"size": "large", "shape": "cross", "guards": 4, "view": 1.05, "hearing": 1.15, "speed": 1.0, "calm_after": 14.0, "alarms": 1, "props": true, "lights": true, "case_alarm": true, "teach": "finale",
-		"loot": {"name": "NIGHT_20_NAME", "blurb": "NIGHT_20_BLURB", "verb": "NIGHT_20_VERB", "seconds": 7.0, "colour": "#74c0fc", "shape": "gem",
+	# The big job: the throne room. Three guards slow to calm down, one of
+	# them standing with its back to the way, all ears: not a step running.
+	{"size": "medium", "shape": "cross", "guards": 3, "post": "quiet", "view": 0.9, "hearing": 1.15, "speed": 0.85, "calm_after": 13.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
+		"boss": true, "tip": "NIGHT_20_TIP",
+		"loot": {"name": "NIGHT_20_NAME", "blurb": "NIGHT_20_BLURB", "verb": "NIGHT_20_VERB", "seconds": 5.0, "colour": "#f0c46a", "shape": "crown",
 			"story": "NIGHT_20_TALE"}},
+	# --- La Torre de Cristal: the modern age. Big museums, and the end.
+	{"size": "large", "shape": "U", "guards": 2, "view": 0.82, "hearing": 1.0, "speed": 0.75, "calm_after": 11.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "big",
+		"loot": {"name": "NIGHT_21_NAME", "blurb": "NIGHT_21_BLURB", "verb": "NIGHT_21_VERB", "seconds": 4.5, "colour": "#e0b060", "shape": "toast",
+			"story": "NIGHT_21_TALE"}},
+	{"size": "large", "shape": "notched", "guards": 3, "view": 0.9, "hearing": 1.05, "speed": 0.85, "calm_after": 12.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
+		"loot": {"name": "NIGHT_22_NAME", "blurb": "NIGHT_22_BLURB", "verb": "NIGHT_22_VERB", "seconds": 5.0, "colour": "#f783ac", "shape": "gum",
+			"story": "NIGHT_22_TALE"}},
+	{"size": "large", "shape": "T", "guards": 3, "view": 0.95, "hearing": 1.1, "speed": 0.92, "calm_after": 13.0, "alarms": 1, "props": true, "lights": true, "case_alarm": true, "teach": "",
+		"loot": {"name": "NIGHT_23_NAME", "blurb": "NIGHT_23_BLURB", "verb": "NIGHT_23_VERB", "seconds": 5.5, "colour": "#339af0", "shape": "clock",
+			"story": "NIGHT_23_TALE"}},
+	{"size": "large", "shape": "L", "guards": 3, "view": 1.0, "hearing": 1.1, "speed": 0.95, "calm_after": 13.0, "alarms": 1, "props": true, "lights": true, "case_alarm": true, "teach": "",
+		"loot": {"name": "NIGHT_24_NAME", "blurb": "NIGHT_24_BLURB", "verb": "NIGHT_24_VERB", "seconds": 6.0, "colour": "#9b5de5", "shape": "mask",
+			"story": "NIGHT_24_TALE"}},
+	# The last big job: the Barón's own diamond, four guards wide awake.
+	{"size": "large", "shape": "cross", "guards": 4, "view": 1.05, "hearing": 1.15, "speed": 1.0, "calm_after": 14.0, "alarms": 1, "props": true, "lights": true, "case_alarm": true, "teach": "finale",
+		"boss": true, "tip": "NIGHT_25_TIP",
+		"loot": {"name": "NIGHT_25_NAME", "blurb": "NIGHT_25_BLURB", "verb": "NIGHT_25_VERB", "seconds": 6.5, "colour": "#74c0fc", "shape": "gem",
+			"story": "NIGHT_25_TALE"}},
 ]
 
 ## Each night's museum is always the same one — one for a thief on their
@@ -127,44 +175,51 @@ const LESSONS := {
 }
 
 ## From this night on the case is picked and the alarm panel's glass cut
-## with the suction cup (Minigame); before it, you stand still at the case and hold the panel.
-const LOCKPICK_NIGHT := 9
+## with the suction cup (Minigame); before it, you stand still at the case
+## and hold the panel. The one new thing of its night, between the lights
+## (16) and the big museum (21).
+const LOCKPICK_NIGHT := 18
 
 const SAVE := "user://progress.cfg"
 ## where the progress is kept: SAVE, but the tests keep theirs apart
 static var save := SAVE
 
-## The town's museums, each a stop on the city map with a few of the nights
-## inside, in order: the first museum holds the first nights, the last one
-## the finale. Four nights a museum, and each keeps to one size: two small
-## ones, two medium, and the large one for the end. Each has its own floor and
-## walls (MuseumView.THEMES keys), and a colour for its stop on the map.
+## The town's museums, each a stop on the city map with ROOMS heists
+## inside, in order, the last its big job. Each shows one theme (Themes):
+## its galleries, its corridors and its pieces. Each has its own floor and
+## walls (MuseumView.THEMES keys) to match, and a colour for its stop on
+## the map. In the order of time, from the dinosaurs to today: prehistory,
+## nature (the living world, still in the old natural-history style), the
+## ancient world, the middle ages, and the modern age, the Barón's own tower.
 const MUSEUMS := [
-	# The Barón's attic of odds and ends: creaky boards, faded blue stripes.
-	{"name": "MUSEUM_1_NAME", "text": "MUSEUM_1_TEXT", "nights": 4, "colour": "#4dabf7",
-		"palette": {"floor": 2, "stone": Color("#3a2a1c"), "stone2": Color("#46321f"), "joint": Color("#150d08"), "gloss": 0.45,
-			"paper": Color("#1f2e4a"), "paper2": Color("#27395a"), "wallpaper": 2, "wainscot": Color("#3b2a1a"), "dado": 0.5,
-			"cap": Color("#5c5040"), "trim": Color("#b08d4a"), "skirt": Color("#150d08")}},
-	# The greenhouse of the Queen of Pickles: green tiles, leafy damask.
-	{"name": "MUSEUM_2_NAME", "text": "MUSEUM_2_TEXT", "nights": 4, "colour": "#7bc043",
-		"palette": {"floor": 1, "stone": Color("#23352a"), "stone2": Color("#2a3f31"), "joint": Color("#0e1611"), "gloss": 0.3,
-			"paper": Color("#1e4a2c"), "paper2": Color("#285c38"), "wallpaper": 1, "wainscot": Color("#2e2418"), "dado": 0.45,
+	# La Gran Cueva: rough ochre stone underfoot, clay walls, dark rock below.
+	{"name": "MUSEUM_1_NAME", "text": "MUSEUM_1_TEXT", "theme": "prehistoria", "colour": "#d08a3a",
+		"palette": {"floor": 0, "stone": Color("#4a3624"), "stone2": Color("#56402a"), "joint": Color("#1e140c"), "gloss": 0.55,
+			"paper": Color("#6b3f1f"), "paper2": Color("#7a4a25"), "wallpaper": 0, "wainscot": Color("#3a2a1c"), "dado": 0.4,
+			"cap": Color("#6a5a48"), "trim": Color("#c9853a"), "skirt": Color("#120c08")}},
+	# La Casa de los Bichos: oak boards, leafy green damask, like an old
+	# natural-history museum.
+	{"name": "MUSEUM_2_NAME", "text": "MUSEUM_2_TEXT", "theme": "naturaleza", "colour": "#5cc85c",
+		"palette": {"floor": 2, "stone": Color("#3a2a18"), "stone2": Color("#4a3520"), "joint": Color("#120c06"), "gloss": 0.4,
+			"paper": Color("#1e4a2c"), "paper2": Color("#285c38"), "wallpaper": 1, "wainscot": Color("#2e2418"), "dado": 0.5,
 			"cap": Color("#5a6a4a"), "trim": Color("#c9a34a"), "skirt": Color("#0e1611")}},
-	# The observatory: night-blue marble, violet stars on the walls.
-	{"name": "MUSEUM_3_NAME", "text": "MUSEUM_3_TEXT", "nights": 4, "colour": "#9b5de5",
-		"palette": {"floor": 0, "stone": Color("#25243a"), "stone2": Color("#2e2d46"), "joint": Color("#5a5488"), "gloss": 0.18,
-			"paper": Color("#3a2656"), "paper2": Color("#462f66"), "wallpaper": 1, "wainscot": Color("#1c1636"), "dado": 0.5,
-			"cap": Color("#5e5670"), "trim": Color("#a8a0d8"), "skirt": Color("#0a0818")}},
-	# The clock tower: warm terracotta, mustard stripes, dark oak.
-	{"name": "MUSEUM_4_NAME", "text": "MUSEUM_4_TEXT", "nights": 4, "colour": "#e8590c",
-		"palette": {"floor": 1, "stone": Color("#5c3420"), "stone2": Color("#683c25"), "joint": Color("#1c0f0a"), "gloss": 0.35,
-			"paper": Color("#5a4418"), "paper2": Color("#6b521e"), "wallpaper": 2, "wainscot": Color("#3a1e12"), "dado": 0.55,
-			"cap": Color("#6a4a36"), "trim": Color("#d9a441"), "skirt": Color("#1c0f0a")}},
-	# The Barón's own palace, for the finale: black marble, royal crimson.
-	{"name": "MUSEUM_5_NAME", "text": "MUSEUM_5_TEXT", "nights": 4, "colour": "#e03131",
-		"palette": {"floor": 0, "stone": Color("#1a1618"), "stone2": Color("#262024"), "joint": Color("#8a6a3a"), "gloss": 0.15,
-			"paper": Color("#5e1222"), "paper2": Color("#74182c"), "wallpaper": 1, "wainscot": Color("#1a1014"), "dado": 0.5,
-			"cap": Color("#7a6040"), "trim": Color("#f0c46a"), "skirt": Color("#08070c")}},
+	# El Templo de las Momias: sandstone slabs, lapis and gold stripes over
+	# terracotta.
+	{"name": "MUSEUM_3_NAME", "text": "MUSEUM_3_TEXT", "theme": "antiguo", "colour": "#e8b53a",
+		"palette": {"floor": 0, "stone": Color("#6a5638"), "stone2": Color("#78623f"), "joint": Color("#2a200f"), "gloss": 0.35,
+			"paper": Color("#1f3a6e"), "paper2": Color("#8a6a2a"), "wallpaper": 2, "wainscot": Color("#7a3a1e"), "dado": 0.45,
+			"cap": Color("#8a7650"), "trim": Color("#e8b53a"), "skirt": Color("#1a1208")}},
+	# El Castillo de los Inventos: grey flagstones, crimson tapestry damask,
+	# dark oak.
+	{"name": "MUSEUM_4_NAME", "text": "MUSEUM_4_TEXT", "theme": "edad_media", "colour": "#d0263e",
+		"palette": {"floor": 0, "stone": Color("#3a3a40"), "stone2": Color("#46464e"), "joint": Color("#16161a"), "gloss": 0.4,
+			"paper": Color("#5e1222"), "paper2": Color("#74182c"), "wallpaper": 1, "wainscot": Color("#2a1a10"), "dado": 0.55,
+			"cap": Color("#6a6470"), "trim": Color("#b08d4a"), "skirt": Color("#0a0808")}},
+	# La Torre de Cristal: polished concrete, violet stripes, a pink trim.
+	{"name": "MUSEUM_5_NAME", "text": "MUSEUM_5_TEXT", "theme": "moderna", "colour": "#ff4f9a",
+		"palette": {"floor": 1, "stone": Color("#3c3c46"), "stone2": Color("#44444f"), "joint": Color("#1c1c22"), "gloss": 0.25,
+			"paper": Color("#4a2a5e"), "paper2": Color("#5a3470"), "wallpaper": 2, "wainscot": Color("#1c1c22"), "dado": 0.0,
+			"cap": Color("#56534f"), "trim": Color("#ff4f9a"), "skirt": Color("#08070c")}},
 ]
 
 
@@ -209,12 +264,15 @@ static func news(n: int, players := 1) -> Array:
 	return [Text.fields(LESSONS[teach], ["title", "text"])] if teach != "" else []
 
 
-## The senses and pace of the guards on night n, as Sim.custom.
+## The senses and pace of the guards on night n, as Sim.custom, and the
+## theme its museum shows.
 static func tuning(n: int) -> Dictionary:
 	var l := level(n)
-	# The pick and the wire cutters (Minigame) come with the third museum.
-	# The minigames' level (Minigame.level_now): a museum at a time from there.
-	var out := {"lock": 1.0, "lockpick": n >= LOCKPICK_NIGHT, "game_level": clampi((n - LOCKPICK_NIGHT) / 4, 0, 2)}
+	# The minigames' level (Minigame.level_now): the first museum with them
+	# plays them easy, each museum on a step harder, a big job a step more.
+	var game := museum_of(n) - museum_of(LOCKPICK_NIGHT) + (1 if is_boss(n) else 0)
+	var out := {"lock": 1.0, "lockpick": n >= LOCKPICK_NIGHT, "game_level": clampi(game, 0, 2),
+		"theme": MUSEUMS[museum_of(n)].theme}
 	for k in ["guards", "view", "hearing", "speed", "calm_after", "alarms", "props", "lights", "case_alarm", "post"]:
 		if l.has(k):
 			out[k] = l[k]
@@ -222,15 +280,19 @@ static func tuning(n: int) -> Dictionary:
 
 
 ## The furthest night reached, saved between sessions: each size of gang
-## has its own, since a night done alone is not a night done as four. The
-## save from before gangs kept one, with no count: that one is the lone
-## thief's.
+## has its own, since a night done alone is not a night done as four.
+## Kept as "robo_<gang>". A save from the story of twenty nights (four to a
+## museum, "unlocked_<gang>", and before gangs just "unlocked", the lone
+## thief's) is read through from_old: nothing done is lost.
 static func unlocked(players := 1) -> int:
 	var cfg := ConfigFile.new()
 	if cfg.load(save) != OK:
 		return 1
+	if cfg.has_section_key("story", _key(players)):
+		return clampi(int(cfg.get_value("story", _key(players))), 1, LEVELS.size())
 	var old: int = cfg.get_value("story", "unlocked", 1) if players == 1 else 1
-	return clampi(int(cfg.get_value("story", _key(players), old)), 1, LEVELS.size())
+	old = int(cfg.get_value("story", "unlocked_%d" % clampi(players, 1, 4), old))
+	return from_old(old)
 
 
 static func unlock(n: int, players := 1) -> void:
@@ -243,38 +305,55 @@ static func unlock(n: int, players := 1) -> void:
 
 
 static func _key(players: int) -> String:
-	return "unlocked_%d" % clampi(players, 1, 4)
+	return "robo_%d" % clampi(players, 1, 4)
+
+
+## The old story's furthest night (twenty, four to a museum) as a heist of
+## this one: every museum done there is a museum done here, and the nights
+## done in the one under way are as many rooms done in its match. Night 5
+## (the first museum done) is heist 6; night 20 (three done in the last)
+## is heist 24.
+static func from_old(night: int) -> int:
+	var done := clampi(night, 1, 20) - 1
+	return mini((done / 4) * ROOMS + done % 4 + 1, LEVELS.size())
 
 
 # --- Museums ---------------------------------------------------------------------
 
 ## Over the piece before night n: the gang's rank, a step up each museum,
-## and which job this is in words — "Ladronzuelo · tu quinto robo".
+## and which job this is in words — "Ladronzuelo · tu segundo robo en la
+## Gran Cueva"; a museum's last, its big job.
 static func heading(n: int, players := 1) -> String:
 	var many := "_MANY" if players > 1 else "_ONE"
-	var rank := Text.t("RANK_%d%s" % [museum_of(n) + 1, many])
+	var m := museum_of(n)
+	var rank := Text.t("RANK_%d%s" % [m + 1, many])
+	var place := museum_in(m)
 	if n >= count():
 		return Text.t("BRIEF_JOB_LAST" + many) % rank
-	return Text.t("BRIEF_JOB" + many) % [rank, Text.t("ORDINAL_%d" % n)]
+	if is_boss(n):
+		return Text.t("BRIEF_JOB_BOSS" + many) % [rank, place]
+	return Text.t("BRIEF_JOB" + many) % [rank, Text.t("ORDINAL_%d" % room_of(n)), place]
 
 
 ## The museum (0-based, MUSEUMS) night n is in.
 static func museum_of(n: int) -> int:
-	var last := 0
-	for m in MUSEUMS.size():
-		last += MUSEUMS[m].nights
-		if n <= last:
-			return m
-	return MUSEUMS.size() - 1
+	return clampi((n - 1) / ROOMS, 0, MUSEUMS.size() - 1)
+
+
+## Night n's room in its museum, 1 to ROOMS (the last, the big job).
+static func room_of(n: int) -> int:
+	return (clampi(n, 1, LEVELS.size()) - 1) % ROOMS + 1
+
+
+## Whether night n is its museum's big job, the last of its rooms.
+static func is_boss(n: int) -> bool:
+	return bool(LEVELS[clampi(n, 1, LEVELS.size()) - 1].get("boss", false))
 
 
 ## The nights (1-based) inside museum m, in order.
 static func nights_in(m: int) -> Array[int]:
-	var first := 1
-	for k in m:
-		first += MUSEUMS[k].nights
 	var out: Array[int] = []
-	for n in range(first, first + MUSEUMS[m].nights):
+	for n in range(m * ROOMS + 1, m * ROOMS + ROOMS + 1):
 		out.append(n)
 	return out
 
@@ -284,6 +363,17 @@ static func museum(m: int) -> Dictionary:
 	return Text.fields(MUSEUMS[clampi(m, 0, MUSEUMS.size() - 1)], ["name", "text"])
 
 
+## Museum m's name as it goes after "en" or "de": "la Gran Cueva".
+static func museum_in(m: int) -> String:
+	var name: String = museum(m).name
+	return name.left(1).to_lower() + name.substr(1)
+
+
 ## The floor and walls of night n's museum (MuseumView.THEMES keys).
 static func palette(n: int) -> Dictionary:
 	return MUSEUMS[museum_of(n)].palette
+
+
+## The theme (Themes) night n's museum shows, in every gallery.
+static func theme(n: int) -> String:
+	return MUSEUMS[museum_of(n)].theme

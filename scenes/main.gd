@@ -223,6 +223,10 @@ func _ready() -> void:
 	# For recording and testing: `godot -- --autostart` skips the title, shows
 	# the mission for two seconds and starts the round; add --two for two thieves.
 	# --menu=story|generative|settings: open a menu straight away, to look at it.
+	# --pick=N first: the story's heist N picked (map and museum open on its).
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--pick="):
+			story_pick = clampi(int(arg.substr(7)), 1, Story.count())
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--menu="):
 			match arg.substr(7):
@@ -594,7 +598,7 @@ func _show_story_menu() -> void:
 	var cards: Array = []
 	for n in range(1, 5):
 		cards.append({"title": Text.t("MENU_PLAYERS_%d" % n),
-			"text": Text.t("MENU_PLAYERS_%d_TEXT" % n) + "\n" + Text.t("STORY_REACHED") % [Story.unlocked(n), Story.count()],
+			"text": Text.t("MENU_PLAYERS_%d_TEXT" % n) + "\n" + Text.t("STORY_REACHED") % [Story.museum_of(Story.unlocked(n)) + 1, Story.room_of(Story.unlocked(n))],
 			"stage": MenuStage.make("players:%d" % n), "call": _story_players.bind(n), "colour": _thief_colours()[n - 1], "focus": n == players})
 	hud.show_menu([
 		{"title": Text.t("MENU_STORY_TITLE"), "size": 44},
@@ -653,9 +657,10 @@ func _pick_museum(m: int) -> void:
 	hud.set_text("museum_text", museum.text, Hud.C.dim)
 
 
-## Inside a museum, in its own colours: its nights as rooms (any reached so
-## far can be picked), the piece of the one picked turning under a light.
-## Pressing a room, or ROBAR, plays it.
+## Inside a museum, in its own colours: its heists as rooms (any reached so
+## far can be picked), numbered 1 to 5, the last its big job in a room of
+## its own; the piece of the one picked turning under a light. Pressing a
+## room, or ROBAR, plays it.
 func _show_museum(m: int) -> void:
 	hud.backdrop(Hud.SPOTS.story)
 	phase = "museum"
@@ -667,15 +672,15 @@ func _show_museum(m: int) -> void:
 	_build_preview(loot)
 	var stops: Array = []
 	for n in nights:
-		stops.append({"n": n, "colour": Color(Story.level(n).loot.colour), "locked": n > reached, "selected": n == story_pick,
-			"call": _pick_night.bind(n), "open": _play_night})
+		stops.append({"n": Story.room_of(n), "colour": Color(Story.level(n).loot.colour), "locked": n > reached, "selected": n == story_pick,
+			"boss": Story.is_boss(n), "call": _pick_night.bind(n), "open": _play_night})
 	var museum := Story.museum(m)
 	hud.show_menu([
 		{"title": museum.name.to_upper(), "colour": Color(museum.colour).lightened(0.2), "size": 40},
 		{"text": museum.text, "colour": Hud.C.dim, "size": 15},
-		{"nights": stops, "style": "museum", "palette": museum.palette, "width": 720, "height": 170},
+		{"nights": stops, "style": "museum", "palette": museum.palette, "width": 720, "height": 190},
 		{"picture": preview.get_texture(), "smooth": true, "height": 110},
-		{"text": Text.t("MENU_NIGHT_PIECE") % [story_pick, loot.name.to_upper()], "colour": Color(loot.colour), "size": 17, "id": "night"},
+		{"text": _room_name(story_pick), "colour": Color(loot.colour), "size": 17, "id": "night"},
 		{"buttons": [
 			{"text": Text.t("MENU_BACK"), "call": _show_story_map, "colour": Hud.C.dim},
 			{"text": Text.t("STORY_PLAY"), "call": _play_night, "colour": Hud.C.safe},
@@ -695,7 +700,14 @@ func _pick_night(n: int) -> void:
 	story_pick = n
 	var loot: Dictionary = Story.level(n).loot
 	_preview_piece(loot)
-	hud.set_text("night", Text.t("MENU_NIGHT_PIECE") % [n, loot.name.to_upper()], Color(loot.colour))
+	hud.set_text("night", _room_name(n), Color(loot.colour))
+
+
+## A heist's name inside its museum: its room and its piece, or, the last,
+## the big job — "SALA 2 · EL PATO..." or "GRAN GOLPE · LA PERLA...".
+func _room_name(n: int) -> String:
+	var piece := String(Story.level(n).loot.name).to_upper()
+	return Text.t("STORY_BOSS_PIECE") % piece if Story.is_boss(n) else Text.t("STORY_ROOM_PIECE") % [Story.room_of(n), piece]
 
 
 ## The generative mode: difficulty and museum size as cards, then play with
@@ -1410,11 +1422,18 @@ func _show_end() -> void:
 	var colour: Color = Hud.C.alert
 	var line := Text.t("END_BACK_IN_CASE" if Heist.taken else "END_STILL_THERE") % Heist.first_upper(Heist.loot.name)
 	var next := Text.t("END_AGAIN")
+	var go := _again
 	if phase == "escaped":
 		title = Text.t("END_PERFECT")
 		colour = Hud.C.safe
 		line = Text.t("END_HOME") % Heist.first_upper(Heist.loot.name) if mode == "story" else Text.t("END_LEVEL_DONE") % [level, Heist.loot.name]
 		next = Text.t("END_NEXT_NIGHT" if mode == "story" else "END_NEXT_HEIST")
+		# A museum's big job done: the museum is, and the town shows the next.
+		if mode == "story" and Story.is_boss(level) and level < Story.count():
+			line = Text.t("END_MUSEUM_DONE") % [Heist.first_upper(Heist.loot.name), Story.museum(Story.museum_of(level)).name]
+			next = Text.t("END_NEXT_MUSEUM")
+			if not testing:
+				go = _leave_game.bind(_show_story_map)
 		if mode == "story" and not testing:
 			Story.unlock(level + 1, players)
 			story_pick = mini(level + 1, Story.count())
@@ -1429,7 +1448,7 @@ func _show_end() -> void:
 		{"title": title, "colour": colour, "size": 52},
 		picture,
 		{"text": line},
-		{"buttons": [{"text": next, "call": _again, "colour": colour}], "big": true},
+		{"buttons": [{"text": next, "call": go, "colour": colour}], "big": true},
 		{"buttons": [{"text": Text.t("EDITOR_BACK_TO_EDITOR") if testing else Text.t("END_TO_MENU"), "call": _leave_game.bind({"story": _show_story_map, "challenge": _show_challenge_menu}.get(mode, _show_title)), "colour": Hud.C.dim}], "small": true},
 	])
 
@@ -1608,8 +1627,9 @@ func _lay_out(n: int, map_seed: int) -> int:
 	Sim.gang = players
 	if saved_map:
 		# A saved map: the way in, the piece, the door and the guards where
-		# its maker put them. A story night keeps its museum's colours unless
-		# the map chose its own.
+		# its maker put them. A story night keeps its museum's colours and
+		# theme unless the map chose its own colours.
+		Museum.only_theme = String(Sim.custom.get("theme", ""))
 		saved_map.apply()
 		var own := saved_map.palette()
 		if mode == "challenge" or not own.is_empty():

@@ -331,7 +331,8 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 ##                                                    ("step" for "call": a setting, _stepper)
 ##   {"cards": [{"title", "text"?, "picture", "call", "colour"?, "selected"?,
 ##     "focus"?}], "width"?: int}                     big picture cards in a row
-##   {"nights": [{"n", "colour", "locked", "selected", "call", "open"?}],
+##   {"nights": [{"n", "colour", "locked", "selected", "call", "open"?,
+##     "boss"?}],
 ##     "style"?, "width"?, "height"?}                 the story's maps (NightMap):
 ##                                                    landing on a stop calls
 ##                                                    "call", pressing it "open"
@@ -1104,6 +1105,8 @@ func _night(n: Dictionary) -> Button:
 	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	b.set_meta("colour", n.colour)
 	b.set_meta("locked", n.locked)
+	# A museum's big job: ringed in gold and a size up, open or not.
+	b.set_meta("boss", n.get("boss", false))
 	b.add_theme_color_override("font_disabled_color", Color("#6d5a78"))
 	_night_look(b, n.selected)
 	if not n.locked:
@@ -1123,6 +1126,7 @@ func _night(n: Dictionary) -> Button:
 func _night_look(b: Button, picked: bool) -> void:
 	var colour: Color = b.get_meta("colour")
 	var locked: bool = b.get_meta("locked")
+	var boss: bool = b.get_meta("boss", false)
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
 		var st := StyleBoxFlat.new()
 		st.set_corner_radius_all(25 if picked and not locked else 21)
@@ -1131,8 +1135,8 @@ func _night_look(b: Button, picked: bool) -> void:
 		st.shadow_offset = Vector2(0, 5)
 		if locked:
 			st.bg_color = Color("#2a1d2e")
-			st.border_color = Color("#3d2c40")
-			st.set_border_width_all(2)
+			st.border_color = BRASS.darkened(0.45) if boss else Color("#3d2c40")
+			st.set_border_width_all(4 if boss else 2)
 			st.shadow_color = WALNUT_EDGE
 		elif picked:
 			# The night in force: in full colour, a thick brass ring and a glow
@@ -1148,8 +1152,8 @@ func _night_look(b: Button, picked: bool) -> void:
 			# cursor is on them.
 			var lit: bool = state != "normal"
 			st.bg_color = colour.darkened(0.25) if lit else colour.darkened(0.6)
-			st.border_color = CREAM if lit else colour.darkened(0.35)
-			st.set_border_width_all(3 if lit else 2)
+			st.border_color = CREAM if lit else (BRASS if boss else colour.darkened(0.35))
+			st.set_border_width_all(4 if boss else (3 if lit else 2))
 			st.shadow_color = WALNUT_EDGE
 		b.add_theme_stylebox_override(state, st)
 	# Dark numbers on the picked night (light ones vanish on a pale colour).
@@ -1158,7 +1162,8 @@ func _night_look(b: Button, picked: bool) -> void:
 	b.add_theme_color_override("font_hover_color", INK if picked else CREAM)
 	# And bigger than the rest, whether or not the cursor is on it.
 	b.pivot_offset = b.size / 2
-	b.custom_minimum_size = Vector2(50, 50) if picked else Vector2(42, 42)
+	var grow := 8.0 if boss else 0.0
+	b.custom_minimum_size = Vector2(50, 50) + Vector2(grow, grow) if picked else Vector2(42, 42) + Vector2(grow, grow)
 
 
 ## The thief on the title screen, as the web draws it: a hooded figure in

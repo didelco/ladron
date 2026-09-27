@@ -58,11 +58,16 @@ var spawn: Vector2i
 ## the big pieces, each on a block of COVER: {"kind": ..., "rect": Rect2i}
 var big: Array[Dictionary] = []
 var _rand: Mulberry32
+## the one theme the museum shows ("" any): which big pieces it may have
+var theme := ""
 
 
 ## Build a museum. Read the result from grid, rooms, spawn, outside and ring.
-static func generate(seed: int, width: int, height: int, shape: String) -> MapGen:
+## only: a museum of one theme (Museum.only_theme) gets only the big
+## pieces of that theme, if it has any; "" all of them.
+static func generate(seed: int, width: int, height: int, shape: String, only := "") -> MapGen:
 	var g := MapGen.new()
+	g.theme = only
 	g._build(seed, width, height, shape)
 	return g
 
@@ -947,6 +952,9 @@ func _big_pieces(seed: int) -> void:
 	# Last, so the others land where they always did.
 	wanted.append("bear")
 	wanted.append_array(["trojan_horse", "mammoth", "log", "car"])
+	# A museum of one theme: only its own (the middle ages have none).
+	if theme != "":
+		wanted = wanted.filter(func(kind: String) -> bool: return Themes.for_big(kind) in [theme, ""])
 	var order: Array[int] = []
 	for i in rooms.size():
 		order.append(i)

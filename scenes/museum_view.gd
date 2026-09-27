@@ -299,9 +299,10 @@ func _exhibits() -> void:
 		elif exhibits.has(t):
 			_exhibit(piece, exhibits[t], t, yaw)
 		else:
-			# What the gallery's theme shows (a corridor, a bit of everything).
+			# What the gallery's theme shows (a corridor, a bit of everything,
+			# unless the whole museum keeps to one: Museum.only_theme).
 			var room := Museum.room_at(t.x + 0.5, t.y + 0.5)
-			var pick := theme_pick(room.theme if room else "", t)
+			var pick := theme_pick(room.theme if room else Museum.only_theme, t)
 			_themed(piece, pick[0], pick[1], t, yaw)
 
 
@@ -474,7 +475,7 @@ const FLAT_TILT := 0.45
 func _pedestal(parent: Node3D, t: Vector2i, h := PEDESTAL_H) -> void:
 	var on_plan := t.x < Museum.w and t.y < Museum.h and Museum.grid.size() == Museum.w * Museum.h
 	var room := Museum.room_at(t.x + 0.5, t.y + 0.5) if on_plan else null
-	var theme: String = room.theme if room else ""
+	var theme: String = room.theme if room else (Museum.only_theme if on_plan else "")
 	var drum := func(r: float, height: float, r2: float, sides: int, colour: Color, y: float, spin := 0.0) -> void:
 		var c := CylinderMesh.new()
 		c.bottom_radius = r
@@ -563,7 +564,8 @@ func _colours(t: Vector2i) -> Node3D:
 	var on_plan := t.x < Museum.w and t.y < Museum.h and Museum.grid.size() == Museum.w * Museum.h
 	var room := Museum.room_at(t.x + 0.5, t.y + 0.5) if on_plan else null
 	var ids := Themes.ids()
-	var theme: String = room.theme if room and room.theme != "" else ids[int(_hash01(t.x, t.y, 41) * ids.size()) % ids.size()]
+	var own: String = room.theme if room and room.theme != "" else (Museum.only_theme if on_plan else "")
+	var theme: String = own if own != "" else ids[int(_hash01(t.x, t.y, 41) * ids.size()) % ids.size()]
 	var cols: Array = Themes.ALL[theme].colours
 	var first := int(_hash01(t.x, t.y, 43) * cols.size()) % cols.size()
 	var a := Color(cols[first])
@@ -761,7 +763,7 @@ func _paintings() -> void:
 				x += 1
 				continue
 			var room := Museum.room_at(x + 0.5, y + 1.5)
-			var theme := room.theme if room else ""
+			var theme := room.theme if room else Museum.only_theme
 			var pick := _hash01(x, y, 41)
 			var span := 3 if pick < 0.1 and run >= 3 else (2 if pick < 0.28 and run >= 2 else 1)
 			var frame := Node3D.new()

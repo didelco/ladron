@@ -19,7 +19,9 @@ extends RefCounted
 ##     after, here; after that it is known and goes unsaid. Out of the
 ##     story (no night to go by) it is said whenever the museum has it.
 ##     A gang's shared job counts as one, taught on the first night.
-##   - In this order: the guards, the job, the museum.
+##   - A museum's big job (Story's "boss") says what makes it one, in its
+##     own line ("tip"), right under the guards.
+##   - In this order: the guards, the big job, the job, the museum.
 
 ## Past these the guards' senses and pace are worth a word (Sim.tuning,
 ## gang ease included): medium is the game as designed, and says nothing.
@@ -51,6 +53,9 @@ static func tips(guards: Array[Guard], night := 0) -> Array[String]:
 	var n := guards.size()
 	var must: Array[String] = [_guards_line(n)]
 	var nice: Array[String] = []
+	# A museum's big job: what makes it one, in a line of its own.
+	if night > 0 and String(Story.LEVELS[night - 1].get("tip", "")) != "":
+		must.append(Text.t(Story.LEVELS[night - 1].tip))
 	# The job: a gang shares it out, and all of them have to get out; told
 	# like a mechanic (the first night's lesson).
 	if Heist.team and (night <= 0 or night == Story.lesson_night("heist") + 1):

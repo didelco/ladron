@@ -6,7 +6,10 @@ extends Control
 ##            museum a building in its own colours, its stop at the door. The
 ##            streets light up as far as the last museum open.
 ##   "museum" inside one museum, in its colours (Story.MUSEUMS palette): a row
-##            of rooms, a night's stop in each, doors from one to the next.
+##            of rooms, a heist's stop in each, doors from one to the next;
+##            the last, the big job ("boss"), a hall of its own behind a
+##            golden door: wider, a red carpet up to the piece, a crown
+##            over it and its name above.
 ## The stops are the menu's own buttons (Hud._night): this only places them
 ## and draws the rest, and the ninja's token hopping on the one picked.
 
@@ -19,6 +22,10 @@ const ROAD_EDGE := Color("#2a160d")
 const RIVER := Color("#1f3a5e")
 const WINDOW := Color("#ffd479")
 const DARK := Color("#08070c")
+## The big job's hall: its carpet, its gold, and how much wider it is.
+const CARPET := Color("#8a1c2c")
+const BRASS := Color("#e8b54a")
+const BOSS_WIDTH := 1.6
 
 ## Where each museum's door is, across the map (0..1 of its size), in
 ## the order they open: left to right, up and down the town.
@@ -106,7 +113,7 @@ func _layout() -> void:
 		if style == "city":
 			_points.append(_at(SPOTS[mini(i, SPOTS.size() - 1)]))
 		else:
-			_points.append(Vector2(size.x * (i + 0.5) / n, size.y * 0.6))
+			_points.append(Vector2(_room_rect(i).get_center().x, size.y * 0.6))
 	for i in n:
 		var b := _stops[i]
 		b.pivot_offset = b.size / 2
@@ -320,37 +327,91 @@ func _draw_inside() -> void:
 	var stone2: Color = look.get("stone2", Color("#3a3340"))
 	draw_style_box(_panel(wall2.darkened(0.3)), Rect2(Vector2.ZERO, size))
 	var n := _points.size()
-	var inner := Rect2(Vector2(22, 22), size - Vector2(44, 44))
-	var room_w := inner.size.x / n
+	var inner := _inner()
 	var tile := 18.0
 	for i in n:
-		var r := Rect2(inner.position.x + i * room_w, inner.position.y, room_w, inner.size.y)
-		# The floor, a checkerboard of its two tones.
+		var r := _room_rect(i)
+		# The floor, a checkerboard of its two tones; the big job's darker,
+		# with a red carpet from its door to the piece.
+		var boss := _boss(i)
 		for ty in int(ceil(r.size.y / tile)):
 			for tx in int(ceil(r.size.x / tile)):
 				var cell := Rect2(r.position + Vector2(tx, ty) * tile, Vector2(tile, tile)).intersection(r)
-				draw_rect(cell, stone if (tx + ty) % 2 == 0 else stone2)
+				var c := stone if (tx + ty) % 2 == 0 else stone2
+				draw_rect(cell, c.darkened(0.25) if boss else c)
+		if boss:
+			var y := inner.position.y + inner.size.y * 0.6
+			draw_rect(Rect2(r.position.x, y - 11, r.size.x * 0.5, 22), CARPET)
+			draw_rect(Rect2(r.position.x, y - 11, r.size.x * 0.5, 22), BRASS, false, 2.0)
+			draw_circle(Vector2(r.get_center().x, y), 30, CARPET)
+			draw_arc(Vector2(r.get_center().x, y), 30, 0, TAU, 40, BRASS, 2.5, true)
 		if _locked[i]:
 			draw_rect(r, Color(DARK, 0.65))
-	# The walls: round the lot and between the rooms, each with a door.
+	# The walls: round the lot and between the rooms, each with a door; the
+	# big job's, a golden one.
 	var band := 10.0
 	draw_rect(inner, wall, false, band)
 	draw_rect(inner.grow(band / 2), trim, false, 2.0)
+	var door := inner.size.y * 0.3
+	var mid := inner.position.y + inner.size.y * 0.6
 	for i in range(1, n):
-		var x := inner.position.x + i * room_w
-		var door := inner.size.y * 0.3
-		var mid := inner.position.y + inner.size.y * 0.6
+		var x := _room_rect(i).position.x
 		draw_line(Vector2(x, inner.position.y), Vector2(x, mid - door / 2), wall, band)
 		draw_line(Vector2(x, mid + door / 2), Vector2(x, inner.end.y), wall, band)
+		if _boss(i):
+			for s in [-1, 1]:
+				draw_rect(Rect2(x - band * 0.8, mid + s * door / 2 - (8 if s > 0 else 0), band * 1.6, 8), BRASS)
 	# The way in, on the left: a green door.
-	var y := inner.position.y + inner.size.y * 0.6
-	draw_rect(Rect2(inner.position.x - band, y - 18, band + 4, 36), Color("#4ade80"))
-	# A painting on each room's back wall.
+	draw_rect(Rect2(inner.position.x - band, mid - 18, band + 4, 36), Color("#4ade80"))
+	# A painting on each room's back wall; over the big job, a crown and its
+	# name.
 	for i in n:
-		var cx := inner.position.x + (i + 0.5) * room_w
+		var r := _room_rect(i)
+		var cx := r.get_center().x
 		var lit := not _locked[i]
+		if _boss(i):
+			_crown(Vector2(cx, inner.position.y + 26), BRASS if lit else BRASS.darkened(0.6))
+			var font := Hud.ARCADE
+			var label := Text.t("STORY_BOSS_ROOM")
+			var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 11).x
+			draw_string(font, Vector2(cx - w / 2, inner.end.y - 14), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, BRASS if lit else BRASS.darkened(0.6))
+			continue
 		draw_rect(Rect2(cx - 18, inner.position.y + 10, 36, 24), trim if lit else trim.darkened(0.6))
 		draw_rect(Rect2(cx - 14, inner.position.y + 14, 28, 16), Color("#274b6e") if lit else DARK)
+
+
+## Inside the museum's outer walls.
+func _inner() -> Rect2:
+	return Rect2(Vector2(22, 22), size - Vector2(44, 44))
+
+
+## Whether stop i is the museum's big job.
+func _boss(i: int) -> bool:
+	var nights: Array = _item.get("nights", [])
+	return i < nights.size() and bool(nights[i].get("boss", false))
+
+
+## Room i of the row: the big job's BOSS_WIDTH times as wide as the rest.
+func _room_rect(i: int) -> Rect2:
+	var inner := _inner()
+	var n := _stops.size()
+	var widths: Array[float] = []
+	var total := 0.0
+	for k in n:
+		widths.append(BOSS_WIDTH if _boss(k) else 1.0)
+		total += widths[k]
+	var x := inner.position.x
+	for k in i:
+		x += inner.size.x * widths[k] / total
+	return Rect2(x, inner.position.y, inner.size.x * widths[i] / total, inner.size.y)
+
+
+## A little crown: a gold band with three points, a gem on each.
+func _crown(at: Vector2, colour: Color) -> void:
+	draw_colored_polygon([at + Vector2(-16, 8), at + Vector2(-16, -6), at + Vector2(-8, 1), at + Vector2(0, -10),
+		at + Vector2(8, 1), at + Vector2(16, -6), at + Vector2(16, 8)], colour)
+	for x in [-16, 0, 16]:
+		draw_circle(at + Vector2(x, -8 if x == 0 else -5), 2.6, CARPET.lightened(0.3))
 
 
 ## The picked stop: the one whose button carries "selected".

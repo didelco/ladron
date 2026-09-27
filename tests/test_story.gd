@@ -1,5 +1,6 @@
 extends SceneTree
-## The story's museums and the progress kept for each size of gang.
+## The story's museums, a theme each, and the progress kept for each size
+## of gang, the old story's carried over.
 ##   godot --headless --script tests/test_story.gd
 
 var failures: Array[String] = []
@@ -12,47 +13,84 @@ func check(ok: bool, what: String) -> void:
 
 
 func _init() -> void:
-	# The museums hold every night once, in order, a size each.
+	# The museums hold every heist once, in order: five rooms each, the last
+	# the big job, and one theme each, the first prehistory.
 	var all: Array[int] = []
+	var themes := {}
 	for m in Story.MUSEUMS.size():
 		var nights := Story.nights_in(m)
-		check(nights.size() >= 3 and nights.size() <= 4, "museo %d: %d noches" % [m + 1, nights.size()])
-		var sizes := {}
+		check(nights.size() == Story.ROOMS, "museo %d: %d robos" % [m + 1, nights.size()])
 		for n in nights:
-			sizes[Story.level(n).size] = true
-			check(Story.museum_of(n) == m, "la noche %d está en el museo %d" % [n, m + 1])
-		check(sizes.size() == 1, "museo %d: un solo tamaño (%s)" % [m + 1, ", ".join(sizes.keys())])
+			check(Story.museum_of(n) == m, "el robo %d está en el museo %d" % [n, m + 1])
+			check(Story.is_boss(n) == (n == nights[-1]), "robo %d: %s" % [n, "el gran golpe, el último" if Story.is_boss(n) else "una sala"])
+			check(Story.tuning(n).theme == Story.MUSEUMS[m].theme, "el robo %d, del tema de su museo" % n)
+		check(String(Story.LEVELS[nights[-1] - 1].get("tip", "")) != "", "museo %d: su gran golpe dice qué tiene de especial" % [m + 1])
 		all.append_array(nights)
+		themes[Story.MUSEUMS[m].theme] = true
+		check(Themes.ALL.has(Story.MUSEUMS[m].theme), "museo %d: un tema de los cinco (%s)" % [m + 1, Story.MUSEUMS[m].theme])
 		var look: Dictionary = Story.MUSEUMS[m].palette
 		for k in MuseumView.THEMES[0]:
 			check(look.has(k), "museo %d: su paleta tiene %s" % [m + 1, k])
 		check(Story.museum(m).name != Story.MUSEUMS[m].name, "museo %d: con nombre (%s)" % [m + 1, Story.museum(m).name])
-	var in_order := all.size() == Story.count()
+	check(themes.size() == Themes.ALL.size() and Story.MUSEUMS[0].theme == "prehistoria", "cinco museos, cinco temas, el primero la prehistoria")
+	var in_order := all.size() == Story.count() and Story.count() == 25
 	for i in all.size():
 		in_order = in_order and all[i] == i + 1
-	check(in_order, "las %d noches, cada una en un museo y en orden" % Story.count())
+	check(in_order, "los %d robos, cada uno en un museo y en orden" % Story.count())
 	var looks := {}
 	for m in Story.MUSEUMS.size():
 		looks[str(Story.MUSEUMS[m].palette.paper) + str(Story.MUSEUMS[m].palette.stone)] = true
 	check(looks.size() == Story.MUSEUMS.size(), "cada museo con sus colores de pared y suelo")
 
-	# The progress: its own for each gang, and the old save is the lone thief's.
+	# The heading: the rank, and which job in which museum; the big job, so.
+	check(Story.heading(2) == "Ladronzuelo · tu segundo robo en la Gran Cueva", "cabecera: «%s»" % Story.heading(2))
+	check(Story.heading(10, 2).begins_with(Text.t("RANK_2_MANY")) and Story.heading(10, 2).contains("gran golpe"), "cabecera de un gran golpe: «%s»" % Story.heading(10, 2))
+	check(Story.heading(25).contains(Text.t("RANK_5_ONE")), "cabecera del último: «%s»" % Story.heading(25))
+
+	# A theme a museum: every gallery, and only its own big pieces.
+	for m in Story.MUSEUMS.size():
+		var n := Story.nights_in(m)[-1]
+		var night := Story.level(n)
+		Sim.custom = Story.tuning(n)
+		Sim.new_map(Story.seed_for(n), night.size, -1, night.shape)
+		var ok: bool = Museum.only_theme == Story.MUSEUMS[m].theme
+		for r in Museum.rooms:
+			ok = ok and r.theme == Story.MUSEUMS[m].theme
+		for b in Museum.big_pieces:
+			ok = ok and Themes.for_big(b.kind) in [Story.MUSEUMS[m].theme, ""]
+		check(ok, "museo %d (robo %d): todo de %s, %d piezas grandes" % [m + 1, n, Story.MUSEUMS[m].theme, Museum.big_pieces.size()])
+	Sim.custom = {}
+	Sim.new_map(4242, "medium")
+	check(Museum.only_theme == "", "fuera de la historia, los temas se mezclan")
+
+	# The progress: its own for each gang, and the old saves carried over.
 	Story.save = "user://test_progress.cfg"
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
-	check(Story.unlocked(1) == 1 and Story.unlocked(3) == 1, "sin partida guardada, solo la primera noche")
+	check(Story.unlocked(1) == 1 and Story.unlocked(3) == 1, "sin partida guardada, solo el primer robo")
 	var old := ConfigFile.new()
 	old.set_value("story", "unlocked", 7)
 	old.save(Story.save)
-	check(Story.unlocked(1) == 7, "la partida de antes pasa a ser la de 1 jugador (%d)" % Story.unlocked(1))
+	check(Story.unlocked(1) == 8, "la partida de antes de las bandas (noche 7 de 20) pasa a ser la de 1 jugador: robo %d" % Story.unlocked(1))
 	check(Story.unlocked(2) == 1, "y no abre nada a 2 jugadores (%d)" % Story.unlocked(2))
+	old.set_value("story", "unlocked_3", 20)
+	old.set_value("story", "unlocked_4", 5)
+	old.save(Story.save)
+	check(Story.unlocked(3) == 24 and Story.unlocked(4) == 6, "la de 20 noches: museos hechos, museos hechos; noche 20 es el robo %d, noche 5 el %d" % [Story.unlocked(3), Story.unlocked(4)])
+	var map := {1: 1, 4: 4, 5: 6, 8: 9, 9: 11, 13: 16, 17: 21, 20: 24}
+	var carried := true
+	for night in map:
+		carried = carried and Story.from_old(night) == map[night]
+	check(carried, "de las noches de antes a los robos de ahora, museo a museo")
 	Story.unlock(4, 2)
-	check(Story.unlocked(2) == 4 and Story.unlocked(1) == 7 and Story.unlocked(4) == 1, "ganar con 2 abre la noche solo para 2")
+	check(Story.unlocked(2) == 4 and Story.unlocked(1) == 8 and Story.unlocked(4) == 6, "ganar con 2 abre el robo solo para 2")
 	Story.unlock(3, 2)
 	check(Story.unlocked(2) == 4, "no se retrocede")
-	Story.unlock(8, 1)
-	check(Story.unlocked(1) == 8, "1 jugador sigue su camino (%d)" % Story.unlocked(1))
+	Story.unlock(9, 1)
+	check(Story.unlocked(1) == 9, "1 jugador sigue su camino (%d)" % Story.unlocked(1))
+	Story.unlock(3, 3)
+	check(Story.unlocked(3) == 24, "lo que se traía de antes no se pierde al jugar (%d)" % Story.unlocked(3))
 	Story.unlock(99, 4)
-	check(Story.unlocked(4) == Story.count(), "nunca más allá de la última noche")
+	check(Story.unlocked(4) == Story.count(), "nunca más allá del último robo")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
 	Story.save = Story.SAVE
 

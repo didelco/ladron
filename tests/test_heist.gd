@@ -181,14 +181,17 @@ func _init() -> void:
 	check(watcher.alarms == alarms_before, "verlo otra vez no suma otra alarma")
 	Props.list.clear()
 
-	# The story: twenty nights, each a playable museum, harder as they go:
-	# never fewer guards, never keener eyes taken back unless a guard or a
-	# bigger museum comes with it, and what a night has switched on stays on.
+	# The story: twenty-five heists, each a playable museum. The rooms get
+	# harder as they go, across the museums: never fewer guards, never
+	# keener eyes taken back unless a guard or a bigger museum comes with it,
+	# and what a night has switched on stays on. A museum's big job may go
+	# further than the rooms after it, never less far than the rooms before.
 	var last_guards := 0
 	var last_view := 0.0
 	var last_on := {}
 	var last_size := "small"
 	var harder := true
+	var bosses_hard := true
 	for n in range(1, Story.count() + 1):
 		var night := Story.level(n)
 		Sim.custom = Story.tuning(n)
@@ -196,8 +199,18 @@ func _init() -> void:
 		Heist.plan_job(n, night.loot, 2 if n % 2 == 0 else 1)
 		var guards := Sim.new_guards(Sim.guard_count(Museum.size_name))
 		var view := Sim.tuning("view")
+		print("  noche %2d: %-6s %-7s %d guardias · %s · %.1f s%s" % [n, night.size, Museum.shape, guards.size(), Heist.loot.name, Heist.loot.seconds, " · GRAN GOLPE" if Story.is_boss(n) else ""])
+		if Heist.route.size() < 5:
+			harder = false
+		if Story.is_boss(n):
+			if guards.size() < last_guards or (view < last_view and night.get("post", "") == "" and guards.size() == last_guards):
+				bosses_hard = false
+			for k in ["props", "lights", "case_alarm"]:
+				if last_on.get(k, false) and not Sim.feature(k):
+					bosses_hard = false
+			continue
 		var grew: bool = guards.size() > last_guards or night.size != last_size
-		if guards.size() < last_guards or (view < last_view and not grew and night.get("post", "") == "") or Heist.route.size() < 5:
+		if guards.size() < last_guards or (view < last_view and not grew and night.get("post", "") == ""):
 			harder = false
 		for k in ["props", "lights", "case_alarm"]:
 			if last_on.get(k, false) and not Sim.feature(k):
@@ -207,8 +220,18 @@ func _init() -> void:
 		last_size = night.size
 		if night.get("post", "") == "":
 			last_view = view
-		print("  noche %2d: %-6s %-7s %d guardias · %s · %.1f s" % [n, night.size, Museum.shape, guards.size(), Heist.loot.name, Heist.loot.seconds])
-	check(harder and Story.count() == 20, "veinte noches jugables, cada una igual o más difícil")
+	check(harder and Story.count() == 25, "veinticinco robos jugables, las salas cada una igual o más difícil")
+	check(bosses_hard, "cada gran golpe, al menos tan difícil como las salas de antes")
+	# One new thing at a time, and never on a big job (the last excepted:
+	# the finale): a lesson or the pick, no two on one night.
+	var taught := {}
+	var one_each := true
+	for n in range(1, Story.count() + 1):
+		var news: int = (1 if Story.level(n).get("teach", "") != "" else 0) + (1 if n == Story.LOCKPICK_NIGHT else 0)
+		if news > 1 or (Story.is_boss(n) and news > 0 and n != Story.count()):
+			one_each = false
+		taught[n] = news
+	check(one_each and taught.values().count(1) == Story.LESSONS.size() - 3 + 1, "una cosa nueva cada vez, nunca en un gran golpe salvo el final (%d)" % taught.values().count(1))
 	Sim.custom = {"lockpick": false}
 
 	# Four thieves: two panels far apart, both held, and two at the case.
@@ -341,6 +364,8 @@ func _init() -> void:
 				if line.split(" ", false).size() > Briefing.WORDS:
 					long += 1
 					worst = line
+			if Story.is_boss(n):
+				check(t.has(Text.t(Story.LEVELS[n - 1].tip)), "robo %d, %d ladrón(es): el gran golpe dice lo suyo: %s" % [n, gang, t])
 			if gang == 1 and n == Story.lesson_night("props") + 1:
 				check(t.has(Text.t("BRIEF_PROPS")), "la noche después de enseñarlo, se recuerda tirar cosas")
 			if gang == 1 and n == Story.lesson_night("props") + 2:

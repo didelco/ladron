@@ -88,9 +88,9 @@ caparazón, caballo de Troya, mamut y tronco) salieron de `art/temas/escondites.
 ```bash
 godot --headless --script tests/test_mapgen.gd   # museos bien formados (306 de todos los tamaños y formas)
 godot --headless --script tests/test_sim.gd      # escenarios de la simulación
-godot --headless --script tests/test_heist.gd    # el golpe, el cuadro de alarma y las noches de la historia
+godot --headless --script tests/test_heist.gd    # el golpe, el cuadro de alarma y los 25 robos de la historia (salas y grandes golpes)
 godot --headless --script tests/test_mapfile.gd  # mapas guardados: ida y vuelta, validación y que se juegan
-godot --headless --script tests/test_story.gd    # la historia: noches por museo, progreso por jugadores
+godot --headless --script tests/test_story.gd    # la historia: cinco museos de un tema, cinco robos cada uno, progreso por jugadores (y el de 20 noches)
 godot --headless --script tests/test_roll.gd     # rodar: ocho casillas, bajo y callado; limpia o contra la pared (golpe y estrellas)
 godot --headless --script tests/test_plinths.gd  # pedestales: subir con la acción, estatua invisible, bajar con una dirección
 godot --headless --script tests/test_hideouts.gd # escondites: muebles y piezas grandes por tema, invisible dentro, el guardia que te ve entrar va a por ti
@@ -123,12 +123,19 @@ Editar un texto en el visor lo cambia en `locale/texts.csv` (solo esa fila) y Go
 
 En el título se elige el modo:
 
-- **Historia**: veinte noches fijas, de muy fácil (un museo pequeño sin guardias) a
-  difícil (cuatro guardias en uno grande). La Banda del Calcetín recupera las cosas que el Barón Von
-  Bostezo se llevó del pueblo (`logic/story.gd`). Primero se elige cuántos ladrones; luego, en el
-  mapa de la ciudad, uno de los cinco museos (cada uno con sus colores de pared y suelo) y dentro,
-  una de sus cuatro noches. El progreso se guarda aparte para cada número de jugadores y se puede
-  rejugar cualquier noche ya alcanzada.
+- **Historia**: robar cinco museos, cinco salas en cada uno: 25 robos fijos, de muy fácil (un
+  museo pequeño sin guardias) a difícil (cuatro guardias en uno grande). El Barón Von Bostezo se
+  ha quedado con los cinco museos de la ciudad y la Banda del Calcetín rescata sus obras
+  (`logic/story.gd`). Cada museo es de un tema (`logic/themes.gd`), con sus colores de pared y
+  suelo, y todo lo que enseña y se roba es de ese tema: la Gran Cueva (prehistoria), la Casa de
+  los Bichos (naturaleza), el Templo de las Momias (mundo antiguo), el Castillo de los Inventos
+  (Edad Media) y la Torre de Cristal (edad moderna). Las cuatro primeras salas son robos normales;
+  la quinta, el **gran golpe** del museo, con algo especial (un guardián que ve lejos, un guardia
+  pegado a la pieza, tres guardias, la sala del trono, el gran final); al hacerlo se abre el
+  siguiente museo. Primero se elige cuántos ladrones; luego, en el mapa de la ciudad, un museo y
+  dentro una de sus salas. El progreso se guarda aparte para cada número de jugadores y se puede
+  rejugar cualquier robo ya alcanzado; una partida de la historia de 20 noches se conserva
+  (museo hecho, museo hecho; las noches del museo a medias, salas hechas).
 - **Generativo**: un museo nuevo cada vez, con dificultad (fácil, media, difícil) y tamaño a elegir.
   Cada golpe trae su pieza y su historia, inventadas a partir de la semilla (`logic/loot_gen.gd`):
   algo que el Barón le quitó a alguien del pueblo.
@@ -138,17 +145,17 @@ En el título se elige el modo:
   dinosaurio...), la entrada, la pieza, la salida, guardias y objetos, o partir de un mapa
   aleatorio del generador; tamaño, dificultad y guardias; vista 3D, probar y guardar. Solo deja
   jugar mapas cerrados, sin espacios a los que no se llega, con pieza y salida alcanzables.
-  `-- --menu=challenges` (o `editor`) los abre directamente. La pantalla es una lista (las noches
+  `-- --menu=challenges` (o `editor`) los abre directamente. La pantalla es una lista (los robos
   de la historia, luego los retos) con el plano del que está elegido a la derecha.
-  Las **noches de la historia** también se retocan ahí: se abre el museo tal como lo monta la
-  noche (`MapFile.from_museum`), se edita y se guarda en `maps/historia/noche_NN.json` (en
-  `user://maps/historia/` si el juego está exportado); desde entonces la noche juega ese museo,
+  Los **robos de la historia** también se retocan ahí: se abre el museo tal como lo monta el
+  robo (`MapFile.from_museum`), se edita y se guarda en `maps/historia/noche_NN.json` (en
+  `user://maps/historia/` si el juego está exportado); desde entonces el robo juega ese museo,
   con su pieza, sus guardias y su dificultad de siempre. *Volver al original* borra el fichero.
-  Probar una noche desde el editor no cuenta como partida de la historia.
+  Probar un robo desde el editor no cuenta como partida de la historia.
 
 Antes de cada golpe, el plan: el mapa a la izquierda y, a la derecha, la pieza, su historia y
 consejos sacados de cómo es la noche (`logic/briefing.gd`: cuántos guardias, si son rápidos u
-oyen bien, la alarma de la vitrina, qué se puede tirar...).
+oyen bien, qué tiene de especial un gran golpe, la alarma de la vitrina, qué se puede tirar...).
 
 En los dos, uno o dos ladrones. Con dos hay que colaborar: la vitrina solo cede mientras el otro
 sujeta el **cuadro de la alarma** (naranja, en una pared lejos de la pieza), y así se abre sin que
