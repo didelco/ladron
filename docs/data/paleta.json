@@ -277,13 +277,35 @@
 	{
 		"colours": [
 			{
+				"hex": "#2a2233",
+				"key": ""
+			}
+		],
+		"file": "scenes/end_pages.gd",
+		"name": "CARD_PHOTO_BACK",
+		"note": "The job sheet's polaroid: its photo's dark back and the tape on it."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#f2e6b899",
+				"key": ""
+			}
+		],
+		"file": "scenes/end_pages.gd",
+		"name": "CARD_TAPE",
+		"note": "The job sheet's polaroid: its photo's dark back and the tape on it."
+	},
+	{
+		"colours": [
+			{
 				"hex": "#1f2023",
 				"key": ""
 			}
 		],
 		"file": "scenes/end_pages.gd",
 		"name": "SHEET_INK",
-		"note": "The studio behind the piece in its photo, before it is printed."
+		"note": "The job sheet's polaroid: its photo's dark back and the tape on it."
 	},
 	{
 		"colours": [
@@ -294,7 +316,7 @@
 		],
 		"file": "scenes/end_pages.gd",
 		"name": "SHEET_INK_SOFT",
-		"note": "The studio behind the piece in its photo, before it is printed."
+		"note": "The job sheet's polaroid: its photo's dark back and the tape on it."
 	},
 	{
 		"colours": [
@@ -305,7 +327,7 @@
 		],
 		"file": "scenes/end_pages.gd",
 		"name": "SHEET_LINE",
-		"note": "The studio behind the piece in its photo, before it is printed."
+		"note": "The job sheet's polaroid: its photo's dark back and the tape on it."
 	},
 	{
 		"colours": [
@@ -316,7 +338,7 @@
 		],
 		"file": "scenes/end_pages.gd",
 		"name": "STAMP",
-		"note": "The studio behind the piece in its photo, before it is printed."
+		"note": "The job sheet's polaroid: its photo's dark back and the tape on it."
 	},
 	{
 		"colours": [
