@@ -238,11 +238,12 @@ func _ready() -> void:
 				"end":
 					phase = "caught"
 					_show_end()
-	# --brief=N:P: the story's night N, briefing page P (0-based), to look at it.
+	# --brief=N:P: the story's night N, briefing page P (0-based), to look at it
+	# (--gen: the generative's level N instead).
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--brief="):
 			var bits := arg.substr(8).split(":")
-			mode = "story"
+			mode = "generative" if "--gen" in OS.get_cmdline_user_args() else "story"
 			_new_round(int(bits[0]))
 			_show_brief(int(bits[1]) if bits.size() > 1 else 0)
 	# --intro: the piece, then the countdown, for checking the way in.
@@ -1212,7 +1213,7 @@ func _quit_to_title() -> void:
 
 ## Before a night: a briefing of a page or three, back and next along the
 ## bottom — in the story, the piece and its tale, then what is new tonight
-## (if anything is); a saved map, its tale if it was given one; in every
+## (if anything is); out of it, the piece's tale if it has one; in every
 ## mode, the plan: the map and the rules for the
 ## night (Briefing).
 func _brief_pages() -> Array:
@@ -1221,8 +1222,9 @@ func _brief_pages() -> Array:
 		pages.append("story")
 		if not Story.news(level, players).is_empty():
 			pages.append("news")
-	elif mode == "challenge" and String(Heist.loot.get("story", "")).strip_edges() != "":
-		# A saved map's tale, written by hand in the editor.
+	elif String(Heist.loot.get("story", "")).strip_edges() != "":
+		# Out of the story the tale is optional: a generated piece comes
+		# with one, a saved map's only if it was written in the editor.
 		pages.append("story")
 	pages.append("plan")
 	return pages
