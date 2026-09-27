@@ -83,6 +83,8 @@ var _alarm_level := -1
 var _gang: HBoxContainer
 var _portraits: Array[Dictionary] = []
 var _log: Label
+## the game's version (project.godot, tools/version.py), in the title's corner
+var _version: Label
 var _job: Label
 ## the way to the objective: a kunai at the edge of the screen
 var _arrow: Control
@@ -118,6 +120,9 @@ var _ia_box: VBoxContainer
 func _ready() -> void:
 	_status = _label(16, C.text, self, true)
 	_status.position = Vector2(24, 16)
+	_version = _label(12, C.dim)
+	_version.text = "v" + str(ProjectSettings.get_setting("application/config/version", ""))
+	_version.visible = false
 	_log = _label(15, C.dim)
 	_log.position = Vector2(24, 64)
 	_job = _label(14, C.gold, self, true)
@@ -285,6 +290,7 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 ## Buttons work with the mouse, and with the arrows and Enter; the first one
 ## has the focus.
 func show_menu(items: Array) -> void:
+	_version.visible = false
 	for c in _panel_box.get_children():
 		c.queue_free()
 	# What the items leave behind: rows of focusable controls, top to
@@ -957,6 +963,15 @@ func menu_open() -> bool:
 
 ## The IA panel: one card per guard. entries are {"name", "title", "colour",
 ## "options": [[label, probability]], "note"}.
+## The version in the bottom right corner, on the title only (show_menu
+## hides it again).
+func show_version() -> void:
+	var view := get_viewport().get_visible_rect().size
+	_version.position = view - _version.get_minimum_size() - Vector2(16, 12)
+	_version.visible = true
+	move_child(_version, get_child_count() - 1)
+
+
 func set_ia(on: bool, entries: Array) -> void:
 	_ia.visible = on and not _shown
 	if not _ia.visible:

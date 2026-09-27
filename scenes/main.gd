@@ -277,6 +277,7 @@ func _show_title() -> void:
 		{"gap": 10},
 		{"buttons": [{"text": Text.t("MENU_QUIT"), "call": _quit, "colour": Hud.C.dim}], "small": true},
 	])
+	hud.show_version()
 
 
 # --- Challenges ------------------------------------------------------------------------

@@ -153,6 +153,20 @@ uv pip install --python brain/.venv/bin/python -r brain/requirements.txt
 
 Sin el cerebro, los guardias deciden con reglas fijas: el juego siempre se puede jugar.
 
+## Versión
+
+`0.1.N`, donde N es el número de commits de la rama: el hook `.githooks/pre-commit` la escribe
+en `project.godot` (`config/version`) antes de cada commit con `tools/version.py`, así que
+cada commit lleva la suya. Se ve en la esquina del título y las exportaciones la toman de ahí.
+En un clon nuevo hay que activar el hook una vez:
+
+```bash
+git config core.hooksPath .githooks
+python3 tools/version.py --show   # la versión actual
+```
+
+Para pasar a 0.2, se cambia `BASE` en `tools/version.py`.
+
 ## Exportar
 
 `export_presets.cfg` trae tres configuraciones: **Windows Desktop** (x86_64), **macOS** (universal,

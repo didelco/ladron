@@ -1,0 +1,5 @@
+#!/bin/sh
+# La versión del juego (tools/version.py): 0.1.N, con N el número de este commit.
+# En una rama que aún no tiene el script, no hace nada.
+[ -f tools/version.py ] || exit 0
+python3 tools/version.py >/dev/null && git add project.godot
