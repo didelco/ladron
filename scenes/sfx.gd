@@ -59,6 +59,12 @@ func _ready() -> void:
 	_streams.caught = _trombone()
 	_streams.escaped = _mix(_tones([[587.3, 0.0, 0.12], [740.0, 0.12, 0.12], [880.0, 0.24, 0.12], [1174.7, 0.36, 0.5]], "square", 0.22),
 		_tones([[293.7, 0.36, 0.6], [440.0, 0.36, 0.6]], "saw", 0.12))
+	# The arcade machine's pong: square bleeps, a jingle up for a point won
+	# and down for one lost.
+	_streams.pong_hit = _tones([[880.0, 0.0, 0.05]], "square", 0.2)
+	_streams.pong_wall = _tones([[440.0, 0.0, 0.04]], "square", 0.16)
+	_streams.pong_score = _tones([[660.0, 0.0, 0.07], [880.0, 0.07, 0.07], [1320.0, 0.14, 0.12]], "square", 0.18)
+	_streams.pong_miss = _tones([[330.0, 0.0, 0.1], [220.0, 0.1, 0.22]], "square", 0.18)
 	_streams.tick = _mix(_bells([[880.0, 0.0]], 0.25, 0.3), _noise(0.02, 3000.0, 0.3))
 	_streams.go = _mix(_bells([[587.3, 0.0], [740.0, 0.0], [880.0, 0.0], [1174.7, 0.0]], 0.9, 0.2), _thump(0.5, 110.0, 55.0, 0.6))
 	# A smoke bomb: a soft, deep pop and the long hiss of the cloud rushing out.

@@ -1665,6 +1665,8 @@ func _lay_out(n: int, map_seed: int) -> int:
 		keep.append(t)
 	Hideouts.spread(map_seed, keep, Sim.feature("plinths") and Plinths.list.is_empty(),
 		Sim.feature("hideouts") and Hideouts.pieces.is_empty(), Sim.feature("hideouts"))
+	# The arcade machines, where MuseumView will put them: now that the rest is placed.
+	Arcades.find()
 	return Sim.assign_posts(guards)
 
 
@@ -1993,6 +1995,11 @@ func _game_sounds(p: Thief) -> void:
 			"slip": sfx.at("slip", at, 0.6, 2.0)
 			"snip": sfx.at("snip", at, 0.7, 2.0)
 			"spark": sfx.at("spark", at, 0.6, 2.0)
+			# The arcade machine's pong (ArcadeGame): its bleeps.
+			"bounce": sfx.at("pong_hit", at, 0.35, 2.0)
+			"wall": sfx.at("pong_wall", at, 0.25, 2.0)
+			"score": sfx.at("pong_score", at, 0.35, 2.0)
+			"miss": sfx.at("pong_miss", at, 0.35, 2.0)
 			"done": _rumble(0.3, 0.2, 0.12, Vector2(p.x, p.y))
 
 
@@ -2094,6 +2101,8 @@ func _prompt_rows(i: int) -> Array:
 		return [row.call("move", Text.t("HUD_HIDE_OUT"))]
 	if Plinths.within_reach(p, thieves) != null:
 		return [row.call("action", Text.t("HUD_PLINTH_HINT"))]
+	if Arcades.within_reach(p, thieves).x >= 0:
+		return [row.call("action", Text.t("HUD_ARCADE_HINT"))]
 	var spot := Hideouts.within_reach(p, thieves)
 	if spot:
 		return [row.call("action", Text.t("HUD_HIDE_HINT") % Hideouts.name_of(spot.kind).to_upper())]
@@ -2218,6 +2227,7 @@ func _tick(dt: float) -> void:
 					if p.game.kind == "balance":
 						Plinths.get_down(p, lean)
 					p.hide_target = null
+					p.arcade = Vector2i(-1, -1)
 					p.game = null
 				"fail":
 					# Lost its balance: down it comes, and the guards hear it.
@@ -2272,6 +2282,7 @@ func _tick(dt: float) -> void:
 			var plinth = Plinths.within_reach(t, thieves)
 			var spot := Hideouts.within_reach(t, thieves)
 			var target := Props.within_reach(t)
+			var arcade := Arcades.within_reach(t, thieves)
 			var job := Heist.game_for(t)
 			if not job.is_empty():
 				Heist.start_game(t, job, _game_input(i, keys))
@@ -2288,6 +2299,13 @@ func _tick(dt: float) -> void:
 			elif spot:
 				# In with a moment's wriggling (Minigame "squeeze", _squeeze).
 				Hideouts.start(t, spot, _game_input(i, keys))
+			elif arcade.x >= 0:
+				# A game of pong, facing the screen: nothing to win (ArcadeGame).
+				t.game = Minigame.make("arcade", "arcade", 1, _game_input(i, keys))
+				t.arcade = arcade
+				t.dir = atan2(arcade.y + 0.5 - t.y, arcade.x + 0.5 - t.x)
+				sfx.at("pong_score", _to_world(t.x, t.y, 1.0), 0.4, 2.0)
+				_log(Text.t("LOG_ARCADE"))
 			elif target:
 				Props.push(target, t, now, noises)
 		push_held[i] = pressed

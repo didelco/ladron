@@ -16,6 +16,8 @@ extends RefCounted
 ##     "squeeze" (SqueezeGame: wriggling into a hideout);
 ##   of the enduring kind, which can be failed:
 ##     "balance" (BalanceGame: posing as a statue on one foot).
+##   and one just for fun, which never ends: "arcade" (ArcadeGame: pong on
+##     the arcade machine, Arcades).
 ##
 ## A new one: logic/minigames/<kind>.gd extending this (its _setup and
 ## _play, and progress if it is not counted in steps),

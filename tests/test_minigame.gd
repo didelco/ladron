@@ -416,8 +416,64 @@ func _init() -> void:
 	check(Heist.game_for(p).is_empty(), "sin ganzúa esa noche: E no saca nada (basta con quedarse quieto)")
 	Sim.custom = {}
 
+	print("La recreativa")
+	arcade()
+
 	if failures.is_empty():
 		print("OK: minijuegos")
 	else:
 		print("FALLOS: %d" % failures.size())
 	quit(1 if not failures.is_empty() else 0)
+
+
+## The arcade machine's pong (ArcadeGame): it never ends, the ball stays on
+## the screen, letting go leaves it, and one who follows the ball beats the
+## machine. And the machines are where the museum stands them (Arcades).
+func arcade() -> void:
+	var g := Minigame.make("arcade", "arcade", 1, {}, 3) as ArcadeGame
+	var inside := true
+	var bounces := 0
+	# Two minutes following the ball with the paddle.
+	while g.t < 120.0:
+		var input := {"up": g.ball.y > g.me + 0.03, "down": g.ball.y < g.me - 0.03}
+		check_quiet(g.tick(input, DT) == "", "arcade: nada que acabar")
+		bounces += g.events.count("bounce")
+		inside = inside and absf(g.ball.x) <= ArcadeGame.HALF_W + 0.1 and absf(g.ball.y) <= ArcadeGame.HALF_H
+	check(not g.done and g.progress() == 0.0, "dos minutos jugando y no acaba nunca (ni avanza nada)")
+	check(inside, "la pelota no se sale de la pantalla")
+	check(bounces > 20, "la pelota va y viene (%d golpes)" % bounces)
+	check(g.mine > g.theirs, "siguiendo la pelota se le gana a la máquina (%d a %d)" % [g.mine, g.theirs])
+	var idle := Minigame.make("arcade", "arcade", 1, {}, 3) as ArcadeGame
+	while idle.t < 60.0:
+		idle.tick({}, DT)
+	check(idle.theirs > idle.mine, "sin jugar, gana la máquina (%d a %d)" % [idle.theirs, idle.mine])
+	check(g.tick({"cancel": true}, DT) == "quit", "soltar: se deja de jugar")
+
+	# Somewhere with machines: a museum of modern galleries.
+	var found := false
+	for seed_ in range(1, 60):
+		Sim.new_map(seed_, "medium")
+		Heist.plan_job(1)
+		Arcades.find()
+		if not Arcades.list.is_empty():
+			found = true
+			var t: Vector2i = Arcades.list[0]
+			check(MuseumView.theme_pick(Museum.room_at(t.x + 0.5, t.y + 0.5).theme if Museum.room_at(t.x + 0.5, t.y + 0.5) else "", t)[1] == Arcades.MODEL,
+				"la recreativa está donde el museo la pone (semilla %d)" % seed_)
+			var front := MuseumView.front_of(t)
+			var p := Sim.new_thief()
+			p.x = t.x + 0.5 + front.x
+			p.y = t.y + 0.5 + front.y
+			var ps: Array[Thief] = [p]
+			check(Arcades.within_reach(p, ps) == t, "delante de la pantalla, se puede jugar")
+			p.x = t.x + 0.5 - front.x * 1.2
+			p.y = t.y + 0.5 - front.y * 1.2
+			check(Arcades.within_reach(p, ps).x < 0, "por detrás, no")
+			break
+	check(found, "algún museo tiene recreativa")
+
+
+## A check that only speaks up when it fails (it runs every frame).
+func check_quiet(ok: bool, what: String) -> void:
+	if not ok and not failures.has(what):
+		check(false, what)

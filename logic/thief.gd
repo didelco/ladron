@@ -60,3 +60,5 @@ var hide_seen: Array[Guard] = []
 ## the balance on a pedestal; it
 ## stands where it is until done or it lets go
 var game: Minigame = null
+## playing pong on an arcade machine (Arcades): its tile
+var arcade := Vector2i(-1, -1)
