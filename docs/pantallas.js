@@ -283,7 +283,7 @@ window.PANTALLAS = [
           },
           {
             id: "pausa", title: "MENU_PAUSE", fn: "_pause", phase: "paused",
-            text: "Esc, P o Start. El mundo se para; la música y los menús, no.", shots: ["juego_pausa"],
+            text: "Esc, P o Start. El mundo se para; la música y los menús, no. Detrás del menú, la partida congelada en el monitor de vigilancia del museo: verde de fósforo, pixelada y oscura (se sabe dónde estás, pero no sirve para espiar a los guardias), con la cámara y la sala arriba, «REC» y la hora que sigue corriendo, y el museo abajo. Los ajustes abiertos desde aquí lo mantienen.", shots: ["juego_pausa"],
             options: [
               { key: "MENU_RESUME", to: "juego" },
               { key: "MENU_SETTINGS", to: "ajustes" },
@@ -293,13 +293,13 @@ window.PANTALLAS = [
         ],
       },
       {
-        id: "fin_pillado", title: "END_CAUGHT", fn: "_show_end", phase: "caught",
-        text: "Si pillan a uno, se acaba la noche.", shots: ["final_pillado"],
+        id: "fin_pillado", title: "END_FILE_STAMP_ONE", fn: "_show_end", phase: "caught",
+        text: "Si pillan a uno, se acaba la noche. La ficha policial: un folio blanco que se sale por abajo, con las dos fotos de siempre (la cabeza del ninja de frente y de perfil, en blanco y negro, ante la regla de alturas), el número, el delito, quién te pilló y el sello rojo. Los botones, a su lado.", shots: ["final_pillado"],
         options: [{ key: "END_AGAIN", to: "previa" }, { key: "END_TO_MENU" }],
       },
       {
-        id: "fin_escapado", title: "END_PERFECT", fn: "_show_end", phase: "escaped",
-        text: "Toda la banda fuera con la pieza. En la historia abre la sala siguiente; tras un gran golpe, el siguiente museo (y vuelve a la ciudad).", shots: ["final_escapado"],
+        id: "fin_escapado", title: "END_PAPER_NAME", fn: "_show_end", phase: "escaped",
+        text: "Toda la banda fuera con la pieza. La portada del periódico del pueblo: el titular, la foto de la pieza en trama y el golpe en cifras (el tiempo, las veces que os vieron y lo que más hicisteis: bombas, escondites, cosas tiradas…, HeistStats). En la historia abre la sala siguiente; tras un gran golpe, el titular es el museo desvalijado y se pasa al siguiente museo (y vuelve a la ciudad).", shots: ["final_escapado"],
         options: [{ key: "END_NEXT_NIGHT", text: "En la historia.", to: "previa" }, { key: "END_NEXT_MUSEUM", text: "Tras el gran golpe de un museo.", to: "ciudad" }, { key: "END_NEXT_HEIST", text: "En el generativo.", to: "previa" }, { key: "END_TO_MENU" }],
       },
       {

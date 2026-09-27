@@ -223,6 +223,105 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#efe6d1",
+     "key": ""
+    }
+   ],
+   "file": "scenes/end_pages.gd",
+   "name": "PAPER",
+   "note": "The paper's colours and the file's: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#241a13",
+     "key": ""
+    }
+   ],
+   "file": "scenes/end_pages.gd",
+   "name": "PAPER_INK",
+   "note": "The paper's colours and the file's: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#6e5c49",
+     "key": ""
+    }
+   ],
+   "file": "scenes/end_pages.gd",
+   "name": "PAPER_INK_SOFT",
+   "note": "The paper's colours and the file's: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#cfc3ab",
+     "key": ""
+    }
+   ],
+   "file": "scenes/end_pages.gd",
+   "name": "PHOTO_BACK",
+   "note": "The studio behind the piece in its photo, before it is printed."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#f7f7f5",
+     "key": ""
+    }
+   ],
+   "file": "scenes/end_pages.gd",
+   "name": "SHEET",
+   "note": "The studio behind the piece in its photo, before it is printed."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#1f2023",
+     "key": ""
+    }
+   ],
+   "file": "scenes/end_pages.gd",
+   "name": "SHEET_INK",
+   "note": "The studio behind the piece in its photo, before it is printed."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#7a7c80",
+     "key": ""
+    }
+   ],
+   "file": "scenes/end_pages.gd",
+   "name": "SHEET_INK_SOFT",
+   "note": "The studio behind the piece in its photo, before it is printed."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#b9bbbe",
+     "key": ""
+    }
+   ],
+   "file": "scenes/end_pages.gd",
+   "name": "SHEET_LINE",
+   "note": "The studio behind the piece in its photo, before it is printed."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#d3263a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/end_pages.gd",
+   "name": "STAMP",
+   "note": "The studio behind the piece in its photo, before it is printed."
+  },
+  {
+   "colours": [
+    {
      "hex": "#08070c",
      "key": ""
     }
@@ -263,6 +362,17 @@ window.JUEGO = {
    "file": "scenes/figure.gd",
    "name": "SWEAT_COLOUR",
    "note": "The drop of sweat: its size (m, radius of the round end), where it sits beside the head, how far it runs down before it starts again, and how fast."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#141418",
+     "key": ""
+    }
+   ],
+   "file": "scenes/figure.gd",
+   "name": "FACE_INK",
+   "note": "The lids: as round as the eye on top, their straight edge this far above its middle."
   },
   {
    "colours": [
@@ -429,6 +539,50 @@ window.JUEGO = {
    "file": "scenes/hud.gd",
    "name": "GLOW_TEXT",
    "note": "The menus' frames: dark smoked glass with a thin pale rim, and a warm glow round the one with the focus, lit like the cases in the hall behind."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#8dffb0",
+     "key": ""
+    }
+   ],
+   "file": "scenes/hud.gd",
+   "name": "CCTV_PHOSPHOR",
+   "note": "The security monitor's colours (the pause, cctv), all here to change in one place: its green glow and its black, the writing on it, the REC dot."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#030d08",
+     "key": ""
+    }
+   ],
+   "file": "scenes/hud.gd",
+   "name": "CCTV_DARK",
+   "note": "The security monitor's colours (the pause, cctv), all here to change in one place: its green glow and its black, the writing on it, the REC dot."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#a8ffc4",
+     "key": ""
+    }
+   ],
+   "file": "scenes/hud.gd",
+   "name": "CCTV_TEXT",
+   "note": "The security monitor's colours (the pause, cctv), all here to change in one place: its green glow and its black, the writing on it, the REC dot."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ff4d5e",
+     "key": ""
+    }
+   ],
+   "file": "scenes/hud.gd",
+   "name": "CCTV_REC",
+   "note": "The security monitor's colours (the pause, cctv), all here to change in one place: its green glow and its black, the writing on it, the REC dot."
   },
   {
    "colours": [
@@ -1164,6 +1318,50 @@ window.JUEGO = {
    "file": "scenes/minigame_view.gd",
    "name": "RED",
    "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#b9c3cc",
+     "key": ""
+    }
+   ],
+   "file": "scenes/mugshot_stage.gd",
+   "name": "CHART_WALL",
+   "note": "The wall and its chart."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2b3440",
+     "key": ""
+    }
+   ],
+   "file": "scenes/mugshot_stage.gd",
+   "name": "CHART_INK",
+   "note": "The wall and its chart."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2ec4a6",
+     "key": ""
+    }
+   ],
+   "file": "scenes/mugshot_stage.gd",
+   "name": "SUIT",
+   "note": "The thief's suit: grey in the photo, but a colour for the light to shade."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#12705f",
+     "key": ""
+    }
+   ],
+   "file": "scenes/mugshot_stage.gd",
+   "name": "SUIT_SHADE",
+   "note": "The thief's suit: grey in the photo, but a colour for the light to shade."
   },
   {
    "colours": [
@@ -6753,8 +6951,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "27-09-2026 22:11",
-  "commit": "96fa3e8",
-  "rama": "main"
+  "fecha": "27-09-2026 23:48",
+  "commit": "40b4dc4",
+  "rama": "worktree-agent-a9519c6cdca98cc78"
  }
 };

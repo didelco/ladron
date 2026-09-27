@@ -28,6 +28,11 @@ const GLOW_TEXT := Color("#fff0d6")
 ## Out of the game a picture of the museum hall shows instead (MENU_PICTURE),
 ## darker at the top and bottom so the headings and buttons read, looking at a
 ## different part of it on each screen (focus, SPOTS) and drifting.
+## In the pause, the game itself as the museum's security monitor shows it
+## (cctv, Hud.cctv): green phosphor, in big blurry pixels, dark, with scan
+## lines, grain and a bar rolling down, on a tube that bulges a little and
+## goes black at its rounded edges. Enough to know you are still in there;
+## too coarse and dark to spy on the guards from.
 const BACKDROP_SHADER := """
 shader_type canvas_item;
 uniform vec4 top : source_color = vec4(0.16, 0.09, 0.2, 0.97);
@@ -35,7 +40,38 @@ uniform vec4 bottom : source_color = vec4(0.08, 0.045, 0.035, 0.98);
 uniform sampler2D picture : filter_linear, repeat_disable;
 uniform float cover = 0.0;
 uniform vec2 focus = vec2(0.5);
+uniform sampler2D game_screen : hint_screen_texture, filter_linear_mipmap;
+uniform float cctv = 0.0;
+uniform vec4 phosphor : source_color = vec4(0.55, 1.0, 0.69, 1.0);
+uniform vec4 phosphor_dark : source_color = vec4(0.01, 0.05, 0.03, 1.0);
+uniform float block = 7.0;
+uniform float bright = 0.5;
 const float ZOOM = 1.15;
+float grain(vec2 p) {
+	return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+}
+vec3 monitor(vec2 uv, vec2 frag, vec2 pixel) {
+	vec2 d = uv - 0.5;
+	vec2 tube = 0.5 + d * (1.0 + 0.09 * dot(d, d) * 4.0);
+	// Rounded corners, black beyond.
+	vec2 q = abs(tube - 0.5) - vec2(0.47, 0.45);
+	float edge = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0);
+	float inside = 1.0 - smoothstep(-0.004, 0.004, edge - 0.02);
+	vec2 px = pixel * block;
+	vec2 s = (floor(tube / px) + 0.5) * px;
+	vec3 g = textureLod(game_screen, clamp(s, 0.0, 1.0), 2.0).rgb;
+	float l = dot(g, vec3(0.299, 0.587, 0.114));
+	l = smoothstep(0.0, 0.85, l) * bright;
+	// Scan lines, grain, a bar rolling down and a faint flicker.
+	l *= 0.7 + 0.3 * sin(frag.y * 2.1);
+	l += (grain(floor(frag / 2.0) + fract(TIME * 7.0) * 91.0) - 0.5) * 0.12;
+	float bar = fract(tube.y * 0.6 - TIME * 0.08);
+	l += smoothstep(0.0, 0.05, bar) * smoothstep(0.12, 0.05, bar) * 0.05;
+	l *= 0.97 + 0.03 * sin(TIME * 53.0);
+	// A heavy vignette: darkest where it bends away.
+	l *= clamp(1.25 - length(d * vec2(1.05, 1.25)) * 1.5, 0.0, 1.0);
+	return mix(phosphor_dark.rgb, phosphor.rgb, clamp(l, 0.0, 1.0)) * inside;
+}
 void fragment() {
 	vec4 c = mix(top, bottom, smoothstep(0.0, 1.0, UV.y));
 	float stripe = step(0.5, fract(FRAGCOORD.x / 64.0));
@@ -63,11 +99,26 @@ void fragment() {
 	}
 	// The lamp: warm light pooling from the top centre, breathing slowly.
 	float lamp = exp(-pow(distance(UV * vec2(1.6, 1.0), vec2(0.8, 0.05)) * 1.9, 2.0));
-	c.rgb += vec3(0.45, 0.28, 0.12) * lamp * (0.3 + 0.03 * sin(TIME * 1.3)) * (1.0 - cover);
-	c.rgb *= 1.0 - distance(UV, vec2(0.5)) * 0.55;
+	c.rgb += vec3(0.45, 0.28, 0.12) * lamp * (0.3 + 0.03 * sin(TIME * 1.3)) * (1.0 - cover) * (1.0 - cctv);
+	c.rgb *= 1.0 - distance(UV, vec2(0.5)) * 0.55 * (1.0 - cctv);
+	if (cctv > 0.0) {
+		c = mix(c, vec4(monitor(UV, FRAGCOORD.xy, SCREEN_PIXEL_SIZE), 1.0), cctv);
+	}
 	COLOR = c;
 }
 """
+## The security monitor's colours (the pause, cctv), all here to change in
+## one place: its green glow and its black, the writing on it, the REC dot.
+const CCTV_PHOSPHOR := Color("#8dffb0")
+const CCTV_DARK := Color("#030d08")
+const CCTV_TEXT := Color("#a8ffc4")
+const CCTV_REC := Color("#ff4d5e")
+## How big its pixels are, and how bright it gets at most (0..1): coarse and
+## dark, so it cannot be used to spy on the guards.
+const CCTV_BLOCK := 6.0
+const CCTV_BRIGHT := 0.5
+## The clock on it: the night's hour when the round began, in seconds.
+const CCTV_FROM := 3 * 3600
 const MENU_PICTURE := "res://assets/ui/fondo_menu.png"
 ## Where the menus out of the game look in MENU_PICTURE (Hud.backdrop), as
 ## fractions of it: the title at the lit case in the middle, the story at the
@@ -162,6 +213,17 @@ var _menu_map: MapStage
 var _map_legend: VBoxContainer
 var _ia: PanelContainer
 var _ia_box: VBoxContainer
+## The security monitor in the pause (cctv): the writing over the picture,
+## its clock (seconds since the round began, running while it is up) and
+## the dot that blinks by REC.
+var _cctv: Control
+var _cctv_on := false
+var _cctv_where: Label
+var _cctv_museum: Label
+var _cctv_clock: Label
+var _cctv_dot: Panel
+var _cctv_seconds := 0.0
+var _cctv_fade: Tween
 
 
 func _ready() -> void:
@@ -238,6 +300,7 @@ func _ready() -> void:
 	_panel.material = ShaderMaterial.new()
 	(_panel.material as ShaderMaterial).shader = backdrop
 	add_child(_panel)
+	_build_cctv()
 	var centre := CenterContainer.new()
 	centre.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_panel.add_child(centre)
@@ -341,6 +404,10 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 ##   {"table": [[cell, ...], ...], "widths": [int], "heads"?: int}
 ##                                                    short texts in rows and
 ##                                                    columns on a board (_table)
+##   {"newspaper": {...}}                             the town paper's front
+##                                                    page (EndPages.newspaper)
+##   {"mugshot": {...}}                               the police file with the
+##                                                    gang's photo (EndPages.mugshot)
 ##   {"footer": text}                                 what to press
 ## Buttons work with the mouse, and with the arrows and Enter; the first one
 ## has the focus.
@@ -368,7 +435,7 @@ func show_menu(items: Array) -> void:
 		# The controls in it are brand new; only the frame around them was
 		# made click-through by hide_panel.
 		_panel.mouse_filter = Control.MOUSE_FILTER_STOP
-		(_panel.get_child(0) as Control).mouse_filter = Control.MOUSE_FILTER_PASS
+		(_panel_box.get_parent() as Control).mouse_filter = Control.MOUSE_FILTER_PASS
 		_panel_box.mouse_filter = Control.MOUSE_FILTER_PASS
 		if not _panel.visible:
 			_panel.modulate.a = 0.0
@@ -544,6 +611,10 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 			st.rows.append(line)
 	elif item.has("table"):
 		_table(item, parent)
+	elif item.has("newspaper"):
+		parent.add_child(EndPages.newspaper(item.newspaper))
+	elif item.has("mugshot"):
+		parent.add_child(EndPages.mugshot(item.mugshot))
 	elif item.has("footer"):
 		var f := _label(14, C.gold, parent, true)
 		f.text = item.footer
@@ -1216,6 +1287,10 @@ func _fade_panel(to: float) -> void:
 	if to == 0.0:
 		_fade.tween_callback(func() -> void:
 			_panel.visible = false
+			# The monitor goes off with the menus it was behind.
+			_cctv_on = false
+			_cctv.visible = false
+			(_panel.material as ShaderMaterial).set_shader_parameter("cctv", 0.0)
 			backdrop(null))
 
 
@@ -1249,6 +1324,111 @@ func backdrop(focus: Variant) -> void:
 	else:
 		m.set_shader_parameter("focus", _focus)
 
+
+
+## The writing on the security monitor, under the menus and over the
+## picture (the shader draws the picture, BACKDROP_SHADER): top left which
+## camera and where, top right REC and the clock, bottom left the museum,
+## bottom right whose cameras these are.
+func _build_cctv() -> void:
+	var m := _panel.material as ShaderMaterial
+	m.set_shader_parameter("phosphor", CCTV_PHOSPHOR)
+	m.set_shader_parameter("phosphor_dark", CCTV_DARK)
+	m.set_shader_parameter("block", CCTV_BLOCK)
+	m.set_shader_parameter("bright", CCTV_BRIGHT)
+	_cctv = Control.new()
+	_cctv.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_cctv.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_cctv.visible = false
+	_panel.add_child(_cctv)
+	var corners := {}
+	for corner in [Control.PRESET_TOP_LEFT, Control.PRESET_TOP_RIGHT, Control.PRESET_BOTTOM_LEFT, Control.PRESET_BOTTOM_RIGHT]:
+		var box := HBoxContainer.new()
+		box.add_theme_constant_override("separation", 10)
+		box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_cctv.add_child(box)
+		var right: bool = corner in [Control.PRESET_TOP_RIGHT, Control.PRESET_BOTTOM_RIGHT]
+		var low: bool = corner in [Control.PRESET_BOTTOM_LEFT, Control.PRESET_BOTTOM_RIGHT]
+		box.grow_horizontal = Control.GROW_DIRECTION_BEGIN if right else Control.GROW_DIRECTION_END
+		box.grow_vertical = Control.GROW_DIRECTION_BEGIN if low else Control.GROW_DIRECTION_END
+		box.set_anchors_and_offsets_preset(corner, Control.PRESET_MODE_MINSIZE, 56)
+		corners[corner] = box
+	_cctv_where = _cctv_label(corners[Control.PRESET_TOP_LEFT])
+	_cctv_dot = Panel.new()
+	var dot := StyleBoxFlat.new()
+	dot.bg_color = CCTV_REC
+	dot.set_corner_radius_all(8)
+	dot.shadow_color = Color(CCTV_REC, 0.5)
+	dot.shadow_size = 6
+	_cctv_dot.add_theme_stylebox_override("panel", dot)
+	_cctv_dot.custom_minimum_size = Vector2(16, 16)
+	_cctv_dot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_cctv_dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	corners[Control.PRESET_TOP_RIGHT].add_child(_cctv_dot)
+	_cctv_clock = _cctv_label(corners[Control.PRESET_TOP_RIGHT])
+	_cctv_museum = _cctv_label(corners[Control.PRESET_BOTTOM_LEFT])
+	_cctv_label(corners[Control.PRESET_BOTTOM_RIGHT]).text = cctv_caps(Text.t("HUD_CCTV_OWNER"))
+
+
+func _cctv_label(parent: Node) -> Label:
+	var l := _label(14, CCTV_TEXT, parent, true)
+	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	l.add_theme_color_override("font_shadow_color", Color(CCTV_PHOSPHOR, 0.35))
+	l.add_theme_constant_override("shadow_offset_y", 0)
+	l.add_theme_constant_override("shadow_outline_size", 6)
+	return l
+
+
+## The pause's backdrop: the game frozen behind the menus as the museum's
+## security monitor shows it (on), until the menus go away or it is turned
+## off. where: the camera and the room, for the top; museum: the bottom;
+## seconds: how long the round has gone on, for its clock, which keeps
+## running while it is up (the tape does). Up again while up (a pad lost or
+## back), it only changes the writing.
+func cctv(on: bool, where := "", museum := "", seconds := 0.0) -> void:
+	var m := _panel.material as ShaderMaterial
+	if _cctv_fade:
+		_cctv_fade.kill()
+	if on:
+		_cctv_where.text = cctv_caps(where)
+		_cctv_museum.text = cctv_caps(museum)
+		if not _cctv_on:
+			_cctv_seconds = seconds
+		_cctv_on = true
+		_cctv.visible = true
+		_cctv.modulate.a = 1.0
+		m.set_shader_parameter("cctv", 1.0)
+		_draw_cctv(0.0)
+		return
+	if not _cctv_on:
+		return
+	_cctv_on = false
+	# Off with the menus still up (out to the title): it fades to the wall.
+	_cctv_fade = create_tween().set_parallel()
+	_cctv_fade.tween_method(func(v: float) -> void: m.set_shader_parameter("cctv", v), 1.0, 0.0, 0.35)
+	_cctv_fade.tween_property(_cctv, "modulate:a", 0.0, 0.2)
+	_cctv_fade.chain().tween_callback(func() -> void: _cctv.visible = false)
+
+
+## Writing as the monitor's character generator puts it: capitals, and no
+## accents (the arcade face has none on its capitals either).
+static func cctv_caps(text: String) -> String:
+	var out := text.to_upper()
+	for pair in [["Á", "A"], ["É", "E"], ["Í", "I"], ["Ó", "O"], ["Ú", "U"], ["Ü", "U"], ["Ñ", "N"]]:
+		out = out.replace(pair[0], pair[1])
+	return out
+
+
+func cctv_on() -> bool:
+	return _cctv_on
+
+
+## The clock on the monitor, "03:14:07", and the REC dot blinking.
+func _draw_cctv(dt: float) -> void:
+	_cctv_seconds += dt
+	var t := CCTV_FROM + int(_cctv_seconds)
+	_cctv_clock.text = Text.t("HUD_CCTV_REC") % ("%02d:%02d:%02d" % [(t / 3600) % 24, (t / 60) % 60, t % 60])
+	_cctv_dot.modulate.a = 1.0 if fmod(_cctv_seconds, 1.0) < 0.6 else 0.0
 
 
 func menu_open() -> bool:
@@ -1900,6 +2080,8 @@ func _draw_count(dt: float) -> void:
 
 func _process(dt: float) -> void:
 	_clock += dt
+	if _cctv_on:
+		_draw_cctv(dt)
 	for i in _titles.size():
 		var t := _titles[i]
 		if is_instance_valid(t):

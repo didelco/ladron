@@ -3,6 +3,8 @@
 | recurso | autor | licencia |
 |---|---|---|
 | `assets/fonts/PressStart2P-Regular.ttf` (Press Start 2P) | The Press Start 2P Project Authors | [SIL Open Font License 1.1](assets/fonts/OFL.txt) |
+| `assets/fonts/UnifrakturMaguntia-Book.ttf` (UnifrakturMaguntia, la cabecera del periódico) | j. 'mach' wust, Peter Wiegel | [SIL Open Font License 1.1](assets/fonts/OFL-UnifrakturMaguntia.txt) |
+| `assets/fonts/AbrilFatface-Regular.ttf` (Abril Fatface, los titulares del periódico y la ficha) | TypeTogether | [SIL Open Font License 1.1](assets/fonts/OFL-AbrilFatface.txt) |
 | `assets/models/statue-a.glb` (Estatua) | — (Poly Pizza) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `assets/models/statue-b.glb` (Estatua) | — (Poly Pizza) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `assets/models/bear.glb` (Black bear) | Poly by Google | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) |

@@ -137,6 +137,136 @@ func set_lean(amount: float) -> void:
 	_sweat_show(absf(amount) >= BalanceGame.WOBBLE)
 
 
+## Whether it shows through what covers it as a silhouette (it does, in
+## the game). Off for a figure holding something up in front of it (the
+## police photo, MugshotStage), which would show through that too.
+func set_xray(on: bool) -> void:
+	for m in _materials:
+		m.stencil_mode = BaseMaterial3D.STENCIL_MODE_XRAY if on else BaseMaterial3D.STENCIL_MODE_DISABLED
+
+
+## The caught face, for the police photo (MugshotStage): the blank stare —
+## pinpoint pupils under heavy lids, the angry brows gone — and the mouth a
+## flat line turned down at the ends. Drawn over the model's own face (its
+## pupils and brows painted out), on the head bone so it moves with it.
+## Positions are the model's own, in metres, from the ninja's eyes.
+const FACE_EYES := [Vector3(-0.092, 0.786, 0.0), Vector3(0.092, 0.786, 0.0)]
+const FACE_FRONT := 0.281
+const FACE_PUPIL := 0.014
+## The lids: as round as the eye on top, their straight edge this far above
+## its middle.
+const FACE_LID_R := 0.074
+const FACE_LID_EDGE := 0.006
+const FACE_MOUTH := Vector3(0.0, 0.69, 0.285)
+const FACE_INK := Color("#141418")
+
+
+func caught_face() -> void:
+	var skeletons := _model.find_children("*", "Skeleton3D", true, false)
+	if skeletons.is_empty():
+		return
+	var skeleton: Skeleton3D = skeletons[0]
+	var head := skeleton.find_bone("cabeza")
+	if head < 0:
+		return
+	var eye_white := Color.WHITE
+	var skin := Color.WHITE
+	for mi in _model.find_children("*", "MeshInstance3D", true, false):
+		for i in mi.mesh.get_surface_count():
+			var src := mi.mesh.surface_get_material(i) as StandardMaterial3D
+			var m := mi.get_surface_override_material(i) as StandardMaterial3D
+			if src == null or m == null:
+				continue
+			match src.resource_name:
+				"ojo": eye_white = m.albedo_color
+				"traje": skin = m.albedo_color
+	# The model's pupils and brows painted out: white on the eye, and the
+	# brows, which sit on the headband, as black as it.
+	for mi in _model.find_children("*", "MeshInstance3D", true, false):
+		for i in mi.mesh.get_surface_count():
+			var src := mi.mesh.surface_get_material(i) as StandardMaterial3D
+			var m := mi.get_surface_override_material(i) as StandardMaterial3D
+			if src and m and src.resource_name in ["pupila", "ceja"]:
+				m.albedo_color = eye_white if src.resource_name == "pupila" else BELT
+				m.emission_enabled = false
+	var bone := BoneAttachment3D.new()
+	bone.bone_name = "cabeza"
+	skeleton.add_child(bone)
+	# The parts are placed in the model's space at rest; on the bone they
+	# are relative to its rest.
+	var face := Node3D.new()
+	face.transform = skeleton.get_bone_global_rest(head).affine_inverse()
+	bone.add_child(face)
+	var ink := _flat_material(FACE_INK)
+	var lid := _flat_material(skin.darkened(0.2))
+	var lid_mesh := _half_disc(FACE_LID_R)
+	for k in 2:
+		var eye: Vector3 = FACE_EYES[k]
+		# A pinpoint pupil, dead ahead: looking at nothing.
+		var pupil := MeshInstance3D.new()
+		var ball := SphereMesh.new()
+		ball.radius = FACE_PUPIL
+		ball.height = FACE_PUPIL * 2.0
+		pupil.mesh = ball
+		pupil.material_override = ink
+		pupil.scale = Vector3(1, 1, 0.4)
+		pupil.position = Vector3(eye.x, eye.y - 0.018, FACE_FRONT)
+		face.add_child(pupil)
+		# The heavy lid down over the top half of the eye, and its line.
+		var l := MeshInstance3D.new()
+		l.mesh = lid_mesh
+		l.material_override = lid
+		l.position = Vector3(eye.x, eye.y + FACE_LID_EDGE, FACE_FRONT + 0.004)
+		l.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		face.add_child(l)
+		_face_box(face, Vector3(FACE_LID_R * 2.0, 0.01, 0.006), Vector3(eye.x, eye.y + FACE_LID_EDGE, FACE_FRONT + 0.007), ink, 0.0)
+	# The mouth: flat, the ends turned down.
+	_face_box(face, Vector3(0.08, 0.016, 0.01), FACE_MOUTH, ink, 0.0)
+	for side in [-1.0, 1.0]:
+		_face_box(face, Vector3(0.03, 0.016, 0.01), FACE_MOUTH + Vector3(side * 0.05, -0.007, 0.0), ink, side * 0.55)
+
+
+## The top half of a disc of radius r, facing +z, its straight edge along x.
+static func _half_disc(r: float) -> ArrayMesh:
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	st.set_normal(Vector3.BACK)
+	const STEPS := 16
+	for i in STEPS:
+		var a0 := PI * i / STEPS
+		var a1 := PI * (i + 1) / STEPS
+		st.add_vertex(Vector3.ZERO)
+		st.add_vertex(Vector3(cos(a1), sin(a1), 0) * r)
+		st.add_vertex(Vector3(cos(a0), sin(a0), 0) * r)
+	return st.commit()
+
+
+func _face_box(parent: Node3D, box: Vector3, at: Vector3, m: Material, tilt: float) -> void:
+	var mi := MeshInstance3D.new()
+	var mesh := BoxMesh.new()
+	mesh.size = box
+	mi.mesh = mesh
+	mi.material_override = m
+	mi.position = at
+	mi.rotation.z = tilt
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(mi)
+
+
+static func _flat_material(colour: Color) -> StandardMaterial3D:
+	var m := StandardMaterial3D.new()
+	m.albedo_color = colour
+	m.roughness = 0.8
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	return m
+
+
+## The drop of sweat on its own, without the sway: a thief in a tight spot
+## (the police photo, MugshotStage). Called each frame after set_state.
+func sweat(on: bool) -> void:
+	_sweat_show(on)
+
+
 ## How strong the rim light round the figure is (the dioramas' daylight
 ## washes it out at the game's strength).
 func set_rim(amount: float) -> void:

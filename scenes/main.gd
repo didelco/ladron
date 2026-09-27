@@ -125,6 +125,14 @@ var joined_at := -INF
 ## the map is out: the thieves stand still to read it, the guards do not
 var map_open := false
 var level := 1
+## who was caught first, and by which guard (its name), for the police file;
+## -1 and "" while nobody is
+var caught_thief := -1
+var caught_by := ""
+## how many police files this session has opened: each gets the next number
+var files_opened := 0
+## an end shown to look at it (--menu=escaped): it unlocks nothing
+var just_looking := false
 var thieves: Array[Thief] = []
 var guards: Array[Guard] = []
 var phase := "title"
@@ -248,9 +256,13 @@ func _ready() -> void:
 				"settings": _show_settings("title")
 				"pads": _show_settings("title", "pads")
 				"input": _show_join("generative")
-				"end":
-					phase = "caught"
-					_show_end()
+				# The ends of a night and the pause, to look at them: --pick=N
+				# for the story's heist, --gen for the generative, --two or
+				# --gang=N for more thieves.
+				"end", "caught", "escaped":
+					_look_at_end("escaped" if arg == "--menu=escaped" else "caught")
+				"paused":
+					_look_at_pause()
 	# --brief=N:P: the story's night N, briefing page P (0-based), to look at it
 	# (--gen: the generative's level N instead).
 	for arg in OS.get_cmdline_user_args():
@@ -284,6 +296,48 @@ func _ready() -> void:
 		# --hide: and P1 starts a few steps from a place to hide in.
 		if "--hide" in OS.get_cmdline_user_args():
 			get_tree().create_timer(2.1).timeout.connect(_near_hideout.bind(0))
+
+
+## A night's end straight away (--menu=caught, --menu=escaped), for looking
+## at it: the heist --pick=N (the story), or --gen's first; saves nothing.
+func _look_at_end(how: String) -> void:
+	just_looking = true
+	var args := OS.get_cmdline_user_args()
+	if "--gen" in args:
+		mode = "generative"
+	players = 2 if "--two" in args else 1
+	for arg in args:
+		if arg.begins_with("--gang="):
+			players = clampi(int(arg.substr(7)), 1, 4)
+	_new_round(story_pick if mode == "story" else 1)
+	# Over the museum, as after a night: the wall, not the title's picture;
+	# and some figures for the paper, as after a night.
+	hud.backdrop(null)
+	HeistStats.time = 102.0
+	HeistStats.add("hides", 2)
+	HeistStats.add("smoke")
+	if how == "caught":
+		caught_thief = 0
+		caught_by = guards[0].name if not guards.is_empty() else ""
+	phase = how
+	_show_end()
+
+
+## The pause a moment into the night (--menu=paused), for looking at it;
+## --lost: as if the first thief's pad had dropped out.
+func _look_at_pause() -> void:
+	var args := OS.get_cmdline_user_args()
+	if "--gen" in args:
+		mode = "generative"
+	if "--two" in args:
+		players = 2
+	_new_round(story_pick if mode == "story" else 1)
+	_show_brief(_brief_pages().size() - 1)
+	get_tree().create_timer(1.0).timeout.connect(_start_playing)
+	get_tree().create_timer(2.5).timeout.connect(func() -> void:
+		if "--lost" in args:
+			pads_lost[0] = ""
+		_pause())
 
 
 ## For trying hiding out (--hide): thief i a few steps from a hideout,
@@ -1161,7 +1215,8 @@ func _asset_loot() -> Array:
 
 
 func _show_assets(tab: String, index: int) -> void:
-	hud.backdrop(Hud.SPOTS.settings)
+	if settings_from != "paused":
+		hud.backdrop(Hud.SPOTS.settings)
 	phase = "assets"
 	assets_tab = tab
 	var tabs: Array = []
@@ -1255,6 +1310,7 @@ func _pause() -> void:
 		lost.append({"text": Text.t("PAD_LOST") % (i + 1), "size": 18, "colour": Hud.C.alert})
 	if not lost.is_empty():
 		lost.append({"text": Text.t("PAD_LOST_HOW"), "size": 15, "colour": Hud.C.dim})
+	hud.cctv(true, _camera_caption(), _cctv_museum(), HeistStats.time)
 	hud.show_menu([
 		{"title": Text.t("MENU_PAUSE"), "size": 56}] + lost + [
 		{"buttons": [
@@ -1267,7 +1323,30 @@ func _pause() -> void:
 
 func _quit_to_title() -> void:
 	get_tree().paused = false
+	hud.cctv(false)
 	_leave_game(_show_title)
+
+
+## Over the pause's monitor: the camera of the room the first thief is in,
+## "CAM 3 · LA SALA DE LOS HUESOS" (a corridor, just the corridor).
+func _camera_caption() -> String:
+	var where := Text.t("ZONE_MUSEUM")
+	var cam := 1
+	if not thieves.is_empty():
+		var z := Museum.zone_at(thieves[0].x, thieves[0].y)
+		if z:
+			cam = z.id + 1
+			where = z.label if z.room >= 0 else Text.t("ZONE_CORRIDOR")
+	return Text.t("HUD_CCTV_CAM") % [cam, where.to_upper()]
+
+
+## Under it: the museum, by name when it has one.
+func _cctv_museum() -> String:
+	if mode == "story":
+		return String(Story.museum(Story.museum_of(level)).name).to_upper()
+	if mode == "challenge" and challenge_map and challenge_map.name != "":
+		return challenge_map.name.to_upper()
+	return Text.t("HUD_CCTV_MUSEUM")
 
 
 ## Before a night, the same in every mode: the piece's tale if it has one,
@@ -1464,40 +1543,114 @@ func _drop_preview() -> void:
 		preview_spot = null
 
 
+## How many headlines the paper picks from (END_HEAD_n), and the longest
+## piece's name that fits in one ("¡%s VUELVE A CASA!").
+const END_HEADS := 5
+const END_HEAD_NAME := 26
+
+
+## The end of a night. Got away with the piece: the town paper's front page
+## (_front_page), the buttons under it. Caught: the police file
+## (_police_file), the buttons beside it. The way on (again, or the next)
+## with the focus, and the way out, as always.
 func _show_end() -> void:
-	var title := Text.t("END_CAUGHT")
 	var colour: Color = Hud.C.alert
-	var line := Text.t("END_BACK_IN_CASE" if Heist.taken else "END_STILL_THERE") % Heist.first_upper(Heist.loot.name)
 	var next := Text.t("END_AGAIN")
 	var go := _again
+	var boss := false
 	if phase == "escaped":
-		title = Text.t("END_PERFECT")
 		colour = Hud.C.safe
-		line = Text.t("END_HOME") % Heist.first_upper(Heist.loot.name) if mode == "story" else Text.t("END_LEVEL_DONE") % [level, Heist.loot.name]
 		next = Text.t("END_NEXT_NIGHT" if mode == "story" else "END_NEXT_HEIST")
 		# A museum's big job done: the museum is, and the town shows the next.
 		if mode == "story" and Story.is_boss(level) and level < Story.count():
-			line = Text.t("END_MUSEUM_DONE") % [Heist.first_upper(Heist.loot.name), Story.museum(Story.museum_of(level)).name]
+			boss = true
 			next = Text.t("END_NEXT_MUSEUM")
 			if not testing:
 				go = _leave_game.bind(_show_story_map)
 		if mode == "story" and not testing:
-			Story.unlock(level + 1, players)
+			if not just_looking:
+				Story.unlock(level + 1, players)
 			story_pick = mini(level + 1, Story.count())
 			if level >= Story.count():
 				_show_ending()
 				return
-	var picture: Dictionary = {"stage": MenuStage.make("guards:hard"), "height": 140}
-	if phase == "escaped":
-		_build_preview()
-		picture = {"picture": preview.get_texture(), "smooth": true, "height": 140}
-	hud.show_menu([
-		{"title": title, "colour": colour, "size": 52},
-		picture,
-		{"text": line},
+	var ways: Array = [
 		{"buttons": [{"text": next, "call": go, "colour": colour}], "big": true},
 		{"buttons": [{"text": Text.t("EDITOR_BACK_TO_EDITOR") if testing else Text.t("END_TO_MENU"), "call": _leave_game.bind({"story": _show_story_map, "challenge": _show_challenge_menu}.get(mode, _show_title)), "colour": Hud.C.dim}], "small": true},
-	])
+	]
+	if phase == "escaped":
+		hud.show_menu([{"newspaper": _front_page(boss)}] + ways)
+	else:
+		# The file runs off the bottom of the screen: the buttons beside it.
+		hud.show_menu([{"columns": [{"items": [{"mugshot": _police_file()}]}, {"items": ways, "middle": true}], "separation": 48}])
+
+
+## Which headline the paper picks: the same heist, the same page.
+func _end_pick() -> int:
+	return absi(hash(String(Heist.loot.get("name", "")))) % 997 + level
+
+
+## The town paper the morning after: its name, a big headline, the piece's
+## photo and, beside it, the night in a few big figures. After a museum's
+## big job (boss), the museum is the news.
+func _front_page(boss: bool) -> Dictionary:
+	_build_preview()
+	# Wide, for the page: the same piece, with more room either side.
+	preview.size = Vector2i(int(300 * EndPages.PAPER_PHOTO.x / EndPages.PAPER_PHOTO.y), 300)
+	var name := String(Heist.loot.get("name", ""))
+	var headline := Text.t("END_HEAD_%d" % (_end_pick() % END_HEADS + 1))
+	if "%s" in headline:
+		headline = headline % name.to_upper() if name.length() <= END_HEAD_NAME else Text.t("END_HEAD_1")
+	# Not seen once: half the time, that is the news.
+	if HeistStats.count("seen") == 0 and _end_pick() % 2 == 0:
+		headline = Text.t("END_HEAD_UNSEEN")
+	if boss:
+		headline = Text.t("END_HEAD_MUSEUM") % Story.museum_in(Story.museum_of(level)).to_upper()
+	return {
+		"name": Text.t("END_PAPER_NAME"),
+		"headline": headline,
+		"photo": preview.get_texture(),
+		"figures": _figures(),
+	}
+
+
+## The night in figures, for the paper: [number, what] each (HeistStats).
+func _figures() -> Array:
+	var out: Array = []
+	for h in HeistStats.highlights():
+		var k: String = h[0]
+		var n: int = h[1]
+		if k == "time":
+			out.append([HeistStats.clock(n), Text.t("END_STAT_TIME")])
+		elif k == "seen":
+			# Seen by a guard: you, or the lot of you.
+			out.append([str(n), Text.t("END_STAT_SEEN_MANY" if thieves.size() > 1 else "END_STAT_SEEN_ONE")])
+		else:
+			out.append([str(n), Text.t("END_STAT_%s_%s" % [k.to_upper(), "ONE" if n == 1 else "MANY"])])
+	return out
+
+
+## The police file: always the same sheet and photo, only the number
+## changing, what was taken (or nearly) and who did the catching. A gang
+## caught is the same file: the stamp says how many.
+func _police_file() -> Dictionary:
+	files_opened += 1
+	var n := maxi(1, thieves.size())
+	var many := "_MANY" if n > 1 else "_ONE"
+	var name := String(Heist.loot.get("name", ""))
+	return {
+		"photos": [MugshotStage.of(false), MugshotStage.of(true)],
+		"number": Text.t("END_FILE_NUMBER") % files_opened,
+		"letterhead": Text.t("END_FILE_LETTERHEAD"),
+		"stamp": Text.t("END_FILE_STAMP_MANY") % n if n > 1 else Text.t("END_FILE_STAMP_ONE"),
+		"rows": [
+			[Text.t("END_FILE_CRIME"), Text.t("END_FILE_CRIME_ALMOST" if Heist.taken else "END_FILE_CRIME_TRY") % name],
+			[Text.t("END_FILE_BY" + many), Text.t("END_FILE_BY_GUARD") % caught_by if caught_by != "" else Text.t("END_FILE_BY_NOBODY")],
+		],
+		"tick": [Text.t("END_FILE_AGAIN"), Text.t("END_FILE_YES_NO")],
+		"more": [Text.t("END_FILE_NOTES")],
+		"prints": Text.t("END_FILE_PRINTS"),
+	}
 
 
 func _show_ending() -> void:
@@ -1789,6 +1942,9 @@ func _new_round(n: int) -> void:
 		Sim.custom = {}
 		_lay_out(n, randi() % 1000000000)
 	stride = [0.0, 0.0, 0.0, 0.0]
+	HeistStats.reset()
+	caught_thief = -1
+	caught_by = ""
 	push_held = [false, false, false, false]
 	smoke_held = [false, false, false, false]
 	Smoke.reset(thieves)
@@ -2087,6 +2243,8 @@ func _on_prop_tipped(id: int, dir: float, at: Vector2, strength: float) -> void:
 
 ## The crash of one going over, whoever did it.
 func _prop_fell(p: Props.Prop, strength := 0.6) -> void:
+	if phase == "playing":
+		HeistStats.add("knocked")
 	var loud := Props.crash_loudness(p.kind, strength)
 	sfx.noise(p.kind, _to_world(p.x, p.y), loud)
 	_rumble(0.3 + 0.5 * strength, 0.4 * strength, 0.15 + 0.2 * strength, Vector2(p.x, p.y))
@@ -2146,6 +2304,7 @@ func _sneeze_coming(p: Thief, i: int, keys: Dictionary, dt: float) -> void:
 
 ## ACHOO! Out of the hideout, stunned a moment, and heard all round.
 func _sneeze(p: Thief, noises: Array[SoundEvent]) -> void:
+	HeistStats.add("sneezes")
 	p.game = null
 	Hideouts.tip_out(p)
 	p.dizzy = SneezeGame.STUN_S
@@ -2170,6 +2329,7 @@ func _squeeze(p: Thief, done: bool) -> void:
 
 ## In: the lid's thud, and whether anyone saw it.
 func _hid(p: Thief, spot: Hideouts.Spot) -> void:
+	HeistStats.add("hides")
 	sfx.at("roll", _to_world(p.x, p.y), 0.3, 2.0)
 	_log(Text.t("LOG_HIDE_BLOWN") if p.hide_blown else Text.t("LOG_HIDE_IN") % Hideouts.name_of(spot.kind))
 
@@ -2369,6 +2529,7 @@ func _thief_colours() -> Array:
 
 
 func _tick(dt: float) -> void:
+	HeistStats.time += dt
 	var now := Sim.now_ms()
 	# Reading the map, nobody moves (the pads are still read, to keep their
 	# held-button bookkeeping); every few frames it is redrawn.
@@ -2436,9 +2597,11 @@ func _tick(dt: float) -> void:
 				stride[i] = 0.0
 		# Off in a ball: a rush over the floor (the guards hear nothing of it).
 		if step.roll == "start":
+			HeistStats.add("rolls")
 			sfx.at("roll", _to_world(p.x, p.y), 0.7, 3.0)
 		# Rolled into a wall: the thump, a puff of plaster, and it hurts.
 		if step.bumped == "roll":
+			HeistStats.add("bumps")
 			Fx.puff(world, _to_world(p.x + cos(p.dir) * Sim.BODY, p.y + sin(p.dir) * Sim.BODY), false)
 			_rumble(0.6, 0.9, 0.3, Vector2(p.x, p.y))
 			var case := Museum.is_cover(p.x + cos(p.dir) * (Sim.BODY + 0.1), p.y + sin(p.dir) * (Sim.BODY + 0.1))
@@ -2515,6 +2678,7 @@ func _tick(dt: float) -> void:
 		smoke_held[i] = pressed
 	Smoke.step(now)
 	for c in Smoke.fresh:
+		HeistStats.add("smoke")
 		SmokeFx.burst(world, _to_world(c.x, c.y), Smoke.RADIUS * 1.15, Smoke.SECONDS)
 		sfx.at("smoke", _to_world(c.x, c.y, 0.5), 0.9, 6.0)
 		_rumble(0.3, 0.5, 0.3, Vector2(c.x, c.y))
@@ -2553,6 +2717,7 @@ func _tick(dt: float) -> void:
 	for s in Sim.call_for_backup(saw_before, guards, now):
 		sfx.at("shout", _to_world(s.x, s.y), 1.0 if s.first else 0.5)
 		if s.first:
+			HeistStats.add("seen")
 			sfx.ui("sting", 0.7)
 			_rumble(0.4, 0.8, 0.4)
 			_shake(0.6)
@@ -2576,6 +2741,7 @@ func _tick(dt: float) -> void:
 		var r: Museum.Room = Museum.rooms[e.room]
 		sfx.at("lights", _to_world(r.switch_at.x + 0.5, r.switch_at.y + 0.5), 0.8)
 		if e.thief:
+			HeistStats.add("lights")
 			_log(Text.t("LOG_YOU_LIGHTS_ON" if e.on else "LOG_YOU_LIGHTS_OFF") % label)
 		else:
 			_log(Text.t("LOG_LIGHTS") % [e.by, label])
@@ -2608,6 +2774,9 @@ func _tick(dt: float) -> void:
 			p.out = true
 			p.speed = 0
 			sfx.ui("caught")
+			if caught_thief < 0:
+				caught_thief = thieves.find(p)
+				caught_by = _nearest_guard(p)
 	# Once the piece is taken, whoever reaches the door slips out and is
 	# safe: out of sight, out of reach, waiting for the rest.
 	if Heist.taken:
@@ -2629,6 +2798,15 @@ func _tick(dt: float) -> void:
 		_close_map()
 		sfx.ui("escaped")
 		_show_end()
+
+
+## The name of the guard nearest thief p: the one that caught it.
+func _nearest_guard(p: Thief) -> String:
+	var best: Guard = null
+	for g in guards:
+		if best == null or Museum.dist(g.x, g.y, p.x, p.y) < Museum.dist(best.x, best.y, p.x, p.y):
+			best = g
+	return best.name if best else ""
 
 
 func _on_decided(decisions: Dictionary, _ms: int) -> void:
