@@ -210,7 +210,8 @@ func _show_title() -> void:
 	phase = "title"
 	_drop_preview()
 	hud.show_menu([
-		{"title": "¡APAGA LA LUZ\nQUE TE PILLO!", "size": 64},
+		{"title": "NINJA KARMA", "size": 72},
+		{"text": "¡Apaga la luz que te pillo!", "colour": Hud.C.dim},
 		{"cards": [
 			{"title": "HISTORIA", "text": "Diez noches de aventura", "stage": MenuStage.make("story"), "call": _show_story_menu, "colour": Hud.C.safe},
 			{"title": "GENERATIVO", "text": "Un museo nuevo cada vez", "stage": MenuStage.make("generative"), "call": _show_generative_menu, "colour": Hud.C.gold},
