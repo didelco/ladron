@@ -57,6 +57,27 @@ func _init() -> void:
 	m.joining.clear(); m.joined_at = -INF
 	m._join_input(key(KEY_SHIFT, true, KEY_LOCATION_RIGHT)); key(KEY_SHIFT, false)
 	check(m.joining == ["kb_right"], "Shift dcha. se sienta en el lado derecho")
+	# A pad that drops out mid-game leaves its thief without hands, and the
+	# game pauses; the same pad back (same guid), or a press on a free pad,
+	# gives them back — never someone else's pad.
+	m.seats.assign(["pad:3", "pad:4"])
+	m.pad_guids = {3: "guid-a", 4: "guid-b"}
+	m.pads_lost.clear()
+	m._pad_changed(4, false)
+	check(m.seats == ["pad:3", "lost"] and m.pads_lost == {1: "guid-b"}, "se va el mando de J2: J2 sin mando " + str(m.seats))
+	check(m._seat_input("lost", false).count(true) == 0, "sin mando, no se mueve")
+	m._reclaim_pad(3)
+	check(m.seats == ["pad:3", "lost"], "el mando de J1 no le sirve a J2")
+	m._reclaim_pad(7)
+	check(m.seats == ["pad:3", "pad:7"] and m.pads_lost.is_empty(), "otro mando libre: J2 lo coge")
+	m._pad_changed(3, false)
+	check(Pads.owner_back(m.pads_lost, "guid-a") == 0, "vuelve el mismo mando de J1: es suyo")
+	m._give_pad(0, 5)
+	check(m.seats == ["pad:5", "pad:7"] and m.pads_lost.is_empty(), "J1 vuelve a tener mando")
+	check(Pads.real(0) and Pads.real(-1), "un mando cualquiera cuenta")
+	check(Vector2i(0x05ac, 0x0004) in Pads.FAKE, "el falso mando de Apple (05ac:0004) se ignora")
+	m.seats.assign(["any"])
+	m.pads_lost.clear()
 	print("etiqueta de KEY_SLASH en este teclado: ", m._key_label(KEY_SLASH), " · punto: ", m._key_label(KEY_PERIOD))
 	print("FALLOS: %d" % fails)
 	quit(1 if fails else 0)

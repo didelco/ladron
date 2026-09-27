@@ -202,6 +202,12 @@ func _ready() -> void:
 	# itself: its keys, the menus and the music go on. The world only moves
 	# in _tick, which the pause does not run.
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	# Devices that are not really pads, ignored before anything sees them
+	# (Pads, PadFilter); and pads that drop out and come back (_pad_changed).
+	get_tree().root.add_child.call_deferred(PadFilter.new())
+	for d in Input.get_connected_joypads():
+		pad_guids[d] = Input.get_joy_guid(d)
+	Input.joy_connection_changed.connect(_pad_changed)
 	brain = BrainClient.new()
 	add_child(brain)
 	brain.decided.connect(_on_decided)
@@ -571,6 +577,7 @@ func _drop_editor() -> void:
 func _editor_preview(m: MapFile) -> void:
 	players = 1
 	seats = ["any"]
+	pads_lost.clear()
 	if m.night > 0:
 		mode = "story"
 		story_test = m
@@ -613,6 +620,7 @@ func _story_players(n: int) -> void:
 		_show_join("story", n)
 		return
 	seats = ["any"]
+	pads_lost.clear()
 	_story_gang(1)
 
 
@@ -758,6 +766,7 @@ func _start(which: String, n: int, picked := false) -> void:
 	players = n
 	if n == 1:
 		seats = ["any"]
+	pads_lost.clear()
 	if mode == "story":
 		_new_round(story_pick)
 		if story_pick == 1 and not testing:
@@ -827,6 +836,8 @@ func _join_input(event: InputEvent) -> void:
 		elif event.physical_keycode in KB_RIGHT or event.keycode in KB_RIGHT:
 			seat = "kb_right"
 	elif event is InputEventJoypadButton and event.pressed:
+		if not Pads.real(event.device):
+			return
 		# B takes this pad's own thief off, or with nobody in, goes back: never
 		# somebody else's seat.
 		if event.button_index == JOY_BUTTON_B:
@@ -853,6 +864,7 @@ func _join_input(event: InputEvent) -> void:
 		get_tree().create_timer(0.8).timeout.connect(func() -> void:
 			if phase == "join" and joining.size() == join_count:
 				seats.assign(joining)
+				pads_lost.clear()
 				if join_for == "story":
 					# The story's gang goes on to the town, to pick a night.
 					_story_gang(join_count)
@@ -946,7 +958,7 @@ func _show_settings(from: String, page := "") -> void:
 			items.append({"text": Text.t("SETTINGS_SOUND_HELP"), "size": 16, "colour": Hud.C.dim})
 		"pads":
 			var pads := Input.get_connected_joypads()
-			var names: Array = pads.map(func(d): return "%d: %s" % [d + 1, Input.get_joy_name(d)])
+			var names: Array = pads.map(func(d): return Pads.describe(d))
 			items.append({"text": (Text.t("SETTINGS_PADS_LIST") % " · ".join(names)) if not pads.is_empty() else Text.t("SETTINGS_NO_PADS"), "size": 16, "colour": Hud.C.gold})
 			items.append(_controls_table())
 			items.append({"text": Text.t("CONTROLS_MORE"), "size": 15, "colour": Hud.C.dim})
@@ -1208,8 +1220,13 @@ func _pause() -> void:
 	_close_map()
 	phase = "paused"
 	get_tree().paused = true
+	var lost: Array = []
+	for i in pads_lost:
+		lost.append({"text": Text.t("PAD_LOST") % (i + 1), "size": 18, "colour": Hud.C.alert})
+	if not lost.is_empty():
+		lost.append({"text": Text.t("PAD_LOST_HOW"), "size": 15, "colour": Hud.C.dim})
 	hud.show_menu([
-		{"title": Text.t("MENU_PAUSE"), "size": 56},
+		{"title": Text.t("MENU_PAUSE"), "size": 56}] + lost + [
 		{"buttons": [
 			{"text": Text.t("MENU_RESUME"), "call": _start_playing},
 			{"text": Text.t("MENU_SETTINGS"), "call": _show_settings.bind("paused")},
@@ -1799,9 +1816,11 @@ func _input(event: InputEvent) -> void:
 	# hints show whichever was touched last.
 	if event is InputEventKey and event.pressed:
 		last_pad = false
-	elif (event is InputEventJoypadButton and event.pressed) or (event is InputEventJoypadMotion and absf(event.axis_value) > 0.5):
+	elif ((event is InputEventJoypadButton and event.pressed) or (event is InputEventJoypadMotion and absf(event.axis_value) > 0.5)) and Pads.real(event.device):
 		last_pad = true
 		last_pad_device = event.device
+		if event is InputEventJoypadButton and not pads_lost.is_empty():
+			_reclaim_pad(event.device)
 
 
 ## The last thing touched was a pad (for the hints of a thief on "any"),
@@ -1879,7 +1898,7 @@ func _seat_input(seat: String, resumed: bool) -> Array:
 			if held if pair[0] < 4 else _fresh("key:%d" % pair[1], held, resumed):
 				out[pair[0]] = true
 		out[7] = out[7] or _mod_held(KEY_SHIFT, KEY_LOCATION_RIGHT)
-	var pads: Array = Input.get_connected_joypads() if seat == "any" else ([int(seat.substr(4))] if seat.begins_with("pad:") else [])
+	var pads: Array = Pads.connected() if seat == "any" else ([int(seat.substr(4))] if seat.begins_with("pad:") else [])
 	var dz := deadzone / 100.0
 	for pad in pads:
 		var x := Input.get_joy_axis(pad, JOY_AXIS_LEFT_X)
@@ -1927,9 +1946,64 @@ func _rumble_pad(seat: String, weak: float, secs: float, strong := -1.0) -> void
 	if strong < 0.0:
 		strong = weak
 	var k := rumble_strength / 100.0
-	var pads: Array = Input.get_connected_joypads() if seat == "any" else ([int(seat.substr(4))] if seat.begins_with("pad:") else [])
+	var pads: Array = Pads.connected() if seat == "any" else ([int(seat.substr(4))] if seat.begins_with("pad:") else [])
 	for pad in pads:
 		Input.start_joy_vibration(pad, weak * k, strong * k, secs)
+
+
+## Each pad's guid while plugged in (device -> guid): once it is gone the
+## system no longer says, and a lost seat waits for that pad by it.
+var pad_guids := {}
+## Seats whose pad dropped out: seat index -> the guid of the pad it had.
+var pads_lost := {}
+
+
+## A pad plugged in or out. Out: the thief it was has no hands (its seat is
+## "lost") and a game in play pauses. In: if it is the pad a thief lost,
+## back it goes to that thief.
+func _pad_changed(device: int, connected: bool) -> void:
+	if connected:
+		pad_guids[device] = Input.get_joy_guid(device)
+		var i := Pads.owner_back(pads_lost, pad_guids[device])
+		if i >= 0 and Pads.real(device) and not ("pad:%d" % device) in seats:
+			_give_pad(i, device)
+		return
+	var seat := "pad:%d" % device
+	if phase == "join" and seat in joining:
+		joining.erase(seat)
+		_draw_join()
+	for i in seats.size():
+		if seats[i] == seat:
+			seats[i] = "lost"
+			pads_lost[i] = pad_guids.get(device, "")
+	pad_guids.erase(device)
+	if not pads_lost.is_empty():
+		if phase == "playing":
+			_pause()
+		elif phase == "paused":
+			_pause()
+
+
+## A press on a pad while a thief has none: if the pad is nobody's, it is
+## the first such thief's now.
+func _reclaim_pad(device: int) -> void:
+	if ("pad:%d" % device) in seats:
+		return
+	var first := -1
+	for i in pads_lost:
+		if first < 0 or i < first:
+			first = i
+	_give_pad(first, device)
+
+
+func _give_pad(i: int, device: int) -> void:
+	seats[i] = "pad:%d" % device
+	pads_lost.erase(i)
+	sfx.ui("ok")
+	_rumble_pad(seats[i], 0.3, 0.15)
+	_log(Text.t("LOG_PAD_BACK") % (i + 1))
+	if phase == "paused":
+		_pause()
 
 
 # --- The loop ------------------------------------------------------------------------
