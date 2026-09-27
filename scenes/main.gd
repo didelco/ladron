@@ -287,16 +287,16 @@ func _show_title() -> void:
 	testing = null
 	_drop_preview()
 	hud.show_menu([
-		{"title": Text.t("MENU_TITLE"), "size": 64},
 		{"cards": [
-			{"title": Text.t("MENU_STORY"), "text": Text.t("MENU_STORY_TEXT"), "stage": MenuStage.make("story"), "call": _show_story_menu, "colour": Hud.C.safe},
 			{"title": Text.t("MENU_GENERATIVE"), "text": Text.t("MENU_GENERATIVE_TEXT"), "stage": MenuStage.make("generative"), "call": _show_generative_menu, "colour": Hud.C.gold},
+			{"title": Text.t("MENU_STORY"), "text": Text.t("MENU_STORY_TEXT"), "stage": MenuStage.make("story"), "call": _show_story_menu, "colour": Hud.C.safe, "focus": true},
 			{"title": Text.t("MENU_CHALLENGE"), "text": Text.t("MENU_CHALLENGE_TEXT"), "stage": MenuStage.make("museum:large"), "call": _show_challenge_menu, "colour": Hud.C.green},
-		], "width": 250},
-		{"gap": 18},
-		{"buttons": [{"text": Text.t("MENU_SETTINGS"), "call": _show_settings.bind("title"), "colour": Hud.C.dim}], "small": true},
-		{"gap": 10},
-		{"buttons": [{"text": Text.t("MENU_QUIT"), "call": _quit, "colour": Hud.C.dim}], "small": true},
+		], "width": 270, "arrows": true},
+		{"gap": 40},
+		{"buttons": [
+			{"text": Text.t("MENU_SETTINGS"), "call": _show_settings.bind("title"), "colour": Hud.C.dim},
+			{"text": Text.t("MENU_QUIT"), "call": _quit, "colour": Hud.C.dim},
+		], "row": true, "small": true, "width": 260},
 	])
 	hud.show_version()
 

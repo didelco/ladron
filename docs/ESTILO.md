@@ -6,7 +6,7 @@ Lo que decide cómo se ve el juego y por qué. Es la única página escrita a ma
 
 ## La idea
 
-Un museo de noche visto desde arriba, **cartoon nocturno a lo Luigi's Mansion 3**: sombras azul-violeta, una luna fría, y solo dos cosas cálidas, las lámparas de las salas y las linternas de los guardias. Los menús son **un museo de noche por dentro**: pared berenjena con papel pintado, paneles de nogal con latón y dioramas 3D axonométricos.
+Un museo de noche visto desde arriba, **cartoon nocturno a lo Luigi's Mansion 3**: sombras azul-violeta, una luna fría, y solo dos cosas cálidas, las lámparas de las salas y las linternas de los guardias. Los menús son **un museo de noche por dentro**: la sala del museo de fondo, marcos de cristal ahumado que brillan en cálido con el foco, como las vitrinas, y dioramas 3D axonométricos.
 
 ## Reglas
 
@@ -93,8 +93,8 @@ Cada museo de la historia tiene su paleta (suelo, papel pintado, zócalo, remate
 ## Interfaz
 
 - **Fondo de menús**: fuera del juego, la sala del museo de noche (`assets/ui/fondo_menu.png`), algo oscurecida arriba y abajo para que se lean los títulos y los botones. Cada pantalla mira a un sitio distinto de la sala y va derivando despacio: el título a la vitrina iluminada del centro, la historia al jarrón de la izquierda, el generativo a las vitrinas de la derecha, los retos a los ventanales y los ajustes a los estandartes (`Hud.SPOTS`, `Hud.backdrop`). Sobre el juego (pausa, final), la pared de un museo de noche (shader), con papel de rayas, friso y la luz de una lámpara que respira.
-- **Botones**: píldoras de nogal con borde de latón. Con foco, latón pulido y borde crema, con un salto elástico a ×1,07 y un aplastamiento al pulsar.
-- **Tarjetas**: cara de madera con su diorama 3D, que solo se anima con el foco.
+- **Botones**: píldoras de cristal ahumado (`Hud.GLASS`) con un borde fino y pálido. Con foco, borde naranja cálido que brilla (`Hud.GLOW`) y texto crema claro, con un salto elástico a ×1,07 y un aplastamiento al pulsar.
+- **Tarjetas**: cristal ahumado con su diorama 3D, que solo se anima con el foco. Las que esperan quedan en penumbra; la del foco se ilumina, crece a ×1,1 y brilla. En el título, HISTORIA va en el centro con el foco y hay flechas ‹ › a los lados; SETTINGS y SALIR van en una fila y no hay rótulo arriba (el logo ya sale en la portada).
 - El ratón toma el foco, para que ratón y flechas nunca señalen dos cosas distintas. La navegación va al vecino más cercano en pantalla.
 - **Mapa en juego**: un pergamino plegado en acordeón que se despliega, respira en las manos y se inclina con los controles.
 - **Plano**: suelo crema, vitrinas tostadas y lo que se puede tirar en una casilla de un tono algo más cálido que las vitrinas, sin icono, para que no llame la atención. La salida se marca con el mismo kunai verde que señala el camino en el juego. La ruta va en puntos de media casilla.

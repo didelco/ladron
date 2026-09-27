@@ -14,6 +14,13 @@ const WALNUT_LIT := Color("#4a2f24")
 const WALNUT_EDGE := Color("#120906")
 const BRASS := Color("#d8ac5c")
 const BRASS_DARK := Color("#7a5a32")
+## The menus' frames: dark smoked glass with a thin pale rim, and a warm glow
+## round the one with the focus, lit like the cases in the hall behind.
+const GLASS := Color("#150f24", 0.84)
+const GLASS_LIT := Color("#241838", 0.92)
+const GLASS_EDGE := Color("#8f82b8", 0.5)
+const GLOW := Color("#ffae42")
+const GLOW_TEXT := Color("#fff0d6")
 
 ## Behind every menu: a museum wall at night — aubergine above, dark wood
 ## below, a faint striped wallpaper with a damask dot, the warm pool of a
@@ -478,6 +485,11 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 			if st.first == null or c.get("focus", false):
 				st.first = card
 		st.rows.append(line)
+		if item.get("arrows", false):
+			row.add_theme_constant_override("separation", 28)
+			row.add_child(_arrow(">", line, 1))
+			row.add_child(_arrow("<", line, -1))
+			row.move_child(row.get_child(-1), 0)
 	elif item.has("nights"):
 		# The nights as stops on a map, the road winding through them.
 		var map := NightMap.new(item)
@@ -560,12 +572,12 @@ func _table(item: Dictionary, parent: BoxContainer) -> void:
 	for r in rows.size():
 		if r == heads:
 			var rule := ColorRect.new()
-			rule.color = BRASS_DARK
+			rule.color = GLASS_EDGE
 			rule.custom_minimum_size = Vector2(0, 2)
 			lines.add_child(rule)
 		var stripe := PanelContainer.new()
 		var bg := StyleBoxFlat.new()
-		bg.bg_color = WALNUT_LIT if r >= heads and (r - heads) % 2 == 0 else Color(0, 0, 0, 0)
+		bg.bg_color = Color(1, 1, 1, 0.05) if r >= heads and (r - heads) % 2 == 0 else Color(0, 0, 0, 0)
 		bg.set_corner_radius_all(8)
 		stripe.add_theme_stylebox_override("panel", bg)
 		lines.add_child(stripe)
@@ -697,7 +709,7 @@ func _list(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 			b.add_theme_stylebox_override(state, s)
 		b.add_theme_color_override("font_color", colour)
 		for key in ["font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
-			b.add_theme_color_override(key, INK)
+			b.add_theme_color_override(key, GLOW_TEXT)
 		b.focus_entered.connect(func() -> void:
 			if not _quiet:
 				ui_sound.emit("nav")
@@ -798,7 +810,7 @@ func _button(b: Dictionary) -> Button:
 	_lift(button)
 	button.add_theme_color_override("font_color", C.gold if selected else CREAM)
 	for key in ["font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
-		button.add_theme_color_override(key, INK)
+		button.add_theme_color_override(key, GLOW_TEXT)
 	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	if b.has("icon"):
 		var icon: Texture2D = b.icon
@@ -834,20 +846,24 @@ func _stepper(button: Button, step: Callable) -> void:
 				button.accept_event())
 
 
-## The frame every menu control shares: a walnut pill with a brass edge
-## and a raised lip underneath; with the focus it turns to polished brass.
+## The frame every menu control shares: a pill of dark glass with a thin
+## pale rim and a soft shadow; with the focus the rim turns warm and glows.
 ## selected (the choice in force) keeps a rim of its colour while it waits.
 func _frame(colour: Color, lit: bool, selected := false, radius := 26) -> StyleBoxFlat:
 	var st := StyleBoxFlat.new()
-	st.bg_color = BRASS if lit else WALNUT
+	st.bg_color = GLASS_LIT if lit else GLASS
 	st.set_corner_radius_all(radius)
 	st.anti_aliasing = true
-	st.border_color = CREAM if lit else (colour.lerp(BRASS, 0.6) if selected else BRASS_DARK)
+	st.border_color = GLOW if lit else (colour.lerp(GLOW, 0.5) if selected else GLASS_EDGE)
 	st.set_border_width_all(3 if lit or selected else 2)
-	# The raised edge: a darker shadow straight below, no blur.
-	st.shadow_color = Color("#5a3a16") if lit else WALNUT_EDGE
-	st.shadow_size = 1
-	st.shadow_offset = Vector2(0, 6 if lit else 4)
+	if lit:
+		st.shadow_color = Color(GLOW, 0.45)
+		st.shadow_size = 16
+		st.shadow_offset = Vector2.ZERO
+	else:
+		st.shadow_color = Color(0, 0, 0, 0.35)
+		st.shadow_size = 6
+		st.shadow_offset = Vector2(0, 3)
 	return st
 
 
@@ -864,7 +880,7 @@ func _round_corners(r: TextureRect, box: Vector2, radius: float) -> void:
 
 ## Grows a little under the mouse or the focus; the mouse takes the focus,
 ## so the arrows and the mouse never point at two different things.
-func _lift(c: Control) -> void:
+func _lift(c: Control, grow := 1.07) -> void:
 	c.focus_entered.connect(func() -> void:
 		if not _quiet:
 			ui_sound.emit("nav"))
@@ -875,11 +891,32 @@ func _lift(c: Control) -> void:
 	# A springy pop, overshooting a little, like a jelly button.
 	c.focus_entered.connect(func() -> void:
 		c.scale = Vector2(0.96, 1.04)
-		create_tween().tween_property(c, "scale", Vector2.ONE * 1.07, 0.35).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT))
+		create_tween().tween_property(c, "scale", Vector2.ONE * grow, 0.35).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT))
 	c.focus_exited.connect(func() -> void: create_tween().tween_property(c, "scale", Vector2.ONE, 0.15).set_trans(Tween.TRANS_QUAD))
 	if c is BaseButton:
 		# A squash on the press.
 		(c as BaseButton).button_down.connect(func() -> void: c.scale = Vector2(1.1, 0.92))
+
+
+const DIM_CARD := Color(0.7, 0.7, 0.8)
+
+
+## An arrow beside a row of cards: a click moves the focus to the card
+## beside the one that has it, round the ends. It never takes the focus.
+func _arrow(text: String, cards: Array, dir: int) -> Button:
+	var b := Button.new()
+	b.text = text
+	b.flat = true
+	b.focus_mode = Control.FOCUS_NONE
+	b.add_theme_font_override("font", ARCADE)
+	b.add_theme_font_size_override("font_size", 28)
+	for key in ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color"]:
+		b.add_theme_color_override(key, GLOW if key != "font_color" else CREAM)
+	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	b.pressed.connect(func() -> void:
+		var at := maxi(0, cards.find(get_viewport().gui_get_focus_owner()))
+		(cards[posmod(at + dir, cards.size())] as Control).grab_focus())
+	return b
 
 
 ## A big card: a picture, a title and a line under it.
@@ -891,11 +928,7 @@ func _card(c: Dictionary, width: int) -> Button:
 	for state in ["normal", "hover", "pressed", "focus"]:
 		var st := _frame(colour, state != "normal", selected, 22)
 		if state != "normal":
-			# A card keeps its wood face with the focus: a brass-lit rim says it.
-			st.bg_color = WALNUT_LIT
-			st.border_color = colour.lerp(BRASS, 0.75)
-			st.set_border_width_all(5)
-			st.shadow_color = WALNUT_EDGE
+			st.set_border_width_all(4)
 		st.set_content_margin_all(12)
 		b.add_theme_stylebox_override(state, st)
 	var box := VBoxContainer.new()
@@ -938,7 +971,7 @@ func _card(c: Dictionary, width: int) -> Button:
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	height += 24
 	if c.has("text"):
-		var l := _label(12, INK_SOFT, box)
+		var l := _label(12, C.dim, box)
 		l.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
 		l.text = c.text
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -960,7 +993,11 @@ func _card(c: Dictionary, width: int) -> Button:
 		return b
 	b.pressed.connect(c.call)
 	b.pressed.connect(func() -> void: ui_sound.emit("ok"))
-	_lift(b)
+	_lift(b, 1.1)
+	# The ones waiting sit back in the dark; the one with the focus comes up.
+	b.modulate = DIM_CARD
+	b.focus_entered.connect(func() -> void: create_tween().tween_property(b, "modulate", Color.WHITE, 0.2))
+	b.focus_exited.connect(func() -> void: create_tween().tween_property(b, "modulate", DIM_CARD, 0.2))
 	return b
 
 
