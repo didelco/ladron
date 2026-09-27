@@ -267,6 +267,29 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#8fb4ff",
+     "key": "cross"
+    },
+    {
+     "hex": "#ff7a7a",
+     "key": "circle"
+    },
+    {
+     "hex": "#f59ad8",
+     "key": "square"
+    },
+    {
+     "hex": "#4fd8a8",
+     "key": "triangle"
+    }
+   ],
+   "file": "scenes/glyph.gd",
+   "name": "PS_MARKS",
+   "note": "The PlayStation marks keep their colours on the dark buttons."
+  },
+  {
+   "colours": [
+    {
      "hex": "#f1dfbd",
      "key": ""
     }
@@ -1347,6 +1370,17 @@ window.JUEGO = {
    "file": "scenes/smoke_fx.gd",
    "name": "DARK",
    "note": "The smoke's colours: pale and a little warm where it is thick, cool grey where it thins, as ash smoke goes."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#140c24",
+     "key": ""
+    }
+   ],
+   "file": "scenes/title_screen.gd",
+   "name": "BACK",
+   "note": "Where the title is in the picture, as fractions of its width and height, and the margin kept round it."
   }
  ],
  "historia": {
@@ -1672,7 +1706,7 @@ window.JUEGO = {
     "news": [
      {
       "stage": "lesson:torch",
-      "text": "De lejos, su linterna solo ve a quien va de pie. Cruza agachado (C).",
+      "text": "De lejos, su linterna solo ve a quien va de pie. Cruza agachado (C, o X).",
       "title": "AGÁCHATE"
      }
     ],
@@ -1755,7 +1789,7 @@ window.JUEGO = {
      "colour": "#f783ac",
      "name": "NIGHT_07_NAME",
      "seconds": 3.0,
-     "shape": "rock",
+     "shape": "gum",
      "story": "NIGHT_07_TALE",
      "verb": "NIGHT_07_VERB"
     },
@@ -1790,7 +1824,7 @@ window.JUEGO = {
     "news": [
      {
       "stage": "lesson:props",
-      "text": "Tira algo lejos (E, o X): el guardia irá a mirar y la pieza quedará libre.",
+      "text": "Tira algo lejos (E, o A): el guardia irá a mirar y la pieza quedará libre.",
       "title": "LA DISTRACCIÓN"
      }
     ],
@@ -2781,7 +2815,7 @@ window.JUEGO = {
     "file": "assets/piezas/07.webp",
     "name": "la bola de chicle del récord",
     "night": 7,
-    "shape": "rock"
+    "shape": "gum"
    },
    {
     "blurb": "Verde, con granitos. Muy real.",
@@ -2936,41 +2970,49 @@ window.JUEGO = {
     "shape": "rock"
    },
    {
-    "blurb": "Con purpurina y plumas de colores.",
-    "colour": "#e03131",
+    "blurb": "Pegajosa y de todos los sabores.",
+    "colour": "#8ce0bd",
     "file": "assets/piezas/27.webp",
-    "name": "la máscara del luchador del alcalde Bigotes",
+    "name": "la bola de chicle gigante del alcalde Bigotes",
+    "night": 0,
+    "shape": "gum"
+   },
+   {
+    "blurb": "Con cejas pintadas y bigote de purpurina.",
+    "colour": "#9b5de5",
+    "file": "assets/piezas/28.webp",
+    "name": "la máscara del luchador del cartero Tomás",
     "night": 0,
     "shape": "mask"
    },
    {
-    "blurb": "Hace tic-tac al revés: cat-cit.",
-    "colour": "#4dabf7",
-    "file": "assets/piezas/28.webp",
-    "name": "el despertador más puntual del mundo del cartero Tomás",
+    "blurb": "Suena a las siete. Siempre.",
+    "colour": "#ffd43b",
+    "file": "assets/piezas/29.webp",
+    "name": "el reloj de cuco sin cuco de la vaca Paquita",
     "night": 0,
     "shape": "clock"
    },
    {
     "blurb": "Todavía está calentito.",
-    "colour": "#fcc419",
-    "file": "assets/piezas/29.webp",
-    "name": "el huevo de oro de la vaca Paquita",
+    "colour": "#63e6be",
+    "file": "assets/piezas/30.webp",
+    "name": "el huevo de oro del pequeño Lucas",
     "night": 0,
     "shape": "egg"
    },
    {
     "blurb": "Tallado a mano. Brilla solo.",
     "colour": "#ffec99",
-    "file": "assets/piezas/30.webp",
-    "name": "la piedra que brilla de noche del pequeño Lucas",
+    "file": "assets/piezas/31.webp",
+    "name": "el diamante de la suerte del alcalde Bigotes",
     "night": 0,
     "shape": "gem"
    },
    {
     "blurb": "Negro y muy brillante.",
-    "colour": "#b07cff",
-    "file": "assets/piezas/31.webp",
+    "colour": "#e03131",
+    "file": "assets/piezas/32.webp",
     "name": "el gnomo del jardín del alcalde Bigotes",
     "night": 0,
     "shape": "idol"
@@ -2983,9 +3025,9 @@ window.JUEGO = {
    "group": "museo",
    "name": "amonite",
    "size": [
-    0.26,
-    0.33,
-    0.12
+    0.42,
+    0.39,
+    0.38
    ]
   },
   {
@@ -3016,6 +3058,126 @@ window.JUEGO = {
     6.68,
     10.22,
     16.13
+   ]
+  },
+  {
+   "file": "assets/modelos/botin__calcetin.webp",
+   "group": "museo",
+   "name": "botin/calcetin",
+   "size": [
+    0.38,
+    0.42,
+    0.18
+   ]
+  },
+  {
+   "file": "assets/modelos/botin__chicle.webp",
+   "group": "museo",
+   "name": "botin/chicle",
+   "size": [
+    0.34,
+    0.35,
+    0.3
+   ]
+  },
+  {
+   "file": "assets/modelos/botin__corona.webp",
+   "group": "museo",
+   "name": "botin/corona",
+   "size": [
+    0.38,
+    0.41,
+    0.38
+   ]
+  },
+  {
+   "file": "assets/modelos/botin__dentadura.webp",
+   "group": "museo",
+   "name": "botin/dentadura",
+   "size": [
+    0.3,
+    0.2,
+    0.2
+   ]
+  },
+  {
+   "file": "assets/modelos/botin__despertador.webp",
+   "group": "museo",
+   "name": "botin/despertador",
+   "size": [
+    0.28,
+    0.35,
+    0.12
+   ]
+  },
+  {
+   "file": "assets/modelos/botin__diamante.webp",
+   "group": "museo",
+   "name": "botin/diamante",
+   "size": [
+    0.32,
+    0.25,
+    0.32
+   ]
+  },
+  {
+   "file": "assets/modelos/botin__huevo.webp",
+   "group": "museo",
+   "name": "botin/huevo",
+   "size": [
+    0.26,
+    0.29,
+    0.26
+   ]
+  },
+  {
+   "file": "assets/modelos/botin__idolo.webp",
+   "group": "museo",
+   "name": "botin/idolo",
+   "size": [
+    0.22,
+    0.43,
+    0.16
+   ]
+  },
+  {
+   "file": "assets/modelos/botin__mascara.webp",
+   "group": "museo",
+   "name": "botin/mascara",
+   "size": [
+    0.28,
+    0.35,
+    0.29
+   ]
+  },
+  {
+   "file": "assets/modelos/botin__pato.webp",
+   "group": "museo",
+   "name": "botin/pato",
+   "size": [
+    0.54,
+    0.46,
+    0.42
+   ]
+  },
+  {
+   "file": "assets/modelos/botin__queso_lunar.webp",
+   "group": "museo",
+   "name": "botin/queso_lunar",
+   "size": [
+    0.37,
+    0.41,
+    0.29
+   ]
+  },
+  {
+   "file": "assets/modelos/botin__tostada.webp",
+   "group": "museo",
+   "name": "botin/tostada",
+   "size": [
+    0.32,
+    0.34,
+    0.12
    ]
   },
   {
@@ -3073,9 +3235,9 @@ window.JUEGO = {
    "group": "museo",
    "name": "craneo_lego",
    "size": [
-    0.2,
-    0.28,
-    0.2
+    0.24,
+    0.31,
+    0.24
    ]
   },
   {
@@ -3249,13 +3411,23 @@ window.JUEGO = {
    ]
   },
   {
+   "file": "assets/modelos/temas__antiguo__caballo_troya.webp",
+   "group": "antiguo",
+   "name": "temas/antiguo/caballo_troya",
+   "size": [
+    1.94,
+    2.73,
+    1.78
+   ]
+  },
+  {
    "file": "assets/modelos/temas__antiguo__canopos.webp",
    "group": "antiguo",
    "name": "temas/antiguo/canopos",
    "size": [
-    0.52,
-    0.34,
-    0.2
+    0.47,
+    0.51,
+    0.47
    ]
   },
   {
@@ -3263,9 +3435,9 @@ window.JUEGO = {
    "group": "antiguo",
    "name": "temas/antiguo/escarabajo",
    "size": [
-    0.27,
-    0.13,
-    0.25
+    0.46,
+    0.56,
+    0.45
    ]
   },
   {
@@ -3276,6 +3448,16 @@ window.JUEGO = {
     0.17,
     0.43,
     0.22
+   ]
+  },
+  {
+   "file": "assets/modelos/temas__antiguo__legionario.webp",
+   "group": "antiguo",
+   "name": "temas/antiguo/legionario",
+   "size": [
+    0.68,
+    1.33,
+    0.52
    ]
   },
   {
@@ -3303,9 +3485,19 @@ window.JUEGO = {
    "group": "edad_media",
    "name": "temas/edad_media/astrolabio",
    "size": [
-    0.16,
-    0.22,
-    0.07
+    0.43,
+    0.53,
+    0.34
+   ]
+  },
+  {
+   "file": "assets/modelos/temas__edad_media__baul.webp",
+   "group": "edad_media",
+   "name": "temas/edad_media/baul",
+   "size": [
+    0.93,
+    0.57,
+    0.6
    ]
   },
   {
@@ -3313,9 +3505,9 @@ window.JUEGO = {
    "group": "edad_media",
    "name": "temas/edad_media/caliz",
    "size": [
-    0.38,
-    0.28,
-    0.19
+    0.44,
+    0.47,
+    0.4
    ]
   },
   {
@@ -3346,6 +3538,16 @@ window.JUEGO = {
     0.5,
     0.13,
     0.31
+   ]
+  },
+  {
+   "file": "assets/modelos/temas__edad_media__confesionario.webp",
+   "group": "edad_media",
+   "name": "temas/edad_media/confesionario",
+   "size": [
+    0.91,
+    1.66,
+    0.68
    ]
   },
   {
@@ -3449,6 +3651,146 @@ window.JUEGO = {
    ]
   },
   {
+   "file": "assets/modelos/temas__moderna__caja.webp",
+   "group": "moderna",
+   "name": "temas/moderna/caja",
+   "size": [
+    0.74,
+    0.74,
+    0.7
+   ]
+  },
+  {
+   "file": "assets/modelos/temas__moderna__coche.webp",
+   "group": "moderna",
+   "name": "temas/moderna/coche",
+   "size": [
+    2.8,
+    1.19,
+    1.7
+   ]
+  },
+  {
+   "file": "assets/modelos/temas__moderna__movil_calder.webp",
+   "group": "moderna",
+   "name": "temas/moderna/movil_calder",
+   "size": [
+    0.83,
+    1.08,
+    0.64
+   ]
+  },
+  {
+   "file": "assets/modelos/temas__moderna__nevera.webp",
+   "group": "moderna",
+   "name": "temas/moderna/nevera",
+   "size": [
+    0.6,
+    1.28,
+    0.6
+   ]
+  },
+  {
+   "file": "assets/modelos/temas__moderna__perro_globo.webp",
+   "group": "moderna",
+   "name": "temas/moderna/perro_globo",
+   "size": [
+    0.53,
+    0.45,
+    0.25
+   ]
+  },
+  {
+   "file": "assets/modelos/temas__moderna__recreativa.webp",
+   "group": "moderna",
+   "name": "temas/moderna/recreativa",
+   "size": [
+    0.58,
+    1.08,
+    0.6
+   ]
+  },
+  {
+   "file": "assets/modelos/temas__moderna__rubik.webp",
+   "group": "moderna",
+   "name": "temas/moderna/rubik",
+   "size": [
+    0.47,
+    0.57,
+    0.47
+   ]
+  },
+  {
+   "file": "assets/modelos/temas__moderna__semaforo.webp",
+   "group": "moderna",
+   "name": "temas/moderna/semaforo",
+   "size": [
+    0.4,
+    1.1,
+    0.4
+   ]
+  },
+  {
+   "file": "assets/modelos/temas__moderna__tele.webp",
+   "group": "moderna",
+   "name": "temas/moderna/tele",
+   "size": [
+    0.46,
+    0.76,
+    0.37
+   ]
+  },
+  {
+   "file": "assets/modelos/temas__moderna__tostadora.webp",
+   "group": "moderna",
+   "name": "temas/moderna/tostadora",
+   "size": [
+    0.43,
+    0.44,
+    0.3
+   ]
+  },
+  {
+   "file": "assets/modelos/temas__naturaleza__caparazon.webp",
+   "group": "naturaleza",
+   "name": "temas/naturaleza/caparazon",
+   "size": [
+    0.94,
+    0.6,
+    0.89
+   ]
+  },
+  {
+   "file": "assets/modelos/temas__naturaleza__tronco.webp",
+   "group": "naturaleza",
+   "name": "temas/naturaleza/tronco",
+   "size": [
+    2.71,
+    0.92,
+    0.91
+   ]
+  },
+  {
+   "file": "assets/modelos/temas__prehistoria__huevo.webp",
+   "group": "prehistoria",
+   "name": "temas/prehistoria/huevo",
+   "size": [
+    1.01,
+    1.2,
+    1.02
+   ]
+  },
+  {
+   "file": "assets/modelos/temas__prehistoria__mamut.webp",
+   "group": "prehistoria",
+   "name": "temas/prehistoria/mamut",
+   "size": [
+    2.85,
+    2.25,
+    1.51
+   ]
+  },
+  {
    "file": "assets/modelos/totem.webp",
    "group": "museo",
    "name": "totem",
@@ -3480,6 +3822,16 @@ window.JUEGO = {
   }
  ],
  "sonidos": [
+  {
+   "file": "assets/sonidos/caught.wav",
+   "name": "caught",
+   "seconds": 2.0
+  },
+  {
+   "file": "assets/sonidos/roll.wav",
+   "name": "roll",
+   "seconds": 0.35
+  },
   {
    "file": "assets/sonidos/ok.wav",
    "name": "ok",
@@ -3581,14 +3933,14 @@ window.JUEGO = {
    "seconds": 0.75
   },
   {
-   "file": "assets/sonidos/pick.wav",
-   "name": "pick",
-   "seconds": 0.4
-  },
-  {
    "file": "assets/sonidos/shout.wav",
    "name": "shout",
    "seconds": 0.46
+  },
+  {
+   "file": "assets/sonidos/pick.wav",
+   "name": "pick",
+   "seconds": 0.4
   },
   {
    "file": "assets/sonidos/tick.wav",
@@ -3596,14 +3948,9 @@ window.JUEGO = {
    "seconds": 0.25
   },
   {
-   "file": "assets/sonidos/back.wav",
-   "name": "back",
-   "seconds": 0.19
-  },
-  {
-   "file": "assets/sonidos/step.wav",
-   "name": "step",
-   "seconds": 0.05
+   "file": "assets/sonidos/lights.wav",
+   "name": "lights",
+   "seconds": 0.55
   },
   {
    "file": "assets/sonidos/panel.wav",
@@ -3616,24 +3963,19 @@ window.JUEGO = {
    "seconds": 0.12
   },
   {
-   "file": "assets/sonidos/lights.wav",
-   "name": "lights",
-   "seconds": 0.55
+   "file": "assets/sonidos/back.wav",
+   "name": "back",
+   "seconds": 0.19
   },
   {
-   "file": "assets/sonidos/caught.wav",
-   "name": "caught",
-   "seconds": 2.0
-  },
-  {
-   "file": "assets/sonidos/roll.wav",
-   "name": "roll",
-   "seconds": 0.35
+   "file": "assets/sonidos/step.wav",
+   "name": "step",
+   "seconds": 0.05
   }
  ],
  "generado": {
-  "fecha": "27-09-2026 09:55",
-  "commit": "5896060",
-  "rama": "worktree-equilibrio-guardias"
+  "fecha": "27-09-2026 14:55",
+  "commit": "5f61800",
+  "rama": "piezas-modeladas-y-lecciones"
  }
 };

@@ -266,6 +266,29 @@
 	{
 		"colours": [
 			{
+				"hex": "#8fb4ff",
+				"key": "cross"
+			},
+			{
+				"hex": "#ff7a7a",
+				"key": "circle"
+			},
+			{
+				"hex": "#f59ad8",
+				"key": "square"
+			},
+			{
+				"hex": "#4fd8a8",
+				"key": "triangle"
+			}
+		],
+		"file": "scenes/glyph.gd",
+		"name": "PS_MARKS",
+		"note": "The PlayStation marks keep their colours on the dark buttons."
+	},
+	{
+		"colours": [
+			{
 				"hex": "#f1dfbd",
 				"key": ""
 			}
@@ -1346,5 +1369,16 @@
 		"file": "scenes/smoke_fx.gd",
 		"name": "DARK",
 		"note": "The smoke's colours: pale and a little warm where it is thick, cool grey where it thins, as ash smoke goes."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#140c24",
+				"key": ""
+			}
+		],
+		"file": "scenes/title_screen.gd",
+		"name": "BACK",
+		"note": "Where the title is in the picture, as fractions of its width and height, and the margin kept round it."
 	}
 ]

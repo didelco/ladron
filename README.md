@@ -38,7 +38,8 @@ su nombre escrito delante, y sale a su propio `.glb`:
 | `art/coleccion.blend` | bustos, regadera, váter, cráneos, ánfora, globo, tótem, amonite, meteorito, oso, armadura, sarcófago, dinosaurio | `assets/models/` |
 | `art/tema_antiguo.blend` | las piezas del tema antiguo (Egipto) | `assets/models/temas/antiguo/` |
 | `art/tema_edad_media.blend` | las piezas de la Edad Media | `assets/models/temas/edad_media/` |
-| `art/tema_moderna.blend`, `tema_prehistoria.blend`, `tema_naturaleza.blend` | los escondites de esos temas (nevera y caja; huevo y mamut; caparazón y tronco hueco) | `assets/models/temas/<tema>/` |
+| `art/tema_moderna.blend` | la edad moderna: tele, tostadora, cubo de Rubik, perro-globo (peana); recreativa, móvil de Calder, semáforo (suelo); cochecito (grande, escondite); nevera y caja (escondites) | `assets/models/temas/moderna/` |
+| `art/tema_prehistoria.blend`, `tema_naturaleza.blend` | los escondites de esos temas (huevo y mamut; caparazón y tronco hueco) | `assets/models/temas/<tema>/` |
 | `art/botin.blend` | las piezas a robar: dentadura, pato, calcetín, tostada, corona, queso lunar, chicle, máscara, despertador, huevo, diamante, ídolo. Los materiales que empiezan por `color` toman el color de la pieza en el juego (`color_claro_N`, `color_oscuro_N`: un N % más claro u oscuro) | `assets/models/botin/` |
 | `art/personajes/guardia.blend`, `ninja.blend` | un personaje con esqueleto y acciones cada uno | `assets/models/` |
 
@@ -65,7 +66,7 @@ Una pieza nueva: *Nueva pieza* en el fichero que le toque (o una colección nuev
 pie en z = 0 y el frente a -Y sobre el cursor, y exportar. Convenciones y nombres que busca el
 juego: `art/catalogo.py`. Los scripts de `art/characters/` y `art/temas/` son cómo se hizo la
 primera versión: volver a ejecutarlos pisa los retoques hechos a mano. Los escondites (nevera, caja, legionario, confesionario, baúl, huevo,
-caparazón, caballo de Troya, mamut y tronco) salieron de `art/temas/escondites.py`.
+caparazón, caballo de Troya, mamut y tronco) salieron de `art/temas/escondites.py`. Las piezas de la edad moderna, de `art/temas/moderna.py`.
 
 ## Plan
 

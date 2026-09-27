@@ -321,7 +321,7 @@
 			"news": [
 				{
 					"stage": "lesson:torch",
-					"text": "De lejos, su linterna solo ve a quien va de pie. Cruza agachado (C).",
+					"text": "De lejos, su linterna solo ve a quien va de pie. Cruza agachado (C, o X).",
 					"title": "AGÁCHATE"
 				}
 			],
@@ -404,7 +404,7 @@
 				"colour": "#f783ac",
 				"name": "NIGHT_07_NAME",
 				"seconds": 3.0,
-				"shape": "rock",
+				"shape": "gum",
 				"story": "NIGHT_07_TALE",
 				"verb": "NIGHT_07_VERB"
 			},
@@ -439,7 +439,7 @@
 			"news": [
 				{
 					"stage": "lesson:props",
-					"text": "Tira algo lejos (E, o X): el guardia irá a mirar y la pieza quedará libre.",
+					"text": "Tira algo lejos (E, o A): el guardia irá a mirar y la pieza quedará libre.",
 					"title": "LA DISTRACCIÓN"
 				}
 			],

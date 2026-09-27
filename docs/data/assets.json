@@ -77,7 +77,7 @@
 			"file": "assets/piezas/07.webp",
 			"name": "la bola de chicle del récord",
 			"night": 7,
-			"shape": "rock"
+			"shape": "gum"
 		},
 		{
 			"blurb": "Verde, con granitos. Muy real.",
@@ -232,41 +232,49 @@
 			"shape": "rock"
 		},
 		{
-			"blurb": "Con purpurina y plumas de colores.",
-			"colour": "#e03131",
+			"blurb": "Pegajosa y de todos los sabores.",
+			"colour": "#8ce0bd",
 			"file": "assets/piezas/27.webp",
-			"name": "la máscara del luchador del alcalde Bigotes",
+			"name": "la bola de chicle gigante del alcalde Bigotes",
+			"night": 0,
+			"shape": "gum"
+		},
+		{
+			"blurb": "Con cejas pintadas y bigote de purpurina.",
+			"colour": "#9b5de5",
+			"file": "assets/piezas/28.webp",
+			"name": "la máscara del luchador del cartero Tomás",
 			"night": 0,
 			"shape": "mask"
 		},
 		{
-			"blurb": "Hace tic-tac al revés: cat-cit.",
-			"colour": "#4dabf7",
-			"file": "assets/piezas/28.webp",
-			"name": "el despertador más puntual del mundo del cartero Tomás",
+			"blurb": "Suena a las siete. Siempre.",
+			"colour": "#ffd43b",
+			"file": "assets/piezas/29.webp",
+			"name": "el reloj de cuco sin cuco de la vaca Paquita",
 			"night": 0,
 			"shape": "clock"
 		},
 		{
 			"blurb": "Todavía está calentito.",
-			"colour": "#fcc419",
-			"file": "assets/piezas/29.webp",
-			"name": "el huevo de oro de la vaca Paquita",
+			"colour": "#63e6be",
+			"file": "assets/piezas/30.webp",
+			"name": "el huevo de oro del pequeño Lucas",
 			"night": 0,
 			"shape": "egg"
 		},
 		{
 			"blurb": "Tallado a mano. Brilla solo.",
 			"colour": "#ffec99",
-			"file": "assets/piezas/30.webp",
-			"name": "la piedra que brilla de noche del pequeño Lucas",
+			"file": "assets/piezas/31.webp",
+			"name": "el diamante de la suerte del alcalde Bigotes",
 			"night": 0,
 			"shape": "gem"
 		},
 		{
 			"blurb": "Negro y muy brillante.",
-			"colour": "#b07cff",
-			"file": "assets/piezas/31.webp",
+			"colour": "#e03131",
+			"file": "assets/piezas/32.webp",
 			"name": "el gnomo del jardín del alcalde Bigotes",
 			"night": 0,
 			"shape": "idol"
