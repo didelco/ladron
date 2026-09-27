@@ -761,8 +761,22 @@ func _clear_wall_crumbs() -> void:
 						bit.append(n)
 			if outer or bit.size() > 2 or bit.any(func(b): return _furniture.has(b)):
 				continue
+			# Only if the floor it leaves has two ways out: a crumb touching the
+			# floor at one side or just at a corner would become a stub.
+			if not bit.all(func(b): return _open_sides(b, bit) >= 2):
+				continue
 			for b in bit:
 				_put(b.x, b.y, Tiles.FLOOR)
+
+
+## Sides of t with floor to walk on (a case is no way out), counting the
+## rest of `bit` as cleared.
+func _open_sides(t: Vector2i, bit: Array[Vector2i]) -> int:
+	var n := 0
+	for d in DIRS:
+		if at(t.x + d.x, t.y + d.y) == Tiles.FLOOR or bit.has(t + d):
+			n += 1
+	return n
 
 
 ## Is this tile of the room just inside an opening in its wall?
