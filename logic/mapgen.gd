@@ -108,6 +108,7 @@ func _build(seed: int, width: int, height: int, shape: String) -> void:
 	_link_everything()
 	_clear_dead_ends()
 	_keep_galleries()
+	_clear_wall_crumbs()
 	_unpinch_cases()
 
 	# The way in: floor against the outer wall.
@@ -519,9 +520,9 @@ func _open_doors() -> void:
 						doors[room] = doors.get(room, 0) + 1
 
 
-## A few crooked passages cut through the walls from one gallery to another
-## far off: stepping mostly towards the target, sometimes sideways, so they
-## run at odd angles across the plan instead of along the grid.
+## A few passages cut through the walls from one gallery to another far off:
+## straight across, then straight along (an L), so each wall they cross gets
+## one clean opening instead of a staircase of bites.
 func _shortcuts() -> void:
 	if rooms.size() < 3:
 		return
@@ -533,14 +534,12 @@ func _shortcuts() -> void:
 		if absi(p.x - q.x) + absi(p.y - q.y) < 8:
 			continue
 		var steps := 0
+		var x_first := _rand.next() < 0.5
 		while p != q and steps < 200:
 			steps += 1
 			var d := Vector2i(signi(q.x - p.x), signi(q.y - p.y))
-			var along_x := d.y == 0 or (d.x != 0 and _rand.next() < 0.5)
+			var along_x := d.y == 0 or (d.x != 0 and x_first)
 			var step := Vector2i(d.x, 0) if along_x else Vector2i(0, d.y)
-			# A sideways jog now and then.
-			if _rand.next() < 0.18:
-				step = Vector2i(0, 1 if _rand.next() < 0.5 else -1) if along_x else Vector2i(1 if _rand.next() < 0.5 else -1, 0)
 			var n := p + step
 			if n.x < 1 or n.y < 1 or n.x >= w - 1 or n.y >= h - 1 or interior[n.y * w + n.x] == 0:
 				continue
@@ -673,9 +672,9 @@ func _furnish_rooms() -> void:
 					if k == gap:
 						continue
 					if vertical:
-						_put(rx + line, ry + k, Tiles.WALL)
+						_furnish_wall(rx + line, ry + k)
 					else:
-						_put(rx + k, ry + line, Tiles.WALL)
+						_furnish_wall(rx + k, ry + line)
 				line += 2 + _rand.below(2)
 		elif roll < 0.7 and rw >= 6 and rh >= 6:
 			# Columns in a loose grid, the hall of a grand museum.
@@ -686,7 +685,7 @@ func _furnish_rooms() -> void:
 				var x := rx + gx
 				while x < rx + rw - 2:
 					if _rand.next() < 0.85:
-						_put(x, y, Tiles.WALL)
+						_furnish_wall(x, y)
 					x += 2 + _rand.below(2)
 				y += 2 + _rand.below(2)
 		elif roll < 0.85:
@@ -705,7 +704,7 @@ func _furnish_rooms() -> void:
 			# Never across a doorway.
 			if tiles.all(func(t): return not _by_door(t, room)):
 				for t in tiles:
-					_put(t.x, t.y, Tiles.WALL)
+					_furnish_wall(t.x, t.y)
 		else:
 			# An island in the middle of the floor, off-centre.
 			var cx := rx + 1 + _rand.below(maxi(1, rw - 3))
@@ -714,7 +713,53 @@ func _furnish_rooms() -> void:
 			var bh := 1 + _rand.below(2)
 			for y in range(cy, mini(cy + bh, ry + rh - 1)):
 				for x in range(cx, mini(cx + bw, rx + rw - 1)):
-					_put(x, y, Tiles.WALL)
+					_furnish_wall(x, y)
+
+
+## Wall a gallery is furnished with (shelving, columns, a partition, an
+## island): meant to stand on its own, so never cleared as a crumb.
+var _furniture := {}
+
+
+func _furnish_wall(x: int, y: int) -> void:
+	_put(x, y, Tiles.WALL)
+	_furniture[Vector2i(x, y)] = true
+
+
+## Bits of wall left standing on their own — one or two tiles, off the outer
+## wall and not furniture — where doors, openings and passages were cut round
+## them: they read as rubble on the plan, so they go.
+func _clear_wall_crumbs() -> void:
+	var seen := {}
+	for y in range(1, h - 1):
+		for x in range(1, w - 1):
+			var t := Vector2i(x, y)
+			if at(x, y) != Tiles.WALL or interior[y * w + x] == 0 or seen.has(t):
+				continue
+			# The bit of wall this tile is part of, as far as three tiles.
+			var bit: Array[Vector2i] = [t]
+			seen[t] = true
+			var k := 0
+			var outer := false
+			while k < bit.size() and bit.size() <= 3:
+				var c := bit[k]
+				k += 1
+				for dy in range(-1, 2):
+					for dx in range(-1, 2):
+						var n := Vector2i(c.x + dx, c.y + dy)
+						if n.x < 0 or n.y < 0 or n.x >= w or n.y >= h or interior[n.y * w + n.x] == 0:
+							outer = true
+				for d in DIRS:
+					var n := c + d
+					if n.x < 1 or n.y < 1 or n.x >= w - 1 or n.y >= h - 1 or interior[n.y * w + n.x] == 0:
+						continue
+					if at(n.x, n.y) == Tiles.WALL and not seen.has(n):
+						seen[n] = true
+						bit.append(n)
+			if outer or bit.size() > 2 or bit.any(func(b): return _furniture.has(b)):
+				continue
+			for b in bit:
+				_put(b.x, b.y, Tiles.FLOOR)
 
 
 ## Is this tile of the room just inside an opening in its wall?
@@ -743,53 +788,132 @@ func pinched(x: int, y: int) -> bool:
 		or (at(x - 1, y) == Tiles.WALL and at(x + 1, y) == Tiles.WALL)
 
 
-## Cases to duck behind, mostly against walls and in corners.
+## Cases the way a museum sets them out, one plan to a gallery: along its
+## walls at even steps, in rows down its length, an island in its middle, or
+## a few here and there. Each plan is centred on the room, so a gallery reads
+## as laid out rather than strewn; a case goes only where one may (_case_spot).
 func _scatter_cover() -> void:
-	var candidates: Array[Vector2i] = []
-	for y in range(1, h - 1):
-		for x in range(1, w - 1):
-			if at(x, y) != Tiles.FLOOR:
-				continue
-			# Keep the circulation corridor clear.
-			if ring[y * w + x] == 1:
-				continue
-			# Only inside galleries: floor in a wall line is a doorway or a
-			# gallery opened into the next, however wide.
-			var room := _room_of[y * w + x]
-			if room < 0 or _is_hall[room] or _by_door(Vector2i(x, y), _places[room]):
-				continue
-			var walls := 0
-			for d in DIRS:
-				if at(x + d.x, y + d.y) == Tiles.WALL:
-					walls += 1
-			# Never plug a corridor: walls on opposite sides mean the only way through.
-			if pinched(x, y) or walls > 2:
-				continue
-			# Not in front of a door: a case there turns the door into a wall.
-			var at_door := false
-			for d in DIRS:
-				var nx := x + d.x
-				var ny := y + d.y
-				if at(nx, ny) == Tiles.FLOOR and ((at(nx, ny - 1) == Tiles.WALL and at(nx, ny + 1) == Tiles.WALL) or (at(nx - 1, ny) == Tiles.WALL and at(nx + 1, ny) == Tiles.WALL)):
-					at_door = true
-			if at_door:
-				continue
-			candidates.append(Vector2i(x, y))
-
-	var wanted := _js_round(candidates.size() * 0.14)
-	var placed := 0
-	var i := candidates.size() - 1
-	while i > 0 and placed < wanted:
-		var j := int(floor(_rand.next() * (i + 1)))
-		var tmp := candidates[i]
-		candidates[i] = candidates[j]
-		candidates[j] = tmp
-		var c := candidates[i]
-		i -= 1
-		if at(c.x, c.y) != Tiles.FLOOR:
+	for i in _places.size():
+		if _is_hall[i]:
 			continue
-		_put(c.x, c.y, Tiles.COVER)
-		placed += 1
+		var r := _places[i]
+		var roll := _rand.next()
+		var spots: Array[Vector2i]
+		if roll < 0.35:
+			spots = _cases_along_walls(r)
+		elif roll < 0.6:
+			spots = _cases_in_rows(r)
+		elif roll < 0.8:
+			spots = _cases_island(r)
+		else:
+			spots = _cases_here_and_there(r, i)
+		for t in spots:
+			if _case_spot(t.x, t.y, i):
+				_put(t.x, t.y, Tiles.COVER)
+
+
+## Against the walls, every CASE_STEP tiles, the same from both ends; never
+## in a corner.
+const CASE_STEP := 3
+
+
+func _cases_along_walls(r: Rect2i) -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	for x in _even_steps(r.position.x + 1, r.end.x - 2, CASE_STEP):
+		out.append(Vector2i(x, r.position.y))
+		out.append(Vector2i(x, r.end.y - 1))
+	for y in _even_steps(r.position.y + 1, r.end.y - 2, CASE_STEP):
+		out.append(Vector2i(r.position.x, y))
+		out.append(Vector2i(r.end.x - 1, y))
+	return out
+
+
+## One row down the middle of the room's length, or two in a wide room, a
+## case every other tile, with a way round every row.
+func _cases_in_rows(r: Rect2i) -> Array[Vector2i]:
+	var along_x := r.size.x >= r.size.y
+	var across := r.size.y if along_x else r.size.x
+	var length := r.size.x if along_x else r.size.y
+	if across < 5 or length < 5:
+		return _cases_along_walls(r)
+	var lines: Array[int] = []
+	if across < 8:
+		lines.append(across / 2)
+	else:
+		lines.append_array([across / 3, across - 1 - across / 3])
+	var out: Array[Vector2i] = []
+	for l in lines:
+		for k in _even_steps(2, length - 3, 2):
+			out.append(r.position + (Vector2i(k, l) if along_x else Vector2i(l, k)))
+	return out
+
+
+## A block of cases in the middle of the room: two by two, or longer in a
+## long room, a single one in a small room.
+func _cases_island(r: Rect2i) -> Array[Vector2i]:
+	var bw := 1 if r.size.x < 6 else (3 if r.size.x >= 9 and r.size.x > r.size.y else 2)
+	var bh := 1 if r.size.y < 6 else (3 if r.size.y >= 9 and r.size.y > r.size.x else 2)
+	var x0 := r.position.x + (r.size.x - bw) / 2
+	var y0 := r.position.y + (r.size.y - bh) / 2
+	var out: Array[Vector2i] = []
+	for y in range(y0, y0 + bh):
+		for x in range(x0, x0 + bw):
+			out.append(Vector2i(x, y))
+	return out
+
+
+## A few cases where they fall, as the generator always did: about one spot
+## in seven of those a case may take.
+func _cases_here_and_there(r: Rect2i, room: int) -> Array[Vector2i]:
+	var spots: Array[Vector2i] = []
+	for y in range(r.position.y, r.end.y):
+		for x in range(r.position.x, r.end.x):
+			if _case_spot(x, y, room):
+				spots.append(Vector2i(x, y))
+	for i in range(spots.size() - 1, 0, -1):
+		var j := int(floor(_rand.next() * (i + 1)))
+		var tmp := spots[i]
+		spots[i] = spots[j]
+		spots[j] = tmp
+	return spots.slice(0, _js_round(spots.size() * 0.14))
+
+
+## From a to b, every `step`, centred between them: the same gap at both ends.
+static func _even_steps(a: int, b: int, step: int) -> Array[int]:
+	var out: Array[int] = []
+	if b < a:
+		return out
+	var n := (b - a) / step + 1
+	var first := a + ((b - a) - (n - 1) * step) / 2
+	for k in n:
+		out.append(first + k * step)
+	return out
+
+
+## Whether a case may stand here, in gallery `room`: on its floor, off the
+## corridor along the outer wall, not just inside a doorway nor in front of
+## one, not between two walls, with no more than two walls round it.
+func _case_spot(x: int, y: int, room: int) -> bool:
+	if x < 1 or y < 1 or x >= w - 1 or y >= h - 1 or at(x, y) != Tiles.FLOOR:
+		return false
+	if ring[y * w + x] == 1 or _room_of[y * w + x] != room or _is_hall[room]:
+		return false
+	if _by_door(Vector2i(x, y), _places[room]):
+		return false
+	var walls := 0
+	for d in DIRS:
+		if at(x + d.x, y + d.y) == Tiles.WALL:
+			walls += 1
+	# Never plug a corridor: walls on opposite sides mean the only way through.
+	if pinched(x, y) or walls > 2:
+		return false
+	# Not in front of a door: a case there turns the door into a wall.
+	for d in DIRS:
+		var nx := x + d.x
+		var ny := y + d.y
+		if at(nx, ny) == Tiles.FLOOR and ((at(nx, ny - 1) == Tiles.WALL and at(nx, ny + 1) == Tiles.WALL) or (at(nx - 1, ny) == Tiles.WALL and at(nx + 1, ny) == Tiles.WALL)):
+			return false
+	return true
 
 
 ## The big pieces, each standing on a block of case tiles in a gallery with
