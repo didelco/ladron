@@ -280,6 +280,18 @@ func _ready() -> void:
 					_look_at_end("escaped" if arg == "--menu=escaped" else "caught")
 				"paused":
 					_look_at_pause()
+	# --plan=N: heist N's plan out of its room, told from the start (with
+	# --explore, as if told before: straight to looking round it).
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--plan="):
+			var n := clampi(int(arg.substr(7)), 1, Story.count())
+			if Story.save != Story.SAVE:
+				Story.unlock(n, players)
+			n = mini(n, Story.unlocked(players))
+			if "--explore" in OS.get_cmdline_user_args():
+				told_now[[n, players]] = true
+			_show_museum_tour(n)
+			_tour_room(n)
 	# --acts=right,accept,...: presses for the way in, one every 1.2 s, to
 	# record it going (Tour.act: left, right, up, down, accept, back, skip).
 	for arg in OS.get_cmdline_user_args():
@@ -777,6 +789,8 @@ func _open_tour() -> Tour:
 		_close_tour()
 		_show_story_menu())
 	tour.room_chosen.connect(_tour_room)
+	tour.go.connect(_tour_go)
+	tour.told.connect(_remember_told)
 	tour.sound.connect(func(kind: String) -> void: sfx.ui(kind, 0.6))
 	get_viewport().disable_3d = true
 	return tour
@@ -789,11 +803,64 @@ func _close_tour() -> void:
 		tour = null
 
 
-## A room picked in the museum: heist n, on to its plan.
+## A room picked in the museum: heist n laid out, and its plan out of the
+## room (Tour.show_plan).
 func _tour_room(n: int) -> void:
 	story_pick = n
-	_close_tour()
-	_start("story", players, true)
+	mode = "story"
+	pads_lost.clear()
+	_new_round(n)
+	tour.show_plan(_plan_data())
+
+
+## What the tour needs to tell the plan of the heist laid out: its picture,
+## the beats told over it (PlanBeats), the job sheet, the goals for its
+## stars, and whether it has been told before.
+func _plan_data() -> Dictionary:
+	_build_preview()
+	return {
+		"n": level,
+		"image": Hud.plan_map(guards, _thief_colours().slice(0, thieves.size())),
+		"tile_px": float(clampi(int(Hud.MAP_WIDTH / Museum.w), 8, 32)),
+		"heading": Story.heading(level, players),
+		"beats": PlanBeats.build(level, players, guards),
+		"sheet": {"heading": Story.heading(level, players), "name": Heist.first_upper(Heist.loot.name), "blurb": Heist.loot.blurb,
+			"story": Heist.loot.get("story", ""), "photo": preview.get_texture()},
+		"goals": StarSlots.goals(level, players),
+		"told": _told(level),
+	}
+
+
+## Heist n's plan told already: done before, or told this time round or on
+## an earlier day (kept with the progress, "tour", "told_<gang>").
+func _told(n: int) -> bool:
+	if n < Story.unlocked(players) or told_now.has([n, players]):
+		return true
+	var cfg := ConfigFile.new()
+	cfg.load(Story.save)
+	return int(cfg.get_value("tour", "told_%d" % players, 0)) >= n
+
+
+var told_now := {}
+
+
+func _remember_told(n: int) -> void:
+	told_now[[n, players]] = true
+	var cfg := ConfigFile.new()
+	cfg.load(Story.save)
+	var key := "told_%d" % players
+	if int(cfg.get_value("tour", key, 0)) < n:
+		cfg.set_value("tour", key, n)
+		cfg.save(Story.save)
+
+
+## ¡A ROBAR! on the plan: the tour fades into the game and the count begins.
+func _tour_go(_n: int) -> void:
+	get_viewport().disable_3d = false
+	var t := tour
+	tour = null
+	t.fade_out()
+	_start_countdown()
 
 
 ## The generative mode: difficulty and museum size as cards, then play with

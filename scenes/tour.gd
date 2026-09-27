@@ -9,13 +9,21 @@ extends CanvasLayer
 ##   "city"     the town: the arrows pick a museum, A goes in, B back out
 ##   "zoom"     gliding in or out; nothing to press
 ##   "museum"   inside one: the arrows pick a room reached, A plans it, B out
-## Main listens for what it asks for (left, room_chosen) and forwards the
-## input while it is up (input).
+##   "unfold"   the room's plan coming out of it and opening
+##   "plan"     the plan open: told over it, then looked round (PlanTalk)
+##   "going"    off to the heist: the plan fades into the game
+## Main listens for what it asks for (left, room_chosen, go) and forwards
+## the input while it is up (input).
 
 ## Out of the town, back to the story's menu.
 signal left
-## A room picked for tonight: heist n.
+## A room picked for tonight: heist n. Main lays it out and hands its plan
+## back (show_plan).
 signal room_chosen(n: int)
+## ¡A ROBAR!: heist n, now.
+signal go(n: int)
+## Heist n's plan has been told: next time, straight to looking round.
+signal told(n: int)
 ## A menu sound to play: "nav", "ok" or "back".
 signal sound(kind: String)
 
@@ -49,6 +57,9 @@ var _nights: Array[int] = []
 ## under each room reached, its stars
 var _room_stars: Array[Label] = []
 var _fade: Tween
+## the plan out and what is told over it, and whose it is
+var talk: PlanTalk
+var night := 0
 
 
 func _init() -> void:
@@ -250,6 +261,76 @@ func _leave_museum() -> void:
 	stage.go_out(_show_city)
 
 
+# --- The plan ---------------------------------------------------------------------
+
+## Heist n laid out, its plan out of its room (Main._plan_data): image and
+## tile_px, the plan's picture; heading, over it; beats (PlanBeats), sheet
+## (the job sheet), goals (StarSlots.goals); told, whether to go straight to
+## looking round.
+func show_plan(data: Dictionary) -> void:
+	state = "unfold"
+	night = data.n
+	_sign.visible = false
+	for l in _room_stars:
+		l.visible = false
+	_title.text = Text.t("STORY_BOSS_ROOM") if Story.is_boss(night) else Text.t("TOUR_ROOM") % Story.room_of(night)
+	_arcade(_title)
+	_subtitle.text = data.heading
+	_set_hints([])
+	stage.raise_plan(data.image, data.tile_px, _plan_open.bind(data))
+
+
+func _plan_open(data: Dictionary) -> void:
+	state = "plan"
+	talk = PlanTalk.new()
+	talk.tour = self
+	talk.stage = stage
+	talk.beats = data.beats
+	talk.sheet = data.sheet
+	talk.goals = data.goals
+	_root.add_child(talk)
+	_root.move_child(talk, _view.get_index() + 1)
+	talk.go.connect(_go)
+	talk.back.connect(_back_to_museum)
+	talk.told.connect(func() -> void: told.emit(night))
+	if data.get("told", false):
+		talk.skip()
+	else:
+		talk.tell()
+
+
+## B on the plan: it folds back into its room.
+func _back_to_museum() -> void:
+	_sound("back")
+	state = "zoom"
+	if talk:
+		talk.queue_free()
+		talk = null
+	_set_hints([])
+	stage.lower_plan(func() -> void: _inside(Story.museum_of(night), night))
+
+
+func _go() -> void:
+	if state != "plan":
+		return
+	_sound("ok")
+	state = "going"
+	go.emit(night)
+
+
+## Off to the heist: the plan comes at you and everything fades into the
+## game behind, then the tour is gone.
+func fade_out() -> void:
+	state = "going"
+	_set_hints([])
+	var secs := 0.0 if stage.hurry else 0.7
+	var tw := create_tween().set_parallel()
+	tw.tween_property(_root, "modulate:a", 0.0, secs).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	if stage.sheet:
+		tw.tween_property(stage.sheet, "scale", stage.sheet.scale * 1.6, secs).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tw.chain().tween_callback(queue_free)
+
+
 ## The museum's own picture (Hud.PICTURES), far behind and out of focus.
 func _show_picture(m: int) -> void:
 	var look: Dictionary = Hud.PICTURES.get("museum_%d" % (m + 1), {})
@@ -342,6 +423,9 @@ func act(what: String) -> void:
 				"right", "down", "next": _step_room(1)
 				"accept": _choose_room()
 				"back": _leave_museum()
+		"plan":
+			if talk:
+				talk.act(what)
 
 
 func _ready() -> void:
@@ -356,7 +440,13 @@ func _on_mouse(event: InputEvent) -> void:
 	var at: Vector2 = event.position
 	var best := -1
 	var near := 110.0
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and state in ["city", "museum", "plan"]:
+		act("back")
+		return
 	match state:
+		"plan":
+			if talk:
+				talk.mouse(event)
 		"city":
 			for m in Story.MUSEUMS.size():
 				var d := at.distance_to(stage.on_screen(stage._museums[m].global_position + Vector3(0, 1.0, 0)))

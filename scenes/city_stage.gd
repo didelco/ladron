@@ -44,6 +44,12 @@ const CITY_VIEW := 21.0
 const MUSEUM_VIEW := 3.7
 ## How long the camera takes into a museum and back out (s).
 const ZOOM_S := 1.5
+## How long the plan takes out of its room and open in front of you (s),
+## and how much of the screen it fills then, across and up.
+const PLAN_S := 2.1
+const PLAN_FILL := Vector2(0.94, 0.76)
+## How dark the town goes behind the plan.
+const PLAN_VEIL := 0.8
 ## A room's size across, the big job's this many times wider; the walls.
 const BOSS_WIDTH := 1.6
 const WALL_H := 0.42
@@ -76,6 +82,15 @@ var _room_light: SpotLight3D
 var _tween: Tween
 ## everything moves at once (the tests)
 var hurry := false
+## the plan out of its room (PlanSheet), and the veil behind it
+var sheet: PlanSheet
+var _veil: MeshInstance3D
+## where the sheet starts (flat on its room's floor) and where it ends up
+## (open, facing the camera), as position, turn and size
+var _sheet_from := {}
+var _sheet_to := {}
+## the camera as the plan opened, to close in on it from and come back to
+var _plan_cam := {}
 
 
 func _init() -> void:
@@ -753,6 +768,150 @@ func _crown(parent: Node3D, at: Vector3, colour: Color) -> void:
 		var p := PrismMesh.new()
 		p.size = Vector3(0.1, 0.14, 0.04)
 		_mesh(parent, p, colour, at + Vector3(-0.13 + k * 0.13, 0.12, 0))
+
+
+# --- The plan ---------------------------------------------------------------------
+
+## Out of the room picked comes its plan: it lifts off the floor, glowing,
+## folded up; flies to the front, turning to face you; and opens out over
+## the whole screen, the town darkening behind it. done() once it is open.
+## plan: Hud.plan_map's picture, tile_px pixels a tile in it.
+func raise_plan(plan: Image, tile_px: float, done: Callable) -> void:
+	drop_plan()
+	sheet = PlanSheet.new()
+	add_child(sheet)
+	sheet.print_plan(plan, tile_px)
+	var ground := room_floor(room)
+	# Flat on the floor, its height along the room's depth, as long as it.
+	var flat := (ground.basis as Basis).orthonormalized() * Basis.from_euler(Vector3(-PI / 2, 0, 0))
+	_sheet_from = {"at": ground.centre + Vector3(0, 0.05, 0), "turn": flat.get_rotation_quaternion(),
+		"size": ground.size.y * 0.8 / sheet.tall}
+	_sheet_to = _front_of_camera()
+	_plan_cam = {"at": _cam.position, "size": _cam.size}
+	sheet.fold = PlanSheet.SHUT
+	_veil_on()
+	_sheet_step(0.0)
+	if _tween:
+		_tween.kill()
+	_tween = create_tween()
+	_tween.tween_method(_sheet_step, 0.0, 1.0, 0.0 if hurry else PLAN_S)
+	_tween.tween_callback(done)
+
+
+## The plan back into its room, folding up as it goes (back to the museum).
+func lower_plan(done: Callable) -> void:
+	if sheet == null:
+		done.call()
+		return
+	plan_rest(0.0)
+	if _tween:
+		_tween.kill()
+	_tween = create_tween()
+	_tween.tween_method(_sheet_step, 1.0, 0.0, 0.0 if hurry else PLAN_S * 0.55)
+	_tween.tween_callback(func() -> void:
+		drop_plan()
+		done.call())
+
+
+func drop_plan() -> void:
+	if sheet:
+		sheet.queue_free()
+		sheet = null
+	if _veil:
+		_veil.visible = false
+
+
+## Where the open plan sits: in front of the camera, facing it, as big as
+## fits (PLAN_FILL), a little above the middle to leave room for the hints.
+func _front_of_camera() -> Dictionary:
+	var aspect := float(size.x) / maxf(size.y, 1.0)
+	var tall := _cam.size
+	var wide := tall * aspect
+	var k := minf(wide * PLAN_FILL.x, tall * PLAN_FILL.y / sheet.tall)
+	var b := _cam.global_transform.basis.orthonormalized()
+	return {"at": _cam.global_position - b.z * 30.0 - b.y * tall * 0.01, "turn": b.get_rotation_quaternion(), "size": k}
+
+
+## The way out of the room, 0 on the floor to 1 open in front: it lifts
+## (the first quarter), flies and turns (to 0.62) and opens (the rest).
+func _sheet_step(t: float) -> void:
+	if sheet == null:
+		return
+	var rise := smoothstep(0.0, 0.24, t)
+	var fly := smoothstep(0.2, 0.62, t)
+	var open := clampf((t - 0.6) / 0.4, 0.0, 1.0)
+	# A little overshoot as it snaps open, like a map shaken out.
+	var snap := 1.0 - pow(1.0 - open, 3.0) + sin(open * PI) * 0.08
+	var lifted: Vector3 = _sheet_from.at + Vector3(0, 0.7 * rise, 0)
+	var at := lifted.lerp(_sheet_to.at, fly)
+	# An arc on the way, not a straight line.
+	at += Vector3(0, sin(fly * PI) * 1.2, 0)
+	var turn := (_sheet_from.turn as Quaternion).slerp(_sheet_to.turn, fly)
+	# A twirl while it flies.
+	turn = turn * Quaternion(Vector3.FORWARD, sin(fly * PI) * 0.5)
+	var k: float = exp(lerpf(log(_sheet_from.size), log(_sheet_to.size), fly))
+	sheet.transform = Transform3D(Basis(turn) * Basis.from_scale(Vector3.ONE * k), at)
+	sheet.fold = lerpf(PlanSheet.SHUT, PlanSheet.OPEN, clampf(snap, 0.0, 1.2))
+	sheet.shine(sin(minf(t / 0.62, 1.0) * PI) * 1.2)
+	(_veil.material_override as StandardMaterial3D).albedo_color.a = PLAN_VEIL * fly
+
+
+## The dark behind the plan: a sheet of night between it and the town.
+func _veil_on() -> void:
+	if _veil == null:
+		_veil = MeshInstance3D.new()
+		var q := QuadMesh.new()
+		q.size = Vector2(400, 400)
+		_veil.mesh = q
+		var m := StandardMaterial3D.new()
+		m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		m.albedo_color = Color(SKY, 0.0)
+		_veil.material_override = m
+		_cam.add_child(_veil)
+		_veil.position = Vector3(0, 0, -55)
+	_veil.visible = true
+
+
+## Where a point of the room's plan (tiles) is on screen, with the plan out.
+func plan_on_screen(p: Vector2) -> Vector2:
+	return _cam.unproject_position(sheet.tile_world(p)) if sheet else Vector2.ZERO
+
+
+## The camera closing in on a point of the open plan (tiles): zoom times
+## nearer, the point landing at `frac` of the screen (0..1 each way). It
+## only slides across its own view, so the plan stays where it is.
+func plan_look(p: Vector2, zoom: float, frac: Vector2, secs: float) -> void:
+	if sheet == null:
+		return
+	var tall: float = _plan_cam.size / zoom
+	var aspect := float(size.x) / maxf(size.y, 1.0)
+	var b := _cam.global_transform.basis.orthonormalized()
+	var rel := sheet.tile_world(p) - (_plan_cam.at as Vector3)
+	var across := rel.dot(b.x) - (frac.x - 0.5) * tall * aspect
+	var up := rel.dot(b.y) + (frac.y - 0.5) * tall
+	_cam_to(_plan_cam.at + b.x * across + b.y * up, tall, secs)
+
+
+## The camera back to the whole plan.
+func plan_rest(secs: float) -> void:
+	if not _plan_cam.is_empty():
+		_cam_to(_plan_cam.at, _plan_cam.size, secs)
+
+
+var _cam_tween: Tween
+
+
+func _cam_to(at: Vector3, tall: float, secs: float) -> void:
+	if _cam_tween:
+		_cam_tween.kill()
+	if secs <= 0.0:
+		_cam.position = at
+		_cam.size = tall
+		return
+	_cam_tween = create_tween().set_parallel().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	_cam_tween.tween_property(_cam, "position", at, secs)
+	_cam_tween.tween_property(_cam, "size", tall, secs)
 
 
 # --- Shapes -----------------------------------------------------------------------
