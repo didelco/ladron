@@ -754,7 +754,7 @@ func _pick_museum(m: int) -> void:
 ## its own; the piece of the one picked turning under a light. Pressing a
 ## room, or ROBAR, plays it.
 func _show_museum(m: int) -> void:
-	hud.backdrop(Hud.SPOTS.story)
+	hud.backdrop(Hud.MUSEUM_FOCUS, "museum_%d" % (m + 1))
 	phase = "museum"
 	var reached := Story.unlocked(players)
 	var nights := Story.nights_in(m)
@@ -1367,6 +1367,9 @@ func _show_brief(page: int) -> void:
 	page = clampi(page, 0, pages.size() - 1)
 	brief_page = page
 	phase = "brief"
+	# In the story, the museum's own picture behind its heists' screens.
+	if mode == "story":
+		hud.backdrop(Hud.MUSEUM_FOCUS, "museum_%d" % (Story.museum_of(level) + 1))
 	var names := {"story": Text.t("BRIEF_TAB_STORY"), "news": Text.t("BRIEF_TAB_NEWS"), "plan": Text.t("BRIEF_TAB_PLAN")}
 	var items: Array = []
 	match pages[page]:

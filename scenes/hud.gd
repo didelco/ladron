@@ -40,6 +40,8 @@ uniform vec4 bottom : source_color = vec4(0.08, 0.045, 0.035, 0.98);
 uniform sampler2D picture : filter_linear, repeat_disable;
 uniform float cover = 0.0;
 uniform vec2 focus = vec2(0.5);
+uniform float shade = 0.7;
+uniform vec4 tint : source_color = vec4(1.0);
 uniform sampler2D game_screen : hint_screen_texture, filter_linear_mipmap;
 uniform float cctv = 0.0;
 uniform vec4 phosphor : source_color = vec4(0.55, 1.0, 0.69, 1.0);
@@ -91,7 +93,7 @@ void fragment() {
 		span /= ZOOM;
 		vec2 drift = vec2(sin(TIME * 0.05), cos(TIME * 0.037)) * 0.02;
 		vec2 centre = clamp(focus + drift, span * 0.5, 1.0 - span * 0.5);
-		vec3 p = texture(picture, centre + (UV - 0.5) * span).rgb * 0.7;
+		vec3 p = texture(picture, centre + (UV - 0.5) * span).rgb * shade * tint.rgb;
 		// Darker at the top, under the heading, and at the bottom, under the buttons.
 		p *= 1.0 - 0.35 * smoothstep(0.3, 0.0, UV.y);
 		p *= 1.0 - 0.4 * pow(clamp((UV.y - 0.6) / 0.4, 0.0, 1.0), 2.0);
@@ -120,6 +122,22 @@ const CCTV_BRIGHT := 0.5
 ## The clock on it: the night's hour when the round began, in seconds.
 const CCTV_FROM := 3 * 3600
 const MENU_PICTURE := "res://assets/ui/fondo_menu.png"
+## The pictures behind the menus (Hud.backdrop), by name: the museum hall of
+## the menus out of the game, and each story museum's own, shown on its
+## screen and before each of its heists. Each with how bright it shows
+## (shade) and a colour it is tinted with, to sit in the night's purples and
+## let the writing read: the ancient world's is a sunny afternoon, so it is
+## dimmed and tinted to night.
+const PICTURES := {
+	"hall": {"path": MENU_PICTURE, "shade": 0.7, "tint": Color.WHITE},
+	"museum_1": {"path": "res://assets/ui/fondos/museo_1_prehistoria.png", "shade": 0.7, "tint": Color.WHITE},
+	"museum_2": {"path": "res://assets/ui/fondos/museo_2_naturaleza.png", "shade": 1.0, "tint": Color(0.95, 1.0, 0.97)},
+	"museum_3": {"path": "res://assets/ui/fondos/museo_3_antiguo.png", "shade": 0.42, "tint": Color(0.74, 0.62, 0.98)},
+	"museum_4": {"path": "res://assets/ui/fondos/museo_4_edad_media.png", "shade": 0.58, "tint": Color(0.88, 0.8, 1.0)},
+	"museum_5": {"path": "res://assets/ui/fondos/museo_5_moderna.png", "shade": 0.72, "tint": Color.WHITE},
+}
+## Where a museum's own picture is looked at: its middle.
+const MUSEUM_FOCUS := Vector2(0.5, 0.55)
 ## Where the menus out of the game look in MENU_PICTURE (Hud.backdrop), as
 ## fractions of it: the title at the lit case in the middle, the story at the
 ## vase on the left, the generative at the cases on the right, the challenges
@@ -198,6 +216,8 @@ var _fade: Tween
 var _backdrop: Tween
 ## where in the picture it looks (the wall keeps the last, to fade from)
 var _focus := Vector2(0.5, 0.5)
+## which of PICTURES is behind the menus ("" before the first)
+var _picture := ""
 ## what is drawn over the game while playing; hidden behind a menu
 var _play: Array[Control] = []
 var _count: Label
@@ -1294,16 +1314,21 @@ func _fade_panel(to: float) -> void:
 			backdrop(null))
 
 
-## Behind the menus, MENU_PICTURE looking at focus (a point in it, see
-## SPOTS), or the museum wall with null. Menu to menu it pans and
-## fades across; a menu coming up takes it at once. The wall comes back when
-## the menu goes away, so the menus over the game keep it.
-func backdrop(focus: Variant) -> void:
+## Behind the menus, one of PICTURES (the hall unless said) looking at focus
+## (a point in it, see SPOTS), or the museum wall with null. Menu to menu it
+## pans and fades across; a menu coming up takes it at once; another
+## picture comes in at once. The wall comes back when the menu goes away, so
+## the menus over the game keep it.
+func backdrop(focus: Variant, picture := "hall") -> void:
 	var m := _panel.material as ShaderMaterial
-	if focus != null and m.get_shader_parameter("picture") == null:
-		if not ResourceLoader.exists(MENU_PICTURE):
+	if focus != null and picture != _picture:
+		var look: Dictionary = PICTURES.get(picture, PICTURES.hall)
+		if not ResourceLoader.exists(look.path):
 			return
-		m.set_shader_parameter("picture", load(MENU_PICTURE))
+		_picture = picture
+		m.set_shader_parameter("picture", load(look.path))
+		m.set_shader_parameter("shade", look.shade)
+		m.set_shader_parameter("tint", look.tint)
 	if _backdrop:
 		_backdrop.kill()
 	var cover := 0.0 if focus == null else 1.0
