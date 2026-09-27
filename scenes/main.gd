@@ -242,6 +242,10 @@ func _ready() -> void:
 	# --menu=story|generative|settings: open a menu straight away, to look at it.
 	# --pick=N first: the story's heist N picked (map and museum open on its).
 	for arg in OS.get_cmdline_user_args():
+		# --save=PATH: the progress kept there instead (Story.save), for
+		# looking at the screens without touching the player's own.
+		if arg.begins_with("--save="):
+			Story.save = arg.substr(7)
 		if arg.begins_with("--pick="):
 			story_pick = clampi(int(arg.substr(7)), 1, Story.count())
 	for arg in OS.get_cmdline_user_args():
@@ -1447,7 +1451,7 @@ func _plan_items() -> Array:
 	var piece: Array = [
 		{"text": _brief_heading(), "size": 15, "colour": Hud.C.dim, "align": "left"},
 		{"text": Heist.first_upper(Heist.loot.name), "size": 26, "colour": Color(Heist.loot.colour), "wrap": true, "width": 330, "align": "left"},
-		{"text": Text.t("BRIEF_TAKES") % _seconds(Heist.loot.seconds), "size": 15, "colour": Hud.C.dim, "wrap": true, "width": 330, "align": "left"},
+		{"text": Briefing.takes(), "size": 15, "colour": Hud.C.dim, "wrap": true, "width": 330, "align": "left"},
 	]
 	var right: Array = [{"columns": [
 		{"items": [{"picture": preview.get_texture(), "smooth": true, "height": 120}], "middle": true},
@@ -1558,6 +1562,8 @@ func _show_end() -> void:
 			if not testing:
 				go = _leave_game.bind(_show_story_map)
 		if mode == "story" and not testing:
+			# The stars this go won, kept with the best (not when only looking).
+			HeistStats.rate(level, players, true, not just_looking)
 			if not just_looking:
 				Story.unlock(level + 1, players)
 			story_pick = mini(level + 1, Story.count())
@@ -1596,12 +1602,18 @@ func _front_page(boss: bool) -> Dictionary:
 		headline = Text.t("END_HEAD_UNSEEN")
 	if boss:
 		headline = Text.t("END_HEAD_MUSEUM") % Story.museum_in(Story.museum_of(level)).to_upper()
-	return {
+	var page := {
 		"name": Text.t("END_PAPER_NAME"),
 		"headline": headline,
 		"photo": preview.get_texture(),
 		"figures": _figures(),
 	}
+	# In the story, the stars this go won (HeistStats.rate), the new ones
+	# stamped in red.
+	if HeistStats.stars != 0:
+		page.stars = HeistStats.star_row()
+		page.star_names = [Text.t("END_STAR_TAKEN"), Text.t("END_STAR_UNSEEN"), Text.t("END_STAR_FAST")]
+	return page
 
 
 ## The night in figures, for the paper: [number, what] each (HeistStats).
@@ -1656,10 +1668,6 @@ func _show_ending() -> void:
 func _again() -> void:
 	_new_round(level + 1 if phase == "escaped" else level)
 	_show_brief(0)
-
-
-func _seconds(s: float) -> String:
-	return Text.t("BRIEF_SECONDS") % (str(int(s)) if is_equal_approx(s, round(s)) else str(s).replace(".", Text.t("BRIEF_DECIMAL_POINT")))
 
 
 func _unhandled_input(event: InputEvent) -> void:

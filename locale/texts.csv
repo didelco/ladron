@@ -331,6 +331,9 @@ END_STAT_ROLLS_ONE,VOLTERETA
 END_STAT_ROLLS_MANY,VOLTERETAS
 END_STAT_BUMPS_ONE,CHOQUE
 END_STAT_BUMPS_MANY,CHOQUES
+END_STAR_TAKEN,BOTÍN
+END_STAR_UNSEEN,SIGILO
+END_STAR_FAST,RAPIDEZ
 END_HEAD_MUSEUM,¡NO QUEDA NADA EN %s!
 END_FILE_LETTERHEAD,Comisaría del Pueblo · Ficha de detenido
 END_FILE_NUMBER,Nº %04d
@@ -894,6 +897,13 @@ GEN_KETCHUP_DETAIL_1,"Si se aprieta, suelta un «prrrt» que se oye en todo el m
 GEN_KETCHUP_DETAIL_2,El moho de la etiqueta ya tiene nombre: se llama Gustavo.
 BRIEF_TIPS_TITLE,PARA ESTA NOCHE
 BRIEF_TAKES,Para sacarla: quieto %s junto a la vitrina
+BRIEF_TAKES_PICK_ONE,Para sacarla: ganzúa de un perno
+BRIEF_TAKES_PICK_MANY,Para sacarla: ganzúa de %d pernos
+STAR_GOAL_TAKEN_ONE,Roba la pieza
+STAR_GOAL_TAKEN_MANY,Robad la pieza
+STAR_GOAL_UNSEEN_ONE,Sin que te vean
+STAR_GOAL_UNSEEN_MANY,Sin que os vean
+STAR_GOAL_FAST,En menos de %s
 BRIEF_DIFFICULTY,%s · %s
 TIP_GUARDS_NONE,Sin guardias: practica sin prisa.
 TIP_GUARDS_ONE,Un guardia

@@ -48,6 +48,8 @@ const HEADLINE := preload("res://assets/fonts/AbrilFatface-Regular.ttf")
 const PAPER_W := 720
 const PAPER_PHOTO := Vector2(456, 236)
 const FIGURES_W := 236
+## Each of a story heist's three stars under the headline, across.
+const STAR_SIZE := 34.0
 ## The police sheet: an A4's shape (1 : 1.414), and how much of it the menu
 ## makes room for — the rest runs off the bottom of the screen.
 const SHEET_W := 540.0
@@ -128,9 +130,10 @@ void fragment() {
 
 
 ## The front page: {"name", "headline", "photo": Texture2D, "figures":
-## [[number, what], ...]}: the masthead, the headline, the photo on the
-## left and the figures on the right. It spins in, as front pages do in old
-## films.
+## [[number, what], ...], "stars"?: [[won, new], ...], "star_names"?}: the
+## masthead, the headline, under it a story heist's three stars, and the
+## photo on the left and the figures on the right. It spins in, as front
+## pages do in old films.
 static func newspaper(d: Dictionary) -> Control:
 	var paper := PanelContainer.new()
 	paper.add_theme_stylebox_override("panel", _sheet(PAPER, 30, 18))
@@ -145,6 +148,8 @@ static func newspaper(d: Dictionary) -> Control:
 	headline.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	headline.custom_minimum_size.x = PAPER_W
 	headline.add_theme_constant_override("line_spacing", -8)
+	if d.has("stars"):
+		page.add_child(_stars(d.stars, d.get("star_names", [])))
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", PAPER_W - int(PAPER_PHOTO.x) - FIGURES_W)
 	page.add_child(row)
@@ -388,6 +393,51 @@ static func _figures(figures: Array) -> Control:
 		what.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		what.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	return column
+
+
+## A story heist's three stars under the headline, printed: each one won
+## solid in the paper's ink, or, new tonight, in the stamp's red and
+## stamped down once the page has landed; one not won, just its outline.
+## What each is for in small capitals under it (names).
+static func _stars(row: Array, names: Array) -> Control:
+	var line := HBoxContainer.new()
+	line.alignment = BoxContainer.ALIGNMENT_CENTER
+	line.add_theme_constant_override("separation", 34)
+	for i in row.size():
+		var won: bool = row[i][0]
+		var fresh: bool = row[i][1]
+		var cell := VBoxContainer.new()
+		cell.add_theme_constant_override("separation", 2)
+		line.add_child(cell)
+		var star := Control.new()
+		star.custom_minimum_size = Vector2(STAR_SIZE, STAR_SIZE)
+		star.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		star.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		star.pivot_offset = Vector2(STAR_SIZE, STAR_SIZE) / 2
+		var ink := STAMP if fresh else PAPER_INK
+		star.draw.connect(func() -> void:
+			var points := _star_points(Vector2(STAR_SIZE, STAR_SIZE) / 2, STAR_SIZE * 0.5, STAR_SIZE * 0.21)
+			if won:
+				star.draw_colored_polygon(points, ink)
+			else:
+				points.append(points[0])
+				star.draw_polyline(points, Color(PAPER_INK, 0.45), 2.0, true))
+		cell.add_child(star)
+		if won and fresh:
+			_stamp_down(star, -8.0 + i * 8.0)
+		if i < names.size():
+			var what := _line(names[i], 9, PAPER_INK if won else PAPER_INK_SOFT, cell, Hud.ARCADE)
+			what.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	return line
+
+
+## A five-pointed star round centre, point up: outer and inner radius.
+static func _star_points(centre: Vector2, outer: float, inner: float) -> PackedVector2Array:
+	var out := PackedVector2Array()
+	for k in 10:
+		var a := -PI / 2 + k * PI / 5
+		out.append(centre + Vector2(cos(a), sin(a)) * (outer if k % 2 == 0 else inner))
+	return out
 
 
 ## A police photo, grey, with the flash going off.
