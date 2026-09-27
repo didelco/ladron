@@ -232,5 +232,22 @@
 				"@meteorite"
 			]
 		}
+	},
+	"unique": [
+		"dinosaur",
+		"trojan_horse",
+		"temas/edad_media/espada_piedra",
+		"temas/edad_media/trono",
+		"temas/edad_media/maquina_voladora"
+	],
+	"variants": {
+		"temas/moderna/recreativa": [
+			"tenis",
+			"invasores",
+			"comecocos",
+			"bloques",
+			"serpiente",
+			"carreras"
+		]
 	}
 }

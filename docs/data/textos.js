@@ -26,7 +26,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:292"
+   "scenes/main.gd:293"
   ],
   "via": []
  },
@@ -37,7 +37,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:292"
+   "scenes/main.gd:293"
   ],
   "via": []
  },
@@ -48,7 +48,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:291"
+   "scenes/main.gd:292"
   ],
   "via": []
  },
@@ -59,7 +59,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:291"
+   "scenes/main.gd:292"
   ],
   "via": []
  },
@@ -70,8 +70,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:297",
-   "scenes/main.gd:1202"
+   "scenes/main.gd:298",
+   "scenes/main.gd:1203"
   ],
   "via": []
  },
@@ -82,7 +82,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:298"
+   "scenes/main.gd:299"
   ],
   "via": []
  },
@@ -93,14 +93,14 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:354",
-   "scenes/main.gd:430",
-   "scenes/main.gd:483",
-   "scenes/main.gd:602",
-   "scenes/main.gd:640",
-   "scenes/main.gd:679",
-   "scenes/main.gd:723",
-   "scenes/main.gd:877"
+   "scenes/main.gd:355",
+   "scenes/main.gd:431",
+   "scenes/main.gd:484",
+   "scenes/main.gd:603",
+   "scenes/main.gd:641",
+   "scenes/main.gd:680",
+   "scenes/main.gd:724",
+   "scenes/main.gd:878"
   ],
   "via": []
  },
@@ -111,7 +111,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:877"
+   "scenes/main.gd:878"
   ],
   "via": []
  },
@@ -122,8 +122,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:878",
-   "scenes/main.gd:1165"
+   "scenes/main.gd:879",
+   "scenes/main.gd:1166"
   ],
   "via": []
  },
@@ -134,7 +134,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:880"
+   "scenes/main.gd:881"
   ],
   "via": []
  },
@@ -145,7 +145,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1164"
+   "scenes/main.gd:1165"
   ],
   "via": []
  },
@@ -156,7 +156,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:599"
+   "scenes/main.gd:600"
   ],
   "via": []
  },
@@ -167,7 +167,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:600"
+   "scenes/main.gd:601"
   ],
   "via": []
  },
@@ -178,9 +178,9 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:378",
-   "scenes/main.gd:677",
-   "scenes/main.gd:697",
+   "scenes/main.gd:379",
+   "scenes/main.gd:678",
+   "scenes/main.gd:698",
    "logic/text.gd:9"
   ],
   "via": []
@@ -258,7 +258,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:714"
+   "scenes/main.gd:715"
   ],
   "via": []
  },
@@ -341,8 +341,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:475",
-   "scenes/main.gd:718"
+   "scenes/main.gd:476",
+   "scenes/main.gd:719"
   ],
   "via": []
  },
@@ -353,8 +353,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:476",
-   "scenes/main.gd:719"
+   "scenes/main.gd:477",
+   "scenes/main.gd:720"
   ],
   "via": []
  },
@@ -365,8 +365,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:477",
-   "scenes/main.gd:720"
+   "scenes/main.gd:478",
+   "scenes/main.gd:721"
   ],
   "via": []
  },
@@ -377,7 +377,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1199"
+   "scenes/main.gd:1200"
   ],
   "via": []
  },
@@ -388,7 +388,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1201"
+   "scenes/main.gd:1202"
   ],
   "via": []
  },
@@ -399,8 +399,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:555",
-   "scenes/main.gd:1433"
+   "scenes/main.gd:556",
+   "scenes/main.gd:1443"
   ],
   "via": []
  },
@@ -411,7 +411,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:786"
+   "scenes/main.gd:787"
   ],
   "via": []
  },
@@ -422,7 +422,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:782"
+   "scenes/main.gd:783"
   ],
   "via": []
  },
@@ -433,7 +433,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:782"
+   "scenes/main.gd:783"
   ],
   "via": []
  },
@@ -444,7 +444,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:788"
+   "scenes/main.gd:789"
   ],
   "via": []
  },
@@ -455,7 +455,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:789"
+   "scenes/main.gd:790"
   ],
   "via": []
  },
@@ -466,7 +466,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:789"
+   "scenes/main.gd:790"
   ],
   "via": []
  },
@@ -477,7 +477,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:795"
+   "scenes/main.gd:796"
   ],
   "via": []
  },
@@ -488,7 +488,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:796"
+   "scenes/main.gd:797"
   ],
   "via": []
  },
@@ -499,7 +499,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:797"
+   "scenes/main.gd:798"
   ],
   "via": []
  },
@@ -510,7 +510,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:799"
+   "scenes/main.gd:800"
   ],
   "via": []
  },
@@ -521,7 +521,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:929"
+   "scenes/main.gd:930"
   ],
   "via": []
  },
@@ -532,7 +532,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:929"
+   "scenes/main.gd:930"
   ],
   "via": []
  },
@@ -543,7 +543,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:929"
+   "scenes/main.gd:930"
   ],
   "via": []
  },
@@ -554,7 +554,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:929"
+   "scenes/main.gd:930"
   ],
   "via": []
  },
@@ -565,7 +565,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:922"
+   "scenes/main.gd:923"
   ],
   "via": []
  },
@@ -576,7 +576,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:923"
+   "scenes/main.gd:924"
   ],
   "via": []
  },
@@ -587,7 +587,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:924"
+   "scenes/main.gd:925"
   ],
   "via": []
  },
@@ -598,7 +598,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:925"
+   "scenes/main.gd:926"
   ],
   "via": []
  },
@@ -609,7 +609,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:963"
+   "scenes/main.gd:964"
   ],
   "via": []
  },
@@ -620,7 +620,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:963"
+   "scenes/main.gd:964"
   ],
   "via": []
  },
@@ -631,7 +631,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:965"
+   "scenes/main.gd:966"
   ],
   "via": []
  },
@@ -642,7 +642,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:966"
+   "scenes/main.gd:967"
   ],
   "via": []
  },
@@ -653,7 +653,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:967"
+   "scenes/main.gd:968"
   ],
   "via": []
  },
@@ -664,7 +664,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:968"
+   "scenes/main.gd:969"
   ],
   "via": []
  },
@@ -675,7 +675,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:969"
+   "scenes/main.gd:970"
   ],
   "via": []
  },
@@ -686,7 +686,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:970"
+   "scenes/main.gd:971"
   ],
   "via": []
  },
@@ -697,7 +697,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:973"
+   "scenes/main.gd:974"
   ],
   "via": []
  },
@@ -708,7 +708,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:973"
+   "scenes/main.gd:974"
   ],
   "via": []
  },
@@ -719,7 +719,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:974"
+   "scenes/main.gd:975"
   ],
   "via": []
  },
@@ -730,7 +730,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:975"
+   "scenes/main.gd:976"
   ],
   "via": []
  },
@@ -741,7 +741,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:976"
+   "scenes/main.gd:977"
   ],
   "via": []
  },
@@ -752,7 +752,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:977"
+   "scenes/main.gd:978"
   ],
   "via": []
  },
@@ -763,7 +763,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:978"
+   "scenes/main.gd:979"
   ],
   "via": []
  },
@@ -774,7 +774,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:933"
+   "scenes/main.gd:934"
   ],
   "via": []
  },
@@ -785,7 +785,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:937"
+   "scenes/main.gd:938"
   ],
   "via": []
  },
@@ -796,7 +796,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:937"
+   "scenes/main.gd:938"
   ],
   "via": []
  },
@@ -807,7 +807,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:948"
+   "scenes/main.gd:949"
   ],
   "via": []
  },
@@ -818,7 +818,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:948"
+   "scenes/main.gd:949"
   ],
   "via": []
  },
@@ -829,7 +829,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:948"
+   "scenes/main.gd:949"
   ],
   "via": []
  },
@@ -840,7 +840,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:949"
+   "scenes/main.gd:950"
   ],
   "via": []
  },
@@ -851,7 +851,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:949"
+   "scenes/main.gd:950"
   ],
   "via": []
  },
@@ -862,7 +862,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:949"
+   "scenes/main.gd:950"
   ],
   "via": []
  },
@@ -873,7 +873,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:953"
+   "scenes/main.gd:954"
   ],
   "via": []
  },
@@ -884,7 +884,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:953"
+   "scenes/main.gd:954"
   ],
   "via": []
  },
@@ -895,7 +895,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:953"
+   "scenes/main.gd:954"
   ],
   "via": []
  },
@@ -906,7 +906,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:953"
+   "scenes/main.gd:954"
   ],
   "via": []
  },
@@ -917,7 +917,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:953"
+   "scenes/main.gd:954"
   ],
   "via": []
  },
@@ -928,7 +928,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:953"
+   "scenes/main.gd:954"
   ],
   "via": []
  },
@@ -939,7 +939,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:953"
+   "scenes/main.gd:954"
   ],
   "via": []
  },
@@ -950,7 +950,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:953"
+   "scenes/main.gd:954"
   ],
   "via": []
  },
@@ -961,7 +961,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:939"
+   "scenes/main.gd:940"
   ],
   "via": []
  },
@@ -972,7 +972,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1115"
+   "scenes/main.gd:1116"
   ],
   "via": []
  },
@@ -983,7 +983,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1092"
+   "scenes/main.gd:1093"
   ],
   "via": []
  },
@@ -994,7 +994,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1092"
+   "scenes/main.gd:1093"
   ],
   "via": []
  },
@@ -1005,7 +1005,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1092"
+   "scenes/main.gd:1093"
   ],
   "via": []
  },
@@ -1016,7 +1016,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1092"
+   "scenes/main.gd:1093"
   ],
   "via": []
  },
@@ -1027,7 +1027,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1092"
+   "scenes/main.gd:1093"
   ],
   "via": []
  },
@@ -1038,7 +1038,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1135"
+   "scenes/main.gd:1136"
   ],
   "via": []
  },
@@ -1049,7 +1049,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1135"
+   "scenes/main.gd:1136"
   ],
   "via": []
  },
@@ -1060,7 +1060,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1139"
+   "scenes/main.gd:1140"
   ],
   "via": []
  },
@@ -1071,7 +1071,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1139"
+   "scenes/main.gd:1140"
   ],
   "via": []
  },
@@ -1082,7 +1082,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1139"
+   "scenes/main.gd:1140"
   ],
   "via": []
  },
@@ -1093,7 +1093,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1139"
+   "scenes/main.gd:1140"
   ],
   "via": []
  },
@@ -1104,7 +1104,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1152"
+   "scenes/main.gd:1153"
   ],
   "via": []
  },
@@ -1115,7 +1115,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1156"
+   "scenes/main.gd:1157"
   ],
   "via": []
  },
@@ -1126,7 +1126,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1159"
+   "scenes/main.gd:1160"
   ],
   "via": []
  },
@@ -1137,7 +1137,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:872"
+   "scenes/main.gd:873"
   ],
   "via": []
  },
@@ -1148,7 +1148,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:878"
+   "scenes/main.gd:879"
   ],
   "via": []
  },
@@ -1159,7 +1159,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:1431"
+   "scenes/main.gd:1441"
   ],
   "via": []
  },
@@ -1593,8 +1593,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1337",
-   "scenes/main.gd:1338"
+   "scenes/main.gd:1347",
+   "scenes/main.gd:1348"
   ],
   "via": []
  },
@@ -1671,7 +1671,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1443"
+   "scenes/main.gd:1453"
   ],
   "via": []
  },
@@ -1682,7 +1682,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1443"
+   "scenes/main.gd:1453"
   ],
   "via": []
  },
@@ -2914,7 +2914,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1399"
+   "scenes/main.gd:1409"
   ],
   "via": []
  },
@@ -2925,7 +2925,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1401"
+   "scenes/main.gd:1411"
   ],
   "via": []
  },
@@ -2936,7 +2936,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1401"
+   "scenes/main.gd:1411"
   ],
   "via": []
  },
@@ -2947,7 +2947,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1402"
+   "scenes/main.gd:1412"
   ],
   "via": []
  },
@@ -2958,7 +2958,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1404"
+   "scenes/main.gd:1414"
   ],
   "via": []
  },
@@ -2969,7 +2969,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1406"
+   "scenes/main.gd:1416"
   ],
   "via": []
  },
@@ -2980,7 +2980,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1406"
+   "scenes/main.gd:1416"
   ],
   "via": []
  },
@@ -2991,7 +2991,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1407"
+   "scenes/main.gd:1417"
   ],
   "via": []
  },
@@ -3002,7 +3002,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1407"
+   "scenes/main.gd:1417"
   ],
   "via": []
  },
@@ -3013,7 +3013,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1423"
+   "scenes/main.gd:1433"
   ],
   "via": []
  },
@@ -3055,7 +3055,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2072"
+   "scenes/main.gd:2093"
   ],
   "via": []
  },
@@ -3066,7 +3066,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2074"
+   "scenes/main.gd:2095"
   ],
   "via": []
  },
@@ -3077,7 +3077,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2077"
+   "scenes/main.gd:2098"
   ],
   "via": []
  },
@@ -3110,7 +3110,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2092"
+   "scenes/main.gd:2115"
   ],
   "via": []
  },
@@ -3121,7 +3121,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2094"
+   "scenes/main.gd:2117"
   ],
   "via": []
  },
@@ -3143,7 +3143,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2086"
+   "scenes/main.gd:2107"
+  ],
+  "via": []
+ },
+ {
+  "key": "HUD_ARCADE_HINT",
+  "es": "JUGAR UNA PARTIDA",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [
+   "scenes/main.gd:2109"
   ],
   "via": []
  },
@@ -3154,7 +3165,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2082"
+   "scenes/main.gd:2103"
   ],
   "via": []
  },
@@ -3165,7 +3176,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2089"
+   "scenes/main.gd:2112"
   ],
   "via": []
  },
@@ -3176,7 +3187,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2084"
+   "scenes/main.gd:2105"
   ],
   "via": []
  },
@@ -3187,7 +3198,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2080"
+   "scenes/main.gd:2101"
   ],
   "via": []
  },
@@ -3198,7 +3209,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2080"
+   "scenes/main.gd:2101"
   ],
   "via": []
  },
@@ -3209,7 +3220,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2080"
+   "scenes/main.gd:2101"
   ],
   "via": []
  },
@@ -3269,14 +3280,34 @@ window.TEXTOS = [
   ]
  },
  {
+  "key": "GAME_HOW_ARCADE",
+  "es": "{ud} MUEVE LA PALA",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": [
+   "GAME_HOW_…"
+  ]
+ },
+ {
   "key": "GAME_LET_GO",
   "es": "{cancel} SOLTAR",
   "broken": false,
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/minigame_box.gd:92"
+   "logic/minigame.gd:133"
   ],
+  "via": []
+ },
+ {
+  "key": "GAME_LET_GO_ARCADE",
+  "es": "{cancel} DEJA DE PERDER EL TIEMPO",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
   "via": []
  },
  {
@@ -3286,7 +3317,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1784"
+   "scenes/main.gd:1800"
   ],
   "via": []
  },
@@ -3297,7 +3328,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1787"
+   "scenes/main.gd:1803"
   ],
   "via": []
  },
@@ -3308,7 +3339,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1786"
+   "scenes/main.gd:1802"
   ],
   "via": []
  },
@@ -3319,7 +3350,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2219"
+   "scenes/main.gd:2243"
   ],
   "via": []
  },
@@ -3330,7 +3361,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2071"
+   "scenes/main.gd:2092"
   ],
   "via": []
  },
@@ -3341,7 +3372,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2071"
+   "scenes/main.gd:2092"
   ],
   "via": []
  },
@@ -3385,7 +3416,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2315"
+   "scenes/main.gd:2347"
   ],
   "via": []
  },
@@ -3429,7 +3460,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2349"
+   "scenes/main.gd:2381"
   ],
   "via": []
  },
@@ -3440,7 +3471,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2349"
+   "scenes/main.gd:2381"
   ],
   "via": []
  },
@@ -3451,7 +3482,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2740"
+   "scenes/main.gd:2772"
   ],
   "via": []
  },
@@ -3462,7 +3493,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2802"
+   "scenes/main.gd:2834"
   ],
   "via": []
  },
@@ -3550,7 +3581,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1954"
+   "scenes/main.gd:1970"
   ],
   "via": []
  },
@@ -3561,7 +3592,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1954"
+   "scenes/main.gd:1970"
   ],
   "via": []
  },
@@ -3572,7 +3603,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2241"
+   "scenes/main.gd:2265"
   ],
   "via": []
  },
@@ -3583,7 +3614,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2277"
+   "scenes/main.gd:2302"
+  ],
+  "via": []
+ },
+ {
+  "key": "LOG_ARCADE",
+  "es": "Una partidita… solo una",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [
+   "scenes/main.gd:2312"
   ],
   "via": []
  },
@@ -3594,7 +3636,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2277"
+   "scenes/main.gd:2302"
   ],
   "via": []
  },
@@ -3605,7 +3647,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1997"
+   "scenes/main.gd:2018"
   ],
   "via": []
  },
@@ -3616,7 +3658,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1997"
+   "scenes/main.gd:2018"
   ],
   "via": []
  },
@@ -3627,7 +3669,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2293"
+   "scenes/main.gd:2325"
   ],
   "via": []
  },
@@ -3638,7 +3680,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2241"
+   "scenes/main.gd:2265"
   ],
   "via": []
  },
@@ -3649,7 +3691,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2318"
+   "scenes/main.gd:2350"
   ],
   "via": []
  },
@@ -3660,7 +3702,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2325"
+   "scenes/main.gd:2357"
   ],
   "via": []
  },
@@ -3671,7 +3713,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2325"
+   "scenes/main.gd:2357"
   ],
   "via": []
  },
@@ -3682,7 +3724,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2327"
+   "scenes/main.gd:2359"
   ],
   "via": []
  },
@@ -3693,7 +3735,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2345"
+   "scenes/main.gd:2377"
   ],
   "via": []
  },
@@ -3704,7 +3746,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2345"
+   "scenes/main.gd:2377"
   ],
   "via": []
  },
@@ -3715,7 +3757,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2345"
+   "scenes/main.gd:2377"
   ],
   "via": []
  },
@@ -3726,7 +3768,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2350"
+   "scenes/main.gd:2382"
   ],
   "via": []
  },
@@ -3737,7 +3779,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2353"
+   "scenes/main.gd:2385"
   ],
   "via": []
  },
@@ -3748,7 +3790,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2366"
+   "scenes/main.gd:2398"
   ],
   "via": []
  },
@@ -3759,7 +3801,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2364"
+   "scenes/main.gd:2396"
   ],
   "via": []
  },
@@ -3770,7 +3812,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2364"
+   "scenes/main.gd:2396"
   ],
   "via": []
  },
@@ -3781,7 +3823,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2357"
+   "scenes/main.gd:2389"
   ],
   "via": []
  },
@@ -3792,7 +3834,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2405"
+   "scenes/main.gd:2437"
   ],
   "via": []
  },
@@ -3821,7 +3863,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2429"
+   "scenes/main.gd:2461"
   ],
   "via": []
  },
@@ -3887,7 +3929,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3323"
+   "scenes/main.gd:3355"
   ],
   "via": []
  },
@@ -3898,7 +3940,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3323"
+   "scenes/main.gd:3355"
   ],
   "via": []
  },
@@ -3909,7 +3951,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3330"
+   "scenes/main.gd:3362"
   ],
   "via": []
  },
@@ -3920,7 +3962,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3330"
+   "scenes/main.gd:3362"
   ],
   "via": []
  },
@@ -4140,7 +4182,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/hideouts.gd:90",
+   "logic/hideouts.gd:92",
    "logic/props.gd:21"
   ],
   "via": []
@@ -4875,8 +4917,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:478",
-   "scenes/main.gd:721"
+   "scenes/main.gd:479",
+   "scenes/main.gd:722"
   ],
   "via": []
  },
@@ -4920,7 +4962,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2072"
+   "scenes/main.gd:2093"
   ],
   "via": []
  },
@@ -4931,7 +4973,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:596"
+   "scenes/main.gd:597"
   ],
   "via": []
  },
@@ -4942,7 +4984,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:635"
+   "scenes/main.gd:636"
   ],
   "via": []
  },
@@ -4997,7 +5039,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:651"
+   "scenes/main.gd:652"
   ],
   "via": []
  },
@@ -5008,7 +5050,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:680"
+   "scenes/main.gd:681"
   ],
   "via": []
  },
@@ -5129,7 +5171,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:293"
+   "scenes/main.gd:294"
   ],
   "via": []
  },
@@ -5140,7 +5182,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:293"
+   "scenes/main.gd:294"
   ],
   "via": []
  },
@@ -5151,7 +5193,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:341"
+   "scenes/main.gd:342"
   ],
   "via": []
  },
@@ -5162,7 +5204,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:342"
+   "scenes/main.gd:343"
   ],
   "via": []
  },
@@ -5173,7 +5215,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:353"
+   "scenes/main.gd:354"
   ],
   "via": []
  },
@@ -5184,8 +5226,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:427",
-   "scenes/main.gd:480"
+   "scenes/main.gd:428",
+   "scenes/main.gd:481"
   ],
   "via": []
  },
@@ -5196,7 +5238,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:482"
+   "scenes/main.gd:483"
   ],
   "via": []
  },
@@ -5207,7 +5249,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:482"
+   "scenes/main.gd:483"
   ],
   "via": []
  },
@@ -5218,8 +5260,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:372",
-   "scenes/main.gd:470"
+   "scenes/main.gd:373",
+   "scenes/main.gd:471"
   ],
   "via": []
  },
@@ -5230,8 +5272,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:372",
-   "scenes/main.gd:470"
+   "scenes/main.gd:373",
+   "scenes/main.gd:471"
   ],
   "via": []
  },
@@ -5242,7 +5284,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:457"
+   "scenes/main.gd:458"
   ],
   "via": []
  },
@@ -5253,7 +5295,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:458"
+   "scenes/main.gd:459"
   ],
   "via": []
  },
@@ -5264,7 +5306,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:333"
+   "scenes/main.gd:334"
   ],
   "via": []
  },
@@ -5284,7 +5326,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:325"
+   "scenes/main.gd:326"
   ],
   "via": []
  },
@@ -5295,7 +5337,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:330"
+   "scenes/main.gd:331"
   ],
   "via": []
  },
@@ -5306,7 +5348,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:349"
+   "scenes/main.gd:350"
   ],
   "via": []
  },
@@ -5317,7 +5359,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:384"
+   "scenes/main.gd:385"
   ],
   "via": []
  },
@@ -5328,7 +5370,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:384"
+   "scenes/main.gd:385"
   ],
   "via": []
  },
@@ -5339,7 +5381,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:385"
+   "scenes/main.gd:386"
   ],
   "via": []
  },
@@ -5350,7 +5392,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:435"
+   "scenes/main.gd:436"
   ],
   "via": []
  },
@@ -5361,7 +5403,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:429"
+   "scenes/main.gd:430"
   ],
   "via": []
  },
@@ -5372,7 +5414,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:429"
+   "scenes/main.gd:430"
   ],
   "via": []
  },
@@ -5866,8 +5908,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/main.gd:555",
-   "scenes/main.gd:1423"
+   "scenes/main.gd:556",
+   "scenes/main.gd:1433"
   ],
   "via": []
  },
@@ -8734,7 +8776,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1319"
+   "scenes/main.gd:1329"
   ],
   "via": []
  },
@@ -8745,7 +8787,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1312"
+   "scenes/main.gd:1322"
   ],
   "via": []
  },
@@ -8756,7 +8798,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1337"
+   "scenes/main.gd:1347"
   ],
   "via": []
  },
@@ -9623,6 +9665,72 @@ window.TEXTOS = [
   ]
  },
  {
+  "key": "PIECE_RECREATIVA_TENIS",
+  "es": "TENIS",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": [
+   "PIECE_…"
+  ]
+ },
+ {
+  "key": "PIECE_RECREATIVA_INVASORES",
+  "es": "INVASORES DEL ESPACIO",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": [
+   "PIECE_…"
+  ]
+ },
+ {
+  "key": "PIECE_RECREATIVA_COMECOCOS",
+  "es": "COMECOCOS",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": [
+   "PIECE_…"
+  ]
+ },
+ {
+  "key": "PIECE_RECREATIVA_BLOQUES",
+  "es": "BLOQUES QUE CAEN",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": [
+   "PIECE_…"
+  ]
+ },
+ {
+  "key": "PIECE_RECREATIVA_SERPIENTE",
+  "es": "LA SERPIENTE",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": [
+   "PIECE_…"
+  ]
+ },
+ {
+  "key": "PIECE_RECREATIVA_CARRERAS",
+  "es": "CARRERAS",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": [
+   "PIECE_…"
+  ]
+ },
+ {
   "key": "PIECE_MOVIL_CALDER",
   "es": "MÓVIL DE CALDER",
   "broken": false,
@@ -9882,7 +9990,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2306"
+   "scenes/main.gd:2338"
   ],
   "via": []
  },

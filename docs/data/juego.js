@@ -2450,6 +2450,23 @@ window.JUEGO = {
      "@meteorite"
     ]
    }
+  },
+  "unique": [
+   "dinosaur",
+   "trojan_horse",
+   "temas/edad_media/espada_piedra",
+   "temas/edad_media/trono",
+   "temas/edad_media/maquina_voladora"
+  ],
+  "variants": {
+   "temas/moderna/recreativa": [
+    "tenis",
+    "invasores",
+    "comecocos",
+    "bloques",
+    "serpiente",
+    "carreras"
+   ]
   }
  },
  "capturas": [
@@ -3979,6 +3996,38 @@ window.JUEGO = {
     0.58,
     1.08,
     0.6
+   ],
+   "variants": [
+    {
+     "file": "assets/modelos/temas__moderna__recreativa__tenis.webp",
+     "id": "tenis",
+     "name": "PIECE_RECREATIVA_TENIS"
+    },
+    {
+     "file": "assets/modelos/temas__moderna__recreativa__invasores.webp",
+     "id": "invasores",
+     "name": "PIECE_RECREATIVA_INVASORES"
+    },
+    {
+     "file": "assets/modelos/temas__moderna__recreativa__comecocos.webp",
+     "id": "comecocos",
+     "name": "PIECE_RECREATIVA_COMECOCOS"
+    },
+    {
+     "file": "assets/modelos/temas__moderna__recreativa__bloques.webp",
+     "id": "bloques",
+     "name": "PIECE_RECREATIVA_BLOQUES"
+    },
+    {
+     "file": "assets/modelos/temas__moderna__recreativa__serpiente.webp",
+     "id": "serpiente",
+     "name": "PIECE_RECREATIVA_SERPIENTE"
+    },
+    {
+     "file": "assets/modelos/temas__moderna__recreativa__carreras.webp",
+     "id": "carreras",
+     "name": "PIECE_RECREATIVA_CARRERAS"
+    }
    ]
   },
   {
@@ -4972,8 +5021,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "27-09-2026 18:48",
-  "commit": "9cc3e5e",
-  "rama": "piezas-modeladas-y-lecciones"
+  "fecha": "27-09-2026 20:14",
+  "commit": "f3a57c1",
+  "rama": "escondites-y-repeticiones"
  }
 };
