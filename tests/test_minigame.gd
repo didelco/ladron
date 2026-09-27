@@ -174,7 +174,9 @@ func _init() -> void:
 		steady_slow += pick(4, 0.0, false, 0.55, 100 + s)
 	check(shaky_slow > steady_slow, "con las manos temblando cuesta más: %.1f s frente a %.1f s de media" % [shaky_slow / 8, steady_slow / 8])
 	check(shaky < 6.0, "experto temblando: %.1f s, más despacio pero la abre" % shaky)
-	check(Minigame.pins_for(1.0) == 2 and Minigame.pins_for(3.0) == 4 and Minigame.pins_for(9.0) == 6, "pernos según la cerradura: 2 a 6")
+	check(Minigame.pins_for(1.0) == 1 and Minigame.pins_for(3.5) == 1 and Minigame.pins_for(4.0) == 2 \
+		and Minigame.pins_for(5.0) == 3 and Minigame.pins_for(6.0) == 4 and Minigame.pins_for(9.0) == 4,
+		"pernos según la cerradura: 1 a 4")
 
 	var g := Minigame.make("lockpick", "case", 3, {"action": true, "right": true}) as LockpickGame
 	check(g.tick({"action": true, "right": true}, DT) == "" and g.step == 0, "lo que ya estaba pulsado al empezar no cuenta")
