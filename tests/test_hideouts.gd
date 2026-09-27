@@ -198,7 +198,7 @@ func _init() -> void:
 	for sd in range(1, 40):
 		Sim.new_map(sd * 7, "large")
 		for b in Museum.big_pieces:
-			if b.kind in ["trojan_horse", "mammoth", "log"]:
+			if b.kind in ["trojan_horse", "mammoth", "log", "car"]:
 				seen[b.kind] = true
 				var rr: Rect2i = b.rect
 				var room := Museum.room_at(rr.position.x + rr.size.x / 2.0, rr.position.y + rr.size.y / 2.0)
@@ -211,7 +211,7 @@ func _init() -> void:
 			var room := Museum.room_at(rr.position.x + rr.size.x / 2.0, rr.position.y + rr.size.y / 2.0)
 			if room and room.theme != "antiguo":
 				check(false, "semilla %d: %s fuera de una sala del mundo antiguo" % [sd * 7, b.kind])
-	for k in ["trojan_horse", "mammoth", "log"]:
+	for k in ["trojan_horse", "mammoth", "log", "car"]:
 		check(seen.has(k), "el generador pone %s" % k)
 		check(k in Hideouts.BIG, "%s es un escondite" % k)
 

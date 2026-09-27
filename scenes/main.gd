@@ -2913,7 +2913,7 @@ func _draw_suspicion(i: int, g: Guard) -> void:
 ## What a guard that saw you get in shows beside its marks: the thing you
 ## are in (Guard.knows_kind), by its icon in the editor's catalogue.
 const HIDEOUT_ICONS := {"plinth": "exhibit_plinth", "sarcophagus": "big_sarcophagus", "armour": "prop_armour",
-	"trojan_horse": "big_trojan_horse", "mammoth": "big_mammoth", "log": "big_log",
+	"trojan_horse": "big_trojan_horse", "mammoth": "big_mammoth", "log": "big_log", "car": "big_car",
 	"fridge": "exhibit_fridge", "box": "exhibit_box", "legionary": "exhibit_legionary", "confessional": "exhibit_confessional",
 	"chest": "exhibit_chest", "egg": "exhibit_egg", "shell": "exhibit_shell"}
 ## How big the icon is, in the marks' pixels.

@@ -4,7 +4,8 @@ extends RefCounted
 ## gets you out, onto the free floor that way.
 ##
 ##   the big pieces (Museum.big_pieces) you fit inside: the sarcophagus, the
-##     Trojan horse, the mammoth (under its coat) and the hollow log;
+##     Trojan horse, the mammoth (under its coat), the hollow log and the
+##     little car on its stand;
 ##   pieces of furniture on a case tile of their own (pieces), one theme
 ##     each: a retro fridge and a cardboard box (modern), a legionary's
 ##     armour (ancient), a confessional and a chest (middle ages), a giant
@@ -22,7 +23,7 @@ const REACH := 1.0
 ## A guard this close to a blown hideout pulls you out.
 const GRAB := 1.2
 ## The big pieces you fit inside (keys of MapGen.BIG).
-const BIG := ["sarcophagus", "trojan_horse", "mammoth", "log"]
+const BIG := ["sarcophagus", "trojan_horse", "mammoth", "log", "car"]
 ## The pieces of furniture you hide in: their model (MuseumView.asset) and
 ## the theme whose galleries they stand in (Themes).
 const PIECES := {

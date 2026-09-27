@@ -41,7 +41,7 @@ const DIRS: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), 
 ## (Hideouts): the Trojan horse on its square wheeled deck, the mammoth and the
 ## hollow log.
 const BIG := {"dinosaur": Vector2i(2, 3), "sarcophagus": Vector2i(1, 3), "bear": Vector2i(1, 2),
-	"trojan_horse": Vector2i(2, 2), "mammoth": Vector2i(2, 3), "log": Vector2i(1, 3)}
+	"trojan_horse": Vector2i(2, 2), "mammoth": Vector2i(2, 3), "log": Vector2i(1, 3), "car": Vector2i(2, 3)}
 
 var w: int
 var h: int
@@ -932,7 +932,7 @@ func _big_pieces(seed: int) -> void:
 		wanted.append("sarcophagus")
 	# Last, so the others land where they always did.
 	wanted.append("bear")
-	wanted.append_array(["trojan_horse", "mammoth", "log"])
+	wanted.append_array(["trojan_horse", "mammoth", "log", "car"])
 	var order: Array[int] = []
 	for i in rooms.size():
 		order.append(i)

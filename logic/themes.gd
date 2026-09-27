@@ -73,12 +73,13 @@ const ALL := {
 	"moderna": {
 		"gallery": ["the modern age gallery", "GALLERY_MODERN"],
 		"case": ["@colours"],
-		"plinth": ["@lego_skull"],
+		"plinth": ["@lego_skull", "temas/moderna/tele", "temas/moderna/tostadora", "temas/moderna/rubik", "temas/moderna/perro_globo"],
 		# Pop: pink, cyan, yellow, violet; on white.
 		"colours": ["#ff4f9a", "#00c2d8", "#ffd400", "#8a4dff"],
 		"cloth": "#f2f2f2",
-		"floor": ["@globe", "@totem"],
+		"floor": ["@globe", "@totem", "temas/moderna/recreativa", "temas/moderna/movil_calder", "temas/moderna/semaforo"],
 		"paintings": ["abstract", "pipe", "banana", "ice_cream", "portrait"],
+		"big": ["car"],
 	},
 }
 

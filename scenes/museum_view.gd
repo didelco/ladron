@@ -379,12 +379,13 @@ func _hideout(piece: Node3D, kind: String, t: Vector2i) -> void:
 
 ## The big pieces' models (the ones you hide in are the themes').
 const BIG_MODELS := {"dinosaur": "dinosaurio", "sarcophagus": "sarcofago", "trojan_horse": "temas/antiguo/caballo_troya",
-	"mammoth": "temas/prehistoria/mamut", "log": "temas/naturaleza/tronco"}
+	"mammoth": "temas/prehistoria/mamut", "log": "temas/naturaleza/tronco", "car": "temas/moderna/coche"}
 
 
 ## A piece standing on a block of tiles (Museum.big_pieces): the dinosaur on
 ## its 3x2 platform, the sarcophagus on its 3x1 bier, the bear on a 2x1
-## plinth, the Trojan horse on its wheeled deck, the mammoth, the hollow log.
+## plinth, the Trojan horse on its wheeled deck, the mammoth, the hollow log,
+## the little car on its show stand.
 ## The models lie along their length (along x, all but the sarcophagus, which
 ## lies along z); either end may face either way.
 func _big_piece(kind: String, r: Rect2i) -> void:

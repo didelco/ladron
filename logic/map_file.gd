@@ -30,7 +30,7 @@ const FORMAT := 1
 ## A tile as a character; a space is no building at all.
 const CHARS := {Tiles.FLOOR: ".", Tiles.WALL: "#", Tiles.COVER: "o"}
 ## The big pieces in a ready-made room (stamp), by their letter.
-const BIG_LETTERS := {"D": "dinosaur", "S": "sarcophagus", "O": "bear", "H": "trojan_horse", "M": "mammoth", "L": "log"}
+const BIG_LETTERS := {"D": "dinosaur", "S": "sarcophagus", "O": "bear", "H": "trojan_horse", "M": "mammoth", "L": "log", "C": "car"}
 const OUT := " "
 ## No building, for put().
 const OUT_TILE := -1
@@ -278,7 +278,7 @@ func stamp(rows: Array, corner: Vector2i, gallery: bool) -> void:
 					put(t, Tiles.WALL)
 				"o":
 					put(t, Tiles.COVER)
-				"D", "S", "O", "H", "M", "L":
+				"D", "S", "O", "H", "M", "L", "C":
 					put(t, Tiles.COVER)
 					var kind: String = BIG_LETTERS[c]
 					blocks[kind] = (blocks[kind] as Rect2i).merge(Rect2i(t, Vector2i.ONE)) if blocks.has(kind) else Rect2i(t, Vector2i.ONE)
