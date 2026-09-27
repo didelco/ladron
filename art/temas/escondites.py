@@ -30,8 +30,8 @@ ART = os.path.normpath(os.path.join(HERE, ".."))
 sys.path += [HERE, os.path.join(ART, "characters"), ART]
 import bpy  # noqa: E402
 
-import catalogo  # noqa: E402
 import kit  # noqa: E402
+import tema  # noqa: E402
 
 ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 TAU = 2 * math.pi
@@ -464,43 +464,9 @@ BIG = {"caballo_troya", "mamut", "tronco"}
 SCALE = {"nevera": 0.93, "legionario": 0.85, "confesionario": 0.9, "huevo": 0.92, "caparazon": 1.08}
 
 
-def build(path, out, pieces):
-    if os.path.exists(path):
-        bpy.ops.wm.open_mainfile(filepath=path)
-    else:
-        kit.reset()
-        catalogo.mark("piezas", out)
-    kit._mats.clear()
-    for name, make in pieces:
-        old = bpy.data.collections.get(name)
-        if old:
-            for o in list(old.all_objects):
-                bpy.data.objects.remove(o, do_unlink=True)
-            bpy.data.collections.remove(old)
-            bpy.context.view_layer.update()
-        coll = catalogo.add_piece(name)
-        coll["sitio"] = "grande" if name in BIG else "escondite"
-        objs = make()
-        k = SCALE.get(name, 1.0)
-        for o in objs:
-            if o.parent is None and k != 1.0:
-                o.location *= k
-                o.scale *= k
-        for o in objs:
-            for c in list(o.users_collection):
-                c.objects.unlink(o)
-            coll.objects.link(o)
-        print("[escondite]", name)
-    catalogo.arrange()
-    bpy.ops.wm.save_as_mainfile(filepath=path)
-
-
 done = []
 for file, (out, pieces) in FILES.items():
     wanted = [(n, f) for n, f in pieces if not ARGS or n in ARGS]
-    if not wanted:
-        continue
-    path = os.path.join(ART, file)
-    build(path, out, wanted)
-    done += catalogo.export_file(path, [n for n, _ in wanted])
+    if wanted:
+        done += tema.replace(os.path.join(ART, file), out, wanted, lambda n: "grande" if n in BIG else "escondite", SCALE)
 print("[escondites]", len(done), "piezas:", ", ".join(done))

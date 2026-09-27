@@ -148,6 +148,48 @@ def _sheet(built, path):
         json.dump(frames, f)
 
 
+# --- Añadir o rehacer piezas en un .blend del catálogo ------------------------------
+
+def replace(path, out, pieces, sitio, scale=None):
+    """Abre art/<fichero>.blend (o lo crea, con su carpeta de salida out) y
+    pone cada pieza en su colección: pieces = [(nombre, función)]; si ya
+    estaba, la sustituye (pisa sus retoques). sitio(nombre) da su propiedad
+    "sitio"; scale, la escala de cada una desde su pie. Ordena la fila,
+    guarda y exporta esas piezas; devuelve sus nombres."""
+    sys.path.append(os.path.join(HERE, ".."))
+    import catalogo
+    scale = scale or {}
+    if os.path.exists(path):
+        bpy.ops.wm.open_mainfile(filepath=path)
+    else:
+        kit.reset()
+        catalogo.mark("piezas", out)
+    kit._mats.clear()
+    for name, make in pieces:
+        old = bpy.data.collections.get(name)
+        if old:
+            for o in list(old.all_objects):
+                bpy.data.objects.remove(o, do_unlink=True)
+            bpy.data.collections.remove(old)
+            bpy.context.view_layer.update()
+        coll = catalogo.add_piece(name)
+        coll["sitio"] = sitio(name)
+        objs = make()
+        k = scale.get(name, 1.0)
+        for o in objs:
+            if o.parent is None and k != 1.0:
+                o.location *= k
+                o.scale *= k
+        for o in objs:
+            for c in list(o.users_collection):
+                c.objects.unlink(o)
+            coll.objects.link(o)
+        print("[pieza]", name)
+    catalogo.arrange()
+    bpy.ops.wm.save_as_mainfile(filepath=path)
+    return catalogo.export_file(path, [n for n, _ in pieces])
+
+
 # --- Piezas de apoyo que se repiten entre temas -----------------------------------
 
 def cushion(name, w, d, colour, h=0.04):

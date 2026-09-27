@@ -6,6 +6,11 @@ extends RefCounted
 ## stands on the floor, which paintings, and the big piece it would rather
 ## have. Corridors show a little of everything.
 ##
+## The glass cases show nothing detailed: bright, simple things in the
+## theme's colours ("@colours": MuseumView._colours), that read from the
+## camera as spots of colour; the detailed pieces stand out in the open, on
+## plinths and on the floor, so the two never look alike.
+##
 ## A piece is a model under assets/models/ ("temas/antiguo/escarabajo",
 ## modelled by art/temas/*.py) or, with an @, one of the pieces MuseumView
 ## builds itself ("@butterflies": MuseumView.EXHIBITS). Paintings are kinds
@@ -19,8 +24,12 @@ extends RefCounted
 const ALL := {
 	"antiguo": {
 		"gallery": ["the ancient world gallery", "GALLERY_ANCIENT"],
-		"case": ["temas/antiguo/escarabajo", "temas/antiguo/canopos", "temas/antiguo/amuletos", "temas/antiguo/papiro"],
-		"plinth": ["temas/antiguo/busto_faraon", "temas/antiguo/gato_bastet", "temas/antiguo/obelisco", "@amphora", "@statue"],
+		"case": ["@colours"],
+		"plinth": ["temas/antiguo/busto_faraon", "temas/antiguo/gato_bastet", "temas/antiguo/obelisco", "@amphora", "@statue",
+			"temas/antiguo/escarabajo", "temas/antiguo/canopos", "temas/antiguo/amuletos", "temas/antiguo/papiro"],
+		# Gold, turquoise, lapis lazuli, terracotta; linen under them.
+		"colours": ["#e8b53a", "#2ec4b6", "#2f5fd0", "#d2643c"],
+		"cloth": "#e6dcc2",
 		"floor": ["temas/antiguo/anubis", "temas/antiguo/barca"],
 		"paintings": ["pyramids", "hieroglyphs", "nile"],
 		"big": ["sarcophagus", "trojan_horse"],
@@ -28,17 +37,23 @@ const ALL := {
 	"edad_media": {
 		"gallery": ["the medieval hall", "GALLERY_MEDIEVAL"],
 		# Castles and knights, the gothic, the Renaissance and Leonardo's inventions.
-		"case": ["temas/edad_media/corona", "temas/edad_media/caliz", "temas/edad_media/manuscrito", "temas/edad_media/llave_sello",
-			"temas/edad_media/codice_leonardo", "temas/edad_media/astrolabio"],
+		"case": ["@colours"],
 		"plinth": ["temas/edad_media/yelmo", "temas/edad_media/escudo", "temas/edad_media/castillo", "temas/edad_media/gargola",
-			"temas/edad_media/carro_blindado"],
+			"temas/edad_media/carro_blindado", "temas/edad_media/corona", "temas/edad_media/caliz", "temas/edad_media/manuscrito",
+			"temas/edad_media/llave_sello", "temas/edad_media/codice_leonardo", "temas/edad_media/astrolabio"],
+		# Ruby, gold, silver, emerald; on crimson velvet.
+		"colours": ["#d0263e", "#e8b53a", "#d6dbe4", "#23a861"],
+		"cloth": "#6a1f2e",
 		"floor": ["temas/edad_media/espada_piedra", "temas/edad_media/trono", "temas/edad_media/maquina_voladora", "temas/edad_media/vidriera"],
 		"paintings": ["castle", "dragon", "tapestry", "gioconda", "vitruvian"],
 	},
 	"prehistoria": {
 		"gallery": ["the prehistory gallery", "GALLERY_PREHISTORY"],
-		"case": ["@ammonite", "@minerals", "@meteorite"],
-		"plinth": ["@skull"],
+		"case": ["@colours", "@minerals"],
+		"plinth": ["@skull", "@ammonite", "@meteorite"],
+		# Ochre, bone, amber, flint; on sand.
+		"colours": ["#d08a3a", "#efe3c8", "#f4a81c", "#4a4452"],
+		"cloth": "#b89a6a",
 		"floor": [],
 		"paintings": ["landscape"],
 		"big": ["dinosaur", "mammoth"],
@@ -46,16 +61,22 @@ const ALL := {
 	# Animals, plants and trees, and life under water.
 	"naturaleza": {
 		"gallery": ["the natural history gallery", "GALLERY_NATURE"],
-		"case": ["@butterflies"],
+		"case": ["@colours", "@butterflies"],
 		"plinth": [],
+		# Leaf, blossom, sky, sunflower; on moss.
+		"colours": ["#5cc85c", "#ff6fa8", "#5ac8fa", "#ffd23f"],
+		"cloth": "#2e4a2a",
 		"floor": ["@diorama"],
 		"paintings": ["landscape"],
 		"big": ["bear", "log"],
 	},
 	"moderna": {
 		"gallery": ["the modern age gallery", "GALLERY_MODERN"],
-		"case": [],
+		"case": ["@colours"],
 		"plinth": ["@lego_skull"],
+		# Pop: pink, cyan, yellow, violet; on white.
+		"colours": ["#ff4f9a", "#00c2d8", "#ffd400", "#8a4dff"],
+		"cloth": "#f2f2f2",
 		"floor": ["@globe", "@totem"],
 		"paintings": ["abstract", "pipe", "banana", "ice_cream", "portrait"],
 	},

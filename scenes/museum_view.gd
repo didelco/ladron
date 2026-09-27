@@ -99,7 +99,7 @@ static var palette := {}
 ## What stands on a case, chosen by hand (a map from the editor): tile to one
 ## of EXHIBITS. The rest, and every case when empty, as the hash says.
 static var exhibits := {}
-const EXHIBITS := ["butterflies", "minerals", "ammonite", "meteorite", "statue", "skull", "lego_skull", "diorama", "amphora", "globe", "totem", "bear", "plinth"]
+const EXHIBITS := ["colours", "butterflies", "minerals", "ammonite", "meteorite", "statue", "skull", "lego_skull", "diorama", "amphora", "globe", "totem", "bear", "plinth"]
 
 
 func build() -> void:
@@ -321,9 +321,8 @@ func _themed(piece: Node3D, where: String, what: String, t: Vector2i, yaw: float
 			inside.add_child(model)
 			_vitrine(piece, inside)
 		"plinth":
-			var p := _pivot(piece, Vector3.ZERO, turn)
-			_plinth(p, 0.5, 0.64)
-			_pivot(p, Vector3(0, 0.5, 0)).add_child(model)
+			_pedestal(piece, t)
+			_on_pedestal(piece, model, _nudge(t))
 		_:
 			_pivot(piece, Vector3(0, 0.16, 0), turn).add_child(model)
 
@@ -333,21 +332,24 @@ func _exhibit(piece: Node3D, what: String, t: Vector2i, yaw: float) -> void:
 	var odd := _hash01(t.x, t.y, 5) < 0.5
 	match what:
 		"butterflies": _vitrine(piece, _butterflies(t.x + t.y))
+		"colours": _vitrine(piece, _colours(t))
 		"minerals": _vitrine(piece, _minerals(t.x + t.y))
-		"ammonite": _vitrine(piece, _ammonite())
-		"meteorite": _vitrine(piece, _rock())
+		# Out of the case, on a plinth of their own: the detailed ones.
+		"ammonite", "meteorite":
+			_pedestal(piece, t)
+			_on_pedestal(piece, _ammonite() if what == "ammonite" else _rock(), _nudge(t))
 		"statue":
-			var p := _pivot(piece, Vector3.ZERO, yaw)
-			_plinth(p, 0.5, 0.64)
+			_pedestal(piece, t)
+			var p := _pivot(piece, Vector3.ZERO, _nudge(t))
 			_specimen(p, "res://assets/models/statue-%s.glb" % ("a" if odd else "b"), 0.5, 0.88, 0.8, C.bone_dark)
 		"skull", "lego_skull":
-			_plinth(piece, CASE_HEIGHT - 0.16, 0.64)
-			_skull(piece, yaw, what == "lego_skull")
+			# Facing the gallery (the camera), a little off square.
+			_pedestal(piece, t)
+			_on_pedestal(piece, asset("craneo_lego" if what == "lego_skull" else "craneo"), _nudge(t))
 		"diorama": _diorama(piece, t.x + t.y)
 		"amphora":
-			var p := _pivot(piece, Vector3.ZERO, yaw)
-			_plinth(p, 0.42, 0.6)
-			_amphora(p, 0.42)
+			_pedestal(piece, t, 0.42)
+			_amphora(_pivot(piece, Vector3.ZERO, _nudge(t)), 0.42)
 		"globe": _globe(_pivot(piece, Vector3.ZERO, yaw))
 		"plinth": _empty_plinth(piece)
 		_ when Hideouts.PIECES.has(what): _hideout(piece, what, t)
@@ -417,6 +419,88 @@ func _base(parent: Node3D) -> void:
 	_mesh(parent, _box(Vector3(0.9, 0.16, 0.9)), C.case_dark, Vector3(0, 0.08, 0))
 
 
+## A piece on a pedestal faces the gallery (the camera), turned no more than
+## this either way: the pedestals stand square, all alike, and pieces turned
+## every which way made the repeats show.
+const NUDGE := 0.12
+
+
+func _nudge(t: Vector2i) -> float:
+	return (_hash01(t.x, t.y, 13) - 0.5) * 2.0 * NUDGE
+
+
+## How tall the pedestals are, and how much of their top a piece fills: as
+## wide as this, as tall as that, never grown more than MAX_GROW.
+const PEDESTAL_H := 0.5
+const PIECE_SPAN := 0.52
+const PIECE_TALL := 0.62
+const MAX_GROW := 2.4
+## A piece lower than this share of its width lies flat: it leans back a
+## little, its face to the camera.
+const FLAT := 0.4
+const FLAT_TILT := 0.45
+
+
+## A pedestal in its gallery's style, top at h: sandstone with a band of
+## lapis (ancient), an eight-sided stone column (middle ages), a rough rock
+## (prehistory), a tree stump (nature), a black gallery cube (modern); in a
+## corridor, the museum's own plinth.
+func _pedestal(parent: Node3D, t: Vector2i, h := PEDESTAL_H) -> void:
+	var on_plan := t.x < Museum.w and t.y < Museum.h and Museum.grid.size() == Museum.w * Museum.h
+	var room := Museum.room_at(t.x + 0.5, t.y + 0.5) if on_plan else null
+	var theme: String = room.theme if room else ""
+	var drum := func(r: float, height: float, r2: float, sides: int, colour: Color, y: float, spin := 0.0) -> void:
+		var c := CylinderMesh.new()
+		c.bottom_radius = r
+		c.top_radius = r2
+		c.height = height
+		c.radial_segments = sides
+		c.rings = 1
+		_mesh(parent, c, colour, Vector3(0, y, 0)).rotation.y = spin
+	match theme:
+		"antiguo":
+			_mesh(parent, _box(Vector3(0.66, 0.06, 0.66)), Color("#9a7a44"), Vector3(0, 0.03, 0))
+			_mesh(parent, _box(Vector3(0.56, h - 0.1, 0.56)), Color("#caa66a"), Vector3(0, 0.06 + (h - 0.1) / 2, 0))
+			_mesh(parent, _box(Vector3(0.58, 0.05, 0.58)), Color("#2f5fd0"), Vector3(0, h - 0.075, 0))
+			_mesh(parent, _box(Vector3(0.6, 0.012, 0.6)), Color("#e8b53a"), Vector3(0, h - 0.044, 0))
+			_mesh(parent, _box(Vector3(0.6, 0.038, 0.6)), Color("#d8b87e"), Vector3(0, h - 0.019, 0))
+		"edad_media":
+			drum.call(0.34, 0.08, 0.32, 8, Color("#55505c"), 0.04, PI / 8)
+			drum.call(0.26, h - 0.13, 0.26, 8, Color("#807a86"), 0.08 + (h - 0.13) / 2, PI / 8)
+			drum.call(0.31, 0.05, 0.33, 8, Color("#55505c"), h - 0.025, PI / 8)
+		"prehistoria":
+			var spin := PI / 7
+			drum.call(0.34, h, 0.28, 7, Color("#7c6e5e"), h / 2, spin)
+			drum.call(0.29, 0.04, 0.25, 7, Color("#968672"), h + 0.0, spin + 0.3)
+		"naturaleza":
+			drum.call(0.3, h, 0.27, 12, Color("#5a3e26"), h / 2)
+			drum.call(0.25, 0.012, 0.25, 12, Color("#c9a06a"), h + 0.006)
+			drum.call(0.12, 0.014, 0.12, 12, Color("#a07a48"), h + 0.008)
+		"moderna":
+			_mesh(parent, _box(Vector3(0.5, 0.04, 0.5)), C.ink, Vector3(0, 0.02, 0))
+			_mesh(parent, _box(Vector3(0.58, h - 0.04, 0.58)), Color("#2a2a32"), Vector3(0, 0.04 + (h - 0.04) / 2, 0))
+			_mesh(parent, _box(Vector3(0.596, 0.016, 0.596)), Color("#ececf0"), Vector3(0, h - 0.04, 0))
+		_:
+			_plinth(parent, h, 0.64)
+
+
+## A theme's piece on top of its pedestal, made to fill it: grown or shrunk
+## to PIECE_SPAN across and at most PIECE_TALL high, and, if it lies flat,
+## leant back towards the camera so its face shows. turn: its own heading.
+func _on_pedestal(parent: Node3D, model: Node3D, turn: float, h := PEDESTAL_H) -> void:
+	var box := _bounds(model, Transform3D.IDENTITY)
+	var span := maxf(maxf(box.size.x, box.size.z), 1e-3)
+	var k := minf(minf(PIECE_SPAN / span, PIECE_TALL / maxf(box.size.y, 1e-3)), MAX_GROW)
+	var flat := box.size.y < span * FLAT
+	var tilt := _pivot(parent, Vector3(0, h + (span * k * 0.5 * sin(FLAT_TILT) if flat else 0.0), 0))
+	tilt.rotation.x = FLAT_TILT if flat else 0.0
+	var holder := _pivot(tilt, Vector3.ZERO, turn if not flat else 0.0)
+	holder.scale = Vector3.ONE * k
+	var centre := box.get_center()
+	model.position = Vector3(-centre.x, -box.position.y, -centre.z)
+	holder.add_child(model)
+
+
 func _plinth(parent: Node3D, h: float, w: float) -> void:
 	_mesh(parent, _box(Vector3(w, h, w)), C.wall_top, Vector3(0, h / 2, 0))
 	# A brass band round the top, and a label on the front.
@@ -441,6 +525,67 @@ func _vitrine(parent: Node3D, contents: Node3D) -> void:
 	if contents:
 		contents.position = Vector3(0, 0.42, 0)
 		parent.add_child(contents)
+
+
+## Bright, simple things in a glass case, in its gallery's colours
+## (Themes "colours", on its "cloth"): a vase, an orb on its ring, a stack
+## of blocks, a handful of gems or a bowl with a ball. From the camera they
+## read as a spot of colour, not as a detail: the detailed pieces stand
+## outside the cases.
+func _colours(t: Vector2i) -> Node3D:
+	# (Off any plan, as the editor's icons are: any theme.)
+	var on_plan := t.x < Museum.w and t.y < Museum.h and Museum.grid.size() == Museum.w * Museum.h
+	var room := Museum.room_at(t.x + 0.5, t.y + 0.5) if on_plan else null
+	var ids := Themes.ids()
+	var theme: String = room.theme if room and room.theme != "" else ids[int(_hash01(t.x, t.y, 41) * ids.size()) % ids.size()]
+	var cols: Array = Themes.ALL[theme].colours
+	var first := int(_hash01(t.x, t.y, 43) * cols.size()) % cols.size()
+	var a := Color(cols[first])
+	var b := Color(cols[(first + 1 + int(_hash01(t.x, t.y, 44) * (cols.size() - 1))) % cols.size()])
+	var g := Node3D.new()
+	_mesh(g, _box(Vector3(0.66, 0.02, 0.66)), Color(Themes.ALL[theme].cloth), Vector3(0, 0.01, 0))
+	var drum := func(r: float, h: float, r2 := -1.0, sides := 10) -> CylinderMesh:
+		var c := CylinderMesh.new()
+		c.top_radius = r if r2 < 0 else r2
+		c.bottom_radius = r
+		c.height = h
+		c.radial_segments = sides
+		c.rings = 1
+		return c
+	var ball := func(r: float, sides := 12) -> SphereMesh:
+		var s := SphereMesh.new()
+		s.radius = r
+		s.height = r * 2
+		s.radial_segments = sides
+		s.rings = sides / 2
+		return s
+	match int(_hash01(t.x, t.y, 47) * 5):
+		0:
+			# A vase: a round belly, a neck, a lip in the second colour.
+			_mesh(g, ball.call(0.17), a, Vector3(0, 0.19, 0), true)
+			_mesh(g, drum.call(0.07, 0.14, 0.09), a, Vector3(0, 0.36, 0), true)
+			_mesh(g, drum.call(0.1, 0.03), b, Vector3(0, 0.44, 0), true)
+			_mesh(g, drum.call(0.12, 0.04, 0.1), b, Vector3(0, 0.04, 0), true)
+		1:
+			# An orb on its ring.
+			_mesh(g, drum.call(0.14, 0.06, 0.1), b, Vector3(0, 0.05, 0), true)
+			_mesh(g, ball.call(0.2, 16), a, Vector3(0, 0.27, 0), true)
+		2:
+			# A stack of blocks, turned a little each.
+			for k in 3:
+				var box := _mesh(g, _box(Vector3(0.44 - k * 0.08, 0.1, 0.32 - k * 0.04)), a if k % 2 == 0 else b, Vector3(0, 0.07 + k * 0.1, 0), true)
+				box.rotation.y = (k - 1) * 0.25
+		3:
+			# A handful of gems.
+			for k in 3:
+				var gem := _mesh(g, ball.call(0.1 - k * 0.015, 5), [a, b, a][k], Vector3(cos(k * 2.1) * 0.13, 0.1, sin(k * 2.1) * 0.13), true)
+				gem.scale = Vector3(1.0, 1.3, 1.0)
+		_:
+			# A wide bowl with a ball in it.
+			_mesh(g, drum.call(0.09, 0.05, 0.22), b, Vector3(0, 0.05, 0), true)
+			_mesh(g, drum.call(0.22, 0.08, 0.26), b, Vector3(0, 0.12, 0), true)
+			_mesh(g, ball.call(0.13), a, Vector3(0, 0.24, 0), true)
+	return g
 
 
 ## Pinned butterflies: little bright wings on a card.
