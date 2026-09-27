@@ -1,7 +1,7 @@
 extends Node3D
 ## The game: screens, the loop, and drawing the world each frame.
 ##
-## Two modes. The story: ten fixed nights, easy to hard, with a tale (Story).
+## Two modes. The story: twenty fixed nights, easy to hard, with a tale (Story).
 ## The generative: a new museum every time, at the difficulty and size you
 ## pick. Either with one thief or two; with two, the job takes both (Heist).
 ##
@@ -232,6 +232,13 @@ func _ready() -> void:
 				"end":
 					phase = "caught"
 					_show_end()
+	# --brief=N:P: the story's night N, briefing page P (0-based), to look at it.
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--brief="):
+			var bits := arg.substr(8).split(":")
+			mode = "story"
+			_new_round(int(bits[0]))
+			_show_brief(int(bits[1]) if bits.size() > 1 else 0)
 	# --intro: the piece, then the countdown, for checking the way in.
 	# --challenge: the first of the saved maps instead.
 	if "--intro" in OS.get_cmdline_user_args():
@@ -1157,14 +1164,16 @@ func _quit_to_title() -> void:
 	_leave_game(_show_title)
 
 
-## Before a night: a briefing of a page or two you can move between freely —
-## what is new tonight (if anything is), and the plan: the map, the piece
-## and its story, and tips for the night — tabs along the top, back and
-## next along the bottom.
+## Before a night: a briefing of a page or three, back and next along the
+## bottom — in the story, the piece and its tale, then what is new tonight
+## (if anything is); in every mode, the plan: the map and the rules for the
+## night (Briefing).
 func _brief_pages() -> Array:
 	var pages := []
-	if mode == "story" and not Story.news(level, players).is_empty():
-		pages.append("news")
+	if mode == "story":
+		pages.append("story")
+		if not Story.news(level, players).is_empty():
+			pages.append("news")
 	pages.append("plan")
 	return pages
 
@@ -1174,22 +1183,23 @@ func _show_brief(page: int) -> void:
 	page = clampi(page, 0, pages.size() - 1)
 	brief_page = page
 	phase = "brief"
-	var names := {"news": Text.t("BRIEF_TAB_NEWS"), "plan": Text.t("BRIEF_TAB_PLAN")}
-	var tabs: Array = []
-	for i in pages.size():
-		tabs.append({"text": names[pages[i]], "call": _show_brief.bind(i), "colour": Hud.C.gold if i == page else Hud.C.dim, "selected": i == page})
-	# Tabs only when there is more than one page.
-	var items: Array = [{"buttons": tabs, "row": true, "small": true}, {"gap": 6}] if pages.size() > 1 else []
+	var names := {"story": Text.t("BRIEF_TAB_STORY"), "news": Text.t("BRIEF_TAB_NEWS"), "plan": Text.t("BRIEF_TAB_PLAN")}
+	var items: Array = []
 	match pages[page]:
+		"story": items.append_array(_story_items())
 		"news": items.append_array(_news_items())
 		"plan": items.append_array(_plan_items())
 	var last := page == pages.size() - 1
-	items.append({"buttons": [
-		{"text": Text.t("MENU_PREV") if page > 0 else Text.t("MENU_BACK"), "call": _brief_back, "colour": Hud.C.dim},
+	# Along the bottom: back on the left, the next page by name in the middle,
+	# and straight to the night on the right (on the last page, the middle
+	# one starts it).
+	var row: Array = [
+		{"text": Text.t("MENU_BACK"), "call": _brief_back, "colour": Hud.C.dim},
 		{"text": Text.t("BRIEF_START") if last else Text.t("BRIEF_NEXT_TAB") % names[pages[page + 1]], "call": _start_countdown if last else _show_brief.bind(page + 1)},
-	], "row": true, "focus": 1})
+	]
 	if not last:
-		items.append({"buttons": [{"text": Text.t("MENU_SKIP"), "call": _skip_story, "colour": Hud.C.dim}], "small": true})
+		row.append({"text": Text.t("BRIEF_SKIP"), "call": _skip_story, "colour": Hud.C.dim})
+	items.append({"buttons": row, "row": true, "focus": 1})
 	hud.show_menu(items)
 
 
@@ -1218,9 +1228,25 @@ func _news_items() -> Array:
 	]
 
 
+## The story's first page: which job this is, the piece turning under a
+## light, its name, what it is like and its tale.
+func _story_items() -> Array:
+	# Rebuilt each time: the last round's piece may still be on the stand.
+	_build_preview()
+	return [
+		{"text": _brief_heading(), "size": 17, "colour": Hud.C.dim},
+		{"picture": preview.get_texture(), "smooth": true, "height": 200},
+		{"text": Heist.first_upper(Heist.loot.name), "size": 32, "colour": Color(Heist.loot.colour), "wrap": true, "width": 760},
+		{"text": Heist.loot.blurb, "size": 18, "colour": Hud.C.gold, "wrap": true, "width": 760},
+		{"gap": 6},
+		{"text": Heist.loot.get("story", ""), "size": 19, "wrap": true, "width": 760},
+		{"gap": 12},
+	]
+
+
 ## The plan: the map on the left; on the right, the piece (turning under a
-## light, its name and how long it takes), its story when it has one, and
-## tips worked out from the night (Briefing).
+## light, its name and how long it takes) and the rules for the night
+## worked out from it (Briefing).
 func _plan_items() -> Array:
 	var colours := _thief_colours().slice(0, thieves.size())
 	var keys := ["thief", "gem", "exit", "guard", "prop", "route"]
@@ -1237,19 +1263,15 @@ func _plan_items() -> Array:
 	var piece: Array = [
 		{"text": _brief_heading(), "size": 15, "colour": Hud.C.dim, "align": "left"},
 		{"text": Heist.first_upper(Heist.loot.name), "size": 26, "colour": Color(Heist.loot.colour), "wrap": true, "width": 330, "align": "left"},
-		{"text": Heist.loot.blurb, "size": 17, "colour": Hud.C.gold, "wrap": true, "width": 330, "align": "left"},
 		{"text": Text.t("BRIEF_TAKES") % _seconds(Heist.loot.seconds), "size": 15, "colour": Hud.C.dim, "wrap": true, "width": 330, "align": "left"},
 	]
 	var right: Array = [{"columns": [
 		{"items": [{"picture": preview.get_texture(), "smooth": true, "height": 120}], "middle": true},
 		{"items": piece, "separation": 4, "middle": true},
 	], "separation": 12}]
-	var story: String = Heist.loot.get("story", "")
-	if story.strip_edges() != "":
-		right.append({"text": story, "size": 17, "wrap": true, "width": 540, "align": "left"})
 	right.append({"gap": 4})
 	right.append({"title": Text.t("BRIEF_TIPS_TITLE"), "size": 24, "align": "left"})
-	for tip in Briefing.tips(guards):
+	for tip in Briefing.tips(guards, level if mode == "story" else 0):
 		right.append({"text": "• " + tip, "size": 17, "wrap": true, "width": 540, "align": "left"})
 	return [{"columns": [
 		{"items": left, "separation": 6, "middle": true},
@@ -1261,7 +1283,7 @@ func _plan_items() -> Array:
 func _brief_heading() -> String:
 	match mode:
 		"story":
-			return Text.t("BRIEF_NIGHT_OF") % [level, Story.count()]
+			return Story.heading(level, players)
 		"challenge":
 			if challenge_map and challenge_map.name != "":
 				return challenge_map.name.to_upper()

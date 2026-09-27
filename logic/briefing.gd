@@ -1,9 +1,25 @@
 class_name Briefing
 extends RefCounted
-## The tips on the screen before a heist, worked out from the night itself:
-## how many guards and what they are like (Sim.tuning), what is switched on
-## (Sim.feature), the job (Heist) and what lies about to knock over (Props).
-## A short line each, for kids: what to watch out for, and what to do about it.
+## The rules on the plan screen before a heist, worked out from the night
+## itself — how many guards and what they are like (Sim.tuning), what is
+## switched on (Sim.feature), the job (Heist) and what lies about to knock
+## over (Props) — so the same rules serve a story night, a generated museum
+## and a saved map.
+##
+## The rules for the rules:
+##   - At most MOST lines, aiming at AIM: the lines that must be said
+##     (MUST) always go, up to MOST; the rest (NICE) only fill up to AIM.
+##   - A short line each (at most WORDS words): what is so, then what to do.
+##   - What is normal is not said: a case without an alarm, guards as the
+##     game has them.
+##   - The guards in a single line: how many, what stands out about them
+##     (two traits at most) and what to do about the first.
+##   - A mechanic (MECHANICS) is told in the story twice: on the night that
+##     teaches it, on the "what's new" page (Story.news), and the night
+##     after, here; after that it is known and goes unsaid. Out of the
+##     story (no night to go by) it is said whenever the museum has it.
+##     A gang's shared job counts as one, taught on the first night.
+##   - In this order: the guards, the job, the museum.
 
 ## Past these the guards' senses and pace are worth a word (Sim.tuning,
 ## gang ease included): medium is the game as designed, and says nothing.
@@ -15,86 +31,106 @@ const FAR_EYES := 1.1
 const SHORT_EYES := 0.6
 ## calm_after, in seconds: slow to calm down from here up.
 const GRUDGE := 12.0
-## The most tips on screen: past this, the least urgent go.
-const MOST := 7
+## The most lines on screen, and how many to aim at.
+const MOST := 5
+const AIM := 3
+## The longest a line may be, in words (the tests hold every night to it).
+const WORDS := 14
+
+## The mechanics and the story lesson (Story.LESSONS) that teaches each,
+## most urgent first: key -> lesson.
+const MECHANICS := {
+	"case_alarm": "case_alarm", "lights": "lights", "two": "two", "props": "props",
+	"noise": "noise", "torch": "torch", "map": "big",
+}
 
 
-## The tips for the night laid out, most urgent first.
-static func tips(guards: Array[Guard]) -> Array[String]:
+## The rules for the night laid out, most urgent first. night: the story
+## night (1-based) it is, or 0 out of the story.
+static func tips(guards: Array[Guard], night := 0) -> Array[String]:
 	var n := guards.size()
-	var out: Array[String] = [_guards_line(n)]
+	var must: Array[String] = [_guards_line(n)]
+	var nice: Array[String] = []
+	# The job: a gang shares it out, and all of them have to get out; told
+	# like a mechanic (the first night's lesson).
+	if Heist.team and (night <= 0 or night == Story.lesson_night("heist") + 1):
+		must.append(Text.t("BRIEF_TEAM_TWO_PANELS" if Heist.panel2.x >= 0 else ("BRIEF_TEAM_TWO_LOCKS" if Heist.hands > 1 else "BRIEF_TEAM_ONE_LOCK")))
+		must.append(Text.t("BRIEF_TEAM_ALL_OUT"))
 	if n > 0:
-		var hearing := Sim.tuning("hearing")
-		if hearing >= SHARP_EARS:
-			out.append(_by(n, "TIP_CROUCH_SHARP"))
-		elif hearing < DULL_EARS:
-			out.append(_by(n, "TIP_EARS_DULL"))
-		else:
-			out.append(Text.t("TIP_CROUCH"))
-	# The case: two or more open it together, in silence; alone, its alarm rings.
-	if Heist.team:
-		out.append(Text.t("BRIEF_TEAM_TWO_PANELS" if Heist.panel2.x >= 0 else ("BRIEF_TEAM_TWO_LOCKS" if Heist.hands > 1 else "BRIEF_TEAM_ONE_LOCK")))
-		out.append(Text.t("BRIEF_TEAM_ALL_OUT"))
-	elif Sim.feature("case_alarm"):
-		out.append(Text.t("TIP_CASE_ALARM"))
-	else:
-		out.append(Text.t("TIP_CASE_QUIET"))
-	# Something to knock over: a way to send the guards elsewhere.
-	if not Props.list.is_empty():
-		out.append(Text.t("BRIEF_PROPS"))
-	if n > 0:
-		var view := Sim.tuning("view")
-		if view >= FAR_EYES:
-			out.append(_by(n, "TIP_EYES_FAR"))
-		elif view < SHORT_EYES:
-			out.append(_by(n, "TIP_EYES_SHORT"))
-		var speed := Sim.tuning("speed")
-		if speed >= FAST:
-			out.append(_by(n, "TIP_FAST"))
-		elif speed < SLOW:
-			out.append(_by(n, "TIP_SLOW"))
-		if guards.any(func(g: Guard) -> bool: return g.post.x >= 0):
-			out.append(Text.t("TIP_POST"))
 		if int(Sim.tuning("alarms")) <= 1:
-			out.append(Text.t("TIP_JUMPY"))
+			must.append(Text.t("TIP_JUMPY"))
 		elif Sim.tuning("calm_after") >= GRUDGE:
-			out.append(_by(n, "TIP_GRUDGE"))
-		if Sim.feature("lights"):
-			out.append(_by(n, "TIP_LIGHTS"))
-	if Museum.size_name == "large":
-		out.append(Text.t("TIP_MAP"))
-	return out.slice(0, MOST)
+			nice.append(_by(n, "TIP_GRUDGE"))
+		if guards.any(func(g: Guard) -> bool: return g.post.x >= 0):
+			nice.append(Text.t("TIP_POST"))
+	# The museum: its mechanics, while they are still news.
+	for m in MECHANICS:
+		if _has(m, n) and _worth_saying(m, night):
+			must.append(_by(n, "TIP_LIGHTS") if m == "lights" else Text.t(_key(m)))
+	var out: Array[String] = must.slice(0, MOST)
+	for line in nice:
+		if out.size() >= AIM:
+			break
+		out.append(line)
+	return out
 
 
-## How many guards, and what stands out about them: "Hay 3 guardias: son
-## rápidos y oyen muy bien."
+## Whether tonight's museum has mechanic m at all.
+static func _has(m: String, guards: int) -> bool:
+	match m:
+		"case_alarm", "lights": return Sim.feature(m)
+		"props": return not Props.list.is_empty()
+		"two": return guards >= 2
+		"noise", "torch": return guards > 0
+		"map": return Museum.size_name == "large"
+	return false
+
+
+## In the story, only the night after the one that teaches it; out of it,
+## always but the basics every guard comes with (the torch and the noise,
+## which the guards' line already covers).
+static func _worth_saying(m: String, night: int) -> bool:
+	if night <= 0:
+		return m not in ["noise", "torch"]
+	return night == Story.lesson_night(MECHANICS[m]) + 1
+
+
+static func _key(m: String) -> String:
+	return {"case_alarm": "TIP_CASE_ALARM", "props": "BRIEF_PROPS", "two": "TIP_TWO",
+		"noise": "TIP_NOISE", "torch": "TIP_TORCH", "map": "TIP_MAP"}[m]
+
+
+## How many guards, what stands out about them and what to do about it:
+## "2 guardias lentos y medio sordos: puedes correr, pero que no te vean."
 static func _guards_line(n: int) -> String:
 	if n == 0:
 		return Text.t("TIP_GUARDS_NONE")
+	# Most urgent first: the first one's advice is the line's.
 	var traits: Array[String] = []
-	var speed := Sim.tuning("speed")
-	if speed >= FAST:
-		traits.append(_by(n, "TIP_TRAIT_FAST"))
-	elif speed < SLOW:
-		traits.append(_by(n, "TIP_TRAIT_SLOW"))
 	var hearing := Sim.tuning("hearing")
-	if hearing >= SHARP_EARS:
-		traits.append(_by(n, "TIP_TRAIT_SHARP_EARS"))
-	elif hearing < DULL_EARS:
-		traits.append(_by(n, "TIP_TRAIT_DULL_EARS"))
 	var view := Sim.tuning("view")
+	var speed := Sim.tuning("speed")
+	if hearing >= SHARP_EARS:
+		traits.append("SHARP_EARS")
+	if speed >= FAST:
+		traits.append("FAST")
 	if view >= FAR_EYES:
-		traits.append(_by(n, "TIP_TRAIT_FAR_EYES"))
-	elif view < SHORT_EYES:
-		traits.append(_by(n, "TIP_TRAIT_SHORT_EYES"))
-	if int(Sim.tuning("alarms")) <= 1 or Sim.tuning("calm_after") >= GRUDGE:
-		traits.append(_by(n, "TIP_TRAIT_SMART"))
-	var head := Text.t("TIP_GUARDS_ONE") if n == 1 else Text.t("TIP_GUARDS_MANY") % n
-	if traits.is_empty():
-		return head + "."
-	var last: String = traits.pop_back()
-	var list: String = last if traits.is_empty() else "%s %s %s" % [", ".join(traits), Text.t("TIP_AND"), last]
-	return "%s: %s." % [head, list]
+		traits.append("FAR_EYES")
+	if hearing < DULL_EARS:
+		traits.append("DULL_EARS")
+	if view < SHORT_EYES:
+		traits.append("SHORT_EYES")
+	if speed < SLOW:
+		traits.append("SLOW")
+	traits = traits.slice(0, 2)
+	var who := Text.t("TIP_GUARDS_ONE") if n == 1 else Text.t("TIP_GUARDS_MANY") % n
+	var words: Array[String] = []
+	for t in traits:
+		words.append(_by(n, "TIP_TRAIT_" + t))
+	if not words.is_empty():
+		who += " " + (" %s " % Text.t("TIP_AND")).join(words)
+	var advice := _by(n, "TIP_ADVICE_" + (traits[0] if not traits.is_empty() else "NORMAL"))
+	return "%s: %s." % [who, advice]
 
 
 ## A line in the singular for one guard, in the plural for more (KEY_ONE, KEY_MANY).

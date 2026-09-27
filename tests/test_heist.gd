@@ -299,22 +299,75 @@ func _init() -> void:
 	var hard_guards := Sim.new_guards(3)
 	Heist.plan_job(1)
 	var hard := Briefing.tips(hard_guards)
-	check(hard[0].begins_with(Text.t("TIP_GUARDS_MANY") % 3) and hard[0].contains(Text.t("TIP_TRAIT_FAST_MANY")) and hard[0].contains(Text.t("TIP_TRAIT_SHARP_EARS_MANY")),
-		"difícil, tres guardias: «%s»" % hard[0])
-	check(hard.has(Text.t("TIP_CROUCH_SHARP_MANY")) and hard.has(Text.t("TIP_CASE_ALARM")), "difícil: a gatas cerca de ellos, y la vitrina con alarma")
+	check(hard[0].begins_with(Text.t("TIP_GUARDS_MANY") % 3) and hard[0].contains(Text.t("TIP_TRAIT_SHARP_EARS_MANY")) and hard[0].contains(Text.t("TIP_ADVICE_SHARP_EARS_MANY")),
+		"difícil, tres guardias, en una línea con su consejo: «%s»" % hard[0])
+	check(hard.has(Text.t("TIP_CASE_ALARM")), "fuera de la historia, la vitrina con alarma se dice")
+	check(not hard.has(Text.t("TIP_NOISE")) and not hard.has(Text.t("TIP_TORCH")), "fuera de la historia, lo básico no se repite")
 	Sim.difficulty = "easy"
 	var easy_guards := Sim.new_guards(1)
 	var easy := Briefing.tips(easy_guards)
-	check(easy[0].begins_with(Text.t("TIP_GUARDS_ONE")) and easy[0].contains(Text.t("TIP_TRAIT_SLOW_ONE")) and easy.has(Text.t("TIP_SLOW_ONE")), "fácil, un guardia lento: «%s»" % easy[0])
+	check(easy[0].begins_with(Text.t("TIP_GUARDS_ONE")) and easy[0].contains(Text.t("TIP_TRAIT_SLOW_ONE")) and easy[0].contains(Text.t("TIP_ADVICE_SLOW_ONE")), "fácil, un guardia: «%s»" % easy[0])
 	Sim.difficulty = "medium"
 	Sim.custom = Story.tuning(1)
 	var none: Array[Guard] = []
 	Props.list.clear()
-	var quiet := Briefing.tips(none)
-	check(quiet[0] == Text.t("TIP_GUARDS_NONE") and quiet.has(Text.t("TIP_CASE_QUIET")) and not quiet.has(Text.t("BRIEF_PROPS")), "primera noche: sin guardias, vitrina sin alarma, nada que tirar")
+	var quiet := Briefing.tips(none, 1)
+	check(quiet == [Text.t("TIP_GUARDS_NONE")], "primera noche: sin guardias y nada más (lo normal no se dice): %s" % [quiet])
 	Heist.plan_job(1, {}, 2)
 	check(Briefing.tips(hard_guards).has(Text.t("BRIEF_TEAM_ONE_LOCK")), "con dos: uno sujeta el cuadro de la alarma")
-	check(hard.size() <= Briefing.MOST and Briefing.tips(hard_guards).size() <= Briefing.MOST, "nunca más de %d consejos" % Briefing.MOST)
+
+	# Every story night, alone and as a gang, and a spread of generated museums:
+	# never more than MOST, short lines, a mechanic only the night after its lesson.
+	var worst := ""
+	var over := 0
+	var long := 0
+	var counts := {}
+	for gang in [1, 2]:
+		for n in range(1, Story.count() + 1):
+			Sim.gang = gang
+			Sim.custom = Story.tuning(n)
+			var night := Story.level(n)
+			Sim.new_map(Story.seed_for(n, gang), night.size, -1, night.shape)
+			var gs := Sim.new_guards(Sim.guard_count(Museum.size_name))
+			Heist.plan_job(n, night.loot, gang)
+			Props.place(n, [Heist.exit, Heist.start])
+			if not Sim.feature("props"):
+				Props.list.clear()
+			var t := Briefing.tips(gs, n)
+			counts[t.size()] = counts.get(t.size(), 0) + 1
+			if t.size() > Briefing.MOST:
+				over += 1
+			for line in t:
+				if line.split(" ", false).size() > Briefing.WORDS:
+					long += 1
+					worst = line
+			if gang == 1 and n == Story.lesson_night("props") + 1:
+				check(t.has(Text.t("BRIEF_PROPS")), "la noche después de enseñarlo, se recuerda tirar cosas")
+			if gang == 1 and n == Story.lesson_night("props") + 2:
+				check(not t.has(Text.t("BRIEF_PROPS")), "y la siguiente ya no")
+			if gang == 1 and n == Story.lesson_night("props"):
+				check(not t.has(Text.t("BRIEF_PROPS")), "la noche que lo enseña está en «lo nuevo», no en el plan")
+	Sim.custom = {}
+	Sim.gang = 1
+	for d in ["easy", "medium", "hard"]:
+		for size in ["small", "medium", "large"]:
+			Sim.difficulty = d
+			Sim.new_map(99 + size.length(), size)
+			var gs := Sim.new_guards(Sim.guard_count(Museum.size_name))
+			Heist.plan_job(1)
+			Props.place(7, [Heist.exit, Heist.start])
+			var t := Briefing.tips(gs)
+			counts[t.size()] = counts.get(t.size(), 0) + 1
+			if t.size() > Briefing.MOST:
+				over += 1
+			for line in t:
+				if line.split(" ", false).size() > Briefing.WORDS:
+					long += 1
+					worst = line
+	Sim.difficulty = "medium"
+	check(over == 0, "nunca más de %d reglas" % Briefing.MOST)
+	check(long == 0, "ninguna regla pasa de %d palabras: «%s»" % [Briefing.WORDS, worst])
+	print("       reglas por pantalla (cuántas: veces): %s" % counts)
 	Sim.custom = {"lockpick": false}
 
 	if failures.is_empty():

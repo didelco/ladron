@@ -1117,7 +1117,7 @@ const MAP_WIDTH := 720.0
 const MAP_INK := Color("#1c1210")
 const MAP_FLOOR := Color("#e8d6b4")
 const MAP_CASE := Color("#b89a70")
-const MAP_PROP := Color("#ff8c2e")
+const MAP_PROP := Color("#c4906a")
 const MAP_ROUTE := Color("#5a3a22")
 const MAP_WALL := Color("#4a2f22")
 const MAP_GUARD := Color("#c42a3c")
@@ -1138,26 +1138,26 @@ static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard
 	var s := clampi(int(MAP_WIDTH / Museum.w), 8, 32)
 	var img := Image.create(Museum.w * s, Museum.h * s, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
-	# The plan in three tones: floor, the cases on it, walls.
+	# The plan in three tones: floor, the cases on it, walls; and what can be
+	# knocked over, still standing, a tile a shade off the cases.
 	for y in Museum.h:
 		for x in Museum.w:
 			if Museum.is_outside(x, y):
 				continue
 			var t := Museum.grid[y * Museum.w + x]
 			img.fill_rect(Rect2i(x * s, y * s, s, s), MAP_WALL if t == Tiles.WALL else (MAP_CASE if t == Tiles.COVER else MAP_FLOOR))
+	for p in Props.list:
+		if not p.fallen:
+			img.fill_rect(Rect2i(p.tile.x * s, p.tile.y * s, s, s), MAP_PROP)
 	var at := func(p: Vector2) -> Vector2i: return Vector2i(int(p.x * s), int(p.y * s))
 	var mid := func(t: Vector2i) -> Vector2: return Vector2(t.x + 0.5, t.y + 0.5)
 	# The plan, before the job: the way from the way in to the piece to the door.
 	if not start_colours.is_empty():
-		var d := maxi(4, s / 3)
+		var d := maxi(6, s / 2)
 		for i in Heist.route.size():
 			if i % 2 == 0:
 				var t: Vector2i = Heist.route[i]
 				img.fill_rect(Rect2i(t.x * s + s / 2 - d / 2, t.y * s + s / 2 - d / 2, d, d), MAP_ROUTE)
-	# What can be knocked over, still standing: an orange triangle each.
-	for p in Props.list:
-		if not p.fallen:
-			_triangle(img, at.call(Vector2(p.x, p.y)), 13, MAP_PROP)
 	# The door, in green, and its sign just inside it.
 	var door: Vector2i = Heist.exit + Heist.exit_face
 	img.fill_rect(Rect2i(door.x * s, door.y * s, s, s), C.green)
@@ -1176,8 +1176,9 @@ static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard
 		gem.call(Heist.dropped, 16)
 	for g in guards:
 		_square(img, at.call(Vector2(g.x, g.y)), 12, MAP_GUARD)
-	# The way out: a green arrow through the door, pointing out.
-	_draw_arrow(img, at.call(mid.call(Heist.exit) + Vector2(Heist.exit_face) * 0.3), Vector2(Heist.exit_face), 64, C.green)
+	# The way out: the kunai that points the way in play, green, through the
+	# door and pointing out.
+	_kunai(img, at.call(mid.call(Heist.exit) + Vector2(Heist.exit_face) * 0.3), Vector2(Heist.exit_face), 1.6, C.green)
 	# Where you come in: a dot for each thief who will, side by side.
 	for i in start_colours.size():
 		var off := Vector2((i - (start_colours.size() - 1) / 2.0) * 34.0 / s, 0)
@@ -1192,17 +1193,6 @@ static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard
 			_glow(img, c, 44, Color(Heist.loot.colour))
 		_dot(img, c, 14, colours[i], Color.WHITE)
 	return img
-
-
-## Something to knock over: a triangle on its base, outlined, a pale dot in it.
-static func _triangle(img: Image, c: Vector2i, r: int, colour: Color) -> void:
-	for pass_n in 2:
-		var rr := r + 4 - pass_n * 4
-		for dy in range(-rr, rr + 1):
-			# From the apex (top) widening to the base (bottom).
-			var half := int((dy + rr) * 0.58)
-			img.fill_rect(Rect2i(c.x - half, c.y + dy, half * 2 + 1, 1), MAP_INK if pass_n == 0 else colour)
-	img.fill_rect(Rect2i(c.x - 2, c.y + r / 3 - 2, 4, 4), Color("#fff3d6"))
 
 
 ## A thief: a disc in its colour with a ring round it.
@@ -1256,30 +1246,27 @@ static func _diamond(img: Image, c: Vector2i, r: int, colour: Color) -> void:
 	img.fill_rect(Rect2i(c.x - r / 3, c.y - r / 2, r / 4 + 2, r / 4 + 2), Color.WHITE)
 
 
-## A fat arrow of length len centred on c, pointing along dir, outlined.
-static func _draw_arrow(img: Image, c: Vector2i, dir: Vector2, len: int, colour: Color) -> void:
-	dir = dir.normalized()
-	var side := dir.orthogonal()
-	var half := len / 2.0
-	var shaft := len * 0.16
-	var head := len * 0.4
-	var inside := func(p: Vector2, grow: float) -> bool:
-		var u := p.dot(dir)
-		var v := absf(p.dot(side))
-		if u < -half - grow or u > half + grow:
-			return false
-		if u < half - head:
-			return v <= shaft + grow
-		# The head: widest at its base, to a point at the tip.
-		var t := (u - (half - head)) / head
-		return v <= head * 0.9 * (1.0 - t) + grow
-	var reach := int(half + head) + 4
+## The kunai's outline, as the HUD's pointer draws it: a long point ahead,
+## a short one behind, pointing right.
+const KUNAI_BLADE := [Vector2(30, 0), Vector2(-4, -9), Vector2(-12, 0), Vector2(-4, 9)]
+
+
+## The kunai (KUNAI_BLADE) scaled by k, centred on c and pointing along dir,
+## outlined.
+static func _kunai(img: Image, c: Vector2i, dir: Vector2, k: float, colour: Color) -> void:
+	var angle := dir.angle()
+	var blade := PackedVector2Array()
+	for q in KUNAI_BLADE:
+		# Centred on its length: the blade runs from -12 to 30.
+		blade.append(((q - Vector2(9, 0)) * k).rotated(angle))
+	var ring: PackedVector2Array = Geometry2D.offset_polygon(blade, 3.5)[0]
+	var reach := int(30 * k) + 4
 	for y in range(maxi(0, c.y - reach), mini(img.get_height(), c.y + reach + 1)):
 		for x in range(maxi(0, c.x - reach), mini(img.get_width(), c.x + reach + 1)):
 			var p := Vector2(x - c.x, y - c.y)
-			if inside.call(p, 0.0):
+			if Geometry2D.is_point_in_polygon(p, blade):
 				img.set_pixel(x, y, colour)
-			elif inside.call(p, 3.5):
+			elif Geometry2D.is_point_in_polygon(p, ring):
 				img.set_pixel(x, y, MAP_INK)
 
 
@@ -1304,11 +1291,13 @@ static func legend_icon(key: String, colour := Color.WHITE) -> ImageTexture:
 		"gem": _diamond(img, c, 9, colour)
 		"guard": _square(img, c, 10, MAP_GUARD)
 		"panel": _stamp(img, ICON_PANEL, c, 4, {"#": Color("#ff922b"), "w": MAP_INK})
-		"prop": _triangle(img, c, 11, MAP_PROP)
+		"prop":
+			img.fill_rect(Rect2i(c.x - 12, c.y - 12, 24, 24), MAP_WALL)
+			img.fill_rect(Rect2i(c.x - 10, c.y - 10, 20, 20), MAP_PROP)
 		"route":
 			for k in 3:
-				img.fill_rect(Rect2i(12 + k * 16, 17, 7, 7), Color("#e8d6b4"))
-		"exit": _draw_arrow(img, c, Vector2.RIGHT, 44, C.green)
+				img.fill_rect(Rect2i(10 + k * 17, 15, 10, 10), Color("#e8d6b4"))
+		"exit": _kunai(img, c, Vector2.RIGHT, 1.2, C.green)
 	return ImageTexture.create_from_image(img)
 
 

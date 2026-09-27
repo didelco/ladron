@@ -192,6 +192,14 @@ static func seed_for(n: int, players := 1) -> int:
 	return SEED_BASE + n * 7919 + SEED_TEAM * (players - 1)
 
 
+## The night (1-based) that teaches lesson (LESSONS key), or -1 if none does.
+static func lesson_night(lesson: String) -> int:
+	for i in LEVELS.size():
+		if LEVELS[i].get("teach", "") == lesson:
+			return i + 1
+	return -1
+
+
 ## What is new on night n, as cards: the one thing the night is built to
 ## teach. Empty if it teaches nothing new.
 static func news(n: int, players := 1) -> Array:
@@ -239,6 +247,16 @@ static func _key(players: int) -> String:
 
 
 # --- Museums ---------------------------------------------------------------------
+
+## Over the piece before night n: the gang's rank, a step up each museum,
+## and which job this is in words — "Ladronzuelo · tu quinto robo".
+static func heading(n: int, players := 1) -> String:
+	var many := "_MANY" if players > 1 else "_ONE"
+	var rank := Text.t("RANK_%d%s" % [museum_of(n) + 1, many])
+	if n >= count():
+		return Text.t("BRIEF_JOB_LAST" + many) % rank
+	return Text.t("BRIEF_JOB" + many) % [rank, Text.t("ORDINAL_%d" % n)]
+
 
 ## The museum (0-based, MUSEUMS) night n is in.
 static func museum_of(n: int) -> int:
