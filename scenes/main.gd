@@ -241,6 +241,20 @@ func _ready() -> void:
 	# the mission for two seconds and starts the round; add --two for two thieves.
 	# --menu=story|generative|settings: open a menu straight away, to look at it.
 	# --pick=N first: the story's heist N picked (map and museum open on its).
+	# --progress=NAME: the story's progress kept in user://NAME instead of
+	# the player's, and --reached=N: as far as heist N there (for pictures).
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--progress="):
+			Story.save = "user://" + arg.substr(11)
+		if arg.begins_with("--gang="):
+			players = clampi(int(arg.substr(7)), 1, 4)
+		elif arg == "--two":
+			players = 2
+	for arg in OS.get_cmdline_user_args():
+		# Never in the player's own progress.
+		if arg.begins_with("--reached=") and Story.save != Story.SAVE:
+			Story.unlock(clampi(int(arg.substr(10)), 1, Story.count()), players)
+	story_pick = Story.unlocked(players)
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--pick="):
 			story_pick = clampi(int(arg.substr(7)), 1, Story.count())
@@ -248,8 +262,10 @@ func _ready() -> void:
 		if arg.begins_with("--menu="):
 			match arg.substr(7):
 				"story": _show_story_menu()
-				"map": _show_story_map()
-				"museum": _show_museum(Story.museum_of(story_pick))
+				# The way in (Tour): the town, or inside the museum of --pick=N
+				# with that room picked.
+				"map", "city": _show_city()
+				"museum": _show_museum_tour(story_pick)
 				"generative": _show_generative_menu()
 				"challenges": _show_challenge_menu()
 				"editor": _show_editor(MapFile.generated(4242, "small"))
@@ -263,6 +279,15 @@ func _ready() -> void:
 					_look_at_end("escaped" if arg == "--menu=escaped" else "caught")
 				"paused":
 					_look_at_pause()
+	# --acts=right,accept,...: presses for the way in, one every 1.2 s, to
+	# record it going (Tour.act: left, right, up, down, accept, back, skip).
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--acts="):
+			var acts := arg.substr(7).split(",")
+			for i in acts.size():
+				get_tree().create_timer(1.2 * (i + 1)).timeout.connect(func() -> void:
+					if tour:
+						tour.act(acts[i]))
 	# --brief=N:P: the story's night N, briefing page P (0-based), to look at it
 	# (--gen: the generative's level N instead).
 	for arg in OS.get_cmdline_user_args():
@@ -682,7 +707,7 @@ func _quit() -> void:
 
 ## The story, first: how many thieves. Each gang has its own way through
 ## the nights (Story.unlocked), shown on its card. A gang then says which
-## controls are whose (_show_join), and on to the town (_show_story_map).
+## controls are whose (_show_join), and on to the town (_show_city).
 func _show_story_menu() -> void:
 	hud.backdrop(Hud.SPOTS.story)
 	phase = "story_players"
@@ -708,98 +733,66 @@ func _story_players(n: int) -> void:
 	_story_gang(1)
 
 
-## The gang is ready: on to the town, where it last got to.
+## The gang is ready: on to the town, where it last got to; the first
+## time, the tale before it.
 func _story_gang(n: int) -> void:
 	players = n
+	mode = "story"
 	story_pick = Story.unlocked(n)
-	_show_story_map()
+	if story_pick == 1:
+		_show_prologue()
+	else:
+		_show_city()
 
 
-## The town: the museums on their streets, the ones this gang has reached
-## open. Landing on one says what it is and how far into it you are;
-## pressing it goes in (_show_museum).
-func _show_story_map() -> void:
-	hud.backdrop(Hud.SPOTS.story)
-	phase = "story_map"
-	var reached := Story.unlocked(players)
-	story_pick = clampi(story_pick, 1, reached)
-	var here := Story.museum_of(story_pick)
-	var stops: Array = []
-	for m in Story.MUSEUMS.size():
-		stops.append({"n": m + 1, "colour": Color(Story.MUSEUMS[m].colour), "locked": Story.nights_in(m)[0] > reached, "selected": m == here,
-			"look": Story.MUSEUMS[m].palette, "call": _pick_museum.bind(m), "open": _show_museum.bind(m)})
-	hud.show_menu([
-		{"title": Text.t("STORY_MAP_TITLE"), "size": 44},
-		{"text": Text.t("STORY_GANG_%d" % players), "colour": _thief_colours()[players - 1], "size": 15},
-		{"nights": stops, "style": "city", "height": 330},
-		{"text": "", "size": 18, "id": "museum"},
-		{"text": "", "size": 15, "id": "museum_text", "colour": Hud.C.dim},
-		{"buttons": [{"text": Text.t("MENU_BACK"), "call": _show_story_menu, "colour": Hud.C.dim}], "row": true},
-	])
-	_pick_museum(here)
+# --- The way in to a heist: the town, a museum, its plan (Tour) -----------------------
+
+## The way in, while it is up: the town in 3D and all that follows (Tour).
+var tour: Tour
 
 
-## Landing on a museum in the town: its name, how many of its nights are
-## done, and what it is.
-func _pick_museum(m: int) -> void:
-	var museum := Story.museum(m)
-	var nights := Story.nights_in(m)
-	var done := nights.filter(func(n: int) -> bool: return n < Story.unlocked(players)).size()
-	hud.set_text("museum", Text.t("STORY_MUSEUM_LINE") % [museum.name.to_upper(), done, nights.size()], Color(museum.colour))
-	hud.set_text("museum_text", museum.text, Hud.C.dim)
+## The town, in 3D (Tour): museum m picked, or the one story_pick is in.
+func _show_city(m := -1) -> void:
+	_open_tour().open_city(players, m if m >= 0 else Story.museum_of(story_pick))
 
 
-## Inside a museum, in its own colours: its heists as rooms (any reached so
-## far can be picked), numbered 1 to 5, the last its big job in a room of
-## its own; the piece of the one picked turning under a light. Pressing a
-## room, or ROBAR, plays it.
-func _show_museum(m: int) -> void:
-	hud.backdrop(Hud.MUSEUM_FOCUS, "museum_%d" % (m + 1))
-	phase = "museum"
-	var reached := Story.unlocked(players)
-	var nights := Story.nights_in(m)
-	if Story.museum_of(story_pick) != m:
-		story_pick = mini(nights[-1], reached)
-	var loot: Dictionary = Story.level(story_pick).loot
-	_build_preview(loot)
-	var stops: Array = []
-	for n in nights:
-		stops.append({"n": Story.room_of(n), "colour": Color(Story.level(n).loot.colour), "locked": n > reached, "selected": n == story_pick,
-			"boss": Story.is_boss(n), "call": _pick_night.bind(n), "open": _play_night})
-	var museum := Story.museum(m)
-	hud.show_menu([
-		{"title": museum.name.to_upper(), "colour": Color(museum.colour).lightened(0.2), "size": 40},
-		{"text": museum.text, "colour": Hud.C.dim, "size": 15},
-		{"nights": stops, "style": "museum", "palette": museum.palette, "width": 720, "height": 190},
-		{"picture": preview.get_texture(), "smooth": true, "height": 110},
-		{"text": _room_name(story_pick), "colour": Color(loot.colour), "size": 17, "id": "night"},
-		{"buttons": [
-			{"text": Text.t("MENU_BACK"), "call": _show_story_map, "colour": Hud.C.dim},
-			{"text": Text.t("STORY_PLAY"), "call": _play_night, "colour": Hud.C.safe},
-		], "row": true},
-	])
+## Inside heist n's museum, its room picked: back from a heist.
+func _show_museum_tour(n: int) -> void:
+	story_pick = clampi(n, 1, Story.unlocked(players))
+	_open_tour().open_museum(players, story_pick)
 
 
-func _play_night() -> void:
-	_start("story", players, true)
+## A new way in over whatever is on screen: the menus fade, the game behind
+## stops being drawn while the town covers it.
+func _open_tour() -> Tour:
+	_close_tour()
+	mode = "story"
+	phase = "tour"
+	_drop_preview()
+	hud.hide_panel()
+	tour = Tour.new()
+	add_child(tour)
+	tour.left.connect(func() -> void:
+		_close_tour()
+		_show_story_menu())
+	tour.room_chosen.connect(_tour_room)
+	tour.sound.connect(func(kind: String) -> void: sfx.ui(kind, 0.6))
+	get_viewport().disable_3d = true
+	return tour
 
 
-## Moving along the path picks the night: the piece and its name change in
-## place, the menu stays as it is.
-func _pick_night(n: int) -> void:
-	if n == story_pick or preview == null:
-		return
+func _close_tour() -> void:
+	get_viewport().disable_3d = false
+	if tour:
+		tour.queue_free()
+		tour = null
+
+
+## A room picked in the museum: heist n, on to its plan.
+func _tour_room(n: int) -> void:
 	story_pick = n
-	var loot: Dictionary = Story.level(n).loot
-	_preview_piece(loot)
-	hud.set_text("night", _room_name(n), Color(loot.colour))
-
-
-## A heist's name inside its museum: its room and its piece, or, the last,
-## the big job — "SALA 2 · EL PATO..." or "GRAN GOLPE · LA PERLA...".
-func _room_name(n: int) -> String:
-	var piece := String(Story.level(n).loot.name).to_upper()
-	return Text.t("STORY_BOSS_PIECE") % piece if Story.is_boss(n) else Text.t("STORY_ROOM_PIECE") % [Story.room_of(n), piece]
+	_close_tour()
+	_start("story", players, true)
 
 
 ## The generative mode: difficulty and museum size as cards, then play with
@@ -853,9 +846,6 @@ func _start(which: String, n: int, picked := false) -> void:
 	pads_lost.clear()
 	if mode == "story":
 		_new_round(story_pick)
-		if story_pick == 1 and not testing:
-			_show_prologue()
-			return
 	else:
 		_new_round(1)
 	_show_brief(0)
@@ -984,9 +974,9 @@ func _show_prologue(page := 0) -> void:
 		{"text": _dots(page, pages.size()), "colour": Hud.C.dim, "size": 14},
 		{"buttons": [
 			{"text": Text.t("MENU_BACK") if page == 0 else Text.t("MENU_PREV"), "call": _prologue_back, "colour": Hud.C.dim},
-			{"text": Text.t("PROLOGUE_GO") if last else Text.t("MENU_NEXT"), "call": _show_brief.bind(0) if last else _show_prologue.bind(page + 1)},
+			{"text": Text.t("PROLOGUE_GO") if last else Text.t("MENU_NEXT"), "call": _show_city if last else _show_prologue.bind(page + 1)},
 		], "row": true, "focus": 1},
-		{"buttons": [{"text": Text.t("MENU_SKIP"), "call": _skip_story, "colour": Hud.C.dim}], "small": true},
+		{"buttons": [{"text": Text.t("MENU_SKIP"), "call": _show_city, "colour": Hud.C.dim}], "small": true},
 	])
 
 
@@ -999,7 +989,7 @@ func _prologue_back() -> void:
 	if prologue_page > 0:
 		_show_prologue(prologue_page - 1)
 	else:
-		_show_museum(Story.museum_of(story_pick))
+		_show_story_menu()
 
 
 ## ● ○ ○ : where you are in a run of pages.
@@ -1396,7 +1386,7 @@ func _brief_back() -> void:
 	elif mode == "story" and level == 1:
 		_show_prologue(Story.prologue().size() - 1)
 	elif mode == "story":
-		_show_museum(Story.museum_of(level))
+		_show_museum_tour(level)
 	elif mode == "challenge":
 		_leave_game(_show_challenge_map.bind(challenge_map))
 	else:
@@ -1556,7 +1546,7 @@ func _show_end() -> void:
 			boss = true
 			next = Text.t("END_NEXT_MUSEUM")
 			if not testing:
-				go = _leave_game.bind(_show_story_map)
+				go = _leave_game.bind(_show_city.bind(Story.museum_of(level + 1)))
 		if mode == "story" and not testing:
 			if not just_looking:
 				Story.unlock(level + 1, players)
@@ -1566,7 +1556,7 @@ func _show_end() -> void:
 				return
 	var ways: Array = [
 		{"buttons": [{"text": next, "call": go, "colour": colour}], "big": true},
-		{"buttons": [{"text": Text.t("EDITOR_BACK_TO_EDITOR") if testing else Text.t("END_TO_MENU"), "call": _leave_game.bind({"story": _show_story_map, "challenge": _show_challenge_menu}.get(mode, _show_title)), "colour": Hud.C.dim}], "small": true},
+		{"buttons": [{"text": Text.t("EDITOR_BACK_TO_EDITOR") if testing else Text.t("END_TO_MENU"), "call": _leave_game.bind({"story": _show_city, "challenge": _show_challenge_menu}.get(mode, _show_title)), "colour": Hud.C.dim}], "small": true},
 	]
 	if phase == "escaped":
 		hud.show_menu([{"newspaper": _front_page(boss)}] + ways)
@@ -1663,6 +1653,9 @@ func _seconds(s: float) -> String:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if phase == "tour" and tour:
+		tour.input(event)
+		return
 	if phase == "join":
 		_join_input(event)
 		return
@@ -1701,19 +1694,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		"challenge":
 			if key == KEY_ESCAPE:
 				_show_challenge_menu()
-		"story_map":
-			if key == KEY_ESCAPE:
-				_show_story_menu()
-		"museum":
-			if key == KEY_ESCAPE:
-				_show_story_map()
 		"input":
 			if key == KEY_ESCAPE:
 				if settings_from == "story":
 					_show_story_menu()
 				else:
 					_show_generative_menu()
-		"prologue", "brief" when key == KEY_TAB:
+		"prologue" when key == KEY_TAB:
+			_show_city()
+		"brief" when key == KEY_TAB:
 			_skip_story()
 		"prologue":
 			if key == KEY_SPACE:
@@ -1721,7 +1710,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				if prologue_page < pages - 1:
 					_show_prologue(prologue_page + 1)
 				else:
-					_show_brief(0)
+					_show_city()
 			elif key == KEY_ESCAPE:
 				_prologue_back()
 		"ending":
