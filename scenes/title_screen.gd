@@ -15,17 +15,6 @@ const PICTURE := "res://assets/ui/portada.png"
 ## and the margin kept round it.
 const TITLE := Rect2(0.31, 0.1, 0.37, 0.37)
 const MARGIN := 0.02
-## Where the menus behind look (Hud.backdrop), as fractions of the picture:
-## the title on the green ninja, the story on the yellow one, the generative
-## on the purple one, the challenges on the blue one on his rope, the settings
-## on the moon.
-const SPOTS := {
-	"title": Vector2(0.5, 0.55),
-	"story": Vector2(0.22, 0.72),
-	"generative": Vector2(0.8, 0.78),
-	"challenge": Vector2(0.82, 0.3),
-	"settings": Vector2(0.62, 0.15),
-}
 const BACK := Color("#140c24")
 
 var _picture: Texture2D

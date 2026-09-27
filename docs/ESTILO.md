@@ -92,7 +92,7 @@ Cada museo de la historia tiene su paleta (suelo, papel pintado, zócalo, remate
 
 ## Interfaz
 
-- **Fondo de menús**: fuera del juego, la portada (`assets/ui/portada.png`) muy desenfocada, oscurecida y teñida de berenjena, para que solo queden manchas de color y las tarjetas manden. Cada pantalla mira a un sitio distinto de la portada y va derivando despacio: el título al ninja verde, la historia al amarillo, el generativo al morado, los retos al azul de la cuerda y los ajustes a la luna (`TitleScreen.SPOTS`, `Hud.backdrop`). Sobre el juego (pausa, final), la pared de un museo de noche (shader), con papel de rayas, friso y la luz de una lámpara que respira.
+- **Fondo de menús**: fuera del juego, la sala del museo de noche (`assets/ui/fondo_menu.png`), algo oscurecida arriba y abajo para que se lean los títulos y los botones. Cada pantalla mira a un sitio distinto de la sala y va derivando despacio: el título a la vitrina iluminada del centro, la historia al jarrón de la izquierda, el generativo a las vitrinas de la derecha, los retos a los ventanales y los ajustes a los estandartes (`Hud.SPOTS`, `Hud.backdrop`). Sobre el juego (pausa, final), la pared de un museo de noche (shader), con papel de rayas, friso y la luz de una lámpara que respira.
 - **Botones**: píldoras de nogal con borde de latón. Con foco, latón pulido y borde crema, con un salto elástico a ×1,07 y un aplastamiento al pulsar.
 - **Tarjetas**: cara de madera con su diorama 3D, que solo se anima con el foco.
 - El ratón toma el foco, para que ratón y flechas nunca señalen dos cosas distintas. La navegación va al vecino más cercano en pantalla.
