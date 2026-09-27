@@ -34,101 +34,113 @@ const ROOMS := 5
 ## one, the one thing it teaches (LESSONS), and the piece. A big job says
 ## so ("boss") and has a line of its own for the plan ("tip"). Easy to
 ## hard, one new thing at a time; each museum's pieces fit its theme.
+## "reseed" (optional) builds the night's museum from that many seeds on
+## (seed_for), for a museum that suits it better than the first. "par": the
+## time for the fast star (stars), in seconds.
 const LEVELS := [
 	# --- La Gran Cueva: prehistory. Small museums, one guard at most.
-	{"size": "small", "shape": "rect", "guards": 0, "view": 0.45, "hearing": 0.2, "speed": 0.4, "calm_after": 5.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "heist",
+	{"size": "small", "shape": "rect", "guards": 0, "view": 0.45, "hearing": 0.2, "speed": 0.4, "calm_after": 5.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "heist", "par": 30,
 		"loot": {"name": "NIGHT_01_NAME", "blurb": "NIGHT_01_BLURB", "verb": "NIGHT_01_VERB", "seconds": 1.5, "colour": "#f4f1e6", "shape": "teeth",
 			"story": "NIGHT_01_TALE"}},
-	{"size": "small", "shape": "L", "guards": 1, "view": 0.45, "hearing": 0.2, "speed": 0.4, "calm_after": 5.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "guard",
+	{"size": "small", "shape": "L", "guards": 1, "view": 0.45, "hearing": 0.2, "speed": 0.4, "calm_after": 5.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "guard", "par": 25,
 		"loot": {"name": "NIGHT_02_NAME", "blurb": "NIGHT_02_BLURB", "verb": "NIGHT_02_VERB", "seconds": 2.0, "colour": "#dee2e6", "shape": "sock",
 			"story": "NIGHT_02_TALE"}},
-	{"size": "small", "shape": "T", "guards": 1, "view": 0.5, "hearing": 0.25, "speed": 0.45, "calm_after": 5.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "",
+	{"size": "small", "shape": "T", "guards": 1, "view": 0.5, "hearing": 0.25, "speed": 0.45, "calm_after": 5.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "", "par": 25,
 		"loot": {"name": "NIGHT_03_NAME", "blurb": "NIGHT_03_BLURB", "verb": "NIGHT_03_VERB", "seconds": 2.0, "colour": "#d9261c", "shape": "ketchup",
 			"story": "NIGHT_03_TALE"}},
-	{"size": "small", "shape": "rect", "guards": 1, "post": "route", "view": 0.95, "hearing": 0.25, "speed": 0.45, "calm_after": 6.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "torch",
+	{"size": "small", "shape": "rect", "guards": 1, "post": "route", "view": 0.95, "hearing": 0.25, "speed": 0.45, "calm_after": 6.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "torch", "par": 25,
 		"loot": {"name": "NIGHT_04_NAME", "blurb": "NIGHT_04_BLURB", "verb": "NIGHT_04_VERB", "seconds": 2.5, "colour": "#e03131", "shape": "idol",
 			"story": "NIGHT_04_TALE"}},
 	# The big job: the cave's keeper, alone, far-sighted and quick, in the
-	# first bigger museum. Seen, you lose it and hide (a mammoth, an egg).
-	{"size": "medium", "shape": "U", "guards": 1, "view": 1.12, "hearing": 0.3, "speed": 0.95, "calm_after": 8.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "",
+	# first bigger museum, walking across your way: hard of hearing, but not
+	# so deaf you can run past it. Seen, you lose it and hide (a mammoth, an
+	# egg).
+	{"size": "medium", "shape": "L", "reseed": 2, "guards": 1, "view": 1.12, "hearing": 0.4, "speed": 1.05, "calm_after": 8.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "", "par": 45,
 		"boss": true, "tip": "NIGHT_05_TIP",
 		"loot": {"name": "NIGHT_05_NAME", "blurb": "NIGHT_05_BLURB", "verb": "NIGHT_05_VERB", "seconds": 3.0, "colour": "#e8c89a", "shape": "egg",
 			"story": "NIGHT_05_TALE"}},
 	# --- La Casa de los Bichos: nature. The minigames (LOCKPICK_NIGHT), the
 	# noise, then things to knock over. From here the case is picked: its
 	# seconds are the pick's pins (Minigame.pins_for), one on the first nights.
-	{"size": "small", "shape": "notched", "guards": 1, "view": 0.6, "hearing": 0.4, "speed": 0.5, "calm_after": 6.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "games",
+	{"size": "small", "shape": "notched", "guards": 1, "view": 0.6, "hearing": 0.4, "speed": 0.5, "calm_after": 6.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "games", "par": 25,
 		"loot": {"name": "NIGHT_06_NAME", "blurb": "NIGHT_06_BLURB", "verb": "NIGHT_06_VERB", "seconds": 3.0, "colour": "#7bc043", "shape": "crown",
 			"story": "NIGHT_06_TALE"}},
-	{"size": "small", "shape": "L", "guards": 1, "post": "quiet", "view": 0.65, "hearing": 0.85, "speed": 0.55, "calm_after": 7.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "noise",
+	{"size": "small", "shape": "L", "guards": 1, "post": "quiet", "view": 0.65, "hearing": 0.85, "speed": 0.55, "calm_after": 7.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "noise", "par": 25,
 		"loot": {"name": "NIGHT_07_NAME", "blurb": "NIGHT_07_BLURB", "verb": "NIGHT_07_VERB", "seconds": 3.0, "colour": "#ff6b6b", "shape": "sock",
 			"story": "NIGHT_07_TALE"}},
-	{"size": "small", "shape": "rect", "guards": 1, "post": "case", "view": 0.7, "hearing": 0.85, "speed": 0.55, "calm_after": 7.0, "alarms": 3, "props": true, "lights": false, "case_alarm": false, "teach": "props",
+	{"size": "small", "shape": "rect", "guards": 1, "post": "case", "view": 0.7, "hearing": 0.85, "speed": 0.55, "calm_after": 7.0, "alarms": 3, "props": true, "lights": false, "case_alarm": false, "teach": "props", "par": 40,
 		"loot": {"name": "NIGHT_08_NAME", "blurb": "NIGHT_08_BLURB", "verb": "NIGHT_08_VERB", "seconds": 3.5, "colour": "#9b5de5", "shape": "mask",
 			"story": "NIGHT_08_TALE"}},
-	{"size": "medium", "shape": "U", "guards": 1, "view": 0.68, "hearing": 0.9, "speed": 0.6, "calm_after": 7.0, "alarms": 3, "props": true, "lights": false, "case_alarm": false, "teach": "",
+	{"size": "medium", "shape": "L", "reseed": 3, "guards": 1, "view": 0.72, "hearing": 1.0, "speed": 0.65, "calm_after": 7.0, "alarms": 3, "props": true, "lights": false, "case_alarm": false, "teach": "", "par": 40,
 		"loot": {"name": "NIGHT_09_NAME", "blurb": "NIGHT_09_BLURB", "verb": "NIGHT_09_VERB", "seconds": 3.5, "colour": "#e8a860", "shape": "gum",
 			"story": "NIGHT_09_TALE"}},
 	# The big job: a guard that never leaves the duck, sharp-eared and
-	# jumpy. One lure to move it, and only one: after that it is on alert.
-	{"size": "medium", "shape": "T", "guards": 1, "post": "case", "view": 0.8, "hearing": 1.15, "speed": 0.65, "calm_after": 9.0, "alarms": 1, "props": true, "lights": false, "case_alarm": false, "teach": "",
+	# jumpy, a long way from the door. One lure to move it, and only one:
+	# after that it is on alert.
+	{"size": "medium", "shape": "L", "guards": 1, "post": "case", "view": 0.8, "hearing": 1.15, "speed": 0.65, "calm_after": 9.0, "alarms": 1, "props": true, "lights": false, "case_alarm": false, "teach": "", "par": 65,
 		"boss": true, "tip": "NIGHT_10_TIP",
 		"loot": {"name": "NIGHT_10_NAME", "blurb": "NIGHT_10_BLURB", "verb": "NIGHT_10_VERB", "seconds": 4.0, "colour": "#ffd43b", "shape": "duck",
 			"story": "NIGHT_10_TALE"}},
 	# --- El Templo de las Momias: the ancient world. The case's alarm, then
-	# two guards.
-	{"size": "medium", "shape": "L", "guards": 1, "view": 0.72, "hearing": 0.9, "speed": 0.62, "calm_after": 8.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "case_alarm",
+	# two guards. The alarm's night, a museum where the guard walks within
+	# earshot of the case now and then: pick it while it is away.
+	{"size": "medium", "shape": "L", "reseed": 2, "guards": 1, "view": 0.72, "hearing": 1.0, "speed": 0.62, "calm_after": 8.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "case_alarm", "par": 35,
 		"loot": {"name": "NIGHT_11_NAME", "blurb": "NIGHT_11_BLURB", "verb": "NIGHT_11_VERB", "seconds": 4.0, "colour": "#e8b53a", "shape": "idol",
 			"story": "NIGHT_11_TALE"}},
-	{"size": "medium", "shape": "notched", "guards": 1, "view": 0.78, "hearing": 0.95, "speed": 0.68, "calm_after": 8.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "",
+	{"size": "medium", "shape": "notched", "reseed": 1, "guards": 1, "view": 0.8, "hearing": 1.05, "speed": 0.68, "calm_after": 8.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "", "par": 40,
 		"loot": {"name": "NIGHT_12_NAME", "blurb": "NIGHT_12_BLURB", "verb": "NIGHT_12_VERB", "seconds": 4.5, "colour": "#2ec4b6", "shape": "clock",
 			"story": "NIGHT_12_TALE"}},
-	{"size": "medium", "shape": "cross", "guards": 2, "view": 0.72, "hearing": 0.95, "speed": 0.65, "calm_after": 9.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "two",
+	{"size": "medium", "shape": "cross", "guards": 2, "view": 0.72, "hearing": 0.95, "speed": 0.65, "calm_after": 9.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "two", "par": 45,
 		"loot": {"name": "NIGHT_13_NAME", "blurb": "NIGHT_13_BLURB", "verb": "NIGHT_13_VERB", "seconds": 4.5, "colour": "#4dabf7", "shape": "duck",
 			"story": "NIGHT_13_TALE"}},
-	{"size": "medium", "shape": "U", "guards": 2, "view": 0.78, "hearing": 1.0, "speed": 0.7, "calm_after": 9.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "",
+	{"size": "medium", "shape": "T", "guards": 2, "view": 0.78, "hearing": 1.0, "speed": 0.7, "calm_after": 9.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "", "par": 60,
 		"loot": {"name": "NIGHT_14_NAME", "blurb": "NIGHT_14_BLURB", "verb": "NIGHT_14_VERB", "seconds": 5.0, "colour": "#f4f1e6", "shape": "egg",
 			"story": "NIGHT_14_TALE"}},
 	# The big job: three guards for the first time, one of them standing by
 	# the way in: past it on all fours, while the other two walk their rounds.
-	{"size": "medium", "shape": "T", "guards": 3, "post": "route", "view": 0.9, "hearing": 1.0, "speed": 0.75, "calm_after": 10.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "",
+	{"size": "medium", "shape": "T", "guards": 3, "post": "route", "view": 0.9, "hearing": 1.0, "speed": 0.75, "calm_after": 10.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "", "par": 90,
 		"boss": true, "tip": "NIGHT_15_TIP",
 		"loot": {"name": "NIGHT_15_NAME", "blurb": "NIGHT_15_BLURB", "verb": "NIGHT_15_VERB", "seconds": 5.5, "colour": "#12b886", "shape": "gem",
 			"story": "NIGHT_15_TALE"}},
-	# --- El Castillo de los Inventos: the middle ages. The lights.
-	{"size": "medium", "shape": "L", "guards": 2, "view": 0.8, "hearing": 1.0, "speed": 0.72, "calm_after": 10.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "lights",
+	# --- El Castillo de los Inventos: the middle ages. The lights: on their
+	# night the guards hear the case's alarm often (four times in ten), and
+	# on alert they light the rooms, so the lights are seen being used.
+	{"size": "medium", "shape": "rect", "guards": 2, "view": 0.8, "hearing": 1.05, "speed": 0.72, "calm_after": 10.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "lights", "par": 30,
 		"loot": {"name": "NIGHT_16_NAME", "blurb": "NIGHT_16_BLURB", "verb": "NIGHT_16_VERB", "seconds": 5.0, "colour": "#e8590c", "shape": "clock",
 			"story": "NIGHT_16_TALE"}},
-	{"size": "medium", "shape": "T", "guards": 2, "view": 0.85, "hearing": 1.0, "speed": 0.78, "calm_after": 10.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
+	{"size": "medium", "shape": "T", "guards": 2, "view": 0.85, "hearing": 1.0, "speed": 0.78, "calm_after": 10.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "", "par": 50,
 		"loot": {"name": "NIGHT_17_NAME", "blurb": "NIGHT_17_BLURB", "verb": "NIGHT_17_VERB", "seconds": 5.5, "colour": "#8b5a2b", "shape": "rock",
 			"story": "NIGHT_17_TALE"}},
-	{"size": "medium", "shape": "notched", "guards": 2, "view": 0.85, "hearing": 1.0, "speed": 0.8, "calm_after": 11.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
+	{"size": "medium", "shape": "L", "guards": 2, "view": 0.88, "hearing": 1.0, "speed": 0.8, "calm_after": 11.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "", "par": 55,
 		"loot": {"name": "NIGHT_18_NAME", "blurb": "NIGHT_18_BLURB", "verb": "NIGHT_18_VERB", "seconds": 5.0, "colour": "#b197fc", "shape": "gum",
 			"story": "NIGHT_18_TALE"}},
-	{"size": "medium", "shape": "U", "guards": 2, "view": 0.88, "hearing": 1.05, "speed": 0.82, "calm_after": 11.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
+	{"size": "medium", "shape": "T", "guards": 2, "view": 0.9, "hearing": 1.05, "speed": 0.82, "calm_after": 11.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "", "par": 65,
 		"loot": {"name": "NIGHT_19_NAME", "blurb": "NIGHT_19_BLURB", "verb": "NIGHT_19_VERB", "seconds": 5.5, "colour": "#40c057", "shape": "mask",
 			"story": "NIGHT_19_TALE"}},
 	# The big job: the throne room. Three guards slow to calm down, one of
 	# them standing with its back to the way, all ears: not a step running.
-	{"size": "medium", "shape": "cross", "guards": 3, "post": "quiet", "view": 0.9, "hearing": 1.15, "speed": 0.85, "calm_after": 13.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
+	# Far enough from the case not to hear its alarm: no lure needed.
+	{"size": "medium", "shape": "T", "guards": 3, "post": "quiet", "view": 0.9, "hearing": 1.15, "speed": 0.85, "calm_after": 13.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "", "par": 120,
 		"boss": true, "tip": "NIGHT_20_TIP",
 		"loot": {"name": "NIGHT_20_NAME", "blurb": "NIGHT_20_BLURB", "verb": "NIGHT_20_VERB", "seconds": 5.0, "colour": "#f0c46a", "shape": "crown",
 			"story": "NIGHT_20_TALE"}},
-	# --- La Torre de Cristal: the modern age. Big museums, and the end.
-	{"size": "large", "shape": "U", "guards": 2, "view": 0.82, "hearing": 1.0, "speed": 0.75, "calm_after": 11.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "big",
-		"loot": {"name": "NIGHT_21_NAME", "blurb": "NIGHT_21_BLURB", "verb": "NIGHT_21_VERB", "seconds": 4.5, "colour": "#e0b060", "shape": "toast",
+	# --- La Torre de Cristal: the modern age. Big museums, and the end: more
+	# guards than anywhere, so they are not lost in so much museum.
+	{"size": "large", "shape": "U", "reseed": 1, "guards": 3, "view": 0.82, "hearing": 1.0, "speed": 0.75, "calm_after": 11.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "big", "par": 60,
+		"loot": {"name": "NIGHT_21_NAME", "blurb": "NIGHT_21_BLURB", "verb": "NIGHT_21_VERB", "seconds": 5.0, "colour": "#e0b060", "shape": "toast",
 			"story": "NIGHT_21_TALE"}},
-	{"size": "large", "shape": "notched", "guards": 3, "view": 0.9, "hearing": 1.05, "speed": 0.85, "calm_after": 12.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
+	{"size": "large", "shape": "T", "guards": 4, "view": 0.9, "hearing": 1.05, "speed": 0.85, "calm_after": 12.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "", "par": 75,
 		"loot": {"name": "NIGHT_22_NAME", "blurb": "NIGHT_22_BLURB", "verb": "NIGHT_22_VERB", "seconds": 5.0, "colour": "#f783ac", "shape": "gum",
 			"story": "NIGHT_22_TALE"}},
-	{"size": "large", "shape": "T", "guards": 3, "view": 0.95, "hearing": 1.1, "speed": 0.92, "calm_after": 13.0, "alarms": 1, "props": true, "lights": true, "case_alarm": true, "teach": "",
+	{"size": "large", "shape": "T", "guards": 4, "view": 0.95, "hearing": 1.1, "speed": 0.92, "calm_after": 13.0, "alarms": 1, "props": true, "lights": true, "case_alarm": true, "teach": "", "par": 100,
 		"loot": {"name": "NIGHT_23_NAME", "blurb": "NIGHT_23_BLURB", "verb": "NIGHT_23_VERB", "seconds": 5.5, "colour": "#f4f1e6", "shape": "teeth",
 			"story": "NIGHT_23_TALE"}},
-	{"size": "large", "shape": "L", "guards": 3, "view": 1.0, "hearing": 1.1, "speed": 0.95, "calm_after": 13.0, "alarms": 1, "props": true, "lights": true, "case_alarm": true, "teach": "",
+	{"size": "large", "shape": "U", "guards": 4, "view": 1.0, "hearing": 1.1, "speed": 0.95, "calm_after": 13.0, "alarms": 1, "props": true, "lights": true, "case_alarm": true, "teach": "", "par": 110,
 		"loot": {"name": "NIGHT_24_NAME", "blurb": "NIGHT_24_BLURB", "verb": "NIGHT_24_VERB", "seconds": 6.0, "colour": "#dee2e6", "shape": "sock",
 			"story": "NIGHT_24_TALE"}},
-	# The last big job: the Barón's own diamond, four guards wide awake.
-	{"size": "large", "shape": "cross", "guards": 4, "view": 1.05, "hearing": 1.15, "speed": 1.0, "calm_after": 14.0, "alarms": 1, "props": true, "lights": true, "case_alarm": true, "teach": "finale",
+	# The last big job: the Barón's own diamond, five guards wide awake, and
+	# the longest way in the story.
+	{"size": "large", "shape": "U", "guards": 5, "view": 1.05, "hearing": 1.15, "speed": 1.0, "calm_after": 14.0, "alarms": 1, "props": true, "lights": true, "case_alarm": true, "teach": "finale", "par": 145,
 		"boss": true, "tip": "NIGHT_25_TIP",
 		"loot": {"name": "NIGHT_25_NAME", "blurb": "NIGHT_25_BLURB", "verb": "NIGHT_25_VERB", "seconds": 6.5, "colour": "#74c0fc", "shape": "gem",
 			"story": "NIGHT_25_TALE"}},
@@ -259,7 +271,8 @@ static func ending() -> String:
 
 
 static func seed_for(n: int, players := 1) -> int:
-	return SEED_BASE + n * 7919 + SEED_TEAM * (players - 1)
+	var reseed := int(LEVELS[clampi(n, 1, LEVELS.size()) - 1].get("reseed", 0))
+	return SEED_BASE + n * 7919 + SEED_TEAM * (players - 1) + reseed * SEED_STEP
 
 
 ## The night (1-based) that teaches lesson (LESSONS key), or -1 if none does.
@@ -329,6 +342,135 @@ static func _key(players: int) -> String:
 static func from_old(night: int) -> int:
 	var done := clampi(night, 1, 20) - 1
 	return mini((done / 4) * ROOMS + done % 4 + 1, LEVELS.size())
+
+
+# --- Stars -----------------------------------------------------------------------
+
+## Each heist of the story gives up to three stars, Overcooked style, each
+## its own goal, as bits of a mask:
+##   STAR_TAKEN   out of the door with the piece: the heist done;
+##   STAR_UNSEEN  no guard saw anyone of the gang, the whole night through
+##                (HeistStats "seen" at 0: heard is fine, seen is not);
+##   STAR_FAST    out under the heist's par (par): its "par" in LEVELS, a
+##                gang's a little longer (GANG_PAR).
+## A star once won stays won: the best is kept for each heist and each size
+## of gang, as a mask, so a worse go never takes one away, and two goes can
+## win two different stars (keep_stars). Only the story has them; nothing
+## waits on them: the next museum opens with the big job, as ever.
+##
+## For the screens:
+##   Story.stars(7)          -> 2      the best of heist 7, alone, as a count
+##   Story.star_mask(7)      -> 0b011  and which (STAR_TAKEN | STAR_UNSEEN)
+##   Story.stars_in(1, 2)    -> 11     museum 2 (0-based m = 1), for two
+##   Story.STARS_EACH * Story.ROOMS    the most a museum gives (15)
+##   Story.par(7)            -> 25.0   seconds for the fast star, alone
+##   Story.goals(7)          -> ["Roba la pieza", "Sin que te vean",
+##                               "En menos de 0:25"]   (STARS order)
+## And after a go, what it won and what was new: HeistStats.rate (the
+## paper's stars, EndPages.newspaper).
+const STAR_TAKEN := 1
+const STAR_UNSEEN := 2
+const STAR_FAST := 4
+## The three, in the order they are shown.
+const STARS := [STAR_TAKEN, STAR_UNSEEN, STAR_FAST]
+const STARS_EACH := 3
+## How much longer a gang has for the fast star: everyone has to get out,
+## and a gang shares out the job (the alarm panel).
+const GANG_PAR := {1: 1.0, 2: 1.2, 3: 1.35, 4: 1.5}
+
+
+## The seconds heist n has for the fast star, for this many thieves: its
+## "par", measured with a bot on the game itself (tools: tiempos.gd, the
+## quickest way past the guards, times 1.75, rounded up to 5 s); a gang's,
+## GANG_PAR times that, rounded up to 5 s too.
+static func par(n: int, players := 1) -> float:
+	var base := float(LEVELS[clampi(n, 1, LEVELS.size()) - 1].par)
+	return ceilf(base * GANG_PAR[clampi(players, 1, 4)] / 5.0) * 5.0
+
+
+## The stars a go at heist n wins (a STARS mask): escaped, seen (how many
+## times a guard spotted the gang, HeistStats "seen") and how long it took.
+## Caught, none: the other two only count with the piece out.
+static func earned(n: int, escaped: bool, seen: int, seconds: float, players := 1) -> int:
+	if not escaped:
+		return 0
+	var mask := STAR_TAKEN
+	if seen == 0:
+		mask |= STAR_UNSEEN
+	if seconds <= par(n, players):
+		mask |= STAR_FAST
+	return mask
+
+
+## How many stars there are in a mask.
+static func count_stars(mask: int) -> int:
+	var k := 0
+	for s in STARS:
+		if mask & s:
+			k += 1
+	return k
+
+
+## The best of heist n for this many thieves, as a mask (STARS): every star
+## ever won there. 0 if never done.
+static func star_mask(n: int, players := 1) -> int:
+	var all := _star_masks(players)
+	return all[n - 1] if n >= 1 and n <= all.size() else 0
+
+
+## The best of heist n for this many thieves: 0 to 3 stars.
+static func stars(n: int, players := 1) -> int:
+	return count_stars(star_mask(n, players))
+
+
+## The stars won in museum m (0-based), for this many thieves: 0 to 15.
+static func stars_in(m: int, players := 1) -> int:
+	var total := 0
+	for n in nights_in(clampi(m, 0, MUSEUMS.size() - 1)):
+		total += stars(n, players)
+	return total
+
+
+## Keeps the stars a go at heist n won (mask) with the ones won before: a
+## star once won is never lost. Returns the ones that are new.
+static func keep_stars(n: int, players: int, mask: int) -> int:
+	if n < 1 or n > LEVELS.size():
+		return 0
+	var all := _star_masks(players)
+	var fresh := mask & ~all[n - 1]
+	if fresh == 0:
+		return 0
+	all[n - 1] |= mask
+	var cfg := ConfigFile.new()
+	cfg.load(save)
+	cfg.set_value("stars", _key(players), all)
+	cfg.save(save)
+	return fresh
+
+
+## The three goals of heist n, short, for the screen before it, in STARS
+## order: "Roba la pieza", "Sin que te vean", "En menos de 1:30".
+static func goals(n: int, players := 1) -> Array[String]:
+	var many := "_MANY" if players > 1 else "_ONE"
+	var secs := int(par(n, players))
+	return [Text.t("STAR_GOAL_TAKEN" + many), Text.t("STAR_GOAL_UNSEEN" + many),
+		Text.t("STAR_GOAL_FAST") % ("%d:%02d" % [secs / 60, secs % 60])]
+
+
+## Every heist's best mask for this many thieves, kept in the progress
+## beside how far it got ("stars", "robo_<gang>"): one a heist, 0 for none.
+static func _star_masks(players: int) -> Array[int]:
+	var out: Array[int] = []
+	out.resize(LEVELS.size())
+	out.fill(0)
+	var cfg := ConfigFile.new()
+	if cfg.load(save) != OK:
+		return out
+	var kept: Variant = cfg.get_value("stars", _key(players), [])
+	if kept is Array or kept is PackedInt32Array or kept is PackedInt64Array:
+		for i in mini(kept.size(), out.size()):
+			out[i] = int(kept[i]) & (STAR_TAKEN | STAR_UNSEEN | STAR_FAST)
+	return out
 
 
 # --- Museums ---------------------------------------------------------------------

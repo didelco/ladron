@@ -80,6 +80,18 @@ static func tips(guards: Array[Guard], night := 0) -> Array[String]:
 	return out
 
 
+## What getting the piece out takes, under its name on the plan: standing
+## still by the case so many seconds, or, once there are minigames
+## (Heist.minigames), the pick and how many pins (Minigame.pins_for).
+static func takes() -> String:
+	var seconds := float(Heist.loot.get("seconds", 1.0))
+	if Heist.minigames():
+		var pins := Minigame.pins_for(seconds)
+		return Text.t("BRIEF_TAKES_PICK_ONE") if pins == 1 else Text.t("BRIEF_TAKES_PICK_MANY") % pins
+	var shown := str(int(seconds)) if is_equal_approx(seconds, roundf(seconds)) else str(seconds).replace(".", Text.t("BRIEF_DECIMAL_POINT"))
+	return Text.t("BRIEF_TAKES") % (Text.t("BRIEF_SECONDS") % shown)
+
+
 ## Whether tonight's museum has mechanic m at all.
 static func _has(m: String, guards: int) -> bool:
 	match m:

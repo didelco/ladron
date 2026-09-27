@@ -63,6 +63,27 @@ func _init() -> void:
 	Sim.new_map(4242, "medium")
 	check(Museum.only_theme == "", "fuera de la historia, los temas se mezclan")
 
+	# The pick's pins never go down along the story but where a museum
+	# starts; and the first museum stands still at the case, no pick.
+	var pins_up := true
+	var last_pins := 0
+	for n in range(Story.LOCKPICK_NIGHT, Story.count() + 1):
+		var pins := Minigame.pins_for(float(Story.LEVELS[n - 1].loot.seconds))
+		if pins < last_pins and Story.room_of(n) != 1:
+			pins_up = false
+			print("    robo %d: %d pernos tras %d" % [n, pins, last_pins])
+		last_pins = pins
+	check(pins_up, "los pernos de la ganzúa no bajan dentro de un museo")
+	check(not Story.tuning(Story.LOCKPICK_NIGHT - 1).lockpick and Story.tuning(Story.LOCKPICK_NIGHT).lockpick, "sin ganzúa en el primer museo")
+	# And the plan says which: still for so long, or the pick and its pins.
+	for n in [3, Story.LOCKPICK_NIGHT, 14]:
+		Sim.custom = Story.tuning(n)
+		Heist.loot = Story.level(n).loot
+		var line := Briefing.takes()
+		var want: String = "quieto 2 segundos" if n == 3 else ("un perno" if n == Story.LOCKPICK_NIGHT else "3 pernos")
+		check(line.contains(want), "robo %d: «%s»" % [n, line])
+	Sim.custom = {}
+
 	# The progress: its own for each gang, and the old saves carried over.
 	Story.save = "user://test_progress.cfg"
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))

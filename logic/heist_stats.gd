@@ -20,10 +20,17 @@ const SHOWN := 4
 ## seconds played
 static var time := 0.0
 static var counts := {}
+## A story heist's stars from this go (Story.STARS mask), and which of them
+## are new: never won there before by this size of gang. Set once the go
+## is over (rate); 0 before, and out of the story.
+static var stars := 0
+static var fresh := 0
 
 
 static func reset() -> void:
 	time = 0.0
+	stars = 0
+	fresh = 0
 	counts.clear()
 	for k in KINDS:
 		counts[k] = 0
@@ -52,3 +59,20 @@ static func highlights() -> Array:
 ## The time as the paper prints it: "1:42".
 static func clock(seconds: int) -> String:
 	return "%d:%02d" % [seconds / 60, seconds % 60]
+
+
+## The go at story heist night is over (escaped or not): the stars it won
+## (Story.earned, from the time and "seen") and which are new. keep: kept
+## in the progress with the best (Story.keep_stars); a go only looked at
+## keeps nothing: new is then what the progress does not have yet.
+static func rate(night: int, players: int, escaped: bool, keep := true) -> void:
+	stars = Story.earned(night, escaped, count("seen"), time, players)
+	fresh = Story.keep_stars(night, players, stars) if keep else stars & ~Story.star_mask(night, players)
+
+
+## The paper's three stars, in Story.STARS order: [won, new] each.
+static func star_row() -> Array:
+	var out: Array = []
+	for s in Story.STARS:
+		out.append([(stars & s) != 0, (fresh & s) != 0])
+	return out

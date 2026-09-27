@@ -603,54 +603,84 @@ window.CODIGO = {
     "line": 29
    },
    "LEVELS": {
-    "value": "[ # --- La Gran Cueva: prehistory. Small museums, one guard at most. {\"size\": \"small\", \"shape\": \"rect\", \"guards\": 0, \"view\": 0.45, \"hearing\": 0.2, \"speed\": 0.4, \"calm_after\": 5.0, \"alarms\": 3, \"props\": false, \"lights\": false, \"case_alarm\": false, \"teach\": \"heist\", \"loot\": {\"name\": \"NIGHT_01_NAME\", \"blurb\": \"NIGHT_01_BLURB\", \"verb\": \"NIGHT_01_VERB\", \"seconds\": 1.5, \"colour\": \"#f4f1e6\", \"shape\": \"te…",
-    "note": "Each heist: museum size and shape, how many guards, their senses and pace (Sim.tuning keys), what is switched on yet (props, lights, the case's alarm: Sim.feature), a guard's post if the lesson or the big job needs one, the one thing it teaches (LESSONS), and the piece. A big job says so (\"boss\") and has a line of its own for the plan (\"tip\"). Easy to hard, one new thing at a time; each museum's pieces fit its theme.",
-    "line": 37
+    "value": "[ # --- La Gran Cueva: prehistory. Small museums, one guard at most. {\"size\": \"small\", \"shape\": \"rect\", \"guards\": 0, \"view\": 0.45, \"hearing\": 0.2, \"speed\": 0.4, \"calm_after\": 5.0, \"alarms\": 3, \"props\": false, \"lights\": false, \"case_alarm\": false, \"teach\": \"heist\", \"par\": 30, \"loot\": {\"name\": \"NIGHT_01_NAME\", \"blurb\": \"NIGHT_01_BLURB\", \"verb\": \"NIGHT_01_VERB\", \"seconds\": 1.5, \"colour\": \"#f4f1e6\", \"…",
+    "note": "Each heist: museum size and shape, how many guards, their senses and pace (Sim.tuning keys), what is switched on yet (props, lights, the case's alarm: Sim.feature), a guard's post if the lesson or the big job needs one, the one thing it teaches (LESSONS), and the piece. A big job says so (\"boss\") and has a line of its own for the plan (\"tip\"). Easy to hard, one new thing at a time; each museum's pieces fit its theme. \"reseed\" (optional) builds the night's museum from that many seeds on (seed_for), for a museum that suits it better than the first. \"par\": the time for the fast star (stars), in seconds.",
+    "line": 40
    },
    "SEED_BASE": {
     "value": "424242",
     "note": "Each night's museum is always the same one — one for a thief on their own and another for two, with the same piece to take back.",
-    "line": 139
+    "line": 151
    },
    "SEED_TEAM": {
     "value": "104729",
     "note": "Each night's museum is always the same one — one for a thief on their own and another for two, with the same piece to take back.",
-    "line": 140
+    "line": 152
    },
    "LESSON_TRIES": {
     "value": "60",
     "note": "How many museums a lesson night may look through for one that forces its lesson (Sim.assign_posts); each is SEED_STEP on from the last.",
-    "line": 143
+    "line": 155
    },
    "SEED_STEP": {
     "value": "7777",
     "note": "How many museums a lesson night may look through for one that forces its lesson (Sim.assign_posts); each is SEED_STEP on from the last.",
-    "line": 144
+    "line": 156
    },
    "LESSONS": {
     "value": "{ \"heist\": {\"title\": \"LESSON_HEIST_TITLE\", \"stage\": \"lesson:heist\", \"text\": \"LESSON_HEIST_TEXT\"}, # The same first lesson for a gang, with the gang's own jobs. \"heist2\": {\"title\": \"LESSON_HEIST2_TITLE\", \"stage\": \"lesson:heist2\", \"text\": \"LESSON_HEIST2_TEXT\"}, \"heist3\": {\"title\": \"LESSON_HEIST3_TITLE\", \"stage\": \"lesson:heist3\", \"text\": \"LESSON_HEIST3_TEXT\"}, \"heist4\": {\"title\": \"LESSON_HEIST4_TITLE…",
     "note": "What each night teaches, one thing a night, the night built around it: a title, a line on how it works and its own little scene acting it out (LessonStage). The words here, like the pieces' and the tale's, are keys into Text.",
-    "line": 150
+    "line": 162
    },
    "LOCKPICK_NIGHT": {
     "value": "6",
     "note": "From this night on, the first in the second museum, there are minigames (Minigame, Heist.minigames): the case is picked, the alarm panel's glass cut with the suction cup, the pose on a pedestal held on one foot, the way into a hideout wriggled and the sneeze in there held in, and the arcade machine plays pong. Before it, in the whole first museum, none of them: you stand still at the case and hold the panel, and are up on a pedestal or in a hideout at once. Its lesson (\"games\") is the one new thing of its night.",
-    "line": 191
+    "line": 203
    },
    "GAME_LEVEL": {
     "value": "[[0, 0], [0, 1], [1, 1], [1, 2], [2, 2]]",
     "note": "The minigames' level (Minigame.level_now) in each museum, in its rooms and on its big job: none in the first (LOCKPICK_NIGHT), then easy, and a step harder every museum or so, the big jobs a step ahead of their rooms.",
-    "line": 196
+    "line": 208
    },
    "SAVE": {
     "value": "\"user://progress.cfg\"",
     "note": "The minigames' level (Minigame.level_now) in each museum, in its rooms and on its big job: none in the first (LOCKPICK_NIGHT), then easy, and a step harder every museum or so, the big jobs a step ahead of their rooms.",
-    "line": 198
+    "line": 210
    },
    "MUSEUMS": {
     "value": "[ # La Gran Cueva: rough ochre stone underfoot, clay walls, dark rock below. {\"name\": \"MUSEUM_1_NAME\", \"text\": \"MUSEUM_1_TEXT\", \"theme\": \"prehistoria\", \"colour\": \"#d08a3a\", \"palette\": {\"floor\": 0, \"stone\": Color(\"#4a3624\"), \"stone2\": Color(\"#56402a\"), \"joint\": Color(\"#1e140c\"), \"gloss\": 0.55, \"paper\": Color(\"#6b3f1f\"), \"paper2\": Color(\"#7a4a25\"), \"wallpaper\": 0, \"wainscot\": Color(\"#3a2a1c\"), \"dado…",
     "note": "The town's museums, each a stop on the city map with ROOMS heists inside, in order, the last its big job. Each shows one theme (Themes): its galleries, its corridors and its pieces. Each has its own floor and walls (MuseumView.THEMES keys) to match, and a colour for its stop on the map. In the order of time, from the dinosaurs to today: prehistory, nature (the living world, still in the old natural-history style), the ancient world, the middle ages, and the modern age, the Barón's own tower.",
-    "line": 209
+    "line": 221
+   },
+   "STAR_TAKEN": {
+    "value": "1",
+    "note": "Each heist of the story gives up to three stars, Overcooked style, each its own goal, as bits of a mask: STAR_TAKEN   out of the door with the piece: the heist done; STAR_UNSEEN  no guard saw anyone of the gang, the whole night through (HeistStats \"seen\" at 0: heard is fine, seen is not); STAR_FAST    out under the heist's par (par): its \"par\" in LEVELS, a gang's a little longer (GANG_PAR). A star once won stays won: the best is kept for each heist and each size of gang, as a mask, so a worse go never takes one away, and two goes can win two different stars (keep_stars). Only the story has them; nothing waits on them: the next museum opens with the big job, as ever.  For the screens: Story.stars(7)          -> 2      the best of heist 7, alone, as a count Story.star_mask(7)      -> 0b011  and which (STAR_TAKEN | STAR_UNSEEN) Story.stars_in(1, 2)    -> 11     museum 2 (0-based m = 1), for two Story.STARS_EACH * Story.ROOMS    the most a museum gives (15) Story.par(7)            -> 25.0   seconds for the fast star, alone Story.goals(7)          -> [\"Roba la pieza\", \"Sin que te vean\", \"En menos de 0:25\"]   (STARS order) And after a go, what it won and what was new: HeistStats.rate (the paper's stars, EndPages.newspaper).",
+    "line": 371
+   },
+   "STAR_UNSEEN": {
+    "value": "2",
+    "note": "Each heist of the story gives up to three stars, Overcooked style, each its own goal, as bits of a mask: STAR_TAKEN   out of the door with the piece: the heist done; STAR_UNSEEN  no guard saw anyone of the gang, the whole night through (HeistStats \"seen\" at 0: heard is fine, seen is not); STAR_FAST    out under the heist's par (par): its \"par\" in LEVELS, a gang's a little longer (GANG_PAR). A star once won stays won: the best is kept for each heist and each size of gang, as a mask, so a worse go never takes one away, and two goes can win two different stars (keep_stars). Only the story has them; nothing waits on them: the next museum opens with the big job, as ever.  For the screens: Story.stars(7)          -> 2      the best of heist 7, alone, as a count Story.star_mask(7)      -> 0b011  and which (STAR_TAKEN | STAR_UNSEEN) Story.stars_in(1, 2)    -> 11     museum 2 (0-based m = 1), for two Story.STARS_EACH * Story.ROOMS    the most a museum gives (15) Story.par(7)            -> 25.0   seconds for the fast star, alone Story.goals(7)          -> [\"Roba la pieza\", \"Sin que te vean\", \"En menos de 0:25\"]   (STARS order) And after a go, what it won and what was new: HeistStats.rate (the paper's stars, EndPages.newspaper).",
+    "line": 372
+   },
+   "STAR_FAST": {
+    "value": "4",
+    "note": "Each heist of the story gives up to three stars, Overcooked style, each its own goal, as bits of a mask: STAR_TAKEN   out of the door with the piece: the heist done; STAR_UNSEEN  no guard saw anyone of the gang, the whole night through (HeistStats \"seen\" at 0: heard is fine, seen is not); STAR_FAST    out under the heist's par (par): its \"par\" in LEVELS, a gang's a little longer (GANG_PAR). A star once won stays won: the best is kept for each heist and each size of gang, as a mask, so a worse go never takes one away, and two goes can win two different stars (keep_stars). Only the story has them; nothing waits on them: the next museum opens with the big job, as ever.  For the screens: Story.stars(7)          -> 2      the best of heist 7, alone, as a count Story.star_mask(7)      -> 0b011  and which (STAR_TAKEN | STAR_UNSEEN) Story.stars_in(1, 2)    -> 11     museum 2 (0-based m = 1), for two Story.STARS_EACH * Story.ROOMS    the most a museum gives (15) Story.par(7)            -> 25.0   seconds for the fast star, alone Story.goals(7)          -> [\"Roba la pieza\", \"Sin que te vean\", \"En menos de 0:25\"]   (STARS order) And after a go, what it won and what was new: HeistStats.rate (the paper's stars, EndPages.newspaper).",
+    "line": 373
+   },
+   "STARS": {
+    "value": "[STAR_TAKEN, STAR_UNSEEN, STAR_FAST]",
+    "note": "The three, in the order they are shown.",
+    "line": 375
+   },
+   "STARS_EACH": {
+    "value": "3",
+    "note": "The three, in the order they are shown.",
+    "line": 376
+   },
+   "GANG_PAR": {
+    "value": "{1: 1.0, 2: 1.2, 3: 1.35, 4: 1.5}",
+    "note": "How much longer a gang has for the fast star: everyone has to get out, and a gang shares out the job (the alarm panel).",
+    "line": 379
    }
   }
  }

@@ -278,13 +278,35 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#2a2233",
+     "key": ""
+    }
+   ],
+   "file": "scenes/end_pages.gd",
+   "name": "CARD_PHOTO_BACK",
+   "note": "The job sheet's polaroid: its photo's dark back and the tape on it."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#f2e6b899",
+     "key": ""
+    }
+   ],
+   "file": "scenes/end_pages.gd",
+   "name": "CARD_TAPE",
+   "note": "The job sheet's polaroid: its photo's dark back and the tape on it."
+  },
+  {
+   "colours": [
+    {
      "hex": "#1f2023",
      "key": ""
     }
    ],
    "file": "scenes/end_pages.gd",
    "name": "SHEET_INK",
-   "note": "The studio behind the piece in its photo, before it is printed."
+   "note": "The job sheet's polaroid: its photo's dark back and the tape on it."
   },
   {
    "colours": [
@@ -295,7 +317,7 @@ window.JUEGO = {
    ],
    "file": "scenes/end_pages.gd",
    "name": "SHEET_INK_SOFT",
-   "note": "The studio behind the piece in its photo, before it is printed."
+   "note": "The job sheet's polaroid: its photo's dark back and the tape on it."
   },
   {
    "colours": [
@@ -306,7 +328,7 @@ window.JUEGO = {
    ],
    "file": "scenes/end_pages.gd",
    "name": "SHEET_LINE",
-   "note": "The studio behind the piece in its photo, before it is printed."
+   "note": "The job sheet's polaroid: its photo's dark back and the tape on it."
   },
   {
    "colours": [
@@ -317,7 +339,7 @@ window.JUEGO = {
    ],
    "file": "scenes/end_pages.gd",
    "name": "STAMP",
-   "note": "The studio behind the piece in its photo, before it is printed."
+   "note": "The job sheet's polaroid: its photo's dark back and the tape on it."
   },
   {
    "colours": [
@@ -1968,6 +1990,7 @@ window.JUEGO = {
       "title": "EL GOLPE"
      }
     ],
+    "par": 30,
     "props": false,
     "shape": "rect",
     "size": "small",
@@ -2000,6 +2023,7 @@ window.JUEGO = {
       "title": "EL GUARDIA"
      }
     ],
+    "par": 25,
     "props": false,
     "shape": "L",
     "size": "small",
@@ -2026,6 +2050,7 @@ window.JUEGO = {
     "museum": 1,
     "n": 3,
     "news": [],
+    "par": 25,
     "props": false,
     "shape": "T",
     "size": "small",
@@ -2058,6 +2083,7 @@ window.JUEGO = {
       "title": "AGÁCHATE"
      }
     ],
+    "par": 25,
     "post": "route",
     "props": false,
     "shape": "rect",
@@ -2072,7 +2098,7 @@ window.JUEGO = {
     "calm_after": 8.0,
     "case_alarm": false,
     "guards": 1,
-    "hearing": 0.3,
+    "hearing": 0.4,
     "lights": false,
     "loot": {
      "blurb": "NIGHT_05_BLURB",
@@ -2086,10 +2112,12 @@ window.JUEGO = {
     "museum": 1,
     "n": 5,
     "news": [],
+    "par": 45,
     "props": false,
-    "shape": "U",
+    "reseed": 2,
+    "shape": "L",
     "size": "medium",
-    "speed": 0.95,
+    "speed": 1.05,
     "teach": "",
     "tip": "NIGHT_05_TIP",
     "view": 1.12
@@ -2119,6 +2147,7 @@ window.JUEGO = {
       "title": "MANOS A LA OBRA"
      }
     ],
+    "par": 25,
     "props": false,
     "shape": "notched",
     "size": "small",
@@ -2151,6 +2180,7 @@ window.JUEGO = {
       "title": "EL RUIDO"
      }
     ],
+    "par": 25,
     "post": "quiet",
     "props": false,
     "shape": "L",
@@ -2184,6 +2214,7 @@ window.JUEGO = {
       "title": "LA DISTRACCIÓN"
      }
     ],
+    "par": 40,
     "post": "case",
     "props": true,
     "shape": "rect",
@@ -2197,7 +2228,7 @@ window.JUEGO = {
     "calm_after": 7.0,
     "case_alarm": false,
     "guards": 1,
-    "hearing": 0.9,
+    "hearing": 1.0,
     "lights": false,
     "loot": {
      "blurb": "NIGHT_09_BLURB",
@@ -2211,12 +2242,14 @@ window.JUEGO = {
     "museum": 2,
     "n": 9,
     "news": [],
+    "par": 40,
     "props": true,
-    "shape": "U",
+    "reseed": 3,
+    "shape": "L",
     "size": "medium",
-    "speed": 0.6,
+    "speed": 0.65,
     "teach": "",
-    "view": 0.68
+    "view": 0.72
    },
    {
     "alarms": 1,
@@ -2238,9 +2271,10 @@ window.JUEGO = {
     "museum": 2,
     "n": 10,
     "news": [],
+    "par": 65,
     "post": "case",
     "props": true,
-    "shape": "T",
+    "shape": "L",
     "size": "medium",
     "speed": 0.65,
     "teach": "",
@@ -2252,7 +2286,7 @@ window.JUEGO = {
     "calm_after": 8.0,
     "case_alarm": true,
     "guards": 1,
-    "hearing": 0.9,
+    "hearing": 1.0,
     "lights": false,
     "loot": {
      "blurb": "NIGHT_11_BLURB",
@@ -2272,7 +2306,9 @@ window.JUEGO = {
       "title": "LA VITRINA CON ALARMA"
      }
     ],
+    "par": 35,
     "props": true,
+    "reseed": 2,
     "shape": "L",
     "size": "medium",
     "speed": 0.62,
@@ -2284,7 +2320,7 @@ window.JUEGO = {
     "calm_after": 8.0,
     "case_alarm": true,
     "guards": 1,
-    "hearing": 0.95,
+    "hearing": 1.05,
     "lights": false,
     "loot": {
      "blurb": "NIGHT_12_BLURB",
@@ -2298,12 +2334,14 @@ window.JUEGO = {
     "museum": 3,
     "n": 12,
     "news": [],
+    "par": 40,
     "props": true,
+    "reseed": 1,
     "shape": "notched",
     "size": "medium",
     "speed": 0.68,
     "teach": "",
-    "view": 0.78
+    "view": 0.8
    },
    {
     "alarms": 2,
@@ -2330,6 +2368,7 @@ window.JUEGO = {
       "title": "DOS GUARDIAS"
      }
     ],
+    "par": 45,
     "props": true,
     "shape": "cross",
     "size": "medium",
@@ -2356,8 +2395,9 @@ window.JUEGO = {
     "museum": 3,
     "n": 14,
     "news": [],
+    "par": 60,
     "props": true,
-    "shape": "U",
+    "shape": "T",
     "size": "medium",
     "speed": 0.7,
     "teach": "",
@@ -2383,6 +2423,7 @@ window.JUEGO = {
     "museum": 3,
     "n": 15,
     "news": [],
+    "par": 90,
     "post": "route",
     "props": true,
     "shape": "T",
@@ -2397,7 +2438,7 @@ window.JUEGO = {
     "calm_after": 10.0,
     "case_alarm": true,
     "guards": 2,
-    "hearing": 1.0,
+    "hearing": 1.05,
     "lights": true,
     "loot": {
      "blurb": "NIGHT_16_BLURB",
@@ -2417,8 +2458,9 @@ window.JUEGO = {
       "title": "LAS LUCES"
      }
     ],
+    "par": 30,
     "props": true,
-    "shape": "L",
+    "shape": "rect",
     "size": "medium",
     "speed": 0.72,
     "teach": "lights",
@@ -2443,6 +2485,7 @@ window.JUEGO = {
     "museum": 4,
     "n": 17,
     "news": [],
+    "par": 50,
     "props": true,
     "shape": "T",
     "size": "medium",
@@ -2469,12 +2512,13 @@ window.JUEGO = {
     "museum": 4,
     "n": 18,
     "news": [],
+    "par": 55,
     "props": true,
-    "shape": "notched",
+    "shape": "L",
     "size": "medium",
     "speed": 0.8,
     "teach": "",
-    "view": 0.85
+    "view": 0.88
    },
    {
     "alarms": 2,
@@ -2495,12 +2539,13 @@ window.JUEGO = {
     "museum": 4,
     "n": 19,
     "news": [],
+    "par": 65,
     "props": true,
-    "shape": "U",
+    "shape": "T",
     "size": "medium",
     "speed": 0.82,
     "teach": "",
-    "view": 0.88
+    "view": 0.9
    },
    {
     "alarms": 2,
@@ -2522,9 +2567,10 @@ window.JUEGO = {
     "museum": 4,
     "n": 20,
     "news": [],
+    "par": 120,
     "post": "quiet",
     "props": true,
-    "shape": "cross",
+    "shape": "T",
     "size": "medium",
     "speed": 0.85,
     "teach": "",
@@ -2535,14 +2581,14 @@ window.JUEGO = {
     "alarms": 2,
     "calm_after": 11.0,
     "case_alarm": true,
-    "guards": 2,
+    "guards": 3,
     "hearing": 1.0,
     "lights": true,
     "loot": {
      "blurb": "NIGHT_21_BLURB",
      "colour": "#e0b060",
      "name": "NIGHT_21_NAME",
-     "seconds": 4.5,
+     "seconds": 5.0,
      "shape": "toast",
      "story": "NIGHT_21_TALE",
      "verb": "NIGHT_21_VERB"
@@ -2556,7 +2602,9 @@ window.JUEGO = {
       "title": "UN MUSEO GRANDE"
      }
     ],
+    "par": 60,
     "props": true,
+    "reseed": 1,
     "shape": "U",
     "size": "large",
     "speed": 0.75,
@@ -2567,7 +2615,7 @@ window.JUEGO = {
     "alarms": 2,
     "calm_after": 12.0,
     "case_alarm": true,
-    "guards": 3,
+    "guards": 4,
     "hearing": 1.05,
     "lights": true,
     "loot": {
@@ -2582,8 +2630,9 @@ window.JUEGO = {
     "museum": 5,
     "n": 22,
     "news": [],
+    "par": 75,
     "props": true,
-    "shape": "notched",
+    "shape": "T",
     "size": "large",
     "speed": 0.85,
     "teach": "",
@@ -2593,7 +2642,7 @@ window.JUEGO = {
     "alarms": 1,
     "calm_after": 13.0,
     "case_alarm": true,
-    "guards": 3,
+    "guards": 4,
     "hearing": 1.1,
     "lights": true,
     "loot": {
@@ -2608,6 +2657,7 @@ window.JUEGO = {
     "museum": 5,
     "n": 23,
     "news": [],
+    "par": 100,
     "props": true,
     "shape": "T",
     "size": "large",
@@ -2619,7 +2669,7 @@ window.JUEGO = {
     "alarms": 1,
     "calm_after": 13.0,
     "case_alarm": true,
-    "guards": 3,
+    "guards": 4,
     "hearing": 1.1,
     "lights": true,
     "loot": {
@@ -2634,8 +2684,9 @@ window.JUEGO = {
     "museum": 5,
     "n": 24,
     "news": [],
+    "par": 110,
     "props": true,
-    "shape": "L",
+    "shape": "U",
     "size": "large",
     "speed": 0.95,
     "teach": "",
@@ -2646,7 +2697,7 @@ window.JUEGO = {
     "boss": true,
     "calm_after": 14.0,
     "case_alarm": true,
-    "guards": 4,
+    "guards": 5,
     "hearing": 1.15,
     "lights": true,
     "loot": {
@@ -2667,8 +2718,9 @@ window.JUEGO = {
       "title": "EL ÚLTIMO GOLPE"
      }
     ],
+    "par": 145,
     "props": true,
-    "shape": "cross",
+    "shape": "U",
     "size": "large",
     "speed": 1.0,
     "teach": "finale",
@@ -2793,7 +2845,9 @@ window.JUEGO = {
     "hideouts": {
      "egg": 2
     },
-    "icons": [],
+    "icons": [
+     "dinosaur"
+    ],
     "lockpick": false,
     "minigames": false,
     "n": 5,
@@ -2804,7 +2858,7 @@ window.JUEGO = {
     "plinths": 1,
     "size": "medium",
     "tips": [
-     "Un guardia de vista larga y medio sordo: escóndete tras vitrinas y paredes.",
+     "Un guardia rápido y de vista larga: que no te vea, que te alcanza.",
      "Si te persigue, piérdelo de vista y métete en un escondite.",
      "De lejos, las linternas no ven a quien va a gatas (C, o X)."
     ],
@@ -2977,11 +3031,9 @@ window.JUEGO = {
     "heading_gang": "Ladrones de guante blanco · vuestro segundo robo en el Templo de las Momias",
     "hideouts": {
      "legionary": 2,
-     "trojan_horse": 1
+     "sarcophagus": 1
     },
-    "icons": [
-     "trojan_horse"
-    ],
+    "icons": [],
     "lockpick": true,
     "minigames": true,
     "n": 12,
@@ -3084,12 +3136,13 @@ window.JUEGO = {
     "heading": "Maestro ladrón · tu primer robo en el Castillo de los Inventos",
     "heading_gang": "Maestros ladrones · vuestro primer robo en el Castillo de los Inventos",
     "hideouts": {
-     "armour": 1,
+     "armour": 2,
      "chest": 1
     },
     "icons": [
      "temas/edad_media/trono",
-     "temas/edad_media/maquina_voladora"
+     "temas/edad_media/maquina_voladora",
+     "temas/edad_media/espada_piedra"
     ],
     "lockpick": true,
     "minigames": true,
@@ -3142,13 +3195,12 @@ window.JUEGO = {
     "heading": "Maestro ladrón · tu tercer robo en el Castillo de los Inventos",
     "heading_gang": "Maestros ladrones · vuestro tercer robo en el Castillo de los Inventos",
     "hideouts": {
-     "armour": 2,
+     "armour": 1,
      "chest": 1
     },
     "icons": [
-     "temas/edad_media/trono",
-     "temas/edad_media/espada_piedra",
-     "temas/edad_media/maquina_voladora"
+     "temas/edad_media/maquina_voladora",
+     "temas/edad_media/trono"
     ],
     "lockpick": true,
     "minigames": true,
@@ -3171,13 +3223,12 @@ window.JUEGO = {
     "heading": "Maestro ladrón · tu cuarto robo en el Castillo de los Inventos",
     "heading_gang": "Maestros ladrones · vuestro cuarto robo en el Castillo de los Inventos",
     "hideouts": {
-     "armour": 1,
+     "chest": 1,
      "confessional": 1
     },
     "icons": [
-     "temas/edad_media/maquina_voladora",
      "temas/edad_media/trono",
-     "temas/edad_media/espada_piedra"
+     "temas/edad_media/maquina_voladora"
     ],
     "lockpick": true,
     "minigames": true,
@@ -3225,6 +3276,8 @@ window.JUEGO = {
    },
    {
     "arcades": [
+     "serpiente",
+     "bloques",
      "carreras"
     ],
     "game_level": 2,
@@ -3232,7 +3285,8 @@ window.JUEGO = {
     "heading": "Leyenda de la noche · tu primer robo en la Torre de Cristal",
     "heading_gang": "Leyendas de la noche · vuestro primer robo en la Torre de Cristal",
     "hideouts": {
-     "box": 3,
+     "box": 1,
+     "car": 2,
      "fridge": 2
     },
     "icons": [],
@@ -3244,21 +3298,21 @@ window.JUEGO = {
      "news",
      "plan"
     ],
-    "plinths": 2,
+    "plinths": 3,
     "size": "large",
     "tips": [
-     "2 guardias: que no te pillen sus linternas."
+     "3 guardias: que no te pillen sus linternas."
     ],
     "w": 49
    },
    {
     "arcades": [
-     "comecocos",
+     "serpiente",
      "invasores",
      "carreras",
-     "tenis",
-     "serpiente",
-     "bloques"
+     "comecocos",
+     "bloques",
+     "tenis"
     ],
     "game_level": 2,
     "h": 35,
@@ -3267,7 +3321,7 @@ window.JUEGO = {
     "hideouts": {
      "box": 1,
      "car": 2,
-     "fridge": 2
+     "fridge": 1
     },
     "icons": [],
     "lockpick": true,
@@ -3277,10 +3331,10 @@ window.JUEGO = {
      "story",
      "plan"
     ],
-    "plinths": 3,
+    "plinths": 2,
     "size": "large",
     "tips": [
-     "3 guardias: que no te pillen sus linternas.",
+     "4 guardias: que no te pillen sus linternas.",
      "Museo grande: mira el mapa con M (View en el mando).",
      "Si se mosquean, tardan en calmarse: espera bien escondido."
     ],
@@ -3315,19 +3369,15 @@ window.JUEGO = {
     "plinths": 2,
     "size": "large",
     "tips": [
-     "3 guardias de oído fino: cerca de ellos, siempre a gatas.",
+     "4 guardias de oído fino: cerca de ellos, siempre a gatas.",
      "Un solo ruido raro y dan la alarma."
     ],
     "w": 49
    },
    {
     "arcades": [
-     "invasores",
-     "bloques",
-     "comecocos",
      "carreras",
-     "serpiente",
-     "tenis"
+     "serpiente"
     ],
     "game_level": 2,
     "h": 35,
@@ -3336,7 +3386,7 @@ window.JUEGO = {
     "hideouts": {
      "box": 2,
      "car": 1,
-     "fridge": 1
+     "fridge": 2
     },
     "icons": [],
     "lockpick": true,
@@ -3349,18 +3399,18 @@ window.JUEGO = {
     "plinths": 2,
     "size": "large",
     "tips": [
-     "3 guardias de oído fino: cerca de ellos, siempre a gatas.",
+     "4 guardias de oído fino: cerca de ellos, siempre a gatas.",
      "Un solo ruido raro y dan la alarma."
     ],
     "w": 49
    },
    {
     "arcades": [
-     "invasores",
-     "carreras",
-     "serpiente",
      "bloques",
-     "comecocos"
+     "comecocos",
+     "carreras",
+     "invasores",
+     "serpiente"
     ],
     "game_level": 2,
     "h": 35,
@@ -3383,7 +3433,7 @@ window.JUEGO = {
     "plinths": 2,
     "size": "large",
     "tips": [
-     "4 guardias de oído fino: cerca de ellos, siempre a gatas.",
+     "5 guardias de oído fino: cerca de ellos, siempre a gatas.",
      "El gran final: mira el mapa y planea la ruta antes de moverte.",
      "Un solo ruido raro y dan la alarma."
     ],
@@ -6951,8 +7001,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "27-09-2026 23:48",
-  "commit": "40b4dc4",
-  "rama": "worktree-agent-a9519c6cdca98cc78"
+  "fecha": "28-09-2026 01:16",
+  "commit": "59cb4b7",
+  "rama": "worktree-agent-ac8105661808ef839"
  }
 };

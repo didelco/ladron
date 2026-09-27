@@ -299,7 +299,7 @@ window.PANTALLAS = [
       },
       {
         id: "fin_escapado", title: "END_PAPER_NAME", fn: "_show_end", phase: "escaped",
-        text: "Toda la banda fuera con la pieza. La portada del periódico del pueblo: el titular, la foto de la pieza en trama y el golpe en cifras (el tiempo, las veces que os vieron y lo que más hicisteis: bombas, escondites, cosas tiradas…, HeistStats). En la historia abre la sala siguiente; tras un gran golpe, el titular es el museo desvalijado y se pasa al siguiente museo (y vuelve a la ciudad).", shots: ["final_escapado"],
+        text: "Toda la banda fuera con la pieza. La portada del periódico del pueblo: el titular, la foto de la pieza en trama y el golpe en cifras (el tiempo, las veces que os vieron y lo que más hicisteis: bombas, escondites, cosas tiradas…, HeistStats). En la historia, bajo el titular, las tres estrellas del intento (botín, sigilo y rapidez, Story.STARS), llenas o vacías y las nuevas estampadas en rojo; y abre la sala siguiente; tras un gran golpe, el titular es el museo desvalijado y se pasa al siguiente museo (y vuelve a la ciudad).", shots: ["final_escapado"],
         options: [{ key: "END_NEXT_NIGHT", text: "En la historia.", to: "previa" }, { key: "END_NEXT_MUSEUM", text: "Tras el gran golpe de un museo.", to: "ciudad" }, { key: "END_NEXT_HEIST", text: "En el generativo.", to: "previa" }, { key: "END_TO_MENU" }],
       },
       {
