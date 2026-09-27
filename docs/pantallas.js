@@ -251,7 +251,7 @@ window.PANTALLAS = [
         shots: ["juego_robo_01", "juego_robo_04_linterna", "juego_robo_08_objetos", "juego_robo_13_dos", "juego_robo_16_luces", "juego_robo_25_final", "juego_generativo", "juego_reto"],
         options: [
           { key: "HUD_HELP", text: "La ayuda de teclas, siempre abajo a la izquierda." },
-          { label: "Robar", text: "Quieto junto a la vitrina hasta que se abre (desde el robo 18, con minijuego)." },
+          { label: "Robar", text: "Quieto junto a la vitrina hasta que se abre (desde el robo 6, el segundo museo, con minijuego)." },
           { label: "Salir por la flecha verde", text: "Con la pieza, toda la banda.", to: "fin_escapado" },
           { label: "Que te pillen", to: "fin_pillado" },
         ],

@@ -43,7 +43,7 @@ const WORDS := 14
 ## most urgent first: key -> lesson.
 const MECHANICS := {
 	"case_alarm": "case_alarm", "lights": "lights", "two": "two", "props": "props",
-	"noise": "noise", "torch": "torch", "map": "big",
+	"games": "games", "noise": "noise", "torch": "torch", "map": "big",
 }
 
 
@@ -84,6 +84,7 @@ static func tips(guards: Array[Guard], night := 0) -> Array[String]:
 static func _has(m: String, guards: int) -> bool:
 	match m:
 		"case_alarm", "lights": return Sim.feature(m)
+		"games": return Heist.minigames()
 		"props": return not Props.list.is_empty()
 		"two": return guards >= 2
 		"noise", "torch": return guards > 0
@@ -93,15 +94,16 @@ static func _has(m: String, guards: int) -> bool:
 
 ## In the story, only the night after the one that teaches it; out of it,
 ## always but the basics every guard comes with (the torch and the noise,
-## which the guards' line already covers).
+## which the guards' line already covers) and the minigames, which every
+## museum out of the story has and whose box says how each is played.
 static func _worth_saying(m: String, night: int) -> bool:
 	if night <= 0:
-		return m not in ["noise", "torch"]
+		return m not in ["noise", "torch", "games"]
 	return night == Story.lesson_night(MECHANICS[m]) + 1
 
 
 static func _key(m: String) -> String:
-	return {"case_alarm": "TIP_CASE_ALARM", "props": "BRIEF_PROPS", "two": "TIP_TWO",
+	return {"case_alarm": "TIP_CASE_ALARM", "props": "BRIEF_PROPS", "two": "TIP_TWO", "games": "TIP_GAMES",
 		"noise": "TIP_NOISE", "torch": "TIP_TORCH", "map": "TIP_MAP"}[m]
 
 

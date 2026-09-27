@@ -932,7 +932,7 @@ function minijuegos() {
   const M = MEC.minijuegos || {}, cat = J.catalogo || {}, h = J.historia || {};
   const todos = cat.minigames || [];
   const orden = [...(M.orden || []), ...todos.map(g => g.kind).filter(k => !(M.orden || []).includes(k))];
-  const lk = h.lockpick_night || 18;
+  const lk = h.lockpick_night || 6;
   const niveles = ["fácil", "medio", "difícil"];
   const conJuegos = NOCHES().filter(p => p.minigames);
   $("#p-minijuegos").innerHTML = `<h1>Minijuegos</h1>

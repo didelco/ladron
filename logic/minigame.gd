@@ -99,8 +99,8 @@ static func level_now() -> int:
 
 ## How many pins a lock of this many seconds (Heist.loot.seconds, the
 ## night's difficulty already in it) has: one for the first ones, four at
-## most. On the story's nights, 3.5 s (the pick's first) is one pin, 4 s two,
-## 5 s three, 6 s and up four.
+## most. On the story's nights, 3 s and 3.5 s (the pick's first nights)
+## are one pin, 4 s two, 5 s three, 6 s and up four.
 static func pins_for(seconds: float) -> int:
 	return clampi(roundi(seconds - 2.5), 1, 4)
 

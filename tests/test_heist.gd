@@ -223,15 +223,17 @@ func _init() -> void:
 	check(harder and Story.count() == 25, "veinticinco robos jugables, las salas cada una igual o más difícil")
 	check(bosses_hard, "cada gran golpe, al menos tan difícil como las salas de antes")
 	# One new thing at a time, and never on a big job (the last excepted:
-	# the finale): a lesson or the pick, no two on one night.
+	# the finale): a lesson a night at most, the minigames' among them, on
+	# the night they start.
 	var taught := {}
 	var one_each := true
 	for n in range(1, Story.count() + 1):
-		var news: int = (1 if Story.level(n).get("teach", "") != "" else 0) + (1 if n == Story.LOCKPICK_NIGHT else 0)
-		if news > 1 or (Story.is_boss(n) and news > 0 and n != Story.count()):
+		var news: int = 1 if Story.level(n).get("teach", "") != "" else 0
+		if Story.is_boss(n) and news > 0 and n != Story.count():
 			one_each = false
 		taught[n] = news
-	check(one_each and taught.values().count(1) == Story.LESSONS.size() - 3 + 1, "una cosa nueva cada vez, nunca en un gran golpe salvo el final (%d)" % taught.values().count(1))
+	check(one_each and taught.values().count(1) == Story.LESSONS.size() - 3, "una cosa nueva cada vez, nunca en un gran golpe salvo el final (%d)" % taught.values().count(1))
+	check(Story.lesson_night("games") == Story.LOCKPICK_NIGHT and Story.news(Story.LOCKPICK_NIGHT).size() == 1, "los minijuegos, lo nuevo del robo %d" % Story.LOCKPICK_NIGHT)
 	Sim.custom = {"lockpick": false}
 
 	# Four thieves: two panels far apart, both held, and two at the case.

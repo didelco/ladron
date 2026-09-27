@@ -180,6 +180,8 @@ LESSON_NOISE_TITLE,EL RUIDO
 LESSON_NOISE_TEXT,"Corriendo te oyen lejos; andando, poco; a gatas, nada."
 LESSON_PROPS_TITLE,LA DISTRACCIÓN
 LESSON_PROPS_TEXT,"Tira algo lejos (E, o A): el guardia irá a mirar y la pieza quedará libre."
+LESSON_GAMES_TITLE,LA GANZÚA
+LESSON_GAMES_TEXT,"La vitrina se abre con ganzúa: E (o A) al pasar por el verde. Esconderte y posar también piden maña."
 LESSON_CASE_ALARM_TITLE,LA VITRINA CON ALARMA
 LESSON_TWO_TITLE,DOS GUARDIAS
 LESSON_TWO_TEXT,"Si uno te ve, grita y el otro viene corriendo."
@@ -894,6 +896,7 @@ TIP_LIGHTS_ONE,En alerta enciende la luz: apágala con E en el interruptor.
 TIP_LIGHTS_MANY,En alerta encienden la luz: apágala con E en el interruptor.
 TIP_TWO,"Si uno te ve, grita y los demás vienen corriendo."
 TIP_NOISE,"Corriendo te oyen de lejos; a gatas, nada."
+TIP_GAMES,"Ganzúa, pedestal y escondite piden maña: sigue el recuadro."
 TIP_TORCH,"De lejos, las linternas no ven a quien va a gatas (C, o X)."
 TIP_MAP,Museo grande: mira el mapa con M (View en el mando).
 GALLERY_ANCIENT,la sala del mundo antiguo

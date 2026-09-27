@@ -1540,6 +1540,11 @@ window.JUEGO = {
     "text": "LESSON_FINALE_TEXT",
     "title": "LESSON_FINALE_TITLE"
    },
+   "games": {
+    "stage": "lesson:games",
+    "text": "LESSON_GAMES_TEXT",
+    "title": "LESSON_GAMES_TITLE"
+   },
    "guard": {
     "stage": "lesson:guard",
     "text": "LESSON_GUARD_TEXT",
@@ -1591,7 +1596,7 @@ window.JUEGO = {
     "title": "LESSON_TWO_TITLE"
    }
   },
-  "lockpick_night": 18,
+  "lockpick_night": 6,
   "museums": [
    {
     "colour": "#d08a3a",
@@ -1896,7 +1901,7 @@ window.JUEGO = {
     "calm_after": 6.0,
     "case_alarm": false,
     "guards": 1,
-    "hearing": 0.8,
+    "hearing": 0.4,
     "lights": false,
     "loot": {
      "blurb": "NIGHT_06_BLURB",
@@ -1911,17 +1916,16 @@ window.JUEGO = {
     "n": 6,
     "news": [
      {
-      "stage": "lesson:noise",
-      "text": "Corriendo te oyen lejos; andando, poco; a gatas, nada.",
-      "title": "EL RUIDO"
+      "stage": "lesson:games",
+      "text": "La vitrina se abre con ganzúa: E (o A) al pasar por el verde. Esconderte y posar también piden maña.",
+      "title": "LA GANZÚA"
      }
     ],
-    "post": "quiet",
     "props": false,
-    "shape": "L",
+    "shape": "notched",
     "size": "small",
     "speed": 0.5,
-    "teach": "noise",
+    "teach": "games",
     "view": 0.6
    },
    {
@@ -1942,12 +1946,19 @@ window.JUEGO = {
     },
     "museum": 2,
     "n": 7,
-    "news": [],
+    "news": [
+     {
+      "stage": "lesson:noise",
+      "text": "Corriendo te oyen lejos; andando, poco; a gatas, nada.",
+      "title": "EL RUIDO"
+     }
+    ],
+    "post": "quiet",
     "props": false,
-    "shape": "notched",
+    "shape": "L",
     "size": "small",
     "speed": 0.55,
-    "teach": "",
+    "teach": "noise",
     "view": 0.65
    },
    {
@@ -2252,7 +2263,7 @@ window.JUEGO = {
      "blurb": "NIGHT_18_BLURB",
      "colour": "#b197fc",
      "name": "NIGHT_18_NAME",
-     "seconds": 3.5,
+     "seconds": 5.0,
      "shape": "gum",
      "story": "NIGHT_18_TALE",
      "verb": "NIGHT_18_VERB"
@@ -2278,7 +2289,7 @@ window.JUEGO = {
      "blurb": "NIGHT_19_BLURB",
      "colour": "#40c057",
      "name": "NIGHT_19_NAME",
-     "seconds": 4.0,
+     "seconds": 5.5,
      "shape": "mask",
      "story": "NIGHT_19_TALE",
      "verb": "NIGHT_19_VERB"
@@ -2612,8 +2623,8 @@ window.JUEGO = {
      "shell": 1
     },
     "icons": [],
-    "lockpick": false,
-    "minigames": false,
+    "lockpick": true,
+    "minigames": true,
     "n": 6,
     "pages": [
      "story",
@@ -2623,8 +2634,7 @@ window.JUEGO = {
     "plinths": 1,
     "size": "small",
     "tips": [
-     "Un guardia lento: si te ve, corre y escóndete.",
-     "Un guardia no se mueve: pasa cuando mire a otro lado."
+     "Un guardia medio sordo y lento: corre, pero que no te vea."
     ],
     "w": 23
    },
@@ -2638,18 +2648,20 @@ window.JUEGO = {
      "shell": 2
     },
     "icons": [],
-    "lockpick": false,
-    "minigames": false,
+    "lockpick": true,
+    "minigames": true,
     "n": 7,
     "pages": [
      "story",
+     "news",
      "plan"
     ],
     "plinths": 1,
     "size": "small",
     "tips": [
      "Un guardia lento: si te ve, corre y escóndete.",
-     "Corriendo te oyen de lejos; a gatas, nada."
+     "Ganzúa, pedestal y escondite piden maña: sigue el recuadro.",
+     "Un guardia no se mueve: pasa cuando mire a otro lado."
     ],
     "w": 23
    },
@@ -2663,8 +2675,8 @@ window.JUEGO = {
      "shell": 2
     },
     "icons": [],
-    "lockpick": false,
-    "minigames": false,
+    "lockpick": true,
+    "minigames": true,
     "n": 8,
     "pages": [
      "story",
@@ -2675,6 +2687,7 @@ window.JUEGO = {
     "size": "small",
     "tips": [
      "Un guardia lento: si te ve, corre y escóndete.",
+     "Corriendo te oyen de lejos; a gatas, nada.",
      "Un guardia no se mueve: pasa cuando mire a otro lado."
     ],
     "w": 23
@@ -2690,8 +2703,8 @@ window.JUEGO = {
      "shell": 1
     },
     "icons": [],
-    "lockpick": false,
-    "minigames": false,
+    "lockpick": true,
+    "minigames": true,
     "n": 9,
     "pages": [
      "story",
@@ -2707,7 +2720,7 @@ window.JUEGO = {
    },
    {
     "arcades": [],
-    "game_level": 0,
+    "game_level": 1,
     "h": 25,
     "heading": "Ratero · tu gran golpe en la Casa de los Bichos",
     "heading_gang": "Rateros · vuestro gran golpe en la Casa de los Bichos",
@@ -2716,8 +2729,8 @@ window.JUEGO = {
      "shell": 1
     },
     "icons": [],
-    "lockpick": false,
-    "minigames": false,
+    "lockpick": true,
+    "minigames": true,
     "n": 10,
     "pages": [
      "story",
@@ -2734,7 +2747,7 @@ window.JUEGO = {
    },
    {
     "arcades": [],
-    "game_level": 0,
+    "game_level": 1,
     "h": 25,
     "heading": "Ladrón de guante blanco · tu primer robo en el Templo de las Momias",
     "heading_gang": "Ladrones de guante blanco · vuestro primer robo en el Templo de las Momias",
@@ -2743,8 +2756,8 @@ window.JUEGO = {
      "sarcophagus": 1
     },
     "icons": [],
-    "lockpick": false,
-    "minigames": false,
+    "lockpick": true,
+    "minigames": true,
     "n": 11,
     "pages": [
      "story",
@@ -2760,7 +2773,7 @@ window.JUEGO = {
    },
    {
     "arcades": [],
-    "game_level": 0,
+    "game_level": 1,
     "h": 25,
     "heading": "Ladrón de guante blanco · tu segundo robo en el Templo de las Momias",
     "heading_gang": "Ladrones de guante blanco · vuestro segundo robo en el Templo de las Momias",
@@ -2771,8 +2784,8 @@ window.JUEGO = {
     "icons": [
      "trojan_horse"
     ],
-    "lockpick": false,
-    "minigames": false,
+    "lockpick": true,
+    "minigames": true,
     "n": 12,
     "pages": [
      "story",
@@ -2788,7 +2801,7 @@ window.JUEGO = {
    },
    {
     "arcades": [],
-    "game_level": 0,
+    "game_level": 1,
     "h": 25,
     "heading": "Ladrón de guante blanco · tu tercer robo en el Templo de las Momias",
     "heading_gang": "Ladrones de guante blanco · vuestro tercer robo en el Templo de las Momias",
@@ -2796,8 +2809,8 @@ window.JUEGO = {
      "legionary": 2
     },
     "icons": [],
-    "lockpick": false,
-    "minigames": false,
+    "lockpick": true,
+    "minigames": true,
     "n": 13,
     "pages": [
      "story",
@@ -2813,7 +2826,7 @@ window.JUEGO = {
    },
    {
     "arcades": [],
-    "game_level": 0,
+    "game_level": 1,
     "h": 25,
     "heading": "Ladrón de guante blanco · tu cuarto robo en el Templo de las Momias",
     "heading_gang": "Ladrones de guante blanco · vuestro cuarto robo en el Templo de las Momias",
@@ -2822,8 +2835,8 @@ window.JUEGO = {
      "sarcophagus": 1
     },
     "icons": [],
-    "lockpick": false,
-    "minigames": false,
+    "lockpick": true,
+    "minigames": true,
     "n": 14,
     "pages": [
      "story",
@@ -2839,7 +2852,7 @@ window.JUEGO = {
    },
    {
     "arcades": [],
-    "game_level": 0,
+    "game_level": 1,
     "h": 25,
     "heading": "Ladrón de guante blanco · tu gran golpe en el Templo de las Momias",
     "heading_gang": "Ladrones de guante blanco · vuestro gran golpe en el Templo de las Momias",
@@ -2850,8 +2863,8 @@ window.JUEGO = {
     "icons": [
      "trojan_horse"
     ],
-    "lockpick": false,
-    "minigames": false,
+    "lockpick": true,
+    "minigames": true,
     "n": 15,
     "pages": [
      "story",
@@ -2868,7 +2881,7 @@ window.JUEGO = {
    },
    {
     "arcades": [],
-    "game_level": 0,
+    "game_level": 1,
     "h": 25,
     "heading": "Maestro ladrón · tu primer robo en el Castillo de los Inventos",
     "heading_gang": "Maestros ladrones · vuestro primer robo en el Castillo de los Inventos",
@@ -2880,8 +2893,8 @@ window.JUEGO = {
      "temas/edad_media/trono",
      "temas/edad_media/maquina_voladora"
     ],
-    "lockpick": false,
-    "minigames": false,
+    "lockpick": true,
+    "minigames": true,
     "n": 16,
     "pages": [
      "story",
@@ -2897,7 +2910,7 @@ window.JUEGO = {
    },
    {
     "arcades": [],
-    "game_level": 0,
+    "game_level": 1,
     "h": 25,
     "heading": "Maestro ladrón · tu segundo robo en el Castillo de los Inventos",
     "heading_gang": "Maestros ladrones · vuestro segundo robo en el Castillo de los Inventos",
@@ -2909,8 +2922,8 @@ window.JUEGO = {
      "temas/edad_media/trono",
      "temas/edad_media/maquina_voladora"
     ],
-    "lockpick": false,
-    "minigames": false,
+    "lockpick": true,
+    "minigames": true,
     "n": 17,
     "pages": [
      "story",
@@ -2926,7 +2939,7 @@ window.JUEGO = {
    },
    {
     "arcades": [],
-    "game_level": 0,
+    "game_level": 1,
     "h": 25,
     "heading": "Maestro ladrón · tu tercer robo en el Castillo de los Inventos",
     "heading_gang": "Maestros ladrones · vuestro tercer robo en el Castillo de los Inventos",
@@ -2955,7 +2968,7 @@ window.JUEGO = {
    },
    {
     "arcades": [],
-    "game_level": 0,
+    "game_level": 1,
     "h": 25,
     "heading": "Maestro ladrón · tu cuarto robo en el Castillo de los Inventos",
     "heading_gang": "Maestros ladrones · vuestro cuarto robo en el Castillo de los Inventos",
@@ -2984,7 +2997,7 @@ window.JUEGO = {
    },
    {
     "arcades": [],
-    "game_level": 1,
+    "game_level": 2,
     "h": 25,
     "heading": "Maestro ladrón · tu gran golpe en el Castillo de los Inventos",
     "heading_gang": "Maestros ladrones · vuestro gran golpe en el Castillo de los Inventos",
@@ -3016,7 +3029,7 @@ window.JUEGO = {
     "arcades": [
      "carreras"
     ],
-    "game_level": 1,
+    "game_level": 2,
     "h": 35,
     "heading": "Leyenda de la noche · tu primer robo en la Torre de Cristal",
     "heading_gang": "Leyendas de la noche · vuestro primer robo en la Torre de Cristal",
@@ -3049,7 +3062,7 @@ window.JUEGO = {
      "serpiente",
      "bloques"
     ],
-    "game_level": 1,
+    "game_level": 2,
     "h": 35,
     "heading": "Leyenda de la noche · tu segundo robo en la Torre de Cristal",
     "heading_gang": "Leyendas de la noche · vuestro segundo robo en la Torre de Cristal",
@@ -3084,7 +3097,7 @@ window.JUEGO = {
      "tenis",
      "comecocos"
     ],
-    "game_level": 1,
+    "game_level": 2,
     "h": 35,
     "heading": "Leyenda de la noche · tu tercer robo en la Torre de Cristal",
     "heading_gang": "Leyendas de la noche · vuestro tercer robo en la Torre de Cristal",
@@ -3118,7 +3131,7 @@ window.JUEGO = {
      "serpiente",
      "tenis"
     ],
-    "game_level": 1,
+    "game_level": 2,
     "h": 35,
     "heading": "Leyenda de la noche · tu cuarto robo en la Torre de Cristal",
     "heading_gang": "Leyendas de la noche · vuestro cuarto robo en la Torre de Cristal",
@@ -6740,8 +6753,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "27-09-2026 21:15",
-  "commit": "4d2411a",
-  "rama": "docs-versiones"
+  "fecha": "27-09-2026 21:57",
+  "commit": "7e54415",
+  "rama": "worktree-agent-a5f1e8bdb216284e0"
  }
 };

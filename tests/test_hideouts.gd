@@ -234,6 +234,11 @@ func _init() -> void:
 	check(p.hiding and Vector2(p.x, p.y) == Vector2(cell) + Vector2(0.5, 0.5), "dentro del mueble")
 	var out_keys := {}
 	out_keys[KEY[door - cell]] = true
+	# What was held getting in (the last wriggle, the way it came) does not
+	# get it out again: that key is let go first.
+	Sim.step_thief(p, out_keys, DT, "wasd")
+	check(p.hiding, "la dirección que traía pulsada no lo saca")
+	Sim.step_thief(p, {}, DT, "wasd")
 	Sim.step_thief(p, out_keys, DT, "wasd")
 	check(not p.hiding and Vector2(p.x, p.y) == Vector2(door) + Vector2(0.5, 0.5), "y sale por donde entró")
 	for k in Hideouts.PIECES:

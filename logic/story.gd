@@ -54,11 +54,13 @@ const LEVELS := [
 		"boss": true, "tip": "NIGHT_05_TIP",
 		"loot": {"name": "NIGHT_05_NAME", "blurb": "NIGHT_05_BLURB", "verb": "NIGHT_05_VERB", "seconds": 3.0, "colour": "#e8c89a", "shape": "egg",
 			"story": "NIGHT_05_TALE"}},
-	# --- La Casa de los Bichos: nature. The noise, then things to knock over.
-	{"size": "small", "shape": "L", "guards": 1, "post": "quiet", "view": 0.6, "hearing": 0.8, "speed": 0.5, "calm_after": 6.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "noise",
+	# --- La Casa de los Bichos: nature. The minigames (LOCKPICK_NIGHT), the
+	# noise, then things to knock over. From here the case is picked: its
+	# seconds are the pick's pins (Minigame.pins_for), one on the first nights.
+	{"size": "small", "shape": "notched", "guards": 1, "view": 0.6, "hearing": 0.4, "speed": 0.5, "calm_after": 6.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "games",
 		"loot": {"name": "NIGHT_06_NAME", "blurb": "NIGHT_06_BLURB", "verb": "NIGHT_06_VERB", "seconds": 3.0, "colour": "#7bc043", "shape": "crown",
 			"story": "NIGHT_06_TALE"}},
-	{"size": "small", "shape": "notched", "guards": 1, "view": 0.65, "hearing": 0.85, "speed": 0.55, "calm_after": 7.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "",
+	{"size": "small", "shape": "L", "guards": 1, "post": "quiet", "view": 0.65, "hearing": 0.85, "speed": 0.55, "calm_after": 7.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "noise",
 		"loot": {"name": "NIGHT_07_NAME", "blurb": "NIGHT_07_BLURB", "verb": "NIGHT_07_VERB", "seconds": 3.0, "colour": "#ff6b6b", "shape": "sock",
 			"story": "NIGHT_07_TALE"}},
 	{"size": "small", "shape": "rect", "guards": 1, "post": "case", "view": 0.7, "hearing": 0.85, "speed": 0.55, "calm_after": 7.0, "alarms": 3, "props": true, "lights": false, "case_alarm": false, "teach": "props",
@@ -93,21 +95,18 @@ const LEVELS := [
 		"boss": true, "tip": "NIGHT_15_TIP",
 		"loot": {"name": "NIGHT_15_NAME", "blurb": "NIGHT_15_BLURB", "verb": "NIGHT_15_VERB", "seconds": 5.5, "colour": "#12b886", "shape": "gem",
 			"story": "NIGHT_15_TALE"}},
-	# --- El Castillo de los Inventos: the middle ages. The lights, then the
-	# pick and the cutters (LOCKPICK_NIGHT).
+	# --- El Castillo de los Inventos: the middle ages. The lights.
 	{"size": "medium", "shape": "L", "guards": 2, "view": 0.8, "hearing": 1.0, "speed": 0.72, "calm_after": 10.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "lights",
 		"loot": {"name": "NIGHT_16_NAME", "blurb": "NIGHT_16_BLURB", "verb": "NIGHT_16_VERB", "seconds": 5.0, "colour": "#e8590c", "shape": "clock",
 			"story": "NIGHT_16_TALE"}},
 	{"size": "medium", "shape": "T", "guards": 2, "view": 0.85, "hearing": 1.0, "speed": 0.78, "calm_after": 10.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
 		"loot": {"name": "NIGHT_17_NAME", "blurb": "NIGHT_17_BLURB", "verb": "NIGHT_17_VERB", "seconds": 5.5, "colour": "#8b5a2b", "shape": "rock",
 			"story": "NIGHT_17_TALE"}},
-	# From here the case is picked: its seconds are the pick's pins now
-	# (Minigame.pins_for), one on the first night.
 	{"size": "medium", "shape": "notched", "guards": 2, "view": 0.85, "hearing": 1.0, "speed": 0.8, "calm_after": 11.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
-		"loot": {"name": "NIGHT_18_NAME", "blurb": "NIGHT_18_BLURB", "verb": "NIGHT_18_VERB", "seconds": 3.5, "colour": "#b197fc", "shape": "gum",
+		"loot": {"name": "NIGHT_18_NAME", "blurb": "NIGHT_18_BLURB", "verb": "NIGHT_18_VERB", "seconds": 5.0, "colour": "#b197fc", "shape": "gum",
 			"story": "NIGHT_18_TALE"}},
 	{"size": "medium", "shape": "U", "guards": 2, "view": 0.88, "hearing": 1.05, "speed": 0.82, "calm_after": 11.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
-		"loot": {"name": "NIGHT_19_NAME", "blurb": "NIGHT_19_BLURB", "verb": "NIGHT_19_VERB", "seconds": 4.0, "colour": "#40c057", "shape": "mask",
+		"loot": {"name": "NIGHT_19_NAME", "blurb": "NIGHT_19_BLURB", "verb": "NIGHT_19_VERB", "seconds": 5.5, "colour": "#40c057", "shape": "mask",
 			"story": "NIGHT_19_TALE"}},
 	# The big job: the throne room. Three guards slow to calm down, one of
 	# them standing with its back to the way, all ears: not a step running.
@@ -166,6 +165,9 @@ const LESSONS := {
 		"text": "LESSON_NOISE_TEXT"},
 	"props": {"title": "LESSON_PROPS_TITLE", "stage": "lesson:props",
 		"text": "LESSON_PROPS_TEXT"},
+	# The minigames: the pick at the case, and the knack the rest ask for.
+	"games": {"title": "LESSON_GAMES_TITLE", "stage": "lesson:games",
+		"text": "LESSON_GAMES_TEXT"},
 	"case_alarm": {"title": "LESSON_CASE_ALARM_TITLE", "stage": "lesson:case_alarm",
 		"text": "LESSON_CASE_ALARM_TEXT"},
 	"two": {"title": "LESSON_TWO_TITLE", "stage": "lesson:two",
@@ -178,11 +180,20 @@ const LESSONS := {
 		"text": "LESSON_FINALE_TEXT"},
 }
 
-## From this night on the case is picked and the alarm panel's glass cut
-## with the suction cup (Minigame); before it, you stand still at the case
-## and hold the panel. The one new thing of its night, between the lights
-## (16) and the big museum (21).
-const LOCKPICK_NIGHT := 18
+## From this night on, the first in the second museum, there are minigames
+## (Minigame, Heist.minigames): the case is picked, the alarm panel's glass
+## cut with the suction cup, the pose on a pedestal held on one foot, the
+## way into a hideout wriggled and the sneeze in there held in, and the
+## arcade machine plays pong. Before it, in the whole first museum, none of
+## them: you stand still at the case and hold the panel, and are up on a
+## pedestal or in a hideout at once. Its lesson ("games") is the one new
+## thing of its night.
+const LOCKPICK_NIGHT := 6
+
+## The minigames' level (Minigame.level_now) in each museum, in its rooms
+## and on its big job: none in the first (LOCKPICK_NIGHT), then easy, and a
+## step harder every museum or so, the big jobs a step ahead of their rooms.
+const GAME_LEVEL := [[0, 0], [0, 1], [1, 1], [1, 2], [2, 2]]
 
 const SAVE := "user://progress.cfg"
 ## where the progress is kept: SAVE, but the tests keep theirs apart
@@ -272,10 +283,8 @@ static func news(n: int, players := 1) -> Array:
 ## theme its museum shows.
 static func tuning(n: int) -> Dictionary:
 	var l := level(n)
-	# The minigames' level (Minigame.level_now): the first museum with them
-	# plays them easy, each museum on a step harder, a big job a step more.
-	var game := museum_of(n) - museum_of(LOCKPICK_NIGHT) + (1 if is_boss(n) else 0)
-	var out := {"lock": 1.0, "lockpick": n >= LOCKPICK_NIGHT, "game_level": clampi(game, 0, 2),
+	var game: int = GAME_LEVEL[museum_of(n)][1 if is_boss(n) else 0]
+	var out := {"lock": 1.0, "lockpick": n >= LOCKPICK_NIGHT, "game_level": game,
 		"theme": MUSEUMS[museum_of(n)].theme}
 	for k in ["guards", "view", "hearing", "speed", "calm_after", "alarms", "props", "lights", "case_alarm", "post"]:
 		if l.has(k):

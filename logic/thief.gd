@@ -52,6 +52,10 @@ var hideout: Hideouts.Spot = null
 var hide_entry := Vector2.ZERO
 ## a guard saw it get in: that guard knows (Guard.knows)
 var hide_blown := false
+## just in, with a direction still held from getting in (the last wriggle,
+## the way it walked up): that does not get it out again; it has to be let
+## go first (Sim.step_thief)
+var hide_settling := false
 ## wriggling into one (Minigame "squeeze"): which, and the guards that have
 ## seen it at it so far
 var hide_target: Hideouts.Spot = null

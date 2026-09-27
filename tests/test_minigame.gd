@@ -311,6 +311,14 @@ func _init() -> void:
 	sq.tick({"left": true}, DT)
 	check(sq.step == 1 and sq.lock > 0.0 and sq.events.has("slip"), "el mismo lado dos veces: atascado un momento")
 	check(sq.tick({"cancel": true}, DT) == "quit", "B (rodar) lo deja")
+	# The stick is never quite level: right with a touch of down is right.
+	var tilted := Minigame.make("squeeze", "hideout", 0, {}, 3, 1) as SqueezeGame
+	tilted.tick({"right": true, "down": true}, DT)
+	check(tilted.step == 1 and tilted.side == SqueezeGame.LEFT, "derecha con algo de abajo (el stick torcido) cuenta como derecha")
+	tilted.settle = 0.0
+	tilted.tick({}, DT)
+	tilted.tick({"up": true}, DT)
+	check(tilted.step == 1 and tilted.lock == 0.0, "arriba o abajo solos no cuentan ni atascan")
 
 	print("Minijuegos: uno por fichero")
 	for k in ["lockpick", "wires", "steady", "balance", "squeeze"]:

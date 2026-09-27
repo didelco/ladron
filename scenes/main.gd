@@ -133,6 +133,9 @@ var stride := [0.0, 0.0, 0.0, 0.0]
 var push_held := [false, false, false, false]
 ## the same for the smoke bomb key: one bomb per press
 var smoke_held := [false, false, false, false]
+## at a minigame as the frame began, per thief: a press that ends one is
+## not also an action on the room
+var busy := [false, false, false, false]
 ## how many seats the player-select screen is filling
 var join_count := 2
 var last_think := 0.0
@@ -2133,10 +2136,15 @@ func _squeeze(p: Thief, done: bool) -> void:
 	match Hideouts.squeeze(p, guards, thieves, done):
 		"in":
 			p.game = null
-			sfx.at("roll", _to_world(p.x, p.y), 0.3, 2.0)
-			_log(Text.t("LOG_HIDE_BLOWN") if p.hide_blown else Text.t("LOG_HIDE_IN") % Hideouts.name_of(spot.kind))
+			_hid(p, spot)
 		"lost":
 			p.game = null
+
+
+## In: the lid's thud, and whether anyone saw it.
+func _hid(p: Thief, spot: Hideouts.Spot) -> void:
+	sfx.at("roll", _to_world(p.x, p.y), 0.3, 2.0)
+	_log(Text.t("LOG_HIDE_BLOWN") if p.hide_blown else Text.t("LOG_HIDE_IN") % Hideouts.name_of(spot.kind))
 
 
 ## Each thief's minigame box, beside it on screen.
@@ -2194,9 +2202,35 @@ func _draw_prompts(dt: float) -> void:
 	seat_before = seat_now.duplicate(true)
 
 
+## What the action key would do for thief t where it stands, the first of
+## these there is (the bubble says the same, _prompt_rows): a minigame at
+## the case or the alarm panel ("job"), a pedestal ("plinth"), a hideout
+## ("hide"), an arcade machine ("arcade"), a room's switch ("switch"), a
+## prop to push over ("push"). {do, at}, or empty for nothing.
+func _action_for(t: Thief) -> Dictionary:
+	var job := Heist.game_for(t)
+	if not job.is_empty():
+		return {"do": "job", "at": job}
+	var plinth = Plinths.within_reach(t, thieves)
+	if plinth != null:
+		return {"do": "plinth", "at": plinth}
+	var spot := Hideouts.within_reach(t, thieves)
+	if spot:
+		return {"do": "hide", "at": spot}
+	var arcade := Arcades.within_reach(t, thieves)
+	if arcade.x >= 0:
+		return {"do": "arcade", "at": arcade}
+	var room := Sim.switch_within_reach(t)
+	if room:
+		return {"do": "switch", "at": room}
+	var prop := Props.within_reach(t)
+	if prop:
+		return {"do": "push", "at": prop}
+	return {}
+
+
 ## What thief i can do where it stands, one row each (Prompt): the action
-## key for what it would do (the one it would do: a minigame, the pedestal,
-## a prop, a switch, in that order), why it waits, or how the job goes.
+## key for what it would do (_action_for), why it waits, or how the job goes.
 func _prompt_rows(i: int) -> Array:
 	var p := thieves[i]
 	if phase != "playing" or p.out or p.game or map_open:
@@ -2215,25 +2249,18 @@ func _prompt_rows(i: int) -> Array:
 		return [{"verb": Heist.loot.verb, "progress": Heist.progress}]
 	if Heist.carrier == p.id:
 		return [{"verb": Text.t("HUD_JOB_CARRYING") % String(Heist.loot.name).to_upper()}]
-	var job := Heist.game_for(p)
-	if not job.is_empty():
-		return [row.call("action", Text.t({"lockpick": "HUD_GAME_PICK_HINT", "steady": "HUD_GAME_STEADY_HINT"}.get(job.kind, "HUD_GAME_WIRES_HINT")))]
 	if p.posing:
 		return [row.call("move", Text.t("HUD_PLINTH_DOWN"))]
 	if p.hiding:
 		return [row.call("move", Text.t("HUD_HIDE_OUT"))]
-	if Plinths.within_reach(p, thieves) != null:
-		return [row.call("action", Text.t("HUD_PLINTH_HINT"))]
-	if Arcades.within_reach(p, thieves).x >= 0:
-		return [row.call("action", Text.t("HUD_ARCADE_HINT"))]
-	var spot := Hideouts.within_reach(p, thieves)
-	if spot:
-		return [row.call("action", Text.t("HUD_HIDE_HINT") % Hideouts.name_of(spot.kind).to_upper())]
-	var prop := Props.within_reach(p)
-	if prop:
-		return [row.call("action", Text.t("HUD_PUSH_HINT") % Props.name_of(prop.kind).to_upper())]
-	if Sim.switch_within_reach(p):
-		return [row.call("action", Text.t("HUD_SWITCH_HINT"))]
+	var act := _action_for(p)
+	match act.get("do", ""):
+		"job": return [row.call("action", Text.t({"lockpick": "HUD_GAME_PICK_HINT", "steady": "HUD_GAME_STEADY_HINT"}.get(act.at.kind, "HUD_GAME_WIRES_HINT")))]
+		"plinth": return [row.call("action", Text.t("HUD_PLINTH_HINT"))]
+		"hide": return [row.call("action", Text.t("HUD_HIDE_HINT") % Hideouts.name_of(act.at.kind).to_upper())]
+		"arcade": return [row.call("action", Text.t("HUD_ARCADE_HINT"))]
+		"switch": return [row.call("action", Text.t("HUD_SWITCH_HINT"))]
+		"push": return [row.call("action", Text.t("HUD_PUSH_HINT") % Props.name_of(act.at.kind).to_upper())]
 	return []
 
 
@@ -2340,6 +2367,7 @@ func _tick(dt: float) -> void:
 		# On your own both pads drive you; with two, each pad is its own.
 		var scheme: String = "solo" if thieves.size() == 1 else ["wasd", "arrows", "ijkl", "numpad"][i]
 		_sneeze_coming(p, i, keys, dt)
+		busy[i] = p.game != null
 		if p.game:
 			p.game.tremble = Minigame.tremble_for(suspicion)
 			p.game.pressure = Plinths.pressure(p, guards)
@@ -2353,6 +2381,8 @@ func _tick(dt: float) -> void:
 					p.hide_target = null
 					p.arcade = Vector2i(-1, -1)
 					p.game = null
+					# The roll key let go of it: it is not a roll as well.
+					p.roll_key = true
 				"fail" when p.game.kind == "sneeze":
 					_sneeze(p, noises)
 				"fail":
@@ -2404,37 +2434,40 @@ func _tick(dt: float) -> void:
 	for i in thieves.size():
 		var t := thieves[i]
 		var pressed: bool = keys.has(["e", "period", "o", "kpadd"][i]) or (thieves.size() == 1 and keys.has("period"))
-		if pressed and not push_held[i] and not t.game:
-			var room := Sim.switch_within_reach(t)
-			var plinth = Plinths.within_reach(t, thieves)
-			var spot := Hideouts.within_reach(t, thieves)
-			var target := Props.within_reach(t)
-			var arcade := Arcades.within_reach(t, thieves)
-			var job := Heist.game_for(t)
-			if not job.is_empty():
-				Heist.start_game(t, job, _game_input(i, keys))
+		# Not from inside a hideout, and not the press that just ended a
+		# minigame (the sneeze let out, the balance lost): that one was the game's.
+		var act := _action_for(t) if pressed and not push_held[i] and not t.game and not busy[i] and not t.hiding else {}
+		match act.get("do", ""):
+			"job":
+				Heist.start_game(t, act.at, _game_input(i, keys))
 				sfx.at("pick", _to_world(t.x, t.y), 0.5, 2.0)
-			elif room:
-				Sim.flip_switch(room, t, guards, now, noises)
-			elif plinth != null:
-				Plinths.climb(t, plinth, guards)
+			"plinth":
+				Plinths.climb(t, act.at, guards)
 				# With minigames the pose is held on one foot (Minigame "balance").
 				if Heist.minigames():
 					t.game = Minigame.make("balance", "plinth", 1, _game_input(i, keys))
 				sfx.at("roll", _to_world(t.x, t.y), 0.4, 2.0)
 				_log(Text.t("LOG_PLINTH_BLOWN" if t.pose_blown else "LOG_PLINTH_UP"))
-			elif spot:
-				# In with a moment's wriggling (Minigame "squeeze", _squeeze).
-				Hideouts.start(t, spot, _game_input(i, keys))
-			elif arcade.x >= 0:
+			"hide":
+				# In with a moment's wriggling (Minigame "squeeze", _squeeze);
+				# before the nights have minigames, in at once.
+				if Heist.minigames():
+					Hideouts.start(t, act.at, _game_input(i, keys))
+				else:
+					Hideouts.get_in(t, act.at, guards)
+					_hid(t, act.at)
+			"arcade":
 				# A game of pong, facing the screen: nothing to win (ArcadeGame).
+				var arcade: Vector2i = act.at
 				t.game = Minigame.make("arcade", "arcade", 1, _game_input(i, keys))
 				t.arcade = arcade
 				t.dir = atan2(arcade.y + 0.5 - t.y, arcade.x + 0.5 - t.x)
 				sfx.at("pong_score", _to_world(t.x, t.y, 1.0), 0.4, 2.0)
 				_log(Text.t("LOG_ARCADE"))
-			elif target:
-				Props.push(target, t, now, noises)
+			"switch":
+				Sim.flip_switch(act.at, t, guards, now, noises)
+			"push":
+				Props.push(act.at, t, now, noises)
 		push_held[i] = pressed
 	for p in Props.knocked:
 		props_view.shove(p)

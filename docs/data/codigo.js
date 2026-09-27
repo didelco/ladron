@@ -365,57 +365,57 @@ window.CODIGO = {
   }
  },
  "logic/hideouts.gd": {
-  "doc": "Places to hide in. Next to one, the action key gets you in; any direction gets you out, onto the free floor that way.  the big pieces (Museum.big_pieces) you fit inside: the sarcophagus, the Trojan horse, the mammoth (under its coat), the hollow log and the little car on its stand; pieces of furniture on a case tile of their own (pieces), one theme each: a retro fridge and a cardboard box (modern), a legionary's armour (ancient), a confessional and a chest (middle ages), a giant dinosaur egg (prehistory), a giant tortoise shell (nature); a suit of armour still standing (Props): you step inside it.  Whatever looks like a place to hide is one: every big piece and every suit of armour standing in the museum, and every piece of furniture. What keeps it from being too easy is how few of them there are, far apart from one another: the generator stands only so many big pieces to hide in (MapGen), the props only so many suits of armour (Props.place), and each night adds furniture, and empty pedestals to pose on (Plinths), up to the museum's share (places, spread). A saved map keeps what it stood by hand. Getting in takes a moment of wriggling (Minigame \"squeeze\", start), two to five seconds out in the open.  Inside, you make no sound and no guard sees you. Same deal as the statue (Plinths): it only works unseen. Get in in front of a guard and it remembers (Guard.knows) and comes straight for you, and once beside it pulls you out; a guard that did not see you walks right past. A suit of armour knocked over with you inside it tips you out onto the floor.",
+  "doc": "Places to hide in. Next to one, the action key gets you in; any direction gets you out, onto the free floor that way.  the big pieces (Museum.big_pieces) you fit inside: the sarcophagus, the Trojan horse, the mammoth (under its coat), the hollow log and the little car on its stand; pieces of furniture on a case tile of their own (pieces), one theme each: a retro fridge and a cardboard box (modern), a legionary's armour (ancient), a confessional and a chest (middle ages), a giant dinosaur egg (prehistory), a giant tortoise shell (nature); a suit of armour still standing (Props): you step inside it.  Whatever looks like a place to hide is one: every big piece and every suit of armour standing in the museum, and every piece of furniture. What keeps it from being too easy is how few of them there are, far apart from one another: the generator stands only so many big pieces to hide in (MapGen), the props only so many suits of armour (Props.place), and each night adds furniture, and empty pedestals to pose on (Plinths), up to the museum's share (places, spread). A saved map keeps what it stood by hand. Getting in takes a moment of wriggling (Minigame \"squeeze\", start), two to five seconds out in the open — once the nights have minigames (Heist.minigames); before that, the action key gets you in at once.  Inside, you make no sound and no guard sees you. Same deal as the statue (Plinths): it only works unseen. Get in in front of a guard and it remembers (Guard.knows) and comes straight for you, and once beside it pulls you out; a guard that did not see you walks right past. A suit of armour knocked over with you inside it tips you out onto the floor.",
   "consts": {
    "REACH": {
     "value": "1.0",
     "note": "Closer than this to one (to its edge) to get in.",
-    "line": 32
+    "line": 33
    },
    "GRAB": {
     "value": "1.2",
     "note": "A guard this close to a blown hideout pulls you out.",
-    "line": 34
+    "line": 35
    },
    "BIG": {
     "value": "[\"sarcophagus\", \"trojan_horse\", \"mammoth\", \"log\", \"car\"]",
     "note": "The big pieces you fit inside (keys of MapGen.BIG).",
-    "line": 36
+    "line": 37
    },
    "PIECES": {
     "value": "{ \"fridge\": {\"model\": \"temas/moderna/nevera\", \"theme\": \"moderna\"}, \"box\": {\"model\": \"temas/moderna/caja\", \"theme\": \"moderna\"}, \"legionary\": {\"model\": \"temas/antiguo/legionario\", \"theme\": \"antiguo\"}, \"confessional\": {\"model\": \"temas/edad_media/confesionario\", \"theme\": \"edad_media\"}, \"chest\": {\"model\": \"temas/edad_media/baul\", \"theme\": \"edad_media\"}, \"egg\": {\"model\": \"temas/prehistoria/huevo\", \"them…",
     "note": "The pieces of furniture you hide in: their model (MuseumView.asset) and the theme whose galleries they stand in (Themes).",
-    "line": 39
+    "line": 40
    },
    "PER_TILES": {
     "value": "120",
     "note": "How many places to hide in and pedestals to pose on a museum has between them: one for this many open tiles, and never fewer than MIN (if there is room); every PLINTH_EVERY-th of them a pedestal.",
-    "line": 51
+    "line": 52
    },
    "MIN": {
     "value": "3",
     "note": "How many places to hide in and pedestals to pose on a museum has between them: one for this many open tiles, and never fewer than MIN (if there is room); every PLINTH_EVERY-th of them a pedestal.",
-    "line": 52
+    "line": 53
    },
    "PLINTH_EVERY": {
     "value": "3",
     "note": "How many places to hide in and pedestals to pose on a museum has between them: one for this many open tiles, and never fewer than MIN (if there is room); every PLINTH_EVERY-th of them a pedestal.",
-    "line": 53
+    "line": 54
    },
    "BIG_SHARE": {
     "value": "0.4",
     "note": "Of the places to hide in, about this share are big pieces (MapGen); of the rest, up to half are suits of armour (Props.place), and furniture fills what is left (spread).",
-    "line": 57
+    "line": 58
    },
    "APART": {
     "value": "9.0",
     "note": "None closer than this to another, in tiles, middle to middle: running from one to the next is a risk of its own.",
-    "line": 60
+    "line": 61
    },
    "TIGHT": {
     "value": "{\"box\": 1, \"egg\": 1, \"chest\": 1, \"shell\": 1, \"armour\": 1, \"legionary\": 1}",
     "note": "How tight a squeeze each is: that many more wriggles to get in (SqueezeGame); the roomy ones take none.",
-    "line": 63
+    "line": 64
    }
   }
  },
@@ -510,7 +510,7 @@ window.CODIGO = {
   }
  },
  "logic/arcades.gd": {
-  "doc": "The arcade machines standing tonight (the modern gallery's \"temas/moderna/recreativa\", where MuseumView puts one). In front of one, the action key starts a game of pong on it (Minigame \"arcade\", ArcadeGame): a joke, with nothing to win, that keeps you standing there playing while the guards go by. Any number of thieves can play, one machine each.",
+  "doc": "The arcade machines standing tonight (the modern gallery's \"temas/moderna/recreativa\", where MuseumView puts one). In front of one, the action key starts a game of pong on it (Minigame \"arcade\", ArcadeGame): a joke, with nothing to win, that keeps you standing there playing while the guards go by. Any number of thieves can play, one machine each; like every minigame, not before the nights have them.",
   "consts": {
    "REACH": {
     "value": "0.9",
@@ -578,7 +578,7 @@ window.CODIGO = {
     "line": 40
    },
    "MECHANICS": {
-    "value": "{ \"case_alarm\": \"case_alarm\", \"lights\": \"lights\", \"two\": \"two\", \"props\": \"props\", \"noise\": \"noise\", \"torch\": \"torch\", \"map\": \"big\", }",
+    "value": "{ \"case_alarm\": \"case_alarm\", \"lights\": \"lights\", \"two\": \"two\", \"props\": \"props\", \"games\": \"games\", \"noise\": \"noise\", \"torch\": \"torch\", \"map\": \"big\", }",
     "note": "The mechanics and the story lesson (Story.LESSONS) that teaches each, most urgent first: key -> lesson.",
     "line": 44
    }
@@ -610,42 +610,47 @@ window.CODIGO = {
    "SEED_BASE": {
     "value": "424242",
     "note": "Each night's museum is always the same one — one for a thief on their own and another for two, with the same piece to take back.",
-    "line": 140
+    "line": 139
    },
    "SEED_TEAM": {
     "value": "104729",
     "note": "Each night's museum is always the same one — one for a thief on their own and another for two, with the same piece to take back.",
-    "line": 141
+    "line": 140
    },
    "LESSON_TRIES": {
     "value": "60",
     "note": "How many museums a lesson night may look through for one that forces its lesson (Sim.assign_posts); each is SEED_STEP on from the last.",
-    "line": 144
+    "line": 143
    },
    "SEED_STEP": {
     "value": "7777",
     "note": "How many museums a lesson night may look through for one that forces its lesson (Sim.assign_posts); each is SEED_STEP on from the last.",
-    "line": 145
+    "line": 144
    },
    "LESSONS": {
     "value": "{ \"heist\": {\"title\": \"LESSON_HEIST_TITLE\", \"stage\": \"lesson:heist\", \"text\": \"LESSON_HEIST_TEXT\"}, # The same first lesson for a gang, with the gang's own jobs. \"heist2\": {\"title\": \"LESSON_HEIST2_TITLE\", \"stage\": \"lesson:heist2\", \"text\": \"LESSON_HEIST2_TEXT\"}, \"heist3\": {\"title\": \"LESSON_HEIST3_TITLE\", \"stage\": \"lesson:heist3\", \"text\": \"LESSON_HEIST3_TEXT\"}, \"heist4\": {\"title\": \"LESSON_HEIST4_TITLE…",
     "note": "What each night teaches, one thing a night, the night built around it: a title, a line on how it works and its own little scene acting it out (LessonStage). The words here, like the pieces' and the tale's, are keys into Text.",
-    "line": 151
+    "line": 150
    },
    "LOCKPICK_NIGHT": {
-    "value": "18",
-    "note": "From this night on the case is picked and the alarm panel's glass cut with the suction cup (Minigame); before it, you stand still at the case and hold the panel. The one new thing of its night, between the lights (16) and the big museum (21).",
-    "line": 185
+    "value": "6",
+    "note": "From this night on, the first in the second museum, there are minigames (Minigame, Heist.minigames): the case is picked, the alarm panel's glass cut with the suction cup, the pose on a pedestal held on one foot, the way into a hideout wriggled and the sneeze in there held in, and the arcade machine plays pong. Before it, in the whole first museum, none of them: you stand still at the case and hold the panel, and are up on a pedestal or in a hideout at once. Its lesson (\"games\") is the one new thing of its night.",
+    "line": 191
+   },
+   "GAME_LEVEL": {
+    "value": "[[0, 0], [0, 1], [1, 1], [1, 2], [2, 2]]",
+    "note": "The minigames' level (Minigame.level_now) in each museum, in its rooms and on its big job: none in the first (LOCKPICK_NIGHT), then easy, and a step harder every museum or so, the big jobs a step ahead of their rooms.",
+    "line": 196
    },
    "SAVE": {
     "value": "\"user://progress.cfg\"",
-    "note": "From this night on the case is picked and the alarm panel's glass cut with the suction cup (Minigame); before it, you stand still at the case and hold the panel. The one new thing of its night, between the lights (16) and the big museum (21).",
-    "line": 187
+    "note": "The minigames' level (Minigame.level_now) in each museum, in its rooms and on its big job: none in the first (LOCKPICK_NIGHT), then easy, and a step harder every museum or so, the big jobs a step ahead of their rooms.",
+    "line": 198
    },
    "MUSEUMS": {
     "value": "[ # La Gran Cueva: rough ochre stone underfoot, clay walls, dark rock below. {\"name\": \"MUSEUM_1_NAME\", \"text\": \"MUSEUM_1_TEXT\", \"theme\": \"prehistoria\", \"colour\": \"#d08a3a\", \"palette\": {\"floor\": 0, \"stone\": Color(\"#4a3624\"), \"stone2\": Color(\"#56402a\"), \"joint\": Color(\"#1e140c\"), \"gloss\": 0.55, \"paper\": Color(\"#6b3f1f\"), \"paper2\": Color(\"#7a4a25\"), \"wallpaper\": 0, \"wainscot\": Color(\"#3a2a1c\"), \"dado…",
     "note": "The town's museums, each a stop on the city map with ROOMS heists inside, in order, the last its big job. Each shows one theme (Themes): its galleries, its corridors and its pieces. Each has its own floor and walls (MuseumView.THEMES keys) to match, and a colour for its stop on the map. In the order of time, from the dinosaurs to today: prehistory, nature (the living world, still in the old natural-history style), the ancient world, the middle ages, and the modern age, the Barón's own tower.",
-    "line": 198
+    "line": 209
    }
   }
  }

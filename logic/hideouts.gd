@@ -20,7 +20,8 @@ extends RefCounted
 ## night adds furniture, and empty pedestals to pose on (Plinths), up to the
 ## museum's share (places, spread). A saved map keeps what it stood by hand.
 ## Getting in takes a moment of wriggling (Minigame "squeeze", start), two to
-## five seconds out in the open.
+## five seconds out in the open — once the nights have minigames
+## (Heist.minigames); before that, the action key gets you in at once.
 ##
 ## Inside, you make no sound and no guard sees you. Same deal as the statue
 ## (Plinths): it only works unseen. Get in in front of a guard and it
@@ -242,14 +243,14 @@ static func all() -> Array[Spot]:
 
 
 ## The hideout within reach of this thief, nearest first, or null: never
-## one another thief is already in.
+## one another thief is already in, or wriggling into.
 static func within_reach(p: Thief, thieves: Array[Thief]) -> Spot:
 	if p.out or p.posing or p.hiding or p.rolling or p.dizzy > 0.0:
 		return null
 	var best: Spot = null
 	var best_d := REACH
 	for s in all():
-		if thieves.any(func(o): return o.hiding and s.same(o.hideout)):
+		if thieves.any(func(o): return o != p and ((o.hiding and s.same(o.hideout)) or s.same(o.hide_target))):
 			continue
 		var d := s.dist_to(p.x, p.y)
 		if d <= best_d:
@@ -301,6 +302,7 @@ static func get_in(p: Thief, s: Spot, guards: Array[Guard], seen: Array[Guard] =
 			saw.append(g)
 	p.hide_blown = not saw.is_empty()
 	p.hiding = true
+	p.hide_settling = true
 	p.hideout = s
 	p.hide_entry = Vector2(p.x, p.y)
 	var m := s.middle()
@@ -355,6 +357,7 @@ static func tip_out(p: Thief) -> void:
 static func leave(p: Thief, t: Vector2i, dir: float) -> void:
 	p.hiding = false
 	p.hide_blown = false
+	p.hide_settling = false
 	p.hideout = null
 	p.x = t.x + 0.5
 	p.y = t.y + 0.5

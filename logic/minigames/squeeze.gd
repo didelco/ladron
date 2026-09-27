@@ -39,9 +39,12 @@ func ready() -> bool:
 
 func _play(_input: Dictionary, press: Dictionary, dt: float) -> String:
 	settle = maxf(0.0, settle - dt)
-	var dir := pressed_dir(press)
-	if dir != LEFT and dir != RIGHT:
+	# Left or right, whatever else went down with it: a stick is never
+	# quite level, and a touch of up or down must not swallow the wriggle.
+	var left: bool = press.has(DIRS[LEFT])
+	if left == press.has(DIRS[RIGHT]):
 		return ""
+	var dir := LEFT if left else RIGHT
 	if lock > 0.0:
 		return ""
 	if settle > 0.0 or (side >= 0 and dir != side):

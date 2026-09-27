@@ -21,7 +21,7 @@ const CRAWL := 1.0
 
 ## How long each lesson's loop lasts, in seconds.
 const LOOPS := {"heist": 6.8, "heist2": 7.2, "heist3": 7.2, "heist4": 7.2, "guard": 7.6, "torch": 8.0, "noise": 9.0,
-	"props": 9.0, "case_alarm": 8.0, "two": 7.0, "lights": 8.0, "big": 9.0, "finale": 6.0}
+	"props": 9.0, "games": 7.6, "case_alarm": 8.0, "two": 7.0, "lights": 8.0, "big": 9.0, "finale": 6.0}
 
 var _crew: Array[Figure] = []
 var _watch: Array[Figure] = []
@@ -53,6 +53,7 @@ func _build() -> void:
 		"torch": _torch()
 		"noise": _noise()
 		"props": _props()
+		"games": _games()
 		"case_alarm": _case_alarm()
 		"two": _two()
 		"lights": _lights()
@@ -82,6 +83,7 @@ func _play(u: float, dt: float) -> void:
 		"torch": _play_torch(u, dt)
 		"noise": _play_noise(u, dt)
 		"props": _play_props(u, dt)
+		"games": _play_games(u, dt)
 		"case_alarm": _play_case_alarm(u, dt)
 		"two": _play_two(u, dt)
 		"lights": _play_lights(u, dt)
@@ -304,6 +306,89 @@ func _play_props(u: float, dt: float) -> void:
 	alert.position = _watch[0].position + Vector3(0, 1.12, 0)
 	(_bits.gem as Node3D).visible = u < 5.8
 	(_bits.gem as Node3D).rotation.y = u * 2.0
+
+
+# --- The minigames: the case picked, a pin each time the needle crosses the green ---
+
+const GAMES_CASE := Vector3(-0.2, 0, -0.2)
+## When the needle starts round, how long a turn takes, and when each pin
+## sets (the green is where the needle is then).
+const PICK_FROM := 1.8
+const PICK_TURN := 1.0
+const PINS := [2.4, 3.5, 4.6]
+
+
+func _games() -> void:
+	_case(GAMES_CASE, false)
+	_crew.append(_thief(0))
+	# The dial over the case, facing the camera like the meters: a ring, the
+	# green on its rim, the needle, and a pip for each pin under it.
+	var dial := Node3D.new()
+	dial.position = GAMES_CASE + Vector3(0, 1.1, 0)
+	dial.rotation = Vector3(0, PI / 4, 0)
+	dial.scale = Vector3.ONE * 1.5
+	_root.add_child(dial)
+	var ring := TorusMesh.new()
+	ring.inner_radius = 0.13
+	ring.outer_radius = 0.16
+	_mesh(dial, ring, CREAM, Vector3.ZERO).rotation.x = PI / 2
+	var green := _box(dial, Vector3(0.07, 0.045, 0.03), Color("#40c057"), Vector3.ZERO)
+	_glow(green, Color("#40c057"), 1.6)
+	var needle := Node3D.new()
+	dial.add_child(needle)
+	_box(needle, Vector3(0.022, 0.13, 0.02), GOLD, Vector3(0, 0.065, 0.01))
+	var pips: Array = []
+	for i in PINS.size():
+		pips.append(_box(dial, Vector3(0.05, 0.05, 0.02), INK, Vector3((i - 1) * 0.08, -0.24, 0)))
+	_bits.dial = dial
+	_bits.green = green
+	_bits.needle = needle
+	_bits.pips = pips
+	var lit := _material(GOLD).duplicate() as StandardMaterial3D
+	lit.emission_enabled = true
+	lit.emission = GOLD
+	lit.emission_energy_multiplier = 1.5
+	_bits.pip_lit = lit
+	_bits.pip_dim = _material(INK)
+
+
+func _play_games(u: float, dt: float) -> void:
+	# In from the front, to the case's side, and still there till it gives.
+	var beside := GAMES_CASE + Vector3(0.55, 0, 0.1)
+	var tkeys := [[0.0, Vector3(1.2, 0, 1.1)], [0.3, Vector3(1.2, 0, 1.1)], [1.6, beside]]
+	_walk(_crew[0], tkeys, u, 0.0, dt)
+	var opened: float = PINS[-1] + 0.3
+	if u > 1.6 and u < opened:
+		_crew[0].set_state(beside, PI + 0.2, 0.0, dt)
+	elif u >= opened:
+		_hop(_crew[0], u * 9.0, 0.08)
+	# The needle goes round; the green waits where the next pin sets.
+	var dial: Node3D = _bits.dial
+	dial.visible = u > PICK_FROM - 0.2 and u < opened + 0.3
+	var turn := maxf(0.0, u - PICK_FROM) / PICK_TURN
+	(_bits.needle as Node3D).rotation.z = -turn * TAU
+	var done := 0
+	for p in PINS:
+		if u >= p:
+			done += 1
+	var next: float = PINS[mini(done, PINS.size() - 1)]
+	var at := fposmod((next - PICK_FROM) / PICK_TURN, 1.0) * TAU
+	var green: Node3D = _bits.green
+	green.visible = done < PINS.size()
+	green.position = Vector3(sin(at), cos(at), 0) * 0.145
+	green.rotation.z = -at
+	for i in PINS.size():
+		(_bits.pips[i] as MeshInstance3D).material_override = _bits.pip_lit if i < done else _bits.pip_dim
+	# Each pin: a click, seen as a little ring.
+	for p in PINS:
+		if u >= p and u - dt < p:
+			_ring(GAMES_CASE + Vector3(0, 0.2, 0), 0.6, GOLD)
+	# The piece: in its case, then held up high.
+	var gem: Node3D = _bits.gem
+	var up := clampf((u - opened) / 0.4, 0.0, 1.0)
+	gem.position = (GAMES_CASE + Vector3(0, 0.42 * CASE_SCALE + 0.06, 0)).lerp(_crew[0].position + Vector3(0, 1.05 + sin(u * 8.0) * 0.03, 0), up)
+	gem.scale = Vector3.ONE * (1.0 + 0.3 * up)
+	gem.rotation.y = u * 2.0
 
 
 # --- The case with an alarm: it beeps while forced; let go and hide when they come --

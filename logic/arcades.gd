@@ -5,7 +5,7 @@ extends RefCounted
 ## the action key starts a game of pong on it (Minigame "arcade",
 ## ArcadeGame): a joke, with nothing to win, that keeps you standing there
 ## playing while the guards go by. Any number of thieves can play, one
-## machine each.
+## machine each; like every minigame, not before the nights have them.
 
 ## Closer than this to one (to its edge) to play.
 const REACH := 0.9
@@ -25,7 +25,11 @@ static func find() -> void:
 
 ## The machine thief p stands in front of (on the side its screen faces,
 ## MuseumView.front_of), with nobody else playing at it; else (-1, -1).
+## Only on its feet and free, and only on the nights with minigames
+## (Heist.minigames): none in the story's first museum.
 static func within_reach(p: Thief, thieves: Array[Thief]) -> Vector2i:
+	if not Heist.minigames() or p.out or p.game or p.posing or p.hiding or p.rolling or p.dizzy > 0.0:
+		return Vector2i(-1, -1)
 	for t in list:
 		var front := MuseumView.front_of(t)
 		var middle := Vector2(t) + Vector2(0.5, 0.5)

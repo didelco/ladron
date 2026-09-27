@@ -555,6 +555,10 @@ static func step_thief(p: Thief, keys: Dictionary, dt: float, scheme: String = "
 	if p.hiding:
 		p.roll_key = _pressed(keys, pad.roll)
 		p.crouch_key = _pressed(keys, pad.crouch)
+		# What was held on the way in (the last wriggle) is let go first.
+		if p.hide_settling:
+			p.hide_settling = dx != 0 or dy != 0
+			return {"bumped": "", "entered_cover": false, "roll": ""}
 		if (dx != 0 or dy != 0) and Hideouts.get_out(p, dx, dy):
 			return {"bumped": "", "entered_cover": false, "roll": "", "hideout": "out"}
 		return {"bumped": "", "entered_cover": false, "roll": ""}
