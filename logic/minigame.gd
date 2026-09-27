@@ -15,7 +15,9 @@ extends RefCounted
 ##     "lockpick" (LockpickGame), "wires" (WiresGame), "steady" (SteadyGame),
 ##     "squeeze" (SqueezeGame: wriggling into a hideout);
 ##   of the enduring kind, which can be failed:
-##     "balance" (BalanceGame: posing as a statue on one foot).
+##     "balance" (BalanceGame: posing as a statue on one foot),
+##     "sneeze" (SneezeGame: holding in a sneeze while hiding, which never
+##     ends while you stay in);
 ##   and one just for fun, which never ends: "arcade" (ArcadeGame: pong on
 ##     the arcade machine, Arcades).
 ##
@@ -128,6 +130,12 @@ func how() -> String:
 	return "GAME_HOW_" + kind.to_upper()
 
 
+## The roll key lets go of it (it does, but for the sneeze: that one is
+## left by getting out of the hideout).
+func can_let_go() -> bool:
+	return true
+
+
 ## The key into Text of the line on how to let go of it, under the box.
 func let_go() -> String:
 	return "GAME_LET_GO"
@@ -148,7 +156,7 @@ func tick(input: Dictionary, dt: float) -> String:
 		if input[k] and not _was.get(k, false):
 			press[k] = true
 	_was = input.duplicate()
-	if press.has("cancel"):
+	if press.has("cancel") and can_let_go():
 		return "quit"
 	if done or blocked != "":
 		return ""

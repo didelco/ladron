@@ -60,5 +60,7 @@ var hide_seen: Array[Guard] = []
 ## the balance on a pedestal; it
 ## stands where it is until done or it lets go
 var game: Minigame = null
+## seconds in the hideout so far (the sneeze comes on after a while: SneezeGame)
+var hidden_for := 0.0
 ## playing pong on an arcade machine (Arcades): its tile
 var arcade := Vector2i(-1, -1)

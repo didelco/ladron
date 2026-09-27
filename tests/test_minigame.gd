@@ -419,6 +419,9 @@ func _init() -> void:
 	print("La recreativa")
 	arcade()
 
+	print("El estornudo")
+	sneeze()
+
 	if failures.is_empty():
 		print("OK: minijuegos")
 	else:
@@ -477,3 +480,48 @@ func arcade() -> void:
 func check_quiet(ok: bool, what: String) -> void:
 	if not ok and not failures.has(what):
 		check(false, what)
+
+
+## Holding in a sneeze in a hideout (SneezeGame): one who keeps the beat
+## stays in for good; one who does nothing, or mashes the key, sneezes
+## soon; the bar narrows with time and with nerves; the roll key does not
+## let go of it.
+func sneeze() -> void:
+	var g := Minigame.make("sneeze", "hideout", 1, {}, 9) as SneezeGame
+	var wide := g.bar()
+	var out := ""
+	var held := 0
+	while g.t < 120.0 and out == "":
+		var press := not g.tickles.is_empty() and absf(g.tickles[0] - SneezeGame.BAR_X) <= g.bar() * 0.5
+		out = g.tick({"action": press}, DT)
+		held += g.events.count("pin")
+		# Let go of the key so the next press counts.
+		if press:
+			g.tick({}, DT)
+	check(out == "", "llevando el ritmo aguanta dos minutos escondido (%d picores)" % held)
+	check(g.bar() < wide * 0.6, "la barra se estrecha con el tiempo (%.2f → %.2f)" % [wide, g.bar()])
+	check(g.beat() < SneezeGame.BEAT, "y el ritmo se acelera")
+	var calm := Minigame.make("sneeze", "hideout", 1, {}, 9) as SneezeGame
+	var nervous := Minigame.make("sneeze", "hideout", 1, {}, 9) as SneezeGame
+	nervous.tremble = 1.0
+	check(nervous.bar() < calm.bar(), "con los guardias alerta, la barra es más estrecha")
+	check(calm.tick({"cancel": true}, DT) != "quit", "soltar no sirve: hay que salir del escondite")
+	var idle := Minigame.make("sneeze", "hideout", 1, {}, 9) as SneezeGame
+	var t_out := -1.0
+	while idle.t < 10.0 and t_out < 0.0:
+		if idle.tick({}, DT) == "fail":
+			t_out = idle.t
+	check(t_out > 0.0 and t_out < 3.0, "sin hacer nada, se escapa el primer picor y estornuda (%.1f s)" % t_out)
+	var masher := Minigame.make("sneeze", "hideout", 1, {}, 9) as SneezeGame
+	var fail := ""
+	var k := 0
+	while masher.t < 10.0 and fail == "":
+		k += 1
+		fail = masher.tick({"action": k % 6 < 3}, DT)
+	check(fail == "fail" and masher.misses >= 1, "aporreando la tecla se falla y estornuda")
+	var forgive := Minigame.make("sneeze", "hideout", 1, {}, 9) as SneezeGame
+	forgive.misses = 2
+	forgive.held = SneezeGame.CALM_HITS - 1
+	forgive.tickles.append(SneezeGame.BAR_X)
+	forgive.tick({"action": true}, DT)
+	check(forgive.misses == 1, "una racha de aciertos perdona un fallo")

@@ -36,6 +36,8 @@ const LOUDNESS := {
 	"switch": 2.5,
 	## a statue losing its balance and landing on the floor (Plinths.fall)
 	"tumble": 12.0,
+	## a thief sneezing its way out of a hideout (SneezeGame)
+	"sneeze": 15.0,
 	## a smoke bomb going off (Smoke): a soft pop, heard close by
 	"smoke": 4.0,
 }

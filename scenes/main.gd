@@ -2003,6 +2003,31 @@ func _game_sounds(p: Thief) -> void:
 			"done": _rumble(0.3, 0.2, 0.12, Vector2(p.x, p.y))
 
 
+## In a hideout, with the minigames on, a sneeze comes on after a while
+## (SneezeGame): it is held in until the thief gets out, whichever way.
+func _sneeze_coming(p: Thief, i: int, keys: Dictionary, dt: float) -> void:
+	if not p.hiding:
+		p.hidden_for = 0.0
+		if p.game is SneezeGame:
+			p.game = null
+		return
+	p.hidden_for += dt
+	if p.game == null and Heist.minigames() and p.hidden_for >= SneezeGame.CALM_S:
+		p.game = Minigame.make("sneeze", "hideout", 1, _game_input(i, keys))
+
+
+## ACHOO! Out of the hideout, stunned a moment, and heard all round.
+func _sneeze(p: Thief, noises: Array[SoundEvent]) -> void:
+	p.game = null
+	Hideouts.tip_out(p)
+	p.dizzy = SneezeGame.STUN_S
+	noises.append(SoundEvent.make(p.x, p.y, "sneeze"))
+	sfx.noise("sneeze", _to_world(p.x, p.y, 1.0), Hearing.LOUDNESS["sneeze"])
+	_rumble(0.5, 0.7, 0.25, Vector2(p.x, p.y))
+	_shake(0.25)
+	_log(Text.t("LOG_SNEEZE"))
+
+
 ## A frame of a thief wriggling into a hideout (Hideouts.squeeze): in once
 ## it is done, or let go if the hideout went meanwhile.
 func _squeeze(p: Thief, done: bool) -> void:
@@ -2216,6 +2241,7 @@ func _tick(dt: float) -> void:
 		var py := p.y
 		# On your own both pads drive you; with two, each pad is its own.
 		var scheme: String = "solo" if thieves.size() == 1 else ["wasd", "arrows", "ijkl", "numpad"][i]
+		_sneeze_coming(p, i, keys, dt)
 		if p.game:
 			p.game.tremble = Minigame.tremble_for(suspicion)
 			p.game.pressure = Plinths.pressure(p, guards)
@@ -2229,6 +2255,8 @@ func _tick(dt: float) -> void:
 					p.hide_target = null
 					p.arcade = Vector2i(-1, -1)
 					p.game = null
+				"fail" when p.game.kind == "sneeze":
+					_sneeze(p, noises)
 				"fail":
 					# Lost its balance: down it comes, and the guards hear it.
 					Plinths.fall(p, (p.game as BalanceGame).lean, noises)
@@ -2242,6 +2270,7 @@ func _tick(dt: float) -> void:
 					if p.game.kind == "squeeze":
 						_squeeze(p, played == "done")
 		var step := Sim.step_thief(p, keys, dt, scheme)
+		_sneeze_coming(p, i, keys, 0.0)
 		var noise := Hearing.thief_noise(px, py, p, step.entered_cover, step.bumped, Sim.TOP_SPEED)
 		# Footsteps land once per stride; a bump is its own event.
 		stride[i] += Museum.dist(px, py, p.x, p.y)

@@ -310,8 +310,10 @@ GAME_HOW_WIRES,{move} COMO LA FLECHA
 GAME_HOW_BALANCE,{lr} QUE NO SE CAIGA
 GAME_HOW_SQUEEZE,{lr} ALTERNA CON RITMO
 GAME_HOW_ARCADE,{ud} MUEVE LA PALA
+GAME_HOW_SNEEZE,{action} CUANDO PASE EL POLVO
 GAME_LET_GO,{cancel} SOLTAR
 GAME_LET_GO_ARCADE,{cancel} DEJA DE PERDER EL TIEMPO
+GAME_LET_GO_SNEEZE,{move} SALIR DEL ESCONDITE
 KEY_STICK,STICK
 KEY_SPACE,ESPACIO
 KEY_ENTER,ENTER
@@ -341,6 +343,7 @@ LOG_KNOCKED,¡Has tirado %s!
 LOG_ROLL_WALL,¡Pum! Te has estampado contra la pared
 LOG_PLINTH_UP,Quieto como una estatua… nadie sospecha nada
 LOG_ARCADE,Una partidita… solo una
+LOG_SNEEZE,¡ACHÍS! Adiós escondite: todo el museo lo ha oído
 LOG_PLINTH_BLOWN,¡Te han visto subir! Así no cuela
 LOG_HIDE_IN,Dentro de %s… ni respiras
 LOG_HIDE_BLOWN,¡Te han visto meterte! Saben dónde estás

@@ -59,6 +59,8 @@ func _ready() -> void:
 	_streams.caught = _trombone()
 	_streams.escaped = _mix(_tones([[587.3, 0.0, 0.12], [740.0, 0.12, 0.12], [880.0, 0.24, 0.12], [1174.7, 0.36, 0.5]], "square", 0.22),
 		_tones([[293.7, 0.36, 0.6], [440.0, 0.36, 0.6]], "saw", 0.12))
+	# A sneeze held in too long: a sharp hiss and a nasal yelp. ACHOO!
+	_streams.sneeze = _mix(_noise(0.28, 3800.0, 0.9), _tones([[640.0, 0.0, 0.2]], "saw", 0.35, 0.55))
 	# The arcade machine's pong: square bleeps, a jingle up for a point won
 	# and down for one lost.
 	_streams.pong_hit = _tones([[880.0, 0.0, 0.05]], "square", 0.2)
