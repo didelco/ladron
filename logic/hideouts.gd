@@ -176,7 +176,9 @@ static func reset() -> void:
 static func put(by_hand: Dictionary) -> void:
 	pieces.clear()
 	for t in by_hand:
-		if PIECES.has(by_hand[t]) and Museum.is_cover(t.x + 0.5, t.y + 0.5) and Museum.big_piece_at(t).is_empty():
+		# Only with floor beside it: a way in, and somewhere for its door to face.
+		if PIECES.has(by_hand[t]) and Museum.is_cover(t.x + 0.5, t.y + 0.5) and Museum.big_piece_at(t).is_empty() \
+				and not _floor_beside(t).is_empty():
 			pieces[t] = by_hand[t]
 
 

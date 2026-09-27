@@ -201,6 +201,12 @@ static func is_piece(kind: String) -> bool:
 
 
 ## Where a theme's model stands: "case", "plinth" or "floor".
+## The floor pieces with a front that must not face a wall: a screen, a
+## seat, a face. MuseumView turns them to the free floor beside them, and a
+## place with none gets another piece.
+const FRONTED := ["temas/moderna/recreativa", "temas/edad_media/trono", "temas/antiguo/anubis"]
+
+
 static func where_of(path: String) -> String:
 	for s in ALL.values():
 		for where in ["case", "plinth", "floor"]:
