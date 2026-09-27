@@ -52,6 +52,10 @@ var hideout: Hideouts.Spot = null
 var hide_entry := Vector2.ZERO
 ## a guard saw it get in: that guard knows (Guard.knows)
 var hide_blown := false
+## wriggling into one (Minigame "squeeze"): which, and the guards that have
+## seen it at it so far
+var hide_target: Hideouts.Spot = null
+var hide_seen: Array[Guard] = []
 ## at a job with the hands (Minigame): the lock or the alarm's glass, or
 ## the balance on a pedestal; it
 ## stands where it is until done or it lets go

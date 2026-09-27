@@ -3,12 +3,12 @@ extends Control
 ## the box big in the middle of the screen.
 ##   godot --path . res://tests/visual/minigames.tscn
 ##
-## 1 pick · 2 suction cup · 3 wires · 4 balance · R again · L level
+## 1 pick · 2 suction cup · 3 wires · 4 balance · 5 squeeze · R again · L level
 ## T: how much the hands shake (0, some, a lot) · P: the pressure on the
 ## balance (none, a guard near, a guard near and the lights on)
 ## Playing: WASD or the arrows, E (X on the pad), Space (B) to let go.
 
-const KINDS := ["lockpick", "steady", "wires", "balance"]
+const KINDS := ["lockpick", "steady", "wires", "balance", "squeeze"]
 const LEVELS := [0.0, 0.55, 1.0]
 const ZOOM := 2.0
 
@@ -52,7 +52,7 @@ func _label(size: int, colour: Color) -> Label:
 
 func _start() -> void:
 	var kind: String = KINDS[_kind]
-	var steps: int = {"lockpick": 4, "steady": 6, "wires": 0, "balance": 1}[kind]
+	var steps: int = {"lockpick": 4, "steady": 6, "wires": 0, "balance": 1}.get(kind, 0)
 	_game = Minigame.make(kind, "case", steps, _keys(), 0, _level)
 	_result.text = ""
 	_again_in = -1.0
@@ -103,7 +103,7 @@ func _pressed(key: Key) -> bool:
 
 func _process(dt: float) -> void:
 	for i in KINDS.size():
-		if _pressed([KEY_1, KEY_2, KEY_3, KEY_4][i]):
+		if _pressed([KEY_1, KEY_2, KEY_3, KEY_4, KEY_5][i]):
 			_kind = i
 			_start()
 	if _pressed(KEY_R):
@@ -136,8 +136,8 @@ func _process(dt: float) -> void:
 	_box.follow(_game, Vector2.ZERO, Color("#2ec4a6"), _controls())
 	_box.position = Vector2.ZERO
 	_holder.position = (view - MinigameBox.SIZE * ZOOM) / 2 + Vector2(0, 30)
-	var names := ["GANZÚA", "VENTOSA", "CABLES", "EQUILIBRIO"]
-	_info.text = "1 GANZUA · 2 VENTOSA · 3 CABLES · 4 EQUILIBRIO · R OTRA VEZ\nL NIVEL: %s · T TEMBLOR: %s · P PRESION: %s\n\n%s   %.1f s" % [
+	var names := ["GANZÚA", "VENTOSA", "CABLES", "EQUILIBRIO", "COLARSE"]
+	_info.text = "1 GANZUA · 2 VENTOSA · 3 CABLES · 4 EQUILIBRIO · 5 COLARSE · R OTRA VEZ\nL NIVEL: %s · T TEMBLOR: %s · P PRESION: %s\n\n%s   %.1f s" % [
 		["FACIL", "MEDIO", "DIFICIL"][_level], ["NADA", "ALGO", "MUCHO"][_shake], ["NADA", "GUARDIA CERCA", "GUARDIA Y LUZ"][_press], names[_kind], _game.t]
 	_result.size = Vector2(view.x, 40)
 	_result.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

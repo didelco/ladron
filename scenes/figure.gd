@@ -117,8 +117,8 @@ func set_ghost(colour: Color, strength: float) -> void:
 ## How far the figure sways, as a statue on one foot (Minigame "balance"):
 ## MAX_LEAN radians for each 1 of lean, negative over to the screen's left,
 ## positive to its right, about the foot it stands on (it falls at
-## Minigame.FALL). The pedestal's statue faces the camera, so the screen's right
-## is its own left. Past Minigame.WOBBLE a big drop of sweat runs down
+## BalanceGame.FALL). The pedestal's statue faces the camera, so the screen's right
+## is its own left. Past BalanceGame.WOBBLE a big drop of sweat runs down
 ## beside its head.
 const MAX_LEAN := 0.4
 ## The drop of sweat: its size (m, radius of the round end), where it sits
@@ -134,7 +134,7 @@ const SWEAT_COLOUR := Color("#9fe0ff")
 func set_lean(amount: float) -> void:
 	if _pivot:
 		_pivot.rotation.z = -amount * MAX_LEAN
-	_sweat_show(absf(amount) >= Minigame.WOBBLE)
+	_sweat_show(absf(amount) >= BalanceGame.WOBBLE)
 
 
 ## How strong the rim light round the figure is (the dioramas' daylight

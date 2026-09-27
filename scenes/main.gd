@@ -1621,35 +1621,29 @@ func _lay_out(n: int, map_seed: int) -> int:
 		Props.place(map_seed, [Heist.exit, Heist.panel, Heist.panel2, stand, Heist.start])
 	else:
 		Props.list.clear()
-	# Empty pedestals to pose on: where a saved map stood them by hand, or
-	# else a few on cases of their own — never the piece's, nor one a saved
-	# map filled by hand.
+	# Empty pedestals to pose on and furniture to hide in: where a saved map
+	# stood them by hand, and then a few more picked for tonight, far apart
+	# (Hideouts.spread) — never on the piece's case, nor one a saved map
+	# filled by hand; a sort a map stood by hand gets none added.
 	var by_hand: Array[Vector2i] = []
-	for t in MuseumView.exhibits:
-		if MuseumView.exhibits[t] == "plinth" and t != Heist.at:
-			by_hand.append(t)
-	if saved_map and not by_hand.is_empty():
-		Plinths.put(by_hand)
-	elif Sim.feature("plinths"):
-		var keep: Array[Vector2i] = [Heist.at]
-		for t in MuseumView.exhibits:
-			keep.append(t)
-		Plinths.place(map_seed, keep)
-	# Furniture to hide in: the same, where a saved map stood it or else a
-	# few on cases of their own, of each gallery's theme.
 	var hide_by_hand := {}
 	for t in MuseumView.exhibits:
-		if Hideouts.PIECES.has(MuseumView.exhibits[t]) and t != Heist.at:
+		if t == Heist.at:
+			continue
+		if MuseumView.exhibits[t] == "plinth":
+			by_hand.append(t)
+		elif Hideouts.PIECES.has(MuseumView.exhibits[t]):
 			hide_by_hand[t] = MuseumView.exhibits[t]
-	if saved_map and not hide_by_hand.is_empty():
+	Plinths.list.clear()
+	Hideouts.pieces.clear()
+	if saved_map:
+		Plinths.put(by_hand)
 		Hideouts.put(hide_by_hand)
-	elif Sim.feature("hideouts"):
-		var keep: Array[Vector2i] = [Heist.at]
-		for t in MuseumView.exhibits:
-			keep.append(t)
-		Hideouts.place(map_seed, keep)
-	else:
-		Hideouts.pieces.clear()
+	var keep: Array[Vector2i] = [Heist.at]
+	for t in MuseumView.exhibits:
+		keep.append(t)
+	Hideouts.spread(map_seed, keep, Sim.feature("plinths") and Plinths.list.is_empty(),
+		Sim.feature("hideouts") and Hideouts.pieces.is_empty(), Sim.feature("hideouts"))
 	return Sim.assign_posts(guards)
 
 
@@ -1981,6 +1975,19 @@ func _game_sounds(p: Thief) -> void:
 			"done": _rumble(0.3, 0.2, 0.12, Vector2(p.x, p.y))
 
 
+## A frame of a thief wriggling into a hideout (Hideouts.squeeze): in once
+## it is done, or let go if the hideout went meanwhile.
+func _squeeze(p: Thief, done: bool) -> void:
+	var spot := p.hide_target
+	match Hideouts.squeeze(p, guards, thieves, done):
+		"in":
+			p.game = null
+			sfx.at("roll", _to_world(p.x, p.y), 0.3, 2.0)
+			_log(Text.t("LOG_HIDE_BLOWN") if p.hide_blown else Text.t("LOG_HIDE_IN") % Hideouts.name_of(spot.kind))
+		"lost":
+			p.game = null
+
+
 ## Each thief's minigame box, beside it on screen.
 var game_boxes: Array[MinigameBox] = []
 
@@ -2182,16 +2189,18 @@ func _tick(dt: float) -> void:
 		if p.game:
 			p.game.tremble = Minigame.tremble_for(suspicion)
 			p.game.pressure = Plinths.pressure(p, guards)
-			var lean := p.game.lean
-			match p.game.tick(_game_input(i, keys), dt):
+			var lean: float = (p.game as BalanceGame).lean if p.game is BalanceGame else 0.0
+			var played := p.game.tick(_game_input(i, keys), dt)
+			match played:
 				"quit":
 					# Off the pedestal as well, if that is where it was.
 					if p.game.kind == "balance":
 						Plinths.get_down(p, lean)
+					p.hide_target = null
 					p.game = null
 				"fail":
 					# Lost its balance: down it comes, and the guards hear it.
-					Plinths.fall(p, p.game.lean, noises)
+					Plinths.fall(p, (p.game as BalanceGame).lean, noises)
 					p.game = null
 					sfx.noise("roll_bump", _to_world(p.x, p.y), Hearing.LOUDNESS["tumble"])
 					_rumble(0.5, 0.7, 0.25, Vector2(p.x, p.y))
@@ -2199,6 +2208,8 @@ func _tick(dt: float) -> void:
 					_log(Text.t("LOG_PLINTH_FELL"))
 				_:
 					_game_sounds(p)
+					if p.game.kind == "squeeze":
+						_squeeze(p, played == "done")
 		var step := Sim.step_thief(p, keys, dt, scheme)
 		var noise := Hearing.thief_noise(px, py, p, step.entered_cover, step.bumped, Sim.TOP_SPEED)
 		# Footsteps land once per stride; a bump is its own event.
@@ -2254,9 +2265,8 @@ func _tick(dt: float) -> void:
 				sfx.at("roll", _to_world(t.x, t.y), 0.4, 2.0)
 				_log(Text.t("LOG_PLINTH_BLOWN" if t.pose_blown else "LOG_PLINTH_UP"))
 			elif spot:
-				Hideouts.get_in(t, spot, guards)
-				sfx.at("roll", _to_world(t.x, t.y), 0.3, 2.0)
-				_log(Text.t("LOG_HIDE_BLOWN") if t.hide_blown else Text.t("LOG_HIDE_IN") % Hideouts.name_of(spot.kind))
+				# In with a moment's wriggling (Minigame "squeeze", _squeeze).
+				Hideouts.start(t, spot, _game_input(i, keys))
 			elif target:
 				Props.push(target, t, now, noises)
 		push_held[i] = pressed
@@ -2822,7 +2832,7 @@ func _draw_frame(dt: float) -> void:
 		var f := thief_nodes[i]
 		f.set_state(_to_world(p.x, p.y, Plinths.HEIGHT if p.posing else 0.0), p.dir, p.posture, dt, _pose_of(p))
 		# On one foot on a pedestal, the statue sways as its balance does.
-		f.set_lean(p.game.lean if p.posing and p.game and p.game.kind == "balance" else 0.0)
+		f.set_lean((p.game as BalanceGame).lean if p.posing and p.game is BalanceGame else 0.0)
 		# Gone out of the door: not in the museum any more.
 		f.visible = not p.safe and not p.hiding
 		f.scale = Vector3.ONE * (0.75 if p.out else 1.0)

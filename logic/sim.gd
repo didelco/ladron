@@ -672,7 +672,7 @@ static func can_see(g: Guard, p: Thief) -> bool:
 	if Smoke.blocks(g.x, g.y, p.x, p.y, now_ms()):
 		return false
 	# Striking a pose on a pedestal: one more statue, unless this guard saw it
-	# get up (Guard.knows) or it is wobbling on one foot (Minigame.wobbling).
+	# get up (Guard.knows) or it is wobbling on one foot (BalanceGame.wobbling).
 	if p.posing and g.knows != p.id and not (p.game and p.game.wobbling()):
 		return false
 	# Inside a sarcophagus or a suit of armour: unless this guard saw it get in.

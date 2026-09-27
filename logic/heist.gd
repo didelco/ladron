@@ -76,7 +76,7 @@ static var short_hand := false
 ## the rest of the night; the case is picked (Minigame "lockpick").
 static var panel_off := false
 static var panel2_off := false
-## The lamps of the suction cup on the panel's glass (Minigame.need): half a
+## The lamps of the suction cup on the panel's glass (SteadyGame.need): half a
 ## second each.
 const PANEL_LAMPS := 5
 

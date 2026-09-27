@@ -12,6 +12,12 @@ extends RefCounted
 ##     dinosaur egg (prehistory), a giant tortoise shell (nature);
 ##   a suit of armour still standing (Props): you step inside it.
 ##
+## Not all of them, though: that would make it too easy. Each night picks a
+## few (spread), far apart from one another, shared with the empty pedestals
+## (Plinths): the rest of the big pieces and suits of armour are just to
+## look at (and knock over). Getting in takes a moment of wriggling
+## (Minigame "squeeze", start), two to five seconds out in the open.
+##
 ## Inside, you make no sound and no guard sees you. Same deal as the statue
 ## (Plinths): it only works unseen. Get in in front of a guard and it
 ## remembers (Guard.knows) and comes straight for you, and once beside it
@@ -35,13 +41,27 @@ const PIECES := {
 	"egg": {"model": "temas/prehistoria/huevo", "theme": "prehistoria"},
 	"shell": {"model": "temas/naturaleza/caparazon", "theme": "naturaleza"},
 }
-## One piece of furniture to hide in for this many open tiles, and never
-## fewer than MIN (if there is room).
-const PER_TILES := 70
-const MIN := 2
+## How many places to hide in and pedestals to pose on a museum has between
+## them: one for this many open tiles, and never fewer than MIN (if there is
+## room); every PLINTH_EVERY-th of them a pedestal.
+const PER_TILES := 120
+const MIN := 3
+const PLINTH_EVERY := 3
+## None closer than this to another, in tiles, middle to middle: running
+## from one to the next is a risk of its own.
+const APART := 9.0
+## How tight a squeeze each is: that many more wriggles to get in
+## (SqueezeGame); the roomy ones take none.
+const TIGHT := {"box": 1, "egg": 1, "chest": 1, "shell": 1, "armour": 1, "legionary": 1}
 
 ## The pieces of furniture standing tonight: tile -> kind (PIECES).
 static var pieces := {}
+## Which of the big pieces (their rect) and suits of armour (their Props id)
+## you can get into tonight, once spread has picked (chosen); until then,
+## all of them (a museum on its own: the editor, the tests).
+static var big_open: Array[Rect2i] = []
+static var suits: Array[int] = []
+static var chosen := false
 
 
 class Spot:
@@ -70,31 +90,86 @@ static func name_of(kind: String) -> String:
 	return Text.t("PROP_ARMOUR" if kind == "armour" else "HIDE_" + kind.to_upper())
 
 
-## Stand a few pieces of furniture to hide in on the museum's cases, each of
-## its gallery's theme (a corridor's, any): never the job's case nor one in
-## avoid, never a big piece, each with floor beside it to get in from, and
-## spread out about the museum.
-static func place(seed: int, avoid: Array[Vector2i]) -> void:
-	pieces.clear()
+## Pick tonight's places to hide in and pedestals to pose on, together: as
+## many as the museum's size gives (PER_TILES), none within APART of another
+## nor of those a saved map stood by hand (Plinths.list, pieces), a mix of
+## them — every PLINTH_EVERY-th a pedestal (if plinths), the rest a big piece
+## or a suit of armour to get into (if big_and_suits) or a piece of furniture
+## of its gallery's theme on a case of its own (if furniture). Never on the
+## job's case nor one in avoid, never on a big piece, always with floor
+## beside it to get in from.
+static func spread(seed: int, avoid: Array[Vector2i], plinths: bool, furniture: bool, big_and_suits: bool) -> void:
+	chosen = true
+	big_open.clear()
+	suits.clear()
 	var rand := Mulberry32.new(seed ^ 0x6b43a9b5)
-	var spots: Array[Vector2i] = []
+	var taken: Array[Vector2] = []
+	for t in Plinths.list:
+		taken.append(Vector2(t) + Vector2(0.5, 0.5))
+	for t in pieces:
+		taken.append(Vector2(t) + Vector2(0.5, 0.5))
+	# What there is to pick from, by sort: [where its middle is, what it is].
+	var cases: Array = []
 	for t in Museum.cover_tiles:
-		if t in avoid or Plinths.is_plinth(t) or not Museum.big_piece_at(t).is_empty():
+		if t in avoid or Plinths.is_plinth(t) or pieces.has(t) or not Museum.big_piece_at(t).is_empty():
 			continue
-		if _floor_beside(t).is_empty():
+		if not _floor_beside(t).is_empty():
+			cases.append([Vector2(t) + Vector2(0.5, 0.5), t])
+	var sorts := {"plinth": cases if plinths else [], "furniture": cases if furniture else [], "big": [], "suit": []}
+	if big_and_suits:
+		for b in Museum.big_pieces:
+			if b.kind in BIG:
+				sorts.big.append([Rect2(b.rect).get_center(), b.rect])
+		for p in Props.list:
+			if p.kind == "armour" and not p.fallen:
+				sorts.suit.append([Vector2(p.x, p.y), p.id])
+	var wanted := maxi(MIN, Museum.open_tiles.size() / PER_TILES) - taken.size()
+	var n := taken.size()
+	while wanted > 0:
+		# A pedestal every so often; else a place to hide, of any sort there
+		# is still room for (a big piece or furniture twice as likely as a
+		# suit of armour).
+		var pool: Array = []
+		if n % PLINTH_EVERY == 1 and not sorts.plinth.is_empty():
+			pool = ["plinth"]
+		else:
+			for k in [["big", 2], ["furniture", 2], ["suit", 1]]:
+				if not sorts[k[0]].is_empty():
+					for w in k[1]:
+						pool.append(k[0])
+			if pool.is_empty() and not sorts.plinth.is_empty():
+				pool = ["plinth"]
+		if pool.is_empty():
+			break
+		var sort: String = pool[rand.below(pool.size())]
+		var list: Array = sorts[sort].filter(func(c): return taken.all(func(o): return o.distance_to(c[0]) >= APART))
+		if list.is_empty():
+			sorts[sort] = []
 			continue
-		spots.append(t)
-	var wanted := maxi(MIN, Museum.open_tiles.size() / PER_TILES)
-	var tries := 0
-	while pieces.size() < wanted and tries < 400 and not spots.is_empty():
-		tries += 1
-		var t: Vector2i = spots[rand.below(spots.size())]
-		if pieces.keys().any(func(o): return absi(o.x - t.x) + absi(o.y - t.y) < 5):
-			continue
-		var room := Museum.room_at(t.x + 0.5, t.y + 0.5)
-		var kinds := kinds_for(room.theme if room else "")
-		pieces[t] = kinds[rand.below(kinds.size())]
-		spots.erase(t)
+		var pick: Array = list[rand.below(list.size())]
+		taken.append(pick[0])
+		n += 1
+		wanted -= 1
+		match sort:
+			"plinth":
+				Plinths.list.append(pick[1])
+			"furniture":
+				var t: Vector2i = pick[1]
+				var room := Museum.room_at(t.x + 0.5, t.y + 0.5)
+				var kinds := kinds_for(room.theme if room else "")
+				pieces[t] = kinds[rand.below(kinds.size())]
+			"big":
+				big_open.append(pick[1])
+			"suit":
+				suits.append(pick[1])
+
+
+## A museum just built: every big piece and suit counts until spread picks.
+static func reset() -> void:
+	pieces.clear()
+	big_open.clear()
+	suits.clear()
+	chosen = false
 
 
 ## Where a saved map stood them by hand (MapFile's exhibits): tile -> kind.
@@ -128,7 +203,7 @@ static func _floor_beside(t: Vector2i) -> Array[Vector2i]:
 static func all() -> Array[Spot]:
 	var out: Array[Spot] = []
 	for b in Museum.big_pieces:
-		if not b.kind in BIG:
+		if not b.kind in BIG or (chosen and not b.rect in big_open):
 			continue
 		var r: Rect2i = b.rect
 		var s := Spot.new()
@@ -145,7 +220,7 @@ static func all() -> Array[Spot]:
 		s.tiles.append(t)
 		out.append(s)
 	for p in Props.list:
-		if p.kind != "armour" or p.fallen:
+		if p.kind != "armour" or p.fallen or (chosen and not p.id in suits):
 			continue
 		var s := Spot.new()
 		s.kind = "armour"
@@ -173,9 +248,47 @@ static func within_reach(p: Thief, thieves: Array[Thief]) -> Spot:
 	return best
 
 
-## In, and not a sound. Seen doing it, it fools nobody.
-static func get_in(p: Thief, s: Spot, guards: Array[Guard]) -> void:
+## Start wriggling into one (Minigame "squeeze"): it stops where it is,
+## hands and all, out in the open until it is in.
+static func start(p: Thief, s: Spot, input: Dictionary) -> void:
+	p.game = Minigame.make("squeeze", "hideout", TIGHT.get(s.kind, 0), input)
+	p.hide_target = s
+	p.hide_seen.clear()
+	p.moving = false
+	p.speed = 0.0
+	p.sprinting = false
+
+
+## One frame of wriggling in, done or not: the guards that see it at it
+## remember. Returns "in" once it is in (seen at any point, it fools none of
+## them), "lost" if the hideout is gone meanwhile (another thief got in
+## first, the suit went over), else "".
+static func squeeze(p: Thief, guards: Array[Guard], thieves: Array[Thief], done: bool) -> String:
+	var s := p.hide_target
+	if s == null or p.out:
+		p.hide_target = null
+		return "lost"
+	if thieves.any(func(o): return o != p and o.hiding and s.same(o.hideout)) or (s.prop and s.prop.fallen):
+		p.hide_target = null
+		return "lost"
+	for g in Sim.witnesses(guards, p):
+		if not g in p.hide_seen:
+			p.hide_seen.append(g)
+	if not done:
+		return ""
+	get_in(p, s, guards, p.hide_seen)
+	p.hide_target = null
+	p.hide_seen.clear()
+	return "in"
+
+
+## In, and not a sound. Seen doing it (now, or by those in seen while it
+## wriggled in), it fools nobody.
+static func get_in(p: Thief, s: Spot, guards: Array[Guard], seen: Array[Guard] = []) -> void:
 	var saw := Sim.witnesses(guards, p)
+	for g in seen:
+		if not g in saw:
+			saw.append(g)
 	p.hide_blown = not saw.is_empty()
 	p.hiding = true
 	p.hideout = s

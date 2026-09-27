@@ -89,8 +89,7 @@ func follow(g: Minigame, head: Vector2, thief_colour: Color, controls: Dictionar
 	elif g.blocked == "hands":
 		lines = [Text.t("GAME_WAIT_HANDS")]
 	else:
-		lines = [Text.t({"lockpick": "GAME_HOW_LOCKPICK", "steady": "GAME_HOW_STEADY", "wires": "GAME_HOW_WIRES", "balance": "GAME_HOW_BALANCE"}[g.kind]),
-			Text.t("GAME_LET_GO")]
+		lines = [Text.t(g.how()), Text.t("GAME_LET_GO")]
 	_show_how(lines, controls)
 
 

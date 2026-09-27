@@ -19,7 +19,7 @@ func check(ok: bool, what: String) -> void:
 ## presses `late` seconds after the needle gets there; the fumbler
 ## (late < 0) presses every `every` seconds whatever the tip is doing.
 func pick(pins: int, tremble: float, expert: bool, every := 0.55, seed_ := 7, late := -1.0) -> float:
-	var g := Minigame.make("lockpick", "case", pins, {}, seed_)
+	var g := Minigame.make("lockpick", "case", pins, {}, seed_) as LockpickGame
 	g.tremble = tremble
 	var last := 0.0
 	var held := false
@@ -49,7 +49,7 @@ func pick(pins: int, tremble: float, expert: bool, every := 0.55, seed_ := 7, la
 ## Seconds to cut the wires, a reaction time after each way shows; the
 ## fumbler pulls the wrong way first on every other wire.
 func cut(tremble: float, reaction: float, fumble: bool, level := 1) -> float:
-	var g := Minigame.make("wires", "panel", 0, {}, 3, level)
+	var g := Minigame.make("wires", "panel", 0, {}, 3, level) as WiresGame
 	g.tremble = tremble
 	var shown := -1.0
 	var wrong_done := {}
@@ -78,7 +78,7 @@ func cut(tremble: float, reaction: float, fumble: bool, level := 1) -> float:
 ## `limit`. The player pushes it back to the middle, seeing where it is
 ## `late` seconds ago (late < 0: hands off).
 func steady(late: float, tremble: float, seed_: int, limit := 30.0, level := 1) -> float:
-	var g := Minigame.make("steady", "case", 6, {}, seed_, level)
+	var g := Minigame.make("steady", "case", 6, {}, seed_, level) as SteadyGame
 	g.tremble = tremble
 	var seen: Array[Vector2] = []
 	while not g.done and g.t < limit:
@@ -99,7 +99,7 @@ func steady(late: float, tremble: float, seed_: int, limit := 30.0, level := 1) 
 ## and as many up (late < 0: hands off); `press` frames down each time
 ## (a long press instead of a tap).
 func balance(late: float, pressure: float, seed_: int, limit: float, level := 1, press := 3) -> float:
-	var g := Minigame.make("balance", "plinth", 1, {}, seed_, level)
+	var g := Minigame.make("balance", "plinth", 1, {}, seed_, level) as BalanceGame
 	g.pressure = pressure
 	var seen: Array[float] = []
 	var t := 0.0
@@ -124,6 +124,36 @@ func balance(late: float, pressure: float, seed_: int, limit: float, level := 1,
 	return t
 
 
+## Seconds to wriggle into a hideout: the next side `react` seconds after the
+## body settles (the masher, every < 0 aside, presses a side every `every`
+## seconds whatever; wrong_every: every so many wriggles, the same side twice).
+func squeeze(react: float, tremble: float, level := 1, tight := 0, every := -1.0, wrong_every := 0) -> float:
+	var g := Minigame.make("squeeze", "hideout", tight, {}, 3, level) as SqueezeGame
+	g.tremble = tremble
+	var since := 0.0
+	var last := 0.0
+	var held := false
+	var n := 0
+	while not g.done and g.t < 30.0:
+		var press := false
+		if every > 0.0:
+			press = g.t - last >= every
+		else:
+			since = since + DT if g.ready() else 0.0
+			press = g.ready() and since >= react
+		var key := ""
+		if press and not held:
+			last = g.t
+			var side: int = g.side if g.side >= 0 else SqueezeGame.RIGHT
+			if wrong_every > 0 and n % wrong_every == wrong_every - 1:
+				side = SqueezeGame.LEFT if side == SqueezeGame.RIGHT else SqueezeGame.RIGHT
+			key = Minigame.DIRS[side]
+			n += 1
+		held = press and not held
+		g.tick({key: true} if key != "" else {}, DT)
+	return g.t
+
+
 func _init() -> void:
 	print("Ganzúa")
 	var fast := pick(4, 0.0, true)
@@ -146,15 +176,15 @@ func _init() -> void:
 	check(shaky < 6.0, "experto temblando: %.1f s, más despacio pero la abre" % shaky)
 	check(Minigame.pins_for(1.0) == 2 and Minigame.pins_for(3.0) == 4 and Minigame.pins_for(9.0) == 6, "pernos según la cerradura: 2 a 6")
 
-	var g := Minigame.make("lockpick", "case", 3, {"action": true, "right": true})
+	var g := Minigame.make("lockpick", "case", 3, {"action": true, "right": true}) as LockpickGame
 	check(g.tick({"action": true, "right": true}, DT) == "" and g.step == 0, "lo que ya estaba pulsado al empezar no cuenta")
 	check(g.tick({"action": true, "right": false}, DT) == "", "soltar no hace nada")
 	check(g.tick({"right": true}, DT) == "", "una dirección con la ganzúa no la suelta: solo B (rodar)")
 	check(g.tick({"cancel": true}, DT) == "quit", "B (rodar) suelta la ganzúa")
-	g = Minigame.make("lockpick", "case", 3, {})
+	g = Minigame.make("lockpick", "case", 3, {}) as LockpickGame
 	g.tick({"action": true}, DT)
 	check(g.events.has("slip") and g.lock > 0.0, "fallar el punto: la ganzúa resbala un momento")
-	g = Minigame.make("lockpick", "case", 3, {})
+	g = Minigame.make("lockpick", "case", 3, {}) as LockpickGame
 	g.blocked = "panel"
 	g.tick({}, 1.0)
 	check(g.t == 0.0, "bloqueada (falta el cuadro): no avanza")
@@ -188,7 +218,7 @@ func _init() -> void:
 	check(calm >= 2.0 and calm <= 5.0, "experto: la mantiene dentro y corta el cristal en %.1f s (hacen falta 3)" % calm)
 	check(clumsy_cup > calm, "reaccionando tarde tarda más: %.1f s" % clumsy_cup)
 	check(loose >= 6.0, "sin tocar nada se sale y no acaba nunca")
-	var cupg := Minigame.make("steady", "case", 6, {}, 9)
+	var cupg := Minigame.make("steady", "case", 6, {}, 9) as SteadyGame
 	cupg.cup = Vector2(0.95, 0.0)
 	cupg.held = 1.0
 	cupg.tick({}, DT)
@@ -203,7 +233,7 @@ func _init() -> void:
 		pressed_up += balance(0.1, 1.0, 400 + s, 20.0)
 		fell += balance(-1.0, 0.0, 400 + s, 20.0)
 	check(up / 8 >= 59.0, "atento a izquierda y derecha aguanta %.1f s de media: con el tiempo se complica, pero muy despacio" % (up / 8))
-	var tire := Minigame.make("balance", "plinth", 1, {}, 5, 1)
+	var tire := Minigame.make("balance", "plinth", 1, {}, 5, 1) as BalanceGame
 	tire.t = 60.0
 	check(tire.tired() > 1.3 and tire.tired() < 2.0, "al minuto cuesta %.2f veces lo del principio" % tire.tired())
 	var lasts := 0.0
@@ -215,7 +245,7 @@ func _init() -> void:
 	for s in 8:
 		held_down += balance(0.1, 0.0, 400 + s, 20.0, 1, 36)
 	check(held_down / 8 < 10.0, "pulsaciones largas (0,6 s) empujan demasiado y se cae: %.1f s frente a %.1f s a toques" % [held_down / 8, up / 8])
-	var push := Minigame.make("balance", "plinth", 1, {}, 5, 1)
+	var push := Minigame.make("balance", "plinth", 1, {}, 5, 1) as BalanceGame
 	push.lean = 0.0
 	push.lean_v = 0.0
 	var tt := 0.0
@@ -236,7 +266,7 @@ func _init() -> void:
 		by_near.append(sum / 8)
 	check(by_near[0] >= by_near[1] and by_near[1] >= by_near[2] and by_near[2] >= by_near[3] and by_near[0] > by_near[3],
 		"cuanto más cerca el guardia, antes se cae: %.1f s, %.1f s, %.1f s, %.1f s" % by_near)
-	var far := Minigame.make("balance", "plinth", 1, {}, 5, 1)
+	var far := Minigame.make("balance", "plinth", 1, {}, 5, 1) as BalanceGame
 	var widest := 0.0
 	while far.tick({}, DT) != "fail":
 		widest = maxf(widest, absf(far.lean))
@@ -257,6 +287,34 @@ func _init() -> void:
 			sum += steady(0.25, 0.0, 700 + s, 30.0, level)
 		cup_level.append(sum / 8)
 	check(cup_level[0] < cup_level[1] and cup_level[1] < cup_level[2], "ventosa por niveles: %.1f s fácil, %.1f s medio, %.1f s difícil" % cup_level)
+
+	print("Colarse en un escondite")
+	var quickest := squeeze(0.0, 0.0, 0)
+	var usual := squeeze(0.15, 0.0, 1)
+	var worst := squeeze(0.15, 1.0, 2, 1)
+	var fumbling := squeeze(0.15, 0.0, 1, 0, -1.0, 4)
+	check(quickest >= 1.9 and quickest <= 2.3, "lo más rápido posible, fácil y holgado: %.1f s" % quickest)
+	check(usual >= 2.3 and usual <= 4.0, "normal: %.1f s" % usual)
+	check(worst > usual and worst <= 5.2, "difícil, apretado y temblando: %.1f s" % worst)
+	check(fumbling > usual, "equivocándose de lado de vez en cuando: %.1f s" % fumbling)
+	check(squeeze(0.15, 0.0, 1, 1) > usual, "apretado cuesta más")
+	check(squeeze(0.15, 1.0, 1) > usual, "con las manos temblando cuesta más")
+	var mash := squeeze(0.0, 0.0, 1, 0, 0.1)
+	check(mash > usual, "machacar izquierda-derecha no sirve: %.1f s frente a %.1f s con ritmo" % [mash, usual])
+	var sq := Minigame.make("squeeze", "hideout", 0, {}, 3, 1) as SqueezeGame
+	sq.tick({"left": true}, DT)
+	check(sq.step == 1 and sq.side == SqueezeGame.RIGHT, "cualquier lado para empezar; luego toca el otro")
+	sq.settle = 0.0
+	sq.tick({}, DT)
+	sq.tick({"left": true}, DT)
+	check(sq.step == 1 and sq.lock > 0.0 and sq.events.has("slip"), "el mismo lado dos veces: atascado un momento")
+	check(sq.tick({"cancel": true}, DT) == "quit", "B (rodar) lo deja")
+
+	print("Minijuegos: uno por fichero")
+	for k in ["lockpick", "wires", "steady", "balance", "squeeze"]:
+		check(Minigame.exists(k) and ResourceLoader.exists(MinigameView.SCRIPTS % k), "%s: lógica y vista" % k)
+		var how: String = "GAME_HOW_" + k.to_upper()
+		check(Text.t(how) != how, "%s: sabe explicar cómo se juega" % k)
 
 	print("El golpe con ganzúa")
 	Sim.custom = {}
@@ -288,7 +346,8 @@ func _init() -> void:
 	while result == "" and now < 60000.0:
 		now += 1000.0 * DT
 		# Frame-perfect: press the moment the tip is on the spot.
-		var down: bool = p.game != null and p.game.off() <= p.game.band() * 0.5 and p.game.lock <= 0.0
+		var pick := p.game as LockpickGame
+		var down: bool = pick != null and pick.off() <= pick.band() * 0.5 and pick.lock <= 0.0
 		if p.game:
 			p.game.tick({"action": down}, DT)
 		noises.clear()

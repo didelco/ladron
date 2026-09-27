@@ -254,13 +254,14 @@ window.PANTALLAS = [
             shots: ["juego_algo_raro", "juego_persecucion"], options: [],
           },
           {
-            id: "minijuegos", title: "«Minijuegos»", text: "Una caja al lado del ladrón (nunca encima), sin palabras. Tiemblan más cuanto más alarmados están los guardias.",
-            shots: ["juego_minijuego_lockpick", "juego_minijuego_wires", "juego_minijuego_steady", "juego_minijuego_balance"],
+            id: "minijuegos", title: "«Minijuegos»", text: "Una caja al lado del ladrón (nunca encima), sin palabras. Tiemblan más cuanto más alarmados están los guardias. Cada uno es un fichero de lógica (logic/minigames/) y otro de vista (scenes/minigame_views/).",
+            shots: ["juego_minijuego_lockpick", "juego_minijuego_wires", "juego_minijuego_steady", "juego_minijuego_balance", "juego_minijuego_squeeze"],
             options: [
               { key: "GAME_HOW_LOCKPICK", text: "La ganzúa, en la vitrina." },
               { key: "GAME_HOW_WIRES", text: "Los cables, en el cuadro de alarma." },
               { key: "GAME_HOW_STEADY", text: "La ventosa, en el cristal." },
               { key: "GAME_HOW_BALANCE", text: "El equilibrio, posando como estatua en un pedestal." },
+              { key: "GAME_HOW_SQUEEZE", text: "Colarse en un escondite: a un lado y a otro, con ritmo; de 2 a 5 s a la vista." },
               { key: "GAME_LET_GO" },
             ],
           },

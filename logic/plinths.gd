@@ -19,35 +19,11 @@ const HEIGHT := 0.3
 const GRAB := 1.3
 ## Seconds on the floor after falling off one (Minigame "balance").
 const FALL_DOWN_S := 1.2
-## One for this many open tiles, and never fewer than MIN (if there is room).
-const PER_TILES := 90
-const MIN := 2
-
 static var list: Array[Vector2i] = []
 
 
-## Pick a few of the museum's cases to be empty pedestals instead: never the
-## job's own, never a big piece, each with floor beside it to climb from and
-## spread out about the museum.
-static func place(seed: int, avoid: Array[Vector2i]) -> void:
-	list.clear()
-	var rand := Mulberry32.new(seed ^ 0x51ed270b)
-	var spots: Array[Vector2i] = []
-	for t in Museum.cover_tiles:
-		if t in avoid or not Museum.big_piece_at(t).is_empty():
-			continue
-		if _floor_beside(t).is_empty():
-			continue
-		spots.append(t)
-	var wanted := maxi(MIN, Museum.open_tiles.size() / PER_TILES)
-	var tries := 0
-	while list.size() < wanted and tries < 400 and not spots.is_empty():
-		tries += 1
-		var t: Vector2i = spots[rand.below(spots.size())]
-		if list.any(func(o): return absi(o.x - t.x) + absi(o.y - t.y) < 5):
-			continue
-		list.append(t)
-		spots.erase(t)
+## Which cases are pedestals tonight is picked along with the places to hide
+## in, far apart from one another (Hideouts.spread).
 
 
 ## Where a saved map stood them by hand (MapFile's exhibits, "plinth").

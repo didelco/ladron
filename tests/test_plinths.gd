@@ -18,8 +18,8 @@ func check(ok: bool, what: String) -> void:
 func _init() -> void:
 	Sim.new_map(4242, "medium")
 	var none: Array[Vector2i] = []
-	Plinths.place(4242, none)
-	check(Plinths.list.size() >= Plinths.MIN, "hay pedestales (%d)" % Plinths.list.size())
+	Hideouts.spread(4242, none, true, false, false)
+	check(Plinths.list.size() >= 1, "hay pedestales (%d)" % Plinths.list.size())
 	for t in Plinths.list:
 		check(Museum.is_cover(t.x + 0.5, t.y + 0.5), "el pedestal %s ocupa una casilla de mueble" % t)
 	var t: Vector2i = Plinths.list[0]

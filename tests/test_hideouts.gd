@@ -134,7 +134,9 @@ func _init() -> void:
 
 	# The same for a statue on a pedestal.
 	var t: Vector2i = Vector2i(-1, -1)
-	Plinths.place(4242, [] as Array[Vector2i])
+	Hideouts.spread(4242, [] as Array[Vector2i], true, false, false)
+	# Only the pedestals picked: every big piece and suit still counts.
+	Hideouts.reset()
 	t = Plinths.list[0]
 	var foot: Vector2i = Plinths._floor_beside(t)[0]
 	var pd := t - foot
@@ -169,8 +171,9 @@ func _init() -> void:
 	check(not p.hiding and Museum.tile_at(p.x, p.y) == Tiles.FLOOR, "al caer la armadura, sale al suelo")
 
 	# Furniture to hide in: a few on cases, each of its gallery's theme.
-	Hideouts.place(4242, [] as Array[Vector2i])
-	check(Hideouts.pieces.size() >= Hideouts.MIN, "hay muebles para esconderse (%d)" % Hideouts.pieces.size())
+	Plinths.list.clear()
+	Hideouts.spread(4242, [] as Array[Vector2i], false, true, false)
+	check(Hideouts.pieces.size() >= 2, "hay muebles para esconderse (%d)" % Hideouts.pieces.size())
 	for at in Hideouts.pieces:
 		var kind: String = Hideouts.pieces[at]
 		var room := Museum.room_at(at.x + 0.5, at.y + 0.5)
@@ -214,6 +217,74 @@ func _init() -> void:
 	for k in ["trojan_horse", "mammoth", "log", "car"]:
 		check(seen.has(k), "el generador pone %s" % k)
 		check(k in Hideouts.BIG, "%s es un escondite" % k)
+
+	# Few, and far apart: each story night, the places to hide in and the
+	# pedestals together, as many as the museum's size gives, none near
+	# another; the rest of the big pieces and suits are just to look at.
+	var most := 0
+	var closest := INF
+	var mixed := 0
+	for n in range(1, Story.count() + 1):
+		var night := Story.level(n)
+		Sim.custom = Story.tuning(n)
+		var sd := Story.seed_for(n, 1)
+		Sim.new_map(sd, night.size, -1, night.shape)
+		Heist.plan_job(n, night.loot, 1, {})
+		if Sim.feature("props"):
+			Props.place(sd, [Heist.exit, Heist.panel, Heist.panel2, Heist.start])
+		else:
+			Props.list.clear()
+		Plinths.list.clear()
+		Hideouts.pieces.clear()
+		Hideouts.spread(sd, [Heist.at] as Array[Vector2i], true, true, true)
+		var spots := Hideouts.all()
+		var at: Array[Vector2] = []
+		for sp in spots:
+			at.append(sp.middle())
+		for pl in Plinths.list:
+			at.append(Vector2(pl) + Vector2(0.5, 0.5))
+		var budget := maxi(Hideouts.MIN, Museum.open_tiles.size() / Hideouts.PER_TILES)
+		check(at.size() <= budget, "noche %d (%s): %d sitios de %d como mucho" % [n, night.size, at.size(), budget])
+		most = maxi(most, at.size())
+		for i in at.size():
+			for j in range(i + 1, at.size()):
+				closest = minf(closest, at[i].distance_to(at[j]))
+		if not spots.is_empty() and not Plinths.list.is_empty():
+			mixed += 1
+		check(not Heist.at in Plinths.list and not Hideouts.pieces.has(Heist.at), "noche %d: nada sobre la vitrina del golpe" % n)
+	check(closest >= Hideouts.APART, "ninguno a menos de %.0f casillas de otro (el más cerca, a %.1f)" % [Hideouts.APART, closest])
+	check(mixed >= Story.count() - 2, "casi todas las noches hay escondites y pedestales (%d de %d)" % [mixed, Story.count()])
+	check(most <= 10, "en el museo más grande, %d sitios" % most)
+
+	# Getting in takes a moment of wriggling, out in the open: seen at any
+	# point of it, the guard knows.
+	Sim.custom = {}
+	Sim.new_map(4242, "medium")
+	Props.list.clear()
+	var sq := Hideouts.all().filter(func(o): return o.kind == "sarcophagus")[0] as Hideouts.Spot
+	var by := Vector2i(-1, -1)
+	for tt in sq.tiles:
+		for dd in Museum.DIRS:
+			var nb: Vector2i = tt + dd
+			if by.x < 0 and not nb in sq.tiles and Museum.tile_at(nb.x + 0.5, nb.y + 0.5) == Tiles.FLOOR:
+				by = nb
+	var q := Sim.new_thief()
+	q.x = by.x + 0.5
+	q.y = by.y + 0.5
+	var alone: Array[Thief] = [q]
+	Hideouts.start(q, Hideouts.within_reach(q, alone), {})
+	check(q.game is SqueezeGame and not q.hiding, "E junto al sarcófago: empieza a colarse, aún fuera")
+	var spy := Guard.new()
+	spy.x = q.x + 1.5
+	spy.y = q.y
+	spy.dir = PI
+	var spies: Array[Guard] = [spy]
+	check(Hideouts.squeeze(q, spies, alone, false) == "", "mientras se cuela, sigue fuera")
+	check(q.hide_seen.has(spy) or not Sim.can_see(spy, q), "el guardia que lo ve colarse lo recuerda")
+	var saw_it := q.hide_seen.has(spy)
+	var gone: Array[Guard] = []
+	check(Hideouts.squeeze(q, gone, alone, true) == "in" and q.hiding, "hecho: dentro")
+	check(q.hide_blown == saw_it, "aunque ya no mire al terminar, si lo vio colarse lo sabe")
 
 	print("OK: escondites" if failures.is_empty() else "FALLOS: %d" % failures.size())
 	quit(0 if failures.is_empty() else 1)
