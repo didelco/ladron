@@ -1415,30 +1415,17 @@ func _news_items() -> Array:
 	]
 
 
-## The story's first page, like a card beside an exhibit: the piece turning
-## under a light, big, on the left; on the right which job this is, its
-## name, what it is like and its tale.
+## The story's first page: the gang's job sheet, on paper over the museum's
+## picture (EndPages.piece_card) — the piece turning in a polaroid, which
+## job this is, its name, what it is like and its tale.
 func _story_items() -> Array:
 	# Rebuilt each time: the last round's piece may still be on the stand.
 	_build_preview()
-	var card: Array = [
-		{"text": _brief_heading().to_upper(), "size": 15, "colour": Hud.C.dim, "align": "left"},
-		{"text": Heist.first_upper(Heist.loot.name), "size": 40, "colour": Color(Heist.loot.colour), "wrap": true, "width": STORY_WIDTH, "align": "left"},
-		{"text": Heist.loot.blurb, "size": 19, "colour": Hud.C.gold, "wrap": true, "width": STORY_WIDTH, "align": "left"},
-		{"gap": 10},
-		{"text": Heist.loot.get("story", ""), "size": 20, "wrap": true, "width": STORY_WIDTH, "align": "left"},
-	]
 	return [
-		{"columns": [
-			{"items": [{"picture": preview.get_texture(), "smooth": true, "height": 290}], "middle": true},
-			{"items": card, "width": STORY_WIDTH, "separation": 8, "middle": true},
-		], "separation": 48},
+		{"card": {"heading": _brief_heading(), "name": Heist.first_upper(Heist.loot.name), "blurb": Heist.loot.blurb,
+			"story": Heist.loot.get("story", ""), "photo": preview.get_texture()}},
 		{"gap": 16},
 	]
-
-
-## How wide the tale runs beside the piece on the story's page.
-const STORY_WIDTH := 520
 
 
 ## The plan: the map on the left; on the right, the piece (turning under a

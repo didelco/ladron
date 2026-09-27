@@ -16,6 +16,11 @@ extends RefCounted
 ## filled in and a box ticked, and the rest of the form running off the
 ## bottom. All grey but the red stamp.
 ##
+## And before a heist, the gang's job sheet (Hud's "card"), on the same
+## cream paper: a polaroid of the piece turning, taped on, and beside it
+## which job this is, the piece's name, what it is like and its tale — so
+## the words sit on paper, not straight on the museum's picture.
+##
 ## Faces: the game's plain one for reading and its arcade one for small
 ## capitals, and two of a paper's: a blackletter for the masthead, a fat
 ## serif for the headline, the figures and the stamp.
@@ -27,6 +32,9 @@ const PAPER_INK_SOFT := Color("#6e5c49")
 ## The studio behind the piece in its photo, before it is printed.
 const PHOTO_BACK := Color("#cfc3ab")
 const SHEET := Color("#f7f7f5")
+## The job sheet's polaroid: its photo's dark back and the tape on it.
+const CARD_PHOTO_BACK := Color("#2a2233")
+const CARD_TAPE := Color(0.95, 0.9, 0.72, 0.6)
 const SHEET_INK := Color("#1f2023")
 const SHEET_INK_SOFT := Color("#7a7c80")
 const SHEET_LINE := Color("#b9bbbe")
@@ -48,6 +56,11 @@ const SHEET_SHOWN := 620.0
 const SHEET_MARGIN := 30
 ## Each of the two photos on it, and how far the sheet is turned (degrees).
 const SHEET_PHOTO := Vector2(237, 190)
+## The job sheet: how wide it is, its words, its photo, and its tilt.
+const CARD_W := 860
+const CARD_TEXT_W := 470
+const CARD_PHOTO := Vector2(260, 220)
+const CARD_TILT := -0.8
 const SHEET_TILT := 1.2
 
 ## A photo printed in a newspaper: grey on the paper, in a screen of dots at
@@ -152,6 +165,97 @@ static func newspaper(d: Dictionary) -> Control:
 	row.add_child(_figures(d.get("figures", [])))
 	_spin_in(paper)
 	return _loose(paper)
+
+
+## The job sheet before a heist: {"heading", "name", "blurb", "story",
+## "photo": Texture2D (the piece turning, live)}: the polaroid on the left,
+## the words on the right, the sheet a hair askew, dropping in.
+static func piece_card(d: Dictionary) -> Control:
+	var sheet := PanelContainer.new()
+	var st := _sheet(PAPER, 0, 0)
+	st.set_corner_radius_all(4)
+	sheet.add_theme_stylebox_override("panel", st)
+	sheet.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var grain := ColorRect.new()
+	grain.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var paper := ShaderMaterial.new()
+	paper.shader = Shader.new()
+	paper.shader.code = SHEET_SHADER
+	paper.set_shader_parameter("paper", PAPER)
+	paper.set_shader_parameter("box", Vector2(CARD_W, 400))
+	grain.material = paper
+	sheet.add_child(grain)
+	var margin := MarginContainer.new()
+	for side in ["left", "right"]:
+		margin.add_theme_constant_override("margin_" + side, 34)
+	for side in ["top", "bottom"]:
+		margin.add_theme_constant_override("margin_" + side, 28)
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	sheet.add_child(margin)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 30)
+	margin.add_child(row)
+	if d.get("photo") is Texture2D:
+		row.add_child(_polaroid(d.photo))
+	var words := VBoxContainer.new()
+	words.add_theme_constant_override("separation", 6)
+	words.alignment = BoxContainer.ALIGNMENT_CENTER
+	words.custom_minimum_size.x = CARD_TEXT_W
+	row.add_child(words)
+	_line(d.get("heading", ""), 15, PAPER_INK_SOFT, words)
+	var name := _line(d.get("name", ""), 38, PAPER_INK, words, HEADLINE)
+	name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	name.custom_minimum_size.x = CARD_TEXT_W
+	name.add_theme_constant_override("line_spacing", -6)
+	var blurb := _line(d.get("blurb", ""), 18, PAPER_INK_SOFT, words)
+	blurb.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	blurb.custom_minimum_size.x = CARD_TEXT_W
+	_rule(words, 1, PAPER_INK_SOFT)
+	var tale := _line(d.get("story", ""), 18, PAPER_INK, words)
+	tale.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	tale.custom_minimum_size.x = CARD_TEXT_W
+	_drop_in(sheet, CARD_TILT)
+	return _loose(sheet)
+
+
+## A polaroid: the photo on white, with the wide strip under it, a little
+## askew, and a strip of tape across its top.
+static func _polaroid(photo: Texture2D) -> Control:
+	var frame := PanelContainer.new()
+	var st := _box(Color("#fbfaf6"), Color(0, 0, 0, 0), 0)
+	st.content_margin_left = 12
+	st.content_margin_right = 12
+	st.content_margin_top = 12
+	st.content_margin_bottom = 40
+	st.shadow_color = Color(0, 0, 0, 0.25)
+	st.shadow_size = 6
+	st.shadow_offset = Vector2(0, 3)
+	frame.add_theme_stylebox_override("panel", st)
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var pic := TextureRect.new()
+	pic.texture = photo
+	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	pic.custom_minimum_size = CARD_PHOTO
+	pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# The photo's own dark back, so the piece stands out as in a flash photo.
+	var back := ColorRect.new()
+	back.color = CARD_PHOTO_BACK
+	back.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.add_child(back)
+	frame.add_child(pic)
+	frame.rotation = deg_to_rad(-3.0)
+	var holder := _loose(frame)
+	holder.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var tape := ColorRect.new()
+	tape.color = CARD_TAPE
+	tape.size = Vector2(90, 26)
+	tape.rotation = deg_to_rad(4.0)
+	tape.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	holder.add_child(tape)
+	holder.resized.connect(func() -> void:
+		tape.position = Vector2(holder.size.x / 2 - 45, -12))
+	return holder
 
 
 ## The police file: {"photos": [MugshotStage front, MugshotStage side],
@@ -445,6 +549,18 @@ static func _spin_in(c: Control) -> void:
 		var tw := c.create_tween().set_parallel().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tw.tween_property(c, "scale", Vector2.ONE, 0.6)
 		tw.tween_property(c, "rotation", deg_to_rad(-0.8), 0.6), CONNECT_ONE_SHOT)
+
+
+## Dropping onto the table: from a little above and larger, landing askew.
+static func _drop_in(c: Control, degrees: float) -> void:
+	c.rotation = deg_to_rad(degrees - 4.0)
+	c.scale = Vector2.ONE * 1.08
+	c.modulate.a = 0.0
+	c.tree_entered.connect(func() -> void:
+		var tw := c.create_tween().set_parallel().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(c, "scale", Vector2.ONE, 0.35)
+		tw.tween_property(c, "rotation", deg_to_rad(degrees), 0.35)
+		tw.tween_property(c, "modulate:a", 1.0, 0.15), CONNECT_ONE_SHOT)
 
 
 ## The stamp comes down hard: big and faint, then there, askew.

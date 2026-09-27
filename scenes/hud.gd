@@ -428,6 +428,9 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 ##                                                    page (EndPages.newspaper)
 ##   {"mugshot": {...}}                               the police file with the
 ##                                                    gang's photo (EndPages.mugshot)
+##   {"card": {...}}                                  the job sheet with the
+##                                                    piece before a heist
+##                                                    (EndPages.piece_card)
 ##   {"footer": text}                                 what to press
 ## Buttons work with the mouse, and with the arrows and Enter; the first one
 ## has the focus.
@@ -635,6 +638,8 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 		parent.add_child(EndPages.newspaper(item.newspaper))
 	elif item.has("mugshot"):
 		parent.add_child(EndPages.mugshot(item.mugshot))
+	elif item.has("card"):
+		parent.add_child(EndPages.piece_card(item.card))
 	elif item.has("footer"):
 		var f := _label(14, C.gold, parent, true)
 		f.text = item.footer
