@@ -286,7 +286,7 @@ END_LEVEL_DONE,Nivel %d superado: %s ya es tuyo.
 END_NEXT_NIGHT,▶ SIGUIENTE NOCHE
 END_NEXT_HEIST,▶ SIGUIENTE GOLPE
 END_TO_MENU,< VOLVER AL MENÚ
-HUD_HELP,P pausa · M mapa · E acción · C a gatas · Shift andar lento · Espacio rodar
+HUD_HELP,P pausa · M mapa · E acción · F humo · C a gatas · Shift andar lento · Espacio rodar
 HUD_MAP_HIDE,M o View para guardarlo
 HUD_COUNT_GO,GO!
 HUD_JOB_WAIT_PANEL,¡QUE TU COMPAÑERO SUJETE EL CUADRO DE ALARMA!
@@ -917,3 +917,5 @@ EDITOR_TYPE_SMALL,PEQUEÑO
 EDITOR_TYPE_BIG,GRANDE
 EDITOR_TYPE_PROP,TIRABLE
 EDITOR_TYPE_HIDE,ESCONDITE
+LOG_SMOKE,¡Bomba de humo!
+GUARD_SMOKE,¿Humo? ¿Qué pasa ahí?

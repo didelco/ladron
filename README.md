@@ -95,6 +95,7 @@ godot --headless --script tests/test_roll.gd     # rodar: ocho casillas, bajo y 
 godot --headless --script tests/test_plinths.gd  # pedestales: subir con la acción, estatua invisible, bajar con una dirección
 godot --headless --script tests/test_hideouts.gd # escondites: muebles y piezas grandes por tema, invisible dentro, el guardia que te ve entrar va a por ti
 godot --headless --script tests/test_controles.gd # teclas y botones: partida, menús y elegir sitio
+godot --headless --script tests/test_smoke.gd     # bomba de humo: dos por ladrón, tapa la vista, despista al que persigue
 godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (necesita el cerebro)
 ```
 
@@ -171,14 +172,14 @@ ladrones, cada uno ocupa su plaza pulsando un botón de su mando o una tecla de 
 dos como mucho: el tercero y el cuarto, con mando. En
 SETTINGS → CONTROLES: vibración y su fuerza, y zona muerta del stick.
 
-SETTINGS (se guardan en `user://settings.cfg`): sonido (`N`), música, volumen de música y de efectos (0–100 %, `←`/`→`), pantalla completa, v-sync y panel de IA; también se recuerdan la dificultad y el tamaño del modo generativo. La música (sintetizada, de misterio) sube de tensión cuando los guardias están en alerta o te ven. Solo: WASD o flechas, `E` la acción, `Espacio` o `Enter` para rodar, `C` para ponerse a gatas y `Shift` para andar lento. Dos
-jugadores: P1 con WASD, `E`, `Espacio`, `C` y el `Shift` izquierdo; P2 con flechas, `.`, `Enter`, la tecla de después del punto (`/` en un teclado inglés, `-` en uno español) y el `Shift` derecho. `Esc` para la pausa. El objetivo: robar
+SETTINGS (se guardan en `user://settings.cfg`): sonido (`N`), música, volumen de música y de efectos (0–100 %, `←`/`→`), pantalla completa, v-sync y panel de IA; también se recuerdan la dificultad y el tamaño del modo generativo. La música (sintetizada, de misterio) sube de tensión cuando los guardias están en alerta o te ven. Solo: WASD o flechas, `E` la acción, `Espacio` o `Enter` para rodar, `C` para ponerse a gatas, `Shift` para andar lento y `F` para la bomba de humo. Dos
+jugadores: P1 con WASD, `E`, `Espacio`, `C`, el `Shift` izquierdo y `F`; P2 con flechas, `.`, `Enter`, la tecla de después del punto (`/` en un teclado inglés, `-` en uno español), el `Shift` derecho y `,`. `Esc` para la pausa. El objetivo: robar
 la pieza (quieto a su lado unos segundos, mires hacia donde mires) y salir por la puerta verde. Sin reloj: se tarda lo que se
 quiera.
 
 Con mando, como en la mayoría de juegos: stick izquierdo o cruceta para moverse, A (✕) la acción, B (○) para rodar
 y soltar un minijuego, X (□) o clic del stick para ponerse a gatas, View para el mapa y Start para la
-pausa; Y (△) queda libre para un objeto. En los menús A acepta, B vuelve, LB/RB cambian de pestaña y Start
+pausa; Y (△) suelta una bomba de humo. En los menús A acepta, B vuelve, LB/RB cambian de pestaña y Start
 salta la historia y la previa. Así A y B significan lo mismo jugando que en los menús: A hace, B se aparta. Solo, vale cualquier mando; con dos, el mando 1 es P1 y el
 2 es P2 (el teclado sigue funcionando, así que un mando y teclado también). Vibra cuando te ven y
 cuando tiras algo.

@@ -115,5 +115,5 @@ Cada museo de la historia tiene su paleta (suelo, papel pintado, zócalo, remate
 
 ## Pendiente de ordenar
 
-- El humo por capas (`scenes/smoke_fx.gd`) está hecho, pero aún no está en el juego.
+- El humo por capas (`scenes/smoke_fx.gd`) es el de la bomba de humo (`logic/smoke.gd`).
 - Hay textos fuera de `locale/texts.csv`: el nombre de los retos de `maps/*.json` y el nombre, la descripción y la historia de las piezas que se escriben en el editor.

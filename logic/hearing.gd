@@ -36,6 +36,8 @@ const LOUDNESS := {
 	"switch": 2.5,
 	## a statue losing its balance and landing on the floor (Plinths.fall)
 	"tumble": 12.0,
+	## a smoke bomb going off (Smoke): a soft pop, heard close by
+	"smoke": 4.0,
 }
 
 ## Walking slowly on purpose (Sim.SLOW_SPEED) you place your feet: a step

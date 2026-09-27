@@ -131,6 +131,8 @@ var phase := "title"
 var stride := [0.0, 0.0, 0.0, 0.0]
 ## the push key held last frame, per thief: one push per press
 var push_held := [false, false, false, false]
+## the same for the smoke bomb key: one bomb per press
+var smoke_held := [false, false, false, false]
 ## how many seats the player-select screen is filling
 var join_count := 2
 var last_think := 0.0
@@ -258,6 +260,10 @@ func _ready() -> void:
 			_new_round(1)
 		_show_brief(_brief_pages().size() - 1)
 		get_tree().create_timer(2.0).timeout.connect(_start_playing)
+		# --smoke: and a smoke bomb goes off at P1's feet a moment in.
+		if "--smoke" in OS.get_cmdline_user_args():
+			get_tree().create_timer(3.5).timeout.connect(func() -> void:
+				Smoke.drop(thieves[0], Sim.now_ms(), prop_noises))
 		# --map: and take the map out a moment later.
 		if "--map" in OS.get_cmdline_user_args():
 			get_tree().create_timer(3.0).timeout.connect(_toggle_map)
@@ -1687,6 +1693,8 @@ func _new_round(n: int) -> void:
 		_lay_out(n, randi() % 1000000000)
 	stride = [0.0, 0.0, 0.0, 0.0]
 	push_held = [false, false, false, false]
+	smoke_held = [false, false, false, false]
+	Smoke.reset(thieves)
 	guard_steps.clear()
 	prop_noises.clear()
 	last_think = 0.0
@@ -1717,12 +1725,12 @@ func _pressed_keys() -> Dictionary:
 	pad_frame = Engine.get_physics_frames()
 	# Each thief's controls, as the key names Sim reads for that thief. P3's
 	# and P4's are only names now: they play with a pad, never those keys.
-	var names := [["w", "s", "a", "d", "c", "e", "space", "lalt"], ["up", "down", "left", "right", "minus", "period", "enter", "ralt"], ["i", "k", "j", "l", "u", "o", "y", "h"], ["kp8", "kp5", "kp4", "kp6", "kp0", "kpadd", "kpmul", "kpsub"]]
+	var names := [["w", "s", "a", "d", "c", "e", "space", "lalt", "f"], ["up", "down", "left", "right", "minus", "period", "enter", "ralt", "comma"], ["i", "k", "j", "l", "u", "o", "y", "h", "n"], ["kp8", "kp5", "kp4", "kp6", "kp0", "kpadd", "kpmul", "kpsub", "kpdot"]]
 	seat_now.resize(mini(seats.size(), thieves.size()))
 	for i in mini(seats.size(), thieves.size()):
 		var got := _seat_input(seats[i], resumed)
 		seat_now[i] = got
-		for k in 8:
+		for k in 9:
 			if got[k]:
 				keys[names[i][k]] = true
 	return keys
@@ -1801,21 +1809,22 @@ func _fresh(id: String, held: bool, resumed: bool) -> bool:
 
 
 ## One seat's controls this frame: [up, down, left, right, crouch, push, roll,
-## slow], the way most PC games have them. P1: WASD, E the action, Space the
-## roll, C to crouch, left Shift held to walk slowly. P2 the same round the
-## arrows: the full stop, Enter, the key after the full stop (KEY_SLASH) and
-## right Shift. No Ctrl: on a Mac, Ctrl and Space change the keyboard's
-## language and Ctrl and an arrow the desktop.
+## slow, smoke], the way most PC games have them. P1: WASD, E the action,
+## Space the roll, C to crouch, left Shift held to walk slowly, F a smoke
+## bomb. P2 the same round the arrows: the full stop, Enter, the key after
+## the full stop (KEY_SLASH), right Shift and the comma. No Ctrl: on a Mac,
+## Ctrl and Space change the keyboard's language and Ctrl and an arrow the
+## desktop.
 func _seat_input(seat: String, resumed: bool) -> Array:
-	var out := [false, false, false, false, false, false, false, false]
+	var out := [false, false, false, false, false, false, false, false, false]
 	if seat == "any" or seat == "kb_left":
-		for pair in [[0, KEY_W], [1, KEY_S], [2, KEY_A], [3, KEY_D], [4, KEY_C], [5, KEY_E], [6, KEY_SPACE]]:
+		for pair in [[0, KEY_W], [1, KEY_S], [2, KEY_A], [3, KEY_D], [4, KEY_C], [5, KEY_E], [6, KEY_SPACE], [8, KEY_F]]:
 			var held := Input.is_physical_key_pressed(pair[1])
 			if held if pair[0] < 4 else _fresh("key:%d" % pair[1], held, resumed):
 				out[pair[0]] = true
 		out[7] = _mod_held(KEY_SHIFT, KEY_LOCATION_LEFT)
 	if seat == "any" or seat == "kb_right":
-		for pair in [[0, KEY_UP], [1, KEY_DOWN], [2, KEY_LEFT], [3, KEY_RIGHT], [4, KEY_SLASH], [5, KEY_PERIOD], [6, KEY_ENTER], [6, KEY_KP_ENTER]]:
+		for pair in [[0, KEY_UP], [1, KEY_DOWN], [2, KEY_LEFT], [3, KEY_RIGHT], [4, KEY_SLASH], [5, KEY_PERIOD], [6, KEY_ENTER], [6, KEY_KP_ENTER], [8, KEY_COMMA]]:
 			var held := Input.is_physical_key_pressed(pair[1])
 			if held if pair[0] < 4 else _fresh("key:%d" % pair[1], held, resumed):
 				out[pair[0]] = true
@@ -1831,9 +1840,9 @@ func _seat_input(seat: String, resumed: bool) -> Array:
 		out[3] = out[3] or x > dz or Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_RIGHT)
 		# As most pads have it: A (south) the action, as it accepts in the
 		# menus; B (east) the roll, the way out, as it backs out of them; X
-		# (west) or a click of the left stick crouches. Y is kept for
-		# something to use. Each is ignored while still held over from a menu.
-		for pair in [[5, JOY_BUTTON_A], [6, JOY_BUTTON_B], [4, JOY_BUTTON_X], [4, JOY_BUTTON_LEFT_STICK]]:
+		# (west) or a click of the left stick crouches; Y (north) throws a smoke
+		# bomb. Each is ignored while still held over from a menu.
+		for pair in [[5, JOY_BUTTON_A], [6, JOY_BUTTON_B], [4, JOY_BUTTON_X], [4, JOY_BUTTON_LEFT_STICK], [8, JOY_BUTTON_Y]]:
 			if _fresh("pad:%d:%d" % [pad, pair[1]], Input.is_joy_button_pressed(pad, pair[1]), resumed):
 				out[pair[0]] = true
 		# LB held walks slowly; so does the stick past the dead zone but short
@@ -2252,6 +2261,20 @@ func _tick(dt: float) -> void:
 			t.dizzy = Plinths.FALL_DOWN_S
 			t.posture = 1.0
 			_log(Text.t("LOG_HIDE_TIPPED"))
+	# Smoke bombs: F (P2 the comma), or Y on the pad, at your feet.
+	for i in thieves.size():
+		var pressed: bool = keys.has(["f", "comma", "n", "kpdot"][i])
+		if pressed and not smoke_held[i]:
+			if Smoke.drop(thieves[i], now, noises) == null and not thieves[i].out:
+				sfx.ui("back", 0.5)
+		smoke_held[i] = pressed
+	Smoke.step(now)
+	for c in Smoke.fresh:
+		SmokeFx.burst(world, _to_world(c.x, c.y), Smoke.RADIUS * 1.15, Smoke.SECONDS)
+		sfx.at("smoke", _to_world(c.x, c.y, 0.5), 0.9, 6.0)
+		_rumble(0.3, 0.5, 0.3, Vector2(c.x, c.y))
+		_log(Text.t("LOG_SMOKE"))
+	Smoke.clear_fresh()
 
 	# The job: working the case (and its alarm), carrying, dropping, the door.
 	var before_alarms := noises.size()
@@ -3236,7 +3259,7 @@ func _draw_hud(dt: float) -> void:
 	var states: Array = []
 	for p in thieves:
 		states.append({"posture": p.posture, "speed": p.speed if p.moving else 0.0, "carrying": Heist.carrier == p.id,
-			"seen": not p.hidden, "out": p.out, "safe": p.safe, "pose": _pose_of(p)})
+			"seen": not p.hidden, "out": p.out, "safe": p.safe, "pose": _pose_of(p), "smoke": Smoke.count(p)})
 	hud.update_gang(states, dt)
 	var alarm := 0
 	for g in guards:

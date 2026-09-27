@@ -16,13 +16,12 @@ func _init() -> void:
 	var m = load("res://scenes/main.tscn").instantiate()
 	root.add_child(m)
 	await process_frame
-	# pad: A action, B roll, X crouch, L3 crouch
-	for pair in [[JOY_BUTTON_A, 5, "A = acción"], [JOY_BUTTON_B, 6, "B = rodar"], [JOY_BUTTON_X, 4, "X = a gatas"], [JOY_BUTTON_LEFT_STICK, 4, "L3 = a gatas"]]:
+	# pad: A action, B roll, X crouch, L3 crouch, Y smoke
+	for pair in [[JOY_BUTTON_A, 5, "A = acción"], [JOY_BUTTON_B, 6, "B = rodar"], [JOY_BUTTON_X, 4, "X = a gatas"], [JOY_BUTTON_LEFT_STICK, 4, "L3 = a gatas"], [JOY_BUTTON_Y, 8, "Y = humo"]]:
 		pad(pair[0], true)
 		var o: Array = m._seat_input("pad:0", false)
 		check(o[pair[1]] and o.count(true) == 1, pair[2] + " " + str(o))
 		pad(pair[0], false)
-	pad(JOY_BUTTON_Y, true); check(m._seat_input("pad:0", false).count(true) == 0, "Y no hace nada en partida"); pad(JOY_BUTTON_Y, false)
 	pad(JOY_BUTTON_A, true)
 	check(not m._seat_input("pad:0", true)[5], "A pulsada desde el menú no actúa al empezar")
 	check(not m._seat_input("pad:0", false)[5], "... ni mientras siga pulsada")
@@ -30,7 +29,7 @@ func _init() -> void:
 	check(m._seat_input("pad:0", false)[5], "... y al volver a pulsarla, sí")
 	pad(JOY_BUTTON_A, false)
 	# keyboard
-	for c in [[KEY_E, "kb_left", 5, "E = acción"], [KEY_SPACE, "kb_left", 6, "Espacio = rodar"], [KEY_C, "kb_left", 4, "C = a gatas"], [KEY_PERIOD, "kb_right", 5, ". = acción J2"], [KEY_ENTER, "kb_right", 6, "Enter = rodar J2"], [KEY_SLASH, "kb_right", 4, "tecla tras el punto = a gatas J2"]]:
+	for c in [[KEY_E, "kb_left", 5, "E = acción"], [KEY_SPACE, "kb_left", 6, "Espacio = rodar"], [KEY_C, "kb_left", 4, "C = a gatas"], [KEY_PERIOD, "kb_right", 5, ". = acción J2"], [KEY_ENTER, "kb_right", 6, "Enter = rodar J2"], [KEY_SLASH, "kb_right", 4, "tecla tras el punto = a gatas J2"], [KEY_F, "kb_left", 8, "F = humo"], [KEY_COMMA, "kb_right", 8, ", = humo J2"]]:
 		key(c[0], true)
 		var o: Array = m._seat_input(c[1], false)
 		check(o[c[2]] and o.count(true) == 1, c[3] + " " + str(o))
