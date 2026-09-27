@@ -168,5 +168,52 @@ func _init() -> void:
 	Hideouts.tip_out(p)
 	check(not p.hiding and Museum.tile_at(p.x, p.y) == Tiles.FLOOR, "al caer la armadura, sale al suelo")
 
+	# Furniture to hide in: a few on cases, each of its gallery's theme.
+	Hideouts.place(4242, [] as Array[Vector2i])
+	check(Hideouts.pieces.size() >= Hideouts.MIN, "hay muebles para esconderse (%d)" % Hideouts.pieces.size())
+	for at in Hideouts.pieces:
+		var kind: String = Hideouts.pieces[at]
+		var room := Museum.room_at(at.x + 0.5, at.y + 0.5)
+		check(Museum.is_cover(at.x + 0.5, at.y + 0.5) and not Plinths.is_plinth(at), "%s en %s: sobre una casilla de mueble" % [kind, at])
+		check(room == null or Hideouts.PIECES[kind].theme == room.theme, "%s en una sala de su tema" % kind)
+		check(ResourceLoader.exists("res://assets/models/%s.glb" % Hideouts.PIECES[kind].model), "%s tiene modelo" % kind)
+	var cell: Vector2i = Hideouts.pieces.keys()[0]
+	var door: Vector2i = Hideouts._floor_beside(cell)[0]
+	p.x = door.x + 0.5
+	p.y = door.y + 0.5
+	var in_it := Hideouts.within_reach(p, thieves)
+	check(in_it != null and in_it.kind == Hideouts.pieces[cell], "junto al mueble, está a mano")
+	Hideouts.get_in(p, in_it, nobody)
+	check(p.hiding and Vector2(p.x, p.y) == Vector2(cell) + Vector2(0.5, 0.5), "dentro del mueble")
+	var out_keys := {}
+	out_keys[KEY[door - cell]] = true
+	Sim.step_thief(p, out_keys, DT, "wasd")
+	check(not p.hiding and Vector2(p.x, p.y) == Vector2(door) + Vector2(0.5, 0.5), "y sale por donde entró")
+	for k in Hideouts.PIECES:
+		check(Themes.is_piece(k) and Themes.catalogue().any(func(e): return e[0] == "exhibit:" + k and e[2] == "hide"), "%s está en el catálogo del editor" % k)
+
+	# The new big pieces: in the generator, in their theme's gallery, and
+	# something to hide in.
+	var seen := {}
+	for sd in range(1, 40):
+		Sim.new_map(sd * 7, "large")
+		for b in Museum.big_pieces:
+			if b.kind in ["trojan_horse", "mammoth", "log"]:
+				seen[b.kind] = true
+				var rr: Rect2i = b.rect
+				var room := Museum.room_at(rr.position.x + rr.size.x / 2.0, rr.position.y + rr.size.y / 2.0)
+				if room and room.theme != Themes.for_big(b.kind):
+					check(false, "%s en una sala de %s" % [b.kind, room.theme])
+		# Both of the ancient world's big pieces keep their gallery.
+		var ancient := Museum.big_pieces.filter(func(b): return b.kind in ["sarcophagus", "trojan_horse"])
+		for b in ancient:
+			var rr: Rect2i = b.rect
+			var room := Museum.room_at(rr.position.x + rr.size.x / 2.0, rr.position.y + rr.size.y / 2.0)
+			if room and room.theme != "antiguo":
+				check(false, "semilla %d: %s fuera de una sala del mundo antiguo" % [sd * 7, b.kind])
+	for k in ["trojan_horse", "mammoth", "log"]:
+		check(seen.has(k), "el generador pone %s" % k)
+		check(k in Hideouts.BIG, "%s es un escondite" % k)
+
 	print("OK: escondites" if failures.is_empty() else "FALLOS: %d" % failures.size())
 	quit(0 if failures.is_empty() else 1)

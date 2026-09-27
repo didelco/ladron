@@ -1620,6 +1620,21 @@ func _lay_out(n: int, map_seed: int) -> int:
 		for t in MuseumView.exhibits:
 			keep.append(t)
 		Plinths.place(map_seed, keep)
+	# Furniture to hide in: the same, where a saved map stood it or else a
+	# few on cases of their own, of each gallery's theme.
+	var hide_by_hand := {}
+	for t in MuseumView.exhibits:
+		if Hideouts.PIECES.has(MuseumView.exhibits[t]) and t != Heist.at:
+			hide_by_hand[t] = MuseumView.exhibits[t]
+	if saved_map and not hide_by_hand.is_empty():
+		Hideouts.put(hide_by_hand)
+	elif Sim.feature("hideouts"):
+		var keep: Array[Vector2i] = [Heist.at]
+		for t in MuseumView.exhibits:
+			keep.append(t)
+		Hideouts.place(map_seed, keep)
+	else:
+		Hideouts.pieces.clear()
 	return Sim.assign_posts(guards)
 
 
@@ -2897,7 +2912,10 @@ func _draw_suspicion(i: int, g: Guard) -> void:
 
 ## What a guard that saw you get in shows beside its marks: the thing you
 ## are in (Guard.knows_kind), by its icon in the editor's catalogue.
-const HIDEOUT_ICONS := {"plinth": "exhibit_plinth", "sarcophagus": "big_sarcophagus", "armour": "prop_armour"}
+const HIDEOUT_ICONS := {"plinth": "exhibit_plinth", "sarcophagus": "big_sarcophagus", "armour": "prop_armour",
+	"trojan_horse": "big_trojan_horse", "mammoth": "big_mammoth", "log": "big_log",
+	"fridge": "exhibit_fridge", "box": "exhibit_box", "legionary": "exhibit_legionary", "confessional": "exhibit_confessional",
+	"chest": "exhibit_chest", "egg": "exhibit_egg", "shell": "exhibit_shell"}
 ## How big the icon is, in the marks' pixels.
 const HIDEOUT_ICON_PX := 22
 static var _hideout_icons := {}

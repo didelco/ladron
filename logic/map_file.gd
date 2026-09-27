@@ -29,6 +29,8 @@ const STORY_MINE := "user://maps/historia"
 const FORMAT := 1
 ## A tile as a character; a space is no building at all.
 const CHARS := {Tiles.FLOOR: ".", Tiles.WALL: "#", Tiles.COVER: "o"}
+## The big pieces in a ready-made room (stamp), by their letter.
+const BIG_LETTERS := {"D": "dinosaur", "S": "sarcophagus", "O": "bear", "H": "trojan_horse", "M": "mammoth", "L": "log"}
 const OUT := " "
 ## No building, for put().
 const OUT_TILE := -1
@@ -249,8 +251,9 @@ func _bare_wall(t: Vector2i) -> bool:
 
 
 ## Stamp a ready-made room down, its top left corner at `corner`: rows of
-## characters as on disk, and 'D', 'S' and 'O' for the dinosaur's, the
-## sarcophagus' and the bear's cases, 'b' for a bust on its pedestal. Whatever was under it
+## characters as on disk, and 'D', 'S', 'O', 'H', 'M' and 'L' for the
+## dinosaur's, the sarcophagus', the bear's, the Trojan horse's, the
+## mammoth's and the hollow log's cases, 'b' for a bust on its pedestal. Whatever was under it
 ## goes; the plan's own edge stays as it was. gallery: its inside is a room
 ## (a light, a switch, a name), not corridor.
 func stamp(rows: Array, corner: Vector2i, gallery: bool) -> void:
@@ -275,9 +278,9 @@ func stamp(rows: Array, corner: Vector2i, gallery: bool) -> void:
 					put(t, Tiles.WALL)
 				"o":
 					put(t, Tiles.COVER)
-				"D", "S", "O":
+				"D", "S", "O", "H", "M", "L":
 					put(t, Tiles.COVER)
-					var kind: String = {"D": "dinosaur", "S": "sarcophagus", "O": "bear"}[c]
+					var kind: String = BIG_LETTERS[c]
 					blocks[kind] = (blocks[kind] as Rect2i).merge(Rect2i(t, Vector2i.ONE)) if blocks.has(kind) else Rect2i(t, Vector2i.ONE)
 				"b":
 					put(t, Tiles.FLOOR)
@@ -719,6 +722,8 @@ static func from_museum(n: int, seed_: int, guard_tiles: Array[Vector2i]) -> Map
 		m.exhibits[t] = MuseumView.exhibits[t]
 	for t in Plinths.list:
 		m.exhibits[t] = "plinth"
+	for t in Hideouts.pieces:
+		m.exhibits[t] = Hideouts.pieces[t]
 	return m
 
 

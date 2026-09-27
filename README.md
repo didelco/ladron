@@ -38,6 +38,7 @@ su nombre escrito delante, y sale a su propio `.glb`:
 | `art/coleccion.blend` | bustos, regadera, váter, cráneos, ánfora, globo, tótem, amonite, meteorito, oso, armadura, sarcófago, dinosaurio | `assets/models/` |
 | `art/tema_antiguo.blend` | las piezas del tema antiguo (Egipto) | `assets/models/temas/antiguo/` |
 | `art/tema_edad_media.blend` | las piezas de la Edad Media | `assets/models/temas/edad_media/` |
+| `art/tema_moderna.blend`, `tema_prehistoria.blend`, `tema_naturaleza.blend` | los escondites de esos temas (nevera y caja; huevo y mamut; caparazón y tronco hueco) | `assets/models/temas/<tema>/` |
 | `art/botin.blend` | las piezas a robar: dentadura, pato, calcetín, tostada, corona, queso lunar, chicle, máscara, despertador, huevo, diamante, ídolo. Los materiales que empiezan por `color` toman el color de la pieza en el juego (`color_claro_N`, `color_oscuro_N`: un N % más claro u oscuro) | `assets/models/botin/` |
 | `art/personajes/guardia.blend`, `ninja.blend` | un personaje con esqueleto y acciones cada uno | `assets/models/` |
 
@@ -63,7 +64,8 @@ carpeta temporal). Si falla, *Pedir arreglo* le manda el error.
 Una pieza nueva: *Nueva pieza* en el fichero que le toque (o una colección nueva), modelar con el
 pie en z = 0 y el frente a -Y sobre el cursor, y exportar. Convenciones y nombres que busca el
 juego: `art/catalogo.py`. Los scripts de `art/characters/` y `art/temas/` son cómo se hizo la
-primera versión: volver a ejecutarlos pisa los retoques hechos a mano.
+primera versión: volver a ejecutarlos pisa los retoques hechos a mano. Los escondites (nevera, caja, legionario, confesionario, baúl, huevo,
+caparazón, caballo de Troya, mamut y tronco) salieron de `art/temas/escondites.py`.
 
 ## Plan
 
@@ -90,7 +92,7 @@ godot --headless --script tests/test_mapfile.gd  # mapas guardados: ida y vuelta
 godot --headless --script tests/test_story.gd    # la historia: noches por museo, progreso por jugadores
 godot --headless --script tests/test_roll.gd     # rodar: ocho casillas, bajo y callado; limpia o contra la pared (golpe y estrellas)
 godot --headless --script tests/test_plinths.gd  # pedestales: subir con la acción, estatua invisible, bajar con una dirección
-godot --headless --script tests/test_hideouts.gd # escondites: meterse en el sarcófago o la armadura, invisible, salir con una dirección
+godot --headless --script tests/test_hideouts.gd # escondites: muebles y piezas grandes por tema, invisible dentro, el guardia que te ve entrar va a por ti
 godot --headless --script tests/test_controles.gd # teclas y botones: partida, menús y elegir sitio
 godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (necesita el cerebro)
 ```

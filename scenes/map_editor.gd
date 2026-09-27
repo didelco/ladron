@@ -1484,7 +1484,7 @@ func _draw_plan() -> void:
 		var r: Rect2i = b.rect
 		var area := Rect2(o + Vector2(r.position) * c, Vector2(r.size) * c).grow(-c * 0.1)
 		_plan.draw_rect(area, Color("#6b4a2e"))
-		_plan.draw_string(Hud.ARCADE, area.get_center() + Vector2(-c * 0.3, c * 0.25), {"dinosaur": "D", "sarcophagus": "S", "bear": "O"}.get(b.kind, "?"), HORIZONTAL_ALIGNMENT_LEFT, -1, int(c * 0.6), Hud.CREAM)
+		_plan.draw_string(Hud.ARCADE, area.get_center() + Vector2(-c * 0.3, c * 0.25), MapFile.BIG_LETTERS.find_key(b.kind) if MapFile.BIG_LETTERS.values().has(b.kind) else "?", HORIZONTAL_ALIGNMENT_LEFT, -1, int(c * 0.6), Hud.CREAM)
 	# A chosen piece: its initial on the case.
 	for t in map.exhibits:
 		if map.big_at(t).is_empty():

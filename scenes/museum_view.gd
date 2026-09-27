@@ -287,6 +287,11 @@ func _exhibits() -> void:
 		if Plinths.is_plinth(t) or exhibits.get(t, "") == "plinth":
 			_empty_plinth(piece)
 			continue
+		# A piece of furniture to hide in (Hideouts).
+		var hide: String = Hideouts.pieces.get(t, exhibits.get(t, ""))
+		if Hideouts.PIECES.has(hide):
+			_hideout(piece, hide, t)
+			continue
 		_base(piece)
 		var yaw := _hash01(t.x, t.y, 3) * TAU
 		if t == Heist.at:
@@ -345,6 +350,7 @@ func _exhibit(piece: Node3D, what: String, t: Vector2i, yaw: float) -> void:
 			_amphora(p, 0.42)
 		"globe": _globe(_pivot(piece, Vector3.ZERO, yaw))
 		"plinth": _empty_plinth(piece)
+		_ when Hideouts.PIECES.has(what): _hideout(piece, what, t)
 		"totem": _totem(_pivot(piece, Vector3.ZERO, round(yaw / (PI / 2)) * PI / 2))
 		"bear":
 			# A map from before the bear took two tiles: at its old size, on one.
@@ -357,25 +363,41 @@ func _exhibit(piece: Node3D, what: String, t: Vector2i, yaw: float) -> void:
 		_: _vitrine(piece, null)
 
 
+## A piece of furniture to hide in (Hideouts.PIECES), standing on the floor
+## with its front (a door, a lid, an opening) to the free floor beside it —
+## the camera's side if it can.
+func _hideout(piece: Node3D, kind: String, t: Vector2i) -> void:
+	var face := Vector2i(0, 1)
+	for d in [Vector2i(0, 1), Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, -1)]:
+		if Museum.tile_at(t.x + d.x + 0.5, t.y + d.y + 0.5) == Tiles.FLOOR:
+			face = d
+			break
+	_pivot(piece, Vector3.ZERO, atan2(face.x, face.y)).add_child(asset(Hideouts.PIECES[kind].model))
+
+
+## The big pieces' models (the ones you hide in are the themes').
+const BIG_MODELS := {"dinosaur": "dinosaurio", "sarcophagus": "sarcofago", "trojan_horse": "temas/antiguo/caballo_troya",
+	"mammoth": "temas/prehistoria/mamut", "log": "temas/naturaleza/tronco"}
+
+
 ## A piece standing on a block of tiles (Museum.big_pieces): the dinosaur on
 ## its 3x2 platform, the sarcophagus on its 3x1 bier, the bear on a 2x1
-## plinth. The models lie along their length (the dinosaur and the bear's
-## spread arms along x, the sarcophagus along z); either end may face either
-## way.
+## plinth, the Trojan horse on its wheeled deck, the mammoth, the hollow log.
+## The models lie along their length (along x, all but the sarcophagus, which
+## lies along z); either end may face either way.
 func _big_piece(kind: String, r: Rect2i) -> void:
-	var along_x := r.size.x > r.size.y
-	var flip := PI if _hash01(r.position.x, r.position.y, 17) < 0.5 else 0.0
+	# A square one (the Trojan horse) stands side on to the camera, its hatch
+	# to the front.
+	var along_x := r.size.x >= r.size.y
+	var flip := PI if _hash01(r.position.x, r.position.y, 17) < 0.5 and r.size.x != r.size.y else 0.0
 	var yaw := (PI / 2 if along_x else 0.0) if kind == "sarcophagus" else (0.0 if along_x else PI / 2)
 	var at := to_world(r.position.x + r.size.x / 2.0, r.position.y + r.size.y / 2.0)
 	var p := _pivot(self, at, yaw + flip)
-	match kind:
-		"bear":
-			_long_plinth(p, BEAR_PLINTH)
-			_pivot(p, Vector3(0, BEAR_PLINTH.y, 0)).add_child(asset("oso"))
-		"dinosaur":
-			p.add_child(asset("dinosaurio"))
-		_:
-			p.add_child(asset("sarcofago"))
+	if kind == "bear":
+		_long_plinth(p, BEAR_PLINTH)
+		_pivot(p, Vector3(0, BEAR_PLINTH.y, 0)).add_child(asset("oso"))
+	else:
+		p.add_child(asset(BIG_MODELS.get(kind, "sarcofago")))
 
 
 ## The bear's plinth (m: long, high, deep): low, as long as its two tiles.

@@ -23,7 +23,7 @@ const ALL := {
 		"plinth": ["temas/antiguo/busto_faraon", "temas/antiguo/gato_bastet", "temas/antiguo/obelisco", "@amphora", "@statue"],
 		"floor": ["temas/antiguo/anubis", "temas/antiguo/barca"],
 		"paintings": ["pyramids", "hieroglyphs", "nile"],
-		"big": "sarcophagus",
+		"big": ["sarcophagus", "trojan_horse"],
 	},
 	"edad_media": {
 		"gallery": ["the medieval hall", "GALLERY_MEDIEVAL"],
@@ -41,7 +41,7 @@ const ALL := {
 		"plinth": ["@skull"],
 		"floor": [],
 		"paintings": ["landscape"],
-		"big": "dinosaur",
+		"big": ["dinosaur", "mammoth"],
 	},
 	# Animals, plants and trees, and life under water.
 	"naturaleza": {
@@ -50,7 +50,7 @@ const ALL := {
 		"plinth": [],
 		"floor": ["@diorama"],
 		"paintings": ["landscape"],
-		"big": "bear",
+		"big": ["bear", "log"],
 	},
 	"moderna": {
 		"gallery": ["the modern age gallery", "GALLERY_MODERN"],
@@ -80,7 +80,7 @@ static func gallery(theme: String) -> Array:
 ## The theme that wants this big piece ("dinosaur", "sarcophagus"), or "".
 static func for_big(kind: String) -> String:
 	for id in ALL:
-		if ALL[id].get("big", "") == kind:
+		if kind in ALL[id].get("big", []):
 			return id
 	return ""
 
@@ -130,9 +130,9 @@ const PROP_THEMES := {"bust": "antiguo", "armour": "edad_media", "bin": "", "pan
 
 
 ## The kinds of piece, as the editor filters them: in a glass case, small
-## (on a plinth), big (on the floor, or on a block of cases), and what the
-## thieves knock over.
-const TYPES := ["case", "small", "big", "prop"]
+## (on a plinth), big (on the floor, or on a block of cases), what the
+## thieves knock over, and what they hide in (Hideouts.PIECES).
+const TYPES := ["case", "small", "big", "prop", "hide"]
 
 
 ## Every piece there is, in order, as the editor's tools name them —
@@ -155,6 +155,9 @@ static func catalogue() -> Array:
 					out.append([tool, [id], type_of[where]])
 	# The empty pedestal a thief poses on (Plinths): no theme's, any gallery's.
 	out.append(["exhibit:plinth", [], "small"])
+	# The furniture a thief hides in (Hideouts), each its theme's.
+	for kind in Hideouts.PIECES:
+		out.append(["exhibit:" + kind, [Hideouts.PIECES[kind].theme], "hide"])
 	for kind in MapGen.BIG:
 		var theme := for_big(kind)
 		out.append(["big:" + kind, [theme] if theme != "" else [], "big"])
@@ -166,7 +169,7 @@ static func catalogue() -> Array:
 ## Whether a map may stand this on a case: one of MuseumView's own pieces or
 ## a theme's model.
 static func is_piece(kind: String) -> bool:
-	if MuseumView.EXHIBITS.has(kind):
+	if MuseumView.EXHIBITS.has(kind) or Hideouts.PIECES.has(kind):
 		return true
 	for s in ALL.values():
 		for where in ["case", "plinth", "floor"]:

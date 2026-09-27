@@ -141,6 +141,7 @@ static func load_grid(seed: int, width: int, height: int, tiles: PackedInt32Arra
 	big_pieces = big
 	# A new museum: no pedestals until the night picks them (Plinths.place).
 	Plinths.list.clear()
+	Hideouts.pieces.clear()
 
 	open_tiles.clear()
 	cover_tiles.clear()
@@ -497,16 +498,26 @@ static func _room_themes(rand: Mulberry32) -> Array:
 		order[j] = tmp
 	for r in rooms:
 		out.append(order[r.id % order.size()])
+	# Galleries already given their theme by a big piece keep it: two pieces
+	# of one theme (the sarcophagus and the Trojan horse) make two galleries
+	# of it.
+	var settled := {}
 	for b in big_pieces:
 		var want := Themes.for_big(b.kind)
 		var rr: Rect2i = b.rect
 		var here := room_at(rr.position.x + rr.size.x / 2.0, rr.position.y + rr.size.y / 2.0)
-		if want == "" or here == null or out[here.id] == want:
+		if want == "" or here == null:
 			continue
-		var other := out.find(want)
-		if other >= 0:
-			out[other] = out[here.id]
-		out[here.id] = want
+		if out[here.id] != want:
+			var other := -1
+			for k in out.size():
+				if out[k] == want and not settled.has(k):
+					other = k
+					break
+			if other >= 0:
+				out[other] = out[here.id]
+			out[here.id] = want
+		settled[here.id] = true
 	return out
 
 

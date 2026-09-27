@@ -44,6 +44,11 @@ func _ready() -> void:
 		var what := tool.trim_prefix("exhibit:")
 		if "/" in what:
 			items["exhibit_" + what.replace("/", "_")] = func(p: Node3D) -> void: p.add_child(MuseumView.asset(what))
+	# What a thief hides in (Hideouts): the furniture, and the big pieces.
+	for k in Hideouts.PIECES:
+		items["exhibit_" + k] = func(p: Node3D) -> void: p.add_child(MuseumView.asset(Hideouts.PIECES[k].model))
+	for k in ["trojan_horse", "mammoth", "log"]:
+		items["big_" + k] = func(p: Node3D) -> void: p.add_child(MuseumView.asset(MuseumView.BIG_MODELS[k]))
 	# The pieces to steal, in the gold the editor starts them in.
 	for shape in ["teeth", "duck", "sock", "toast", "crown", "rock", "gum", "mask", "clock", "egg", "idol", "gem"]:
 		items["loot_" + shape] = func(p: Node3D) -> void: p.add_child(LootModels.build(shape, Color("#f0c46a")))
