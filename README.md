@@ -40,7 +40,7 @@ su nombre escrito delante, y sale a su propio `.glb`:
 | `art/tema_edad_media.blend` | las piezas de la Edad Media | `assets/models/temas/edad_media/` |
 | `art/tema_moderna.blend` | la edad moderna: tele, tostadora, cubo de Rubik, perro-globo (peana); recreativa, móvil de Calder, semáforo (suelo); cochecito (grande, escondite); nevera y caja (escondites) | `assets/models/temas/moderna/` |
 | `art/tema_prehistoria.blend`, `tema_naturaleza.blend` | los escondites de esos temas (huevo y mamut; caparazón y tronco hueco) | `assets/models/temas/<tema>/` |
-| `art/botin.blend` | las piezas a robar: dentadura, pato, calcetín, tostada, corona, queso lunar, chicle, máscara, despertador, huevo, diamante, ídolo. Los materiales que empiezan por `color` toman el color de la pieza en el juego (`color_claro_N`, `color_oscuro_N`: un N % más claro u oscuro) | `assets/models/botin/` |
+| `art/botin.blend` | las piezas a robar: dentadura, pato, calcetín, tostada, corona, queso lunar, chicle, máscara, despertador, huevo, diamante, ídolo, bote de ketchup. Los materiales que empiezan por `color` toman el color de la pieza en el juego (`color_claro_N`, `color_oscuro_N`: un N % más claro u oscuro) | `assets/models/botin/` |
 | `art/personajes/guardia.blend`, `ninja.blend` | un personaje con esqueleto y acciones cada uno | `assets/models/` |
 
 Para retocar: abre el fichero, cambia la pieza **sin moverla de su sitio en la fila** (la colección

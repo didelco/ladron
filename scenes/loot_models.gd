@@ -5,7 +5,9 @@ extends RefCounted
 ## sock, the toast with the Barón's burnt moustache, the pickle queen's
 ## crown, the cheese meteorite, the record ball of chewing gum, the octopus
 ## wrestler's mask, the alarm clock that runs backwards, the dinosaur egg in
-## its nest, a brilliant-cut diamond, the obsidian idol.
+## its nest, a brilliant-cut diamond, the obsidian idol, and the squeeze
+## bottle of ketchup so long in the fridge that it has frost on its
+## shoulders, mould on its label and a crust on its nozzle.
 ##
 ## They are modelled in Blender (art/botin.blend, one collection a piece) and
 ## come out as assets/models/botin/<name>.glb. The materials whose name
@@ -21,9 +23,9 @@ extends RefCounted
 ## The shapes, and the name of each piece in the catalogue.
 const NAMES := {"teeth": "dentadura", "duck": "pato", "sock": "calcetin", "toast": "tostada", "crown": "corona",
 	"rock": "queso_lunar", "gum": "chicle", "mask": "mascara", "clock": "despertador", "egg": "huevo",
-	"gem": "diamante", "idol": "idolo"}
+	"gem": "diamante", "idol": "idolo", "ketchup": "ketchup"}
 ## The shapes this builds; anything else gets the gem.
-const SHAPES := ["teeth", "duck", "sock", "toast", "crown", "rock", "gum", "mask", "clock", "egg", "gem", "idol"]
+const SHAPES := ["teeth", "duck", "sock", "toast", "crown", "rock", "gum", "mask", "clock", "egg", "gem", "idol", "ketchup"]
 
 
 static func build(shape: String, colour: Color) -> Node3D:

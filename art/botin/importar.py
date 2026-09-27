@@ -18,7 +18,8 @@ ART = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(ART)
 import catalogo  # noqa: E402
 
-## La forma del juego (LootModels) y el nombre de su pieza en el catálogo.
+## La forma del juego (LootModels) y el nombre de su pieza en el catálogo
+## (las de entonces: el ketchup se modeló luego, a mano, en el .blend).
 NAMES = {"teeth": "dentadura", "duck": "pato", "sock": "calcetin", "toast": "tostada", "crown": "corona",
          "rock": "queso_lunar", "gum": "chicle", "mask": "mascara", "clock": "despertador", "egg": "huevo",
          "gem": "diamante", "idol": "idolo"}

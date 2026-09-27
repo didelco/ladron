@@ -26,6 +26,7 @@ const PIECES := {
 	"egg": {"nouns": 3, "blurbs": 2, "details": 2, "seconds": 3.0, "colours": ["#e8c89a", "#8b5a2b", "#fcc419", "#63e6be"]},
 	"gem": {"nouns": 3, "blurbs": 2, "details": 2, "seconds": 3.5, "colours": ["#5b8cff", "#ff6b6b", "#63e6be", "#ffec99"]},
 	"idol": {"nouns": 3, "blurbs": 2, "details": 2, "seconds": 3.5, "colours": ["#b07cff", "#fcc419", "#e03131"]},
+	"ketchup": {"nouns": 3, "blurbs": 2, "details": 2, "seconds": 3.0, "colours": ["#d9261c", "#a8201a", "#51cf66"]},
 }
 
 ## How many owners (GEN_OWNER_n_WHO, "la abuela Remedios", and _OF, "de la
