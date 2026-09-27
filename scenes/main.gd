@@ -188,14 +188,14 @@ func _ready() -> void:
 	get_tree().node_added.connect(func(n: Node) -> void:
 		if n is Light3D and not n.has_meta(Fx.LIGHTS_DUST):
 			(n as Light3D).light_cull_mask &= ~Fx.DUST_LAYER)
-	# The map: Y or Select/Back on any pad (M on the keyboard, by hand).
+	# The map: View (Back, Select) on any pad, as most games have it; Y is
+	# kept for something to use (M on the keyboard, by hand).
 	if not InputMap.has_action("map"):
 		InputMap.add_action("map")
-		for button in [JOY_BUTTON_Y, JOY_BUTTON_BACK]:
-			var e := InputEventJoypadButton.new()
-			e.button_index = button
-			e.device = -1
-			InputMap.action_add_event("map", e)
+		var e := InputEventJoypadButton.new()
+		e.button_index = JOY_BUTTON_BACK
+		e.device = -1
+		InputMap.action_add_event("map", e)
 	# The pause stops the tree (and the physics with it), but not the game
 	# itself: its keys, the menus and the music go on. The world only moves
 	# in _tick, which the pause does not run.
@@ -617,10 +617,11 @@ func _start(which: String, n: int, picked := false) -> void:
 
 
 ## The keys on each side of a shared keyboard: pressing any of them on the
-## player-select screen takes that side. One keyboard seats two at most; a
-## third and fourth thief join with a pad.
-const KB_LEFT := [KEY_W, KEY_A, KEY_S, KEY_D, KEY_C, KEY_E, KEY_Q, KEY_SPACE, KEY_SHIFT, KEY_TAB]
-const KB_RIGHT := [KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_ENTER, KEY_KP_ENTER, KEY_MINUS, KEY_SLASH, KEY_PERIOD, KEY_COMMA]
+## player-select screen takes that side (Shift by which of the two it is). One keyboard seats two at most; a third and fourth thief join with
+## a pad. KEY_SLASH is where the key is, not what it says: the one right of
+## the full stop ("/" on a US keyboard, "-" on a Spanish one).
+const KB_LEFT := [KEY_W, KEY_A, KEY_S, KEY_D, KEY_C, KEY_E, KEY_Q, KEY_SPACE, KEY_TAB]
+const KB_RIGHT := [KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_ENTER, KEY_KP_ENTER, KEY_SLASH, KEY_PERIOD, KEY_COMMA]
 
 
 ## Player select, like Mario Kart 64: a seat a thief, each taken by whoever
@@ -667,13 +668,23 @@ func _join_input(event: InputEvent) -> void:
 		if event.keycode == KEY_ESCAPE:
 			_unjoin()
 			return
-		if event.physical_keycode in KB_LEFT or event.keycode in KB_LEFT:
+		if event.keycode == KEY_SHIFT:
+			seat = "kb_right" if event.location == KEY_LOCATION_RIGHT else "kb_left"
+		elif event.physical_keycode in KB_LEFT or event.keycode in KB_LEFT:
 			seat = "kb_left"
 		elif event.physical_keycode in KB_RIGHT or event.keycode in KB_RIGHT:
 			seat = "kb_right"
 	elif event is InputEventJoypadButton and event.pressed:
+		# B takes this pad's own thief off, or with nobody in, goes back: never
+		# somebody else's seat.
 		if event.button_index == JOY_BUTTON_B:
-			_unjoin()
+			var mine := "pad:%d" % event.device
+			if mine in joining:
+				sfx.ui("back")
+				joining.erase(mine)
+				_draw_join()
+			elif joining.is_empty():
+				_unjoin()
 			return
 		seat = "pad:%d" % event.device
 	if seat == "" or seat in joining or joining.size() >= join_count:
@@ -796,8 +807,11 @@ func _controls_table() -> Dictionary:
 		["", Text.t("CONTROLS_P1"), Text.t("CONTROLS_P2"), Text.t("CONTROLS_PAD")],
 		["", Text.t("CONTROLS_P1_WHERE"), Text.t("CONTROLS_P2_WHERE"), Text.t("CONTROLS_PAD_WHERE")],
 	]
-	for key in ["CONTROLS_MOVE", "CONTROLS_SLOW", "CONTROLS_CROUCH", "CONTROLS_ROLL", "CONTROLS_PUSH", "CONTROLS_MAP", "CONTROLS_PAUSE", "CONTROLS_MUTE"]:
-		var cells: Array = Array(Text.t(key).split("|"))
+	# The main action first, then the way out, then the rest. P2's keys by
+	# what they say on this keyboard ({slash}: "-" on a Spanish one).
+	for key in ["CONTROLS_MOVE", "CONTROLS_PUSH", "CONTROLS_ROLL", "CONTROLS_CROUCH", "CONTROLS_SLOW", "CONTROLS_MAP", "CONTROLS_PAUSE", "CONTROLS_MUTE"]:
+		var line := Text.t(key).replace("{slash}", _key_label(KEY_SLASH)).replace("{period}", _key_label(KEY_PERIOD))
+		var cells: Array = Array(line.split("|"))
 		if cells.size() == 3:
 			cells[1] = {"text": cells[1], "span": 2}
 		rows.append(cells)
@@ -1345,7 +1359,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				_show_title()
 		"brief":
 			# Space goes on a page (the last one starts), Escape goes back one;
-			# Q and E, or the shoulder keys' letters, flick between the tabs.
+			# Q and E, or LB and RB on a pad, flick between the tabs.
 			if key == KEY_SPACE:
 				if brief_page < _brief_pages().size() - 1:
 					_show_brief(brief_page + 1)
@@ -1379,14 +1393,19 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 ## A pad button as the key it stands for, so the shortcuts above are written
-## once. Start pauses and resumes (P) and elsewhere moves on (Space); B backs
-## out (Escape), except while playing, where it rolls. A is ui_accept and
-## presses the focused button by itself.
+## once. Start pauses and resumes (P), skips the tale and the briefing (Tab)
+## and elsewhere moves on (Space); B backs out (Escape), except while
+## playing, where it rolls; LB and RB flick between tabs (Q and E). A is
+## ui_accept and presses the focused button by itself.
 func _pad_as_key(event: InputEvent) -> Key:
 	if not (event is InputEventJoypadButton and event.pressed):
 		return KEY_NONE
 	if event.is_action("pause"):
-		return KEY_P if phase in ["playing", "paused"] else KEY_SPACE
+		if phase in ["playing", "paused"]:
+			return KEY_P
+		return KEY_TAB if phase in ["prologue", "brief"] else KEY_SPACE
+	if event.button_index in [JOY_BUTTON_LEFT_SHOULDER, JOY_BUTTON_RIGHT_SHOULDER] and phase in ["brief", "assets"]:
+		return KEY_Q if event.button_index == JOY_BUTTON_LEFT_SHOULDER else KEY_E
 	if event.is_action("map"):
 		return KEY_M if phase == "playing" else KEY_NONE
 	if event.is_action("ui_cancel") and phase != "playing":
@@ -1520,7 +1539,8 @@ func _new_round(n: int) -> void:
 
 ## The physics frame _pressed_keys last ran on: a gap means play (re)started.
 var pad_frame := -1
-## Pad crouch and roll buttons held over from a menu, ignored until released.
+## Crouch, action and roll keys and buttons held over from a menu, ignored
+## until released (_fresh).
 var pad_stale := {}
 ## each thief's controls as last read (_seat_input), for the prompts to see
 ## a press as it happens
@@ -1529,8 +1549,8 @@ var seat_now: Array = []
 
 func _pressed_keys() -> Dictionary:
 	var keys := {}
-	# A and B also press and back out of menus: one still held from there when
-	# the play starts (or resumes) is not a crouch or a roll until it is let go.
+	# A, B, Space and Enter also press and back out of menus: one still held
+	# from there when the play starts (or resumes) does nothing until let go.
 	var resumed := Engine.get_physics_frames() != pad_frame + 1
 	pad_frame = Engine.get_physics_frames()
 	# Each thief's controls, as the key names Sim reads for that thief. P3's
@@ -1546,15 +1566,15 @@ func _pressed_keys() -> Dictionary:
 	return keys
 
 
-## Which Alt (Option) keys are down, by KeyLocation. Polling cannot tell the
-## left one (P1 walks slowly) from the right one (P2), so their key events
+## Which Shift keys are down, by key and KeyLocation. Polling cannot
+## tell the left one (P1's) from the right one (P2's), so their key events
 ## keep this up to date.
-var alt_down := {}
+var mod_down := {}
 
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.physical_keycode == KEY_ALT and not event.echo:
-		alt_down[event.location] = event.pressed
+	if event is InputEventKey and event.keycode == KEY_SHIFT and not event.echo:
+		mod_down[[event.keycode, event.location]] = event.pressed
 	# On your own either the keyboard or a pad may be in your hands: the
 	# hints show whichever was touched last.
 	if event is InputEventKey and event.pressed:
@@ -1577,36 +1597,67 @@ func _controls(i: int) -> Dictionary:
 	var seat: String = seats[i] if i < seats.size() else "any"
 	var pad := seat.begins_with("pad:") or (seat == "any" and last_pad)
 	if pad:
-		return {"move": Text.t("KEY_STICK"), "lr": "◀ ▶", "ud": "▲ ▼", "action": "X", "cancel": "B"}
+		return {"move": Text.t("KEY_STICK"), "lr": "◀ ▶", "ud": "▲ ▼", "action": "A", "cancel": "B"}
 	if seat == "kb_right":
-		return {"move": "← ↑ → ↓", "lr": "← →", "ud": "↑ ↓", "action": ".", "cancel": Text.t("KEY_ENTER")}
+		return {"move": "← ↑ → ↓", "lr": "← →", "ud": "↑ ↓", "action": _key_label(KEY_PERIOD), "cancel": Text.t("KEY_ENTER")}
 	return {"move": "WASD", "lr": "A D", "ud": "W S", "action": "E", "cancel": Text.t("KEY_SPACE")}
 
 
-## Is this side's Alt held? A key event that never said which side counts for
-## both; and with no Alt down at all (let go in another window), none is.
-func _alt_held(side: KeyLocation) -> bool:
-	if not Input.is_physical_key_pressed(KEY_ALT):
-		alt_down.clear()
+## What the key in that place says on this keyboard: "-" for KEY_SLASH on a
+## Spanish one, "/" on a US one.
+static func _key_label(physical: Key) -> String:
+	var label := physical
+	if DisplayServer.get_name() != "headless":
+		label = DisplayServer.keyboard_get_label_from_physical(physical)
+	# A printable key is its character; the rest go by name.
+	if label > 32 and label < KEY_SPECIAL:
+		return char(label).to_upper()
+	return OS.get_keycode_string(label)
+
+
+## Is this side's Shift held? A key event that never said which
+## side counts for both; and with none down at all (let go in another
+## window), none is.
+func _mod_held(key: Key, side: KeyLocation) -> bool:
+	if not Input.is_physical_key_pressed(key):
+		for k in mod_down.keys():
+			if k[0] == key:
+				mod_down.erase(k)
 		return false
-	return alt_down.get(side, false) or alt_down.get(KEY_LOCATION_UNSPECIFIED, false)
+	return mod_down.get([key, side], false) or mod_down.get([key, KEY_LOCATION_UNSPECIFIED], false)
+
+
+## Is this key or button down, and not still held over from a menu (Space,
+## Enter and A accept there; B backs out)? One held when the play starts or
+## resumes counts once it has been let go.
+func _fresh(id: String, held: bool, resumed: bool) -> bool:
+	if held and resumed:
+		pad_stale[id] = true
+	elif not held:
+		pad_stale.erase(id)
+	return held and not pad_stale.has(id)
 
 
 ## One seat's controls this frame: [up, down, left, right, crouch, push, roll,
-## slow]. Slow is held: left Alt, right Alt; on a pad LB, or the stick only
-## tilted a little.
+## slow], the way most PC games have them. P1: WASD, E the action, Space the
+## roll, C to crouch, left Shift held to walk slowly. P2 the same round the
+## arrows: the full stop, Enter, the key after the full stop (KEY_SLASH) and
+## right Shift. No Ctrl: on a Mac, Ctrl and Space change the keyboard's
+## language and Ctrl and an arrow the desktop.
 func _seat_input(seat: String, resumed: bool) -> Array:
 	var out := [false, false, false, false, false, false, false, false]
 	if seat == "any" or seat == "kb_left":
-		for pair in [[0, KEY_W], [1, KEY_S], [2, KEY_A], [3, KEY_D], [4, KEY_C], [4, KEY_SHIFT], [5, KEY_E], [6, KEY_SPACE]]:
-			if Input.is_physical_key_pressed(pair[1]):
+		for pair in [[0, KEY_W], [1, KEY_S], [2, KEY_A], [3, KEY_D], [4, KEY_C], [5, KEY_E], [6, KEY_SPACE]]:
+			var held := Input.is_physical_key_pressed(pair[1])
+			if held if pair[0] < 4 else _fresh("key:%d" % pair[1], held, resumed):
 				out[pair[0]] = true
-		out[7] = _alt_held(KEY_LOCATION_LEFT)
+		out[7] = _mod_held(KEY_SHIFT, KEY_LOCATION_LEFT)
 	if seat == "any" or seat == "kb_right":
-		for pair in [[0, KEY_UP], [1, KEY_DOWN], [2, KEY_LEFT], [3, KEY_RIGHT], [4, KEY_MINUS], [4, KEY_SLASH], [5, KEY_PERIOD], [6, KEY_ENTER], [6, KEY_KP_ENTER]]:
-			if Input.is_physical_key_pressed(pair[1]):
+		for pair in [[0, KEY_UP], [1, KEY_DOWN], [2, KEY_LEFT], [3, KEY_RIGHT], [4, KEY_SLASH], [5, KEY_PERIOD], [6, KEY_ENTER], [6, KEY_KP_ENTER]]:
+			var held := Input.is_physical_key_pressed(pair[1])
+			if held if pair[0] < 4 else _fresh("key:%d" % pair[1], held, resumed):
 				out[pair[0]] = true
-		out[7] = out[7] or _alt_held(KEY_LOCATION_RIGHT)
+		out[7] = out[7] or _mod_held(KEY_SHIFT, KEY_LOCATION_RIGHT)
 	var pads: Array = Input.get_connected_joypads() if seat == "any" else ([int(seat.substr(4))] if seat.begins_with("pad:") else [])
 	var dz := deadzone / 100.0
 	for pad in pads:
@@ -1616,16 +1667,13 @@ func _seat_input(seat: String, resumed: bool) -> Array:
 		out[1] = out[1] or y > dz or Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_DOWN)
 		out[2] = out[2] or x < -dz or Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_LEFT)
 		out[3] = out[3] or x > dz or Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_RIGHT)
-		# A crouches, B rolls: each ignored while still held over from a menu.
-		for pair in [[4, JOY_BUTTON_A], [6, JOY_BUTTON_B]]:
-			var stale_key := "pad:%d:%d" % [pad, pair[1]]
-			var held := Input.is_joy_button_pressed(pad, pair[1])
-			if held and resumed:
-				pad_stale[stale_key] = true
-			elif not held:
-				pad_stale.erase(stale_key)
-			out[pair[0]] = out[pair[0]] or (held and not pad_stale.has(stale_key))
-		out[5] = out[5] or Input.is_joy_button_pressed(pad, JOY_BUTTON_X)
+		# As most pads have it: A (south) the action, as it accepts in the
+		# menus; B (east) the roll, the way out, as it backs out of them; X
+		# (west) or a click of the left stick crouches. Y is kept for
+		# something to use. Each is ignored while still held over from a menu.
+		for pair in [[5, JOY_BUTTON_A], [6, JOY_BUTTON_B], [4, JOY_BUTTON_X], [4, JOY_BUTTON_LEFT_STICK]]:
+			if _fresh("pad:%d:%d" % [pad, pair[1]], Input.is_joy_button_pressed(pad, pair[1]), resumed):
+				out[pair[0]] = true
 		# LB held walks slowly; so does the stick past the dead zone but short
 		# of halfway from there to the rim (the cross has no half measures).
 		var tilt := Vector2(x, y).length()
@@ -1853,7 +1901,7 @@ func _glyph(i: int, input: String) -> Dictionary:
 		if input == "move":
 			return {"kind": "stick"}
 		var device := int(seat.substr(4)) if seat.begins_with("pad:") else last_pad_device
-		var place: String = {"action": "west", "crouch": "south", "roll": "east"}.get(input, "south")
+		var place: String = {"action": "south", "crouch": "west", "roll": "east"}.get(input, "south")
 		return {"kind": "pad", "pos": place, "family": _pad_family(device)}
 	# The four to move, where the hand finds them; left-right and up-down,
 	# the same four with the other two dimmed.
@@ -1864,7 +1912,7 @@ func _glyph(i: int, input: String) -> Dictionary:
 		"ud": return {"kind": "keys4", "labels": four, "lit": [true, false, true, false]}
 	var keys := _controls(i)
 	var label: String = {"move": keys.move, "action": keys.action, "roll": keys.cancel,
-		"crouch": "-" if seat == "kb_right" else "C"}.get(input, "?")
+		"crouch": _key_label(KEY_SLASH) if seat == "kb_right" else "C"}.get(input, "?")
 	return {"kind": "key", "label": label}
 
 

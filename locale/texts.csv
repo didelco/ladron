@@ -10,7 +10,7 @@ MENU_QUIT,SALIR
 MENU_BACK,< VOLVER
 MENU_PREV,< ATRÁS
 MENU_NEXT,SIGUIENTE >
-MENU_SKIP,SALTAR ▶▶ (TAB)
+MENU_SKIP,SALTAR ▶▶ (TAB / START)
 MENU_PREVIOUS,< ANTERIOR
 MENU_STORY_TITLE,MODO HISTORIA
 MENU_STORY_TAGLINE,La Banda del Calcetín contra el Barón Von Bostezo
@@ -39,7 +39,7 @@ JOIN_PLAYER,JUGADOR %d
 JOIN_PRESS,Pulsa un botón
 JOIN_HOW,"Cada uno pulsa un botón de su mando, o una tecla de su lado del teclado (WASD o flechas: dos como mucho; el resto, con mando)"
 JOIN_READY,¡LISTOS!
-JOIN_UNDO,Esc o B: quitar al último · volver
+JOIN_UNDO,"Esc: quitar al último · B: quitar tu mando · sin nadie, volver"
 SEAT_KB_LEFT,Teclado · WASD
 SEAT_KB_RIGHT,Teclado · flechas
 SEAT_ANY,Teclado y mandos
@@ -77,11 +77,11 @@ CONTROLS_P1_WHERE,teclado izquierda
 CONTROLS_P2_WHERE,teclado derecha
 CONTROLS_PAD_WHERE,cualquier mando
 CONTROLS_MOVE,MOVERSE|WASD|Flechas|Stick izq. o cruceta
-CONTROLS_SLOW,ANDAR LENTO|Alt izq.|Alt dcha.|LB o stick a medias
-CONTROLS_CROUCH,A GATAS|C o Shift|- o /|A
-CONTROLS_ROLL,RODAR|Espacio|Enter|B
-CONTROLS_PUSH,TIRAR / INTERRUPTOR|E|. (punto)|X
-CONTROLS_MAP,MAPA|M|Y o Select
+CONTROLS_SLOW,ANDAR LENTO|Shift izq.|Shift dcha.|Stick a medias o LB
+CONTROLS_CROUCH,A GATAS|C|{slash}|X o clic del stick
+CONTROLS_ROLL,RODAR · SOLTAR|Espacio|Enter|B
+CONTROLS_PUSH,ACCIÓN|E|{period}|A
+CONTROLS_MAP,MAPA|M|View
 CONTROLS_PAUSE,PAUSA|P o Esc|Start
 CONTROLS_MUTE,SILENCIAR|N|—
 CONTROLS_MORE,Jugadores 3 y 4: solo con mando
@@ -161,7 +161,7 @@ BRIEF_NEWS_TEXT,Algo ha cambiado en el museo
 BRIEF_TEAM_ONE_LOCK,Uno sujeta la alarma naranja; el otro abre la vitrina.
 BRIEF_TEAM_TWO_LOCKS,Uno sujeta la alarma naranja; los otros dos abren a la vez.
 BRIEF_TEAM_ALL_OUT,"Salid todos: si pillan a uno, se acaba la noche."
-BRIEF_PROPS,Tira papeleras o bustos (E o X) para despistar a los guardias.
+BRIEF_PROPS,Tira papeleras o bustos para despistar a los guardias.
 BRIEF_SECONDS,%s segundos
 BRIEF_DECIMAL_POINT,","
 PLAN_ENTRY,Entrada
@@ -180,11 +180,11 @@ LESSON_HEIST3_TEXT,Uno sujeta la alarma; dos abren las dos cerraduras a la vez. 
 LESSON_GUARD_TITLE,EL GUARDIA
 LESSON_GUARD_TEXT,"Si su linterna te pilla, va a por ti. Espera tras una pared a que pase."
 LESSON_TORCH_TITLE,AGÁCHATE
-LESSON_TORCH_TEXT,"De lejos, su linterna solo ve a quien va de pie. Cruza agachado (C)."
+LESSON_TORCH_TEXT,"De lejos, su linterna solo ve a quien va de pie. Cruza agachado (C, o X)."
 LESSON_NOISE_TITLE,EL RUIDO
 LESSON_NOISE_TEXT,"Corriendo te oyen lejos; andando, poco; a gatas, nada."
 LESSON_PROPS_TITLE,LA DISTRACCIÓN
-LESSON_PROPS_TEXT,"Tira algo lejos (E, o X): el guardia irá a mirar y la pieza quedará libre."
+LESSON_PROPS_TEXT,"Tira algo lejos (E, o A): el guardia irá a mirar y la pieza quedará libre."
 LESSON_CASE_ALARM_TITLE,LA VITRINA CON ALARMA
 LESSON_TWO_TITLE,DOS GUARDIAS
 LESSON_TWO_TEXT,"Si uno te ve, grita y el otro viene corriendo."
@@ -285,8 +285,8 @@ END_LEVEL_DONE,Nivel %d superado: %s ya es tuyo.
 END_NEXT_NIGHT,▶ SIGUIENTE NOCHE
 END_NEXT_HEIST,▶ SIGUIENTE GOLPE
 END_TO_MENU,< VOLVER AL MENÚ
-HUD_HELP,P pausa · M mapa · E tirar cosas, interruptor o subir al pedestal · C a gatas · Alt andar lento · Espacio rodar
-HUD_MAP_HIDE,M o Y para guardarlo
+HUD_HELP,P pausa · M mapa · E acción · C a gatas · Shift andar lento · Espacio rodar
+HUD_MAP_HIDE,M o View para guardarlo
 HUD_COUNT_GO,GO!
 HUD_JOB_WAIT_PANEL,¡QUE TU COMPAÑERO SUJETE EL CUADRO DE ALARMA!
 HUD_JOB_TWO_LOCKS,¡DOS CERRADURAS: FALTA OTRO LADRÓN EN LA VITRINA!
@@ -805,8 +805,8 @@ TIP_LIGHTS_ONE,En alerta enciende la luz: apágala con E en el interruptor.
 TIP_LIGHTS_MANY,En alerta encienden la luz: apágala con E en el interruptor.
 TIP_TWO,"Si uno te ve, grita y los demás vienen corriendo."
 TIP_NOISE,"Corriendo te oyen de lejos; a gatas, nada."
-TIP_TORCH,"De lejos, las linternas no ven a quien va a gatas (C)."
-TIP_MAP,Museo grande: mira el mapa con M (Y en el mando).
+TIP_TORCH,"De lejos, las linternas no ven a quien va a gatas (C, o X)."
+TIP_MAP,Museo grande: mira el mapa con M (View en el mando).
 GALLERY_ANCIENT,la sala del mundo antiguo
 GALLERY_ANCIENT_OF,de la sala del mundo antiguo
 GALLERY_MEDIEVAL,la sala medieval

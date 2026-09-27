@@ -36,8 +36,8 @@ extends RefCounted
 ## Frightened hands shake (tremble, 0..1, from how alarmed the guards are):
 ## the pick jitters and the sweet spot narrows, the cutters take longer to
 ## steady on the next wire. Driven by a few keys or a pad: the directions,
-## the action key, and the roll key (B) to let go; for the pick, which needs
-## no directions, a direction steps away too.
+## the action key, and the roll key (B) to let go — only that one, so a
+## brush of the stick never throws a job away.
 
 ## Seconds for the needle to go once round the dial.
 const PIN_PERIOD := 1.0
@@ -259,17 +259,13 @@ func way() -> int:
 	return ways[step]
 
 
-## One frame. Returns "quit" when the thief lets go (the roll key; for the
-## pick, a direction too), "done" the frame it is finished, "fail" the frame
+## One frame. Returns "quit" when the thief lets go (the roll key), "done" the frame it is finished, "fail" the frame
 ## it falls (balance), else "".
 func tick(input: Dictionary, dt: float) -> String:
 	events.clear()
 	var pressed := func(k: String) -> bool:
 		return input.get(k, false) and not _was.get(k, false)
 	var quit: bool = pressed.call("cancel")
-	if kind == "lockpick":
-		for d in DIRS:
-			quit = quit or pressed.call(d)
 	var act: bool = pressed.call("action")
 	var dir := -1
 	for i in DIRS.size():
