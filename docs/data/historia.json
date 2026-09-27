@@ -288,10 +288,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_03_BLURB",
-				"colour": "#ffe066",
+				"colour": "#d9261c",
 				"name": "NIGHT_03_NAME",
 				"seconds": 2.0,
-				"shape": "rock",
+				"shape": "ketchup",
 				"story": "NIGHT_03_TALE",
 				"verb": "NIGHT_03_VERB"
 			},

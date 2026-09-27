@@ -41,11 +41,11 @@
 		},
 		{
 			"blurb": "Lleva tanto tiempo en la nevera que ya es prehistórico.",
-			"colour": "#ffe066",
+			"colour": "#d9261c",
 			"file": "assets/piezas/03.webp",
-			"name": "el queso de la nevera de Jake",
+			"name": "el bote de ketchup de Jake",
 			"night": 3,
-			"shape": "rock"
+			"shape": "ketchup"
 		},
 		{
 			"blurb": "De barro, con zapatos de metal. Ya bailaba para los dinosaurios.",
@@ -318,6 +318,14 @@
 			"name": "el gnomo del jardín del alcalde Bigotes",
 			"night": 0,
 			"shape": "idol"
+		},
+		{
+			"blurb": "Caducó antes de que se inventara la rueda.",
+			"colour": "#51cf66",
+			"file": "assets/piezas/38.webp",
+			"name": "el bote de ketchup de la bruja Maruja",
+			"night": 0,
+			"shape": "ketchup"
 		}
 	]
 }

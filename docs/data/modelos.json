@@ -120,6 +120,16 @@
 		]
 	},
 	{
+		"file": "assets/modelos/botin__ketchup.webp",
+		"group": "museo",
+		"name": "botin/ketchup",
+		"size": [
+			0.26,
+			0.46,
+			0.23
+		]
+	},
+	{
 		"file": "assets/modelos/botin__mascara.webp",
 		"group": "museo",
 		"name": "botin/mascara",

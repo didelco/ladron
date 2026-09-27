@@ -108,12 +108,12 @@ STORY_PROLOGUE,"Esta es la Banda del Calcetín: ladrones que solo roban lo que y
 
 El Barón Von Bostezo enseñó su Diamante Bostezo a los directores de los cinco museos de la ciudad. Bostezaron tanto que le firmaron un papel sin leerlo: «Regalo mi museo al Barón».
 
-Luego se coló en todas las casas del pueblo. Se llevó la dentadura del abuelo Paco, el pato que canta ópera y hasta el queso de la nevera de Jake, y lo ha puesto todo en vitrinas con un cartel: «Tesoro antiquísimo».
+Luego se coló en todas las casas del pueblo. Se llevó la dentadura del abuelo Paco, el pato que canta ópera y hasta el bote de ketchup de la nevera de Jake, y lo ha puesto todo en vitrinas con un cartel: «Tesoro antiquísimo».
 
-Esta noche empieza la operación DEVOLVERLO TODO: cinco museos, cinco salas en cada uno. Primera parada: la Gran Cueva. Huele a queso."
+Esta noche empieza la operación DEVOLVERLO TODO: cinco museos, cinco salas en cada uno. Primera parada: la Gran Cueva. Huele a ketchup rancio."
 STORY_ENDING,"¡Lo habéis conseguido!
 
-El abuelo Paco vuelve a masticar turrón, el pato canta a las siete en punto, el yeti tiene los pies calentitos y Jake ya tiene su queso (su nevera vuelve a oler fatal, como debe ser).
+El abuelo Paco vuelve a masticar turrón, el pato canta a las siete en punto, el yeti tiene los pies calentitos y Jake ya tiene su ketchup (su nevera vuelve a oler fatal, como debe ser).
 
 Sin su diamante, los directores dejaron de bostezar, rompieron aquel papel y abrieron otra vez sus museos. Gratis para los niños.
 
@@ -194,10 +194,10 @@ NIGHT_02_NAME,el calcetín del yeti
 NIGHT_02_BLURB,Talla 98. Huele a glaciar... y a pie.
 NIGHT_02_VERB,DOBLANDO LA LANA
 NIGHT_02_TALE,"Un yeti muy educado se lo dejó en la lavandería, y el Barón lo expone como «piel de mamut». Ahora el yeti tiene frío en un pie y, cada vez que estornuda, provoca una avalancha."
-NIGHT_03_NAME,el queso de la nevera de Jake
+NIGHT_03_NAME,el bote de ketchup de Jake
 NIGHT_03_BLURB,Lleva tanto tiempo en la nevera que ya es prehistórico.
-NIGHT_03_VERB,TAPANDO EL OLOR
-NIGHT_03_TALE,"Jake lo compró para una merienda del siglo pasado y se le olvidó. El Barón dice que es un meteorito. Sin él, la nevera de Jake huele a limpio, y Jake no pega ojo."
+NIGHT_03_VERB,DESPEGANDO LA COSTRA
+NIGHT_03_TALE,"Jake lo abrió para unas patatas del siglo pasado y se le quedó al fondo de la nevera, detrás de un yogur. El Barón lo expone como «pintura roja de las cavernas». Sin él, la nevera de Jake huele a limpio, Jake no pega ojo y en el pueblo las patatas fritas se comen solas y tristes."
 NIGHT_04_NAME,el gnomo que baila claqué
 NIGHT_04_BLURB,"De barro, con zapatos de metal. Ya bailaba para los dinosaurios."
 NIGHT_04_VERB,CALMANDO AL GNOMO
@@ -702,6 +702,7 @@ EDITOR_SHAPE_MASK,MASCARA
 EDITOR_SHAPE_CLOCK,DESPERTADOR
 EDITOR_SHAPE_EGG,HUEVO
 EDITOR_SHAPE_IDOL,IDOLO
+EDITOR_SHAPE_KETCHUP,KETCHUP
 EDITOR_PLAN,VER EL PLANO
 EDITOR_PAD_HELP,Cruceta: mover · A: poner (mantén para pintar) · X: borrar · B: deshacer · Y: coger lo de la casilla · LB/RB: objeto · LT/RT: categoría · Start: botones · View: 3D
 EDITOR_PAD_HELP_3D,Stick izq.: mover · Stick der.: girar la cámara · A: poner · X: borrar · B: deshacer · Y: coger · LB/RB: objeto · LT/RT: categoría · View: al plano
@@ -839,6 +840,14 @@ GEN_IDOL_BLURB_2,"Cabe en una mano, pero pesa como un gato dormido."
 GEN_IDOL_VERB,ABRIENDO LA CERRADURA
 GEN_IDOL_DETAIL_1,"Si nadie mira, cambia de postura."
 GEN_IDOL_DETAIL_2,Tiene cara de estar aguantando un estornudo.
+GEN_KETCHUP_NOUN_1,el bote de ketchup
+GEN_KETCHUP_NOUN_2,el ketchup del fondo de la nevera
+GEN_KETCHUP_NOUN_3,el bote que hace «prrrt»
+GEN_KETCHUP_BLURB_1,Caducó antes de que se inventara la rueda.
+GEN_KETCHUP_BLURB_2,Con escarcha en los hombros y costra en la boquilla.
+GEN_KETCHUP_VERB,DESPEGANDO LA COSTRA
+GEN_KETCHUP_DETAIL_1,"Si se aprieta, suelta un «prrrt» que se oye en todo el museo."
+GEN_KETCHUP_DETAIL_2,El moho de la etiqueta ya tiene nombre: se llama Gustavo.
 BRIEF_TIPS_TITLE,PARA ESTA NOCHE
 BRIEF_TAKES,Para sacarla: quieto %s junto a la vitrina
 BRIEF_DIFFICULTY,%s · %s

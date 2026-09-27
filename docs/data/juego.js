@@ -1730,10 +1730,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_03_BLURB",
-     "colour": "#ffe066",
+     "colour": "#d9261c",
      "name": "NIGHT_03_NAME",
      "seconds": 2.0,
-     "shape": "rock",
+     "shape": "ketchup",
      "story": "NIGHT_03_TALE",
      "verb": "NIGHT_03_VERB"
     },
@@ -3293,11 +3293,11 @@ window.JUEGO = {
    },
    {
     "blurb": "Lleva tanto tiempo en la nevera que ya es prehistórico.",
-    "colour": "#ffe066",
+    "colour": "#d9261c",
     "file": "assets/piezas/03.webp",
-    "name": "el queso de la nevera de Jake",
+    "name": "el bote de ketchup de Jake",
     "night": 3,
-    "shape": "rock"
+    "shape": "ketchup"
    },
    {
     "blurb": "De barro, con zapatos de metal. Ya bailaba para los dinosaurios.",
@@ -3570,6 +3570,14 @@ window.JUEGO = {
     "name": "el gnomo del jardín del alcalde Bigotes",
     "night": 0,
     "shape": "idol"
+   },
+   {
+    "blurb": "Caducó antes de que se inventara la rueda.",
+    "colour": "#51cf66",
+    "file": "assets/piezas/38.webp",
+    "name": "el bote de ketchup de la bruja Maruja",
+    "night": 0,
+    "shape": "ketchup"
    }
   ]
  },
@@ -3692,6 +3700,16 @@ window.JUEGO = {
     0.22,
     0.43,
     0.16
+   ]
+  },
+  {
+   "file": "assets/modelos/botin__ketchup.webp",
+   "group": "museo",
+   "name": "botin/ketchup",
+   "size": [
+    0.26,
+    0.46,
+    0.23
    ]
   },
   {
@@ -5644,8 +5662,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "27-09-2026 20:39",
-  "commit": "e71eb23",
-  "rama": "main"
+  "fecha": "27-09-2026 21:00",
+  "commit": "046027d",
+  "rama": "ketchup"
  }
 };

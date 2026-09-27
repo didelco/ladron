@@ -1163,7 +1163,7 @@ window.TEXTOS = [
  },
  {
   "key": "STORY_PROLOGUE",
-  "es": "Esta es la Banda del Calcetín: ladrones que solo roban lo que ya estaba robado.\n\nEl Barón Von Bostezo enseñó su Diamante Bostezo a los directores de los cinco museos de la ciudad. Bostezaron tanto que le firmaron un papel sin leerlo: «Regalo mi museo al Barón».\n\nLuego se coló en todas las casas del pueblo. Se llevó la dentadura del abuelo Paco, el pato que canta ópera y hasta el queso de la nevera de Jake, y lo ha puesto todo en vitrinas con un cartel: «Tesoro antiquísimo».\n\nEsta noche empieza la operación DEVOLVERLO TODO: cinco museos, cinco salas en cada uno. Primera parada: la Gran Cueva. Huele a queso.",
+  "es": "Esta es la Banda del Calcetín: ladrones que solo roban lo que ya estaba robado.\n\nEl Barón Von Bostezo enseñó su Diamante Bostezo a los directores de los cinco museos de la ciudad. Bostezaron tanto que le firmaron un papel sin leerlo: «Regalo mi museo al Barón».\n\nLuego se coló en todas las casas del pueblo. Se llevó la dentadura del abuelo Paco, el pato que canta ópera y hasta el bote de ketchup de la nevera de Jake, y lo ha puesto todo en vitrinas con un cartel: «Tesoro antiquísimo».\n\nEsta noche empieza la operación DEVOLVERLO TODO: cinco museos, cinco salas en cada uno. Primera parada: la Gran Cueva. Huele a ketchup rancio.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -1174,7 +1174,7 @@ window.TEXTOS = [
  },
  {
   "key": "STORY_ENDING",
-  "es": "¡Lo habéis conseguido!\n\nEl abuelo Paco vuelve a masticar turrón, el pato canta a las siete en punto, el yeti tiene los pies calentitos y Jake ya tiene su queso (su nevera vuelve a oler fatal, como debe ser).\n\nSin su diamante, los directores dejaron de bostezar, rompieron aquel papel y abrieron otra vez sus museos. Gratis para los niños.\n\nAl Barón Von Bostezo solo le quedó mirar sus vitrinas vacías... y bostezar. Se quedó dormido de pie. Dicen que todavía ronca.\n\nFIN (de momento)",
+  "es": "¡Lo habéis conseguido!\n\nEl abuelo Paco vuelve a masticar turrón, el pato canta a las siete en punto, el yeti tiene los pies calentitos y Jake ya tiene su ketchup (su nevera vuelve a oler fatal, como debe ser).\n\nSin su diamante, los directores dejaron de bostezar, rompieron aquel papel y abrieron otra vez sus museos. Gratis para los niños.\n\nAl Barón Von Bostezo solo le quedó mirar sus vitrinas vacías... y bostezar. Se quedó dormido de pie. Dicen que todavía ronca.\n\nFIN (de momento)",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -1968,7 +1968,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_03_NAME",
-  "es": "el queso de la nevera de Jake",
+  "es": "el bote de ketchup de Jake",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -1990,7 +1990,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_03_VERB",
-  "es": "TAPANDO EL OLOR",
+  "es": "DESPEGANDO LA COSTRA",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2001,7 +2001,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_03_TALE",
-  "es": "Jake lo compró para una merienda del siglo pasado y se le olvidó. El Barón dice que es un meteorito. Sin él, la nevera de Jake huele a limpio, y Jake no pega ojo.",
+  "es": "Jake lo abrió para unas patatas del siglo pasado y se le quedó al fondo de la nevera, detrás de un yogur. El Barón lo expone como «pintura roja de las cavernas». Sin él, la nevera de Jake huele a limpio, Jake no pega ojo y en el pueblo las patatas fritas se comen solas y tristes.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -7477,6 +7477,17 @@ window.TEXTOS = [
   ]
  },
  {
+  "key": "EDITOR_SHAPE_KETCHUP",
+  "es": "KETCHUP",
+  "broken": false,
+  "extra": [],
+  "group": "Editor de mapas",
+  "at": [],
+  "via": [
+   "EDITOR_SHAPE_…"
+  ]
+ },
+ {
   "key": "EDITOR_PLAN",
   "es": "VER EL PLANO",
   "broken": false,
@@ -8973,6 +8984,94 @@ window.TEXTOS = [
  {
   "key": "GEN_IDOL_DETAIL_2",
   "es": "Tiene cara de estar aguantando un estornudo.",
+  "broken": false,
+  "extra": [],
+  "group": "Generador",
+  "at": [],
+  "via": [
+   "GEN_…"
+  ]
+ },
+ {
+  "key": "GEN_KETCHUP_NOUN_1",
+  "es": "el bote de ketchup",
+  "broken": false,
+  "extra": [],
+  "group": "Generador",
+  "at": [],
+  "via": [
+   "GEN_…"
+  ]
+ },
+ {
+  "key": "GEN_KETCHUP_NOUN_2",
+  "es": "el ketchup del fondo de la nevera",
+  "broken": false,
+  "extra": [],
+  "group": "Generador",
+  "at": [],
+  "via": [
+   "GEN_…"
+  ]
+ },
+ {
+  "key": "GEN_KETCHUP_NOUN_3",
+  "es": "el bote que hace «prrrt»",
+  "broken": false,
+  "extra": [],
+  "group": "Generador",
+  "at": [],
+  "via": [
+   "GEN_…"
+  ]
+ },
+ {
+  "key": "GEN_KETCHUP_BLURB_1",
+  "es": "Caducó antes de que se inventara la rueda.",
+  "broken": false,
+  "extra": [],
+  "group": "Generador",
+  "at": [],
+  "via": [
+   "GEN_…"
+  ]
+ },
+ {
+  "key": "GEN_KETCHUP_BLURB_2",
+  "es": "Con escarcha en los hombros y costra en la boquilla.",
+  "broken": false,
+  "extra": [],
+  "group": "Generador",
+  "at": [],
+  "via": [
+   "GEN_…"
+  ]
+ },
+ {
+  "key": "GEN_KETCHUP_VERB",
+  "es": "DESPEGANDO LA COSTRA",
+  "broken": false,
+  "extra": [],
+  "group": "Generador",
+  "at": [],
+  "via": [
+   "GEN_…"
+  ]
+ },
+ {
+  "key": "GEN_KETCHUP_DETAIL_1",
+  "es": "Si se aprieta, suelta un «prrrt» que se oye en todo el museo.",
+  "broken": false,
+  "extra": [],
+  "group": "Generador",
+  "at": [],
+  "via": [
+   "GEN_…"
+  ]
+ },
+ {
+  "key": "GEN_KETCHUP_DETAIL_2",
+  "es": "El moho de la etiqueta ya tiene nombre: se llama Gustavo.",
   "broken": false,
   "extra": [],
   "group": "Generador",

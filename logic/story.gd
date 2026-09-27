@@ -15,7 +15,7 @@ extends RefCounted
 ## first. The Barón Von Bostezo made the directors of the town's five
 ## museums yawn with his diamond until they signed them over to him; now he
 ## keeps them, and fills their cases with things nicked from the town (the
-## grandad's dentures, the cheese in Jake's fridge), labelled as treasures.
+## grandad's dentures, the ketchup in Jake's fridge), labelled as treasures.
 ## Kids' humour: everyday things, a neighbour with a name, an absurd upshot
 ## in town; a piece fits its museum by the joke, not the history lesson.
 ## One a night, the gang takes them back, until the museums are
@@ -43,7 +43,7 @@ const LEVELS := [
 		"loot": {"name": "NIGHT_02_NAME", "blurb": "NIGHT_02_BLURB", "verb": "NIGHT_02_VERB", "seconds": 2.0, "colour": "#dee2e6", "shape": "sock",
 			"story": "NIGHT_02_TALE"}},
 	{"size": "small", "shape": "T", "guards": 1, "view": 0.5, "hearing": 0.25, "speed": 0.45, "calm_after": 5.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "",
-		"loot": {"name": "NIGHT_03_NAME", "blurb": "NIGHT_03_BLURB", "verb": "NIGHT_03_VERB", "seconds": 2.0, "colour": "#ffe066", "shape": "rock",
+		"loot": {"name": "NIGHT_03_NAME", "blurb": "NIGHT_03_BLURB", "verb": "NIGHT_03_VERB", "seconds": 2.0, "colour": "#d9261c", "shape": "ketchup",
 			"story": "NIGHT_03_TALE"}},
 	{"size": "small", "shape": "rect", "guards": 1, "post": "route", "view": 0.95, "hearing": 0.25, "speed": 0.45, "calm_after": 6.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "torch",
 		"loot": {"name": "NIGHT_04_NAME", "blurb": "NIGHT_04_BLURB", "verb": "NIGHT_04_VERB", "seconds": 2.5, "colour": "#e03131", "shape": "idol",
