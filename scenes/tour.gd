@@ -46,6 +46,8 @@ var _pad := false
 var _stick := {}
 ## the rooms of the museum inside, as Story has them: heist numbers
 var _nights: Array[int] = []
+## under each room reached, its stars
+var _room_stars: Array[Label] = []
 var _fade: Tween
 
 
@@ -141,9 +143,8 @@ func _pick_museum(m: int) -> void:
 	else:
 		_sign_line.text = Text.t("TOUR_MUSEUM_SHUT") % Story.museum_in(m - 1)
 		_sign_title.add_theme_color_override("font_color", SIGN_SHUT)
-	var stars := StarSlots.museum_line(m, players)
-	_sign_stars.text = stars
-	_sign_stars.visible = stars != ""
+	_sign_stars.text = StarSlots.museum_line(m, players)
+	_sign_stars.visible = stage.is_open(m)
 
 
 ## The next open museum that way (dir -1 or 1), if any.
@@ -189,6 +190,14 @@ func _inside(m: int, pick_n: int) -> void:
 	_subtitle.text = Story.museum(m).text
 	_picture.modulate.a = 1.0
 	_show_picture(m)
+	for l in _room_stars:
+		l.queue_free()
+	_room_stars.clear()
+	for n in _nights:
+		var l := _label(_root, 17, Hud.C.gold)
+		l.text = StarSlots.room_line(n, players)
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_room_stars.append(l)
 	_pick_room(_nights.find(pick_n))
 	_set_hints([["move", Text.t("TOUR_HINT_ROOM")], ["accept", Text.t("TOUR_HINT_PLAN")], ["back", Text.t("TOUR_HINT_TOWN")]])
 
@@ -208,9 +217,7 @@ func _pick_room(i: int) -> void:
 		_sign_line.text = Text.t("TOUR_ROOM_SHUT")
 		_sign_title.add_theme_color_override("font_color", SIGN_SHUT)
 	_arcade(_sign_title)
-	var stars := StarSlots.room_line(n, players)
-	_sign_stars.text = stars
-	_sign_stars.visible = stars != ""
+	_sign_stars.visible = false
 
 
 func _step_room(dir: int) -> void:
@@ -234,6 +241,9 @@ func _leave_museum() -> void:
 	_sound("back")
 	state = "zoom"
 	_sign.visible = false
+	for l in _room_stars:
+		l.queue_free()
+	_room_stars.clear()
 	_set_hints([])
 	var tw := create_tween()
 	tw.tween_property(_picture, "modulate:a", 0.0, 0.0 if stage.hurry else 0.5)
@@ -395,6 +405,11 @@ func _process(_dt: float) -> void:
 	_title.position = Vector2(view.x * 0.5 - _title.size.x * 0.5, 22)
 	_subtitle.position = Vector2(view.x * 0.5 - _subtitle.size.x * 0.5, 22 + _title.size.y + 6)
 	_hints.position = Vector2(view.x * 0.5 - _hints.get_combined_minimum_size().x * 0.5, view.y - 58)
+	for i in _room_stars.size():
+		var l := _room_stars[i]
+		l.size = l.get_combined_minimum_size()
+		l.position = stage.on_screen(stage.room_centre(i) + Vector3(0, 0, CityStage.LOT_SIZE.y * 0.5)) - Vector2(l.size.x * 0.5, -4)
+		l.visible = state == "museum"
 	if _sign.visible:
 		var at := Vector2.ZERO
 		if state == "city":

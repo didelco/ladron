@@ -241,11 +241,12 @@ func _ready() -> void:
 	# the mission for two seconds and starts the round; add --two for two thieves.
 	# --menu=story|generative|settings: open a menu straight away, to look at it.
 	# --pick=N first: the story's heist N picked (map and museum open on its).
-	# --progress=NAME: the story's progress kept in user://NAME instead of
-	# the player's, and --reached=N: as far as heist N there (for pictures).
+	# --save=PATH: the progress kept there instead (Story.save), for
+	# looking at the screens without touching the player's own; and with it
+	# --reached=N: as far as heist N there.
 	for arg in OS.get_cmdline_user_args():
-		if arg.begins_with("--progress="):
-			Story.save = "user://" + arg.substr(11)
+		if arg.begins_with("--save="):
+			Story.save = arg.substr(7)
 		if arg.begins_with("--gang="):
 			players = clampi(int(arg.substr(7)), 1, 4)
 		elif arg == "--two":
@@ -256,10 +257,6 @@ func _ready() -> void:
 			Story.unlock(clampi(int(arg.substr(10)), 1, Story.count()), players)
 	story_pick = Story.unlocked(players)
 	for arg in OS.get_cmdline_user_args():
-		# --save=PATH: the progress kept there instead (Story.save), for
-		# looking at the screens without touching the player's own.
-		if arg.begins_with("--save="):
-			Story.save = arg.substr(7)
 		if arg.begins_with("--pick="):
 			story_pick = clampi(int(arg.substr(7)), 1, Story.count())
 	for arg in OS.get_cmdline_user_args():
