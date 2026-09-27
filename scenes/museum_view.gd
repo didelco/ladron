@@ -301,8 +301,36 @@ func _exhibits() -> void:
 		else:
 			# What the gallery's theme shows (a corridor, a bit of everything).
 			var room := Museum.room_at(t.x + 0.5, t.y + 0.5)
-			var pick := Themes.pick(room.theme if room else "", _hash01(t.x, t.y), _hash01(t.x, t.y, 29))
+			var pick := theme_pick(room.theme if room else "", t)
 			_themed(piece, pick[0], pick[1], t, yaw)
+
+
+## What a gallery's theme puts on tile t: [where, piece] (Themes.pick). A
+## floor piece with a front (Themes.FRONTED) only where there is free floor
+## beside it to face; else another pick, and in the end a case of colours.
+static func theme_pick(theme: String, t: Vector2i) -> Array:
+	for k in 8:
+		var pick := Themes.pick(theme, _hash01(t.x, t.y, 41 + k * 101), _hash01(t.x, t.y, 29 + k * 101))
+		if pick[1] not in Themes.FRONTED or front_of(t) != Vector2i.ZERO:
+			return pick
+	return ["case", "@colours"]
+
+
+## The way a piece on tile t with a front faces: onto the free floor beside
+## it, the camera's side (south) first, then east and west, north last.
+## Vector2i.ZERO if there is none.
+static func front_of(t: Vector2i) -> Vector2i:
+	for d in [Vector2i(0, 1), Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, -1)]:
+		if Museum.tile_at(t.x + d.x + 0.5, t.y + d.y + 0.5) == Tiles.FLOOR:
+			return d
+	return Vector2i.ZERO
+
+
+## The turn that puts a model's front (+Z) toward front_of(t): facing south
+## if it has nowhere to face.
+static func front_yaw(t: Vector2i) -> float:
+	var d := front_of(t)
+	return atan2(d.x, d.y) if d != Vector2i.ZERO else 0.0
 
 
 ## A piece of a theme in its place: in a glass case, on a plinth, or
@@ -312,8 +340,10 @@ func _themed(piece: Node3D, where: String, what: String, t: Vector2i, yaw: float
 		_exhibit(piece, what.trim_prefix("@"), t, yaw)
 		return
 	var model := asset(what)
-	# Turned to a quarter, a little off square: the front is seen from most sides.
-	var turn: float = round(yaw / (PI / 2)) * PI / 2 + (_hash01(t.x, t.y, 13) - 0.5) * 0.5
+	# Turned to a quarter, a little off square: the front is seen from most
+	# sides. One with a front that must not face a wall, to the free floor.
+	var quarter: float = front_yaw(t) if what in Themes.FRONTED else round(yaw / (PI / 2)) * PI / 2
+	var turn: float = quarter + (_hash01(t.x, t.y, 13) - 0.5) * 0.5
 	match where:
 		"case":
 			var inside := Node3D.new()
@@ -322,7 +352,7 @@ func _themed(piece: Node3D, where: String, what: String, t: Vector2i, yaw: float
 			_vitrine(piece, inside)
 		"plinth":
 			_pedestal(piece, t)
-			_on_pedestal(piece, model, _nudge(t))
+			_on_pedestal(piece, model, front_yaw(t) + _nudge(t))
 		_:
 			_pivot(piece, Vector3(0, 0.16, 0), turn).add_child(model)
 
@@ -337,19 +367,19 @@ func _exhibit(piece: Node3D, what: String, t: Vector2i, yaw: float) -> void:
 		# Out of the case, on a plinth of their own: the detailed ones.
 		"ammonite", "meteorite":
 			_pedestal(piece, t)
-			_on_pedestal(piece, _ammonite() if what == "ammonite" else _rock(), _nudge(t))
+			_on_pedestal(piece, _ammonite() if what == "ammonite" else _rock(), front_yaw(t) + _nudge(t))
 		"statue":
 			_pedestal(piece, t)
-			var p := _pivot(piece, Vector3.ZERO, _nudge(t))
+			var p := _pivot(piece, Vector3.ZERO, front_yaw(t) + _nudge(t))
 			_specimen(p, "res://assets/models/statue-%s.glb" % ("a" if odd else "b"), 0.5, 0.88, 0.8, C.bone_dark)
 		"skull", "lego_skull":
 			# Facing the gallery (the camera), a little off square.
 			_pedestal(piece, t)
-			_on_pedestal(piece, asset("craneo_lego" if what == "lego_skull" else "craneo"), _nudge(t))
+			_on_pedestal(piece, asset("craneo_lego" if what == "lego_skull" else "craneo"), front_yaw(t) + _nudge(t))
 		"diorama": _diorama(piece, t.x + t.y)
 		"amphora":
 			_pedestal(piece, t, 0.42)
-			_amphora(_pivot(piece, Vector3.ZERO, _nudge(t)), 0.42)
+			_amphora(_pivot(piece, Vector3.ZERO, front_yaw(t) + _nudge(t)), 0.42)
 		"globe": _globe(_pivot(piece, Vector3.ZERO, yaw))
 		"plinth": _empty_plinth(piece)
 		_ when Hideouts.PIECES.has(what): _hideout(piece, what, t)
@@ -369,12 +399,7 @@ func _exhibit(piece: Node3D, what: String, t: Vector2i, yaw: float) -> void:
 ## with its front (a door, a lid, an opening) to the free floor beside it —
 ## the camera's side if it can.
 func _hideout(piece: Node3D, kind: String, t: Vector2i) -> void:
-	var face := Vector2i(0, 1)
-	for d in [Vector2i(0, 1), Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, -1)]:
-		if Museum.tile_at(t.x + d.x + 0.5, t.y + d.y + 0.5) == Tiles.FLOOR:
-			face = d
-			break
-	_pivot(piece, Vector3.ZERO, atan2(face.x, face.y)).add_child(asset(Hideouts.PIECES[kind].model))
+	_pivot(piece, Vector3.ZERO, front_yaw(t)).add_child(asset(Hideouts.PIECES[kind].model))
 
 
 ## The big pieces' models (the ones you hide in are the themes').
