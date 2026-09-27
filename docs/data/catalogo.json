@@ -1,4 +1,134 @@
 {
+	"arcade_games": {
+		"bloques": {
+			"art": [
+				"......ppp.......",
+				".......p........",
+				"................",
+				"................",
+				"................",
+				"c.............yy",
+				"cc..gg....vv.yyy",
+				"ccggg.yyyvvv.ppp",
+				"cyyggppyyvvcc.pp"
+			],
+			"ink": {
+				"c": "#00c2d8",
+				"g": "#5cff7a",
+				"p": "#ff4f9a",
+				"v": "#8a4dff",
+				"y": "#ffd400"
+			},
+			"marquesina": "#8a4dff",
+			"mueble": "#ff4f9a",
+			"screen": "#120a28"
+		},
+		"carreras": {
+			"art": [
+				"gg.....w......gg",
+				"gg..c.........gg",
+				"gg.ccc.w......gg",
+				"gg..c.........gg",
+				"gg.....w......gg",
+				"gg.........y..gg",
+				"gg.....w..yyy.gg",
+				"gg.........y..gg",
+				"gg.....w......gg"
+			],
+			"ink": {
+				"c": "#00c2d8",
+				"g": "#3ccf6a",
+				"w": "#f4f2ec",
+				"y": "#ffd400"
+			},
+			"marquesina": "#f4f2ec",
+			"mueble": "#ff5a36",
+			"screen": "#2a2a33"
+		},
+		"comecocos": {
+			"art": [
+				"bbbbbbbbbbbbbbbb",
+				"................",
+				".yyy........ppp.",
+				"yy.......w.ppppp",
+				"y..w..w..w.ppppp",
+				"yy.........ppppp",
+				".yyy.......p.p.p",
+				"................",
+				"bbbbbbbbbbbbbbbb"
+			],
+			"ink": {
+				"b": "#2f5fd0",
+				"p": "#ff4f9a",
+				"w": "#ffe9c0",
+				"y": "#ffd400"
+			},
+			"marquesina": "#00c2d8",
+			"mueble": "#ffd400",
+			"screen": "#0a0f3a"
+		},
+		"invasores": {
+			"art": [
+				"................",
+				"..g...g...g...g.",
+				".ggg.ggg.ggg.ggg",
+				".g.g.g.g.g.g.g.g",
+				"................",
+				"..........w.....",
+				"................",
+				".......c........",
+				"......ccc......."
+			],
+			"ink": {
+				"c": "#00c2d8",
+				"g": "#7dff5a",
+				"w": "#ffffff"
+			},
+			"marquesina": "#ff4f9a",
+			"mueble": "#00c2d8",
+			"screen": "#07071a"
+		},
+		"serpiente": {
+			"art": [
+				"................",
+				"..ssssssss......",
+				"..s.......s.....",
+				"..s.......s.....",
+				"..s.......sssss.",
+				"..s..........s..",
+				"..sss......r.s..",
+				"................",
+				"................"
+			],
+			"ink": {
+				"r": "#ff3a4a",
+				"s": "#9dff3a"
+			},
+			"marquesina": "#ff8a1c",
+			"mueble": "#3ccf6a",
+			"screen": "#0e2a12"
+		},
+		"tenis": {
+			"art": [
+				"........a.......",
+				".a..............",
+				".a......a.......",
+				".a..............",
+				"........a...a...",
+				"..............a.",
+				"........a.....a.",
+				"..............a.",
+				"........a......."
+			],
+			"ink": {
+				"a": "#3cffb0"
+			},
+			"marquesina": "#ffd400",
+			"mueble": "#7a3ce0",
+			"screen": "#0b3326"
+		}
+	},
+	"arcade_model": "temas/moderna/recreativa",
 	"big": [
 		"dinosaur",
 		"sarcophagus",
@@ -23,6 +153,137 @@
 		"totem",
 		"bear",
 		"plinth"
+	],
+	"fronted": [
+		"temas/moderna/recreativa",
+		"temas/edad_media/trono",
+		"temas/antiguo/anubis"
+	],
+	"hideouts": {
+		"big": [
+			"sarcophagus",
+			"trojan_horse",
+			"mammoth",
+			"log",
+			"car"
+		],
+		"big_names": [
+			"HIDE_SARCOPHAGUS",
+			"HIDE_TROJAN_HORSE",
+			"HIDE_MAMMOTH",
+			"HIDE_LOG",
+			"HIDE_CAR"
+		],
+		"pieces": {
+			"box": {
+				"model": "temas/moderna/caja",
+				"name": "HIDE_BOX",
+				"theme": "moderna"
+			},
+			"chest": {
+				"model": "temas/edad_media/baul",
+				"name": "HIDE_CHEST",
+				"theme": "edad_media"
+			},
+			"confessional": {
+				"model": "temas/edad_media/confesionario",
+				"name": "HIDE_CONFESSIONAL",
+				"theme": "edad_media"
+			},
+			"egg": {
+				"model": "temas/prehistoria/huevo",
+				"name": "HIDE_EGG",
+				"theme": "prehistoria"
+			},
+			"fridge": {
+				"model": "temas/moderna/nevera",
+				"name": "HIDE_FRIDGE",
+				"theme": "moderna"
+			},
+			"legionary": {
+				"model": "temas/antiguo/legionario",
+				"name": "HIDE_LEGIONARY",
+				"theme": "antiguo"
+			},
+			"shell": {
+				"model": "temas/naturaleza/caparazon",
+				"name": "HIDE_SHELL",
+				"theme": "naturaleza"
+			}
+		},
+		"tight": {
+			"armour": 1,
+			"box": 1,
+			"chest": 1,
+			"egg": 1,
+			"legionary": 1,
+			"shell": 1
+		}
+	},
+	"minigames": [
+		{
+			"can_let_go": true,
+			"class": "ArcadeGame",
+			"how": "GAME_HOW_ARCADE",
+			"kind": "arcade",
+			"let_go": "GAME_LET_GO_ARCADE",
+			"logic": "logic/minigames/arcade.gd",
+			"view": "scenes/minigame_views/arcade.gd"
+		},
+		{
+			"can_let_go": true,
+			"class": "BalanceGame",
+			"how": "GAME_HOW_BALANCE",
+			"kind": "balance",
+			"let_go": "GAME_LET_GO",
+			"logic": "logic/minigames/balance.gd",
+			"view": "scenes/minigame_views/balance.gd"
+		},
+		{
+			"can_let_go": true,
+			"class": "LockpickGame",
+			"how": "GAME_HOW_LOCKPICK",
+			"kind": "lockpick",
+			"let_go": "GAME_LET_GO",
+			"logic": "logic/minigames/lockpick.gd",
+			"view": "scenes/minigame_views/lockpick.gd"
+		},
+		{
+			"can_let_go": false,
+			"class": "SneezeGame",
+			"how": "GAME_HOW_SNEEZE",
+			"kind": "sneeze",
+			"let_go": "GAME_LET_GO_SNEEZE",
+			"logic": "logic/minigames/sneeze.gd",
+			"view": "scenes/minigame_views/sneeze.gd"
+		},
+		{
+			"can_let_go": true,
+			"class": "SqueezeGame",
+			"how": "GAME_HOW_SQUEEZE",
+			"kind": "squeeze",
+			"let_go": "GAME_LET_GO",
+			"logic": "logic/minigames/squeeze.gd",
+			"view": "scenes/minigame_views/squeeze.gd"
+		},
+		{
+			"can_let_go": true,
+			"class": "SteadyGame",
+			"how": "GAME_HOW_STEADY",
+			"kind": "steady",
+			"let_go": "GAME_LET_GO",
+			"logic": "logic/minigames/steady.gd",
+			"view": "scenes/minigame_views/steady.gd"
+		},
+		{
+			"can_let_go": true,
+			"class": "WiresGame",
+			"how": "GAME_HOW_WIRES",
+			"kind": "wires",
+			"let_go": "GAME_LET_GO",
+			"logic": "logic/minigames/wires.gd",
+			"view": "scenes/minigame_views/wires.gd"
+		}
 	],
 	"model_of": {
 		"big:bear": "oso",

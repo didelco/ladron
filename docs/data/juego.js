@@ -1442,6 +1442,88 @@ window.JUEGO = {
  ],
  "historia": {
   "ending": "STORY_ENDING",
+  "from_old": [
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    4,
+    4
+   ],
+   [
+    5,
+    6
+   ],
+   [
+    6,
+    7
+   ],
+   [
+    7,
+    8
+   ],
+   [
+    8,
+    9
+   ],
+   [
+    9,
+    11
+   ],
+   [
+    10,
+    12
+   ],
+   [
+    11,
+    13
+   ],
+   [
+    12,
+    14
+   ],
+   [
+    13,
+    16
+   ],
+   [
+    14,
+    17
+   ],
+   [
+    15,
+    18
+   ],
+   [
+    16,
+    19
+   ],
+   [
+    17,
+    21
+   ],
+   [
+    18,
+    22
+   ],
+   [
+    19,
+    23
+   ],
+   [
+    20,
+    24
+   ]
+  ],
   "lessons": {
    "big": {
     "stage": "lesson:big",
@@ -1509,6 +1591,7 @@ window.JUEGO = {
     "title": "LESSON_TWO_TITLE"
    }
   },
+  "lockpick_night": 18,
   "museums": [
    {
     "colour": "#d08a3a",
@@ -2384,9 +2467,852 @@ window.JUEGO = {
     "view": 1.05
    }
   ],
-  "prologue": "STORY_PROLOGUE"
+  "played": [
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 17,
+    "heading": "Ladronzuelo · tu primer robo en la Gran Cueva",
+    "heading_gang": "Ladronzuelos · vuestro primer robo en la Gran Cueva",
+    "hideouts": {
+     "sarcophagus": 1
+    },
+    "icons": [
+     "dinosaur"
+    ],
+    "lockpick": false,
+    "minigames": false,
+    "n": 1,
+    "pages": [
+     "story",
+     "news",
+     "plan"
+    ],
+    "plinths": 0,
+    "size": "small",
+    "tips": [
+     "Sin guardias: practica sin prisa."
+    ],
+    "w": 23
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 17,
+    "heading": "Ladronzuelo · tu segundo robo en la Gran Cueva",
+    "heading_gang": "Ladronzuelos · vuestro segundo robo en la Gran Cueva",
+    "hideouts": {
+     "egg": 2
+    },
+    "icons": [
+     "dinosaur"
+    ],
+    "lockpick": false,
+    "minigames": false,
+    "n": 2,
+    "pages": [
+     "story",
+     "news",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "small",
+    "tips": [
+     "Un guardia medio sordo y corto de vista: corre, pero que no te vea."
+    ],
+    "w": 23
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 17,
+    "heading": "Ladronzuelo · tu tercer robo en la Gran Cueva",
+    "heading_gang": "Ladronzuelos · vuestro tercer robo en la Gran Cueva",
+    "hideouts": {
+     "egg": 2
+    },
+    "icons": [],
+    "lockpick": false,
+    "minigames": false,
+    "n": 3,
+    "pages": [
+     "story",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "small",
+    "tips": [
+     "Un guardia medio sordo y corto de vista: corre, pero que no te vea."
+    ],
+    "w": 23
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 17,
+    "heading": "Ladronzuelo · tu cuarto robo en la Gran Cueva",
+    "heading_gang": "Ladronzuelos · vuestro cuarto robo en la Gran Cueva",
+    "hideouts": {
+     "egg": 1,
+     "mammoth": 1
+    },
+    "icons": [
+     "dinosaur"
+    ],
+    "lockpick": false,
+    "minigames": false,
+    "n": 4,
+    "pages": [
+     "story",
+     "news",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "small",
+    "tips": [
+     "Un guardia medio sordo y lento: corre, pero que no te vea.",
+     "Un guardia no se mueve: pasa cuando mire a otro lado."
+    ],
+    "w": 23
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 25,
+    "heading": "Ladronzuelo · tu gran golpe en la Gran Cueva",
+    "heading_gang": "Ladronzuelos · vuestro gran golpe en la Gran Cueva",
+    "hideouts": {
+     "egg": 2
+    },
+    "icons": [],
+    "lockpick": false,
+    "minigames": false,
+    "n": 5,
+    "pages": [
+     "story",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "medium",
+    "tips": [
+     "Un guardia de vista larga y medio sordo: escóndete tras vitrinas y paredes.",
+     "Si te persigue, piérdelo de vista y métete en un escondite.",
+     "De lejos, las linternas no ven a quien va a gatas (C, o X)."
+    ],
+    "w": 35
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 17,
+    "heading": "Ratero · tu primer robo en la Casa de los Bichos",
+    "heading_gang": "Rateros · vuestro primer robo en la Casa de los Bichos",
+    "hideouts": {
+     "log": 1,
+     "shell": 1
+    },
+    "icons": [],
+    "lockpick": false,
+    "minigames": false,
+    "n": 6,
+    "pages": [
+     "story",
+     "news",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "small",
+    "tips": [
+     "Un guardia lento: si te ve, corre y escóndete.",
+     "Un guardia no se mueve: pasa cuando mire a otro lado."
+    ],
+    "w": 23
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 17,
+    "heading": "Ratero · tu segundo robo en la Casa de los Bichos",
+    "heading_gang": "Rateros · vuestro segundo robo en la Casa de los Bichos",
+    "hideouts": {
+     "shell": 2
+    },
+    "icons": [],
+    "lockpick": false,
+    "minigames": false,
+    "n": 7,
+    "pages": [
+     "story",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "small",
+    "tips": [
+     "Un guardia lento: si te ve, corre y escóndete.",
+     "Corriendo te oyen de lejos; a gatas, nada."
+    ],
+    "w": 23
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 17,
+    "heading": "Ratero · tu tercer robo en la Casa de los Bichos",
+    "heading_gang": "Rateros · vuestro tercer robo en la Casa de los Bichos",
+    "hideouts": {
+     "shell": 2
+    },
+    "icons": [],
+    "lockpick": false,
+    "minigames": false,
+    "n": 8,
+    "pages": [
+     "story",
+     "news",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "small",
+    "tips": [
+     "Un guardia lento: si te ve, corre y escóndete.",
+     "Un guardia no se mueve: pasa cuando mire a otro lado."
+    ],
+    "w": 23
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 25,
+    "heading": "Ratero · tu cuarto robo en la Casa de los Bichos",
+    "heading_gang": "Rateros · vuestro cuarto robo en la Casa de los Bichos",
+    "hideouts": {
+     "log": 1,
+     "shell": 1
+    },
+    "icons": [],
+    "lockpick": false,
+    "minigames": false,
+    "n": 9,
+    "pages": [
+     "story",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "medium",
+    "tips": [
+     "Un guardia lento: si te ve, corre y escóndete.",
+     "Tira papeleras o bustos para despistar a los guardias."
+    ],
+    "w": 35
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 25,
+    "heading": "Ratero · tu gran golpe en la Casa de los Bichos",
+    "heading_gang": "Rateros · vuestro gran golpe en la Casa de los Bichos",
+    "hideouts": {
+     "log": 1,
+     "shell": 1
+    },
+    "icons": [],
+    "lockpick": false,
+    "minigames": false,
+    "n": 10,
+    "pages": [
+     "story",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "medium",
+    "tips": [
+     "Un guardia de oído fino y lento: cerca de él, siempre a gatas.",
+     "El guardia no se aparta del pato: tira algo lejos para moverlo.",
+     "Un solo ruido raro y dan la alarma."
+    ],
+    "w": 35
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 25,
+    "heading": "Ladrón de guante blanco · tu primer robo en el Templo de las Momias",
+    "heading_gang": "Ladrones de guante blanco · vuestro primer robo en el Templo de las Momias",
+    "hideouts": {
+     "legionary": 1,
+     "sarcophagus": 1
+    },
+    "icons": [],
+    "lockpick": false,
+    "minigames": false,
+    "n": 11,
+    "pages": [
+     "story",
+     "news",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "medium",
+    "tips": [
+     "Un guardia lento: si te ve, corre y escóndete."
+    ],
+    "w": 35
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 25,
+    "heading": "Ladrón de guante blanco · tu segundo robo en el Templo de las Momias",
+    "heading_gang": "Ladrones de guante blanco · vuestro segundo robo en el Templo de las Momias",
+    "hideouts": {
+     "legionary": 2,
+     "trojan_horse": 1
+    },
+    "icons": [
+     "trojan_horse"
+    ],
+    "lockpick": false,
+    "minigames": false,
+    "n": 12,
+    "pages": [
+     "story",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "medium",
+    "tips": [
+     "Un guardia lento: si te ve, corre y escóndete.",
+     "La vitrina pita al abrirla: luego, corre a la salida."
+    ],
+    "w": 35
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 25,
+    "heading": "Ladrón de guante blanco · tu tercer robo en el Templo de las Momias",
+    "heading_gang": "Ladrones de guante blanco · vuestro tercer robo en el Templo de las Momias",
+    "hideouts": {
+     "legionary": 2
+    },
+    "icons": [],
+    "lockpick": false,
+    "minigames": false,
+    "n": 13,
+    "pages": [
+     "story",
+     "news",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "medium",
+    "tips": [
+     "2 guardias lentos: si te ven, corre y escóndete."
+    ],
+    "w": 35
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 25,
+    "heading": "Ladrón de guante blanco · tu cuarto robo en el Templo de las Momias",
+    "heading_gang": "Ladrones de guante blanco · vuestro cuarto robo en el Templo de las Momias",
+    "hideouts": {
+     "legionary": 1,
+     "sarcophagus": 1
+    },
+    "icons": [],
+    "lockpick": false,
+    "minigames": false,
+    "n": 14,
+    "pages": [
+     "story",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "medium",
+    "tips": [
+     "2 guardias lentos: si te ven, corre y escóndete.",
+     "Si uno te ve, grita y los demás vienen corriendo."
+    ],
+    "w": 35
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 25,
+    "heading": "Ladrón de guante blanco · tu gran golpe en el Templo de las Momias",
+    "heading_gang": "Ladrones de guante blanco · vuestro gran golpe en el Templo de las Momias",
+    "hideouts": {
+     "legionary": 1,
+     "trojan_horse": 1
+    },
+    "icons": [
+     "trojan_horse"
+    ],
+    "lockpick": false,
+    "minigames": false,
+    "n": 15,
+    "pages": [
+     "story",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "medium",
+    "tips": [
+     "3 guardias: que no te pillen sus linternas.",
+     "Un guardia vigila tu camino: pasa a gatas, fuera de su luz.",
+     "Un guardia no se mueve: pasa cuando mire a otro lado."
+    ],
+    "w": 35
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 25,
+    "heading": "Maestro ladrón · tu primer robo en el Castillo de los Inventos",
+    "heading_gang": "Maestros ladrones · vuestro primer robo en el Castillo de los Inventos",
+    "hideouts": {
+     "armour": 1,
+     "chest": 1
+    },
+    "icons": [
+     "temas/edad_media/trono",
+     "temas/edad_media/maquina_voladora"
+    ],
+    "lockpick": false,
+    "minigames": false,
+    "n": 16,
+    "pages": [
+     "story",
+     "news",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "medium",
+    "tips": [
+     "2 guardias lentos: si te ven, corre y escóndete."
+    ],
+    "w": 35
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 25,
+    "heading": "Maestro ladrón · tu segundo robo en el Castillo de los Inventos",
+    "heading_gang": "Maestros ladrones · vuestro segundo robo en el Castillo de los Inventos",
+    "hideouts": {
+     "armour": 1,
+     "confessional": 1
+    },
+    "icons": [
+     "temas/edad_media/trono",
+     "temas/edad_media/maquina_voladora"
+    ],
+    "lockpick": false,
+    "minigames": false,
+    "n": 17,
+    "pages": [
+     "story",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "medium",
+    "tips": [
+     "2 guardias: que no te pillen sus linternas.",
+     "En alerta encienden la luz: apágala con E en el interruptor."
+    ],
+    "w": 35
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 25,
+    "heading": "Maestro ladrón · tu tercer robo en el Castillo de los Inventos",
+    "heading_gang": "Maestros ladrones · vuestro tercer robo en el Castillo de los Inventos",
+    "hideouts": {
+     "armour": 2,
+     "chest": 1
+    },
+    "icons": [
+     "temas/edad_media/trono",
+     "temas/edad_media/espada_piedra",
+     "temas/edad_media/maquina_voladora"
+    ],
+    "lockpick": true,
+    "minigames": true,
+    "n": 18,
+    "pages": [
+     "story",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "medium",
+    "tips": [
+     "2 guardias: que no te pillen sus linternas."
+    ],
+    "w": 35
+   },
+   {
+    "arcades": [],
+    "game_level": 0,
+    "h": 25,
+    "heading": "Maestro ladrón · tu cuarto robo en el Castillo de los Inventos",
+    "heading_gang": "Maestros ladrones · vuestro cuarto robo en el Castillo de los Inventos",
+    "hideouts": {
+     "armour": 1,
+     "confessional": 1
+    },
+    "icons": [
+     "temas/edad_media/maquina_voladora",
+     "temas/edad_media/trono",
+     "temas/edad_media/espada_piedra"
+    ],
+    "lockpick": true,
+    "minigames": true,
+    "n": 19,
+    "pages": [
+     "story",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "medium",
+    "tips": [
+     "2 guardias: que no te pillen sus linternas."
+    ],
+    "w": 35
+   },
+   {
+    "arcades": [],
+    "game_level": 1,
+    "h": 25,
+    "heading": "Maestro ladrón · tu gran golpe en el Castillo de los Inventos",
+    "heading_gang": "Maestros ladrones · vuestro gran golpe en el Castillo de los Inventos",
+    "hideouts": {
+     "armour": 1,
+     "chest": 1
+    },
+    "icons": [
+     "temas/edad_media/trono",
+     "temas/edad_media/maquina_voladora"
+    ],
+    "lockpick": true,
+    "minigames": true,
+    "n": 20,
+    "pages": [
+     "story",
+     "plan"
+    ],
+    "plinths": 1,
+    "size": "medium",
+    "tips": [
+     "3 guardias de oído fino: cerca de ellos, siempre a gatas.",
+     "El guardia del trono te da la espalda, pero lo oye todo: sin correr.",
+     "Si se mosquean, tardan en calmarse: espera bien escondido."
+    ],
+    "w": 35
+   },
+   {
+    "arcades": [
+     "carreras"
+    ],
+    "game_level": 1,
+    "h": 35,
+    "heading": "Leyenda de la noche · tu primer robo en la Torre de Cristal",
+    "heading_gang": "Leyendas de la noche · vuestro primer robo en la Torre de Cristal",
+    "hideouts": {
+     "box": 3,
+     "fridge": 2
+    },
+    "icons": [],
+    "lockpick": true,
+    "minigames": true,
+    "n": 21,
+    "pages": [
+     "story",
+     "news",
+     "plan"
+    ],
+    "plinths": 2,
+    "size": "large",
+    "tips": [
+     "2 guardias: que no te pillen sus linternas."
+    ],
+    "w": 49
+   },
+   {
+    "arcades": [
+     "comecocos",
+     "invasores",
+     "carreras",
+     "tenis",
+     "serpiente",
+     "bloques"
+    ],
+    "game_level": 1,
+    "h": 35,
+    "heading": "Leyenda de la noche · tu segundo robo en la Torre de Cristal",
+    "heading_gang": "Leyendas de la noche · vuestro segundo robo en la Torre de Cristal",
+    "hideouts": {
+     "box": 1,
+     "car": 2,
+     "fridge": 2
+    },
+    "icons": [],
+    "lockpick": true,
+    "minigames": true,
+    "n": 22,
+    "pages": [
+     "story",
+     "plan"
+    ],
+    "plinths": 3,
+    "size": "large",
+    "tips": [
+     "3 guardias: que no te pillen sus linternas.",
+     "Museo grande: mira el mapa con M (View en el mando).",
+     "Si se mosquean, tardan en calmarse: espera bien escondido."
+    ],
+    "w": 49
+   },
+   {
+    "arcades": [
+     "invasores",
+     "bloques",
+     "carreras",
+     "serpiente",
+     "tenis",
+     "comecocos"
+    ],
+    "game_level": 1,
+    "h": 35,
+    "heading": "Leyenda de la noche · tu tercer robo en la Torre de Cristal",
+    "heading_gang": "Leyendas de la noche · vuestro tercer robo en la Torre de Cristal",
+    "hideouts": {
+     "box": 2,
+     "car": 1,
+     "fridge": 1
+    },
+    "icons": [],
+    "lockpick": true,
+    "minigames": true,
+    "n": 23,
+    "pages": [
+     "story",
+     "plan"
+    ],
+    "plinths": 2,
+    "size": "large",
+    "tips": [
+     "3 guardias de oído fino: cerca de ellos, siempre a gatas.",
+     "Un solo ruido raro y dan la alarma."
+    ],
+    "w": 49
+   },
+   {
+    "arcades": [
+     "invasores",
+     "bloques",
+     "comecocos",
+     "carreras",
+     "serpiente",
+     "tenis"
+    ],
+    "game_level": 1,
+    "h": 35,
+    "heading": "Leyenda de la noche · tu cuarto robo en la Torre de Cristal",
+    "heading_gang": "Leyendas de la noche · vuestro cuarto robo en la Torre de Cristal",
+    "hideouts": {
+     "box": 2,
+     "car": 1,
+     "fridge": 1
+    },
+    "icons": [],
+    "lockpick": true,
+    "minigames": true,
+    "n": 24,
+    "pages": [
+     "story",
+     "plan"
+    ],
+    "plinths": 2,
+    "size": "large",
+    "tips": [
+     "3 guardias de oído fino: cerca de ellos, siempre a gatas.",
+     "Un solo ruido raro y dan la alarma."
+    ],
+    "w": 49
+   },
+   {
+    "arcades": [
+     "invasores",
+     "carreras",
+     "serpiente",
+     "bloques",
+     "comecocos"
+    ],
+    "game_level": 2,
+    "h": 35,
+    "heading": "Leyenda de la noche · tu último gran golpe",
+    "heading_gang": "Leyendas de la noche · vuestro último gran golpe",
+    "hideouts": {
+     "box": 2,
+     "car": 2,
+     "fridge": 1
+    },
+    "icons": [],
+    "lockpick": true,
+    "minigames": true,
+    "n": 25,
+    "pages": [
+     "story",
+     "news",
+     "plan"
+    ],
+    "plinths": 2,
+    "size": "large",
+    "tips": [
+     "4 guardias de oído fino: cerca de ellos, siempre a gatas.",
+     "El gran final: mira el mapa y planea la ruta antes de moverte.",
+     "Un solo ruido raro y dan la alarma."
+    ],
+    "w": 49
+   }
+  ],
+  "prologue": "STORY_PROLOGUE",
+  "rooms": 5
  },
  "catalogo": {
+  "arcade_games": {
+   "bloques": {
+    "art": [
+     "......ppp.......",
+     ".......p........",
+     "................",
+     "................",
+     "................",
+     "c.............yy",
+     "cc..gg....vv.yyy",
+     "ccggg.yyyvvv.ppp",
+     "cyyggppyyvvcc.pp"
+    ],
+    "ink": {
+     "c": "#00c2d8",
+     "g": "#5cff7a",
+     "p": "#ff4f9a",
+     "v": "#8a4dff",
+     "y": "#ffd400"
+    },
+    "marquesina": "#8a4dff",
+    "mueble": "#ff4f9a",
+    "screen": "#120a28"
+   },
+   "carreras": {
+    "art": [
+     "gg.....w......gg",
+     "gg..c.........gg",
+     "gg.ccc.w......gg",
+     "gg..c.........gg",
+     "gg.....w......gg",
+     "gg.........y..gg",
+     "gg.....w..yyy.gg",
+     "gg.........y..gg",
+     "gg.....w......gg"
+    ],
+    "ink": {
+     "c": "#00c2d8",
+     "g": "#3ccf6a",
+     "w": "#f4f2ec",
+     "y": "#ffd400"
+    },
+    "marquesina": "#f4f2ec",
+    "mueble": "#ff5a36",
+    "screen": "#2a2a33"
+   },
+   "comecocos": {
+    "art": [
+     "bbbbbbbbbbbbbbbb",
+     "................",
+     ".yyy........ppp.",
+     "yy.......w.ppppp",
+     "y..w..w..w.ppppp",
+     "yy.........ppppp",
+     ".yyy.......p.p.p",
+     "................",
+     "bbbbbbbbbbbbbbbb"
+    ],
+    "ink": {
+     "b": "#2f5fd0",
+     "p": "#ff4f9a",
+     "w": "#ffe9c0",
+     "y": "#ffd400"
+    },
+    "marquesina": "#00c2d8",
+    "mueble": "#ffd400",
+    "screen": "#0a0f3a"
+   },
+   "invasores": {
+    "art": [
+     "................",
+     "..g...g...g...g.",
+     ".ggg.ggg.ggg.ggg",
+     ".g.g.g.g.g.g.g.g",
+     "................",
+     "..........w.....",
+     "................",
+     ".......c........",
+     "......ccc......."
+    ],
+    "ink": {
+     "c": "#00c2d8",
+     "g": "#7dff5a",
+     "w": "#ffffff"
+    },
+    "marquesina": "#ff4f9a",
+    "mueble": "#00c2d8",
+    "screen": "#07071a"
+   },
+   "serpiente": {
+    "art": [
+     "................",
+     "..ssssssss......",
+     "..s.......s.....",
+     "..s.......s.....",
+     "..s.......sssss.",
+     "..s..........s..",
+     "..sss......r.s..",
+     "................",
+     "................"
+    ],
+    "ink": {
+     "r": "#ff3a4a",
+     "s": "#9dff3a"
+    },
+    "marquesina": "#ff8a1c",
+    "mueble": "#3ccf6a",
+    "screen": "#0e2a12"
+   },
+   "tenis": {
+    "art": [
+     "........a.......",
+     ".a..............",
+     ".a......a.......",
+     ".a..............",
+     "........a...a...",
+     "..............a.",
+     "........a.....a.",
+     "..............a.",
+     "........a......."
+    ],
+    "ink": {
+     "a": "#3cffb0"
+    },
+    "marquesina": "#ffd400",
+    "mueble": "#7a3ce0",
+    "screen": "#0b3326"
+   }
+  },
+  "arcade_model": "temas/moderna/recreativa",
   "big": [
    "dinosaur",
    "sarcophagus",
@@ -2411,6 +3337,137 @@ window.JUEGO = {
    "totem",
    "bear",
    "plinth"
+  ],
+  "fronted": [
+   "temas/moderna/recreativa",
+   "temas/edad_media/trono",
+   "temas/antiguo/anubis"
+  ],
+  "hideouts": {
+   "big": [
+    "sarcophagus",
+    "trojan_horse",
+    "mammoth",
+    "log",
+    "car"
+   ],
+   "big_names": [
+    "HIDE_SARCOPHAGUS",
+    "HIDE_TROJAN_HORSE",
+    "HIDE_MAMMOTH",
+    "HIDE_LOG",
+    "HIDE_CAR"
+   ],
+   "pieces": {
+    "box": {
+     "model": "temas/moderna/caja",
+     "name": "HIDE_BOX",
+     "theme": "moderna"
+    },
+    "chest": {
+     "model": "temas/edad_media/baul",
+     "name": "HIDE_CHEST",
+     "theme": "edad_media"
+    },
+    "confessional": {
+     "model": "temas/edad_media/confesionario",
+     "name": "HIDE_CONFESSIONAL",
+     "theme": "edad_media"
+    },
+    "egg": {
+     "model": "temas/prehistoria/huevo",
+     "name": "HIDE_EGG",
+     "theme": "prehistoria"
+    },
+    "fridge": {
+     "model": "temas/moderna/nevera",
+     "name": "HIDE_FRIDGE",
+     "theme": "moderna"
+    },
+    "legionary": {
+     "model": "temas/antiguo/legionario",
+     "name": "HIDE_LEGIONARY",
+     "theme": "antiguo"
+    },
+    "shell": {
+     "model": "temas/naturaleza/caparazon",
+     "name": "HIDE_SHELL",
+     "theme": "naturaleza"
+    }
+   },
+   "tight": {
+    "armour": 1,
+    "box": 1,
+    "chest": 1,
+    "egg": 1,
+    "legionary": 1,
+    "shell": 1
+   }
+  },
+  "minigames": [
+   {
+    "can_let_go": true,
+    "class": "ArcadeGame",
+    "how": "GAME_HOW_ARCADE",
+    "kind": "arcade",
+    "let_go": "GAME_LET_GO_ARCADE",
+    "logic": "logic/minigames/arcade.gd",
+    "view": "scenes/minigame_views/arcade.gd"
+   },
+   {
+    "can_let_go": true,
+    "class": "BalanceGame",
+    "how": "GAME_HOW_BALANCE",
+    "kind": "balance",
+    "let_go": "GAME_LET_GO",
+    "logic": "logic/minigames/balance.gd",
+    "view": "scenes/minigame_views/balance.gd"
+   },
+   {
+    "can_let_go": true,
+    "class": "LockpickGame",
+    "how": "GAME_HOW_LOCKPICK",
+    "kind": "lockpick",
+    "let_go": "GAME_LET_GO",
+    "logic": "logic/minigames/lockpick.gd",
+    "view": "scenes/minigame_views/lockpick.gd"
+   },
+   {
+    "can_let_go": false,
+    "class": "SneezeGame",
+    "how": "GAME_HOW_SNEEZE",
+    "kind": "sneeze",
+    "let_go": "GAME_LET_GO_SNEEZE",
+    "logic": "logic/minigames/sneeze.gd",
+    "view": "scenes/minigame_views/sneeze.gd"
+   },
+   {
+    "can_let_go": true,
+    "class": "SqueezeGame",
+    "how": "GAME_HOW_SQUEEZE",
+    "kind": "squeeze",
+    "let_go": "GAME_LET_GO",
+    "logic": "logic/minigames/squeeze.gd",
+    "view": "scenes/minigame_views/squeeze.gd"
+   },
+   {
+    "can_let_go": true,
+    "class": "SteadyGame",
+    "how": "GAME_HOW_STEADY",
+    "kind": "steady",
+    "let_go": "GAME_LET_GO",
+    "logic": "logic/minigames/steady.gd",
+    "view": "scenes/minigame_views/steady.gd"
+   },
+   {
+    "can_let_go": true,
+    "class": "WiresGame",
+    "how": "GAME_HOW_WIRES",
+    "kind": "wires",
+    "let_go": "GAME_LET_GO",
+    "logic": "logic/minigames/wires.gd",
+    "view": "scenes/minigame_views/wires.gd"
+   }
   ],
   "model_of": {
    "big:bear": "oso",
@@ -2640,6 +3697,13 @@ window.JUEGO = {
   }
  },
  "capturas": [
+  {
+   "file": "capturas/menu_portada.webp",
+   "id": "menu_portada",
+   "section": "menus",
+   "text": "La primera imagen al abrir el juego; cualquier tecla lleva al título.",
+   "title": "Portada"
+  },
   {
    "file": "capturas/menu_titulo.webp",
    "id": "menu_titulo",
@@ -3164,6 +4228,20 @@ window.JUEGO = {
    "section": "juego",
    "text": "Meterse en un escondite, de dos a cinco segundos a la vista.",
    "title": "Minijuego: colarse"
+  },
+  {
+   "file": "capturas/juego_minijuego_sneeze.webp",
+   "id": "juego_minijuego_sneeze",
+   "section": "juego",
+   "text": "Escondido, aguantar el estornudo: pulsar cuando el polvo pasa por la barra.",
+   "title": "Minijuego: el estornudo"
+  },
+  {
+   "file": "capturas/juego_minijuego_arcade.webp",
+   "id": "juego_minijuego_arcade",
+   "section": "juego",
+   "text": "Un pong de broma en la máquina: no se gana nada y los guardias siguen su ronda.",
+   "title": "Minijuego: la recreativa"
   },
   {
    "file": "capturas/juego_mapa.webp",
@@ -5481,9 +6559,19 @@ window.JUEGO = {
  ],
  "sonidos": [
   {
-   "file": "assets/sonidos/lights.wav",
-   "name": "lights",
-   "seconds": 0.55
+   "file": "assets/sonidos/caught.wav",
+   "name": "caught",
+   "seconds": 2.0
+  },
+  {
+   "file": "assets/sonidos/roll.wav",
+   "name": "roll",
+   "seconds": 0.35
+  },
+  {
+   "file": "assets/sonidos/go.wav",
+   "name": "go",
+   "seconds": 0.9
   },
   {
    "file": "assets/sonidos/ok.wav",
@@ -5541,19 +6629,9 @@ window.JUEGO = {
    "seconds": 0.58
   },
   {
-   "file": "assets/sonidos/bin.wav",
-   "name": "bin",
-   "seconds": 0.8
-  },
-  {
    "file": "assets/sonidos/sting.wav",
    "name": "sting",
    "seconds": 1.3
-  },
-  {
-   "file": "assets/sonidos/smoke.wav",
-   "name": "smoke",
-   "seconds": 1.4
   },
   {
    "file": "assets/sonidos/pong_miss.wav",
@@ -5606,19 +6684,24 @@ window.JUEGO = {
    "seconds": 0.09
   },
   {
-   "file": "assets/sonidos/alarm.wav",
-   "name": "alarm",
-   "seconds": 0.75
-  },
-  {
-   "file": "assets/sonidos/go.wav",
-   "name": "go",
-   "seconds": 0.9
+   "file": "assets/sonidos/bin.wav",
+   "name": "bin",
+   "seconds": 0.8
   },
   {
    "file": "assets/sonidos/shout.wav",
    "name": "shout",
    "seconds": 0.46
+  },
+  {
+   "file": "assets/sonidos/smoke.wav",
+   "name": "smoke",
+   "seconds": 1.4
+  },
+  {
+   "file": "assets/sonidos/alarm.wav",
+   "name": "alarm",
+   "seconds": 0.75
   },
   {
    "file": "assets/sonidos/pick.wav",
@@ -5631,14 +6714,9 @@ window.JUEGO = {
    "seconds": 0.25
   },
   {
-   "file": "assets/sonidos/caught.wav",
-   "name": "caught",
-   "seconds": 2.0
-  },
-  {
-   "file": "assets/sonidos/roll.wav",
-   "name": "roll",
-   "seconds": 0.35
+   "file": "assets/sonidos/lights.wav",
+   "name": "lights",
+   "seconds": 0.55
   },
   {
    "file": "assets/sonidos/back.wav",
@@ -5662,8 +6740,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "27-09-2026 21:00",
-  "commit": "046027d",
-  "rama": "ketchup"
+  "fecha": "27-09-2026 21:15",
+  "commit": "4d2411a",
+  "rama": "docs-versiones"
  }
 };

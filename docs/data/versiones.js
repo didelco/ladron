@@ -1,0 +1,299 @@
+window.VERSIONES = {
+ "asuntos": [
+  {
+   "id": "menus",
+   "title": "Los menús (la pantalla de título)",
+   "text": "La primera pantalla con menús, de la web portada a Godot al cristal ahumado sobre la sala del museo.",
+   "source": "docs/capturas/menu_titulo.webp"
+  },
+  {
+   "id": "fondo-menus",
+   "title": "El fondo de los menús",
+   "text": "Lo que hay detrás de las tarjetas, siempre en la misma pantalla (Modo historia): la pared del museo pintada en código, la portada desenfocada y la sala del museo de noche (assets/ui/fondo_menu.png).",
+   "source": "docs/capturas/menu_historia_jugadores.webp"
+  },
+  {
+   "id": "icono",
+   "title": "El icono de la app",
+   "text": "assets/icon.png: el icono de las exportaciones y de la ventana.",
+   "source": "assets/icon.png"
+  },
+  {
+   "id": "ciudad",
+   "title": "La historia: el mapa de la ciudad",
+   "text": "De 20 noches en cinco museos genéricos, cuatro por museo, a cinco museos temáticos con cinco robos cada uno.",
+   "source": "docs/capturas/menu_historia_ciudad.webp"
+  },
+  {
+   "id": "museo",
+   "title": "La historia: un museo por dentro",
+   "text": "El primer museo de la historia y sus salas: de cuatro noches a cinco robos, el quinto su gran golpe.",
+   "source": "docs/capturas/menu_museo_1.webp"
+  },
+  {
+   "id": "recreativa",
+   "title": "La recreativa",
+   "text": "La máquina recreativa de la edad moderna: su ficha de modelo antes y después del modelo nuevo, ya con sus seis juegos.",
+   "source": "docs/assets/modelos/temas__moderna__recreativa.webp"
+  }
+ ],
+ "versiones": [
+  {
+   "asunto": "menus",
+   "fecha": "2026-09-23T19:50",
+   "commit": "fb66ac7",
+   "titulo": "Como en la web",
+   "porque": "La primera versión con menús en Godot: el punto de partida",
+   "cambio": "Título en grande sobre el museo del juego, borroso, y el número de ladrones como dos iconos píxel; solo SETTINGS debajo.",
+   "file": "versiones/menus/2026-09-23-como-en-la-web.webp",
+   "from": "/private/tmp/claude-505/-Users-chema-Code-personal/c95eeb09-98ee-48c2-b063-384581f7f5de/scratchpad/old/fb66ac7_title.png",
+   "commit_msg": "Menús como en la web y modo de dos jugadores",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 15444
+  },
+  {
+   "asunto": "menus",
+   "fecha": "2026-09-25T18:58",
+   "commit": "b313d94",
+   "titulo": "Menús de juguete",
+   "porque": "Primer cambio de estilo completo",
+   "cambio": "Dioramas redondeados en colores caramelo, tarjetas crema, botones píldora y un fondo degradado morado con rayas.",
+   "file": "versiones/menus/2026-09-25-menus-de-juguete.webp",
+   "from": "/private/tmp/claude-505/-Users-chema-Code-personal/c95eeb09-98ee-48c2-b063-384581f7f5de/scratchpad/old/b313d94_title.png",
+   "commit_msg": "Menús estilo juguete: dioramas redondeados con colores caramelo, luz cálida, tilt-shift y personajes que botan; fondo degradado animado, botones píldora, tarjetas crema y título que se balancea",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 35150
+  },
+  {
+   "asunto": "menus",
+   "fecha": "2026-09-27T10:02",
+   "commit": "3888cd5",
+   "titulo": "Madera y latón",
+   "porque": "El museo de noche entra en los menús",
+   "cambio": "Pared berenjena con papel pintado y luz de lámpara, tarjetas de nogal con borde de latón, dioramas en violeta; aparecen RETOS y SALIR. Empezó en 248839b; la captura es la primera de docs/ (3888cd5).",
+   "file": "versiones/menus/2026-09-27-madera-y-laton.webp",
+   "from": "docs/capturas/menu_titulo.webp",
+   "commit_msg": "Documentación en docs/, generada desde el juego con tools/docs.py",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 24650
+  },
+  {
+   "asunto": "menus",
+   "fecha": "2026-09-27T21:18",
+   "commit": "4d2411a",
+   "titulo": "Cristal ahumado",
+   "porque": "El aspecto de ahora",
+   "cambio": "Marcos oscuros de cristal con borde fino y brillo cálido en el foco, tarjetas en penumbra salvo la del foco, sobre la sala del museo; HISTORIA al centro con flechas y SETTINGS y SALIR en fila, sin rótulo (05a33bf, f6f44dc).",
+   "file": "versiones/menus/2026-09-27-cristal-ahumado.webp",
+   "from": "docs/capturas/menu_titulo.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 31874
+  },
+  {
+   "asunto": "fondo-menus",
+   "fecha": "2026-09-27T10:02",
+   "commit": "3888cd5",
+   "titulo": "La pared del museo",
+   "porque": "El primer fondo propio de los menús",
+   "cambio": "Una pared de museo pintada en código (el shader del fondo de Hud): berenjena arriba, madera abajo, papel pintado a rayas y la luz de una lámpara. Desde 248839b.",
+   "file": "versiones/fondo-menus/2026-09-27-la-pared-del-museo.webp",
+   "from": "docs/capturas/menu_historia_jugadores.webp",
+   "commit_msg": "Documentación en docs/, generada desde el juego con tools/docs.py",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 22318
+  },
+  {
+   "asunto": "fondo-menus",
+   "fecha": "2026-09-27T18:02",
+   "commit": "fad97de",
+   "titulo": "La portada desenfocada",
+   "porque": "Cambio de idea: el fondo pasa a ser una imagen",
+   "cambio": "La portada (assets/ui/portada.png) desenfocada, oscurecida y teñida de berenjena, mirando a un sitio distinto en cada pantalla. Duró poco: de fad97de a 73c0343.",
+   "file": "versiones/fondo-menus/2026-09-27-la-portada-desenfocada.webp",
+   "from": "/private/tmp/claude-505/-Users-chema-Code-personal/c95eeb09-98ee-48c2-b063-384581f7f5de/scratchpad/old/fad97de_story.png",
+   "commit_msg": "Fondo de los menús fuera del juego: la portada desenfocada, oscurecida y teñida, mirando a un ninja distinto en cada pantalla; el juego se llama Ninja Karma",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 23664
+  },
+  {
+   "asunto": "fondo-menus",
+   "fecha": "2026-09-27T21:18",
+   "commit": "4d2411a",
+   "titulo": "La sala del museo de noche",
+   "porque": "El fondo de ahora",
+   "cambio": "assets/ui/fondo_menu.png, nítida y algo oscurecida arriba y abajo; cada pantalla mira a un sitio de la sala (Hud.SPOTS) y deriva despacio (73c0343, importada en 9cc3e5e).",
+   "file": "versiones/fondo-menus/2026-09-27-la-sala-del-museo-de-noche.webp",
+   "from": "docs/capturas/menu_historia_jugadores.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 33488
+  },
+  {
+   "asunto": "icono",
+   "fecha": "2026-09-25T18:21",
+   "commit": "ed1b2ac",
+   "titulo": "Ninja píxel",
+   "porque": "El primer icono, con las exportaciones",
+   "cambio": "Un ninja turquesa en píxeles bajo la luna.",
+   "file": "versiones/icono/2026-09-25-ninja-pixel.webp",
+   "from": "assets/icon.png",
+   "commit_msg": "Exportación: presets de Windows, macOS y Linux e icono",
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 1972
+  },
+  {
+   "asunto": "icono",
+   "fecha": "2026-09-26T02:31",
+   "commit": "c81c6d9",
+   "titulo": "Ninja en 3D",
+   "porque": "Cambio completo de estilo",
+   "cambio": "El ninja modelado en Blender, con su cinta roja, de noche.",
+   "file": "versiones/icono/2026-09-26-ninja-en-3d.webp",
+   "from": "assets/icon.png",
+   "commit_msg": "Mapa de noches, armadura con el estilo de los personajes e icono ninja",
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 15004
+  },
+  {
+   "asunto": "icono",
+   "fecha": "2026-09-27T18:14",
+   "commit": "8a57bf5",
+   "titulo": "El logo de Ninja Karma",
+   "porque": "El juego cambia de nombre",
+   "cambio": "El logo de Ninja Karma sobre la noche, con las esquinas transparentes.",
+   "file": "versiones/icono/2026-09-27-el-logo-de-ninja-karma.webp",
+   "from": "assets/icon.png",
+   "commit_msg": "Icono de la app: el logo de Ninja Karma sobre la noche, con las esquinas transparentes",
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 17736
+  },
+  {
+   "asunto": "ciudad",
+   "fecha": "2026-09-27T10:02",
+   "commit": "3888cd5",
+   "titulo": "Veinte noches, cinco museos genéricos",
+   "porque": "La historia antes de los museos temáticos",
+   "cambio": "Cinco museos de cuatro noches, cada uno con su color («El desván del Barón · 4/4 noches»).",
+   "file": "versiones/ciudad/2026-09-27-veinte-noches-cinco-museos-genericos.webp",
+   "from": "docs/capturas/menu_historia_ciudad.webp",
+   "commit_msg": "Documentación en docs/, generada desde el juego con tools/docs.py",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 24966
+  },
+  {
+   "asunto": "ciudad",
+   "fecha": "2026-09-27T21:18",
+   "commit": "4d2411a",
+   "titulo": "Cinco museos temáticos",
+   "porque": "La historia de ahora",
+   "cambio": "Cinco museos de un tema cada uno (la Gran Cueva, la Casa de los Bichos, el Templo de las Momias, el Castillo de los Inventos y la Torre de Cristal), con cinco robos (a7b76b2).",
+   "file": "versiones/ciudad/2026-09-27-cinco-museos-tematicos.webp",
+   "from": "docs/capturas/menu_historia_ciudad.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 31340
+  },
+  {
+   "asunto": "museo",
+   "fecha": "2026-09-27T10:02",
+   "commit": "3888cd5",
+   "titulo": "El desván del Barón: cuatro noches",
+   "porque": "El museo de la historia de 20 noches",
+   "cambio": "Cuatro salas iguales, una por noche.",
+   "file": "versiones/museo/2026-09-27-el-desvan-del-baron-cuatro-noches.webp",
+   "from": "docs/capturas/menu_museo_1.webp",
+   "commit_msg": "Documentación en docs/, generada desde el juego con tools/docs.py",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 19400
+  },
+  {
+   "asunto": "museo",
+   "fecha": "2026-09-27T21:18",
+   "commit": "4d2411a",
+   "titulo": "La Gran Cueva: cinco robos y el gran golpe",
+   "porque": "El museo de ahora",
+   "cambio": "Cuatro salas y la quinta, el gran golpe, más ancha, con alfombra roja, corona y puerta dorada; cada museo en sus colores (a7b76b2).",
+   "file": "versiones/museo/2026-09-27-la-gran-cueva-cinco-robos-y-el-gran-golp.webp",
+   "from": "docs/capturas/menu_museo_1.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 31232
+  },
+  {
+   "asunto": "recreativa",
+   "fecha": "2026-09-27T14:55",
+   "commit": "59b9a18",
+   "titulo": "La primera máquina",
+   "porque": "Antes del modelo nuevo",
+   "cambio": "La recreativa de la edad moderna tal como se modeló primero (5f61800), con el tenis pintado en la pantalla.",
+   "file": "versiones/recreativa/2026-09-27-la-primera-maquina.webp",
+   "from": "docs/assets/modelos/temas__moderna__recreativa.webp",
+   "commit_msg": "Documentación al día: piezas de la edad moderna, escondites y botín modelado en docs/; README con tema_moderna.blend y art/temas/moderna.py",
+   "size": [
+    480,
+    480
+   ],
+   "bytes": 6782
+  },
+  {
+   "asunto": "recreativa",
+   "fecha": "2026-09-27T21:18",
+   "commit": "4d2411a",
+   "titulo": "Máquina de los ochenta, seis juegos",
+   "porque": "Modelo nuevo y variantes",
+   "cambio": "Máquina de los ochenta (ec4387b) con materiales color_mueble y color_marquesina; cada una de un museo enseña uno de sus seis juegos (tenis, invasores, comecocos, bloques, serpiente y carreras). Arriba a la izquierda, el modelo tal cual.",
+   "file": "versiones/recreativa/2026-09-27-maquina-de-los-ochenta-seis-juegos.webp",
+   "from": "docs/assets/modelos/temas__moderna__recreativa.webp, docs/assets/modelos/temas__moderna__recreativa__tenis.webp, docs/assets/modelos/temas__moderna__recreativa__invasores.webp, docs/assets/modelos/temas__moderna__recreativa__comecocos.webp, docs/assets/modelos/temas__moderna__recreativa__bloques.webp, docs/assets/modelos/temas__moderna__recreativa__serpiente.webp, docs/assets/modelos/temas__moderna__recreativa__carreras.webp",
+   "commit_msg": "",
+   "size": [
+    1200,
+    1200
+   ],
+   "bytes": 68042
+  }
+ ],
+ "bytes": 403062
+};
