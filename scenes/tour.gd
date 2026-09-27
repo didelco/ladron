@@ -113,11 +113,17 @@ func _init() -> void:
 
 
 ## The town for a gang of `n`, as far as it has got: museum `pick` picked.
-func open_city(n: int, pick: int) -> void:
+## fresh: a museum just opened, whose padlock pops off as the town shows.
+func open_city(n: int, pick: int, fresh := -1) -> void:
 	players = n
 	reached = Story.unlocked(n)
 	stage.build(Story.museum_of(reached), pick)
 	_show_city()
+	if fresh >= 0:
+		stage.relock(fresh)
+		get_tree().create_timer(0.0 if stage.hurry else 0.8).timeout.connect(func() -> void:
+			stage.unlock(fresh)
+			_sound("ok"))
 
 
 func _show_city() -> void:

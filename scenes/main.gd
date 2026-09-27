@@ -760,13 +760,16 @@ func _story_gang(n: int) -> void:
 
 # --- The way in to a heist: the town, a museum, its plan (Tour) -----------------------
 
-## The way in, while it is up: the town in 3D and all that follows (Tour).
+## The way in, while it is up: the town in 3D and all that follows (Tour);
+## and whether it all moves at once (the tests).
 var tour: Tour
+var tour_hurry := false
 
 
 ## The town, in 3D (Tour): museum m picked, or the one story_pick is in.
-func _show_city(m := -1) -> void:
-	_open_tour().open_city(players, m if m >= 0 else Story.museum_of(story_pick))
+## fresh: a museum just opened by a big job, to show it opening.
+func _show_city(m := -1, fresh := -1) -> void:
+	_open_tour().open_city(players, m if m >= 0 else Story.museum_of(story_pick), fresh)
 
 
 ## Inside heist n's museum, its room picked: back from a heist.
@@ -784,6 +787,7 @@ func _open_tour() -> Tour:
 	_drop_preview()
 	hud.hide_panel()
 	tour = Tour.new()
+	tour.stage.hurry = tour_hurry
 	add_child(tour)
 	tour.left.connect(func() -> void:
 		_close_tour()
@@ -1585,7 +1589,9 @@ func _preview_piece(loot: Dictionary) -> void:
 
 func _drop_preview() -> void:
 	if preview:
-		preview.queue_free()
+		# Gone once the menu showing it has faded out, not before.
+		var old := preview
+		get_tree().create_timer(Hud.FADE_S * 2.0).timeout.connect(old.queue_free)
 		preview = null
 		preview_pivot = null
 		preview_spot = null
@@ -1614,7 +1620,7 @@ func _show_end() -> void:
 			boss = true
 			next = Text.t("END_NEXT_MUSEUM")
 			if not testing:
-				go = _leave_game.bind(_show_city.bind(Story.museum_of(level + 1)))
+				go = _leave_game.bind(_show_city.bind(Story.museum_of(level + 1), Story.museum_of(level + 1)))
 		if mode == "story" and not testing:
 			# The stars this go won, kept with the best (not when only looking).
 			HeistStats.rate(level, players, true, not just_looking)
@@ -1719,7 +1725,19 @@ func _show_ending() -> void:
 	])
 
 
+## Again, or the next: in the story, back to the museum with the next room
+## picked, or the same one again, its plan coming straight back out (told
+## already, so straight to looking round it); elsewhere, the plan.
 func _again() -> void:
+	if mode == "story" and not testing:
+		var caught := phase != "escaped"
+		var n := mini(level + 1, Story.count()) if not caught else level
+		_show_museum_tour(n)
+		if caught:
+			get_tree().create_timer(0.7).timeout.connect(func() -> void:
+				if tour and tour.state == "museum":
+					tour.act("accept"))
+		return
 	_new_round(level + 1 if phase == "escaped" else level)
 	_show_brief(0)
 

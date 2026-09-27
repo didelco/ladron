@@ -591,6 +591,13 @@ func _padlock() -> Node3D:
 	return g
 
 
+## Museum m's padlock back on, to pop off (unlock) as the town shows it.
+func relock(m: int) -> void:
+	if m >= 0 and m < _locks.size():
+		_locks[m].visible = true
+		_locks[m].scale = Vector3.ONE
+
+
 ## The padlock of museum m pops off (a museum just opened).
 func unlock(m: int) -> void:
 	if m < 0 or m >= _locks.size() or not _locks[m].visible:

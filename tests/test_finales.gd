@@ -64,6 +64,10 @@ func _init() -> void:
 		m._hid(m.thieves[0], Hideouts.all()[0])
 		check(HeistStats.count("hides") == 1, "esconderse cuenta")
 	m._again()
+	# In the story, again is back to the museum: the round is laid out as
+	# its plan comes out of the room.
+	if m.tour:
+		m._tour_room(m.level)
 	check(HeistStats.time == 0.0 and HeistStats.count("seen") == 0 and HeistStats.count("knocked") == 0, "otra vez: todo a cero")
 
 	# The ends: story and generative, one thief and two.

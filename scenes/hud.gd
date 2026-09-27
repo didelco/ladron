@@ -414,11 +414,6 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 ##                                                    ("step" for "call": a setting, _stepper)
 ##   {"cards": [{"title", "text"?, "picture", "call", "colour"?, "selected"?,
 ##     "focus"?}], "width"?: int}                     big picture cards in a row
-##   {"nights": [{"n", "colour", "locked", "selected", "call", "open"?,
-##     "boss"?}],
-##     "style"?, "width"?, "height"?}                 the story's maps (NightMap):
-##                                                    landing on a stop calls
-##                                                    "call", pressing it "open"
 ##   {"legend": [keys], "thieves": [Color], "loot": Color}
 ##                                                    the map's legend (LEGEND)
 ##   {"table": [[cell, ...], ...], "widths": [int], "heads"?: int}
@@ -443,7 +438,6 @@ func show_menu(items: Array) -> void:
 	var st := MenuState.new()
 	_named.clear()
 	_pictures.clear()
-	_nights.clear()
 	_menu_map = null
 	_titles.clear()
 	for item in items:
@@ -582,25 +576,6 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 			row.add_child(_card_arrow("<", line, -1))
 			row.move_child(row.get_child(-1), 0)
 			parent.add_child(_pedestal(line, item.get("width", 300)))
-	elif item.has("nights"):
-		# The nights as stops on a map, the road winding through them.
-		var map := NightMap.new(item)
-		map.custom_minimum_size = Vector2(item.get("width", 1120), item.get("height", 190))
-		map.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		parent.add_child(map)
-		var nights: Array = item.nights
-		var line: Array = []
-		for i in nights.size():
-			var node := _night(nights[i])
-			map.add_stop(node, nights[i].locked)
-			if not nights[i].locked:
-				line.append(node)
-				node.set_meta("selected", nights[i].selected)
-			if nights[i].get("selected", false):
-				st.first = node
-		for node in line:
-			node.set_meta("sticky", true)
-		st.rows.append(line)
 	elif item.has("buttons"):
 		var box: BoxContainer = HBoxContainer.new() if item.get("row", false) else VBoxContainer.new()
 		box.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -737,8 +712,6 @@ var _quiet := false
 ## the menu's titles, bobbing gently
 var _titles: Array[Label] = []
 var _clock := 0.0
-## the path's night buttons, to move the "picked" look along with the focus
-var _nights: Array[Button] = []
 ## the focusable rows of the menu on screen
 var _rows: Array = []
 
@@ -1187,79 +1160,6 @@ func _card(c: Dictionary, width: int, back := false) -> Button:
 	b.focus_entered.connect(func() -> void: create_tween().tween_property(b, "modulate", Color.WHITE, 0.2))
 	b.focus_exited.connect(func() -> void: create_tween().tween_property(b, "modulate", DIM_CARD, 0.2))
 	return b
-
-
-## One night on the story's path: a round stone with its number, in the
-## colour of its piece once reached, grey and shut before.
-func _night(n: Dictionary) -> Button:
-	var b := Button.new()
-	b.focus_mode = Control.FOCUS_NONE if n.locked else Control.FOCUS_ALL
-	b.text = "?" if n.locked else str(n.n)
-	b.disabled = n.locked
-	b.add_theme_font_override("font", ARCADE)
-	b.add_theme_font_size_override("font_size", 12)
-	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	b.set_meta("colour", n.colour)
-	b.set_meta("locked", n.locked)
-	# A museum's big job: ringed in gold and a size up, open or not.
-	b.set_meta("boss", n.get("boss", false))
-	b.add_theme_color_override("font_disabled_color", Color("#6d5a78"))
-	_night_look(b, n.selected)
-	if not n.locked:
-		# Landing on a night picks it; the picked look moves with it.
-		b.focus_entered.connect(func() -> void:
-			for other in _nights:
-				_night_look(other, other == b)
-				other.set_meta("selected", other == b)
-			_rewire(_rows)
-			n.call.call())
-		b.pressed.connect(n.get("open", n.call))
-		_nights.append(b)
-	_lift(b)
-	return b
-
-
-func _night_look(b: Button, picked: bool) -> void:
-	var colour: Color = b.get_meta("colour")
-	var locked: bool = b.get_meta("locked")
-	var boss: bool = b.get_meta("boss", false)
-	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
-		var st := StyleBoxFlat.new()
-		st.set_corner_radius_all(25 if picked and not locked else 21)
-		st.anti_aliasing = true
-		st.shadow_size = 1
-		st.shadow_offset = Vector2(0, 5)
-		if locked:
-			st.bg_color = Color("#2a1d2e")
-			st.border_color = BRASS.darkened(0.45) if boss else Color("#3d2c40")
-			st.set_border_width_all(4 if boss else 2)
-			st.shadow_color = WALNUT_EDGE
-		elif picked:
-			# The night in force: in full colour, a thick brass ring and a glow
-			# of its own colour round it, so it stands out from the rest.
-			st.bg_color = colour
-			st.border_color = BRASS.lightened(0.25)
-			st.set_border_width_all(5)
-			st.shadow_color = Color(colour.lightened(0.3), 0.8)
-			st.shadow_size = 12
-			st.shadow_offset = Vector2.ZERO
-		else:
-			# The others stay back: dim, a thin rim, lit only while the
-			# cursor is on them.
-			var lit: bool = state != "normal"
-			st.bg_color = colour.darkened(0.25) if lit else colour.darkened(0.6)
-			st.border_color = CREAM if lit else (BRASS if boss else colour.darkened(0.35))
-			st.set_border_width_all(4 if boss else (3 if lit else 2))
-			st.shadow_color = WALNUT_EDGE
-		b.add_theme_stylebox_override(state, st)
-	# Dark numbers on the picked night (light ones vanish on a pale colour).
-	b.add_theme_color_override("font_color", INK if picked else CREAM.darkened(0.15))
-	b.add_theme_color_override("font_focus_color", INK)
-	b.add_theme_color_override("font_hover_color", INK if picked else CREAM)
-	# And bigger than the rest, whether or not the cursor is on it.
-	b.pivot_offset = b.size / 2
-	var grow := 8.0 if boss else 0.0
-	b.custom_minimum_size = Vector2(50, 50) + Vector2(grow, grow) if picked else Vector2(42, 42) + Vector2(grow, grow)
 
 
 ## The thief on the title screen, as the web draws it: a hooded figure in
