@@ -18,6 +18,10 @@ const PAD := Vector2(10, 7)
 const LIFT := 14.0
 const TAIL := 8.0
 const MARGIN := 12.0
+## The widest a row's words go before they break onto another line, so the
+## bubble stays narrow over the thief.
+const WRAP := 140.0
+const FONT := 10
 
 var _frame: Panel
 var _style: StyleBoxFlat
@@ -131,10 +135,12 @@ func _build(rows: Array, fresh: bool) -> void:
 		var words := Label.new()
 		words.text = r.get("verb", "")
 		words.add_theme_font_override("font", Hud.ARCADE)
-		words.add_theme_font_size_override("font_size", 10)
+		words.add_theme_font_size_override("font_size", FONT)
 		words.add_theme_color_override("font_color", Hud.CREAM)
 		words.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		words.custom_minimum_size.y = GLYPH_H if input != "" else 0.0
+		words.text = _wrap(words.text)
+		words.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER if input == "" else HORIZONTAL_ALIGNMENT_LEFT
 		row.add_child(words)
 		if r.has("progress"):
 			var track := ColorRect.new()
@@ -156,6 +162,22 @@ func _build(rows: Array, fresh: bool) -> void:
 			_spring(line)
 	if fresh:
 		_spring(self)
+
+
+## The words broken onto lines of at most WRAP wide, a word at a time, so
+## the bubble is as wide as its longest line and no wider.
+static func _wrap(text: String) -> String:
+	var lines: Array[String] = []
+	for word in text.split(" ", false):
+		if lines.is_empty():
+			lines.append(word)
+			continue
+		var longer: String = lines[-1] + " " + word
+		if Hud.ARCADE.get_string_size(longer, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT).x > WRAP:
+			lines.append(word)
+		else:
+			lines[-1] = longer
+	return "\n".join(lines)
 
 
 func _spring(c: Control) -> void:

@@ -5,11 +5,16 @@ extends Control
 ## face button is round, in its maker's colours and marks (Xbox letters,
 ## PlayStation shapes, Nintendo letters where Nintendo puts them), with a
 ## little diamond beside it lighting which of the four it is, so the same
-## button reads on any pad. The stick is a knob in its ring.
+## button reads on any pad. The stick is a knob in its ring. The four keys
+## to move are four caps where the hand finds them, one on top and three
+## under it; the arrow keys, with arrows on them.
 ##
 ## The spec (Main._glyph builds them for each thief):
-##   kind    "key", "pad" or "stick"
-##   label   the key's name ("E", "ESPACIO", "WASD")
+##   kind    "key", "pad", "stick" or "keys4"
+##   label   the key's name ("E", "ESPACIO")
+##   labels  keys4: up, left, down and right (["W", "A", "S", "D"]), or
+##           "arrows" for the arrow keys
+##   lit     keys4: which of the four count (the others dimmed); all if left out
 ##   pos     a pad button's place: "south", "east", "west" or "north"
 ##   family  a pad's maker: "xbox", "ps" or "nintendo"
 
@@ -49,7 +54,7 @@ func set_spec(s: Dictionary, height := 28.0) -> void:
 		return
 	spec = s
 	h = height
-	custom_minimum_size = Vector2(_width(), h)
+	custom_minimum_size = Vector2(_width(), _height())
 	size = custom_minimum_size
 	queue_redraw()
 
@@ -70,12 +75,27 @@ func _process(dt: float) -> void:
 
 func _width() -> float:
 	match spec.get("kind", "key"):
+		"keys4":
+			return _cap() * 3 + _gap() * 2
 		"pad":
 			return h * 1.55
 		"stick":
 			return h
 	var text: String = spec.get("label", "?")
 	return maxf(h, Hud.ARCADE.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, _font_size()).x + h * 0.6)
+
+
+func _height() -> float:
+	return _cap() * 2 + _gap() if spec.get("kind") == "keys4" else h
+
+
+## keys4: the side of one cap, and the gap between them.
+func _cap() -> float:
+	return roundf(h * 0.78)
+
+
+func _gap() -> float:
+	return maxf(1.0, roundf(h * 0.06))
 
 
 func _font_size() -> int:
@@ -88,6 +108,8 @@ func _draw() -> void:
 			_draw_pad()
 		"stick":
 			_draw_stick()
+		"keys4":
+			_draw_keys4()
 		_:
 			_draw_key()
 
@@ -105,6 +127,36 @@ func _draw_key() -> void:
 	var fs := _font_size()
 	var ascent := Hud.ARCADE.get_ascent(fs)
 	draw_string(Hud.ARCADE, Vector2(0, face.position.y + face.size.y / 2 + ascent / 2 - 1), text, HORIZONTAL_ALIGNMENT_CENTER, w, fs, Hud.INK)
+
+
+## The four caps in their pyramid: up on top, left, down and right under it.
+## A press sinks the lit ones; the dimmed ones are there to be recognised.
+func _draw_keys4() -> void:
+	var k := _cap()
+	var g := _gap()
+	var labels = spec.get("labels", ["W", "A", "S", "D"])
+	var lit: Array = spec.get("lit", [true, true, true, true])
+	var at := [Vector2(k + g, 0), Vector2(0, k + g), Vector2(k + g, k + g), Vector2((k + g) * 2, k + g)]
+	var lip := maxf(1.0, roundf(k * 0.14))
+	var r := k * 0.22
+	var fs := int(k * 0.5)
+	for i in 4:
+		var on: bool = lit[i]
+		var sink := lip * _down if on else 0.0
+		var alpha := 1.0 if on else 0.35
+		_round_rect(Rect2(at[i] + Vector2(0, lip), Vector2(k, k - lip)), r, Color(Hud.INK_SOFT.darkened(0.25), alpha))
+		var face := Rect2(at[i] + Vector2(0, sink), Vector2(k, k - lip))
+		_round_rect(face, r, Color(Hud.CREAM.lightened(0.15 * _down if on else 0.0), alpha))
+		var ink := Color(Hud.INK, alpha)
+		if labels is String:
+			var c := face.get_center()
+			var dir: Vector2 = [Vector2.UP, Vector2.LEFT, Vector2.DOWN, Vector2.RIGHT][i]
+			var s := k * 0.2
+			var side := dir.orthogonal()
+			draw_colored_polygon(PackedVector2Array([c + dir * s, c - dir * s * 0.7 + side * s, c - dir * s * 0.7 - side * s]), ink)
+		else:
+			var ascent := Hud.ARCADE.get_ascent(fs)
+			draw_string(Hud.ARCADE, Vector2(face.position.x, face.position.y + face.size.y / 2 + ascent / 2 - 1), String(labels[i]), HORIZONTAL_ALIGNMENT_CENTER, k, fs, ink)
 
 
 ## The face button, round on its lip, and the diamond of four beside it.

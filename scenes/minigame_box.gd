@@ -10,7 +10,7 @@ extends Control
 const STAGE := MinigameStage.SIZE
 const PAD := 8.0
 ## the strip under the scene for the two lines of how to play
-const STRIP := 56.0
+const STRIP := 66.0
 const SIZE := Vector2(STAGE.x + PAD * 2, STAGE.y + PAD + STRIP)
 ## How far from the thief's head the box keeps, and from the screen's edge.
 const GAP := 48.0
@@ -123,7 +123,8 @@ func _show_how(lines: Array[String], controls: Dictionary) -> void:
 			var glyphs: Dictionary = controls.get("glyphs", {})
 			if glyphs.has(name):
 				var g := Glyph.new()
-				g.set_spec(glyphs[name], 20.0)
+				# The four to move stand two caps tall: a little smaller, to fit.
+				g.set_spec(glyphs[name], 18.0 if glyphs[name].get("kind") == "keys4" else 20.0)
 				row.add_child(g)
 			else:
 				row.add_child(_keycap(String(controls.get(name, "?"))))

@@ -1767,9 +1767,8 @@ func _draw_game_boxes() -> void:
 		var head := camera.unproject_position(_to_world(p.x, p.y, 1.6)) if g else Vector2.ZERO
 		var controls := _controls(i)
 		controls.glyphs = {"action": _glyph(i, "action"), "cancel": _glyph(i, "roll"), "move": _glyph(i, "move")}
-		if controls.glyphs.move.kind == "stick":
-			controls.glyphs.lr = controls.glyphs.move
-			controls.glyphs.ud = controls.glyphs.move
+		controls.glyphs.lr = controls.glyphs.move if controls.glyphs.move.kind == "stick" else _glyph(i, "lr")
+		controls.glyphs.ud = controls.glyphs.move if controls.glyphs.move.kind == "stick" else _glyph(i, "ud")
 		game_boxes[i].follow(g, head, _thief_colours()[i], controls)
 
 
@@ -1855,6 +1854,13 @@ func _glyph(i: int, input: String) -> Dictionary:
 		var device := int(seat.substr(4)) if seat.begins_with("pad:") else last_pad_device
 		var place: String = {"action": "west", "crouch": "south", "roll": "east"}.get(input, "south")
 		return {"kind": "pad", "pos": place, "family": _pad_family(device)}
+	# The four to move, where the hand finds them; left-right and up-down,
+	# the same four with the other two dimmed.
+	var four = "arrows" if seat == "kb_right" else ["W", "A", "S", "D"]
+	match input:
+		"move": return {"kind": "keys4", "labels": four}
+		"lr": return {"kind": "keys4", "labels": four, "lit": [false, true, false, true]}
+		"ud": return {"kind": "keys4", "labels": four, "lit": [true, false, true, false]}
 	var keys := _controls(i)
 	var label: String = {"move": keys.move, "action": keys.action, "roll": keys.cancel,
 		"crouch": "-" if seat == "kb_right" else "C"}.get(input, "?")
@@ -2991,8 +2997,13 @@ func _draw_hud(dt: float) -> void:
 		"name": Heist.loot.name,
 		"panel": Heist.panels_held() and not Heist.taken,
 	}
+	# What happened lately, in words (bottom left): only with the AI panel on,
+	# beside the guards' thinking.
+	var told: Array[String] = []
+	if show_ia:
+		told = log_lines
 	if not hud.menu_open():
-		hud.update_play(log_lines, job, way, COLOURS.switch_on if Heist.carrier != "" else Color(Heist.loot.colour), alarm)
+		hud.update_play(told, job, way, COLOURS.switch_on if Heist.carrier != "" else Color(Heist.loot.colour), alarm)
 	var cards: Array = []
 	for g in guards:
 		var card := {"name": g.name, "title": Text.t("MIND_SEEN") if g.sees_player else (g.decision.label if g.decision else Text.t("MIND_THINKING")), "colour": COLOURS.alert if g.sees_player else Hud.C.text}
