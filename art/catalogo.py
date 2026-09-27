@@ -20,8 +20,9 @@ Blender añade ".001" a un nombre repetido en el mismo fichero; al exportar se
 le quita (a objetos y materiales), así que dos piezas pueden tener cada una su
 "base" o su "oro".
 
-Una colección con la propiedad "sitio" ("case", "plinth" o "floor") avisa al
-exportar si la pieza no cabe en su sitio (FITS).
+Una colección con la propiedad "sitio" ("case", "plinth", "floor" o "botin":
+la pieza a robar, que flota sobre su vitrina) avisa al exportar si la pieza
+no cabe en su sitio (FITS).
 """
 import os
 import re
@@ -34,7 +35,7 @@ ART = os.path.dirname(os.path.abspath(__file__))
 MODELS = os.path.normpath(os.path.join(ART, "..", "assets", "models"))
 
 ## Tamaño máximo de cada sitio: [ancho, fondo, alto].
-FITS = {"case": (0.6, 0.6, 0.34), "plinth": (0.5, 0.5, 0.5), "floor": (0.8, 0.8, 1.1)}
+FITS = {"case": (0.6, 0.6, 0.34), "plinth": (0.5, 0.5, 0.5), "floor": (0.8, 0.8, 1.1), "botin": (0.5, 0.5, 0.5)}
 ## Hueco entre piezas en la fila, y la etiqueta: delante (más aún si la pieza
 ## es honda), tumbada en el suelo.
 GAP = 0.6

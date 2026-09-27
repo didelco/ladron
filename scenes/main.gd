@@ -213,7 +213,11 @@ func _ready() -> void:
 	_build_environment()
 	# A museum behind the title screen, so it is not a black void.
 	_new_round(1)
-	_show_title()
+	# The cover first, when the game is simply opened; the menu under it.
+	if OS.get_cmdline_user_args().is_empty() and TitleScreen.available():
+		_show_cover()
+	else:
+		_show_title()
 	# For recording and testing: `godot -- --autostart` skips the title, shows
 	# the mission for two seconds and starts the round; add --two for two thieves.
 	# --menu=story|generative|settings: open a menu straight away, to look at it.
@@ -260,6 +264,16 @@ func _ready() -> void:
 
 
 # --- Screens -----------------------------------------------------------------------
+
+## The title screen: the cover, and on any key the menu.
+func _show_cover() -> void:
+	phase = "cover"
+	var cover := TitleScreen.new()
+	cover.started.connect(func() -> void:
+		sfx.ui("ok")
+		_show_title())
+	add_child(cover)
+
 
 func _show_title() -> void:
 	phase = "title"
