@@ -1,5 +1,15 @@
 [
 	{
+		"file": "assets/sonidos/tick.wav",
+		"name": "tick",
+		"seconds": 0.25
+	},
+	{
+		"file": "assets/sonidos/lights.wav",
+		"name": "lights",
+		"seconds": 0.55
+	},
+	{
 		"file": "assets/sonidos/caught.wav",
 		"name": "caught",
 		"seconds": 2.0
@@ -18,6 +28,26 @@
 		"file": "assets/sonidos/ok.wav",
 		"name": "ok",
 		"seconds": 0.42
+	},
+	{
+		"file": "assets/sonidos/back.wav",
+		"name": "back",
+		"seconds": 0.19
+	},
+	{
+		"file": "assets/sonidos/step.wav",
+		"name": "step",
+		"seconds": 0.05
+	},
+	{
+		"file": "assets/sonidos/panel.wav",
+		"name": "panel",
+		"seconds": 0.21
+	},
+	{
+		"file": "assets/sonidos/pin.wav",
+		"name": "pin",
+		"seconds": 0.12
 	},
 	{
 		"file": "assets/sonidos/nav.wav",
@@ -148,35 +178,5 @@
 		"file": "assets/sonidos/pick.wav",
 		"name": "pick",
 		"seconds": 0.4
-	},
-	{
-		"file": "assets/sonidos/tick.wav",
-		"name": "tick",
-		"seconds": 0.25
-	},
-	{
-		"file": "assets/sonidos/lights.wav",
-		"name": "lights",
-		"seconds": 0.55
-	},
-	{
-		"file": "assets/sonidos/back.wav",
-		"name": "back",
-		"seconds": 0.19
-	},
-	{
-		"file": "assets/sonidos/step.wav",
-		"name": "step",
-		"seconds": 0.05
-	},
-	{
-		"file": "assets/sonidos/panel.wav",
-		"name": "panel",
-		"seconds": 0.21
-	},
-	{
-		"file": "assets/sonidos/pin.wav",
-		"name": "pin",
-		"seconds": 0.12
 	}
 ]

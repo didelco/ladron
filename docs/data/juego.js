@@ -6572,6 +6572,16 @@ window.JUEGO = {
  ],
  "sonidos": [
   {
+   "file": "assets/sonidos/tick.wav",
+   "name": "tick",
+   "seconds": 0.25
+  },
+  {
+   "file": "assets/sonidos/lights.wav",
+   "name": "lights",
+   "seconds": 0.55
+  },
+  {
    "file": "assets/sonidos/caught.wav",
    "name": "caught",
    "seconds": 2.0
@@ -6590,6 +6600,26 @@ window.JUEGO = {
    "file": "assets/sonidos/ok.wav",
    "name": "ok",
    "seconds": 0.42
+  },
+  {
+   "file": "assets/sonidos/back.wav",
+   "name": "back",
+   "seconds": 0.19
+  },
+  {
+   "file": "assets/sonidos/step.wav",
+   "name": "step",
+   "seconds": 0.05
+  },
+  {
+   "file": "assets/sonidos/panel.wav",
+   "name": "panel",
+   "seconds": 0.21
+  },
+  {
+   "file": "assets/sonidos/pin.wav",
+   "name": "pin",
+   "seconds": 0.12
   },
   {
    "file": "assets/sonidos/nav.wav",
@@ -6720,41 +6750,11 @@ window.JUEGO = {
    "file": "assets/sonidos/pick.wav",
    "name": "pick",
    "seconds": 0.4
-  },
-  {
-   "file": "assets/sonidos/tick.wav",
-   "name": "tick",
-   "seconds": 0.25
-  },
-  {
-   "file": "assets/sonidos/lights.wav",
-   "name": "lights",
-   "seconds": 0.55
-  },
-  {
-   "file": "assets/sonidos/back.wav",
-   "name": "back",
-   "seconds": 0.19
-  },
-  {
-   "file": "assets/sonidos/step.wav",
-   "name": "step",
-   "seconds": 0.05
-  },
-  {
-   "file": "assets/sonidos/panel.wav",
-   "name": "panel",
-   "seconds": 0.21
-  },
-  {
-   "file": "assets/sonidos/pin.wav",
-   "name": "pin",
-   "seconds": 0.12
   }
  ],
  "generado": {
-  "fecha": "27-09-2026 22:04",
-  "commit": "bc6fb82",
-  "rama": "worktree-agent-a5f1e8bdb216284e0"
+  "fecha": "27-09-2026 22:11",
+  "commit": "96fa3e8",
+  "rama": "main"
  }
 };
