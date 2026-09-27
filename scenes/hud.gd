@@ -14,14 +14,28 @@ const WALNUT_LIT := Color("#4a2f24")
 const WALNUT_EDGE := Color("#120906")
 const BRASS := Color("#d8ac5c")
 const BRASS_DARK := Color("#7a5a32")
+## The menus' frames: dark smoked glass with a thin pale rim, and a warm glow
+## round the one with the focus, lit like the cases in the hall behind.
+const GLASS := Color("#150f24", 0.84)
+const GLASS_LIT := Color("#241838", 0.92)
+const GLASS_EDGE := Color("#8f82b8", 0.5)
+const GLOW := Color("#ffae42")
+const GLOW_TEXT := Color("#fff0d6")
 
 ## Behind every menu: a museum wall at night — aubergine above, dark wood
 ## below, a faint striped wallpaper with a damask dot, the warm pool of a
 ## lamp from the top, a vignette round the edge.
+## Out of the game a picture of the museum hall shows instead (MENU_PICTURE),
+## darker at the top and bottom so the headings and buttons read, looking at a
+## different part of it on each screen (focus, SPOTS) and drifting.
 const BACKDROP_SHADER := """
 shader_type canvas_item;
 uniform vec4 top : source_color = vec4(0.16, 0.09, 0.2, 0.97);
 uniform vec4 bottom : source_color = vec4(0.08, 0.045, 0.035, 0.98);
+uniform sampler2D picture : filter_linear, repeat_disable;
+uniform float cover = 0.0;
+uniform vec2 focus = vec2(0.5);
+const float ZOOM = 1.15;
 void fragment() {
 	vec4 c = mix(top, bottom, smoothstep(0.0, 1.0, UV.y));
 	float stripe = step(0.5, fract(FRAGCOORD.x / 64.0));
@@ -30,13 +44,42 @@ void fragment() {
 	c.rgb += smoothstep(0.09, 0.06, length(g * vec2(1.0, 0.7))) * 0.018 * (1.0 - UV.y);
 	// A wainscot rail across the lower third.
 	c.rgb += smoothstep(0.004, 0.0, abs(UV.y - 0.72)) * 0.05;
+	if (cover > 0.0) {
+		vec2 pic = vec2(textureSize(picture, 0));
+		float screen = SCREEN_PIXEL_SIZE.y / SCREEN_PIXEL_SIZE.x;
+		float aspect = pic.x / pic.y;
+		vec2 span = vec2(screen / aspect, 1.0);
+		if (screen > aspect) {
+			span = vec2(1.0, aspect / screen);
+		}
+		span /= ZOOM;
+		vec2 drift = vec2(sin(TIME * 0.05), cos(TIME * 0.037)) * 0.02;
+		vec2 centre = clamp(focus + drift, span * 0.5, 1.0 - span * 0.5);
+		vec3 p = texture(picture, centre + (UV - 0.5) * span).rgb * 0.7;
+		// Darker at the top, under the heading, and at the bottom, under the buttons.
+		p *= 1.0 - 0.35 * smoothstep(0.3, 0.0, UV.y);
+		p *= 1.0 - 0.4 * pow(clamp((UV.y - 0.6) / 0.4, 0.0, 1.0), 2.0);
+		c.rgb = mix(c.rgb, p, cover);
+	}
 	// The lamp: warm light pooling from the top centre, breathing slowly.
 	float lamp = exp(-pow(distance(UV * vec2(1.6, 1.0), vec2(0.8, 0.05)) * 1.9, 2.0));
-	c.rgb += vec3(0.45, 0.28, 0.12) * lamp * (0.3 + 0.03 * sin(TIME * 1.3));
+	c.rgb += vec3(0.45, 0.28, 0.12) * lamp * (0.3 + 0.03 * sin(TIME * 1.3)) * (1.0 - cover);
 	c.rgb *= 1.0 - distance(UV, vec2(0.5)) * 0.55;
 	COLOR = c;
 }
 """
+const MENU_PICTURE := "res://assets/ui/fondo_menu.png"
+## Where the menus out of the game look in MENU_PICTURE (Hud.backdrop), as
+## fractions of it: the title at the lit case in the middle, the story at the
+## vase on the left, the generative at the cases on the right, the challenges
+## at the tall windows, the settings at the banners.
+const SPOTS := {
+	"title": Vector2(0.5, 0.6),
+	"story": Vector2(0.15, 0.6),
+	"generative": Vector2(0.85, 0.6),
+	"challenge": Vector2(0.7, 0.2),
+	"settings": Vector2(0.3, 0.2),
+}
 
 ## A picture with rounded corners, to sit inside a rounded card.
 const ROUNDED_SHADER := """
@@ -100,6 +143,10 @@ var _panel_box: VBoxContainer
 ## starts fading out, while the panel itself is still visible
 var _shown := false
 var _fade: Tween
+## The backdrop panning or fading between the picture and the wall.
+var _backdrop: Tween
+## where in the picture it looks (the wall keeps the last, to fade from)
+var _focus := Vector2(0.5, 0.5)
 ## what is drawn over the game while playing; hidden behind a menu
 var _play: Array[Control] = []
 var _count: Label
@@ -431,13 +478,19 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 		parent.add_child(row)
 		var line: Array = []
 		for c in item.cards:
-			var card := _card(c, item.get("width", 300))
+			var card := _card(c, item.get("width", 300), item.get("arrows", false))
 			row.add_child(card)
 			card.set_meta("selected", c.get("selected", false) or c.get("focus", false))
 			line.append(card)
 			if st.first == null or c.get("focus", false):
 				st.first = card
 		st.rows.append(line)
+		if item.get("arrows", false):
+			row.add_theme_constant_override("separation", 28)
+			row.add_child(_card_arrow(">", line, 1))
+			row.add_child(_card_arrow("<", line, -1))
+			row.move_child(row.get_child(-1), 0)
+			parent.add_child(_pedestal(line, item.get("width", 300)))
 	elif item.has("nights"):
 		# The nights as stops on a map, the road winding through them.
 		var map := NightMap.new(item)
@@ -520,12 +573,12 @@ func _table(item: Dictionary, parent: BoxContainer) -> void:
 	for r in rows.size():
 		if r == heads:
 			var rule := ColorRect.new()
-			rule.color = BRASS_DARK
+			rule.color = GLASS_EDGE
 			rule.custom_minimum_size = Vector2(0, 2)
 			lines.add_child(rule)
 		var stripe := PanelContainer.new()
 		var bg := StyleBoxFlat.new()
-		bg.bg_color = WALNUT_LIT if r >= heads and (r - heads) % 2 == 0 else Color(0, 0, 0, 0)
+		bg.bg_color = Color(1, 1, 1, 0.05) if r >= heads and (r - heads) % 2 == 0 else Color(0, 0, 0, 0)
 		bg.set_corner_radius_all(8)
 		stripe.add_theme_stylebox_override("panel", bg)
 		lines.add_child(stripe)
@@ -657,7 +710,7 @@ func _list(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 			b.add_theme_stylebox_override(state, s)
 		b.add_theme_color_override("font_color", colour)
 		for key in ["font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
-			b.add_theme_color_override(key, INK)
+			b.add_theme_color_override(key, GLOW_TEXT)
 		b.focus_entered.connect(func() -> void:
 			if not _quiet:
 				ui_sound.emit("nav")
@@ -758,7 +811,7 @@ func _button(b: Dictionary) -> Button:
 	_lift(button)
 	button.add_theme_color_override("font_color", C.gold if selected else CREAM)
 	for key in ["font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
-		button.add_theme_color_override(key, INK)
+		button.add_theme_color_override(key, GLOW_TEXT)
 	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	if b.has("icon"):
 		var icon: Texture2D = b.icon
@@ -770,6 +823,13 @@ func _button(b: Dictionary) -> Button:
 		button.custom_minimum_size = Vector2(w + 40, h + 30)
 		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
+	if b.has("glyph"):
+		button.icon = glyph(b.glyph)
+		button.add_theme_constant_override("icon_max_width", 20)
+		button.add_theme_constant_override("h_separation", 14)
+		button.add_theme_color_override("icon_normal_color", CREAM)
+		for key in ["icon_hover_color", "icon_focus_color", "icon_pressed_color", "icon_hover_pressed_color"]:
+			button.add_theme_color_override(key, GLOW)
 	if b.has("step"):
 		_stepper(button, b.step)
 		button.pressed.connect(func() -> void: ui_sound.emit("ok"))
@@ -794,20 +854,24 @@ func _stepper(button: Button, step: Callable) -> void:
 				button.accept_event())
 
 
-## The frame every menu control shares: a walnut pill with a brass edge
-## and a raised lip underneath; with the focus it turns to polished brass.
+## The frame every menu control shares: a pill of dark glass with a thin
+## pale rim and a soft shadow; with the focus the rim turns warm and glows.
 ## selected (the choice in force) keeps a rim of its colour while it waits.
 func _frame(colour: Color, lit: bool, selected := false, radius := 26) -> StyleBoxFlat:
 	var st := StyleBoxFlat.new()
-	st.bg_color = BRASS if lit else WALNUT
+	st.bg_color = GLASS_LIT if lit else GLASS
 	st.set_corner_radius_all(radius)
 	st.anti_aliasing = true
-	st.border_color = CREAM if lit else (colour.lerp(BRASS, 0.6) if selected else BRASS_DARK)
+	st.border_color = GLOW if lit else (colour.lerp(GLOW, 0.5) if selected else GLASS_EDGE)
 	st.set_border_width_all(3 if lit or selected else 2)
-	# The raised edge: a darker shadow straight below, no blur.
-	st.shadow_color = Color("#5a3a16") if lit else WALNUT_EDGE
-	st.shadow_size = 1
-	st.shadow_offset = Vector2(0, 6 if lit else 4)
+	if lit:
+		st.shadow_color = Color(GLOW, 0.45)
+		st.shadow_size = 16
+		st.shadow_offset = Vector2.ZERO
+	else:
+		st.shadow_color = Color(0, 0, 0, 0.35)
+		st.shadow_size = 6
+		st.shadow_offset = Vector2(0, 3)
 	return st
 
 
@@ -824,7 +888,7 @@ func _round_corners(r: TextureRect, box: Vector2, radius: float) -> void:
 
 ## Grows a little under the mouse or the focus; the mouse takes the focus,
 ## so the arrows and the mouse never point at two different things.
-func _lift(c: Control) -> void:
+func _lift(c: Control, grow := 1.07, rest := 1.0) -> void:
 	c.focus_entered.connect(func() -> void:
 		if not _quiet:
 			ui_sound.emit("nav"))
@@ -835,15 +899,117 @@ func _lift(c: Control) -> void:
 	# A springy pop, overshooting a little, like a jelly button.
 	c.focus_entered.connect(func() -> void:
 		c.scale = Vector2(0.96, 1.04)
-		create_tween().tween_property(c, "scale", Vector2.ONE * 1.07, 0.35).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT))
-	c.focus_exited.connect(func() -> void: create_tween().tween_property(c, "scale", Vector2.ONE, 0.15).set_trans(Tween.TRANS_QUAD))
+		create_tween().tween_property(c, "scale", Vector2.ONE * grow, 0.35).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT))
+	c.focus_exited.connect(func() -> void: create_tween().tween_property(c, "scale", Vector2.ONE * rest, 0.15).set_trans(Tween.TRANS_QUAD))
 	if c is BaseButton:
 		# A squash on the press.
 		(c as BaseButton).button_down.connect(func() -> void: c.scale = Vector2(1.1, 0.92))
 
 
+const DIM_CARD := Color(0.7, 0.7, 0.8)
+
+
+## An arrow beside a row of cards: a click moves the focus to the card
+## beside the one that has it, round the ends. It never takes the focus.
+func _card_arrow(text: String, cards: Array, dir: int) -> Button:
+	var b := Button.new()
+	b.text = text
+	b.flat = true
+	b.focus_mode = Control.FOCUS_NONE
+	b.add_theme_font_override("font", ARCADE)
+	b.add_theme_font_size_override("font_size", 28)
+	for key in ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color"]:
+		b.add_theme_color_override(key, GLOW if key != "font_color" else CREAM)
+	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	b.pressed.connect(func() -> void:
+		var at := maxi(0, cards.find(get_viewport().gui_get_focus_owner()))
+		(cards[posmod(at + dir, cards.size())] as Control).grab_focus())
+	return b
+
+
+## Under a row of cards, a stone plinth lit from above that slides under the
+## card with the focus: a slab with a warm glowing lip on a wider, darker one.
+func _pedestal(cards: Array, width: int) -> Control:
+	var holder := Control.new()
+	holder.custom_minimum_size = Vector2(0, 34)
+	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var plinth := Control.new()
+	plinth.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	plinth.size = Vector2(width + 120, 34)
+	holder.add_child(plinth)
+	var slabs := [[Rect2(40, 0, width + 40, 16), Color("#1d1428"), true], [Rect2(0, 14, width + 120, 18), Color("#110b19"), false]]
+	for s in slabs:
+		var panel := Panel.new()
+		panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		panel.position = s[0].position
+		panel.size = s[0].size
+		var st := StyleBoxFlat.new()
+		st.bg_color = s[1]
+		st.set_corner_radius_all(4)
+		if s[2]:
+			st.border_color = GLOW
+			st.border_width_top = 2
+			st.shadow_color = Color(GLOW, 0.35)
+			st.shadow_size = 14
+		panel.add_theme_stylebox_override("panel", st)
+		plinth.add_child(panel)
+	plinth.move_child(plinth.get_child(1), 0)
+	var place := func(card: Control, slide: bool) -> void:
+		var x := card.global_position.x - holder.global_position.x + card.size.x / 2 - plinth.size.x / 2
+		if slide:
+			create_tween().tween_property(plinth, "position:x", x, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		else:
+			plinth.position.x = x
+	for card in cards:
+		(card as Control).focus_entered.connect(func() -> void: place.call(card, true))
+	holder.resized.connect(func() -> void:
+		var focused := get_viewport().gui_get_focus_owner()
+		place.call(focused if focused in cards else cards[0], false))
+	return holder
+
+
+static var _glyphs := {}
+
+
+## A small line icon for a button, drawn here at four samples a pixel:
+## "settings" a cog, "quit" an arrow going into a door.
+static func glyph(kind: String) -> ImageTexture:
+	if _glyphs.has(kind):
+		return _glyphs[kind]
+	const N := 36
+	const SS := 4
+	var img := Image.create(N, N, false, Image.FORMAT_RGBA8)
+	for y in N:
+		for x in N:
+			var hit := 0
+			for sy in SS:
+				for sx in SS:
+					var p := Vector2(x + (sx + 0.5) / SS, y + (sy + 0.5) / SS) - Vector2(N, N) / 2
+					if _glyph_in(kind, p):
+						hit += 1
+			img.set_pixel(x, y, Color(1, 1, 1, float(hit) / (SS * SS)))
+	_glyphs[kind] = ImageTexture.create_from_image(img)
+	return _glyphs[kind]
+
+
+static func _glyph_in(kind: String, p: Vector2) -> bool:
+	if kind == "settings":
+		var r := p.length()
+		var teeth := 13.0 if cos(p.angle() * 8.0) > 0.2 else 10.0
+		return r < teeth and r > 4.5
+	# quit: an open door (a frame on the right, open on the left) and an
+	# arrow going in.
+	var frame := Rect2(-5, -13, 18, 26)
+	var inside := frame.grow(-3)
+	var in_frame := frame.has_point(p) and not inside.has_point(p) and not (p.x < -1 and absf(p.y) < 6)
+	var shaft := p.x > -15 and p.x < 5 and absf(p.y) < 1.6
+	var head := p.x >= 0 and p.x < 8 and absf(p.y) < 8 - p.x
+	return in_frame or shaft or head
+
+
 ## A big card: a picture, a title and a line under it.
-func _card(c: Dictionary, width: int) -> Button:
+## back: the cards waiting sit smaller, further back (the title's row).
+func _card(c: Dictionary, width: int, back := false) -> Button:
 	var b := Button.new()
 	b.focus_mode = Control.FOCUS_ALL
 	var colour: Color = c.get("colour", C.safe)
@@ -851,11 +1017,7 @@ func _card(c: Dictionary, width: int) -> Button:
 	for state in ["normal", "hover", "pressed", "focus"]:
 		var st := _frame(colour, state != "normal", selected, 22)
 		if state != "normal":
-			# A card keeps its wood face with the focus: a brass-lit rim says it.
-			st.bg_color = WALNUT_LIT
-			st.border_color = colour.lerp(BRASS, 0.75)
-			st.set_border_width_all(5)
-			st.shadow_color = WALNUT_EDGE
+			st.set_border_width_all(4)
 		st.set_content_margin_all(12)
 		b.add_theme_stylebox_override(state, st)
 	var box := VBoxContainer.new()
@@ -898,7 +1060,7 @@ func _card(c: Dictionary, width: int) -> Button:
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	height += 24
 	if c.has("text"):
-		var l := _label(12, INK_SOFT, box)
+		var l := _label(12, C.dim, box)
 		l.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
 		l.text = c.text
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -920,7 +1082,13 @@ func _card(c: Dictionary, width: int) -> Button:
 		return b
 	b.pressed.connect(c.call)
 	b.pressed.connect(func() -> void: ui_sound.emit("ok"))
-	_lift(b)
+	var rest := 0.9 if back else 1.0
+	_lift(b, 1.1, rest)
+	b.scale = Vector2.ONE * rest
+	# The ones waiting sit back in the dark; the one with the focus comes up.
+	b.modulate = DIM_CARD
+	b.focus_entered.connect(func() -> void: create_tween().tween_property(b, "modulate", Color.WHITE, 0.2))
+	b.focus_exited.connect(func() -> void: create_tween().tween_property(b, "modulate", DIM_CARD, 0.2))
 	return b
 
 
@@ -1041,7 +1209,41 @@ func _fade_panel(to: float) -> void:
 	_fade = create_tween()
 	_fade.tween_property(_panel, "modulate:a", to, FADE_S * absf(to - _panel.modulate.a))
 	if to == 0.0:
-		_fade.tween_callback(func(): _panel.visible = false)
+		_fade.tween_callback(func() -> void:
+			_panel.visible = false
+			backdrop(null))
+
+
+## Behind the menus, MENU_PICTURE looking at focus (a point in it, see
+## SPOTS), or the museum wall with null. Menu to menu it pans and
+## fades across; a menu coming up takes it at once. The wall comes back when
+## the menu goes away, so the menus over the game keep it.
+func backdrop(focus: Variant) -> void:
+	var m := _panel.material as ShaderMaterial
+	if focus != null and m.get_shader_parameter("picture") == null:
+		if not ResourceLoader.exists(MENU_PICTURE):
+			return
+		m.set_shader_parameter("picture", load(MENU_PICTURE))
+	if _backdrop:
+		_backdrop.kill()
+	var cover := 0.0 if focus == null else 1.0
+	if focus != null:
+		_focus = focus
+	if not (_panel.visible and _panel.modulate.a > 0.5):
+		m.set_shader_parameter("cover", cover)
+		m.set_shader_parameter("focus", _focus)
+		return
+	_backdrop = create_tween().set_parallel().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	# Through set_shader_parameter: a parameter never set yet is not a
+	# property the tween can find.
+	var was_cover: Variant = m.get_shader_parameter("cover")
+	var was_focus: Variant = m.get_shader_parameter("focus")
+	_backdrop.tween_method(func(v: float) -> void: m.set_shader_parameter("cover", v), 0.0 if was_cover == null else float(was_cover), cover, 0.5)
+	if was_focus != null and typeof(was_focus) == typeof(_focus):
+		_backdrop.tween_method(func(v: Variant) -> void: m.set_shader_parameter("focus", v), was_focus, _focus, 1.4)
+	else:
+		m.set_shader_parameter("focus", _focus)
+
 
 
 func menu_open() -> bool:

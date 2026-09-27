@@ -349,8 +349,8 @@ func _build() -> void:
 	bar.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
 	bar.offset_top = -BAR
 	var bst := StyleBoxFlat.new()
-	bst.bg_color = Color(Hud.WALNUT, 0.96)
-	bst.border_color = Hud.BRASS_DARK
+	bst.bg_color = Hud.GLASS
+	bst.border_color = Hud.GLASS_EDGE
 	bst.border_width_top = 3
 	bst.set_content_margin_all(10)
 	bar.add_theme_stylebox_override("panel", bst)
@@ -423,9 +423,9 @@ func _build() -> void:
 	# The panel of choices, floating over the bar.
 	_flyout = PanelContainer.new()
 	var st := StyleBoxFlat.new()
-	st.bg_color = Color(Hud.WALNUT, 0.97)
-	st.border_color = Hud.BRASS
-	st.set_border_width_all(3)
+	st.bg_color = Hud.GLASS
+	st.border_color = Hud.GLASS_EDGE
+	st.set_border_width_all(2)
 	st.set_corner_radius_all(14)
 	st.set_content_margin_all(12)
 	st.shadow_color = Color(0, 0, 0, 0.5)
@@ -522,20 +522,23 @@ func _look(b: Button, selected: bool) -> void:
 	for state in ["normal", "hover", "pressed", "focus"]:
 		var lit: bool = state != "normal"
 		var st := StyleBoxFlat.new()
-		st.bg_color = Hud.BRASS if lit else (Hud.WALNUT_LIT if selected else Hud.WALNUT)
+		st.bg_color = Hud.GLASS_LIT if lit or selected else Hud.GLASS
 		st.set_corner_radius_all(12)
-		st.border_color = Hud.CREAM if lit else (colour if selected else Hud.BRASS_DARK)
+		st.border_color = Hud.GLOW if lit else (colour if selected else Hud.GLASS_EDGE)
 		st.set_border_width_all(3 if lit or selected else 2)
+		if lit:
+			st.shadow_color = Color(Hud.GLOW, 0.4)
+			st.shadow_size = 10
 		st.set_content_margin_all(6)
 		b.add_theme_stylebox_override(state, st)
 	b.add_theme_color_override("font_color", colour if selected else Hud.CREAM)
 	for key in ["font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
-		b.add_theme_color_override(key, Hud.INK)
+		b.add_theme_color_override(key, Hud.GLOW_TEXT)
 	# A drawn icon goes the colour of the text; a picture stays as it is.
 	if not b.has_meta("photo"):
 		b.add_theme_color_override("icon_normal_color", colour if selected else Hud.CREAM)
 		for key in ["icon_hover_color", "icon_focus_color", "icon_pressed_color", "icon_hover_pressed_color"]:
-			b.add_theme_color_override(key, Hud.INK)
+			b.add_theme_color_override(key, Hud.GLOW)
 
 
 ## A ready-made room as a little plan, in the plan's own colours.

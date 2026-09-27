@@ -282,20 +282,21 @@ func _show_cover() -> void:
 
 
 func _show_title() -> void:
+	hud.backdrop(Hud.SPOTS.title)
 	phase = "title"
 	testing = null
 	_drop_preview()
 	hud.show_menu([
-		{"title": Text.t("MENU_TITLE"), "size": 64},
 		{"cards": [
-			{"title": Text.t("MENU_STORY"), "text": Text.t("MENU_STORY_TEXT"), "stage": MenuStage.make("story"), "call": _show_story_menu, "colour": Hud.C.safe},
 			{"title": Text.t("MENU_GENERATIVE"), "text": Text.t("MENU_GENERATIVE_TEXT"), "stage": MenuStage.make("generative"), "call": _show_generative_menu, "colour": Hud.C.gold},
+			{"title": Text.t("MENU_STORY"), "text": Text.t("MENU_STORY_TEXT"), "stage": MenuStage.make("story"), "call": _show_story_menu, "colour": Hud.C.safe, "focus": true},
 			{"title": Text.t("MENU_CHALLENGE"), "text": Text.t("MENU_CHALLENGE_TEXT"), "stage": MenuStage.make("museum:large"), "call": _show_challenge_menu, "colour": Hud.C.green},
-		], "width": 250},
-		{"gap": 18},
-		{"buttons": [{"text": Text.t("MENU_SETTINGS"), "call": _show_settings.bind("title"), "colour": Hud.C.dim}], "small": true},
-		{"gap": 10},
-		{"buttons": [{"text": Text.t("MENU_QUIT"), "call": _quit, "colour": Hud.C.dim}], "small": true},
+		], "width": 270, "arrows": true},
+		{"gap": 40},
+		{"buttons": [
+			{"text": Text.t("MENU_SETTINGS"), "glyph": "settings", "call": _show_settings.bind("title"), "colour": Hud.C.dim},
+			{"text": Text.t("MENU_QUIT"), "glyph": "quit", "call": _quit, "colour": Hud.C.dim},
+		], "row": true, "small": true, "width": 260},
 	])
 	hud.show_version()
 
@@ -317,6 +318,7 @@ var _night_maps := {}
 ## beside it the one the list is on: its plan and what kind of night it is.
 ## Pressing a line opens it; a new map opens the editor.
 func _show_challenge_menu() -> void:
+	hud.backdrop(Hud.SPOTS.challenge)
 	phase = "menu"
 	challenge_delete = false
 	_drop_preview()
@@ -417,6 +419,7 @@ func _night_as_map(n: int) -> MapFile:
 ## One story night: its plan, then edit it or, touched up, put it back as the
 ## night builds it.
 func _show_night_map(n: int) -> void:
+	hud.backdrop(Hud.SPOTS.challenge)
 	phase = "challenge"
 	challenge_at = "night:%d" % n
 	var m := _night_as_map(n)
@@ -459,6 +462,7 @@ func _challenge_info(m: MapFile) -> String:
 ## One map: its plan, then play it with one to four thieves, edit it, or
 ## (the player's own) delete it.
 func _show_challenge_map(m: MapFile) -> void:
+	hud.backdrop(Hud.SPOTS.challenge)
 	phase = "challenge"
 	challenge_map = m
 	var items: Array = [
@@ -584,6 +588,7 @@ func _quit() -> void:
 ## the nights (Story.unlocked), shown on its card. A gang then says which
 ## controls are whose (_show_join), and on to the town (_show_story_map).
 func _show_story_menu() -> void:
+	hud.backdrop(Hud.SPOTS.story)
 	phase = "story_players"
 	var cards: Array = []
 	for n in range(1, 5):
@@ -617,6 +622,7 @@ func _story_gang(n: int) -> void:
 ## open. Landing on one says what it is and how far into it you are;
 ## pressing it goes in (_show_museum).
 func _show_story_map() -> void:
+	hud.backdrop(Hud.SPOTS.story)
 	phase = "story_map"
 	var reached := Story.unlocked(players)
 	story_pick = clampi(story_pick, 1, reached)
@@ -650,6 +656,7 @@ func _pick_museum(m: int) -> void:
 ## far can be picked), the piece of the one picked turning under a light.
 ## Pressing a room, or ROBAR, plays it.
 func _show_museum(m: int) -> void:
+	hud.backdrop(Hud.SPOTS.story)
 	phase = "museum"
 	var reached := Story.unlocked(players)
 	var nights := Story.nights_in(m)
@@ -693,6 +700,7 @@ func _pick_night(n: int) -> void:
 ## The generative mode: difficulty and museum size as cards, then play with
 ## one thief, two or three.
 func _show_generative_menu() -> void:
+	hud.backdrop(Hud.SPOTS.generative)
 	phase = "menu"
 	var levels: Array = []
 	for k in ["easy", "medium", "hard"]:
@@ -897,6 +905,8 @@ func _dots(at: int, count: int) -> String:
 ## the title and from the pause. Each line is a setting (Hud._stepper): Enter
 ## or a click moves it on, ← and → move it down and up; each change is saved.
 func _show_settings(from: String, page := "") -> void:
+	if from == "title":
+		hud.backdrop(Hud.SPOTS.settings)
 	_drop_preview()
 	settings_from = from
 	settings_page = page
@@ -1096,6 +1106,7 @@ func _asset_loot() -> Array:
 
 
 func _show_assets(tab: String, index: int) -> void:
+	hud.backdrop(Hud.SPOTS.settings)
 	phase = "assets"
 	assets_tab = tab
 	var tabs: Array = []
