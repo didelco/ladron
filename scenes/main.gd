@@ -1211,21 +1211,15 @@ func _quit_to_title() -> void:
 	_leave_game(_show_title)
 
 
-## Before a night: a briefing of a page or three, back and next along the
-## bottom — in the story, the piece and its tale, then what is new tonight
-## (if anything is); out of it, the piece's tale if it has one; in every
-## mode, the plan: the map and the rules for the
-## night (Briefing).
+## Before a night, the same in every mode: the piece's tale if it has one,
+## what is new tonight if anything is (only the story teaches), and the plan:
+## the map and the rules for the night (Briefing).
 func _brief_pages() -> Array:
 	var pages := []
-	if mode == "story":
+	if String(Heist.loot.get("story", "")).strip_edges() != "":
 		pages.append("story")
-		if not Story.news(level, players).is_empty():
-			pages.append("news")
-	elif String(Heist.loot.get("story", "")).strip_edges() != "":
-		# Out of the story the tale is optional: a generated piece comes
-		# with one, a saved map's only if it was written in the editor.
-		pages.append("story")
+	if mode == "story" and not Story.news(level, players).is_empty():
+		pages.append("news")
 	pages.append("plan")
 	return pages
 
