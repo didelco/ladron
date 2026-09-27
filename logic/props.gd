@@ -53,7 +53,9 @@ static func name_of(kind: String) -> String:
 
 
 ## Stand a few about the museum: against a wall, off the doorways, away from
-## where you come in and from the spots the job needs clear.
+## where you come in and from the spots the job needs clear. A suit of
+## armour is a place to hide too (Hideouts): no more than the museum's share
+## (Hideouts.suits_of), none near another place to hide or pedestal.
 static func place(seed: int, avoid: Array[Vector2i]) -> void:
 	list.clear()
 	knocked.clear()
@@ -96,6 +98,10 @@ static func place(seed: int, avoid: Array[Vector2i]) -> void:
 			continue
 		spots.append([t, faces[0]])
 	var wanted := maxi(3, Museum.open_tiles.size() / 40)
+	# A suit of armour standing is a place to hide (Hideouts): only so many,
+	# each far from the others and from the big pieces to hide in.
+	var hideouts := Hideouts.taken()
+	var suits := Hideouts.suits_of(Museum.open_tiles.size(), Hideouts.all().size())
 	var taken := {}
 	var tries := 0
 	while list.size() < wanted and tries < 400 and not spots.is_empty():
@@ -120,6 +126,18 @@ static func place(seed: int, avoid: Array[Vector2i]) -> void:
 		var pull := 0.22 if s[1] != Vector2i.ZERO else 0.0
 		p.x = t.x + 0.5 + p.face.x * pull
 		p.y = t.y + 0.5 + p.face.y * pull
+		if p.kind == "armour":
+			if suits > 0 and Hideouts.far_from(Vector2(p.x, p.y), hideouts):
+				suits -= 1
+				hideouts.append(Vector2(p.x, p.y))
+			else:
+				# No room for another: one of the rest, shared out as usual.
+				var again := rand.next() * (1.0 - WEIGHTS[-1])
+				for k in KINDS.size() - 1:
+					again -= WEIGHTS[k]
+					p.kind = KINDS[k]
+					if again < 0.0:
+						break
 		list.append(p)
 
 

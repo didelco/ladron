@@ -26,7 +26,8 @@ func _init() -> void:
 		for seed in range(1, 41):
 			Sim.new_map(seed * 7919, size)
 			Hideouts.reset()
-			Hideouts.spread(seed, [] as Array[Vector2i], false, true, false)
+			Hideouts.spread(seed, [] as Array[Vector2i], false, true)
+			Collection.lay_out()
 			for t in Museum.cover_tiles:
 				if not Museum.big_piece_at(t).is_empty():
 					continue
@@ -46,7 +47,9 @@ func _init() -> void:
 					if Museum.tile_at(t.x + ahead.x + 0.5, t.y + ahead.y + 0.5) != Tiles.FLOOR:
 						walled_before += 1
 				# As it is now.
-				var pick := MuseumView.theme_pick(theme, t)
+				var pick := Collection.at(t)
+				if pick.is_empty():
+					continue
 				if pick[1] != old[1]:
 					swapped += 1
 				if pick[1] in Themes.FRONTED:

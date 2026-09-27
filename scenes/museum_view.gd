@@ -152,6 +152,160 @@ static func asset(name: String) -> Node3D:
 static var _asset_mats := {}
 
 
+## The arcade machines' games (Themes.VARIANTS), one look each, in the modern
+## age's pop colours: the cabinet ("mueble"), the marquee and its stripes
+## ("marquesina", with the lid, what the camera sees most), the screen, and
+## what is on it, in pixels ("." is the screen, a letter one of its inks).
+## You play pong on every one of them all the same (Arcades).
+const ARCADE_GAMES := {
+	# Table tennis: the first machine, as it was modelled.
+	"tenis": {"mueble": "#7a3ce0", "marquesina": "#ffd400", "screen": "#0b3326", "ink": {"a": "#3cffb0"},
+		"art": ["........a.......", ".a..............", ".a......a.......", ".a..............", "........a...a...",
+			"..............a.", "........a.....a.", "..............a.", "........a......."]},
+	# Invaders from space, rank on rank, and the gun under them.
+	"invasores": {"mueble": "#00c2d8", "marquesina": "#ff4f9a", "screen": "#07071a",
+		"ink": {"g": "#7dff5a", "w": "#ffffff", "c": "#00c2d8"},
+		"art": ["................", "..g...g...g...g.", ".ggg.ggg.ggg.ggg", ".g.g.g.g.g.g.g.g", "................",
+			"..........w.....", "................", ".......c........", "......ccc......."]},
+	# The dot-eater, a ghost after it, in a maze.
+	"comecocos": {"mueble": "#ffd400", "marquesina": "#00c2d8", "screen": "#0a0f3a",
+		"ink": {"b": "#2f5fd0", "y": "#ffd400", "w": "#ffe9c0", "p": "#ff4f9a"},
+		"art": ["bbbbbbbbbbbbbbbb", "................", ".yyy........ppp.", "yy.......w.ppppp", "y..w..w..w.ppppp",
+			"yy.........ppppp", ".yyy.......p.p.p", "................", "bbbbbbbbbbbbbbbb"]},
+	# Falling blocks, a well filling up.
+	"bloques": {"mueble": "#ff4f9a", "marquesina": "#8a4dff", "screen": "#120a28",
+		"ink": {"c": "#00c2d8", "y": "#ffd400", "p": "#ff4f9a", "g": "#5cff7a", "v": "#8a4dff"},
+		"art": ["......ppp.......", ".......p........", "................", "................", "................",
+			"c.............yy", "cc..gg....vv.yyy", "ccggg.yyyvvv.ppp", "cyyggppyyvvcc.pp"]},
+	# The snake, and the apple it is after.
+	"serpiente": {"mueble": "#3ccf6a", "marquesina": "#ff8a1c", "screen": "#0e2a12",
+		"ink": {"s": "#9dff3a", "r": "#ff3a4a"},
+		"art": ["................", "..ssssssss......", "..s.......s.....", "..s.......s.....", "..s.......sssss.",
+			"..s..........s..", "..sss......r.s..", "................", "................"]},
+	# Racing: two cars on a road, seen from above.
+	"carreras": {"mueble": "#ff5a36", "marquesina": "#f4f2ec", "screen": "#2a2a33",
+		"ink": {"g": "#3ccf6a", "w": "#f4f2ec", "c": "#00c2d8", "y": "#ffd400"},
+		"art": ["gg.....w......gg", "gg..c.........gg", "gg.ccc.w......gg", "gg..c.........gg", "gg.....w......gg",
+			"gg.........y..gg", "gg.....w..yyy.gg", "gg.........y..gg", "gg.....w......gg"]},
+}
+## The first model's materials (art/temas/moderna.py), before they were named
+## the way the game tints them: as which "color_..." each is taken.
+const ARCADE_OLD_NAMES := {"morado": "color_mueble", "morado_oscuro": "color_mueble_oscuro_40", "cartel": "color_marquesina"}
+
+
+## Dress an arcade machine (asset(Arcades.MODEL)) as one of its games
+## (ARCADE_GAMES), cheaper than a model per game. As with the pieces to steal
+## (LootModels), the materials whose name starts with "color" take the
+## game's colours: "color_mueble" the cabinet's, "color_marquesina" the
+## marquee's, and a "_claro_N" or "_oscuro_N" after it N % lighter or
+## darker; the rest (the screen, the black, the metal) keep their own. And on
+## the screen (the material whose name starts with "pantalla"), the game's
+## picture.
+static func arcade_game(model: Node3D, game: String) -> void:
+	var look: Dictionary = ARCADE_GAMES[game]
+	for mi: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
+		var screen := false
+		for s in mi.mesh.get_surface_count():
+			var src := mi.mesh.surface_get_material(s)
+			if src == null:
+				continue
+			var name: String = ARCADE_OLD_NAMES.get(src.resource_name, src.resource_name)
+			screen = screen or name.begins_with("pantalla")
+			var c := _arcade_colour(look, name)
+			if c.a == 0.0:
+				continue
+			var key := "%s/%s" % [game, src.resource_name]
+			if not _arcade_mats.has(key):
+				var m := mi.get_active_material(s).duplicate() as BaseMaterial3D
+				m.albedo_color = c
+				if m.emission_enabled:
+					m.emission = c
+				_arcade_mats[key] = m
+			mi.set_surface_override_material(s, _arcade_mats[key])
+		if screen:
+			_arcade_screen(mi, game)
+
+
+## The game's colour for a material named "color_<part>[_claro|_oscuro_N]",
+## or none (transparent) for any other.
+static func _arcade_colour(look: Dictionary, name: String) -> Color:
+	var bits := name.split("_")
+	if bits.size() < 2 or bits[0] != "color" or not look.has(bits[1]):
+		return Color(0, 0, 0, 0)
+	var c := Color(look[bits[1]])
+	if bits.size() >= 4 and bits[2] == "claro":
+		c = c.lightened(int(bits[3]) / 100.0)
+	elif bits.size() >= 4 and bits[2] == "oscuro":
+		c = c.darkened(int(bits[3]) / 100.0)
+	return c
+
+
+## The game's picture on the screen's glass, just in front of it: facing the
+## way the glass faces (its broad faces, front and back, towards +Z), as
+## wide as it is and leaning back as it does.
+static func _arcade_screen(mi: MeshInstance3D, game: String) -> void:
+	var faces := mi.mesh.get_faces()
+	var normal := Vector3.ZERO
+	var centre := Vector3.ZERO
+	var area := 0.0
+	var mids: Array[Vector3] = []
+	for i in range(0, faces.size(), 3):
+		var n := (faces[i + 1] - faces[i]).cross(faces[i + 2] - faces[i])
+		if n.z < 0.0:
+			n = -n
+		if n.length() == 0.0 or n.normalized().z < 0.3:
+			continue
+		var mid := (faces[i] + faces[i + 1] + faces[i + 2]) / 3.0
+		normal += n
+		centre += mid * n.length()
+		area += n.length()
+		mids.append(mid)
+	if area == 0.0:
+		return
+	normal = normal.normalized()
+	centre /= area
+	# From the middle of the glass to its front face.
+	var front := 0.0
+	for mid in mids:
+		front = maxf(front, (mid - centre).dot(normal))
+	centre += normal * front
+	var box := mi.get_aabb()
+	var picture := MeshInstance3D.new()
+	var quad := QuadMesh.new()
+	quad.size = Vector2(box.size.x, box.size.y / maxf(normal.z, 0.3)) * 0.9
+	picture.mesh = quad
+	picture.material_override = _arcade_picture(game)
+	picture.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	picture.basis = Basis(Vector3.RIGHT, normal.cross(Vector3.RIGHT), normal)
+	picture.position = centre + normal * 0.003
+	mi.add_child(picture)
+
+
+static var _arcade_mats := {}
+
+
+## A game's picture, lit from within: its pixels, sharp.
+static func _arcade_picture(game: String) -> StandardMaterial3D:
+	var key := "%s/picture" % game
+	if _arcade_mats.has(key):
+		return _arcade_mats[key]
+	var look: Dictionary = ARCADE_GAMES[game]
+	var rows: Array = look.art
+	var img := Image.create(rows[0].length(), rows.size(), false, Image.FORMAT_RGBA8)
+	img.fill(Color(look.screen))
+	for y in rows.size():
+		for x in rows[y].length():
+			var ink: String = rows[y][x]
+			if ink != ".":
+				img.set_pixel(x, y, Color(look.ink[ink]))
+	var m := StandardMaterial3D.new()
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.albedo_texture = ImageTexture.create_from_image(img)
+	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	_arcade_mats[key] = m
+	return m
+
+
 # --- Floor -------------------------------------------------------------------
 
 ## The marble floor: a shader does the slabs, veins, joints and the contact
@@ -270,11 +424,14 @@ func _cap_shade(t: Vector2i) -> float:
 
 ## What stands on each piece of cover: a glass case of butterflies, minerals or
 ## a fossil, a skull or a statue on a plinth, a fern diorama. The big pieces (a dinosaur, sarcophagi, a bear) stand on
-## blocks of cover of their own. Which piece a tile gets comes from a hash of its
-## coordinates, so a gallery looks the same every time. All waist-high: the
+## blocks of cover of their own. Which piece a tile gets is the museum's
+## collection's (Collection): from a hash of its coordinates, so a gallery
+## looks the same every time, keeping count so an icon stands once and each
+## arcade machine is a different game. All waist-high: the
 ## rules hide someone on all fours behind any of them. The job's own case is
 ## an empty vitrine: the piece itself is drawn by the game, glowing.
 func _exhibits() -> void:
+	Collection.ensure()
 	for b in Museum.big_pieces:
 		_big_piece(b.kind, b.rect)
 	for t in Museum.cover_tiles:
@@ -300,20 +457,8 @@ func _exhibits() -> void:
 			_exhibit(piece, exhibits[t], t, yaw)
 		else:
 			# What the gallery's theme shows (a corridor, a bit of everything).
-			var room := Museum.room_at(t.x + 0.5, t.y + 0.5)
-			var pick := theme_pick(room.theme if room else "", t)
-			_themed(piece, pick[0], pick[1], t, yaw)
-
-
-## What a gallery's theme puts on tile t: [where, piece] (Themes.pick). A
-## floor piece with a front (Themes.FRONTED) only where there is free floor
-## beside it to face; else another pick, and in the end a case of colours.
-static func theme_pick(theme: String, t: Vector2i) -> Array:
-	for k in 8:
-		var pick := Themes.pick(theme, _hash01(t.x, t.y, 41 + k * 101), _hash01(t.x, t.y, 29 + k * 101))
-		if pick[1] not in Themes.FRONTED or front_of(t) != Vector2i.ZERO:
-			return pick
-	return ["case", "@colours"]
+			var pick := Collection.at(t)
+			_themed(piece, pick[0], pick[1], t, yaw, pick[2])
 
 
 ## The way a piece on tile t with a front faces: onto the free floor beside
@@ -335,11 +480,14 @@ static func front_yaw(t: Vector2i) -> float:
 
 ## A piece of a theme in its place: in a glass case, on a plinth, or
 ## standing on the slab. One of MuseumView's own ("@...") has its own stand.
-func _themed(piece: Node3D, where: String, what: String, t: Vector2i, yaw: float) -> void:
+## A piece with variants (Themes.VARIANTS) is dressed as this one.
+func _themed(piece: Node3D, where: String, what: String, t: Vector2i, yaw: float, variant := "") -> void:
 	if what.begins_with("@") or not "/" in what:
 		_exhibit(piece, what.trim_prefix("@"), t, yaw)
 		return
 	var model := asset(what)
+	if what == Arcades.MODEL and variant != "":
+		arcade_game(model, variant)
 	# Turned to a quarter, a little off square: the front is seen from most
 	# sides. One with a front that must not face a wall, to the free floor.
 	var quarter: float = front_yaw(t) if what in Themes.FRONTED else round(yaw / (PI / 2)) * PI / 2
@@ -391,7 +539,7 @@ func _exhibit(piece: Node3D, what: String, t: Vector2i, yaw: float) -> void:
 			var small := _pivot(p, Vector3(0, 0.3, 0))
 			small.scale = Vector3(0.5, 1.0 / 2.4, 0.5)
 			small.add_child(asset("oso"))
-		_ when "/" in what: _themed(piece, Themes.where_of(what), what, t, yaw)
+		_ when "/" in what: _themed(piece, Themes.where_of(what), what, t, yaw, Collection.variant_at(t))
 		_: _vitrine(piece, null)
 
 

@@ -12,11 +12,15 @@ extends RefCounted
 ##     dinosaur egg (prehistory), a giant tortoise shell (nature);
 ##   a suit of armour still standing (Props): you step inside it.
 ##
-## Not all of them, though: that would make it too easy. Each night picks a
-## few (spread), far apart from one another, shared with the empty pedestals
-## (Plinths): the rest of the big pieces and suits of armour are just to
-## look at (and knock over). Getting in takes a moment of wriggling
-## (Minigame "squeeze", start), two to five seconds out in the open.
+## Whatever looks like a place to hide is one: every big piece and every
+## suit of armour standing in the museum, and every piece of furniture. What
+## keeps it from being too easy is how few of them there are, far apart from
+## one another: the generator stands only so many big pieces to hide in
+## (MapGen), the props only so many suits of armour (Props.place), and each
+## night adds furniture, and empty pedestals to pose on (Plinths), up to the
+## museum's share (places, spread). A saved map keeps what it stood by hand.
+## Getting in takes a moment of wriggling (Minigame "squeeze", start), two to
+## five seconds out in the open.
 ##
 ## Inside, you make no sound and no guard sees you. Same deal as the statue
 ## (Plinths): it only works unseen. Get in in front of a guard and it
@@ -47,6 +51,10 @@ const PIECES := {
 const PER_TILES := 120
 const MIN := 3
 const PLINTH_EVERY := 3
+## Of the places to hide in, about this share are big pieces (MapGen); of
+## the rest, up to half are suits of armour (Props.place), and furniture
+## fills what is left (spread).
+const BIG_SHARE := 0.4
 ## None closer than this to another, in tiles, middle to middle: running
 ## from one to the next is a risk of its own.
 const APART := 9.0
@@ -56,12 +64,6 @@ const TIGHT := {"box": 1, "egg": 1, "chest": 1, "shell": 1, "armour": 1, "legion
 
 ## The pieces of furniture standing tonight: tile -> kind (PIECES).
 static var pieces := {}
-## Which of the big pieces (their rect) and suits of armour (their Props id)
-## you can get into tonight, once spread has picked (chosen); until then,
-## all of them (a museum on its own: the editor, the tests).
-static var big_open: Array[Rect2i] = []
-static var suits: Array[int] = []
-static var chosen := false
 
 
 class Spot:
@@ -90,86 +92,92 @@ static func name_of(kind: String) -> String:
 	return Text.t("PROP_ARMOUR" if kind == "armour" else "HIDE_" + kind.to_upper())
 
 
-## Pick tonight's places to hide in and pedestals to pose on, together: as
-## many as the museum's size gives (PER_TILES), none within APART of another
-## nor of those a saved map stood by hand (Plinths.list, pieces), a mix of
-## them — every PLINTH_EVERY-th a pedestal (if plinths), the rest a big piece
-## or a suit of armour to get into (if big_and_suits) or a piece of furniture
-## of its gallery's theme on a case of its own (if furniture). Never on the
-## job's case nor one in avoid, never on a big piece, always with floor
-## beside it to get in from.
-static func spread(seed: int, avoid: Array[Vector2i], plinths: bool, furniture: bool, big_and_suits: bool) -> void:
-	chosen = true
-	big_open.clear()
-	suits.clear()
-	var rand := Mulberry32.new(seed ^ 0x6b43a9b5)
-	var taken: Array[Vector2] = []
+## How many places to hide in and pedestals to pose on a museum with this
+## many open tiles has: its share (PER_TILES), never fewer than MIN.
+static func places(open: int) -> int:
+	return maxi(MIN, open / PER_TILES)
+
+
+## How many of them are pedestals: every PLINTH_EVERY-th, from the second.
+static func plinths_of(open: int) -> int:
+	return (places(open) + 1) / PLINTH_EVERY
+
+
+## How many are places to hide in.
+static func hideouts_of(open: int) -> int:
+	return places(open) - plinths_of(open)
+
+
+## How many big pieces to hide in the generator stands, at most (MapGen).
+static func big_of(open: int) -> int:
+	return roundi(hideouts_of(open) * BIG_SHARE)
+
+
+## How many suits of armour the props stand, at most (Props.place), with
+## this many big pieces to hide in standing already.
+static func suits_of(open: int, big: int) -> int:
+	return ceili(maxi(0, hideouts_of(open) - big) / 2.0)
+
+
+## Where every place to hide in and every pedestal is now: their middles.
+static func taken() -> Array[Vector2]:
+	var out: Array[Vector2] = []
+	for s in all():
+		out.append(s.middle())
 	for t in Plinths.list:
-		taken.append(Vector2(t) + Vector2(0.5, 0.5))
-	for t in pieces:
-		taken.append(Vector2(t) + Vector2(0.5, 0.5))
-	# What there is to pick from, by sort: [where its middle is, what it is].
-	var cases: Array = []
+		out.append(Vector2(t) + Vector2(0.5, 0.5))
+	return out
+
+
+## Whether this point is far enough (APART) from all of these.
+static func far_from(at: Vector2, others: Array[Vector2]) -> bool:
+	return others.all(func(o: Vector2) -> bool: return o.distance_to(at) >= APART)
+
+
+## Fill tonight's share (places) with empty pedestals to pose on (if
+## plinths) and furniture to hide in, of its gallery's theme, each on a case
+## of its own (if furniture): next to the big pieces and suits of armour
+## already standing and what a saved map stood by hand (Plinths.list,
+## pieces), and none within APART of any of them. Never on the job's case
+## nor one in avoid, never on a big piece, always with floor beside it to
+## get in from.
+static func spread(seed: int, avoid: Array[Vector2i], plinths: bool, furniture: bool) -> void:
+	var rand := Mulberry32.new(seed ^ 0x6b43a9b5)
+	var open := Museum.open_tiles.size()
+	var want_plinths := maxi(0, plinths_of(open) - Plinths.list.size()) if plinths else 0
+	var want_furniture := maxi(0, hideouts_of(open) - all().size()) if furniture else 0
+	var cases: Array[Vector2i] = []
 	for t in Museum.cover_tiles:
 		if t in avoid or Plinths.is_plinth(t) or pieces.has(t) or not Museum.big_piece_at(t).is_empty():
 			continue
 		if not _floor_beside(t).is_empty():
-			cases.append([Vector2(t) + Vector2(0.5, 0.5), t])
-	var sorts := {"plinth": cases if plinths else [], "furniture": cases if furniture else [], "big": [], "suit": []}
-	if big_and_suits:
-		for b in Museum.big_pieces:
-			if b.kind in BIG:
-				sorts.big.append([Rect2(b.rect).get_center(), b.rect])
-		for p in Props.list:
-			if p.kind == "armour" and not p.fallen:
-				sorts.suit.append([Vector2(p.x, p.y), p.id])
-	var wanted := maxi(MIN, Museum.open_tiles.size() / PER_TILES) - taken.size()
-	var n := taken.size()
-	while wanted > 0:
-		# A pedestal every so often; else a place to hide, of any sort there
-		# is still room for (a big piece or furniture twice as likely as a
-		# suit of armour).
-		var pool: Array = []
-		if n % PLINTH_EVERY == 1 and not sorts.plinth.is_empty():
-			pool = ["plinth"]
-		else:
-			for k in [["big", 2], ["furniture", 2], ["suit", 1]]:
-				if not sorts[k[0]].is_empty():
-					for w in k[1]:
-						pool.append(k[0])
-			if pool.is_empty() and not sorts.plinth.is_empty():
-				pool = ["plinth"]
-		if pool.is_empty():
-			break
-		var sort: String = pool[rand.below(pool.size())]
-		var list: Array = sorts[sort].filter(func(c): return taken.all(func(o): return o.distance_to(c[0]) >= APART))
-		if list.is_empty():
-			sorts[sort] = []
-			continue
-		var pick: Array = list[rand.below(list.size())]
-		taken.append(pick[0])
+			cases.append(t)
+	var others := taken()
+	# A pedestal every so often, in among the furniture.
+	var n := 0
+	while want_plinths + want_furniture > 0:
+		var plinth := want_furniture == 0 or (want_plinths > 0 and n % PLINTH_EVERY == 1)
 		n += 1
-		wanted -= 1
-		match sort:
-			"plinth":
-				Plinths.list.append(pick[1])
-			"furniture":
-				var t: Vector2i = pick[1]
-				var room := Museum.room_at(t.x + 0.5, t.y + 0.5)
-				var kinds := kinds_for(room.theme if room else "")
-				pieces[t] = kinds[rand.below(kinds.size())]
-			"big":
-				big_open.append(pick[1])
-			"suit":
-				suits.append(pick[1])
+		if plinth:
+			want_plinths -= 1
+		else:
+			want_furniture -= 1
+		var free := cases.filter(func(c: Vector2i) -> bool: return far_from(Vector2(c) + Vector2(0.5, 0.5), others))
+		if free.is_empty():
+			break
+		var t: Vector2i = free[rand.below(free.size())]
+		others.append(Vector2(t) + Vector2(0.5, 0.5))
+		if plinth:
+			Plinths.list.append(t)
+		else:
+			var room := Museum.room_at(t.x + 0.5, t.y + 0.5)
+			var kinds := kinds_for(room.theme if room else "")
+			pieces[t] = kinds[rand.below(kinds.size())]
 
 
-## A museum just built: every big piece and suit counts until spread picks.
+## A museum just built: no furniture until the night stands it.
 static func reset() -> void:
 	pieces.clear()
-	big_open.clear()
-	suits.clear()
-	chosen = false
 
 
 ## Where a saved map stood them by hand (MapFile's exhibits): tile -> kind.
@@ -205,7 +213,7 @@ static func _floor_beside(t: Vector2i) -> Array[Vector2i]:
 static func all() -> Array[Spot]:
 	var out: Array[Spot] = []
 	for b in Museum.big_pieces:
-		if not b.kind in BIG or (chosen and not b.rect in big_open):
+		if not b.kind in BIG:
 			continue
 		var r: Rect2i = b.rect
 		var s := Spot.new()
@@ -222,7 +230,7 @@ static func all() -> Array[Spot]:
 		s.tiles.append(t)
 		out.append(s)
 	for p in Props.list:
-		if p.kind != "armour" or p.fallen or (chosen and not p.id in suits):
+		if p.kind != "armour" or p.fallen:
 			continue
 		var s := Spot.new()
 		s.kind = "armour"

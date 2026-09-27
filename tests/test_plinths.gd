@@ -16,15 +16,25 @@ func check(ok: bool, what: String) -> void:
 
 
 func _init() -> void:
-	Sim.new_map(4242, "medium")
+	# A museum with a pedestal that has two free tiles in a row beside it
+	# (to be watched from).
 	var none: Array[Vector2i] = []
-	Hideouts.spread(4242, none, true, false, false)
-	check(Plinths.list.size() >= 1, "hay pedestales (%d)" % Plinths.list.size())
-	for t in Plinths.list:
-		check(Museum.is_cover(t.x + 0.5, t.y + 0.5), "el pedestal %s ocupa una casilla de mueble" % t)
-	var t: Vector2i = Plinths.list[0]
-	var beside: Vector2i = Plinths._floor_beside(t)[0]
-	var d := beside - t
+	var t := Vector2i(-1, -1)
+	var d := Vector2i.ZERO
+	for sd in range(4242, 4342):
+		Sim.new_map(sd, "medium")
+		Hideouts.spread(sd, none, true, false)
+		check(not Plinths.list.is_empty(), "hay pedestales (%d)" % Plinths.list.size())
+		for c in Plinths.list:
+			check(Museum.is_cover(c.x + 0.5, c.y + 0.5), "el pedestal %s ocupa una casilla de mueble" % c)
+			for dd in Museum.DIRS:
+				if t.x < 0 and Museum.tile_at(c.x + dd.x + 0.5, c.y + dd.y + 0.5) == Tiles.FLOOR \
+						and Museum.tile_at(c.x + dd.x * 2 + 0.5, c.y + dd.y * 2 + 0.5) == Tiles.FLOOR:
+					t = c
+					d = dd
+		if t.x >= 0:
+			break
+	var beside: Vector2i = t + d
 
 	var p := Sim.new_thief()
 	p.x = beside.x + 0.5
