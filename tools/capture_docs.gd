@@ -411,7 +411,24 @@ func _models() -> void:
 		var group := "museo"
 		if name.begins_with("temas/"):
 			group = name.split("/")[1]
-		list.append({"name": name, "file": file, "group": group, "size": [snappedf(box.size.x, 0.01), snappedf(box.size.y, 0.01), snappedf(box.size.z, 0.01)]})
+		var entry := {"name": name, "file": file, "group": group, "size": [snappedf(box.size.x, 0.01), snappedf(box.size.y, 0.01), snappedf(box.size.z, 0.01)]}
+		# A piece with variants (Themes.VARIANTS): each of them too, the same way.
+		var variants: Array = []
+		for v in Themes.variants(name):
+			var dressed := MuseumView.asset(name)
+			if name == Arcades.MODEL:
+				MuseumView.arcade_game(dressed, v)
+			node.visible = false
+			vp.add_child(dressed)
+			await _wait(0.15)
+			var vfile := "assets/modelos/%s__%s.webp" % [name.replace("/", "__"), v]
+			vp.get_texture().get_image().save_webp(_path(vfile), true, 0.9)
+			variants.append({"id": v, "name": "PIECE_%s_%s" % [name.get_file().to_upper(), v.to_upper()], "file": vfile})
+			dressed.queue_free()
+			print("  ", name, " ", v)
+		if not variants.is_empty():
+			entry["variants"] = variants
+		list.append(entry)
 		node.queue_free()
 		print("  ", name)
 	vp.queue_free()
@@ -602,7 +619,8 @@ func _data() -> void:
 	_save_json("data/historia.json", {"museums": museums, "nights": nights, "lessons": _plain(Story.LESSONS),
 		"prologue": Story.PROLOGUE, "ending": Story.ENDING})
 	_save_json("data/catalogo.json", {"themes": _plain(Themes.ALL), "exhibits": MuseumView.EXHIBITS, "big": MapGen.BIG.keys(),
-		"props": Props.KINDS, "prop_themes": Themes.PROP_THEMES, "model_of": MODEL_OF})
+		"props": Props.KINDS, "prop_themes": Themes.PROP_THEMES, "model_of": MODEL_OF,
+		"unique": Themes.UNIQUE, "variants": Themes.VARIANTS})
 
 
 ## The "## ..." lines right above each const, by name.

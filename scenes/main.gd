@@ -1655,15 +1655,10 @@ func _lay_out(n: int, map_seed: int) -> int:
 		if Museum.dist(t.x + 0.5, t.y + 0.5, Heist.at.x + 0.5, Heist.at.y + 0.5) < 1.1:
 			stand = t
 			break
-	# A saved map may stand its own, by hand.
-	if saved_map and not saved_map.props.is_empty():
-		saved_map.put_props()
-	elif Sim.feature("props"):
-		Props.place(map_seed, [Heist.exit, Heist.panel, Heist.panel2, stand, Heist.start])
-	else:
-		Props.list.clear()
-	# Empty pedestals to pose on and furniture to hide in: where a saved map
-	# stood them by hand, and then a few more picked for tonight, far apart
+	# Empty pedestals to pose on and furniture to hide in: first where a
+	# saved map stood them by hand; then the props (a suit of armour is a
+	# place to hide too, Props.place keeps it away from the rest); then a few
+	# more picked for tonight up to the museum's share, far apart
 	# (Hideouts.spread) — never on the piece's case, nor one a saved map
 	# filled by hand; a sort a map stood by hand gets none added.
 	var by_hand: Array[Vector2i] = []
@@ -1680,12 +1675,21 @@ func _lay_out(n: int, map_seed: int) -> int:
 	if saved_map:
 		Plinths.put(by_hand)
 		Hideouts.put(hide_by_hand)
+	# A saved map may stand its own props, by hand.
+	if saved_map and not saved_map.props.is_empty():
+		saved_map.put_props()
+	elif Sim.feature("props"):
+		Props.place(map_seed, [Heist.exit, Heist.panel, Heist.panel2, stand, Heist.start])
+	else:
+		Props.list.clear()
 	var keep: Array[Vector2i] = [Heist.at]
 	for t in MuseumView.exhibits:
 		keep.append(t)
 	Hideouts.spread(map_seed, keep, Sim.feature("plinths") and Plinths.list.is_empty(),
-		Sim.feature("hideouts") and Hideouts.pieces.is_empty(), Sim.feature("hideouts"))
-	# The arcade machines, where MuseumView will put them: now that the rest is placed.
+		Sim.feature("hideouts") and Hideouts.pieces.is_empty())
+	# What stands on every other case tonight, now that the rest is placed:
+	# decided once (Collection), for the view and the arcade machines alike.
+	Collection.lay_out()
 	Arcades.find()
 	return Sim.assign_posts(guards)
 

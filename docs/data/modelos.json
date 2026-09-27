@@ -684,9 +684,41 @@
 		"group": "moderna",
 		"name": "temas/moderna/recreativa",
 		"size": [
-			0.58,
-			1.08,
-			0.6
+			0.61,
+			1.25,
+			0.63
+		],
+		"variants": [
+			{
+				"file": "assets/modelos/temas__moderna__recreativa__tenis.webp",
+				"id": "tenis",
+				"name": "PIECE_RECREATIVA_TENIS"
+			},
+			{
+				"file": "assets/modelos/temas__moderna__recreativa__invasores.webp",
+				"id": "invasores",
+				"name": "PIECE_RECREATIVA_INVASORES"
+			},
+			{
+				"file": "assets/modelos/temas__moderna__recreativa__comecocos.webp",
+				"id": "comecocos",
+				"name": "PIECE_RECREATIVA_COMECOCOS"
+			},
+			{
+				"file": "assets/modelos/temas__moderna__recreativa__bloques.webp",
+				"id": "bloques",
+				"name": "PIECE_RECREATIVA_BLOQUES"
+			},
+			{
+				"file": "assets/modelos/temas__moderna__recreativa__serpiente.webp",
+				"id": "serpiente",
+				"name": "PIECE_RECREATIVA_SERPIENTE"
+			},
+			{
+				"file": "assets/modelos/temas__moderna__recreativa__carreras.webp",
+				"id": "carreras",
+				"name": "PIECE_RECREATIVA_CARRERAS"
+			}
 		]
 	},
 	{

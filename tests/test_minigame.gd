@@ -461,7 +461,7 @@ func arcade() -> void:
 		if not Arcades.list.is_empty():
 			found = true
 			var t: Vector2i = Arcades.list[0]
-			check(MuseumView.theme_pick(Museum.room_at(t.x + 0.5, t.y + 0.5).theme if Museum.room_at(t.x + 0.5, t.y + 0.5) else "", t)[1] == Arcades.MODEL,
+			check(Collection.at(t)[1] == Arcades.MODEL,
 				"la recreativa está donde el museo la pone (semilla %d)" % seed_)
 			var front := MuseumView.front_of(t)
 			var p := Sim.new_thief()

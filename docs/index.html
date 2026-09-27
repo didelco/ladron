@@ -583,6 +583,13 @@ let objSel = "";
 const descripcion = k => k in TEXT ? t(k) : `<span class="vacio" data-key="${esc(k)}" data-valor="">Sin descripción${EDITABLE ? " · pulsa para escribirla" : ""}</span>`;
 // Los sonidos de los objetos que se tiran salen en su ficha (y la página de sonidos lo dice).
 for (const o of J.objetos || []) if (o.tool.startsWith("prop:")) SONIDO_DE[o.kind] = SONIDO_DE[METAL.includes(o.kind) ? "kick_metal" : "kick_dry"] = "objetos";
+// Cuántas veces sale en un museo (Themes.UNIQUE, Themes.VARIANTS; logic/collection.gd).
+function vecesPorMuseo(kind) {
+  const cat = J.catalogo || {}, vars = (cat.variants || {})[kind];
+  if ((cat.unique || []).includes(kind)) return "una como mucho: es única";
+  if (vars) return `varias, cada una distinta (${vars.length} variantes): nunca dos iguales; acabadas, va otra pieza`;
+  return "las que toquen";
+}
 let ELEMENTOS = null;
 function elementos() {
   if (ELEMENTOS) return ELEMENTOS;
@@ -604,6 +611,8 @@ function elementos() {
           ${campo("Colección", col)}
           ${campo("Tamaño", `${o.tiles.join(" × ")} casilla${o.tiles[0] * o.tiles[1] > 1 ? "s" : ""}${m ? ` · ${tam(m)}` : ""}`)}
           ${campo("Modelo", o.model ? `<code>${esc(o.model)}.glb</code>` : "hecho en código")}
+          ${prop ? "" : campo("Por museo", vecesPorMuseo(o.kind))}
+          ${m && m.variants ? campo("Variantes", `<div class="imgs">${m.variants.map(v => `<figure>${img(v.file, tx(v.name))}<figcaption>${t(v.name)}</figcaption></figure>`).join("")}</div>`) : ""}
           ${sonidos}
           <div class="estado"><code>${esc(o.tool)}</code></div>`;
       } };

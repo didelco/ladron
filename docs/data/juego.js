@@ -2620,6 +2620,23 @@ window.JUEGO = {
      "@meteorite"
     ]
    }
+  },
+  "unique": [
+   "dinosaur",
+   "trojan_horse",
+   "temas/edad_media/espada_piedra",
+   "temas/edad_media/trono",
+   "temas/edad_media/maquina_voladora"
+  ],
+  "variants": {
+   "temas/moderna/recreativa": [
+    "tenis",
+    "invasores",
+    "comecocos",
+    "bloques",
+    "serpiente",
+    "carreras"
+   ]
   }
  },
  "capturas": [
@@ -4242,9 +4259,41 @@ window.JUEGO = {
    "group": "moderna",
    "name": "temas/moderna/recreativa",
    "size": [
-    0.58,
-    1.08,
-    0.6
+    0.61,
+    1.25,
+    0.63
+   ],
+   "variants": [
+    {
+     "file": "assets/modelos/temas__moderna__recreativa__tenis.webp",
+     "id": "tenis",
+     "name": "PIECE_RECREATIVA_TENIS"
+    },
+    {
+     "file": "assets/modelos/temas__moderna__recreativa__invasores.webp",
+     "id": "invasores",
+     "name": "PIECE_RECREATIVA_INVASORES"
+    },
+    {
+     "file": "assets/modelos/temas__moderna__recreativa__comecocos.webp",
+     "id": "comecocos",
+     "name": "PIECE_RECREATIVA_COMECOCOS"
+    },
+    {
+     "file": "assets/modelos/temas__moderna__recreativa__bloques.webp",
+     "id": "bloques",
+     "name": "PIECE_RECREATIVA_BLOQUES"
+    },
+    {
+     "file": "assets/modelos/temas__moderna__recreativa__serpiente.webp",
+     "id": "serpiente",
+     "name": "PIECE_RECREATIVA_SERPIENTE"
+    },
+    {
+     "file": "assets/modelos/temas__moderna__recreativa__carreras.webp",
+     "id": "carreras",
+     "name": "PIECE_RECREATIVA_CARRERAS"
+    }
    ]
   },
   {
@@ -4360,71 +4409,24 @@ window.JUEGO = {
  ],
  "objetos": [
   {
-   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__escarabajo.webp",
-   "desc": "DESC_ESCARABAJO",
-   "kind": "temas/antiguo/escarabajo",
-   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__escarabajo.webp",
-   "model": "temas/antiguo/escarabajo",
-   "name": "PIECE_ESCARABAJO",
+   "cerca": "assets/objetos/cerca/exhibit__colours.webp",
+   "desc": "DESC_COLOURS",
+   "kind": "colours",
+   "mapa": "assets/objetos/mapa/exhibit__colours.webp",
+   "model": "",
+   "name": "EDITOR_TOOL_EXHIBIT_COLOURS",
    "themes": [
-    "antiguo"
+    "antiguo",
+    "edad_media",
+    "prehistoria",
+    "naturaleza",
+    "moderna"
    ],
    "tiles": [
     1,
     1
    ],
-   "tool": "exhibit:temas/antiguo/escarabajo",
-   "type": "case"
-  },
-  {
-   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__canopos.webp",
-   "desc": "DESC_CANOPOS",
-   "kind": "temas/antiguo/canopos",
-   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__canopos.webp",
-   "model": "temas/antiguo/canopos",
-   "name": "PIECE_CANOPOS",
-   "themes": [
-    "antiguo"
-   ],
-   "tiles": [
-    1,
-    1
-   ],
-   "tool": "exhibit:temas/antiguo/canopos",
-   "type": "case"
-  },
-  {
-   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__amuletos.webp",
-   "desc": "DESC_AMULETOS",
-   "kind": "temas/antiguo/amuletos",
-   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__amuletos.webp",
-   "model": "temas/antiguo/amuletos",
-   "name": "PIECE_AMULETOS",
-   "themes": [
-    "antiguo"
-   ],
-   "tiles": [
-    1,
-    1
-   ],
-   "tool": "exhibit:temas/antiguo/amuletos",
-   "type": "case"
-  },
-  {
-   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__papiro.webp",
-   "desc": "DESC_PAPIRO",
-   "kind": "temas/antiguo/papiro",
-   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__papiro.webp",
-   "model": "temas/antiguo/papiro",
-   "name": "PIECE_PAPIRO",
-   "themes": [
-    "antiguo"
-   ],
-   "tiles": [
-    1,
-    1
-   ],
-   "tool": "exhibit:temas/antiguo/papiro",
+   "tool": "exhibit:colours",
    "type": "case"
   },
   {
@@ -4513,6 +4515,74 @@ window.JUEGO = {
    "type": "small"
   },
   {
+   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__escarabajo.webp",
+   "desc": "DESC_ESCARABAJO",
+   "kind": "temas/antiguo/escarabajo",
+   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__escarabajo.webp",
+   "model": "temas/antiguo/escarabajo",
+   "name": "PIECE_ESCARABAJO",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/antiguo/escarabajo",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__canopos.webp",
+   "desc": "DESC_CANOPOS",
+   "kind": "temas/antiguo/canopos",
+   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__canopos.webp",
+   "model": "temas/antiguo/canopos",
+   "name": "PIECE_CANOPOS",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/antiguo/canopos",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__amuletos.webp",
+   "desc": "DESC_AMULETOS",
+   "kind": "temas/antiguo/amuletos",
+   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__amuletos.webp",
+   "model": "temas/antiguo/amuletos",
+   "name": "PIECE_AMULETOS",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/antiguo/amuletos",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__papiro.webp",
+   "desc": "DESC_PAPIRO",
+   "kind": "temas/antiguo/papiro",
+   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__papiro.webp",
+   "model": "temas/antiguo/papiro",
+   "name": "PIECE_PAPIRO",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/antiguo/papiro",
+   "type": "small"
+  },
+  {
    "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__anubis.webp",
    "desc": "DESC_ANUBIS",
    "kind": "temas/antiguo/anubis",
@@ -4545,108 +4615,6 @@ window.JUEGO = {
    ],
    "tool": "exhibit:temas/antiguo/barca",
    "type": "big"
-  },
-  {
-   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__corona.webp",
-   "desc": "DESC_CORONA",
-   "kind": "temas/edad_media/corona",
-   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__corona.webp",
-   "model": "temas/edad_media/corona",
-   "name": "PIECE_CORONA",
-   "themes": [
-    "edad_media"
-   ],
-   "tiles": [
-    1,
-    1
-   ],
-   "tool": "exhibit:temas/edad_media/corona",
-   "type": "case"
-  },
-  {
-   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__caliz.webp",
-   "desc": "DESC_CALIZ",
-   "kind": "temas/edad_media/caliz",
-   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__caliz.webp",
-   "model": "temas/edad_media/caliz",
-   "name": "PIECE_CALIZ",
-   "themes": [
-    "edad_media"
-   ],
-   "tiles": [
-    1,
-    1
-   ],
-   "tool": "exhibit:temas/edad_media/caliz",
-   "type": "case"
-  },
-  {
-   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__manuscrito.webp",
-   "desc": "DESC_MANUSCRITO",
-   "kind": "temas/edad_media/manuscrito",
-   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__manuscrito.webp",
-   "model": "temas/edad_media/manuscrito",
-   "name": "PIECE_MANUSCRITO",
-   "themes": [
-    "edad_media"
-   ],
-   "tiles": [
-    1,
-    1
-   ],
-   "tool": "exhibit:temas/edad_media/manuscrito",
-   "type": "case"
-  },
-  {
-   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__llave_sello.webp",
-   "desc": "DESC_LLAVE_SELLO",
-   "kind": "temas/edad_media/llave_sello",
-   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__llave_sello.webp",
-   "model": "temas/edad_media/llave_sello",
-   "name": "PIECE_LLAVE_SELLO",
-   "themes": [
-    "edad_media"
-   ],
-   "tiles": [
-    1,
-    1
-   ],
-   "tool": "exhibit:temas/edad_media/llave_sello",
-   "type": "case"
-  },
-  {
-   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__codice_leonardo.webp",
-   "desc": "DESC_CODICE_LEONARDO",
-   "kind": "temas/edad_media/codice_leonardo",
-   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__codice_leonardo.webp",
-   "model": "temas/edad_media/codice_leonardo",
-   "name": "PIECE_CODICE_LEONARDO",
-   "themes": [
-    "edad_media"
-   ],
-   "tiles": [
-    1,
-    1
-   ],
-   "tool": "exhibit:temas/edad_media/codice_leonardo",
-   "type": "case"
-  },
-  {
-   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__astrolabio.webp",
-   "desc": "DESC_ASTROLABIO",
-   "kind": "temas/edad_media/astrolabio",
-   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__astrolabio.webp",
-   "model": "temas/edad_media/astrolabio",
-   "name": "PIECE_ASTROLABIO",
-   "themes": [
-    "edad_media"
-   ],
-   "tiles": [
-    1,
-    1
-   ],
-   "tool": "exhibit:temas/edad_media/astrolabio",
-   "type": "case"
   },
   {
    "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__yelmo.webp",
@@ -4734,6 +4702,108 @@ window.JUEGO = {
    "type": "small"
   },
   {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__corona.webp",
+   "desc": "DESC_CORONA",
+   "kind": "temas/edad_media/corona",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__corona.webp",
+   "model": "temas/edad_media/corona",
+   "name": "PIECE_CORONA",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/corona",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__caliz.webp",
+   "desc": "DESC_CALIZ",
+   "kind": "temas/edad_media/caliz",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__caliz.webp",
+   "model": "temas/edad_media/caliz",
+   "name": "PIECE_CALIZ",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/caliz",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__manuscrito.webp",
+   "desc": "DESC_MANUSCRITO",
+   "kind": "temas/edad_media/manuscrito",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__manuscrito.webp",
+   "model": "temas/edad_media/manuscrito",
+   "name": "PIECE_MANUSCRITO",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/manuscrito",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__llave_sello.webp",
+   "desc": "DESC_LLAVE_SELLO",
+   "kind": "temas/edad_media/llave_sello",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__llave_sello.webp",
+   "model": "temas/edad_media/llave_sello",
+   "name": "PIECE_LLAVE_SELLO",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/llave_sello",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__codice_leonardo.webp",
+   "desc": "DESC_CODICE_LEONARDO",
+   "kind": "temas/edad_media/codice_leonardo",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__codice_leonardo.webp",
+   "model": "temas/edad_media/codice_leonardo",
+   "name": "PIECE_CODICE_LEONARDO",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/codice_leonardo",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__astrolabio.webp",
+   "desc": "DESC_ASTROLABIO",
+   "kind": "temas/edad_media/astrolabio",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__astrolabio.webp",
+   "model": "temas/edad_media/astrolabio",
+   "name": "PIECE_ASTROLABIO",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/astrolabio",
+   "type": "small"
+  },
+  {
    "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__espada_piedra.webp",
    "desc": "DESC_ESPADA_PIEDRA",
    "kind": "temas/edad_media/espada_piedra",
@@ -4802,23 +4872,6 @@ window.JUEGO = {
    "type": "big"
   },
   {
-   "cerca": "assets/objetos/cerca/exhibit__ammonite.webp",
-   "desc": "DESC_AMMONITE",
-   "kind": "ammonite",
-   "mapa": "assets/objetos/mapa/exhibit__ammonite.webp",
-   "model": "amonite",
-   "name": "EDITOR_TOOL_EXHIBIT_AMMONITE",
-   "themes": [
-    "prehistoria"
-   ],
-   "tiles": [
-    1,
-    1
-   ],
-   "tool": "exhibit:ammonite",
-   "type": "case"
-  },
-  {
    "cerca": "assets/objetos/cerca/exhibit__minerals.webp",
    "desc": "DESC_MINERALS",
    "kind": "minerals",
@@ -4836,23 +4889,6 @@ window.JUEGO = {
    "type": "case"
   },
   {
-   "cerca": "assets/objetos/cerca/exhibit__meteorite.webp",
-   "desc": "DESC_METEORITE",
-   "kind": "meteorite",
-   "mapa": "assets/objetos/mapa/exhibit__meteorite.webp",
-   "model": "meteorito",
-   "name": "EDITOR_TOOL_EXHIBIT_METEORITE",
-   "themes": [
-    "prehistoria"
-   ],
-   "tiles": [
-    1,
-    1
-   ],
-   "tool": "exhibit:meteorite",
-   "type": "case"
-  },
-  {
    "cerca": "assets/objetos/cerca/exhibit__skull.webp",
    "desc": "DESC_SKULL",
    "kind": "skull",
@@ -4867,6 +4903,40 @@ window.JUEGO = {
     1
    ],
    "tool": "exhibit:skull",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__ammonite.webp",
+   "desc": "DESC_AMMONITE",
+   "kind": "ammonite",
+   "mapa": "assets/objetos/mapa/exhibit__ammonite.webp",
+   "model": "amonite",
+   "name": "EDITOR_TOOL_EXHIBIT_AMMONITE",
+   "themes": [
+    "prehistoria"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:ammonite",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__meteorite.webp",
+   "desc": "DESC_METEORITE",
+   "kind": "meteorite",
+   "mapa": "assets/objetos/mapa/exhibit__meteorite.webp",
+   "model": "meteorito",
+   "name": "EDITOR_TOOL_EXHIBIT_METEORITE",
+   "themes": [
+    "prehistoria"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:meteorite",
    "type": "small"
   },
   {
@@ -4921,6 +4991,74 @@ window.JUEGO = {
    "type": "small"
   },
   {
+   "cerca": "assets/objetos/cerca/exhibit__temas__moderna__tele.webp",
+   "desc": "DESC_TELE",
+   "kind": "temas/moderna/tele",
+   "mapa": "assets/objetos/mapa/exhibit__temas__moderna__tele.webp",
+   "model": "temas/moderna/tele",
+   "name": "PIECE_TELE",
+   "themes": [
+    "moderna"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/moderna/tele",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__moderna__tostadora.webp",
+   "desc": "DESC_TOSTADORA",
+   "kind": "temas/moderna/tostadora",
+   "mapa": "assets/objetos/mapa/exhibit__temas__moderna__tostadora.webp",
+   "model": "temas/moderna/tostadora",
+   "name": "PIECE_TOSTADORA",
+   "themes": [
+    "moderna"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/moderna/tostadora",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__moderna__rubik.webp",
+   "desc": "DESC_RUBIK",
+   "kind": "temas/moderna/rubik",
+   "mapa": "assets/objetos/mapa/exhibit__temas__moderna__rubik.webp",
+   "model": "temas/moderna/rubik",
+   "name": "PIECE_RUBIK",
+   "themes": [
+    "moderna"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/moderna/rubik",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__moderna__perro_globo.webp",
+   "desc": "DESC_PERRO_GLOBO",
+   "kind": "temas/moderna/perro_globo",
+   "mapa": "assets/objetos/mapa/exhibit__temas__moderna__perro_globo.webp",
+   "model": "temas/moderna/perro_globo",
+   "name": "PIECE_PERRO_GLOBO",
+   "themes": [
+    "moderna"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/moderna/perro_globo",
+   "type": "small"
+  },
+  {
    "cerca": "assets/objetos/cerca/exhibit__globe.webp",
    "desc": "DESC_GLOBE",
    "kind": "globe",
@@ -4955,6 +5093,57 @@ window.JUEGO = {
    "type": "big"
   },
   {
+   "cerca": "assets/objetos/cerca/exhibit__temas__moderna__recreativa.webp",
+   "desc": "DESC_RECREATIVA",
+   "kind": "temas/moderna/recreativa",
+   "mapa": "assets/objetos/mapa/exhibit__temas__moderna__recreativa.webp",
+   "model": "temas/moderna/recreativa",
+   "name": "PIECE_RECREATIVA",
+   "themes": [
+    "moderna"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/moderna/recreativa",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__moderna__movil_calder.webp",
+   "desc": "DESC_MOVIL_CALDER",
+   "kind": "temas/moderna/movil_calder",
+   "mapa": "assets/objetos/mapa/exhibit__temas__moderna__movil_calder.webp",
+   "model": "temas/moderna/movil_calder",
+   "name": "PIECE_MOVIL_CALDER",
+   "themes": [
+    "moderna"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/moderna/movil_calder",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__moderna__semaforo.webp",
+   "desc": "DESC_SEMAFORO",
+   "kind": "temas/moderna/semaforo",
+   "mapa": "assets/objetos/mapa/exhibit__temas__moderna__semaforo.webp",
+   "model": "temas/moderna/semaforo",
+   "name": "PIECE_SEMAFORO",
+   "themes": [
+    "moderna"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/moderna/semaforo",
+   "type": "big"
+  },
+  {
    "cerca": "assets/objetos/cerca/exhibit__plinth.webp",
    "desc": "DESC_PLINTH",
    "kind": "plinth",
@@ -4968,6 +5157,125 @@ window.JUEGO = {
    ],
    "tool": "exhibit:plinth",
    "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__fridge.webp",
+   "desc": "DESC_FRIDGE",
+   "kind": "fridge",
+   "mapa": "assets/objetos/mapa/exhibit__fridge.webp",
+   "model": "",
+   "name": "EDITOR_TOOL_EXHIBIT_FRIDGE",
+   "themes": [
+    "moderna"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:fridge",
+   "type": "hide"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__box.webp",
+   "desc": "DESC_BOX",
+   "kind": "box",
+   "mapa": "assets/objetos/mapa/exhibit__box.webp",
+   "model": "",
+   "name": "EDITOR_TOOL_EXHIBIT_BOX",
+   "themes": [
+    "moderna"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:box",
+   "type": "hide"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__legionary.webp",
+   "desc": "DESC_LEGIONARY",
+   "kind": "legionary",
+   "mapa": "assets/objetos/mapa/exhibit__legionary.webp",
+   "model": "",
+   "name": "EDITOR_TOOL_EXHIBIT_LEGIONARY",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:legionary",
+   "type": "hide"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__confessional.webp",
+   "desc": "DESC_CONFESSIONAL",
+   "kind": "confessional",
+   "mapa": "assets/objetos/mapa/exhibit__confessional.webp",
+   "model": "",
+   "name": "EDITOR_TOOL_EXHIBIT_CONFESSIONAL",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:confessional",
+   "type": "hide"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__chest.webp",
+   "desc": "DESC_CHEST",
+   "kind": "chest",
+   "mapa": "assets/objetos/mapa/exhibit__chest.webp",
+   "model": "",
+   "name": "EDITOR_TOOL_EXHIBIT_CHEST",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:chest",
+   "type": "hide"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__egg.webp",
+   "desc": "DESC_EGG",
+   "kind": "egg",
+   "mapa": "assets/objetos/mapa/exhibit__egg.webp",
+   "model": "",
+   "name": "EDITOR_TOOL_EXHIBIT_EGG",
+   "themes": [
+    "prehistoria"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:egg",
+   "type": "hide"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__shell.webp",
+   "desc": "DESC_SHELL",
+   "kind": "shell",
+   "mapa": "assets/objetos/mapa/exhibit__shell.webp",
+   "model": "",
+   "name": "EDITOR_TOOL_EXHIBIT_SHELL",
+   "themes": [
+    "naturaleza"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:shell",
+   "type": "hide"
   },
   {
    "cerca": "assets/objetos/cerca/big__dinosaur.webp",
@@ -5018,6 +5326,74 @@ window.JUEGO = {
     2
    ],
    "tool": "big:bear",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/big__trojan_horse.webp",
+   "desc": "DESC_BIG_TROJAN_HORSE",
+   "kind": "trojan_horse",
+   "mapa": "assets/objetos/mapa/big__trojan_horse.webp",
+   "model": "",
+   "name": "EDITOR_TOOL_BIG_TROJAN_HORSE",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    2,
+    2
+   ],
+   "tool": "big:trojan_horse",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/big__mammoth.webp",
+   "desc": "DESC_BIG_MAMMOTH",
+   "kind": "mammoth",
+   "mapa": "assets/objetos/mapa/big__mammoth.webp",
+   "model": "",
+   "name": "EDITOR_TOOL_BIG_MAMMOTH",
+   "themes": [
+    "prehistoria"
+   ],
+   "tiles": [
+    2,
+    3
+   ],
+   "tool": "big:mammoth",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/big__log.webp",
+   "desc": "DESC_BIG_LOG",
+   "kind": "log",
+   "mapa": "assets/objetos/mapa/big__log.webp",
+   "model": "",
+   "name": "EDITOR_TOOL_BIG_LOG",
+   "themes": [
+    "naturaleza"
+   ],
+   "tiles": [
+    1,
+    3
+   ],
+   "tool": "big:log",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/big__car.webp",
+   "desc": "DESC_BIG_CAR",
+   "kind": "car",
+   "mapa": "assets/objetos/mapa/big__car.webp",
+   "model": "",
+   "name": "EDITOR_TOOL_BIG_CAR",
+   "themes": [
+    "moderna"
+   ],
+   "tiles": [
+    2,
+    3
+   ],
+   "tool": "big:car",
    "type": "big"
   },
   {
@@ -5087,14 +5463,9 @@ window.JUEGO = {
  ],
  "sonidos": [
   {
-   "file": "assets/sonidos/caught.wav",
-   "name": "caught",
-   "seconds": 2.0
-  },
-  {
-   "file": "assets/sonidos/roll.wav",
-   "name": "roll",
-   "seconds": 0.35
+   "file": "assets/sonidos/lights.wav",
+   "name": "lights",
+   "seconds": 0.55
   },
   {
    "file": "assets/sonidos/ok.wav",
@@ -5162,9 +5533,34 @@ window.JUEGO = {
    "seconds": 1.3
   },
   {
-   "file": "assets/sonidos/go.wav",
-   "name": "go",
-   "seconds": 0.9
+   "file": "assets/sonidos/smoke.wav",
+   "name": "smoke",
+   "seconds": 1.4
+  },
+  {
+   "file": "assets/sonidos/pong_miss.wav",
+   "name": "pong_miss",
+   "seconds": 0.32
+  },
+  {
+   "file": "assets/sonidos/pong_score.wav",
+   "name": "pong_score",
+   "seconds": 0.26
+  },
+  {
+   "file": "assets/sonidos/pong_wall.wav",
+   "name": "pong_wall",
+   "seconds": 0.04
+  },
+  {
+   "file": "assets/sonidos/pong_hit.wav",
+   "name": "pong_hit",
+   "seconds": 0.05
+  },
+  {
+   "file": "assets/sonidos/sneeze.wav",
+   "name": "sneeze",
+   "seconds": 0.28
   },
   {
    "file": "assets/sonidos/escaped.wav",
@@ -5197,6 +5593,11 @@ window.JUEGO = {
    "seconds": 0.75
   },
   {
+   "file": "assets/sonidos/go.wav",
+   "name": "go",
+   "seconds": 0.9
+  },
+  {
    "file": "assets/sonidos/shout.wav",
    "name": "shout",
    "seconds": 0.46
@@ -5212,19 +5613,14 @@ window.JUEGO = {
    "seconds": 0.25
   },
   {
-   "file": "assets/sonidos/lights.wav",
-   "name": "lights",
-   "seconds": 0.55
+   "file": "assets/sonidos/caught.wav",
+   "name": "caught",
+   "seconds": 2.0
   },
   {
-   "file": "assets/sonidos/panel.wav",
-   "name": "panel",
-   "seconds": 0.21
-  },
-  {
-   "file": "assets/sonidos/pin.wav",
-   "name": "pin",
-   "seconds": 0.12
+   "file": "assets/sonidos/roll.wav",
+   "name": "roll",
+   "seconds": 0.35
   },
   {
    "file": "assets/sonidos/back.wav",
@@ -5235,11 +5631,21 @@ window.JUEGO = {
    "file": "assets/sonidos/step.wav",
    "name": "step",
    "seconds": 0.05
+  },
+  {
+   "file": "assets/sonidos/panel.wav",
+   "name": "panel",
+   "seconds": 0.21
+  },
+  {
+   "file": "assets/sonidos/pin.wav",
+   "name": "pin",
+   "seconds": 0.12
   }
  ],
  "generado": {
-  "fecha": "27-09-2026 20:28",
-  "commit": "3be4930",
-  "rama": "worktree-agent-ad004bd406de77a2b"
+  "fecha": "27-09-2026 20:39",
+  "commit": "e71eb23",
+  "rama": "main"
  }
 };

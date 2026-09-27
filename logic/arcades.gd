@@ -15,18 +15,12 @@ const MODEL := "temas/moderna/recreativa"
 static var list: Array[Vector2i] = []
 
 
-## Find tonight's machines: the tiles MuseumView draws one on, from the same
-## picks — once the job's case, the pedestals and the hideouts are placed.
+## Find tonight's machines: where the museum's collection has one (Collection,
+## which MuseumView draws too), set by hand or by the gallery's theme — once
+## the job's case, the pedestals and the hideouts are placed.
 static func find() -> void:
-	list.clear()
-	for t in Museum.cover_tiles:
-		if t == Heist.at or MuseumView.exhibits.has(t) or not Museum.big_piece_at(t).is_empty():
-			continue
-		if Plinths.is_plinth(t) or Hideouts.pieces.has(t):
-			continue
-		var room := Museum.room_at(t.x + 0.5, t.y + 0.5)
-		if MuseumView.theme_pick(room.theme if room else "", t)[1] == MODEL:
-			list.append(t)
+	Collection.ensure()
+	list = Collection.tiles_of(MODEL)
 
 
 ## The machine thief p stands in front of (on the side its screen faces,

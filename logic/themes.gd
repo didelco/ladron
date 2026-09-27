@@ -134,6 +134,30 @@ static func pick(theme: String, a: float, b: float) -> Array:
 	return ["case", "@minerals"]
 
 
+# --- How many of a piece one museum shows (Collection) ----------------------------
+
+## The icons: a museum has one at most, as a second would be a copy. Big
+## pieces by their kind (MapGen.BIG), the rest by their model. Every piece
+## not here nor in VARIANTS may stand any number of times.
+const UNIQUE := ["dinosaur", "trojan_horse", "temas/edad_media/espada_piedra", "temas/edad_media/trono",
+	"temas/edad_media/maquina_voladora"]
+## The pieces where every copy is really something different: several may
+## stand in one museum, each a different variant, never the same one twice;
+## once they are all out, the place gets another piece. The arcade machine,
+## one game each (MuseumView.ARCADE_GAMES has how each looks; you play pong
+## on all of them, Arcades).
+const VARIANTS := {"temas/moderna/recreativa": ["tenis", "invasores", "comecocos", "bloques", "serpiente", "carreras"]}
+
+
+static func is_unique(piece: String) -> bool:
+	return piece in UNIQUE
+
+
+## A piece's variants, or none.
+static func variants(piece: String) -> Array:
+	return VARIANTS.get(piece, [])
+
+
 ## A kind of painting for a wall of this theme's gallery ("" for a corridor).
 static func painting(theme: String, a: float) -> String:
 	var kinds: Array = []

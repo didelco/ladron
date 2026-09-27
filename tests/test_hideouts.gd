@@ -43,9 +43,55 @@ func goes_for_it(g: Guard, p: Thief, near: Vector2i, d: Vector2i) -> bool:
 	return false
 
 
+## A medium museum with a sarcophagus in it, with room to watch it from:
+## three free tiles in a row away from the first free tile beside it.
+func with_sarcophagus() -> int:
+	for sd in range(4242, 4642):
+		Sim.new_map(sd, "medium")
+		for b in Museum.big_pieces:
+			if b.kind != "sarcophagus":
+				continue
+			var tiles: Array[Vector2i] = []
+			var r: Rect2i = b.rect
+			for y in range(r.position.y, r.end.y):
+				for x in range(r.position.x, r.end.x):
+					tiles.append(Vector2i(x, y))
+			var beside := Vector2i(-1, -1)
+			var d := Vector2i.ZERO
+			for t in tiles:
+				for dd in Museum.DIRS:
+					var n: Vector2i = t + dd
+					if beside.x < 0 and not (n in tiles) and Museum.tile_at(n.x + 0.5, n.y + 0.5) == Tiles.FLOOR:
+						beside = n
+						d = -dd
+			var room := true
+			for k in range(1, 4):
+				var o := beside - d * k
+				room = room and Museum.tile_at(o.x + 0.5, o.y + 0.5) == Tiles.FLOOR
+			if room:
+				return sd
+	return 4242
+
+
+## A night as the game lays it out (main._lay_out): the museum, the job, the
+## props, the pedestals and furniture, and what stands on every case.
+func night(sd: int, size: String, shape := "") -> void:
+	Sim.new_map(sd, size, -1, shape)
+	Heist.plan_job(1, {}, 1, {})
+	Plinths.list.clear()
+	Hideouts.pieces.clear()
+	if Sim.feature("props"):
+		Props.place(sd, [Heist.exit, Heist.panel, Heist.panel2, Heist.start])
+	else:
+		Props.list.clear()
+	Hideouts.spread(sd, [Heist.at] as Array[Vector2i], Sim.feature("plinths"), Sim.feature("hideouts"))
+	Collection.lay_out()
+
+
 func _init() -> void:
 	Sim.custom = {}
-	Sim.new_map(4242, "medium")
+	var sarcophagus_seed := with_sarcophagus()
+	Sim.new_map(sarcophagus_seed, "medium")
 	Props.list.clear()
 	var sarcophagi := Hideouts.all().filter(func(s): return s.kind == "sarcophagus")
 	check(not sarcophagi.is_empty(), "hay sarcófago en el museo (%d)" % sarcophagi.size())
@@ -134,9 +180,7 @@ func _init() -> void:
 
 	# The same for a statue on a pedestal.
 	var t: Vector2i = Vector2i(-1, -1)
-	Hideouts.spread(4242, [] as Array[Vector2i], true, false, false)
-	# Only the pedestals picked: every big piece and suit still counts.
-	Hideouts.reset()
+	Hideouts.spread(4242, [] as Array[Vector2i], true, false)
 	t = Plinths.list[0]
 	var foot: Vector2i = Plinths._floor_beside(t)[0]
 	var pd := t - foot
@@ -172,8 +216,8 @@ func _init() -> void:
 
 	# Furniture to hide in: a few on cases, each of its gallery's theme.
 	Plinths.list.clear()
-	Hideouts.spread(4242, [] as Array[Vector2i], false, true, false)
-	check(Hideouts.pieces.size() >= 2, "hay muebles para esconderse (%d)" % Hideouts.pieces.size())
+	Hideouts.spread(4242, [] as Array[Vector2i], false, true)
+	check(Hideouts.pieces.size() >= 1, "hay muebles para esconderse (%d)" % Hideouts.pieces.size())
 	for at in Hideouts.pieces:
 		var kind: String = Hideouts.pieces[at]
 		var room := Museum.room_at(at.x + 0.5, at.y + 0.5)
@@ -220,7 +264,7 @@ func _init() -> void:
 
 	# Few, and far apart: each story night, the places to hide in and the
 	# pedestals together, as many as the museum's size gives, none near
-	# another; the rest of the big pieces and suits are just to look at.
+	# another; and every one of them there is to see a place to hide.
 	var most := 0
 	var closest := INF
 	var mixed := 0
@@ -230,13 +274,13 @@ func _init() -> void:
 		var sd := Story.seed_for(n, 1)
 		Sim.new_map(sd, night.size, -1, night.shape)
 		Heist.plan_job(n, night.loot, 1, {})
+		Plinths.list.clear()
+		Hideouts.pieces.clear()
 		if Sim.feature("props"):
 			Props.place(sd, [Heist.exit, Heist.panel, Heist.panel2, Heist.start])
 		else:
 			Props.list.clear()
-		Plinths.list.clear()
-		Hideouts.pieces.clear()
-		Hideouts.spread(sd, [Heist.at] as Array[Vector2i], true, true, true)
+		Hideouts.spread(sd, [Heist.at] as Array[Vector2i], true, true)
 		var spots := Hideouts.all()
 		var at: Array[Vector2] = []
 		for sp in spots:
@@ -256,10 +300,53 @@ func _init() -> void:
 	check(mixed >= Story.count() - 2, "casi todas las noches hay escondites y pedestales (%d de %d)" % [mixed, Story.count()])
 	check(most <= 10, "en el museo más grande, %d sitios" % most)
 
+	# What looks like a place to hide is one: in generated museums of every
+	# size and shape, every big piece to hide in and every suit of armour
+	# standing is one (Hideouts.all); and there are few of them, far apart.
+	Sim.custom = {}
+	var nights := 0
+	var not_hideouts := 0
+	var over := 0
+	var under := 0
+	var near := 0
+	var furthest_short := INF
+	var totals := {}
+	for size in ["small", "medium", "large"]:
+		for shape in MapGen.SHAPES:
+			for k in 12:
+				var sd := 1000 + k * 7919 + shape.length() * 31
+				night(sd, size, shape)
+				nights += 1
+				var spots := Hideouts.all()
+				for b in Museum.big_pieces:
+					if b.kind in Hideouts.BIG and not spots.any(func(s): return s.kind == b.kind and s.area == Rect2(b.rect)):
+						not_hideouts += 1
+				for pr in Props.list:
+					if pr.kind == "armour" and not spots.any(func(s): return s.prop == pr):
+						not_hideouts += 1
+				var at := Hideouts.taken()
+				var budget := Hideouts.places(Museum.open_tiles.size())
+				if at.size() > budget:
+					over += 1
+					check(false, "%s/%s semilla %d: %d sitios, más de %d" % [size, shape, sd, at.size(), budget])
+				if at.size() < Hideouts.MIN:
+					under += 1
+				for i in at.size():
+					for j in range(i + 1, at.size()):
+						if at[i].distance_to(at[j]) < Hideouts.APART:
+							near += 1
+						furthest_short = minf(furthest_short, at[i].distance_to(at[j]))
+				totals[size] = totals.get(size, 0) + at.size()
+	print("  sitios de media: pequeño %.1f, mediano %.1f, grande %.1f" % [totals.small / 72.0, totals.medium / 72.0, totals.large / 72.0])
+	check(not_hideouts == 0, "toda pieza grande de escondite y toda armadura en pie deja esconderse (%d que no)" % not_hideouts)
+	check(over == 0, "en %d museos, ninguno con más sitios de los que le tocan" % nights)
+	check(near == 0, "ninguno a menos de %.0f casillas de otro (el más cerca, a %.1f)" % [Hideouts.APART, furthest_short])
+	check(under <= nights / 20, "casi siempre al menos %d (%d de %d con menos)" % [Hideouts.MIN, under, nights])
+
 	# Getting in takes a moment of wriggling, out in the open: seen at any
 	# point of it, the guard knows.
 	Sim.custom = {}
-	Sim.new_map(4242, "medium")
+	Sim.new_map(sarcophagus_seed, "medium")
 	Props.list.clear()
 	var sq := Hideouts.all().filter(func(o): return o.kind == "sarcophagus")[0] as Hideouts.Spot
 	var by := Vector2i(-1, -1)

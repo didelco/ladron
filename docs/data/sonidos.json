@@ -1,13 +1,8 @@
 [
 	{
-		"file": "assets/sonidos/caught.wav",
-		"name": "caught",
-		"seconds": 2.0
-	},
-	{
-		"file": "assets/sonidos/roll.wav",
-		"name": "roll",
-		"seconds": 0.35
+		"file": "assets/sonidos/lights.wav",
+		"name": "lights",
+		"seconds": 0.55
 	},
 	{
 		"file": "assets/sonidos/ok.wav",
@@ -75,9 +70,34 @@
 		"seconds": 1.3
 	},
 	{
-		"file": "assets/sonidos/go.wav",
-		"name": "go",
-		"seconds": 0.9
+		"file": "assets/sonidos/smoke.wav",
+		"name": "smoke",
+		"seconds": 1.4
+	},
+	{
+		"file": "assets/sonidos/pong_miss.wav",
+		"name": "pong_miss",
+		"seconds": 0.32
+	},
+	{
+		"file": "assets/sonidos/pong_score.wav",
+		"name": "pong_score",
+		"seconds": 0.26
+	},
+	{
+		"file": "assets/sonidos/pong_wall.wav",
+		"name": "pong_wall",
+		"seconds": 0.04
+	},
+	{
+		"file": "assets/sonidos/pong_hit.wav",
+		"name": "pong_hit",
+		"seconds": 0.05
+	},
+	{
+		"file": "assets/sonidos/sneeze.wav",
+		"name": "sneeze",
+		"seconds": 0.28
 	},
 	{
 		"file": "assets/sonidos/escaped.wav",
@@ -110,6 +130,11 @@
 		"seconds": 0.75
 	},
 	{
+		"file": "assets/sonidos/go.wav",
+		"name": "go",
+		"seconds": 0.9
+	},
+	{
 		"file": "assets/sonidos/shout.wav",
 		"name": "shout",
 		"seconds": 0.46
@@ -125,19 +150,14 @@
 		"seconds": 0.25
 	},
 	{
-		"file": "assets/sonidos/lights.wav",
-		"name": "lights",
-		"seconds": 0.55
+		"file": "assets/sonidos/caught.wav",
+		"name": "caught",
+		"seconds": 2.0
 	},
 	{
-		"file": "assets/sonidos/panel.wav",
-		"name": "panel",
-		"seconds": 0.21
-	},
-	{
-		"file": "assets/sonidos/pin.wav",
-		"name": "pin",
-		"seconds": 0.12
+		"file": "assets/sonidos/roll.wav",
+		"name": "roll",
+		"seconds": 0.35
 	},
 	{
 		"file": "assets/sonidos/back.wav",
@@ -148,5 +168,15 @@
 		"file": "assets/sonidos/step.wav",
 		"name": "step",
 		"seconds": 0.05
+	},
+	{
+		"file": "assets/sonidos/panel.wav",
+		"name": "panel",
+		"seconds": 0.21
+	},
+	{
+		"file": "assets/sonidos/pin.wav",
+		"name": "pin",
+		"seconds": 0.12
 	}
 ]

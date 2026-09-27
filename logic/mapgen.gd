@@ -939,49 +939,79 @@ func _case_spot(x: int, y: int, room: int) -> bool:
 
 
 ## The big pieces, each standing on a block of case tiles in a gallery with
-## floor all round it (a free tile on every side, so no way is ever shut): a
-## dinosaur, a sarcophagus or two in a big museum, and a bear. They draw from a
-## generator of their own, so the rest of the museum is the same as without
-## them; one to a gallery, and a piece that finds no room is left out.
+## floor all round it (a free tile on every side, so no way is ever shut):
+## the dinosaur and the bear, to look at, and a few to hide in (Hideouts.BIG).
+## Every one of those is a hideout, so there are only as many as the
+## museum's share gives (Hideouts.big_of), far apart (Hideouts.APART): each
+## kind once, and then a second of one that is not unique (Themes.UNIQUE) if
+## there is still room in the share. They draw from a generator of their
+## own, so the rest of the museum is the same as without them; one to a
+## gallery, and a piece that finds no room is left out.
 func _big_pieces(seed: int) -> void:
 	big.clear()
 	var rand := Mulberry32.new(seed ^ 0x3c6ef372)
-	var wanted := ["dinosaur", "sarcophagus"]
-	if w * h >= 1000:
-		wanted.append("sarcophagus")
-	# Last, so the others land where they always did.
-	wanted.append("bear")
-	wanted.append_array(["trojan_horse", "mammoth", "log", "car"])
 	# A museum of one theme: only its own (the middle ages have none).
-	if theme != "":
-		wanted = wanted.filter(func(kind: String) -> bool: return Themes.for_big(kind) in [theme, ""])
+	var fits := func(kind: String) -> bool: return theme == "" or Themes.for_big(kind) in [theme, ""]
 	var order: Array[int] = []
 	for i in rooms.size():
 		order.append(i)
-	for i in range(order.size() - 1, 0, -1):
-		var j := rand.below(i + 1)
-		var tmp := order[i]
-		order[i] = order[j]
-		order[j] = tmp
-	for kind in wanted:
+	_shuffle(order, rand)
+	for kind in ["dinosaur", "bear"]:
+		if fits.call(kind):
+			_stand_big(kind, order, rand, [] as Array[Vector2])
+	var kinds: Array = Hideouts.BIG.filter(fits)
+	_shuffle(kinds, rand)
+	for k in kinds.duplicate():
+		if not Themes.is_unique(k):
+			kinds.append(k)
+	var open := 0
+	for v in grid:
+		if v == Tiles.FLOOR:
+			open += 1
+	var middles: Array[Vector2] = []
+	for kind in kinds:
 		var size: Vector2i = BIG[kind]
-		for i in order:
-			var room := rooms[i]
-			var spots: Array[Rect2i] = []
-			for s in [size, Vector2i(size.y, size.x)]:
-				for y in range(room.position.y, room.end.y):
-					for x in range(room.position.x, room.end.x):
-						if _room_all_floor(Rect2i(x - 1, y - 1, s.x + 2, s.y + 2), i):
-							spots.append(Rect2i(x, y, s.x, s.y))
-			if spots.is_empty():
-				continue
-			var r := spots[rand.below(spots.size())]
-			for y in range(r.position.y, r.end.y):
-				for x in range(r.position.x, r.end.x):
-					_put(x, y, Tiles.COVER)
-			big.append({"kind": kind, "rect": r})
-			order.erase(i)
-			break
+		# Counted once it stands, so the share is the museum's as it ends up.
+		if middles.size() >= Hideouts.big_of(open - size.x * size.y):
+			continue
+		var r := _stand_big(kind, order, rand, middles)
+		if r.size != Vector2i.ZERO:
+			middles.append(Rect2(r).get_center())
+			open -= size.x * size.y
+
+
+## Stand one big piece in the first gallery (of order) with room for it, at
+## least Hideouts.APART from every point in apart; that gallery takes no
+## other. Its tiles, or an empty rect if none had room.
+func _stand_big(kind: String, order: Array[int], rand: Mulberry32, apart: Array[Vector2]) -> Rect2i:
+	var size: Vector2i = BIG[kind]
+	for i in order:
+		var room := rooms[i]
+		var spots: Array[Rect2i] = []
+		for s in [size, Vector2i(size.y, size.x)]:
+			for y in range(room.position.y, room.end.y):
+				for x in range(room.position.x, room.end.x):
+					var r := Rect2i(x, y, s.x, s.y)
+					if _room_all_floor(r.grow(1), i) and Hideouts.far_from(Rect2(r).get_center(), apart):
+						spots.append(r)
+		if spots.is_empty():
+			continue
+		var r := spots[rand.below(spots.size())]
+		for y in range(r.position.y, r.end.y):
+			for x in range(r.position.x, r.end.x):
+				_put(x, y, Tiles.COVER)
+		big.append({"kind": kind, "rect": r})
+		order.erase(i)
+		return r
+	return Rect2i()
+
+
+static func _shuffle(list: Array, rand: Mulberry32) -> void:
+	for i in range(list.size() - 1, 0, -1):
+		var j := rand.below(i + 1)
+		var tmp = list[i]
+		list[i] = list[j]
+		list[j] = tmp
 
 
 ## Every tile of r is plain floor of room i, off the corridor along the
