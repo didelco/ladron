@@ -1918,7 +1918,7 @@ window.JUEGO = {
      {
       "stage": "lesson:games",
       "text": "La vitrina se abre con ganzúa: E (o A) al pasar por el verde. Esconderte y posar también piden maña.",
-      "title": "LA GANZÚA"
+      "title": "MANOS A LA OBRA"
      }
     ],
     "props": false,
@@ -6753,8 +6753,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "27-09-2026 21:57",
-  "commit": "7e54415",
+  "fecha": "27-09-2026 22:04",
+  "commit": "bc6fb82",
   "rama": "worktree-agent-a5f1e8bdb216284e0"
  }
 };

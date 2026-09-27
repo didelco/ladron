@@ -281,6 +281,33 @@ func _ready() -> void:
 		# --map: and take the map out a moment later.
 		if "--map" in OS.get_cmdline_user_args():
 			get_tree().create_timer(3.0).timeout.connect(_toggle_map)
+		# --hide: and P1 starts a few steps from a place to hide in.
+		if "--hide" in OS.get_cmdline_user_args():
+			get_tree().create_timer(2.1).timeout.connect(_near_hideout.bind(0))
+
+
+## For trying hiding out (--hide): thief i a few steps from a hideout,
+## facing it, on the free floor it is got into from. Returns the way from
+## the hideout to where it stands, or (0, 0) if there is none.
+func _near_hideout(i: int) -> Vector2i:
+	var p := thieves[i]
+	for s in Hideouts.all():
+		for t in s.tiles:
+			for d in Museum.DIRS:
+				var n: Vector2i = t + d
+				if n in s.tiles or Museum.tile_at(n.x + 0.5, n.y + 0.5) != Tiles.FLOOR:
+					continue
+				var far := n
+				for k in 3:
+					var m: Vector2i = far + d
+					if Museum.tile_at(m.x + 0.5, m.y + 0.5) != Tiles.FLOOR:
+						break
+					far = m
+				p.x = far.x + 0.5
+				p.y = far.y + 0.5
+				p.dir = atan2(-d.y, -d.x)
+				return d
+	return Vector2i.ZERO
 
 
 # --- Screens -----------------------------------------------------------------------

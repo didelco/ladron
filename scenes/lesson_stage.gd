@@ -326,7 +326,7 @@ func _games() -> void:
 	var dial := Node3D.new()
 	dial.position = GAMES_CASE + Vector3(0, 1.1, 0)
 	dial.rotation = Vector3(0, PI / 4, 0)
-	dial.scale = Vector3.ONE * 1.5
+	dial.scale = Vector3.ONE * 2.2
 	_root.add_child(dial)
 	var ring := TorusMesh.new()
 	ring.inner_radius = 0.13

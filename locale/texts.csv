@@ -180,7 +180,7 @@ LESSON_NOISE_TITLE,EL RUIDO
 LESSON_NOISE_TEXT,"Corriendo te oyen lejos; andando, poco; a gatas, nada."
 LESSON_PROPS_TITLE,LA DISTRACCIÓN
 LESSON_PROPS_TEXT,"Tira algo lejos (E, o A): el guardia irá a mirar y la pieza quedará libre."
-LESSON_GAMES_TITLE,LA GANZÚA
+LESSON_GAMES_TITLE,MANOS A LA OBRA
 LESSON_GAMES_TEXT,"La vitrina se abre con ganzúa: E (o A) al pasar por el verde. Esconderte y posar también piden maña."
 LESSON_CASE_ALARM_TITLE,LA VITRINA CON ALARMA
 LESSON_TWO_TITLE,DOS GUARDIAS
@@ -369,7 +369,7 @@ LOG_PLINTH_UP,Quieto como una estatua… nadie sospecha nada
 LOG_ARCADE,Una partidita… solo una
 LOG_SNEEZE,¡ACHÍS! Adiós escondite: todo el museo lo ha oído
 LOG_PLINTH_BLOWN,¡Te han visto subir! Así no cuela
-LOG_HIDE_IN,Dentro de %s… ni respiras
+LOG_HIDE_IN,Metido en %s… ni respiras
 LOG_HIDE_BLOWN,¡Te han visto meterte! Saben dónde estás
 LOG_HIDE_TIPPED,¡Se cae la armadura y sales rodando!
 LOG_ROLL_CASE,¡Pum! Te has estampado contra la vitrina
