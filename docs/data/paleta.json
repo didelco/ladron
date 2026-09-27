@@ -1364,6 +1364,28 @@
 	{
 		"colours": [
 			{
+				"hex": "#8a1c2c",
+				"key": ""
+			}
+		],
+		"file": "scenes/night_map.gd",
+		"name": "CARPET",
+		"note": "The big job's hall: its carpet, its gold, and how much wider it is."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#e8b54a",
+				"key": ""
+			}
+		],
+		"file": "scenes/night_map.gd",
+		"name": "BRASS",
+		"note": "The big job's hall: its carpet, its gold, and how much wider it is."
+	},
+	{
+		"colours": [
+			{
 				"hex": "#f1ecdc",
 				"key": ""
 			}

@@ -115,6 +115,11 @@ static func place(seed: int, avoid: Array[Vector2i]) -> void:
 			if roll < 0.0:
 				p.kind = KINDS[k]
 				break
+		# A museum of one theme has no busts or armour of another's: an
+		# information panel for the bust, a bin for the armour.
+		var own: String = Themes.PROP_THEMES.get(p.kind, "")
+		if Museum.only_theme != "" and own != "" and own != Museum.only_theme:
+			p.kind = "panel" if p.kind == "bust" else "bin"
 		p.tile = t
 		p.face = s[1] if s[1] != Vector2i.ZERO else Vector2i(0, -1)
 		var pull := 0.22 if s[1] != Vector2i.ZERO else 0.0

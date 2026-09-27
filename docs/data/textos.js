@@ -26,18 +26,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:292"
+   "scenes/main.gd:297"
   ],
   "via": []
  },
  {
   "key": "MENU_STORY_TEXT",
-  "es": "Veinte noches de aventura",
+  "es": "Cinco museos, veinticinco robos",
   "broken": false,
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:292"
+   "scenes/main.gd:297"
   ],
   "via": []
  },
@@ -48,7 +48,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:291"
+   "scenes/main.gd:296"
   ],
   "via": []
  },
@@ -59,7 +59,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:291"
+   "scenes/main.gd:296"
   ],
   "via": []
  },
@@ -70,8 +70,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:297",
-   "scenes/main.gd:1202"
+   "scenes/main.gd:302",
+   "scenes/main.gd:1215"
   ],
   "via": []
  },
@@ -82,7 +82,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:298"
+   "scenes/main.gd:303"
   ],
   "via": []
  },
@@ -93,14 +93,14 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:354",
-   "scenes/main.gd:430",
-   "scenes/main.gd:483",
-   "scenes/main.gd:602",
-   "scenes/main.gd:640",
-   "scenes/main.gd:679",
-   "scenes/main.gd:723",
-   "scenes/main.gd:877"
+   "scenes/main.gd:359",
+   "scenes/main.gd:435",
+   "scenes/main.gd:488",
+   "scenes/main.gd:607",
+   "scenes/main.gd:645",
+   "scenes/main.gd:685",
+   "scenes/main.gd:736",
+   "scenes/main.gd:890"
   ],
   "via": []
  },
@@ -111,7 +111,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:877"
+   "scenes/main.gd:890"
   ],
   "via": []
  },
@@ -122,8 +122,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:878",
-   "scenes/main.gd:1165"
+   "scenes/main.gd:891",
+   "scenes/main.gd:1178"
   ],
   "via": []
  },
@@ -134,7 +134,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:880"
+   "scenes/main.gd:893"
   ],
   "via": []
  },
@@ -145,7 +145,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1164"
+   "scenes/main.gd:1177"
   ],
   "via": []
  },
@@ -156,7 +156,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:599"
+   "scenes/main.gd:604"
   ],
   "via": []
  },
@@ -167,20 +167,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:600"
+   "scenes/main.gd:605"
   ],
   "via": []
  },
  {
   "key": "MENU_NIGHT_PIECE",
-  "es": "NOCHE %d · %s",
+  "es": "ROBO %d · %s",
   "broken": false,
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:378",
-   "scenes/main.gd:677",
-   "scenes/main.gd:697",
+   "scenes/main.gd:383",
    "logic/text.gd:9"
   ],
   "via": []
@@ -258,7 +256,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:714"
+   "scenes/main.gd:727"
   ],
   "via": []
  },
@@ -341,8 +339,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:475",
-   "scenes/main.gd:718"
+   "scenes/main.gd:480",
+   "scenes/main.gd:731"
   ],
   "via": []
  },
@@ -353,8 +351,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:476",
-   "scenes/main.gd:719"
+   "scenes/main.gd:481",
+   "scenes/main.gd:732"
   ],
   "via": []
  },
@@ -365,8 +363,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:477",
-   "scenes/main.gd:720"
+   "scenes/main.gd:482",
+   "scenes/main.gd:733"
   ],
   "via": []
  },
@@ -377,7 +375,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1199"
+   "scenes/main.gd:1212"
   ],
   "via": []
  },
@@ -388,7 +386,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1201"
+   "scenes/main.gd:1214"
   ],
   "via": []
  },
@@ -399,8 +397,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:555",
-   "scenes/main.gd:1433"
+   "scenes/main.gd:560",
+   "scenes/main.gd:1462"
   ],
   "via": []
  },
@@ -411,7 +409,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:786"
+   "scenes/main.gd:799"
   ],
   "via": []
  },
@@ -422,7 +420,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:782"
+   "scenes/main.gd:795"
   ],
   "via": []
  },
@@ -433,7 +431,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:782"
+   "scenes/main.gd:795"
   ],
   "via": []
  },
@@ -444,7 +442,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:788"
+   "scenes/main.gd:801"
   ],
   "via": []
  },
@@ -455,7 +453,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:789"
+   "scenes/main.gd:802"
   ],
   "via": []
  },
@@ -466,7 +464,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:789"
+   "scenes/main.gd:802"
   ],
   "via": []
  },
@@ -477,7 +475,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:795"
+   "scenes/main.gd:808"
   ],
   "via": []
  },
@@ -488,7 +486,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:796"
+   "scenes/main.gd:809"
   ],
   "via": []
  },
@@ -499,7 +497,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:797"
+   "scenes/main.gd:810"
   ],
   "via": []
  },
@@ -510,7 +508,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:799"
+   "scenes/main.gd:812"
   ],
   "via": []
  },
@@ -521,7 +519,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:929"
+   "scenes/main.gd:942"
   ],
   "via": []
  },
@@ -532,7 +530,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:929"
+   "scenes/main.gd:942"
   ],
   "via": []
  },
@@ -543,7 +541,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:929"
+   "scenes/main.gd:942"
   ],
   "via": []
  },
@@ -554,7 +552,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:929"
+   "scenes/main.gd:942"
   ],
   "via": []
  },
@@ -565,7 +563,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:922"
+   "scenes/main.gd:935"
   ],
   "via": []
  },
@@ -576,7 +574,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:923"
+   "scenes/main.gd:936"
   ],
   "via": []
  },
@@ -587,7 +585,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:924"
+   "scenes/main.gd:937"
   ],
   "via": []
  },
@@ -598,7 +596,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:925"
+   "scenes/main.gd:938"
   ],
   "via": []
  },
@@ -609,7 +607,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:963"
+   "scenes/main.gd:976"
   ],
   "via": []
  },
@@ -620,7 +618,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:963"
+   "scenes/main.gd:976"
   ],
   "via": []
  },
@@ -631,7 +629,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:965"
+   "scenes/main.gd:978"
   ],
   "via": []
  },
@@ -642,7 +640,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:966"
+   "scenes/main.gd:979"
   ],
   "via": []
  },
@@ -653,7 +651,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:967"
+   "scenes/main.gd:980"
   ],
   "via": []
  },
@@ -664,7 +662,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:968"
+   "scenes/main.gd:981"
   ],
   "via": []
  },
@@ -675,7 +673,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:969"
+   "scenes/main.gd:982"
   ],
   "via": []
  },
@@ -686,7 +684,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:970"
+   "scenes/main.gd:983"
   ],
   "via": []
  },
@@ -697,7 +695,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:973"
+   "scenes/main.gd:986"
   ],
   "via": []
  },
@@ -708,7 +706,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:973"
+   "scenes/main.gd:986"
   ],
   "via": []
  },
@@ -719,7 +717,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:974"
+   "scenes/main.gd:987"
   ],
   "via": []
  },
@@ -730,7 +728,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:975"
+   "scenes/main.gd:988"
   ],
   "via": []
  },
@@ -741,7 +739,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:976"
+   "scenes/main.gd:989"
   ],
   "via": []
  },
@@ -752,7 +750,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:977"
+   "scenes/main.gd:990"
   ],
   "via": []
  },
@@ -763,7 +761,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:978"
+   "scenes/main.gd:991"
   ],
   "via": []
  },
@@ -774,7 +772,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:933"
+   "scenes/main.gd:946"
   ],
   "via": []
  },
@@ -785,7 +783,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:937"
+   "scenes/main.gd:950"
   ],
   "via": []
  },
@@ -796,7 +794,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:937"
+   "scenes/main.gd:950"
   ],
   "via": []
  },
@@ -807,7 +805,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:948"
+   "scenes/main.gd:961"
   ],
   "via": []
  },
@@ -818,7 +816,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:948"
+   "scenes/main.gd:961"
   ],
   "via": []
  },
@@ -829,7 +827,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:948"
+   "scenes/main.gd:961"
   ],
   "via": []
  },
@@ -840,7 +838,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:949"
+   "scenes/main.gd:962"
   ],
   "via": []
  },
@@ -851,7 +849,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:949"
+   "scenes/main.gd:962"
   ],
   "via": []
  },
@@ -862,7 +860,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:949"
+   "scenes/main.gd:962"
   ],
   "via": []
  },
@@ -873,7 +871,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:953"
+   "scenes/main.gd:966"
   ],
   "via": []
  },
@@ -884,7 +882,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:953"
+   "scenes/main.gd:966"
   ],
   "via": []
  },
@@ -895,7 +893,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:953"
+   "scenes/main.gd:966"
   ],
   "via": []
  },
@@ -906,7 +904,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:953"
+   "scenes/main.gd:966"
   ],
   "via": []
  },
@@ -917,7 +915,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:953"
+   "scenes/main.gd:966"
   ],
   "via": []
  },
@@ -928,7 +926,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:953"
+   "scenes/main.gd:966"
   ],
   "via": []
  },
@@ -939,7 +937,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:953"
+   "scenes/main.gd:966"
   ],
   "via": []
  },
@@ -950,7 +948,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:953"
+   "scenes/main.gd:966"
   ],
   "via": []
  },
@@ -961,7 +959,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:939"
+   "scenes/main.gd:952"
   ],
   "via": []
  },
@@ -972,7 +970,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1115"
+   "scenes/main.gd:1128"
   ],
   "via": []
  },
@@ -983,7 +981,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1092"
+   "scenes/main.gd:1105"
   ],
   "via": []
  },
@@ -994,7 +992,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1092"
+   "scenes/main.gd:1105"
   ],
   "via": []
  },
@@ -1005,7 +1003,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1092"
+   "scenes/main.gd:1105"
   ],
   "via": []
  },
@@ -1016,7 +1014,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1092"
+   "scenes/main.gd:1105"
   ],
   "via": []
  },
@@ -1027,7 +1025,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1092"
+   "scenes/main.gd:1105"
   ],
   "via": []
  },
@@ -1038,7 +1036,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1135"
+   "scenes/main.gd:1148"
   ],
   "via": []
  },
@@ -1049,7 +1047,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1135"
+   "scenes/main.gd:1148"
   ],
   "via": []
  },
@@ -1060,7 +1058,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1139"
+   "scenes/main.gd:1152"
   ],
   "via": []
  },
@@ -1071,7 +1069,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1139"
+   "scenes/main.gd:1152"
   ],
   "via": []
  },
@@ -1082,7 +1080,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1139"
+   "scenes/main.gd:1152"
   ],
   "via": []
  },
@@ -1093,7 +1091,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1139"
+   "scenes/main.gd:1152"
   ],
   "via": []
  },
@@ -1104,7 +1102,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1152"
+   "scenes/main.gd:1165"
   ],
   "via": []
  },
@@ -1115,7 +1113,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1156"
+   "scenes/main.gd:1169"
   ],
   "via": []
  },
@@ -1126,7 +1124,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1159"
+   "scenes/main.gd:1172"
   ],
   "via": []
  },
@@ -1137,7 +1135,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:872"
+   "scenes/main.gd:885"
   ],
   "via": []
  },
@@ -1148,7 +1146,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:878"
+   "scenes/main.gd:891"
   ],
   "via": []
  },
@@ -1159,29 +1157,29 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:1431"
+   "scenes/main.gd:1460"
   ],
   "via": []
  },
  {
   "key": "STORY_PROLOGUE",
-  "es": "Esta es la Banda del Calcetín: ladrones que solo roban lo que ya estaba robado.\n\nEl Barón Von Bostezo, director del Museo de Cosas Rarísimas, se ha ido llevando las cosas más raras del pueblo para exponerlas en vitrinas. Veinte en total.\n\nEsta noche empieza la operación DEVOLVERLO TODO.",
+  "es": "Esta es la Banda del Calcetín: ladrones que solo roban lo que ya estaba robado.\n\nEl Barón Von Bostezo enseñó su Diamante Bostezo a los directores de los cinco museos de la ciudad. Bostezaron tanto que le firmaron un papel sin leerlo: «Regalo mi museo al Barón».\n\nLuego se coló en todas las casas del pueblo. Se llevó la dentadura del abuelo Paco, el pato que canta ópera y hasta el queso de la nevera de Jake, y lo ha puesto todo en vitrinas con un cartel: «Tesoro antiquísimo».\n\nEsta noche empieza la operación DEVOLVERLO TODO: cinco museos, cinco salas en cada uno. Primera parada: la Gran Cueva. Huele a queso.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:14"
+   "logic/story.gd:24"
   ],
   "via": []
  },
  {
   "key": "STORY_ENDING",
-  "es": "¡Lo habéis conseguido!\n\nEl abuelo Paco vuelve a masticar turrón, el pato canta a las siete en punto, el yeti tiene los pies calentitos y los lunes vuelven a durar lo normal.\n\nAl Barón Von Bostezo solo le quedó mirar su vitrina vacía... y bostezar. Se quedó dormido de pie. Dicen que todavía ronca.\n\nFIN (de momento)",
+  "es": "¡Lo habéis conseguido!\n\nEl abuelo Paco vuelve a masticar turrón, el pato canta a las siete en punto, el yeti tiene los pies calentitos y Jake ya tiene su queso (su nevera vuelve a oler fatal, como debe ser).\n\nSin su diamante, los directores dejaron de bostezar, rompieron aquel papel y abrieron otra vez sus museos. Gratis para los niños.\n\nAl Barón Von Bostezo solo le quedó mirar sus vitrinas vacías... y bostezar. Se quedó dormido de pie. Dicen que todavía ronca.\n\nFIN (de momento)",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:16"
+   "logic/story.gd:26"
   ],
   "via": []
  },
@@ -1192,7 +1190,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1232"
+   "scenes/main.gd:1244"
   ],
   "via": []
  },
@@ -1203,7 +1201,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1232"
+   "scenes/main.gd:1244"
   ],
   "via": []
  },
@@ -1214,7 +1212,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1232"
+   "scenes/main.gd:1244"
   ],
   "via": []
  },
@@ -1225,7 +1223,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1244"
+   "scenes/main.gd:1256"
   ],
   "via": []
  },
@@ -1236,7 +1234,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1244"
+   "scenes/main.gd:1256"
   ],
   "via": []
  },
@@ -1247,13 +1245,13 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1247"
+   "scenes/main.gd:1259"
   ],
   "via": []
  },
  {
   "key": "BRIEF_JOB_ONE",
-  "es": "%s · tu %s robo",
+  "es": "%s · tu %s robo en %s",
   "broken": false,
   "extra": [],
   "group": "Menús",
@@ -1262,7 +1260,7 @@ window.TEXTOS = [
  },
  {
   "key": "BRIEF_JOB_MANY",
-  "es": "%s · vuestro %s robo",
+  "es": "%s · vuestro %s robo en %s",
   "broken": false,
   "extra": [],
   "group": "Menús",
@@ -1271,7 +1269,7 @@ window.TEXTOS = [
  },
  {
   "key": "BRIEF_JOB_LAST_ONE",
-  "es": "%s · tu último robo",
+  "es": "%s · tu último gran golpe",
   "broken": false,
   "extra": [],
   "group": "Menús",
@@ -1280,7 +1278,25 @@ window.TEXTOS = [
  },
  {
   "key": "BRIEF_JOB_LAST_MANY",
-  "es": "%s · vuestro último robo",
+  "es": "%s · vuestro último gran golpe",
+  "broken": false,
+  "extra": [],
+  "group": "Menús",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "BRIEF_JOB_BOSS_ONE",
+  "es": "%s · tu gran golpe en %s",
+  "broken": false,
+  "extra": [],
+  "group": "Menús",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "BRIEF_JOB_BOSS_MANY",
+  "es": "%s · vuestro gran golpe en %s",
   "broken": false,
   "extra": [],
   "group": "Menús",
@@ -1422,179 +1438,14 @@ window.TEXTOS = [
   ]
  },
  {
-  "key": "ORDINAL_5",
-  "es": "quinto",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_6",
-  "es": "sexto",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_7",
-  "es": "séptimo",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_8",
-  "es": "octavo",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_9",
-  "es": "noveno",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_10",
-  "es": "décimo",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_11",
-  "es": "undécimo",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_12",
-  "es": "duodécimo",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_13",
-  "es": "decimotercer",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_14",
-  "es": "decimocuarto",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_15",
-  "es": "decimoquinto",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_16",
-  "es": "decimosexto",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_17",
-  "es": "decimoséptimo",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_18",
-  "es": "decimoctavo",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_19",
-  "es": "decimonoveno",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
   "key": "BRIEF_LEVEL",
   "es": "NIVEL %02d",
   "broken": false,
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1337",
-   "scenes/main.gd:1338"
+   "scenes/main.gd:1359",
+   "scenes/main.gd:1360"
   ],
   "via": []
  },
@@ -1605,7 +1456,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1271"
+   "scenes/main.gd:1283"
   ],
   "via": []
  },
@@ -1616,7 +1467,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1272"
+   "scenes/main.gd:1284"
   ],
   "via": []
  },
@@ -1627,7 +1478,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "logic/briefing.gd:57"
+   "logic/briefing.gd:62"
   ],
   "via": []
  },
@@ -1638,7 +1489,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "logic/briefing.gd:57"
+   "logic/briefing.gd:62"
   ],
   "via": []
  },
@@ -1649,7 +1500,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "logic/briefing.gd:58"
+   "logic/briefing.gd:63"
   ],
   "via": []
  },
@@ -1660,7 +1511,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "logic/briefing.gd:99"
+   "logic/briefing.gd:104"
   ],
   "via": []
  },
@@ -1671,7 +1522,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1443"
+   "scenes/main.gd:1472"
   ],
   "via": []
  },
@@ -1682,7 +1533,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1443"
+   "scenes/main.gd:1472"
   ],
   "via": []
  },
@@ -1770,7 +1621,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:100"
+   "logic/story.gd:152"
   ],
   "via": []
  },
@@ -1781,7 +1632,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:101"
+   "logic/story.gd:153"
   ],
   "via": []
  },
@@ -1792,7 +1643,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:103"
+   "logic/story.gd:155"
   ],
   "via": []
  },
@@ -1803,7 +1654,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:104"
+   "logic/story.gd:156"
   ],
   "via": []
  },
@@ -1814,7 +1665,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:105"
+   "logic/story.gd:157"
   ],
   "via": []
  },
@@ -1825,7 +1676,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:106"
+   "logic/story.gd:158"
   ],
   "via": []
  },
@@ -1836,7 +1687,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:109"
+   "logic/story.gd:161"
   ],
   "via": []
  },
@@ -1847,7 +1698,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:110"
+   "logic/story.gd:162"
   ],
   "via": []
  },
@@ -1858,7 +1709,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:111"
+   "logic/story.gd:163"
   ],
   "via": []
  },
@@ -1869,7 +1720,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:112"
+   "logic/story.gd:164"
   ],
   "via": []
  },
@@ -1880,7 +1731,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:113"
+   "logic/story.gd:165"
   ],
   "via": []
  },
@@ -1891,7 +1742,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:114"
+   "logic/story.gd:166"
   ],
   "via": []
  },
@@ -1902,7 +1753,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:115"
+   "logic/story.gd:167"
   ],
   "via": []
  },
@@ -1913,7 +1764,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:116"
+   "logic/story.gd:168"
   ],
   "via": []
  },
@@ -1924,7 +1775,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:117"
+   "logic/story.gd:169"
   ],
   "via": []
  },
@@ -1935,7 +1786,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:119"
+   "logic/story.gd:171"
   ],
   "via": []
  },
@@ -1946,7 +1797,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:120"
+   "logic/story.gd:172"
   ],
   "via": []
  },
@@ -1957,7 +1808,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:121"
+   "logic/story.gd:173"
   ],
   "via": []
  },
@@ -1968,7 +1819,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:122"
+   "logic/story.gd:174"
   ],
   "via": []
  },
@@ -1979,7 +1830,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:123"
+   "logic/story.gd:175"
   ],
   "via": []
  },
@@ -1990,18 +1841,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:124"
+   "logic/story.gd:176"
   ],
   "via": []
  },
  {
   "key": "LESSON_FINALE_TITLE",
-  "es": "LA ÚLTIMA NOCHE",
+  "es": "EL ÚLTIMO GOLPE",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:125"
+   "logic/story.gd:177"
   ],
   "via": []
  },
@@ -2012,7 +1863,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:126"
+   "logic/story.gd:178"
   ],
   "via": []
  },
@@ -2023,7 +1874,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:118"
+   "logic/story.gd:170"
   ],
   "via": []
  },
@@ -2034,18 +1885,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:25"
+   "logic/story.gd:40"
   ],
   "via": []
  },
  {
   "key": "NIGHT_01_BLURB",
-  "es": "Postiza, de porcelana. Brilla en la oscuridad.",
+  "es": "Postiza, de porcelana. Tan vieja que parece un fósil.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:25"
+   "logic/story.gd:40"
   ],
   "via": []
  },
@@ -2056,233 +1907,13 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:25"
+   "logic/story.gd:40"
   ],
   "via": []
  },
  {
   "key": "NIGHT_01_TALE",
-  "es": "Anoche el Barón le quitó la dentadura al abuelo Paco mientras roncaba. Desde entonces el abuelo solo come sopa y a todo contesta «mmmfff». Y hoy el guardia tiene la noche libre.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:26"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_02_NAME",
-  "es": "el pato que canta ópera",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:28"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_02_BLURB",
-  "es": "Amarillo, de goma, con voz de tenor.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:28"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_02_VERB",
-  "es": "CALMANDO AL PATO",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:28"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_02_TALE",
-  "es": "Cada mañana este pato cantaba ópera a las siete en punto y despertaba a todo el pueblo. Sin él nadie se levanta y el panadero ya ha quemado cuarenta barras de pan. Cuidado: si lo aprietas, da el do de pecho.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:29"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_03_NAME",
-  "es": "la bufanda del caracol friolero",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:31"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_03_BLURB",
-  "es": "Seis metros de lana. Para un cuello muy largo... y muy lento.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:31"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_03_VERB",
-  "es": "DESENROLLANDO LA BUFANDA",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:31"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_03_TALE",
-  "es": "El caracol Anselmo tardó once años en tejerla. El Barón se la quitó en diez segundos. Ahora Anselmo no sale de su concha y dice que hace frío hasta en agosto.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:32"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_04_NAME",
-  "es": "el calcetín del yeti",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:34"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_04_BLURB",
-  "es": "Talla 98. Huele un poquito.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:34"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_04_VERB",
-  "es": "DOBLANDO EL CALCETÍN",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:34"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_04_TALE",
-  "es": "Un yeti muy educado se lo dejó en la lavandería y el Barón lo expone como «alfombra prehistórica». Ahora el yeti tiene frío en un pie y cada vez que estornuda provoca una avalancha.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:35"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_05_NAME",
-  "es": "el gnomo que baila claqué",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:37"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_05_BLURB",
-  "es": "De barro, con zapatos de metal. Nunca para quieto.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:37"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_05_VERB",
-  "es": "CALMANDO AL GNOMO",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:37"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_05_TALE",
-  "es": "Era el gnomo del jardín de la señora Remedios, y por las noches bailaba claqué para espantar a los topos. Sin él, los topos han montado una discoteca bajo las lechugas.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:38"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_06_NAME",
-  "es": "la tostada con la cara del Barón",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:40"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_06_BLURB",
-  "es": "Con mantequilla. El Barón dice que es arte.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:40"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_06_VERB",
-  "es": "DESPEGANDO LA TOSTADA",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:40"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_06_TALE",
-  "es": "En esta tostada se ve clavadita la cara del Barón. Él dice que es una obra de arte. En realidad era el desayuno del perro Bartolo, que lleva tres días mirando la vitrina y llorando.",
+  "es": "El Barón la expone con un cartel: «Mandíbula de cavernícola». Desde entonces el abuelo Paco solo come sopa y a todo contesta «mmmfff». Y hoy la cueva no tiene guardias.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2292,8 +1923,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_07_NAME",
-  "es": "la bola de chicle del récord",
+  "key": "NIGHT_02_NAME",
+  "es": "el calcetín del yeti",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2303,8 +1934,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_07_BLURB",
-  "es": "Masticada por todo el pueblo durante cien años.",
+  "key": "NIGHT_02_BLURB",
+  "es": "Talla 98. Huele a glaciar... y a pie.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2314,8 +1945,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_07_VERB",
-  "es": "DESPEGANDO EL CHICLE",
+  "key": "NIGHT_02_VERB",
+  "es": "DOBLANDO LA LANA",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2325,8 +1956,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_07_TALE",
-  "es": "Cada vecino le añadía un chicle el día de su cumpleaños. El Barón dice que es una escultura moderna. Los vecinos dicen que es suya, y que aún sabe a fresa.",
+  "key": "NIGHT_02_TALE",
+  "es": "Un yeti muy educado se lo dejó en la lavandería, y el Barón lo expone como «piel de mamut». Ahora el yeti tiene frío en un pie y, cada vez que estornuda, provoca una avalancha.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2336,8 +1967,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_08_NAME",
-  "es": "la corona de la Reina de los Pepinillos",
+  "key": "NIGHT_03_NAME",
+  "es": "el queso de la nevera de Jake",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2347,8 +1978,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_08_BLURB",
-  "es": "Verde, con granitos. Muy real.",
+  "key": "NIGHT_03_BLURB",
+  "es": "Lleva tanto tiempo en la nevera que ya es prehistórico.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2358,8 +1989,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_08_VERB",
-  "es": "DESATORNILLANDO",
+  "key": "NIGHT_03_VERB",
+  "es": "TAPANDO EL OLOR",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2369,8 +2000,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_08_TALE",
-  "es": "La Reina de los Pepinillos manda en el huerto del pueblo. Sin su corona los pepinillos no le hacen caso, y se pasan la noche bailando la conga por las calles. Nadie consigue dormir.",
+  "key": "NIGHT_03_TALE",
+  "es": "Jake lo compró para una merienda del siglo pasado y se le olvidó. El Barón dice que es un meteorito. Sin él, la nevera de Jake huele a limpio, y Jake no pega ojo.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2380,8 +2011,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_09_NAME",
-  "es": "el trofeo del campeón de siestas",
+  "key": "NIGHT_04_NAME",
+  "es": "el gnomo que baila claqué",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2391,8 +2022,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_09_BLURB",
-  "es": "Oro de verdad. Pesa como un gato dormido.",
+  "key": "NIGHT_04_BLURB",
+  "es": "De barro, con zapatos de metal. Ya bailaba para los dinosaurios.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2402,8 +2033,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_09_VERB",
-  "es": "DESATORNILLANDO LA PEANA",
+  "key": "NIGHT_04_VERB",
+  "es": "CALMANDO AL GNOMO",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2413,8 +2044,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_09_TALE",
-  "es": "Don Anacleto ganó el campeonato mundial de siestas durmiendo tres días seguidos. El Barón se lo llevó mientras dormía la cuarta. Todavía no se ha enterado.",
+  "key": "NIGHT_04_TALE",
+  "es": "Era el gnomo del jardín de la señora Remedios, y por las noches bailaba claqué para espantar a los topos. El Barón lo expone como «ídolo de las cavernas». Sin él, los topos han montado una discoteca bajo las lechugas.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2424,52 +2055,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_10_NAME",
-  "es": "el meteorito que huele a queso",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:52"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_10_BLURB",
-  "es": "Cayó del cielo sobre la quesería.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:52"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_10_VERB",
-  "es": "ENGAÑANDO AL SENSOR",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:52"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_10_TALE",
-  "es": "Huele tanto a queso que los ratones de tres pueblos se han mudado al museo. Un astrónomo ratón lo necesita para demostrar por fin que la Luna es de queso.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:53"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_11_NAME",
-  "es": "la máscara del dragón estornudón",
+  "key": "NIGHT_05_NAME",
+  "es": "el huevo del dinosaurio despistado",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2479,8 +2066,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_11_BLURB",
-  "es": "Verde, con escamas. Pica un poco la nariz.",
+  "key": "NIGHT_05_BLURB",
+  "es": "Setenta millones de años. Aún está calentito.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2490,8 +2077,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_11_VERB",
-  "es": "SOPLANDO EL POLVO",
+  "key": "NIGHT_05_VERB",
+  "es": "SOLTANDO EL HUEVO",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2501,8 +2088,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_11_TALE",
-  "es": "El dragón del monte la usa para no quemar nada cuando estornuda. Sin ella, ya ha tostado tres pajares y el sombrero del alcalde. ¡Achís!",
+  "key": "NIGHT_05_TALE",
+  "es": "Una mamá diplodocus lo olvidó en un aparcamiento y ha vuelto a buscarlo. Espera en la puerta de la cueva, muy seria, pisando coches sin querer. Lo vigila el guardián de la cueva, que ve una miga a cien metros.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2512,41 +2099,19 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_12_NAME",
-  "es": "la máscara del Pulpo Enmascarado",
+  "key": "NIGHT_05_TIP",
+  "es": "Si te persigue, piérdelo de vista y métete en un escondite.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:58"
+   "logic/story.gd:54"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_12_BLURB",
-  "es": "Del luchador más famoso del mundo.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:58"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_12_VERB",
-  "es": "CORTANDO EL SELLO",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:58"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_12_TALE",
-  "es": "El Pulpo Enmascarado tiene ocho brazos y ninguna gana de enseñar la cara. Sin su máscara no puede salir al ring, y lleva una semana escondido detrás de una maceta. Sus fans están desesperados.",
+  "key": "NIGHT_06_NAME",
+  "es": "la corona de la Reina de los Pepinillos",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2556,41 +2121,41 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_13_NAME",
-  "es": "el despertador que canta tangos",
+  "key": "NIGHT_06_BLURB",
+  "es": "Verde, con granitos. Muy real.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:61"
+   "logic/story.gd:59"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_13_BLURB",
-  "es": "Suena a las siete. Con bandoneón.",
+  "key": "NIGHT_06_VERB",
+  "es": "DESATORNILLANDO",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:61"
+   "logic/story.gd:59"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_13_VERB",
-  "es": "PARANDO LA ALARMA",
+  "key": "NIGHT_06_TALE",
+  "es": "El Barón la expone como «hortaliza coronada, especie rarísima». Sin su corona, los pepinillos no le hacen caso a su reina y se pasan la noche bailando la conga por las calles. Nadie consigue dormir.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:61"
+   "logic/story.gd:60"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_13_TALE",
-  "es": "Despertaba a la panadera cada mañana con un tango muy dramático. Sin él, el pueblo lleva una semana desayunando a la hora de comer.",
+  "key": "NIGHT_07_NAME",
+  "es": "la bufanda del caracol friolero",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2600,41 +2165,41 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_14_NAME",
-  "es": "el reloj que va hacia atrás",
+  "key": "NIGHT_07_BLURB",
+  "es": "Seis metros de lana. Para un cuello muy largo... y muy lento.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:64"
+   "logic/story.gd:62"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_14_BLURB",
-  "es": "Hace tic-tac al revés: cat-cit.",
+  "key": "NIGHT_07_VERB",
+  "es": "DESENROLLANDO LA BUFANDA",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:64"
+   "logic/story.gd:62"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_14_VERB",
-  "es": "PARANDO LAS AGUJAS",
+  "key": "NIGHT_07_TALE",
+  "es": "El caracol Anselmo tardó once años en tejerla. El Barón se la quitó en diez segundos. Ahora Anselmo no sale de su concha y dice que hace frío hasta en agosto.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:64"
+   "logic/story.gd:63"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_14_TALE",
-  "es": "Con este reloj el Barón consigue que los lunes duren el doble. Si no lo recuperáis, pronto la semana tendrá nueve lunes y ningún sábado. ¡Eso sí que no!",
+  "key": "NIGHT_08_NAME",
+  "es": "la máscara del Pulpo Enmascarado",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2644,41 +2209,41 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_15_NAME",
-  "es": "el huevo de chocolate que nunca se acaba",
+  "key": "NIGHT_08_BLURB",
+  "es": "Del luchador con más brazos del mundo.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:67"
+   "logic/story.gd:65"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_15_BLURB",
-  "es": "Por mucho que comas, siempre queda la mitad.",
+  "key": "NIGHT_08_VERB",
+  "es": "CORTANDO EL SELLO",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:67"
+   "logic/story.gd:65"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_15_VERB",
-  "es": "ABRIENDO EL ENVOLTORIO",
+  "key": "NIGHT_08_TALE",
+  "es": "El Barón la ha puesto en la sección de bichos del mar, entre una sardina y un mejillón. Sin su máscara, el Pulpo Enmascarado no puede subir al ring y lleva una semana escondido detrás de una maceta. Sus fans lloran tinta.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:67"
+   "logic/story.gd:66"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_15_TALE",
-  "es": "La gallina Petronila lo puso un domingo de Pascua y alimenta a todos los niños del pueblo. El Barón se lo come a escondidas, pero como nunca se acaba, no le sirve de nada.",
+  "key": "NIGHT_09_NAME",
+  "es": "la bola de pelo del gato Misifú",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2688,85 +2253,41 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_16_NAME",
-  "es": "el huevo del dinosaurio despistado",
+  "key": "NIGHT_09_BLURB",
+  "es": "La más gorda del mundo. Tiene trofeo y todo.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:70"
+   "logic/story.gd:68"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_16_BLURB",
-  "es": "Setenta millones de años. Aún está calentito.",
+  "key": "NIGHT_09_VERB",
+  "es": "PEINANDO LA BOLA",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:70"
+   "logic/story.gd:68"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_16_VERB",
-  "es": "SOLTANDO EL HUEVO",
+  "key": "NIGHT_09_TALE",
+  "es": "Misifú tardó tres años en toserla y ganó el concurso del pueblo. El Barón dice que es un erizo en peligro de extinción. Misifú está tan triste que ya ha empezado a toser otra, por si acaso.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:70"
+   "logic/story.gd:69"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_16_TALE",
-  "es": "Una mamá diplodocus lo dejó en un aparcamiento hace setenta millones de años y ha vuelto a buscarlo. Está en la puerta del museo, muy seria, pisando coches sin querer. Devolvédselo antes de que pise el vuestro.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:71"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_17_NAME",
-  "es": "los dientes de oro del pirata Mellado",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:73"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_17_BLURB",
-  "es": "Tres dientes. El cuarto se lo tragó una ballena.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:73"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_17_VERB",
-  "es": "ABRIENDO EL COFRE",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:73"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_17_TALE",
-  "es": "El pirata Mellado ya no puede decir «¡al abordaje!» sin silbar. Su loro se ríe de él cada vez, y un pirata sin dignidad no puede navegar.",
+  "key": "NIGHT_10_NAME",
+  "es": "el pato que canta ópera",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2776,63 +2297,52 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_18_NAME",
-  "es": "el pato de goma del almirante",
+  "key": "NIGHT_10_BLURB",
+  "es": "Amarillo, de goma, con voz de tenor.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:76"
+   "logic/story.gd:74"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_18_BLURB",
-  "es": "Azul marino. Ha dado tres veces la vuelta al mundo.",
+  "key": "NIGHT_10_VERB",
+  "es": "CALMANDO AL PATO",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:76"
+   "logic/story.gd:74"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_18_VERB",
-  "es": "SOLTANDO LAS AMARRAS",
+  "key": "NIGHT_10_TALE",
+  "es": "Cada mañana cantaba ópera a las siete en punto y despertaba a todo el pueblo. Sin él nadie se levanta, y el panadero ya ha quemado cuarenta barras de pan. El Barón lo tiene en su mejor vitrina, con un guardia pegado que se sabe todas las canciones.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:76"
+   "logic/story.gd:75"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_18_TALE",
-  "es": "El almirante se niega a bañarse sin su pato, y la flota entera está esperando en el puerto a que se bañe. Los peces se están aburriendo.",
+  "key": "NIGHT_10_TIP",
+  "es": "El guardia no se aparta del pato: tira algo lejos para moverlo.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:77"
+   "logic/story.gd:73"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_19_NAME",
-  "es": "la gema del faro que no se apaga",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:79"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_19_BLURB",
-  "es": "Da luz sin pilas desde hace doscientos años.",
+  "key": "NIGHT_11_NAME",
+  "es": "el faraón de juguete de Pablito",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2842,8 +2352,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_19_VERB",
-  "es": "DESCONECTANDO EL FARO",
+  "key": "NIGHT_11_BLURB",
+  "es": "Salió en un huevo sorpresa. El Barón jura que es de oro.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2853,8 +2363,19 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_19_TALE",
-  "es": "Sin su gema, el faro del pueblo está a oscuras y los barcos atracan donde pueden. Ayer uno aparcó en la plaza, justo delante de la heladería.",
+  "key": "NIGHT_11_VERB",
+  "es": "SOLTANDO EL JUGUETE",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:79"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_11_TALE",
+  "es": "El Barón lo expone como «estatua auténtica de un faraón». Pablito dice que es suyo y que se llama Tutankaleco. Hasta que vuelva, Pablito no se come la verdura.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2864,8 +2385,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_20_NAME",
-  "es": "el Diamante Bostezo",
+  "key": "NIGHT_12_NAME",
+  "es": "el despertador de la momia Ramona",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2875,8 +2396,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_20_BLURB",
-  "es": "Quien lo mira, bosteza y se duerme.",
+  "key": "NIGHT_12_BLURB",
+  "es": "Suena cada tres mil años. Le toca el martes.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2886,8 +2407,8 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_20_VERB",
-  "es": "ABRIENDO LA CAJA FUERTE",
+  "key": "NIGHT_12_VERB",
+  "es": "PARANDO LA ALARMA",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2897,13 +2418,618 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_20_TALE",
-  "es": "Es el tesoro del Barón y su gran truco: con él dormía a todo el pueblo para llevarse lo que quería. Sin el diamante se le acabaron los trucos. Pero es la última noche... y os están esperando.",
+  "key": "NIGHT_12_TALE",
+  "es": "La momia Ramona lo pone para no dormirse el día de su cumpleaños. Si el martes no suena, se pierde la tarta, y lleva tres mil años esperándola. Está muy vendada y muy enfadada.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
    "logic/story.gd:83"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_13_NAME",
+  "es": "el pato de goma de Arquímedes",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:85"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_13_BLURB",
+  "es": "Arquímedes, el fontanero, no se baña sin él.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:85"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_13_VERB",
+  "es": "ESCURRIENDO EL PATO",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:85"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_13_TALE",
+  "es": "Arquímedes se baña con su pato gritando «¡Eureka!», y nadie sabe por qué. El Barón lo expone como «pato sagrado del Nilo». Desde entonces Arquímedes no se baña, y los vecinos lo notan. Mucho.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:86"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_14_NAME",
+  "es": "el huevo duro del tío Ramsés",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:88"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_14_BLURB",
+  "es": "Lleva siglos en la fiambrera. Nadie se atreve a olerlo.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:88"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_14_VERB",
+  "es": "ABRIENDO LA FIAMBRERA",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:88"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_14_TALE",
+  "es": "El tío Ramsés se lo llevó de excursión a las pirámides y se le olvidó comérselo. El Barón lo expone como «huevo de faraón». El tío Ramsés lo quiere de vuelta: dice que ahora está en su punto.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:89"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_15_NAME",
+  "es": "el anillo de Cleopatra, la del quinto",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:94"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_15_BLURB",
+  "es": "De caramelo verde. Ella dice que es una esmeralda.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:94"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_15_VERB",
+  "es": "DESPEGANDO EL CARAMELO",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:94"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_15_TALE",
+  "es": "Cleopatra, la vecina del quinto, dice que es reina de Egipto y del ascensor. Sin su anillo nadie la cree, y ahora tiene que esperar el ascensor como todo el mundo. Tres guardias lo vigilan, y uno no se mueve del camino.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:95"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_15_TIP",
+  "es": "Un guardia vigila tu camino: pasa a gatas, fuera de su luz.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:93"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_16_NAME",
+  "es": "el despertador de Leonardo",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:99"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_16_BLURB",
+  "es": "Suena con un tango y te tira de la cama.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:99"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_16_VERB",
+  "es": "PARANDO EL TANGO",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:99"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_16_TALE",
+  "es": "Leonardo, el inventor del pueblo, lo hizo para despertar a la panadera. Sin él, el pueblo lleva una semana desayunando a la hora de comer. Leonardo, mientras, ha inventado la cuchara. Otra vez.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:100"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_17_NAME",
+  "es": "la albóndiga de la catapulta",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:102"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_17_BLURB",
+  "es": "Tan dura que los caballeros la usaban de munición.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:102"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_17_VERB",
+  "es": "LEVANTANDO LA BOLA",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:102"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_17_TALE",
+  "es": "El cocinero del castillo hace las albóndigas más duras del reino, y esta es la campeona. El Barón la expone como «bala de cañón medieval». El cocinero está tan ofendido que ha prometido hacer otra... más grande.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:103"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_18_NAME",
+  "es": "la bola de cristal de la bruja Paca",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:107"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_18_BLURB",
+  "es": "Enseña el futuro. Hoy sale una banda con calcetines.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:107"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_18_VERB",
+  "es": "LIMPIANDO EL CRISTAL",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:107"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_18_TALE",
+  "es": "Sin su bola, la bruja Paca no sabe si va a llover, y ya se le ha mojado tres veces la escoba. El Barón la mira cada noche para ver quién viene a robarle, pero solo ve niebla: con tanto bostezo, se empaña.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:108"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_19_NAME",
+  "es": "la mascarilla del dragón estornudón",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:110"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_19_BLURB",
+  "es": "Verde, con escamas. Pica un poco la nariz.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:110"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_19_VERB",
+  "es": "SOPLANDO EL POLVO",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:110"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_19_TALE",
+  "es": "El dragón del monte se la pone para no quemar nada cuando estornuda. Sin ella ya ha tostado tres pajares y el sombrero del alcalde. ¡Achís!",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:111"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_20_NAME",
+  "es": "la corona del rey de las croquetas",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:116"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_20_BLURB",
+  "es": "De oro y armiño. Huele un poco a fritanga.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:116"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_20_VERB",
+  "es": "DESATORNILLANDO LA CORONA",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:116"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_20_TALE",
+  "es": "Arturo, el del bar, la ganó en el concurso de croquetas. Sin corona nadie le hace caso, y las croquetas le salen cuadradas. El Barón se la prueba cada noche en su sala del trono, con un guardia que lo oye todo.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:117"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_20_TIP",
+  "es": "El guardia del trono te da la espalda, pero lo oye todo: sin correr.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:115"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_21_NAME",
+  "es": "la tostada con la cara del Barón",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:120"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_21_BLURB",
+  "es": "Con mantequilla. El Barón dice que es arte moderno.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:120"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_21_VERB",
+  "es": "DESPEGANDO LA TOSTADA",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:120"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_21_TALE",
+  "es": "En esta tostada se ve clavadita la cara del Barón, y la ha colgado en su torre como si fuera un cuadro famoso. En realidad era el desayuno del perro Bartolo, que lleva tres días mirándola y llorando.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:121"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_22_NAME",
+  "es": "la bola de chicle del récord",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:123"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_22_BLURB",
+  "es": "Masticada por todo el pueblo durante cien años.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:123"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_22_VERB",
+  "es": "DESPEGANDO EL CHICLE",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:123"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_22_TALE",
+  "es": "Cada vecino le añadía un chicle el día de su cumpleaños. El Barón dice que es una escultura moderna y le ha puesto un cartel: «No tocar». Nadie la toca: se queda pegado.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:124"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_23_NAME",
+  "es": "la dentadura que brilla en la oscuridad",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:126"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_23_BLURB",
+  "es": "De la abuela Tomasa. Ahora es una lámpara de diseño.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:126"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_23_VERB",
+  "es": "APAGANDO LA SONRISA",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:126"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_23_TALE",
+  "es": "El Barón la ha colgado del techo de su torre como si fuera una lámpara carísima. La abuela Tomasa sonríe con la boca cerrada y su gato ya no la reconoce. Y de noche no encuentra el baño.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:127"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_24_NAME",
+  "es": "el calcetín desparejado de Jake",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:129"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_24_BLURB",
+  "es": "Su pareja se perdió en la lavadora hace años.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:129"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_24_VERB",
+  "es": "DOBLANDO LA OBRA DE ARTE",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:129"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_24_TALE",
+  "es": "El Barón lo expone como escultura moderna, con el título «Soledad». Jake lo quiere de vuelta: el pie izquierdo lleva años pasando frío. Y la lavadora, que tiene al otro, no suelta prenda.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:130"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_25_NAME",
+  "es": "el Diamante Bostezo",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:134"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_25_BLURB",
+  "es": "Quien lo mira, bosteza y se duerme.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:134"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_25_VERB",
+  "es": "ABRIENDO LA CAJA FUERTE",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:134"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_25_TALE",
+  "es": "Es el tesoro del Barón y su gran truco: con él hizo bostezar a los directores de los museos hasta que firmaron. Sin el diamante, se le acaba el truco. Está arriba del todo de la torre, con los cuatro guardias más despiertos de la ciudad.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:135"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_25_TIP",
+  "es": "El gran final: mira el mapa y planea la ruta antes de moverte.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:133"
   ],
   "via": []
  },
@@ -2914,7 +3040,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1399"
+   "scenes/main.gd:1421"
   ],
   "via": []
  },
@@ -2925,7 +3051,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1401"
+   "scenes/main.gd:1423"
   ],
   "via": []
  },
@@ -2936,7 +3062,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1401"
+   "scenes/main.gd:1423"
   ],
   "via": []
  },
@@ -2947,7 +3073,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1402"
+   "scenes/main.gd:1424"
   ],
   "via": []
  },
@@ -2958,7 +3084,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1404"
+   "scenes/main.gd:1427"
   ],
   "via": []
  },
@@ -2969,7 +3095,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1406"
+   "scenes/main.gd:1429"
   ],
   "via": []
  },
@@ -2980,18 +3106,40 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1406"
+   "scenes/main.gd:1429"
   ],
   "via": []
  },
  {
   "key": "END_NEXT_NIGHT",
-  "es": "▶ SIGUIENTE NOCHE",
+  "es": "▶ SIGUIENTE SALA",
   "broken": false,
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1407"
+   "scenes/main.gd:1430"
+  ],
+  "via": []
+ },
+ {
+  "key": "END_NEXT_MUSEUM",
+  "es": "▶ AL SIGUIENTE MUSEO",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [
+   "scenes/main.gd:1434"
+  ],
+  "via": []
+ },
+ {
+  "key": "END_MUSEUM_DONE",
+  "es": "%s vuelve a casa. ¡Museo desvalijado: %s!",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [
+   "scenes/main.gd:1433"
   ],
   "via": []
  },
@@ -3002,7 +3150,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1407"
+   "scenes/main.gd:1430"
   ],
   "via": []
  },
@@ -3013,7 +3161,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1423"
+   "scenes/main.gd:1452"
   ],
   "via": []
  },
@@ -3033,7 +3181,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:1294"
+   "scenes/hud.gd:1299"
   ],
   "via": []
  },
@@ -3044,7 +3192,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:1853"
+   "scenes/hud.gd:1858"
   ],
   "via": []
  },
@@ -3055,7 +3203,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2072"
+   "scenes/main.gd:2102"
   ],
   "via": []
  },
@@ -3066,7 +3214,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2074"
+   "scenes/main.gd:2104"
   ],
   "via": []
  },
@@ -3077,7 +3225,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2077"
+   "scenes/main.gd:2107"
   ],
   "via": []
  },
@@ -3088,7 +3236,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:1622"
+   "scenes/hud.gd:1627"
   ],
   "via": []
  },
@@ -3099,7 +3247,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:1624"
+   "scenes/hud.gd:1629"
   ],
   "via": []
  },
@@ -3110,7 +3258,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2092"
+   "scenes/main.gd:2122"
   ],
   "via": []
  },
@@ -3121,7 +3269,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2094"
+   "scenes/main.gd:2124"
   ],
   "via": []
  },
@@ -3143,7 +3291,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2086"
+   "scenes/main.gd:2116"
   ],
   "via": []
  },
@@ -3154,7 +3302,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2082"
+   "scenes/main.gd:2112"
   ],
   "via": []
  },
@@ -3165,7 +3313,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2089"
+   "scenes/main.gd:2119"
   ],
   "via": []
  },
@@ -3176,7 +3324,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2084"
+   "scenes/main.gd:2114"
   ],
   "via": []
  },
@@ -3187,7 +3335,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2080"
+   "scenes/main.gd:2110"
   ],
   "via": []
  },
@@ -3198,7 +3346,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2080"
+   "scenes/main.gd:2110"
   ],
   "via": []
  },
@@ -3209,7 +3357,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2080"
+   "scenes/main.gd:2110"
   ],
   "via": []
  },
@@ -3286,7 +3434,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1784"
+   "scenes/main.gd:1814"
   ],
   "via": []
  },
@@ -3297,7 +3445,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1787"
+   "scenes/main.gd:1817"
   ],
   "via": []
  },
@@ -3308,7 +3456,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1786"
+   "scenes/main.gd:1816"
   ],
   "via": []
  },
@@ -3319,7 +3467,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2219"
+   "scenes/main.gd:2249"
   ],
   "via": []
  },
@@ -3330,7 +3478,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2071"
+   "scenes/main.gd:2101"
   ],
   "via": []
  },
@@ -3341,7 +3489,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2071"
+   "scenes/main.gd:2101"
   ],
   "via": []
  },
@@ -3385,7 +3533,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2315"
+   "scenes/main.gd:2345"
   ],
   "via": []
  },
@@ -3429,7 +3577,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2349"
+   "scenes/main.gd:2379"
   ],
   "via": []
  },
@@ -3440,7 +3588,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2349"
+   "scenes/main.gd:2379"
   ],
   "via": []
  },
@@ -3451,7 +3599,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2740"
+   "scenes/main.gd:2770"
   ],
   "via": []
  },
@@ -3462,7 +3610,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2802"
+   "scenes/main.gd:2832"
   ],
   "via": []
  },
@@ -3473,7 +3621,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:1492"
+   "scenes/hud.gd:1497"
   ],
   "via": []
  },
@@ -3484,7 +3632,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:1492"
+   "scenes/hud.gd:1497"
   ],
   "via": []
  },
@@ -3495,7 +3643,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:1492"
+   "scenes/hud.gd:1497"
   ],
   "via": []
  },
@@ -3506,7 +3654,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:1492"
+   "scenes/hud.gd:1497"
   ],
   "via": []
  },
@@ -3517,7 +3665,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:1493"
+   "scenes/hud.gd:1498"
   ],
   "via": []
  },
@@ -3528,7 +3676,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:1493"
+   "scenes/hud.gd:1498"
   ],
   "via": []
  },
@@ -3539,7 +3687,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:1493"
+   "scenes/hud.gd:1498"
   ],
   "via": []
  },
@@ -3550,7 +3698,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1954"
+   "scenes/main.gd:1984"
   ],
   "via": []
  },
@@ -3561,7 +3709,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1954"
+   "scenes/main.gd:1984"
   ],
   "via": []
  },
@@ -3572,7 +3720,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2241"
+   "scenes/main.gd:2271"
   ],
   "via": []
  },
@@ -3583,7 +3731,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2277"
+   "scenes/main.gd:2307"
   ],
   "via": []
  },
@@ -3594,7 +3742,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2277"
+   "scenes/main.gd:2307"
   ],
   "via": []
  },
@@ -3605,7 +3753,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1997"
+   "scenes/main.gd:2027"
   ],
   "via": []
  },
@@ -3616,7 +3764,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1997"
+   "scenes/main.gd:2027"
   ],
   "via": []
  },
@@ -3627,7 +3775,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2293"
+   "scenes/main.gd:2323"
   ],
   "via": []
  },
@@ -3638,7 +3786,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2241"
+   "scenes/main.gd:2271"
   ],
   "via": []
  },
@@ -3649,7 +3797,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2318"
+   "scenes/main.gd:2348"
   ],
   "via": []
  },
@@ -3660,7 +3808,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2325"
+   "scenes/main.gd:2355"
   ],
   "via": []
  },
@@ -3671,7 +3819,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2325"
+   "scenes/main.gd:2355"
   ],
   "via": []
  },
@@ -3682,7 +3830,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2327"
+   "scenes/main.gd:2357"
   ],
   "via": []
  },
@@ -3693,7 +3841,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2345"
+   "scenes/main.gd:2375"
   ],
   "via": []
  },
@@ -3704,7 +3852,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2345"
+   "scenes/main.gd:2375"
   ],
   "via": []
  },
@@ -3715,7 +3863,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2345"
+   "scenes/main.gd:2375"
   ],
   "via": []
  },
@@ -3726,7 +3874,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2350"
+   "scenes/main.gd:2380"
   ],
   "via": []
  },
@@ -3737,7 +3885,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2353"
+   "scenes/main.gd:2383"
   ],
   "via": []
  },
@@ -3748,7 +3896,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2366"
+   "scenes/main.gd:2396"
   ],
   "via": []
  },
@@ -3759,7 +3907,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2364"
+   "scenes/main.gd:2394"
   ],
   "via": []
  },
@@ -3770,7 +3918,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2364"
+   "scenes/main.gd:2394"
   ],
   "via": []
  },
@@ -3781,7 +3929,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2357"
+   "scenes/main.gd:2387"
   ],
   "via": []
  },
@@ -3792,7 +3940,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2405"
+   "scenes/main.gd:2435"
   ],
   "via": []
  },
@@ -3821,7 +3969,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2429"
+   "scenes/main.gd:2459"
   ],
   "via": []
  },
@@ -3887,7 +4035,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3323"
+   "scenes/main.gd:3353"
   ],
   "via": []
  },
@@ -3898,7 +4046,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3323"
+   "scenes/main.gd:3353"
   ],
   "via": []
  },
@@ -3909,7 +4057,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3330"
+   "scenes/main.gd:3360"
   ],
   "via": []
  },
@@ -3920,7 +4068,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3330"
+   "scenes/main.gd:3360"
   ],
   "via": []
  },
@@ -4052,7 +4200,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/sim.gd:972"
+   "logic/sim.gd:974"
   ],
   "via": []
  },
@@ -4063,7 +4211,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/sim.gd:1263"
+   "logic/sim.gd:1265"
   ],
   "via": []
  },
@@ -4074,7 +4222,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/sim.gd:1263"
+   "logic/sim.gd:1265"
   ],
   "via": []
  },
@@ -4085,7 +4233,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/sim.gd:1191"
+   "logic/sim.gd:1193"
   ],
   "via": []
  },
@@ -4096,7 +4244,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/sim.gd:1191"
+   "logic/sim.gd:1193"
   ],
   "via": []
  },
@@ -4284,7 +4432,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/museum.gd:260"
+   "logic/museum.gd:261"
   ],
   "via": []
  },
@@ -4295,8 +4443,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/museum.gd:548",
-   "logic/museum.gd:549"
+   "logic/museum.gd:549",
+   "logic/museum.gd:550"
   ],
   "via": []
  },
@@ -4307,7 +4455,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/museum.gd:640"
+   "logic/museum.gd:641"
   ],
   "via": []
  },
@@ -4362,7 +4510,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/museum.gd:656"
+   "logic/museum.gd:657"
   ],
   "via": []
  },
@@ -4875,8 +5023,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:478",
-   "scenes/main.gd:721"
+   "scenes/main.gd:483",
+   "scenes/main.gd:734"
   ],
   "via": []
  },
@@ -4887,7 +5035,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:107"
+   "logic/story.gd:159"
   ],
   "via": []
  },
@@ -4898,7 +5046,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:108"
+   "logic/story.gd:160"
   ],
   "via": []
  },
@@ -4909,7 +5057,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "logic/briefing.gd:57"
+   "logic/briefing.gd:62"
   ],
   "via": []
  },
@@ -4920,18 +5068,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2072"
+   "scenes/main.gd:2102"
   ],
   "via": []
  },
  {
   "key": "STORY_REACHED",
-  "es": "Noche %d de %d",
+  "es": "Museo %d · sala %d",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:596"
+   "scenes/main.gd:601"
   ],
   "via": []
  },
@@ -4942,7 +5090,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:635"
+   "scenes/main.gd:640"
   ],
   "via": []
  },
@@ -4992,12 +5140,12 @@ window.TEXTOS = [
  },
  {
   "key": "STORY_MUSEUM_LINE",
-  "es": "%s · %d/%d NOCHES",
+  "es": "%s · %d/%d SALAS",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:651"
+   "scenes/main.gd:656"
   ],
   "via": []
  },
@@ -5008,117 +5156,150 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:680"
+   "scenes/main.gd:686"
+  ],
+  "via": []
+ },
+ {
+  "key": "STORY_ROOM_PIECE",
+  "es": "SALA %d · %s",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "scenes/main.gd:710"
+  ],
+  "via": []
+ },
+ {
+  "key": "STORY_BOSS_PIECE",
+  "es": "GRAN GOLPE · %s",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "scenes/main.gd:710"
+  ],
+  "via": []
+ },
+ {
+  "key": "STORY_BOSS_ROOM",
+  "es": "GRAN GOLPE",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "scenes/night_map.gd:375"
   ],
   "via": []
  },
  {
   "key": "MUSEUM_1_NAME",
-  "es": "El Desván del Barón",
+  "es": "La Gran Cueva",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:144"
+   "logic/story.gd:200"
   ],
   "via": []
  },
  {
   "key": "MUSEUM_1_TEXT",
-  "es": "Trastos, polvo y crujidos: el sitio perfecto para empezar",
+  "es": "Dinosaurios, mamuts y cosas tan viejas que ya son fósiles",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:144"
+   "logic/story.gd:200"
   ],
   "via": []
  },
  {
   "key": "MUSEUM_2_NAME",
-  "es": "El Invernadero",
+  "es": "La Casa de los Bichos",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:149"
+   "logic/story.gd:206"
   ],
   "via": []
  },
  {
   "key": "MUSEUM_2_TEXT",
-  "es": "Entre helechos y macetas, cuidado con lo que se cae",
+  "es": "Bichos, plantas y un pulpo que no quiere que lo miren",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:149"
+   "logic/story.gd:206"
   ],
   "via": []
  },
  {
   "key": "MUSEUM_3_NAME",
-  "es": "El Observatorio",
+  "es": "El Templo de las Momias",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:154"
+   "logic/story.gd:212"
   ],
   "via": []
  },
  {
   "key": "MUSEUM_3_TEXT",
-  "es": "Estrellas en el techo y vitrinas con alarma",
+  "es": "Momias, faraones y un huevo duro que nadie se atreve a oler",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:154"
+   "logic/story.gd:212"
   ],
   "via": []
  },
  {
   "key": "MUSEUM_4_NAME",
-  "es": "La Torre del Reloj",
+  "es": "El Castillo de los Inventos",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:159"
+   "logic/story.gd:218"
   ],
   "via": []
  },
  {
   "key": "MUSEUM_4_TEXT",
-  "es": "Tic, tac: ahora vigilan de dos en dos",
+  "es": "Caballeros, dragones que estornudan e inventos que casi funcionan",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:159"
+   "logic/story.gd:218"
   ],
   "via": []
  },
  {
   "key": "MUSEUM_5_NAME",
-  "es": "El Palacio Bostezo",
+  "es": "La Torre de Cristal",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:164"
+   "logic/story.gd:223"
   ],
   "via": []
  },
  {
   "key": "MUSEUM_5_TEXT",
-  "es": "La casa del Barón. Grande, oscura y llena de guardias",
+  "es": "Arte moderno, o eso dice el Barón. Y arriba del todo, su despacho",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:164"
+   "logic/story.gd:223"
   ],
   "via": []
  },
@@ -5129,7 +5310,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:293"
+   "scenes/main.gd:298"
   ],
   "via": []
  },
@@ -5140,7 +5321,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:293"
+   "scenes/main.gd:298"
   ],
   "via": []
  },
@@ -5151,18 +5332,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:341"
+   "scenes/main.gd:346"
   ],
   "via": []
  },
  {
   "key": "CHALLENGE_TEXT",
-  "es": "Elige un mapa o una noche de la historia, o dibuja el tuyo",
+  "es": "Elige un mapa o un robo de la historia, o dibuja el tuyo",
   "broken": false,
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:342"
+   "scenes/main.gd:347"
   ],
   "via": []
  },
@@ -5173,7 +5354,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:353"
+   "scenes/main.gd:358"
   ],
   "via": []
  },
@@ -5184,8 +5365,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:427",
-   "scenes/main.gd:480"
+   "scenes/main.gd:432",
+   "scenes/main.gd:485"
   ],
   "via": []
  },
@@ -5196,7 +5377,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:482"
+   "scenes/main.gd:487"
   ],
   "via": []
  },
@@ -5207,7 +5388,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:482"
+   "scenes/main.gd:487"
   ],
   "via": []
  },
@@ -5218,8 +5399,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:372",
-   "scenes/main.gd:470"
+   "scenes/main.gd:377",
+   "scenes/main.gd:475"
   ],
   "via": []
  },
@@ -5230,8 +5411,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:372",
-   "scenes/main.gd:470"
+   "scenes/main.gd:377",
+   "scenes/main.gd:475"
   ],
   "via": []
  },
@@ -5242,7 +5423,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:457"
+   "scenes/main.gd:462"
   ],
   "via": []
  },
@@ -5253,7 +5434,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:458"
+   "scenes/main.gd:463"
   ],
   "via": []
  },
@@ -5264,7 +5445,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:333"
+   "scenes/main.gd:338"
   ],
   "via": []
  },
@@ -5284,7 +5465,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:325"
+   "scenes/main.gd:330"
   ],
   "via": []
  },
@@ -5295,7 +5476,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:330"
+   "scenes/main.gd:335"
   ],
   "via": []
  },
@@ -5306,29 +5487,29 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:349"
+   "scenes/main.gd:354"
   ],
   "via": []
  },
  {
   "key": "CHALLENGE_NIGHT_EDITED",
-  "es": "retocada a mano",
+  "es": "retocado a mano",
   "broken": false,
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:384"
+   "scenes/main.gd:389"
   ],
   "via": []
  },
  {
   "key": "CHALLENGE_NIGHT_BUILT",
-  "es": "como la genera el juego",
+  "es": "como lo genera el juego",
   "broken": false,
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:384"
+   "scenes/main.gd:389"
   ],
   "via": []
  },
@@ -5339,18 +5520,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:385"
+   "scenes/main.gd:390"
   ],
   "via": []
  },
  {
   "key": "CHALLENGE_NIGHT_TEXT",
-  "es": "Retócala en el editor y guárdala: la noche jugará este museo, con su pieza, sus guardias y su dificultad de siempre.",
+  "es": "Retócalo en el editor y guárdalo: el robo jugará este museo, con su pieza, sus guardias y su dificultad de siempre.",
   "broken": false,
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:435"
+   "scenes/main.gd:440"
   ],
   "via": []
  },
@@ -5361,7 +5542,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:429"
+   "scenes/main.gd:434"
   ],
   "via": []
  },
@@ -5372,7 +5553,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:429"
+   "scenes/main.gd:434"
   ],
   "via": []
  },
@@ -5866,8 +6047,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/main.gd:555",
-   "scenes/main.gd:1423"
+   "scenes/main.gd:560",
+   "scenes/main.gd:1452"
   ],
   "via": []
  },
@@ -8734,7 +8915,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1319"
+   "scenes/main.gd:1341"
   ],
   "via": []
  },
@@ -8745,7 +8926,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1312"
+   "scenes/main.gd:1334"
   ],
   "via": []
  },
@@ -8756,7 +8937,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1337"
+   "scenes/main.gd:1359"
   ],
   "via": []
  },
@@ -8767,7 +8948,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "logic/briefing.gd:107"
+   "logic/briefing.gd:112"
   ],
   "via": []
  },
@@ -8778,7 +8959,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "logic/briefing.gd:126"
+   "logic/briefing.gd:131"
   ],
   "via": []
  },
@@ -8789,7 +8970,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "logic/briefing.gd:126"
+   "logic/briefing.gd:131"
   ],
   "via": []
  },
@@ -8800,7 +8981,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "logic/briefing.gd:131"
+   "logic/briefing.gd:136"
   ],
   "via": []
  },
@@ -9097,7 +9278,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "logic/briefing.gd:61"
+   "logic/briefing.gd:66"
   ],
   "via": []
  },
@@ -9126,7 +9307,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "logic/briefing.gd:65"
+   "logic/briefing.gd:70"
   ],
   "via": []
  },
@@ -9137,7 +9318,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "logic/briefing.gd:99"
+   "logic/briefing.gd:104"
   ],
   "via": []
  },
@@ -9166,7 +9347,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "logic/briefing.gd:99"
+   "logic/briefing.gd:104"
   ],
   "via": []
  },
@@ -9177,7 +9358,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "logic/briefing.gd:100"
+   "logic/briefing.gd:105"
   ],
   "via": []
  },
@@ -9188,7 +9369,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "logic/briefing.gd:100"
+   "logic/briefing.gd:105"
   ],
   "via": []
  },
@@ -9199,7 +9380,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "logic/briefing.gd:100"
+   "logic/briefing.gd:105"
   ],
   "via": []
  },
@@ -9882,7 +10063,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2306"
+   "scenes/main.gd:2336"
   ],
   "via": []
  },
@@ -9893,7 +10074,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/sim.gd:994"
+   "logic/sim.gd:996"
   ],
   "via": []
  }

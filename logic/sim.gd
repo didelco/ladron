@@ -342,6 +342,8 @@ static func _angle_diff(a: float) -> float:
 static func new_map(seed: int, size: String = "small", guards: int = -1, shape: String = "") -> void:
 	if guards < 0:
 		guards = guard_count(size)
+	# A story museum shows one theme (Story.tuning's "theme"); the rest mix.
+	Museum.only_theme = String(custom.get("theme", ""))
 	Museum.regenerate(seed, size, shape)
 	Props.list.clear()
 	var starts := _guard_starts(guards)

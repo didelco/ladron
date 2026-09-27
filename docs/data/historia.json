@@ -69,144 +69,149 @@
 	},
 	"museums": [
 		{
-			"colour": "#4dabf7",
+			"colour": "#d08a3a",
 			"n": 1,
 			"name": "MUSEUM_1_NAME",
-			"nights": 4,
 			"nights_list": [
 				1,
 				2,
 				3,
-				4
+				4,
+				5
 			],
 			"palette": {
-				"cap": "#5c5040",
-				"dado": 0.5,
-				"floor": 2,
-				"gloss": 0.45,
-				"joint": "#150d08",
-				"paper": "#1f2e4a",
-				"paper2": "#27395a",
-				"skirt": "#150d08",
-				"stone": "#3a2a1c",
-				"stone2": "#46321f",
-				"trim": "#b08d4a",
-				"wainscot": "#3b2a1a",
-				"wallpaper": 2
+				"cap": "#6a5a48",
+				"dado": 0.4,
+				"floor": 0,
+				"gloss": 0.55,
+				"joint": "#1e140c",
+				"paper": "#6b3f1f",
+				"paper2": "#7a4a25",
+				"skirt": "#120c08",
+				"stone": "#4a3624",
+				"stone2": "#56402a",
+				"trim": "#c9853a",
+				"wainscot": "#3a2a1c",
+				"wallpaper": 0
 			},
-			"text": "MUSEUM_1_TEXT"
+			"text": "MUSEUM_1_TEXT",
+			"theme": "prehistoria"
 		},
 		{
-			"colour": "#7bc043",
+			"colour": "#5cc85c",
 			"n": 2,
 			"name": "MUSEUM_2_NAME",
-			"nights": 4,
 			"nights_list": [
-				5,
 				6,
 				7,
-				8
+				8,
+				9,
+				10
 			],
 			"palette": {
 				"cap": "#5a6a4a",
-				"dado": 0.45,
-				"floor": 1,
-				"gloss": 0.3,
-				"joint": "#0e1611",
+				"dado": 0.5,
+				"floor": 2,
+				"gloss": 0.4,
+				"joint": "#120c06",
 				"paper": "#1e4a2c",
 				"paper2": "#285c38",
 				"skirt": "#0e1611",
-				"stone": "#23352a",
-				"stone2": "#2a3f31",
+				"stone": "#3a2a18",
+				"stone2": "#4a3520",
 				"trim": "#c9a34a",
 				"wainscot": "#2e2418",
 				"wallpaper": 1
 			},
-			"text": "MUSEUM_2_TEXT"
+			"text": "MUSEUM_2_TEXT",
+			"theme": "naturaleza"
 		},
 		{
-			"colour": "#9b5de5",
+			"colour": "#e8b53a",
 			"n": 3,
 			"name": "MUSEUM_3_NAME",
-			"nights": 4,
 			"nights_list": [
-				9,
-				10,
 				11,
-				12
-			],
-			"palette": {
-				"cap": "#5e5670",
-				"dado": 0.5,
-				"floor": 0,
-				"gloss": 0.18,
-				"joint": "#5a5488",
-				"paper": "#3a2656",
-				"paper2": "#462f66",
-				"skirt": "#0a0818",
-				"stone": "#25243a",
-				"stone2": "#2e2d46",
-				"trim": "#a8a0d8",
-				"wainscot": "#1c1636",
-				"wallpaper": 1
-			},
-			"text": "MUSEUM_3_TEXT"
-		},
-		{
-			"colour": "#e8590c",
-			"n": 4,
-			"name": "MUSEUM_4_NAME",
-			"nights": 4,
-			"nights_list": [
+				12,
 				13,
 				14,
-				15,
-				16
+				15
 			],
 			"palette": {
-				"cap": "#6a4a36",
-				"dado": 0.55,
-				"floor": 1,
+				"cap": "#8a7650",
+				"dado": 0.45,
+				"floor": 0,
 				"gloss": 0.35,
-				"joint": "#1c0f0a",
-				"paper": "#5a4418",
-				"paper2": "#6b521e",
-				"skirt": "#1c0f0a",
-				"stone": "#5c3420",
-				"stone2": "#683c25",
-				"trim": "#d9a441",
-				"wainscot": "#3a1e12",
+				"joint": "#2a200f",
+				"paper": "#1f3a6e",
+				"paper2": "#8a6a2a",
+				"skirt": "#1a1208",
+				"stone": "#6a5638",
+				"stone2": "#78623f",
+				"trim": "#e8b53a",
+				"wainscot": "#7a3a1e",
 				"wallpaper": 2
 			},
-			"text": "MUSEUM_4_TEXT"
+			"text": "MUSEUM_3_TEXT",
+			"theme": "antiguo"
 		},
 		{
-			"colour": "#e03131",
-			"n": 5,
-			"name": "MUSEUM_5_NAME",
-			"nights": 4,
+			"colour": "#d0263e",
+			"n": 4,
+			"name": "MUSEUM_4_NAME",
 			"nights_list": [
+				16,
 				17,
 				18,
 				19,
 				20
 			],
 			"palette": {
-				"cap": "#7a6040",
-				"dado": 0.5,
+				"cap": "#6a6470",
+				"dado": 0.55,
 				"floor": 0,
-				"gloss": 0.15,
-				"joint": "#8a6a3a",
+				"gloss": 0.4,
+				"joint": "#16161a",
 				"paper": "#5e1222",
 				"paper2": "#74182c",
-				"skirt": "#08070c",
-				"stone": "#1a1618",
-				"stone2": "#262024",
-				"trim": "#f0c46a",
-				"wainscot": "#1a1014",
+				"skirt": "#0a0808",
+				"stone": "#3a3a40",
+				"stone2": "#46464e",
+				"trim": "#b08d4a",
+				"wainscot": "#2a1a10",
 				"wallpaper": 1
 			},
-			"text": "MUSEUM_5_TEXT"
+			"text": "MUSEUM_4_TEXT",
+			"theme": "edad_media"
+		},
+		{
+			"colour": "#ff4f9a",
+			"n": 5,
+			"name": "MUSEUM_5_NAME",
+			"nights_list": [
+				21,
+				22,
+				23,
+				24,
+				25
+			],
+			"palette": {
+				"cap": "#56534f",
+				"dado": 0.0,
+				"floor": 1,
+				"gloss": 0.25,
+				"joint": "#1c1c22",
+				"paper": "#4a2a5e",
+				"paper2": "#5a3470",
+				"skirt": "#08070c",
+				"stone": "#3c3c46",
+				"stone2": "#44444f",
+				"trim": "#ff4f9a",
+				"wainscot": "#1c1c22",
+				"wallpaper": 2
+			},
+			"text": "MUSEUM_5_TEXT",
+			"theme": "moderna"
 		}
 	],
 	"nights": [
@@ -251,10 +256,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_02_BLURB",
-				"colour": "#ffd43b",
+				"colour": "#dee2e6",
 				"name": "NIGHT_02_NAME",
 				"seconds": 2.0,
-				"shape": "duck",
+				"shape": "sock",
 				"story": "NIGHT_02_TALE",
 				"verb": "NIGHT_02_VERB"
 			},
@@ -283,10 +288,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_03_BLURB",
-				"colour": "#ff6b6b",
+				"colour": "#ffe066",
 				"name": "NIGHT_03_NAME",
 				"seconds": 2.0,
-				"shape": "sock",
+				"shape": "rock",
 				"story": "NIGHT_03_TALE",
 				"verb": "NIGHT_03_VERB"
 			},
@@ -309,10 +314,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_04_BLURB",
-				"colour": "#dee2e6",
+				"colour": "#e03131",
 				"name": "NIGHT_04_NAME",
 				"seconds": 2.5,
-				"shape": "sock",
+				"shape": "idol",
 				"story": "NIGHT_04_TALE",
 				"verb": "NIGHT_04_VERB"
 			},
@@ -335,29 +340,31 @@
 		},
 		{
 			"alarms": 3,
-			"calm_after": 6.0,
+			"boss": true,
+			"calm_after": 8.0,
 			"case_alarm": false,
 			"guards": 1,
 			"hearing": 0.3,
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_05_BLURB",
-				"colour": "#e03131",
+				"colour": "#e8c89a",
 				"name": "NIGHT_05_NAME",
-				"seconds": 2.5,
-				"shape": "idol",
+				"seconds": 3.0,
+				"shape": "egg",
 				"story": "NIGHT_05_TALE",
 				"verb": "NIGHT_05_VERB"
 			},
-			"museum": 2,
+			"museum": 1,
 			"n": 5,
 			"news": [],
 			"props": false,
 			"shape": "U",
-			"size": "small",
-			"speed": 0.5,
+			"size": "medium",
+			"speed": 0.95,
 			"teach": "",
-			"view": 0.6
+			"tip": "NIGHT_05_TIP",
+			"view": 1.12
 		},
 		{
 			"alarms": 3,
@@ -368,10 +375,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_06_BLURB",
-				"colour": "#d4a15a",
+				"colour": "#7bc043",
 				"name": "NIGHT_06_NAME",
 				"seconds": 3.0,
-				"shape": "toast",
+				"shape": "crown",
 				"story": "NIGHT_06_TALE",
 				"verb": "NIGHT_06_VERB"
 			},
@@ -401,10 +408,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_07_BLURB",
-				"colour": "#f783ac",
+				"colour": "#ff6b6b",
 				"name": "NIGHT_07_NAME",
 				"seconds": 3.0,
-				"shape": "gum",
+				"shape": "sock",
 				"story": "NIGHT_07_TALE",
 				"verb": "NIGHT_07_VERB"
 			},
@@ -427,10 +434,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_08_BLURB",
-				"colour": "#7bc043",
+				"colour": "#9b5de5",
 				"name": "NIGHT_08_NAME",
 				"seconds": 3.5,
-				"shape": "crown",
+				"shape": "mask",
 				"story": "NIGHT_08_TALE",
 				"verb": "NIGHT_08_VERB"
 			},
@@ -460,14 +467,14 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_09_BLURB",
-				"colour": "#fcc419",
+				"colour": "#e8a860",
 				"name": "NIGHT_09_NAME",
 				"seconds": 3.5,
-				"shape": "idol",
+				"shape": "gum",
 				"story": "NIGHT_09_TALE",
 				"verb": "NIGHT_09_VERB"
 			},
-			"museum": 3,
+			"museum": 2,
 			"n": 9,
 			"news": [],
 			"props": true,
@@ -478,30 +485,33 @@
 			"view": 0.68
 		},
 		{
-			"alarms": 3,
-			"calm_after": 8.0,
+			"alarms": 1,
+			"boss": true,
+			"calm_after": 9.0,
 			"case_alarm": false,
 			"guards": 1,
-			"hearing": 0.9,
+			"hearing": 1.15,
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_10_BLURB",
-				"colour": "#ffe066",
+				"colour": "#ffd43b",
 				"name": "NIGHT_10_NAME",
 				"seconds": 4.0,
-				"shape": "rock",
+				"shape": "duck",
 				"story": "NIGHT_10_TALE",
 				"verb": "NIGHT_10_VERB"
 			},
-			"museum": 3,
+			"museum": 2,
 			"n": 10,
 			"news": [],
+			"post": "case",
 			"props": true,
-			"shape": "L",
+			"shape": "T",
 			"size": "medium",
-			"speed": 0.62,
+			"speed": 0.65,
 			"teach": "",
-			"view": 0.72
+			"tip": "NIGHT_10_TIP",
+			"view": 0.8
 		},
 		{
 			"alarms": 2,
@@ -512,10 +522,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_11_BLURB",
-				"colour": "#2b8a3e",
+				"colour": "#e8b53a",
 				"name": "NIGHT_11_NAME",
 				"seconds": 4.0,
-				"shape": "mask",
+				"shape": "idol",
 				"story": "NIGHT_11_TALE",
 				"verb": "NIGHT_11_VERB"
 			},
@@ -529,7 +539,7 @@
 				}
 			],
 			"props": true,
-			"shape": "T",
+			"shape": "L",
 			"size": "medium",
 			"speed": 0.62,
 			"teach": "case_alarm",
@@ -544,10 +554,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_12_BLURB",
-				"colour": "#9b5de5",
+				"colour": "#2ec4b6",
 				"name": "NIGHT_12_NAME",
 				"seconds": 4.5,
-				"shape": "mask",
+				"shape": "clock",
 				"story": "NIGHT_12_TALE",
 				"verb": "NIGHT_12_VERB"
 			},
@@ -570,14 +580,14 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_13_BLURB",
-				"colour": "#e8590c",
+				"colour": "#4dabf7",
 				"name": "NIGHT_13_NAME",
 				"seconds": 4.5,
-				"shape": "clock",
+				"shape": "duck",
 				"story": "NIGHT_13_TALE",
 				"verb": "NIGHT_13_VERB"
 			},
-			"museum": 4,
+			"museum": 3,
 			"n": 13,
 			"news": [
 				{
@@ -602,14 +612,14 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_14_BLURB",
-				"colour": "#4dabf7",
+				"colour": "#f4f1e6",
 				"name": "NIGHT_14_NAME",
 				"seconds": 5.0,
-				"shape": "clock",
+				"shape": "egg",
 				"story": "NIGHT_14_TALE",
 				"verb": "NIGHT_14_VERB"
 			},
-			"museum": 4,
+			"museum": 3,
 			"n": 14,
 			"news": [],
 			"props": true,
@@ -621,22 +631,51 @@
 		},
 		{
 			"alarms": 2,
+			"boss": true,
+			"calm_after": 10.0,
+			"case_alarm": true,
+			"guards": 3,
+			"hearing": 1.0,
+			"lights": false,
+			"loot": {
+				"blurb": "NIGHT_15_BLURB",
+				"colour": "#12b886",
+				"name": "NIGHT_15_NAME",
+				"seconds": 5.5,
+				"shape": "gem",
+				"story": "NIGHT_15_TALE",
+				"verb": "NIGHT_15_VERB"
+			},
+			"museum": 3,
+			"n": 15,
+			"news": [],
+			"post": "route",
+			"props": true,
+			"shape": "T",
+			"size": "medium",
+			"speed": 0.75,
+			"teach": "",
+			"tip": "NIGHT_15_TIP",
+			"view": 0.9
+		},
+		{
+			"alarms": 2,
 			"calm_after": 10.0,
 			"case_alarm": true,
 			"guards": 2,
 			"hearing": 1.0,
 			"lights": true,
 			"loot": {
-				"blurb": "NIGHT_15_BLURB",
-				"colour": "#8b5a2b",
-				"name": "NIGHT_15_NAME",
+				"blurb": "NIGHT_16_BLURB",
+				"colour": "#e8590c",
+				"name": "NIGHT_16_NAME",
 				"seconds": 5.0,
-				"shape": "egg",
-				"story": "NIGHT_15_TALE",
-				"verb": "NIGHT_15_VERB"
+				"shape": "clock",
+				"story": "NIGHT_16_TALE",
+				"verb": "NIGHT_16_VERB"
 			},
 			"museum": 4,
-			"n": 15,
+			"n": 16,
 			"news": [
 				{
 					"stage": "lesson:lights",
@@ -659,16 +698,16 @@
 			"hearing": 1.0,
 			"lights": true,
 			"loot": {
-				"blurb": "NIGHT_16_BLURB",
-				"colour": "#e8c89a",
-				"name": "NIGHT_16_NAME",
+				"blurb": "NIGHT_17_BLURB",
+				"colour": "#8b5a2b",
+				"name": "NIGHT_17_NAME",
 				"seconds": 5.5,
-				"shape": "egg",
-				"story": "NIGHT_16_TALE",
-				"verb": "NIGHT_16_VERB"
+				"shape": "rock",
+				"story": "NIGHT_17_TALE",
+				"verb": "NIGHT_17_VERB"
 			},
 			"museum": 4,
-			"n": 16,
+			"n": 17,
 			"news": [],
 			"props": true,
 			"shape": "T",
@@ -685,16 +724,97 @@
 			"hearing": 1.0,
 			"lights": true,
 			"loot": {
-				"blurb": "NIGHT_17_BLURB",
-				"colour": "#ffd43b",
-				"name": "NIGHT_17_NAME",
-				"seconds": 5.5,
-				"shape": "teeth",
-				"story": "NIGHT_17_TALE",
-				"verb": "NIGHT_17_VERB"
+				"blurb": "NIGHT_18_BLURB",
+				"colour": "#b197fc",
+				"name": "NIGHT_18_NAME",
+				"seconds": 3.5,
+				"shape": "gum",
+				"story": "NIGHT_18_TALE",
+				"verb": "NIGHT_18_VERB"
+			},
+			"museum": 4,
+			"n": 18,
+			"news": [],
+			"props": true,
+			"shape": "notched",
+			"size": "medium",
+			"speed": 0.8,
+			"teach": "",
+			"view": 0.85
+		},
+		{
+			"alarms": 2,
+			"calm_after": 11.0,
+			"case_alarm": true,
+			"guards": 2,
+			"hearing": 1.05,
+			"lights": true,
+			"loot": {
+				"blurb": "NIGHT_19_BLURB",
+				"colour": "#40c057",
+				"name": "NIGHT_19_NAME",
+				"seconds": 4.0,
+				"shape": "mask",
+				"story": "NIGHT_19_TALE",
+				"verb": "NIGHT_19_VERB"
+			},
+			"museum": 4,
+			"n": 19,
+			"news": [],
+			"props": true,
+			"shape": "U",
+			"size": "medium",
+			"speed": 0.82,
+			"teach": "",
+			"view": 0.88
+		},
+		{
+			"alarms": 2,
+			"boss": true,
+			"calm_after": 13.0,
+			"case_alarm": true,
+			"guards": 3,
+			"hearing": 1.15,
+			"lights": true,
+			"loot": {
+				"blurb": "NIGHT_20_BLURB",
+				"colour": "#f0c46a",
+				"name": "NIGHT_20_NAME",
+				"seconds": 5.0,
+				"shape": "crown",
+				"story": "NIGHT_20_TALE",
+				"verb": "NIGHT_20_VERB"
+			},
+			"museum": 4,
+			"n": 20,
+			"news": [],
+			"post": "quiet",
+			"props": true,
+			"shape": "cross",
+			"size": "medium",
+			"speed": 0.85,
+			"teach": "",
+			"tip": "NIGHT_20_TIP",
+			"view": 0.9
+		},
+		{
+			"alarms": 2,
+			"calm_after": 11.0,
+			"case_alarm": true,
+			"guards": 2,
+			"hearing": 1.0,
+			"lights": true,
+			"loot": {
+				"blurb": "NIGHT_21_BLURB",
+				"colour": "#e0b060",
+				"name": "NIGHT_21_NAME",
+				"seconds": 4.5,
+				"shape": "toast",
+				"story": "NIGHT_21_TALE",
+				"verb": "NIGHT_21_VERB"
 			},
 			"museum": 5,
-			"n": 17,
+			"n": 21,
 			"news": [
 				{
 					"stage": "lesson:big",
@@ -717,16 +837,16 @@
 			"hearing": 1.05,
 			"lights": true,
 			"loot": {
-				"blurb": "NIGHT_18_BLURB",
-				"colour": "#339af0",
-				"name": "NIGHT_18_NAME",
-				"seconds": 6.0,
-				"shape": "duck",
-				"story": "NIGHT_18_TALE",
-				"verb": "NIGHT_18_VERB"
+				"blurb": "NIGHT_22_BLURB",
+				"colour": "#f783ac",
+				"name": "NIGHT_22_NAME",
+				"seconds": 5.0,
+				"shape": "gum",
+				"story": "NIGHT_22_TALE",
+				"verb": "NIGHT_22_VERB"
 			},
 			"museum": 5,
-			"n": 18,
+			"n": 22,
 			"news": [],
 			"props": true,
 			"shape": "notched",
@@ -743,16 +863,16 @@
 			"hearing": 1.1,
 			"lights": true,
 			"loot": {
-				"blurb": "NIGHT_19_BLURB",
-				"colour": "#ffec99",
-				"name": "NIGHT_19_NAME",
-				"seconds": 6.5,
-				"shape": "gem",
-				"story": "NIGHT_19_TALE",
-				"verb": "NIGHT_19_VERB"
+				"blurb": "NIGHT_23_BLURB",
+				"colour": "#f4f1e6",
+				"name": "NIGHT_23_NAME",
+				"seconds": 5.5,
+				"shape": "teeth",
+				"story": "NIGHT_23_TALE",
+				"verb": "NIGHT_23_VERB"
 			},
 			"museum": 5,
-			"n": 19,
+			"n": 23,
 			"news": [],
 			"props": true,
 			"shape": "T",
@@ -763,27 +883,54 @@
 		},
 		{
 			"alarms": 1,
+			"calm_after": 13.0,
+			"case_alarm": true,
+			"guards": 3,
+			"hearing": 1.1,
+			"lights": true,
+			"loot": {
+				"blurb": "NIGHT_24_BLURB",
+				"colour": "#dee2e6",
+				"name": "NIGHT_24_NAME",
+				"seconds": 6.0,
+				"shape": "sock",
+				"story": "NIGHT_24_TALE",
+				"verb": "NIGHT_24_VERB"
+			},
+			"museum": 5,
+			"n": 24,
+			"news": [],
+			"props": true,
+			"shape": "L",
+			"size": "large",
+			"speed": 0.95,
+			"teach": "",
+			"view": 1.0
+		},
+		{
+			"alarms": 1,
+			"boss": true,
 			"calm_after": 14.0,
 			"case_alarm": true,
 			"guards": 4,
 			"hearing": 1.15,
 			"lights": true,
 			"loot": {
-				"blurb": "NIGHT_20_BLURB",
+				"blurb": "NIGHT_25_BLURB",
 				"colour": "#74c0fc",
-				"name": "NIGHT_20_NAME",
-				"seconds": 7.0,
+				"name": "NIGHT_25_NAME",
+				"seconds": 6.5,
 				"shape": "gem",
-				"story": "NIGHT_20_TALE",
-				"verb": "NIGHT_20_VERB"
+				"story": "NIGHT_25_TALE",
+				"verb": "NIGHT_25_VERB"
 			},
 			"museum": 5,
-			"n": 20,
+			"n": 25,
 			"news": [
 				{
 					"stage": "lesson:finale",
 					"text": "Todos despiertos y sin calmarse. Todo lo que sabes, a la vez. Suerte.",
-					"title": "LA ÚLTIMA NOCHE"
+					"title": "EL ÚLTIMO GOLPE"
 				}
 			],
 			"props": true,
@@ -791,6 +938,7 @@
 			"size": "large",
 			"speed": 1.0,
 			"teach": "finale",
+			"tip": "NIGHT_25_TIP",
 			"view": 1.05
 		}
 	],

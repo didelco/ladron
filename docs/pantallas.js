@@ -17,7 +17,7 @@ window.PANTALLAS = [
     text: "La primera pantalla: el título y los tres modos de juego como tarjetas con su diorama.",
     shots: ["menu_titulo"],
     options: [
-      { key: "MENU_STORY", text: "Veinte noches fijas en cinco museos, con cuento.", to: "historia" },
+      { key: "MENU_STORY", text: "Cinco museos, cinco robos en cada uno (el quinto, su gran golpe), con cuento.", to: "historia" },
       { key: "MENU_GENERATIVE", text: "Un museo nuevo cada vez, con la dificultad y el tamaño que elijas.", to: "generativo" },
       { key: "MENU_CHALLENGE", text: "Mapas hechos a mano (los de serie y los tuyos) y el editor.", to: "retos" },
       { key: "MENU_SETTINGS", to: "ajustes" },
@@ -51,28 +51,28 @@ window.PANTALLAS = [
             text: "La ciudad de noche vista desde arriba: los cinco museos en sus calles, cada uno en sus colores. Las calles se iluminan hasta el último museo abierto para esta banda.",
             shots: ["menu_historia_ciudad"],
             options: [
-              { key: "MUSEUM_1_NAME", text: "Noches 1 a 4.", to: "museo" },
-              { key: "MUSEUM_2_NAME", text: "Noches 5 a 8.", to: "museo" },
-              { key: "MUSEUM_3_NAME", text: "Noches 9 a 12.", to: "museo" },
-              { key: "MUSEUM_4_NAME", text: "Noches 13 a 16.", to: "museo" },
-              { key: "MUSEUM_5_NAME", text: "Noches 17 a 20, la final.", to: "museo" },
+              { key: "MUSEUM_1_NAME", text: "La prehistoria. Robos 1 a 5.", to: "museo" },
+              { key: "MUSEUM_2_NAME", text: "La naturaleza. Robos 6 a 10.", to: "museo" },
+              { key: "MUSEUM_3_NAME", text: "El mundo antiguo. Robos 11 a 15.", to: "museo" },
+              { key: "MUSEUM_4_NAME", text: "La Edad Media. Robos 16 a 20.", to: "museo" },
+              { key: "MUSEUM_5_NAME", text: "La edad moderna. Robos 21 a 25, el final.", to: "museo" },
               { key: "MENU_BACK", to: "historia" },
             ],
             children: [
               {
-                id: "museo", title: "«Un museo y sus noches»", fn: "_show_museum", phase: "museum",
-                text: "Dentro de un museo, en sus colores: sus cuatro noches como salas (se puede elegir cualquiera ya alcanzada) y la pieza de la elegida girando sobre terciopelo.",
+                id: "museo", title: "«Un museo y sus salas»", fn: "_show_museum", phase: "museum",
+                text: "Dentro de un museo, en sus colores: sus cinco robos como salas (se puede elegir cualquiera ya alcanzada), la quinta, la del gran golpe, más ancha, con alfombra roja, corona y puerta dorada; y la pieza de la elegida girando sobre terciopelo.",
                 shots: ["menu_museo_1", "menu_museo_2", "menu_museo_3", "menu_museo_4", "menu_museo_5"],
                 options: [
-                  { label: "Las noches (1, 2, 3…)", text: "Moverse por ellas cambia la pieza y su nombre." },
-                  { key: "STORY_PLAY", text: "La noche 1 empieza con el prólogo; las demás, con la previa.", to: "previa" },
+                  { label: "Las salas (1 a 5)", text: "Moverse por ellas cambia la pieza y su nombre." },
+                  { key: "STORY_PLAY", text: "El robo 1 empieza con el prólogo; los demás, con la previa.", to: "previa" },
                   { key: "MENU_BACK", to: "ciudad" },
                 ],
                 children: [
                   {
                     id: "prologo", title: "PROLOGUE_TITLE", fn: "_show_prologue", phase: "prologue",
-                    text: "Solo antes de la noche 1: el cuento de la Banda del Calcetín en tres páginas.",
-                    shots: ["previa_prologo_1", "previa_prologo_2", "previa_prologo_3"],
+                    text: "Solo antes del robo 1: el cuento de la Banda del Calcetín en cuatro páginas.",
+                    shots: ["previa_prologo_1", "previa_prologo_2", "previa_prologo_3", "previa_prologo_4"],
                     options: [
                       { key: "MENU_NEXT", text: "Página siguiente." },
                       { key: "PROLOGUE_GO", text: "En la última página.", to: "previa" },
@@ -106,10 +106,10 @@ window.PANTALLAS = [
       },
       {
         id: "retos", title: "CHALLENGE_TITLE", fn: "_show_challenge_menu", phase: "menu",
-        text: "Una lista de nombres (las noches de la historia y los mapas hechos a mano) con el plano del elegido a la derecha.",
+        text: "Una lista de nombres (los robos de la historia y los mapas hechos a mano) con el plano del elegido a la derecha.",
         shots: ["menu_retos"],
         options: [
-          { key: "CHALLENGE_STORY_HEAD", text: "Las veinte noches; «*» si están retocadas a mano.", to: "reto_noche" },
+          { key: "CHALLENGE_STORY_HEAD", text: "Los veinticinco robos; «*» si están retocados a mano.", to: "reto_noche" },
           { key: "CHALLENGE_MAPS_HEAD", text: "Los mapas de serie (maps/) y los tuyos (user://maps).", to: "reto" },
           { key: "CHALLENGE_NEW", to: "editor" },
           { key: "MENU_BACK", to: "titulo" },
@@ -130,8 +130,8 @@ window.PANTALLAS = [
             ],
           },
           {
-            id: "reto_noche", title: "«Una noche de la historia»", fn: "_show_night_map", phase: "challenge",
-            text: "El museo de una noche, para retocarlo: al guardarlo, la noche jugará ese plano con su pieza, sus guardias y su dificultad.",
+            id: "reto_noche", title: "«Un robo de la historia»", fn: "_show_night_map", phase: "challenge",
+            text: "El museo de un robo, para retocarlo: al guardarlo, el robo jugará ese plano con su pieza, sus guardias y su dificultad.",
             shots: ["menu_reto_noche"],
             options: [
               { key: "CHALLENGE_EDIT", to: "editor" },
@@ -223,8 +223,8 @@ window.PANTALLAS = [
     children: [
       {
         id: "previa", title: "«La previa»", fn: "_show_brief", phase: "brief",
-        text: "Una o dos páginas antes de jugar. «Lo nuevo» sale solo en las noches de la historia que enseñan algo (la lección, con su escena); «El plan» siempre: el plano, la pieza, su historia y consejos para esa noche.",
-        shots: ["previa_noche_01_news", "previa_noche_01_plan", "previa_noche_02_news", "previa_noche_04_news", "previa_noche_06_news", "previa_noche_08_news", "previa_noche_09_plan", "previa_noche_11_news", "previa_noche_13_news", "previa_noche_15_news", "previa_noche_17_news", "previa_noche_20_news", "previa_noche_20_plan", "previa_generativo_plan"],
+        text: "Una o dos páginas antes de jugar. «Lo nuevo» sale solo en los robos de la historia que enseñan algo (la lección, con su escena); «El plan» siempre: el plano, la pieza, su historia y consejos para esa noche.",
+        shots: ["previa_robo_01_story", "previa_robo_01_news", "previa_robo_01_plan", "previa_robo_02_news", "previa_robo_04_news", "previa_robo_05_story", "previa_robo_05_plan", "previa_robo_06_news", "previa_robo_08_news", "previa_robo_10_plan", "previa_robo_11_news", "previa_robo_13_news", "previa_robo_15_plan", "previa_robo_16_news", "previa_robo_20_plan", "previa_robo_21_news", "previa_robo_25_news", "previa_robo_25_plan", "previa_generativo_plan"],
         options: [
           { key: "BRIEF_TAB_NEWS", text: "La lección de la noche." },
           { key: "BRIEF_TAB_PLAN", text: "El plano y la pieza." },
@@ -241,10 +241,10 @@ window.PANTALLAS = [
       {
         id: "juego", title: "«En juego»", fn: "_start_playing", phase: "playing",
         text: "El museo desde arriba. Abajo, un retrato por ladrón; arriba al centro, la alarma (! !! !!!); a la izquierda, lo que piensa cada guardia y la ayuda de teclas. No hay reloj: la noche dura lo que haga falta.",
-        shots: ["juego_noche_01", "juego_noche_04_linterna", "juego_noche_08_objetos", "juego_noche_13_dos", "juego_noche_15_luces", "juego_noche_20_final", "juego_generativo", "juego_reto"],
+        shots: ["juego_robo_01", "juego_robo_04_linterna", "juego_robo_08_objetos", "juego_robo_13_dos", "juego_robo_16_luces", "juego_robo_25_final", "juego_generativo", "juego_reto"],
         options: [
           { key: "HUD_HELP", text: "La ayuda de teclas, siempre abajo a la izquierda." },
-          { label: "Robar", text: "Quieto junto a la vitrina hasta que se abre (desde la noche 9, con minijuego)." },
+          { label: "Robar", text: "Quieto junto a la vitrina hasta que se abre (desde el robo 18, con minijuego)." },
           { label: "Salir por la flecha verde", text: "Con la pieza, toda la banda.", to: "fin_escapado" },
           { label: "Que te pillen", to: "fin_pillado" },
         ],
@@ -288,12 +288,12 @@ window.PANTALLAS = [
       },
       {
         id: "fin_escapado", title: "END_PERFECT", fn: "_show_end", phase: "escaped",
-        text: "Toda la banda fuera con la pieza. En la historia desbloquea la noche siguiente.", shots: ["final_escapado"],
-        options: [{ key: "END_NEXT_NIGHT", text: "En la historia.", to: "previa" }, { key: "END_NEXT_HEIST", text: "En el generativo.", to: "previa" }, { key: "END_TO_MENU" }],
+        text: "Toda la banda fuera con la pieza. En la historia abre la sala siguiente; tras un gran golpe, el siguiente museo (y vuelve a la ciudad).", shots: ["final_escapado"],
+        options: [{ key: "END_NEXT_NIGHT", text: "En la historia.", to: "previa" }, { key: "END_NEXT_MUSEUM", text: "Tras el gran golpe de un museo.", to: "ciudad" }, { key: "END_NEXT_HEIST", text: "En el generativo.", to: "previa" }, { key: "END_TO_MENU" }],
       },
       {
         id: "final", title: "ENDING_TITLE", fn: "_show_ending", phase: "ending",
-        text: "Tras la noche 20: el final del cuento.", shots: ["final_historia"],
+        text: "Tras el robo 25: el final del cuento.", shots: ["final_historia"],
         options: [{ key: "MENU_TO_MENU", to: "titulo" }],
       },
     ],

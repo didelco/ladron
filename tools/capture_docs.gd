@@ -178,13 +178,13 @@ func _shots() -> void:
 		main.story_pick = Story.nights_in(m)[0]
 		main._show_museum(m)
 		await _wait(1.5)
-		await _shot("menu_museo_%d" % (m + 1), "menus", "Museo %d: %s" % [m + 1, Text.t(Story.MUSEUMS[m].name)], "Sus noches como salas y la pieza de la elegida.")
+		await _shot("menu_museo_%d" % (m + 1), "menus", "Museo %d: %s" % [m + 1, Text.t(Story.MUSEUMS[m].name)], "Sus cinco robos como salas, la del gran golpe aparte, y la pieza de la elegida.")
 	main._show_generative_menu()
 	await _wait(1.5)
 	await _shot("menu_generativo", "menus", "Modo generativo", "Dificultad, tamaño del museo y número de ladrones.")
 	main._show_challenge_menu()
 	await _wait(1.5)
-	await _shot("menu_retos", "menus", "Retos", "Las noches de la historia y los mapas hechos a mano, con el plano del elegido.")
+	await _shot("menu_retos", "menus", "Retos", "Los robos de la historia y los mapas hechos a mano, con el plano del elegido.")
 	var maps := MapFile.list()
 	if not maps.is_empty():
 		main._show_challenge_map(maps[0])
@@ -192,7 +192,7 @@ func _shots() -> void:
 		await _shot("menu_reto_mapa", "menus", "Un reto elegido", maps[0].name if "name" in maps[0] else "")
 	main._show_night_map(1)
 	await _wait(1.5)
-	await _shot("menu_reto_noche", "menus", "Retos: una noche de la historia", "Para retocar su museo en el editor.")
+	await _shot("menu_reto_noche", "menus", "Retos: un robo de la historia", "Para retocar su museo en el editor.")
 	main._show_editor(MapFile.generated(4242, "small"))
 	await _wait(1.5)
 	await _shot("menu_editor", "menus", "Editor de mapas")
@@ -208,7 +208,8 @@ func _shots() -> void:
 		await _shot("ajustes_" + (page if page != "" else "inicio"), "ajustes",
 			{"": "Ajustes", "sound": "Ajustes: sonido", "screen": "Ajustes: pantalla", "pads": "Ajustes: mandos y controles"}[page])
 
-	# Before a night: the tale, the news (the lesson) and the plan.
+	# Before a heist: the tale, the news (the lesson) and the plan; the
+	# lessons' nights and the museums' big jobs.
 	main.mode = "story"
 	main.players = 1
 	var pages := Story.prologue()
@@ -216,7 +217,7 @@ func _shots() -> void:
 		main._show_prologue(p)
 		await _wait(1.5)
 		await _shot("previa_prologo_%d" % (p + 1), "previas", "Prólogo, página %d de %d" % [p + 1, pages.size()])
-	for n in [1, 2, 4, 6, 8, 9, 11, 13, 15, 17, 20]:
+	for n in [1, 2, 4, 5, 6, 8, 10, 11, 13, 15, 16, 20, 21, 25]:
 		_reset()
 		main.mode = "story"
 		main.players = 1
@@ -226,7 +227,7 @@ func _shots() -> void:
 		for i in brief.size():
 			main._show_brief(i)
 			await _wait(1.6)
-			await _shot("previa_noche_%02d_%s" % [n, brief[i]], "previas", "Noche %d: %s" % [n, {"story": "la historia", "news": "la noticia", "plan": "el plan"}[brief[i]]],
+			await _shot("previa_robo_%02d_%s" % [n, brief[i]], "previas", "Robo %d%s: %s" % [n, " (gran golpe)" if Story.is_boss(n) else "", {"story": "la historia", "news": "la noticia", "plan": "el plan"}[brief[i]]],
 				Text.t(Story.level(n).loot.name))
 	_reset()
 	main.mode = "generative"
@@ -242,17 +243,17 @@ func _shots() -> void:
 
 	# In play.
 	await _play("story", 1, 1)
-	await _shot("juego_noche_01", "juego", "Noche 1: el museo vacío", "Sin guardias: aprender a llevarse la pieza.")
+	await _shot("juego_robo_01", "juego", "Robo 1: el museo vacío", "Sin guardias: aprender a llevarse la pieza.")
 	await _play("story", 4, 1, 4.0)
-	await _shot("juego_noche_04_linterna", "juego", "Noche 4: la linterna", "Un guardia con ronda fija y su cono de luz.")
+	await _shot("juego_robo_04_linterna", "juego", "Robo 4: la linterna", "Un guardia quieto junto al camino y su cono de luz.")
 	await _play("story", 8, 1, 3.0)
-	await _shot("juego_noche_08_objetos", "juego", "Noche 8: objetos que se caen", "Papeleras, bustos, paneles y armaduras que hacen ruido.")
+	await _shot("juego_robo_08_objetos", "juego", "Robo 8: objetos que se caen", "Papeleras y paneles que hacen ruido (bustos en el mundo antiguo, armaduras en la Edad Media).")
 	await _play("story", 13, 2, 3.0)
-	await _shot("juego_noche_13_dos", "juego", "Noche 13: dos guardias, dos ladrones")
-	await _play("story", 15, 1, 3.0)
-	await _shot("juego_noche_15_luces", "juego", "Noche 15: las luces", "Salas encendidas e interruptores.")
-	await _play("story", 20, 4, 3.0)
-	await _shot("juego_noche_20_final", "juego", "Noche 20: la final", "Cuatro guardias y la banda de cuatro.")
+	await _shot("juego_robo_13_dos", "juego", "Robo 13: dos guardias, dos ladrones")
+	await _play("story", 16, 1, 3.0)
+	await _shot("juego_robo_16_luces", "juego", "Robo 16: las luces", "Salas encendidas e interruptores.")
+	await _play("story", 25, 4, 3.0)
+	await _shot("juego_robo_25_final", "juego", "Robo 25: el gran final", "Cuatro guardias y la banda de cuatro.")
 	await _play("story", 13, 1, 1.0)
 	if not main.guards.is_empty():
 		_in_sight(main.thieves[0], main.guards[0])
@@ -268,10 +269,10 @@ func _shots() -> void:
 		g.sees_player = true
 	await _wait(1.0)
 	await _shot("juego_persecucion", "juego", "Alerta", "Los guardias en alerta: linternas rojas y marcas !!! sobre ellos.")
-	var games := [["lockpick", "case", 9, "Minijuego: la ganzúa", "Forzar la cerradura de la vitrina."],
-		["wires", "panel", 11, "Minijuego: los cables", "Desconectar el cuadro de alarma."],
-		["steady", "case", 11, "Minijuego: la ventosa", "Cortar el cristal sin moverse."],
-		["balance", "plinth", 14, "Minijuego: el equilibrio", "Hacerse pasar por estatua sobre un pedestal."],
+	var games := [["lockpick", "case", 18, "Minijuego: la ganzúa", "Forzar la cerradura de la vitrina."],
+		["wires", "panel", 19, "Minijuego: los cables", "Desconectar el cuadro de alarma."],
+		["steady", "case", 19, "Minijuego: la ventosa", "Cortar el cristal sin moverse."],
+		["balance", "plinth", 21, "Minijuego: el equilibrio", "Hacerse pasar por estatua sobre un pedestal."],
 		["squeeze", "hideout", 11, "Minijuego: colarse", "Meterse en un escondite, de dos a cinco segundos a la vista."]]
 	for g in games:
 		await _play("story", g[2], 1, 1.0)
@@ -291,7 +292,7 @@ func _shots() -> void:
 		main.thieves[0].game = Minigame.make(g[0], g[1], 3, {})
 		await _wait(1.2)
 		await _shot("juego_minijuego_" + g[0], "juego", g[3], g[4])
-	await _play("story", 17, 1, 2.0)
+	await _play("story", 21, 1, 2.0)
 	main._toggle_map()
 	await _wait(1.2)
 	await _shot("juego_mapa", "juego", "El mapa", "El plano con la banda, la pieza, la salida y los guardias.")

@@ -156,7 +156,7 @@ static func spread(seed: int, avoid: Array[Vector2i], plinths: bool, furniture: 
 			"furniture":
 				var t: Vector2i = pick[1]
 				var room := Museum.room_at(t.x + 0.5, t.y + 0.5)
-				var kinds := kinds_for(room.theme if room else "")
+				var kinds := kinds_for(room.theme if room else Museum.only_theme)
 				pieces[t] = kinds[rand.below(kinds.size())]
 			"big":
 				big_open.append(pick[1])

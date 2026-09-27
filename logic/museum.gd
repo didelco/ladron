@@ -100,7 +100,8 @@ static var zones: Array[Zone] = []
 ## milliseconds each room's lights stay on for; 0 is dark
 static var lights_left: Array[float] = []
 static var spawn := Vector2i(1, 1)
-## A museum of one theme (Themes), every gallery the same; "" mixes them.
+## A museum of one theme (Themes), every gallery and corridor the same, and
+## only its big pieces (MapGen); "" mixes them. Set with the night (Sim.new_map).
 static var only_theme := ""
 ## bumped on every regenerate, so views can rebuild what they cached
 static var version := 0
@@ -122,7 +123,7 @@ static func regenerate(seed: int, size: String = "small", outline: String = "") 
 	var rand := Mulberry32.new(seed ^ 0x5bd1e995)
 	shape = outline if outline != "" else MapGen.SHAPES[rand.below(MapGen.SHAPES.size())]
 	size_name = size
-	var made := MapGen.generate(seed, dims.w, dims.h, shape)
+	var made := MapGen.generate(seed, dims.w, dims.h, shape, only_theme)
 	load_grid(seed, made.w, made.h, made.grid, made.outside, made.ring, made.spawn, made.big, made.rooms, rand)
 
 

@@ -1365,6 +1365,28 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#8a1c2c",
+     "key": ""
+    }
+   ],
+   "file": "scenes/night_map.gd",
+   "name": "CARPET",
+   "note": "The big job's hall: its carpet, its gold, and how much wider it is."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#e8b54a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/night_map.gd",
+   "name": "BRASS",
+   "note": "The big job's hall: its carpet, its gold, and how much wider it is."
+  },
+  {
+   "colours": [
+    {
      "hex": "#f1ecdc",
      "key": ""
     }
@@ -1489,144 +1511,149 @@ window.JUEGO = {
   },
   "museums": [
    {
-    "colour": "#4dabf7",
+    "colour": "#d08a3a",
     "n": 1,
     "name": "MUSEUM_1_NAME",
-    "nights": 4,
     "nights_list": [
      1,
      2,
      3,
-     4
+     4,
+     5
     ],
     "palette": {
-     "cap": "#5c5040",
-     "dado": 0.5,
-     "floor": 2,
-     "gloss": 0.45,
-     "joint": "#150d08",
-     "paper": "#1f2e4a",
-     "paper2": "#27395a",
-     "skirt": "#150d08",
-     "stone": "#3a2a1c",
-     "stone2": "#46321f",
-     "trim": "#b08d4a",
-     "wainscot": "#3b2a1a",
-     "wallpaper": 2
+     "cap": "#6a5a48",
+     "dado": 0.4,
+     "floor": 0,
+     "gloss": 0.55,
+     "joint": "#1e140c",
+     "paper": "#6b3f1f",
+     "paper2": "#7a4a25",
+     "skirt": "#120c08",
+     "stone": "#4a3624",
+     "stone2": "#56402a",
+     "trim": "#c9853a",
+     "wainscot": "#3a2a1c",
+     "wallpaper": 0
     },
-    "text": "MUSEUM_1_TEXT"
+    "text": "MUSEUM_1_TEXT",
+    "theme": "prehistoria"
    },
    {
-    "colour": "#7bc043",
+    "colour": "#5cc85c",
     "n": 2,
     "name": "MUSEUM_2_NAME",
-    "nights": 4,
     "nights_list": [
-     5,
      6,
      7,
-     8
+     8,
+     9,
+     10
     ],
     "palette": {
      "cap": "#5a6a4a",
-     "dado": 0.45,
-     "floor": 1,
-     "gloss": 0.3,
-     "joint": "#0e1611",
+     "dado": 0.5,
+     "floor": 2,
+     "gloss": 0.4,
+     "joint": "#120c06",
      "paper": "#1e4a2c",
      "paper2": "#285c38",
      "skirt": "#0e1611",
-     "stone": "#23352a",
-     "stone2": "#2a3f31",
+     "stone": "#3a2a18",
+     "stone2": "#4a3520",
      "trim": "#c9a34a",
      "wainscot": "#2e2418",
      "wallpaper": 1
     },
-    "text": "MUSEUM_2_TEXT"
+    "text": "MUSEUM_2_TEXT",
+    "theme": "naturaleza"
    },
    {
-    "colour": "#9b5de5",
+    "colour": "#e8b53a",
     "n": 3,
     "name": "MUSEUM_3_NAME",
-    "nights": 4,
     "nights_list": [
-     9,
-     10,
      11,
-     12
-    ],
-    "palette": {
-     "cap": "#5e5670",
-     "dado": 0.5,
-     "floor": 0,
-     "gloss": 0.18,
-     "joint": "#5a5488",
-     "paper": "#3a2656",
-     "paper2": "#462f66",
-     "skirt": "#0a0818",
-     "stone": "#25243a",
-     "stone2": "#2e2d46",
-     "trim": "#a8a0d8",
-     "wainscot": "#1c1636",
-     "wallpaper": 1
-    },
-    "text": "MUSEUM_3_TEXT"
-   },
-   {
-    "colour": "#e8590c",
-    "n": 4,
-    "name": "MUSEUM_4_NAME",
-    "nights": 4,
-    "nights_list": [
+     12,
      13,
      14,
-     15,
-     16
+     15
     ],
     "palette": {
-     "cap": "#6a4a36",
-     "dado": 0.55,
-     "floor": 1,
+     "cap": "#8a7650",
+     "dado": 0.45,
+     "floor": 0,
      "gloss": 0.35,
-     "joint": "#1c0f0a",
-     "paper": "#5a4418",
-     "paper2": "#6b521e",
-     "skirt": "#1c0f0a",
-     "stone": "#5c3420",
-     "stone2": "#683c25",
-     "trim": "#d9a441",
-     "wainscot": "#3a1e12",
+     "joint": "#2a200f",
+     "paper": "#1f3a6e",
+     "paper2": "#8a6a2a",
+     "skirt": "#1a1208",
+     "stone": "#6a5638",
+     "stone2": "#78623f",
+     "trim": "#e8b53a",
+     "wainscot": "#7a3a1e",
      "wallpaper": 2
     },
-    "text": "MUSEUM_4_TEXT"
+    "text": "MUSEUM_3_TEXT",
+    "theme": "antiguo"
    },
    {
-    "colour": "#e03131",
-    "n": 5,
-    "name": "MUSEUM_5_NAME",
-    "nights": 4,
+    "colour": "#d0263e",
+    "n": 4,
+    "name": "MUSEUM_4_NAME",
     "nights_list": [
+     16,
      17,
      18,
      19,
      20
     ],
     "palette": {
-     "cap": "#7a6040",
-     "dado": 0.5,
+     "cap": "#6a6470",
+     "dado": 0.55,
      "floor": 0,
-     "gloss": 0.15,
-     "joint": "#8a6a3a",
+     "gloss": 0.4,
+     "joint": "#16161a",
      "paper": "#5e1222",
      "paper2": "#74182c",
-     "skirt": "#08070c",
-     "stone": "#1a1618",
-     "stone2": "#262024",
-     "trim": "#f0c46a",
-     "wainscot": "#1a1014",
+     "skirt": "#0a0808",
+     "stone": "#3a3a40",
+     "stone2": "#46464e",
+     "trim": "#b08d4a",
+     "wainscot": "#2a1a10",
      "wallpaper": 1
     },
-    "text": "MUSEUM_5_TEXT"
+    "text": "MUSEUM_4_TEXT",
+    "theme": "edad_media"
+   },
+   {
+    "colour": "#ff4f9a",
+    "n": 5,
+    "name": "MUSEUM_5_NAME",
+    "nights_list": [
+     21,
+     22,
+     23,
+     24,
+     25
+    ],
+    "palette": {
+     "cap": "#56534f",
+     "dado": 0.0,
+     "floor": 1,
+     "gloss": 0.25,
+     "joint": "#1c1c22",
+     "paper": "#4a2a5e",
+     "paper2": "#5a3470",
+     "skirt": "#08070c",
+     "stone": "#3c3c46",
+     "stone2": "#44444f",
+     "trim": "#ff4f9a",
+     "wainscot": "#1c1c22",
+     "wallpaper": 2
+    },
+    "text": "MUSEUM_5_TEXT",
+    "theme": "moderna"
    }
   ],
   "nights": [
@@ -1671,10 +1698,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_02_BLURB",
-     "colour": "#ffd43b",
+     "colour": "#dee2e6",
      "name": "NIGHT_02_NAME",
      "seconds": 2.0,
-     "shape": "duck",
+     "shape": "sock",
      "story": "NIGHT_02_TALE",
      "verb": "NIGHT_02_VERB"
     },
@@ -1703,10 +1730,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_03_BLURB",
-     "colour": "#ff6b6b",
+     "colour": "#ffe066",
      "name": "NIGHT_03_NAME",
      "seconds": 2.0,
-     "shape": "sock",
+     "shape": "rock",
      "story": "NIGHT_03_TALE",
      "verb": "NIGHT_03_VERB"
     },
@@ -1729,10 +1756,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_04_BLURB",
-     "colour": "#dee2e6",
+     "colour": "#e03131",
      "name": "NIGHT_04_NAME",
      "seconds": 2.5,
-     "shape": "sock",
+     "shape": "idol",
      "story": "NIGHT_04_TALE",
      "verb": "NIGHT_04_VERB"
     },
@@ -1755,29 +1782,31 @@ window.JUEGO = {
    },
    {
     "alarms": 3,
-    "calm_after": 6.0,
+    "boss": true,
+    "calm_after": 8.0,
     "case_alarm": false,
     "guards": 1,
     "hearing": 0.3,
     "lights": false,
     "loot": {
      "blurb": "NIGHT_05_BLURB",
-     "colour": "#e03131",
+     "colour": "#e8c89a",
      "name": "NIGHT_05_NAME",
-     "seconds": 2.5,
-     "shape": "idol",
+     "seconds": 3.0,
+     "shape": "egg",
      "story": "NIGHT_05_TALE",
      "verb": "NIGHT_05_VERB"
     },
-    "museum": 2,
+    "museum": 1,
     "n": 5,
     "news": [],
     "props": false,
     "shape": "U",
-    "size": "small",
-    "speed": 0.5,
+    "size": "medium",
+    "speed": 0.95,
     "teach": "",
-    "view": 0.6
+    "tip": "NIGHT_05_TIP",
+    "view": 1.12
    },
    {
     "alarms": 3,
@@ -1788,10 +1817,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_06_BLURB",
-     "colour": "#d4a15a",
+     "colour": "#7bc043",
      "name": "NIGHT_06_NAME",
      "seconds": 3.0,
-     "shape": "toast",
+     "shape": "crown",
      "story": "NIGHT_06_TALE",
      "verb": "NIGHT_06_VERB"
     },
@@ -1821,10 +1850,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_07_BLURB",
-     "colour": "#f783ac",
+     "colour": "#ff6b6b",
      "name": "NIGHT_07_NAME",
      "seconds": 3.0,
-     "shape": "gum",
+     "shape": "sock",
      "story": "NIGHT_07_TALE",
      "verb": "NIGHT_07_VERB"
     },
@@ -1847,10 +1876,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_08_BLURB",
-     "colour": "#7bc043",
+     "colour": "#9b5de5",
      "name": "NIGHT_08_NAME",
      "seconds": 3.5,
-     "shape": "crown",
+     "shape": "mask",
      "story": "NIGHT_08_TALE",
      "verb": "NIGHT_08_VERB"
     },
@@ -1880,14 +1909,14 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_09_BLURB",
-     "colour": "#fcc419",
+     "colour": "#e8a860",
      "name": "NIGHT_09_NAME",
      "seconds": 3.5,
-     "shape": "idol",
+     "shape": "gum",
      "story": "NIGHT_09_TALE",
      "verb": "NIGHT_09_VERB"
     },
-    "museum": 3,
+    "museum": 2,
     "n": 9,
     "news": [],
     "props": true,
@@ -1898,30 +1927,33 @@ window.JUEGO = {
     "view": 0.68
    },
    {
-    "alarms": 3,
-    "calm_after": 8.0,
+    "alarms": 1,
+    "boss": true,
+    "calm_after": 9.0,
     "case_alarm": false,
     "guards": 1,
-    "hearing": 0.9,
+    "hearing": 1.15,
     "lights": false,
     "loot": {
      "blurb": "NIGHT_10_BLURB",
-     "colour": "#ffe066",
+     "colour": "#ffd43b",
      "name": "NIGHT_10_NAME",
      "seconds": 4.0,
-     "shape": "rock",
+     "shape": "duck",
      "story": "NIGHT_10_TALE",
      "verb": "NIGHT_10_VERB"
     },
-    "museum": 3,
+    "museum": 2,
     "n": 10,
     "news": [],
+    "post": "case",
     "props": true,
-    "shape": "L",
+    "shape": "T",
     "size": "medium",
-    "speed": 0.62,
+    "speed": 0.65,
     "teach": "",
-    "view": 0.72
+    "tip": "NIGHT_10_TIP",
+    "view": 0.8
    },
    {
     "alarms": 2,
@@ -1932,10 +1964,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_11_BLURB",
-     "colour": "#2b8a3e",
+     "colour": "#e8b53a",
      "name": "NIGHT_11_NAME",
      "seconds": 4.0,
-     "shape": "mask",
+     "shape": "idol",
      "story": "NIGHT_11_TALE",
      "verb": "NIGHT_11_VERB"
     },
@@ -1949,7 +1981,7 @@ window.JUEGO = {
      }
     ],
     "props": true,
-    "shape": "T",
+    "shape": "L",
     "size": "medium",
     "speed": 0.62,
     "teach": "case_alarm",
@@ -1964,10 +1996,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_12_BLURB",
-     "colour": "#9b5de5",
+     "colour": "#2ec4b6",
      "name": "NIGHT_12_NAME",
      "seconds": 4.5,
-     "shape": "mask",
+     "shape": "clock",
      "story": "NIGHT_12_TALE",
      "verb": "NIGHT_12_VERB"
     },
@@ -1990,14 +2022,14 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_13_BLURB",
-     "colour": "#e8590c",
+     "colour": "#4dabf7",
      "name": "NIGHT_13_NAME",
      "seconds": 4.5,
-     "shape": "clock",
+     "shape": "duck",
      "story": "NIGHT_13_TALE",
      "verb": "NIGHT_13_VERB"
     },
-    "museum": 4,
+    "museum": 3,
     "n": 13,
     "news": [
      {
@@ -2022,14 +2054,14 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_14_BLURB",
-     "colour": "#4dabf7",
+     "colour": "#f4f1e6",
      "name": "NIGHT_14_NAME",
      "seconds": 5.0,
-     "shape": "clock",
+     "shape": "egg",
      "story": "NIGHT_14_TALE",
      "verb": "NIGHT_14_VERB"
     },
-    "museum": 4,
+    "museum": 3,
     "n": 14,
     "news": [],
     "props": true,
@@ -2041,22 +2073,51 @@ window.JUEGO = {
    },
    {
     "alarms": 2,
+    "boss": true,
+    "calm_after": 10.0,
+    "case_alarm": true,
+    "guards": 3,
+    "hearing": 1.0,
+    "lights": false,
+    "loot": {
+     "blurb": "NIGHT_15_BLURB",
+     "colour": "#12b886",
+     "name": "NIGHT_15_NAME",
+     "seconds": 5.5,
+     "shape": "gem",
+     "story": "NIGHT_15_TALE",
+     "verb": "NIGHT_15_VERB"
+    },
+    "museum": 3,
+    "n": 15,
+    "news": [],
+    "post": "route",
+    "props": true,
+    "shape": "T",
+    "size": "medium",
+    "speed": 0.75,
+    "teach": "",
+    "tip": "NIGHT_15_TIP",
+    "view": 0.9
+   },
+   {
+    "alarms": 2,
     "calm_after": 10.0,
     "case_alarm": true,
     "guards": 2,
     "hearing": 1.0,
     "lights": true,
     "loot": {
-     "blurb": "NIGHT_15_BLURB",
-     "colour": "#8b5a2b",
-     "name": "NIGHT_15_NAME",
+     "blurb": "NIGHT_16_BLURB",
+     "colour": "#e8590c",
+     "name": "NIGHT_16_NAME",
      "seconds": 5.0,
-     "shape": "egg",
-     "story": "NIGHT_15_TALE",
-     "verb": "NIGHT_15_VERB"
+     "shape": "clock",
+     "story": "NIGHT_16_TALE",
+     "verb": "NIGHT_16_VERB"
     },
     "museum": 4,
-    "n": 15,
+    "n": 16,
     "news": [
      {
       "stage": "lesson:lights",
@@ -2079,16 +2140,16 @@ window.JUEGO = {
     "hearing": 1.0,
     "lights": true,
     "loot": {
-     "blurb": "NIGHT_16_BLURB",
-     "colour": "#e8c89a",
-     "name": "NIGHT_16_NAME",
+     "blurb": "NIGHT_17_BLURB",
+     "colour": "#8b5a2b",
+     "name": "NIGHT_17_NAME",
      "seconds": 5.5,
-     "shape": "egg",
-     "story": "NIGHT_16_TALE",
-     "verb": "NIGHT_16_VERB"
+     "shape": "rock",
+     "story": "NIGHT_17_TALE",
+     "verb": "NIGHT_17_VERB"
     },
     "museum": 4,
-    "n": 16,
+    "n": 17,
     "news": [],
     "props": true,
     "shape": "T",
@@ -2105,16 +2166,97 @@ window.JUEGO = {
     "hearing": 1.0,
     "lights": true,
     "loot": {
-     "blurb": "NIGHT_17_BLURB",
-     "colour": "#ffd43b",
-     "name": "NIGHT_17_NAME",
-     "seconds": 5.5,
-     "shape": "teeth",
-     "story": "NIGHT_17_TALE",
-     "verb": "NIGHT_17_VERB"
+     "blurb": "NIGHT_18_BLURB",
+     "colour": "#b197fc",
+     "name": "NIGHT_18_NAME",
+     "seconds": 3.5,
+     "shape": "gum",
+     "story": "NIGHT_18_TALE",
+     "verb": "NIGHT_18_VERB"
+    },
+    "museum": 4,
+    "n": 18,
+    "news": [],
+    "props": true,
+    "shape": "notched",
+    "size": "medium",
+    "speed": 0.8,
+    "teach": "",
+    "view": 0.85
+   },
+   {
+    "alarms": 2,
+    "calm_after": 11.0,
+    "case_alarm": true,
+    "guards": 2,
+    "hearing": 1.05,
+    "lights": true,
+    "loot": {
+     "blurb": "NIGHT_19_BLURB",
+     "colour": "#40c057",
+     "name": "NIGHT_19_NAME",
+     "seconds": 4.0,
+     "shape": "mask",
+     "story": "NIGHT_19_TALE",
+     "verb": "NIGHT_19_VERB"
+    },
+    "museum": 4,
+    "n": 19,
+    "news": [],
+    "props": true,
+    "shape": "U",
+    "size": "medium",
+    "speed": 0.82,
+    "teach": "",
+    "view": 0.88
+   },
+   {
+    "alarms": 2,
+    "boss": true,
+    "calm_after": 13.0,
+    "case_alarm": true,
+    "guards": 3,
+    "hearing": 1.15,
+    "lights": true,
+    "loot": {
+     "blurb": "NIGHT_20_BLURB",
+     "colour": "#f0c46a",
+     "name": "NIGHT_20_NAME",
+     "seconds": 5.0,
+     "shape": "crown",
+     "story": "NIGHT_20_TALE",
+     "verb": "NIGHT_20_VERB"
+    },
+    "museum": 4,
+    "n": 20,
+    "news": [],
+    "post": "quiet",
+    "props": true,
+    "shape": "cross",
+    "size": "medium",
+    "speed": 0.85,
+    "teach": "",
+    "tip": "NIGHT_20_TIP",
+    "view": 0.9
+   },
+   {
+    "alarms": 2,
+    "calm_after": 11.0,
+    "case_alarm": true,
+    "guards": 2,
+    "hearing": 1.0,
+    "lights": true,
+    "loot": {
+     "blurb": "NIGHT_21_BLURB",
+     "colour": "#e0b060",
+     "name": "NIGHT_21_NAME",
+     "seconds": 4.5,
+     "shape": "toast",
+     "story": "NIGHT_21_TALE",
+     "verb": "NIGHT_21_VERB"
     },
     "museum": 5,
-    "n": 17,
+    "n": 21,
     "news": [
      {
       "stage": "lesson:big",
@@ -2137,16 +2279,16 @@ window.JUEGO = {
     "hearing": 1.05,
     "lights": true,
     "loot": {
-     "blurb": "NIGHT_18_BLURB",
-     "colour": "#339af0",
-     "name": "NIGHT_18_NAME",
-     "seconds": 6.0,
-     "shape": "duck",
-     "story": "NIGHT_18_TALE",
-     "verb": "NIGHT_18_VERB"
+     "blurb": "NIGHT_22_BLURB",
+     "colour": "#f783ac",
+     "name": "NIGHT_22_NAME",
+     "seconds": 5.0,
+     "shape": "gum",
+     "story": "NIGHT_22_TALE",
+     "verb": "NIGHT_22_VERB"
     },
     "museum": 5,
-    "n": 18,
+    "n": 22,
     "news": [],
     "props": true,
     "shape": "notched",
@@ -2163,16 +2305,16 @@ window.JUEGO = {
     "hearing": 1.1,
     "lights": true,
     "loot": {
-     "blurb": "NIGHT_19_BLURB",
-     "colour": "#ffec99",
-     "name": "NIGHT_19_NAME",
-     "seconds": 6.5,
-     "shape": "gem",
-     "story": "NIGHT_19_TALE",
-     "verb": "NIGHT_19_VERB"
+     "blurb": "NIGHT_23_BLURB",
+     "colour": "#f4f1e6",
+     "name": "NIGHT_23_NAME",
+     "seconds": 5.5,
+     "shape": "teeth",
+     "story": "NIGHT_23_TALE",
+     "verb": "NIGHT_23_VERB"
     },
     "museum": 5,
-    "n": 19,
+    "n": 23,
     "news": [],
     "props": true,
     "shape": "T",
@@ -2183,27 +2325,54 @@ window.JUEGO = {
    },
    {
     "alarms": 1,
+    "calm_after": 13.0,
+    "case_alarm": true,
+    "guards": 3,
+    "hearing": 1.1,
+    "lights": true,
+    "loot": {
+     "blurb": "NIGHT_24_BLURB",
+     "colour": "#dee2e6",
+     "name": "NIGHT_24_NAME",
+     "seconds": 6.0,
+     "shape": "sock",
+     "story": "NIGHT_24_TALE",
+     "verb": "NIGHT_24_VERB"
+    },
+    "museum": 5,
+    "n": 24,
+    "news": [],
+    "props": true,
+    "shape": "L",
+    "size": "large",
+    "speed": 0.95,
+    "teach": "",
+    "view": 1.0
+   },
+   {
+    "alarms": 1,
+    "boss": true,
     "calm_after": 14.0,
     "case_alarm": true,
     "guards": 4,
     "hearing": 1.15,
     "lights": true,
     "loot": {
-     "blurb": "NIGHT_20_BLURB",
+     "blurb": "NIGHT_25_BLURB",
      "colour": "#74c0fc",
-     "name": "NIGHT_20_NAME",
-     "seconds": 7.0,
+     "name": "NIGHT_25_NAME",
+     "seconds": 6.5,
      "shape": "gem",
-     "story": "NIGHT_20_TALE",
-     "verb": "NIGHT_20_VERB"
+     "story": "NIGHT_25_TALE",
+     "verb": "NIGHT_25_VERB"
     },
     "museum": 5,
-    "n": 20,
+    "n": 25,
     "news": [
      {
       "stage": "lesson:finale",
       "text": "Todos despiertos y sin calmarse. Todo lo que sabes, a la vez. Suerte.",
-      "title": "LA ÚLTIMA NOCHE"
+      "title": "EL ÚLTIMO GOLPE"
      }
     ],
     "props": true,
@@ -2211,6 +2380,7 @@ window.JUEGO = {
     "size": "large",
     "speed": 1.0,
     "teach": "finale",
+    "tip": "NIGHT_25_TIP",
     "view": 1.05
    }
   ],
@@ -2478,36 +2648,36 @@ window.JUEGO = {
    "file": "capturas/menu_museo_1.webp",
    "id": "menu_museo_1",
    "section": "menus",
-   "text": "Sus noches como salas y la pieza de la elegida.",
-   "title": "Museo 1: El Desván del Barón"
+   "text": "Sus cinco robos como salas, la del gran golpe aparte, y la pieza de la elegida.",
+   "title": "Museo 1: La Gran Cueva"
   },
   {
    "file": "capturas/menu_museo_2.webp",
    "id": "menu_museo_2",
    "section": "menus",
-   "text": "Sus noches como salas y la pieza de la elegida.",
-   "title": "Museo 2: El Invernadero"
+   "text": "Sus cinco robos como salas, la del gran golpe aparte, y la pieza de la elegida.",
+   "title": "Museo 2: La Casa de los Bichos"
   },
   {
    "file": "capturas/menu_museo_3.webp",
    "id": "menu_museo_3",
    "section": "menus",
-   "text": "Sus noches como salas y la pieza de la elegida.",
-   "title": "Museo 3: El Observatorio"
+   "text": "Sus cinco robos como salas, la del gran golpe aparte, y la pieza de la elegida.",
+   "title": "Museo 3: El Templo de las Momias"
   },
   {
    "file": "capturas/menu_museo_4.webp",
    "id": "menu_museo_4",
    "section": "menus",
-   "text": "Sus noches como salas y la pieza de la elegida.",
-   "title": "Museo 4: La Torre del Reloj"
+   "text": "Sus cinco robos como salas, la del gran golpe aparte, y la pieza de la elegida.",
+   "title": "Museo 4: El Castillo de los Inventos"
   },
   {
    "file": "capturas/menu_museo_5.webp",
    "id": "menu_museo_5",
    "section": "menus",
-   "text": "Sus noches como salas y la pieza de la elegida.",
-   "title": "Museo 5: El Palacio Bostezo"
+   "text": "Sus cinco robos como salas, la del gran golpe aparte, y la pieza de la elegida.",
+   "title": "Museo 5: La Torre de Cristal"
   },
   {
    "file": "capturas/menu_generativo.webp",
@@ -2520,7 +2690,7 @@ window.JUEGO = {
    "file": "capturas/menu_retos.webp",
    "id": "menu_retos",
    "section": "menus",
-   "text": "Las noches de la historia y los mapas hechos a mano, con el plano del elegido.",
+   "text": "Los robos de la historia y los mapas hechos a mano, con el plano del elegido.",
    "title": "Retos"
   },
   {
@@ -2535,7 +2705,7 @@ window.JUEGO = {
    "id": "menu_reto_noche",
    "section": "menus",
    "text": "Para retocar su museo en el editor.",
-   "title": "Retos: una noche de la historia"
+   "title": "Retos: un robo de la historia"
   },
   {
    "file": "capturas/menu_editor.webp",
@@ -2584,245 +2754,294 @@ window.JUEGO = {
    "id": "previa_prologo_1",
    "section": "previas",
    "text": "",
-   "title": "Prólogo, página 1 de 3"
+   "title": "Prólogo, página 1 de 4"
   },
   {
    "file": "capturas/previa_prologo_2.webp",
    "id": "previa_prologo_2",
    "section": "previas",
    "text": "",
-   "title": "Prólogo, página 2 de 3"
+   "title": "Prólogo, página 2 de 4"
   },
   {
    "file": "capturas/previa_prologo_3.webp",
    "id": "previa_prologo_3",
    "section": "previas",
    "text": "",
-   "title": "Prólogo, página 3 de 3"
+   "title": "Prólogo, página 3 de 4"
   },
   {
-   "file": "capturas/previa_noche_01_story.webp",
-   "id": "previa_noche_01_story",
+   "file": "capturas/previa_prologo_4.webp",
+   "id": "previa_prologo_4",
+   "section": "previas",
+   "text": "",
+   "title": "Prólogo, página 4 de 4"
+  },
+  {
+   "file": "capturas/previa_robo_01_story.webp",
+   "id": "previa_robo_01_story",
    "section": "previas",
    "text": "la dentadura del abuelo Paco",
-   "title": "Noche 1: la historia"
+   "title": "Robo 1: la historia"
   },
   {
-   "file": "capturas/previa_noche_01_news.webp",
-   "id": "previa_noche_01_news",
+   "file": "capturas/previa_robo_01_news.webp",
+   "id": "previa_robo_01_news",
    "section": "previas",
    "text": "la dentadura del abuelo Paco",
-   "title": "Noche 1: la noticia"
+   "title": "Robo 1: la noticia"
   },
   {
-   "file": "capturas/previa_noche_01_plan.webp",
-   "id": "previa_noche_01_plan",
+   "file": "capturas/previa_robo_01_plan.webp",
+   "id": "previa_robo_01_plan",
    "section": "previas",
    "text": "la dentadura del abuelo Paco",
-   "title": "Noche 1: el plan"
+   "title": "Robo 1: el plan"
   },
   {
-   "file": "capturas/previa_noche_02_story.webp",
-   "id": "previa_noche_02_story",
-   "section": "previas",
-   "text": "el pato que canta ópera",
-   "title": "Noche 2: la historia"
-  },
-  {
-   "file": "capturas/previa_noche_02_news.webp",
-   "id": "previa_noche_02_news",
-   "section": "previas",
-   "text": "el pato que canta ópera",
-   "title": "Noche 2: la noticia"
-  },
-  {
-   "file": "capturas/previa_noche_02_plan.webp",
-   "id": "previa_noche_02_plan",
-   "section": "previas",
-   "text": "el pato que canta ópera",
-   "title": "Noche 2: el plan"
-  },
-  {
-   "file": "capturas/previa_noche_04_story.webp",
-   "id": "previa_noche_04_story",
+   "file": "capturas/previa_robo_02_story.webp",
+   "id": "previa_robo_02_story",
    "section": "previas",
    "text": "el calcetín del yeti",
-   "title": "Noche 4: la historia"
+   "title": "Robo 2: la historia"
   },
   {
-   "file": "capturas/previa_noche_04_news.webp",
-   "id": "previa_noche_04_news",
+   "file": "capturas/previa_robo_02_news.webp",
+   "id": "previa_robo_02_news",
    "section": "previas",
    "text": "el calcetín del yeti",
-   "title": "Noche 4: la noticia"
+   "title": "Robo 2: la noticia"
   },
   {
-   "file": "capturas/previa_noche_04_plan.webp",
-   "id": "previa_noche_04_plan",
+   "file": "capturas/previa_robo_02_plan.webp",
+   "id": "previa_robo_02_plan",
    "section": "previas",
    "text": "el calcetín del yeti",
-   "title": "Noche 4: el plan"
+   "title": "Robo 2: el plan"
   },
   {
-   "file": "capturas/previa_noche_06_story.webp",
-   "id": "previa_noche_06_story",
+   "file": "capturas/previa_robo_04_story.webp",
+   "id": "previa_robo_04_story",
    "section": "previas",
-   "text": "la tostada con la cara del Barón",
-   "title": "Noche 6: la historia"
+   "text": "el gnomo que baila claqué",
+   "title": "Robo 4: la historia"
   },
   {
-   "file": "capturas/previa_noche_06_news.webp",
-   "id": "previa_noche_06_news",
+   "file": "capturas/previa_robo_04_news.webp",
+   "id": "previa_robo_04_news",
    "section": "previas",
-   "text": "la tostada con la cara del Barón",
-   "title": "Noche 6: la noticia"
+   "text": "el gnomo que baila claqué",
+   "title": "Robo 4: la noticia"
   },
   {
-   "file": "capturas/previa_noche_06_plan.webp",
-   "id": "previa_noche_06_plan",
+   "file": "capturas/previa_robo_04_plan.webp",
+   "id": "previa_robo_04_plan",
    "section": "previas",
-   "text": "la tostada con la cara del Barón",
-   "title": "Noche 6: el plan"
+   "text": "el gnomo que baila claqué",
+   "title": "Robo 4: el plan"
   },
   {
-   "file": "capturas/previa_noche_08_story.webp",
-   "id": "previa_noche_08_story",
+   "file": "capturas/previa_robo_05_story.webp",
+   "id": "previa_robo_05_story",
+   "section": "previas",
+   "text": "el huevo del dinosaurio despistado",
+   "title": "Robo 5 (gran golpe): la historia"
+  },
+  {
+   "file": "capturas/previa_robo_05_plan.webp",
+   "id": "previa_robo_05_plan",
+   "section": "previas",
+   "text": "el huevo del dinosaurio despistado",
+   "title": "Robo 5 (gran golpe): el plan"
+  },
+  {
+   "file": "capturas/previa_robo_06_story.webp",
+   "id": "previa_robo_06_story",
    "section": "previas",
    "text": "la corona de la Reina de los Pepinillos",
-   "title": "Noche 8: la historia"
+   "title": "Robo 6: la historia"
   },
   {
-   "file": "capturas/previa_noche_08_news.webp",
-   "id": "previa_noche_08_news",
+   "file": "capturas/previa_robo_06_news.webp",
+   "id": "previa_robo_06_news",
    "section": "previas",
    "text": "la corona de la Reina de los Pepinillos",
-   "title": "Noche 8: la noticia"
+   "title": "Robo 6: la noticia"
   },
   {
-   "file": "capturas/previa_noche_08_plan.webp",
-   "id": "previa_noche_08_plan",
+   "file": "capturas/previa_robo_06_plan.webp",
+   "id": "previa_robo_06_plan",
    "section": "previas",
    "text": "la corona de la Reina de los Pepinillos",
-   "title": "Noche 8: el plan"
+   "title": "Robo 6: el plan"
   },
   {
-   "file": "capturas/previa_noche_09_story.webp",
-   "id": "previa_noche_09_story",
+   "file": "capturas/previa_robo_08_story.webp",
+   "id": "previa_robo_08_story",
    "section": "previas",
-   "text": "el trofeo del campeón de siestas",
-   "title": "Noche 9: la historia"
+   "text": "la máscara del Pulpo Enmascarado",
+   "title": "Robo 8: la historia"
   },
   {
-   "file": "capturas/previa_noche_09_plan.webp",
-   "id": "previa_noche_09_plan",
+   "file": "capturas/previa_robo_08_news.webp",
+   "id": "previa_robo_08_news",
    "section": "previas",
-   "text": "el trofeo del campeón de siestas",
-   "title": "Noche 9: el plan"
+   "text": "la máscara del Pulpo Enmascarado",
+   "title": "Robo 8: la noticia"
   },
   {
-   "file": "capturas/previa_noche_11_story.webp",
-   "id": "previa_noche_11_story",
+   "file": "capturas/previa_robo_08_plan.webp",
+   "id": "previa_robo_08_plan",
    "section": "previas",
-   "text": "la máscara del dragón estornudón",
-   "title": "Noche 11: la historia"
+   "text": "la máscara del Pulpo Enmascarado",
+   "title": "Robo 8: el plan"
   },
   {
-   "file": "capturas/previa_noche_11_news.webp",
-   "id": "previa_noche_11_news",
+   "file": "capturas/previa_robo_10_story.webp",
+   "id": "previa_robo_10_story",
    "section": "previas",
-   "text": "la máscara del dragón estornudón",
-   "title": "Noche 11: la noticia"
+   "text": "el pato que canta ópera",
+   "title": "Robo 10 (gran golpe): la historia"
   },
   {
-   "file": "capturas/previa_noche_11_plan.webp",
-   "id": "previa_noche_11_plan",
+   "file": "capturas/previa_robo_10_plan.webp",
+   "id": "previa_robo_10_plan",
    "section": "previas",
-   "text": "la máscara del dragón estornudón",
-   "title": "Noche 11: el plan"
+   "text": "el pato que canta ópera",
+   "title": "Robo 10 (gran golpe): el plan"
   },
   {
-   "file": "capturas/previa_noche_13_story.webp",
-   "id": "previa_noche_13_story",
+   "file": "capturas/previa_robo_11_story.webp",
+   "id": "previa_robo_11_story",
    "section": "previas",
-   "text": "el despertador que canta tangos",
-   "title": "Noche 13: la historia"
+   "text": "el faraón de juguete de Pablito",
+   "title": "Robo 11: la historia"
   },
   {
-   "file": "capturas/previa_noche_13_news.webp",
-   "id": "previa_noche_13_news",
+   "file": "capturas/previa_robo_11_news.webp",
+   "id": "previa_robo_11_news",
    "section": "previas",
-   "text": "el despertador que canta tangos",
-   "title": "Noche 13: la noticia"
+   "text": "el faraón de juguete de Pablito",
+   "title": "Robo 11: la noticia"
   },
   {
-   "file": "capturas/previa_noche_13_plan.webp",
-   "id": "previa_noche_13_plan",
+   "file": "capturas/previa_robo_11_plan.webp",
+   "id": "previa_robo_11_plan",
    "section": "previas",
-   "text": "el despertador que canta tangos",
-   "title": "Noche 13: el plan"
+   "text": "el faraón de juguete de Pablito",
+   "title": "Robo 11: el plan"
   },
   {
-   "file": "capturas/previa_noche_15_story.webp",
-   "id": "previa_noche_15_story",
+   "file": "capturas/previa_robo_13_story.webp",
+   "id": "previa_robo_13_story",
    "section": "previas",
-   "text": "el huevo de chocolate que nunca se acaba",
-   "title": "Noche 15: la historia"
+   "text": "el pato de goma de Arquímedes",
+   "title": "Robo 13: la historia"
   },
   {
-   "file": "capturas/previa_noche_15_news.webp",
-   "id": "previa_noche_15_news",
+   "file": "capturas/previa_robo_13_news.webp",
+   "id": "previa_robo_13_news",
    "section": "previas",
-   "text": "el huevo de chocolate que nunca se acaba",
-   "title": "Noche 15: la noticia"
+   "text": "el pato de goma de Arquímedes",
+   "title": "Robo 13: la noticia"
   },
   {
-   "file": "capturas/previa_noche_15_plan.webp",
-   "id": "previa_noche_15_plan",
+   "file": "capturas/previa_robo_13_plan.webp",
+   "id": "previa_robo_13_plan",
    "section": "previas",
-   "text": "el huevo de chocolate que nunca se acaba",
-   "title": "Noche 15: el plan"
+   "text": "el pato de goma de Arquímedes",
+   "title": "Robo 13: el plan"
   },
   {
-   "file": "capturas/previa_noche_17_story.webp",
-   "id": "previa_noche_17_story",
+   "file": "capturas/previa_robo_15_story.webp",
+   "id": "previa_robo_15_story",
    "section": "previas",
-   "text": "los dientes de oro del pirata Mellado",
-   "title": "Noche 17: la historia"
+   "text": "el anillo de Cleopatra, la del quinto",
+   "title": "Robo 15 (gran golpe): la historia"
   },
   {
-   "file": "capturas/previa_noche_17_news.webp",
-   "id": "previa_noche_17_news",
+   "file": "capturas/previa_robo_15_plan.webp",
+   "id": "previa_robo_15_plan",
    "section": "previas",
-   "text": "los dientes de oro del pirata Mellado",
-   "title": "Noche 17: la noticia"
+   "text": "el anillo de Cleopatra, la del quinto",
+   "title": "Robo 15 (gran golpe): el plan"
   },
   {
-   "file": "capturas/previa_noche_17_plan.webp",
-   "id": "previa_noche_17_plan",
+   "file": "capturas/previa_robo_16_story.webp",
+   "id": "previa_robo_16_story",
    "section": "previas",
-   "text": "los dientes de oro del pirata Mellado",
-   "title": "Noche 17: el plan"
+   "text": "el despertador de Leonardo",
+   "title": "Robo 16: la historia"
   },
   {
-   "file": "capturas/previa_noche_20_story.webp",
-   "id": "previa_noche_20_story",
+   "file": "capturas/previa_robo_16_news.webp",
+   "id": "previa_robo_16_news",
+   "section": "previas",
+   "text": "el despertador de Leonardo",
+   "title": "Robo 16: la noticia"
+  },
+  {
+   "file": "capturas/previa_robo_16_plan.webp",
+   "id": "previa_robo_16_plan",
+   "section": "previas",
+   "text": "el despertador de Leonardo",
+   "title": "Robo 16: el plan"
+  },
+  {
+   "file": "capturas/previa_robo_20_story.webp",
+   "id": "previa_robo_20_story",
+   "section": "previas",
+   "text": "la corona del rey de las croquetas",
+   "title": "Robo 20 (gran golpe): la historia"
+  },
+  {
+   "file": "capturas/previa_robo_20_plan.webp",
+   "id": "previa_robo_20_plan",
+   "section": "previas",
+   "text": "la corona del rey de las croquetas",
+   "title": "Robo 20 (gran golpe): el plan"
+  },
+  {
+   "file": "capturas/previa_robo_21_story.webp",
+   "id": "previa_robo_21_story",
+   "section": "previas",
+   "text": "la tostada con la cara del Barón",
+   "title": "Robo 21: la historia"
+  },
+  {
+   "file": "capturas/previa_robo_21_news.webp",
+   "id": "previa_robo_21_news",
+   "section": "previas",
+   "text": "la tostada con la cara del Barón",
+   "title": "Robo 21: la noticia"
+  },
+  {
+   "file": "capturas/previa_robo_21_plan.webp",
+   "id": "previa_robo_21_plan",
+   "section": "previas",
+   "text": "la tostada con la cara del Barón",
+   "title": "Robo 21: el plan"
+  },
+  {
+   "file": "capturas/previa_robo_25_story.webp",
+   "id": "previa_robo_25_story",
    "section": "previas",
    "text": "el Diamante Bostezo",
-   "title": "Noche 20: la historia"
+   "title": "Robo 25 (gran golpe): la historia"
   },
   {
-   "file": "capturas/previa_noche_20_news.webp",
-   "id": "previa_noche_20_news",
+   "file": "capturas/previa_robo_25_news.webp",
+   "id": "previa_robo_25_news",
    "section": "previas",
    "text": "el Diamante Bostezo",
-   "title": "Noche 20: la noticia"
+   "title": "Robo 25 (gran golpe): la noticia"
   },
   {
-   "file": "capturas/previa_noche_20_plan.webp",
-   "id": "previa_noche_20_plan",
+   "file": "capturas/previa_robo_25_plan.webp",
+   "id": "previa_robo_25_plan",
    "section": "previas",
    "text": "el Diamante Bostezo",
-   "title": "Noche 20: el plan"
+   "title": "Robo 25 (gran golpe): el plan"
   },
   {
    "file": "capturas/previa_generativo_plan.webp",
@@ -2839,46 +3058,46 @@ window.JUEGO = {
    "title": "La cuenta atrás"
   },
   {
-   "file": "capturas/juego_noche_01.webp",
-   "id": "juego_noche_01",
+   "file": "capturas/juego_robo_01.webp",
+   "id": "juego_robo_01",
    "section": "juego",
    "text": "Sin guardias: aprender a llevarse la pieza.",
-   "title": "Noche 1: el museo vacío"
+   "title": "Robo 1: el museo vacío"
   },
   {
-   "file": "capturas/juego_noche_04_linterna.webp",
-   "id": "juego_noche_04_linterna",
+   "file": "capturas/juego_robo_04_linterna.webp",
+   "id": "juego_robo_04_linterna",
    "section": "juego",
-   "text": "Un guardia con ronda fija y su cono de luz.",
-   "title": "Noche 4: la linterna"
+   "text": "Un guardia quieto junto al camino y su cono de luz.",
+   "title": "Robo 4: la linterna"
   },
   {
-   "file": "capturas/juego_noche_08_objetos.webp",
-   "id": "juego_noche_08_objetos",
+   "file": "capturas/juego_robo_08_objetos.webp",
+   "id": "juego_robo_08_objetos",
    "section": "juego",
-   "text": "Papeleras, bustos, paneles y armaduras que hacen ruido.",
-   "title": "Noche 8: objetos que se caen"
+   "text": "Papeleras y paneles que hacen ruido (bustos en el mundo antiguo, armaduras en la Edad Media).",
+   "title": "Robo 8: objetos que se caen"
   },
   {
-   "file": "capturas/juego_noche_13_dos.webp",
-   "id": "juego_noche_13_dos",
+   "file": "capturas/juego_robo_13_dos.webp",
+   "id": "juego_robo_13_dos",
    "section": "juego",
    "text": "",
-   "title": "Noche 13: dos guardias, dos ladrones"
+   "title": "Robo 13: dos guardias, dos ladrones"
   },
   {
-   "file": "capturas/juego_noche_15_luces.webp",
-   "id": "juego_noche_15_luces",
+   "file": "capturas/juego_robo_16_luces.webp",
+   "id": "juego_robo_16_luces",
    "section": "juego",
    "text": "Salas encendidas e interruptores.",
-   "title": "Noche 15: las luces"
+   "title": "Robo 16: las luces"
   },
   {
-   "file": "capturas/juego_noche_20_final.webp",
-   "id": "juego_noche_20_final",
+   "file": "capturas/juego_robo_25_final.webp",
+   "id": "juego_robo_25_final",
    "section": "juego",
    "text": "Cuatro guardias y la banda de cuatro.",
-   "title": "Noche 20: la final"
+   "title": "Robo 25: el gran final"
   },
   {
    "file": "capturas/juego_algo_raro.webp",
@@ -2921,6 +3140,13 @@ window.JUEGO = {
    "section": "juego",
    "text": "Hacerse pasar por estatua sobre un pedestal.",
    "title": "Minijuego: el equilibrio"
+  },
+  {
+   "file": "capturas/juego_minijuego_squeeze.webp",
+   "id": "juego_minijuego_squeeze",
+   "section": "juego",
+   "text": "Meterse en un escondite, de dos a cinco segundos a la vista.",
+   "title": "Minijuego: colarse"
   },
   {
    "file": "capturas/juego_mapa.webp",
@@ -3033,7 +3259,7 @@ window.JUEGO = {
   "paginas": [],
   "piezas": [
    {
-    "blurb": "Postiza, de porcelana. Brilla en la oscuridad.",
+    "blurb": "Postiza, de porcelana. Tan vieja que parece un fósil.",
     "colour": "#f4f1e6",
     "file": "assets/piezas/01.webp",
     "name": "la dentadura del abuelo Paco",
@@ -3041,161 +3267,201 @@ window.JUEGO = {
     "shape": "teeth"
    },
    {
-    "blurb": "Amarillo, de goma, con voz de tenor.",
-    "colour": "#ffd43b",
+    "blurb": "Talla 98. Huele a glaciar... y a pie.",
+    "colour": "#dee2e6",
     "file": "assets/piezas/02.webp",
-    "name": "el pato que canta ópera",
+    "name": "el calcetín del yeti",
     "night": 2,
-    "shape": "duck"
+    "shape": "sock"
+   },
+   {
+    "blurb": "Lleva tanto tiempo en la nevera que ya es prehistórico.",
+    "colour": "#ffe066",
+    "file": "assets/piezas/03.webp",
+    "name": "el queso de la nevera de Jake",
+    "night": 3,
+    "shape": "rock"
+   },
+   {
+    "blurb": "De barro, con zapatos de metal. Ya bailaba para los dinosaurios.",
+    "colour": "#e03131",
+    "file": "assets/piezas/04.webp",
+    "name": "el gnomo que baila claqué",
+    "night": 4,
+    "shape": "idol"
+   },
+   {
+    "blurb": "Setenta millones de años. Aún está calentito.",
+    "colour": "#e8c89a",
+    "file": "assets/piezas/05.webp",
+    "name": "el huevo del dinosaurio despistado",
+    "night": 5,
+    "shape": "egg"
+   },
+   {
+    "blurb": "Verde, con granitos. Muy real.",
+    "colour": "#7bc043",
+    "file": "assets/piezas/06.webp",
+    "name": "la corona de la Reina de los Pepinillos",
+    "night": 6,
+    "shape": "crown"
    },
    {
     "blurb": "Seis metros de lana. Para un cuello muy largo... y muy lento.",
     "colour": "#ff6b6b",
-    "file": "assets/piezas/03.webp",
+    "file": "assets/piezas/07.webp",
     "name": "la bufanda del caracol friolero",
-    "night": 3,
+    "night": 7,
     "shape": "sock"
    },
    {
-    "blurb": "Talla 98. Huele un poquito.",
-    "colour": "#dee2e6",
-    "file": "assets/piezas/04.webp",
-    "name": "el calcetín del yeti",
-    "night": 4,
-    "shape": "sock"
+    "blurb": "Del luchador con más brazos del mundo.",
+    "colour": "#9b5de5",
+    "file": "assets/piezas/08.webp",
+    "name": "la máscara del Pulpo Enmascarado",
+    "night": 8,
+    "shape": "mask"
    },
    {
-    "blurb": "De barro, con zapatos de metal. Nunca para quieto.",
-    "colour": "#e03131",
-    "file": "assets/piezas/05.webp",
-    "name": "el gnomo que baila claqué",
-    "night": 5,
+    "blurb": "La más gorda del mundo. Tiene trofeo y todo.",
+    "colour": "#e8a860",
+    "file": "assets/piezas/09.webp",
+    "name": "la bola de pelo del gato Misifú",
+    "night": 9,
+    "shape": "gum"
+   },
+   {
+    "blurb": "Amarillo, de goma, con voz de tenor.",
+    "colour": "#ffd43b",
+    "file": "assets/piezas/10.webp",
+    "name": "el pato que canta ópera",
+    "night": 10,
+    "shape": "duck"
+   },
+   {
+    "blurb": "Salió en un huevo sorpresa. El Barón jura que es de oro.",
+    "colour": "#e8b53a",
+    "file": "assets/piezas/11.webp",
+    "name": "el faraón de juguete de Pablito",
+    "night": 11,
     "shape": "idol"
    },
    {
-    "blurb": "Con mantequilla. El Barón dice que es arte.",
-    "colour": "#d4a15a",
-    "file": "assets/piezas/06.webp",
+    "blurb": "Suena cada tres mil años. Le toca el martes.",
+    "colour": "#2ec4b6",
+    "file": "assets/piezas/12.webp",
+    "name": "el despertador de la momia Ramona",
+    "night": 12,
+    "shape": "clock"
+   },
+   {
+    "blurb": "Arquímedes, el fontanero, no se baña sin él.",
+    "colour": "#4dabf7",
+    "file": "assets/piezas/13.webp",
+    "name": "el pato de goma de Arquímedes",
+    "night": 13,
+    "shape": "duck"
+   },
+   {
+    "blurb": "Lleva siglos en la fiambrera. Nadie se atreve a olerlo.",
+    "colour": "#f4f1e6",
+    "file": "assets/piezas/14.webp",
+    "name": "el huevo duro del tío Ramsés",
+    "night": 14,
+    "shape": "egg"
+   },
+   {
+    "blurb": "De caramelo verde. Ella dice que es una esmeralda.",
+    "colour": "#12b886",
+    "file": "assets/piezas/15.webp",
+    "name": "el anillo de Cleopatra, la del quinto",
+    "night": 15,
+    "shape": "gem"
+   },
+   {
+    "blurb": "Suena con un tango y te tira de la cama.",
+    "colour": "#e8590c",
+    "file": "assets/piezas/16.webp",
+    "name": "el despertador de Leonardo",
+    "night": 16,
+    "shape": "clock"
+   },
+   {
+    "blurb": "Tan dura que los caballeros la usaban de munición.",
+    "colour": "#8b5a2b",
+    "file": "assets/piezas/17.webp",
+    "name": "la albóndiga de la catapulta",
+    "night": 17,
+    "shape": "rock"
+   },
+   {
+    "blurb": "Enseña el futuro. Hoy sale una banda con calcetines.",
+    "colour": "#b197fc",
+    "file": "assets/piezas/18.webp",
+    "name": "la bola de cristal de la bruja Paca",
+    "night": 18,
+    "shape": "gum"
+   },
+   {
+    "blurb": "Verde, con escamas. Pica un poco la nariz.",
+    "colour": "#40c057",
+    "file": "assets/piezas/19.webp",
+    "name": "la mascarilla del dragón estornudón",
+    "night": 19,
+    "shape": "mask"
+   },
+   {
+    "blurb": "De oro y armiño. Huele un poco a fritanga.",
+    "colour": "#f0c46a",
+    "file": "assets/piezas/20.webp",
+    "name": "la corona del rey de las croquetas",
+    "night": 20,
+    "shape": "crown"
+   },
+   {
+    "blurb": "Con mantequilla. El Barón dice que es arte moderno.",
+    "colour": "#e0b060",
+    "file": "assets/piezas/21.webp",
     "name": "la tostada con la cara del Barón",
-    "night": 6,
+    "night": 21,
     "shape": "toast"
    },
    {
     "blurb": "Masticada por todo el pueblo durante cien años.",
     "colour": "#f783ac",
-    "file": "assets/piezas/07.webp",
+    "file": "assets/piezas/22.webp",
     "name": "la bola de chicle del récord",
-    "night": 7,
+    "night": 22,
     "shape": "gum"
    },
    {
-    "blurb": "Verde, con granitos. Muy real.",
-    "colour": "#7bc043",
-    "file": "assets/piezas/08.webp",
-    "name": "la corona de la Reina de los Pepinillos",
-    "night": 8,
-    "shape": "crown"
-   },
-   {
-    "blurb": "Oro de verdad. Pesa como un gato dormido.",
-    "colour": "#fcc419",
-    "file": "assets/piezas/09.webp",
-    "name": "el trofeo del campeón de siestas",
-    "night": 9,
-    "shape": "idol"
-   },
-   {
-    "blurb": "Cayó del cielo sobre la quesería.",
-    "colour": "#ffe066",
-    "file": "assets/piezas/10.webp",
-    "name": "el meteorito que huele a queso",
-    "night": 10,
-    "shape": "rock"
-   },
-   {
-    "blurb": "Verde, con escamas. Pica un poco la nariz.",
-    "colour": "#2b8a3e",
-    "file": "assets/piezas/11.webp",
-    "name": "la máscara del dragón estornudón",
-    "night": 11,
-    "shape": "mask"
-   },
-   {
-    "blurb": "Del luchador más famoso del mundo.",
-    "colour": "#9b5de5",
-    "file": "assets/piezas/12.webp",
-    "name": "la máscara del Pulpo Enmascarado",
-    "night": 12,
-    "shape": "mask"
-   },
-   {
-    "blurb": "Suena a las siete. Con bandoneón.",
-    "colour": "#e8590c",
-    "file": "assets/piezas/13.webp",
-    "name": "el despertador que canta tangos",
-    "night": 13,
-    "shape": "clock"
-   },
-   {
-    "blurb": "Hace tic-tac al revés: cat-cit.",
-    "colour": "#4dabf7",
-    "file": "assets/piezas/14.webp",
-    "name": "el reloj que va hacia atrás",
-    "night": 14,
-    "shape": "clock"
-   },
-   {
-    "blurb": "Por mucho que comas, siempre queda la mitad.",
-    "colour": "#8b5a2b",
-    "file": "assets/piezas/15.webp",
-    "name": "el huevo de chocolate que nunca se acaba",
-    "night": 15,
-    "shape": "egg"
-   },
-   {
-    "blurb": "Setenta millones de años. Aún está calentito.",
-    "colour": "#e8c89a",
-    "file": "assets/piezas/16.webp",
-    "name": "el huevo del dinosaurio despistado",
-    "night": 16,
-    "shape": "egg"
-   },
-   {
-    "blurb": "Tres dientes. El cuarto se lo tragó una ballena.",
-    "colour": "#ffd43b",
-    "file": "assets/piezas/17.webp",
-    "name": "los dientes de oro del pirata Mellado",
-    "night": 17,
+    "blurb": "De la abuela Tomasa. Ahora es una lámpara de diseño.",
+    "colour": "#f4f1e6",
+    "file": "assets/piezas/23.webp",
+    "name": "la dentadura que brilla en la oscuridad",
+    "night": 23,
     "shape": "teeth"
    },
    {
-    "blurb": "Azul marino. Ha dado tres veces la vuelta al mundo.",
-    "colour": "#339af0",
-    "file": "assets/piezas/18.webp",
-    "name": "el pato de goma del almirante",
-    "night": 18,
-    "shape": "duck"
-   },
-   {
-    "blurb": "Da luz sin pilas desde hace doscientos años.",
-    "colour": "#ffec99",
-    "file": "assets/piezas/19.webp",
-    "name": "la gema del faro que no se apaga",
-    "night": 19,
-    "shape": "gem"
+    "blurb": "Su pareja se perdió en la lavadora hace años.",
+    "colour": "#dee2e6",
+    "file": "assets/piezas/24.webp",
+    "name": "el calcetín desparejado de Jake",
+    "night": 24,
+    "shape": "sock"
    },
    {
     "blurb": "Quien lo mira, bosteza y se duerme.",
     "colour": "#74c0fc",
-    "file": "assets/piezas/20.webp",
+    "file": "assets/piezas/25.webp",
     "name": "el Diamante Bostezo",
-    "night": 20,
+    "night": 25,
     "shape": "gem"
    },
    {
     "blurb": "Con encías rosas. Brilla en la oscuridad.",
     "colour": "#ffc9c9",
-    "file": "assets/piezas/21.webp",
+    "file": "assets/piezas/26.webp",
     "name": "la sonrisa de porcelana del alcalde Bigotes",
     "night": 0,
     "shape": "teeth"
@@ -3203,7 +3469,7 @@ window.JUEGO = {
    {
     "blurb": "De goma, con pajarita.",
     "colour": "#339af0",
-    "file": "assets/piezas/22.webp",
+    "file": "assets/piezas/27.webp",
     "name": "el patito de la bañera del pequeño Lucas",
     "night": 0,
     "shape": "duck"
@@ -3211,7 +3477,7 @@ window.JUEGO = {
    {
     "blurb": "De lana, a rayas. Talla gigante.",
     "colour": "#b197fc",
-    "file": "assets/piezas/23.webp",
+    "file": "assets/piezas/28.webp",
     "name": "el calcetín de la suerte de la vaca Paquita",
     "night": 0,
     "shape": "sock"
@@ -3219,7 +3485,7 @@ window.JUEGO = {
    {
     "blurb": "Con mantequilla y un poco quemada.",
     "colour": "#e8b86d",
-    "file": "assets/piezas/24.webp",
+    "file": "assets/piezas/29.webp",
     "name": "la tostada con forma de corazón de la capitana Olivia",
     "night": 0,
     "shape": "toast"
@@ -3227,7 +3493,7 @@ window.JUEGO = {
    {
     "blurb": "Brilla más que el sol del mediodía.",
     "colour": "#f0c46a",
-    "file": "assets/piezas/25.webp",
+    "file": "assets/piezas/30.webp",
     "name": "la corona de las fiestas de la panadera Lola",
     "night": 0,
     "shape": "crown"
@@ -3235,7 +3501,7 @@ window.JUEGO = {
    {
     "blurb": "Cayó de la luna una noche de verano.",
     "colour": "#ffe066",
-    "file": "assets/piezas/26.webp",
+    "file": "assets/piezas/31.webp",
     "name": "la piedra lunar agujereada del mago Chispas",
     "night": 0,
     "shape": "rock"
@@ -3243,7 +3509,7 @@ window.JUEGO = {
    {
     "blurb": "Pegajosa y de todos los sabores.",
     "colour": "#8ce0bd",
-    "file": "assets/piezas/27.webp",
+    "file": "assets/piezas/32.webp",
     "name": "la bola de chicle gigante del alcalde Bigotes",
     "night": 0,
     "shape": "gum"
@@ -3251,7 +3517,7 @@ window.JUEGO = {
    {
     "blurb": "Con cejas pintadas y bigote de purpurina.",
     "colour": "#9b5de5",
-    "file": "assets/piezas/28.webp",
+    "file": "assets/piezas/33.webp",
     "name": "la máscara del luchador del cartero Tomás",
     "night": 0,
     "shape": "mask"
@@ -3259,7 +3525,7 @@ window.JUEGO = {
    {
     "blurb": "Suena a las siete. Siempre.",
     "colour": "#ffd43b",
-    "file": "assets/piezas/29.webp",
+    "file": "assets/piezas/34.webp",
     "name": "el reloj de cuco sin cuco de la vaca Paquita",
     "night": 0,
     "shape": "clock"
@@ -3267,7 +3533,7 @@ window.JUEGO = {
    {
     "blurb": "Todavía está calentito.",
     "colour": "#63e6be",
-    "file": "assets/piezas/30.webp",
+    "file": "assets/piezas/35.webp",
     "name": "el huevo de oro del pequeño Lucas",
     "night": 0,
     "shape": "egg"
@@ -3275,7 +3541,7 @@ window.JUEGO = {
    {
     "blurb": "Tallado a mano. Brilla solo.",
     "colour": "#ffec99",
-    "file": "assets/piezas/31.webp",
+    "file": "assets/piezas/36.webp",
     "name": "el diamante de la suerte del alcalde Bigotes",
     "night": 0,
     "shape": "gem"
@@ -3283,7 +3549,7 @@ window.JUEGO = {
    {
     "blurb": "Negro y muy brillante.",
     "colour": "#e03131",
-    "file": "assets/piezas/32.webp",
+    "file": "assets/piezas/37.webp",
     "name": "el gnomo del jardín del alcalde Bigotes",
     "night": 0,
     "shape": "idol"
@@ -4972,8 +5238,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "27-09-2026 18:48",
-  "commit": "9cc3e5e",
-  "rama": "piezas-modeladas-y-lecciones"
+  "fecha": "27-09-2026 20:28",
+  "commit": "3be4930",
+  "rama": "worktree-agent-ad004bd406de77a2b"
  }
 };
