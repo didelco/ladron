@@ -31,14 +31,14 @@ func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	visible = false
 	_style = StyleBoxFlat.new()
-	_style.bg_color = Color(Hud.WALNUT, 0.94)
+	_style.bg_color = Hud.GLASS
 	_style.set_corner_radius_all(20)
 	_style.anti_aliasing = true
 	_style.set_border_width_all(3)
-	_style.border_color = Hud.BRASS_DARK
-	_style.shadow_color = Hud.WALNUT_EDGE
-	_style.shadow_size = 1
-	_style.shadow_offset = Vector2(0, 5)
+	_style.border_color = Hud.GLASS_EDGE
+	_style.shadow_color = Color(0, 0, 0, 0.35)
+	_style.shadow_size = 8
+	_style.shadow_offset = Vector2(0, 3)
 	_frame = Panel.new()
 	_frame.add_theme_stylebox_override("panel", _style)
 	_frame.size = SIZE
@@ -70,7 +70,7 @@ func follow(g: Minigame, head: Vector2, thief_colour: Color, controls: Dictionar
 	_stage.show_game(g, thief_colour)
 	if not visible:
 		return
-	_style.border_color = thief_colour.lerp(Hud.BRASS, 0.35)
+	_style.border_color = thief_colour.lerp(Hud.GLOW, 0.35)
 	var view := get_viewport_rect().size
 	# To the right of the thief, or to its left against the right edge; its
 	# middle level with the head, kept on screen.

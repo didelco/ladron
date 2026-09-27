@@ -294,8 +294,8 @@ func _show_title() -> void:
 		], "width": 270, "arrows": true},
 		{"gap": 40},
 		{"buttons": [
-			{"text": Text.t("MENU_SETTINGS"), "call": _show_settings.bind("title"), "colour": Hud.C.dim},
-			{"text": Text.t("MENU_QUIT"), "call": _quit, "colour": Hud.C.dim},
+			{"text": Text.t("MENU_SETTINGS"), "glyph": "settings", "call": _show_settings.bind("title"), "colour": Hud.C.dim},
+			{"text": Text.t("MENU_QUIT"), "glyph": "quit", "call": _quit, "colour": Hud.C.dim},
 		], "row": true, "small": true, "width": 260},
 	])
 	hud.show_version()

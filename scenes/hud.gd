@@ -478,7 +478,7 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 		parent.add_child(row)
 		var line: Array = []
 		for c in item.cards:
-			var card := _card(c, item.get("width", 300))
+			var card := _card(c, item.get("width", 300), item.get("arrows", false))
 			row.add_child(card)
 			card.set_meta("selected", c.get("selected", false) or c.get("focus", false))
 			line.append(card)
@@ -490,6 +490,7 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 			row.add_child(_arrow(">", line, 1))
 			row.add_child(_arrow("<", line, -1))
 			row.move_child(row.get_child(-1), 0)
+			parent.add_child(_pedestal(line, item.get("width", 300)))
 	elif item.has("nights"):
 		# The nights as stops on a map, the road winding through them.
 		var map := NightMap.new(item)
@@ -822,6 +823,13 @@ func _button(b: Dictionary) -> Button:
 		button.custom_minimum_size = Vector2(w + 40, h + 30)
 		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
+	if b.has("glyph"):
+		button.icon = glyph(b.glyph)
+		button.add_theme_constant_override("icon_max_width", 20)
+		button.add_theme_constant_override("h_separation", 14)
+		button.add_theme_color_override("icon_normal_color", CREAM)
+		for key in ["icon_hover_color", "icon_focus_color", "icon_pressed_color", "icon_hover_pressed_color"]:
+			button.add_theme_color_override(key, GLOW)
 	if b.has("step"):
 		_stepper(button, b.step)
 		button.pressed.connect(func() -> void: ui_sound.emit("ok"))
@@ -880,7 +888,7 @@ func _round_corners(r: TextureRect, box: Vector2, radius: float) -> void:
 
 ## Grows a little under the mouse or the focus; the mouse takes the focus,
 ## so the arrows and the mouse never point at two different things.
-func _lift(c: Control, grow := 1.07) -> void:
+func _lift(c: Control, grow := 1.07, rest := 1.0) -> void:
 	c.focus_entered.connect(func() -> void:
 		if not _quiet:
 			ui_sound.emit("nav"))
@@ -892,7 +900,7 @@ func _lift(c: Control, grow := 1.07) -> void:
 	c.focus_entered.connect(func() -> void:
 		c.scale = Vector2(0.96, 1.04)
 		create_tween().tween_property(c, "scale", Vector2.ONE * grow, 0.35).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT))
-	c.focus_exited.connect(func() -> void: create_tween().tween_property(c, "scale", Vector2.ONE, 0.15).set_trans(Tween.TRANS_QUAD))
+	c.focus_exited.connect(func() -> void: create_tween().tween_property(c, "scale", Vector2.ONE * rest, 0.15).set_trans(Tween.TRANS_QUAD))
 	if c is BaseButton:
 		# A squash on the press.
 		(c as BaseButton).button_down.connect(func() -> void: c.scale = Vector2(1.1, 0.92))
@@ -919,8 +927,89 @@ func _arrow(text: String, cards: Array, dir: int) -> Button:
 	return b
 
 
+## Under a row of cards, a stone plinth lit from above that slides under the
+## card with the focus: a slab with a warm glowing lip on a wider, darker one.
+func _pedestal(cards: Array, width: int) -> Control:
+	var holder := Control.new()
+	holder.custom_minimum_size = Vector2(0, 34)
+	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var plinth := Control.new()
+	plinth.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	plinth.size = Vector2(width + 120, 34)
+	holder.add_child(plinth)
+	var slabs := [[Rect2(40, 0, width + 40, 16), Color("#1d1428"), true], [Rect2(0, 14, width + 120, 18), Color("#110b19"), false]]
+	for s in slabs:
+		var panel := Panel.new()
+		panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		panel.position = s[0].position
+		panel.size = s[0].size
+		var st := StyleBoxFlat.new()
+		st.bg_color = s[1]
+		st.set_corner_radius_all(4)
+		if s[2]:
+			st.border_color = GLOW
+			st.border_width_top = 2
+			st.shadow_color = Color(GLOW, 0.35)
+			st.shadow_size = 14
+		panel.add_theme_stylebox_override("panel", st)
+		plinth.add_child(panel)
+	plinth.move_child(plinth.get_child(1), 0)
+	var place := func(card: Control, slide: bool) -> void:
+		var x := card.global_position.x - holder.global_position.x + card.size.x / 2 - plinth.size.x / 2
+		if slide:
+			create_tween().tween_property(plinth, "position:x", x, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		else:
+			plinth.position.x = x
+	for card in cards:
+		(card as Control).focus_entered.connect(func() -> void: place.call(card, true))
+	holder.resized.connect(func() -> void:
+		var focused := get_viewport().gui_get_focus_owner()
+		place.call(focused if focused in cards else cards[0], false))
+	return holder
+
+
+static var _glyphs := {}
+
+
+## A small line icon for a button, drawn here at four samples a pixel:
+## "settings" a cog, "quit" an arrow going into a door.
+static func glyph(kind: String) -> ImageTexture:
+	if _glyphs.has(kind):
+		return _glyphs[kind]
+	const N := 36
+	const SS := 4
+	var img := Image.create(N, N, false, Image.FORMAT_RGBA8)
+	for y in N:
+		for x in N:
+			var hit := 0
+			for sy in SS:
+				for sx in SS:
+					var p := Vector2(x + (sx + 0.5) / SS, y + (sy + 0.5) / SS) - Vector2(N, N) / 2
+					if _glyph_in(kind, p):
+						hit += 1
+			img.set_pixel(x, y, Color(1, 1, 1, float(hit) / (SS * SS)))
+	_glyphs[kind] = ImageTexture.create_from_image(img)
+	return _glyphs[kind]
+
+
+static func _glyph_in(kind: String, p: Vector2) -> bool:
+	if kind == "settings":
+		var r := p.length()
+		var teeth := 13.0 if cos(p.angle() * 8.0) > 0.2 else 10.0
+		return r < teeth and r > 4.5
+	# quit: an open door (a frame on the right, open on the left) and an
+	# arrow going in.
+	var frame := Rect2(-5, -13, 18, 26)
+	var inside := frame.grow(-3)
+	var in_frame := frame.has_point(p) and not inside.has_point(p) and not (p.x < -1 and absf(p.y) < 6)
+	var shaft := p.x > -15 and p.x < 5 and absf(p.y) < 1.6
+	var head := p.x >= 0 and p.x < 8 and absf(p.y) < 8 - p.x
+	return in_frame or shaft or head
+
+
 ## A big card: a picture, a title and a line under it.
-func _card(c: Dictionary, width: int) -> Button:
+## back: the cards waiting sit smaller, further back (the title's row).
+func _card(c: Dictionary, width: int, back := false) -> Button:
 	var b := Button.new()
 	b.focus_mode = Control.FOCUS_ALL
 	var colour: Color = c.get("colour", C.safe)
@@ -993,7 +1082,9 @@ func _card(c: Dictionary, width: int) -> Button:
 		return b
 	b.pressed.connect(c.call)
 	b.pressed.connect(func() -> void: ui_sound.emit("ok"))
-	_lift(b, 1.1)
+	var rest := 0.9 if back else 1.0
+	_lift(b, 1.1, rest)
+	b.scale = Vector2.ONE * rest
 	# The ones waiting sit back in the dark; the one with the focus comes up.
 	b.modulate = DIM_CARD
 	b.focus_entered.connect(func() -> void: create_tween().tween_property(b, "modulate", Color.WHITE, 0.2))
