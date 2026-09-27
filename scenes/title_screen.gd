@@ -10,10 +10,10 @@ extends CanvasLayer
 
 signal started
 
-const PICTURE := "res://assets/ui/portada.jpg"
+const PICTURE := "res://assets/ui/portada.png"
 ## Where the title is in the picture, as fractions of its width and height,
 ## and the margin kept round it.
-const TITLE := Rect2(0.28, 0.13, 0.44, 0.41)
+const TITLE := Rect2(0.31, 0.1, 0.37, 0.37)
 const MARGIN := 0.02
 const BACK := Color("#140c24")
 
