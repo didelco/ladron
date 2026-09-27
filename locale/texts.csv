@@ -117,17 +117,51 @@ Al Barón Von Bostezo solo le quedó mirar su vitrina vacía... y bostezar. Se q
 
 FIN (de momento)"
 BRIEF_TAB_NEWS,LO NUEVO
+BRIEF_TAB_STORY,LA HISTORIA
 BRIEF_TAB_PLAN,EL PLAN
 BRIEF_NEXT_TAB,%s >
 BRIEF_START,▶ EMPEZAR
-BRIEF_NIGHT_OF,NOCHE %d DE %d
+BRIEF_SKIP,SALTAR Y JUGAR >>
+BRIEF_JOB_ONE,%s · tu %s robo
+BRIEF_JOB_MANY,%s · vuestro %s robo
+BRIEF_JOB_LAST_ONE,%s · tu último robo
+BRIEF_JOB_LAST_MANY,%s · vuestro último robo
+RANK_1_ONE,Ladronzuelo
+RANK_1_MANY,Ladronzuelos
+RANK_2_ONE,Ratero
+RANK_2_MANY,Rateros
+RANK_3_ONE,Ladrón de guante blanco
+RANK_3_MANY,Ladrones de guante blanco
+RANK_4_ONE,Maestro ladrón
+RANK_4_MANY,Maestros ladrones
+RANK_5_ONE,Leyenda de la noche
+RANK_5_MANY,Leyendas de la noche
+ORDINAL_1,primer
+ORDINAL_2,segundo
+ORDINAL_3,tercer
+ORDINAL_4,cuarto
+ORDINAL_5,quinto
+ORDINAL_6,sexto
+ORDINAL_7,séptimo
+ORDINAL_8,octavo
+ORDINAL_9,noveno
+ORDINAL_10,décimo
+ORDINAL_11,undécimo
+ORDINAL_12,duodécimo
+ORDINAL_13,decimotercer
+ORDINAL_14,decimocuarto
+ORDINAL_15,decimoquinto
+ORDINAL_16,decimosexto
+ORDINAL_17,decimoséptimo
+ORDINAL_18,decimoctavo
+ORDINAL_19,decimonoveno
 BRIEF_LEVEL,NIVEL %02d
 BRIEF_NEWS_TITLE,ESTA NOCHE
 BRIEF_NEWS_TEXT,Algo ha cambiado en el museo
-BRIEF_TEAM_ONE_LOCK,Uno sujeta el cuadro de la alarma (naranja) mientras el otro abre la vitrina
-BRIEF_TEAM_TWO_LOCKS,Uno sujeta el cuadro de la alarma (naranja) mientras los otros dos abren a la vez las dos cerraduras de la vitrina
-BRIEF_TEAM_ALL_OUT,"Para ganar tenéis que salir todos · si pillan a uno, se acaba la noche"
-BRIEF_PROPS,"Papeleras, bustos y paneles: tíralos con E (X en el mando) y los guardias irán a ver el ruido"
+BRIEF_TEAM_ONE_LOCK,Uno sujeta la alarma naranja; el otro abre la vitrina.
+BRIEF_TEAM_TWO_LOCKS,Uno sujeta la alarma naranja; los otros dos abren a la vez.
+BRIEF_TEAM_ALL_OUT,"Salid todos: si pillan a uno, se acaba la noche."
+BRIEF_PROPS,Tira papeleras o bustos (E o X) para despistar a los guardias.
 BRIEF_SECONDS,%s segundos
 BRIEF_DECIMAL_POINT,","
 PLAN_ENTRY,Entrada
@@ -259,14 +293,14 @@ HUD_JOB_TWO_LOCKS,¡DOS CERRADURAS: FALTA OTRO LADRÓN EN LA VITRINA!
 HUD_JOB_CARRYING,TIENES %s · ¡A LA SALIDA!
 HUD_JOB_DROPPED,%s ESTÁ EN EL SUELO
 HUD_JOB_PANEL_HELD,ALARMA DESCONECTADA · ¡A LA VITRINA!
-HUD_PUSH_HINT,%s: TIRAR %s
-HUD_SWITCH_HINT,%s: INTERRUPTOR DE LA LUZ
+HUD_PUSH_HINT,TIRAR %s
+HUD_SWITCH_HINT,INTERRUPTOR DE LA LUZ
 EDITOR_TOOL_EXHIBIT_PLINTH,PEDESTAL
-HUD_PLINTH_HINT,%s: SUBIR AL PEDESTAL
-HUD_PLINTH_DOWN,MUÉVETE PARA BAJAR DEL PEDESTAL
-HUD_GAME_PICK_HINT,%s: GANZÚA
-HUD_GAME_WIRES_HINT,%s: CORTAR LOS CABLES
-HUD_GAME_STEADY_HINT,%s: VENTOSA EN LA ALARMA
+HUD_PLINTH_HINT,SUBIR AL PEDESTAL
+HUD_PLINTH_DOWN,BAJAR DEL PEDESTAL
+HUD_GAME_PICK_HINT,GANZÚA
+HUD_GAME_WIRES_HINT,CORTAR LOS CABLES
+HUD_GAME_STEADY_HINT,VENTOSA EN LA ALARMA
 GAME_HOW_LOCKPICK,{action} CUANDO PASE POR EL VERDE
 GAME_HOW_STEADY,{move} DENTRO DEL ARO
 GAME_HOW_WIRES,{move} COMO LA FLECHA
@@ -410,7 +444,7 @@ MENU_PLAYERS_4_TEXT,Dos alarmas y dos cerraduras
 MENU_PLAY_4,▶ 4 LADRONES
 LESSON_HEIST4_TITLE,EL GOLPE EN EQUIPO
 LESSON_HEIST4_TEXT,Dos sujetan las dos alarmas; dos abren las cerraduras a la vez. Salid todos.
-BRIEF_TEAM_TWO_PANELS,Dos sujetan los dos cuadros de alarma (naranja) mientras los otros dos abren a la vez las dos cerraduras de la vitrina
+BRIEF_TEAM_TWO_PANELS,Dos sujetan las alarmas naranjas; los otros dos abren a la vez.
 HUD_JOB_WAIT_PANELS,¡HAY QUE SUJETAR LOS DOS CUADROS DE ALARMA!
 STORY_REACHED,Noche %d de %d
 STORY_MAP_TITLE,LA CIUDAD
@@ -732,46 +766,47 @@ GEN_IDOL_DETAIL_2,Tiene cara de estar aguantando un estornudo.
 BRIEF_TIPS_TITLE,PARA ESTA NOCHE
 BRIEF_TAKES,Para sacarla: quieto %s junto a la vitrina
 BRIEF_DIFFICULTY,%s · %s
-TIP_GUARDS_NONE,Esta noche no hay guardias: ¡aprovecha para practicar!
-TIP_GUARDS_ONE,Hay un guardia
-TIP_GUARDS_MANY,Hay %d guardias
+TIP_GUARDS_NONE,Sin guardias: practica sin prisa.
+TIP_GUARDS_ONE,Un guardia
+TIP_GUARDS_MANY,%d guardias
 TIP_AND,y
-TIP_TRAIT_FAST_ONE,es rápido
-TIP_TRAIT_FAST_MANY,son rápidos
-TIP_TRAIT_SLOW_ONE,es lento
-TIP_TRAIT_SLOW_MANY,son lentos
-TIP_TRAIT_SHARP_EARS_ONE,oye muy bien
-TIP_TRAIT_SHARP_EARS_MANY,oyen muy bien
-TIP_TRAIT_DULL_EARS_ONE,oye poco
-TIP_TRAIT_DULL_EARS_MANY,oyen poco
-TIP_TRAIT_FAR_EYES_ONE,ve muy lejos
-TIP_TRAIT_FAR_EYES_MANY,ven muy lejos
-TIP_TRAIT_SHORT_EYES_ONE,ve poco
-TIP_TRAIT_SHORT_EYES_MANY,ven poco
-TIP_TRAIT_SMART_ONE,es muy listo
-TIP_TRAIT_SMART_MANY,son muy listos
-TIP_CROUCH,"Cerca de un guardia, ve a gatas: haces menos ruido."
-TIP_CROUCH_SHARP_ONE,"Tiene un oído finísimo: cerca de él, ve siempre a gatas."
-TIP_CROUCH_SHARP_MANY,"Tienen un oído finísimo: cerca de ellos, ve siempre a gatas."
-TIP_EARS_DULL_ONE,"Está medio sordo: puedes correr, pero que no te vea."
-TIP_EARS_DULL_MANY,"Están medio sordos: puedes correr, pero que no te vean."
-TIP_EYES_FAR_ONE,Su linterna llega muy lejos: escóndete tras vitrinas y paredes.
-TIP_EYES_FAR_MANY,Sus linternas llegan muy lejos: escóndete tras vitrinas y paredes.
-TIP_EYES_SHORT_ONE,Su linterna no llega lejos: puedes pasar cerca si no te pones delante.
-TIP_EYES_SHORT_MANY,Sus linternas no llegan lejos: puedes pasar cerca si no te pones delante.
-TIP_FAST_ONE,"Si te ve, te alcanza enseguida: mejor que no te vea."
-TIP_FAST_MANY,"Si te ven, te alcanzan enseguida: mejor que no te vean."
-TIP_SLOW_ONE,"Es lento: si te ve, corre y escóndete."
-TIP_SLOW_MANY,"Son lentos: si te ven, corre y escóndete."
-TIP_POST,Un guardia no se mueve de su sitio: fíjate hacia dónde mira y pasa cuando mire a otro lado.
-TIP_JUMPY,Un solo ruido raro basta para que den la alarma.
-TIP_GRUDGE_ONE,"Cuando se mosquea, tarda mucho en calmarse: si te busca, espera bien escondido."
-TIP_GRUDGE_MANY,"Cuando se mosquean, tardan mucho en calmarse: si te buscan, espera bien escondido."
-TIP_LIGHTS_ONE,"Si se pone en alerta, enciende las luces de la sala; con E en el interruptor las apagas."
-TIP_LIGHTS_MANY,"Si se ponen en alerta, encienden las luces de la sala; con E en el interruptor las apagas."
-TIP_CASE_ALARM,"La vitrina tiene alarma: cuando la abras sonará y vendrán los guardias. ¡Luego, corre a la salida!"
-TIP_CASE_QUIET,La vitrina no tiene alarma: se abre sin hacer ruido.
-TIP_MAP,El museo es muy grande: pulsa M (Y en el mando) para mirar el mapa.
+TIP_TRAIT_SHARP_EARS_ONE,de oído fino
+TIP_TRAIT_SHARP_EARS_MANY,de oído fino
+TIP_TRAIT_FAST_ONE,rápido
+TIP_TRAIT_FAST_MANY,rápidos
+TIP_TRAIT_FAR_EYES_ONE,de vista larga
+TIP_TRAIT_FAR_EYES_MANY,de vista larga
+TIP_TRAIT_DULL_EARS_ONE,medio sordo
+TIP_TRAIT_DULL_EARS_MANY,medio sordos
+TIP_TRAIT_SHORT_EYES_ONE,corto de vista
+TIP_TRAIT_SHORT_EYES_MANY,cortos de vista
+TIP_TRAIT_SLOW_ONE,lento
+TIP_TRAIT_SLOW_MANY,lentos
+TIP_ADVICE_SHARP_EARS_ONE,"cerca de él, siempre a gatas"
+TIP_ADVICE_SHARP_EARS_MANY,"cerca de ellos, siempre a gatas"
+TIP_ADVICE_FAST_ONE,"que no te vea, que te alcanza"
+TIP_ADVICE_FAST_MANY,"que no te vean, que te alcanzan"
+TIP_ADVICE_FAR_EYES_ONE,escóndete tras vitrinas y paredes
+TIP_ADVICE_FAR_EYES_MANY,escóndete tras vitrinas y paredes
+TIP_ADVICE_DULL_EARS_ONE,"corre, pero que no te vea"
+TIP_ADVICE_DULL_EARS_MANY,"corre, pero que no te vean"
+TIP_ADVICE_SHORT_EYES_ONE,"puedes pasar cerca, pero no delante"
+TIP_ADVICE_SHORT_EYES_MANY,"puedes pasar cerca, pero no delante"
+TIP_ADVICE_SLOW_ONE,"si te ve, corre y escóndete"
+TIP_ADVICE_SLOW_MANY,"si te ven, corre y escóndete"
+TIP_ADVICE_NORMAL_ONE,que no te pille su linterna
+TIP_ADVICE_NORMAL_MANY,que no te pillen sus linternas
+TIP_JUMPY,Un solo ruido raro y dan la alarma.
+TIP_GRUDGE_ONE,"Si se mosquea, tarda en calmarse: espera bien escondido."
+TIP_GRUDGE_MANY,"Si se mosquean, tardan en calmarse: espera bien escondido."
+TIP_POST,Un guardia no se mueve: pasa cuando mire a otro lado.
+TIP_CASE_ALARM,"La vitrina pita al abrirla: luego, corre a la salida."
+TIP_LIGHTS_ONE,En alerta enciende la luz: apágala con E en el interruptor.
+TIP_LIGHTS_MANY,En alerta encienden la luz: apágala con E en el interruptor.
+TIP_TWO,"Si uno te ve, grita y los demás vienen corriendo."
+TIP_NOISE,"Corriendo te oyen de lejos; a gatas, nada."
+TIP_TORCH,"De lejos, las linternas no ven a quien va a gatas (C)."
+TIP_MAP,Museo grande: mira el mapa con M (Y en el mando).
 GALLERY_ANCIENT,la sala del mundo antiguo
 GALLERY_ANCIENT_OF,de la sala del mundo antiguo
 GALLERY_MEDIEVAL,la sala medieval

@@ -232,6 +232,13 @@ func _ready() -> void:
 				"end":
 					phase = "caught"
 					_show_end()
+	# --brief=N:P: the story's night N, briefing page P (0-based), to look at it.
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--brief="):
+			var bits := arg.substr(8).split(":")
+			mode = "story"
+			_new_round(int(bits[0]))
+			_show_brief(int(bits[1]) if bits.size() > 1 else 0)
 	# --intro: the piece, then the countdown, for checking the way in.
 	# --challenge: the first of the saved maps instead.
 	if "--intro" in OS.get_cmdline_user_args():
@@ -1046,14 +1053,16 @@ func _quit_to_title() -> void:
 	_leave_game(_show_title)
 
 
-## Before a night: a briefing of a page or two you can move between freely —
-## what is new tonight (if anything is), and the plan: the map, the piece
-## and its story, and tips for the night — tabs along the top, back and
-## next along the bottom.
+## Before a night: a briefing of a page or three, back and next along the
+## bottom — in the story, the piece and its tale, then what is new tonight
+## (if anything is); in every mode, the plan: the map and the rules for the
+## night (Briefing).
 func _brief_pages() -> Array:
 	var pages := []
-	if mode == "story" and not Story.news(level, players).is_empty():
-		pages.append("news")
+	if mode == "story":
+		pages.append("story")
+		if not Story.news(level, players).is_empty():
+			pages.append("news")
 	pages.append("plan")
 	return pages
 
@@ -1063,22 +1072,23 @@ func _show_brief(page: int) -> void:
 	page = clampi(page, 0, pages.size() - 1)
 	brief_page = page
 	phase = "brief"
-	var names := {"news": Text.t("BRIEF_TAB_NEWS"), "plan": Text.t("BRIEF_TAB_PLAN")}
-	var tabs: Array = []
-	for i in pages.size():
-		tabs.append({"text": names[pages[i]], "call": _show_brief.bind(i), "colour": Hud.C.gold if i == page else Hud.C.dim, "selected": i == page})
-	# Tabs only when there is more than one page.
-	var items: Array = [{"buttons": tabs, "row": true, "small": true}, {"gap": 6}] if pages.size() > 1 else []
+	var names := {"story": Text.t("BRIEF_TAB_STORY"), "news": Text.t("BRIEF_TAB_NEWS"), "plan": Text.t("BRIEF_TAB_PLAN")}
+	var items: Array = []
 	match pages[page]:
+		"story": items.append_array(_story_items())
 		"news": items.append_array(_news_items())
 		"plan": items.append_array(_plan_items())
 	var last := page == pages.size() - 1
-	items.append({"buttons": [
-		{"text": Text.t("MENU_PREV") if page > 0 else Text.t("MENU_BACK"), "call": _brief_back, "colour": Hud.C.dim},
+	# Along the bottom: back on the left, the next page by name in the middle,
+	# and straight to the night on the right (on the last page, the middle
+	# one starts it).
+	var row: Array = [
+		{"text": Text.t("MENU_BACK"), "call": _brief_back, "colour": Hud.C.dim},
 		{"text": Text.t("BRIEF_START") if last else Text.t("BRIEF_NEXT_TAB") % names[pages[page + 1]], "call": _start_countdown if last else _show_brief.bind(page + 1)},
-	], "row": true, "focus": 1})
+	]
 	if not last:
-		items.append({"buttons": [{"text": Text.t("MENU_SKIP"), "call": _skip_story, "colour": Hud.C.dim}], "small": true})
+		row.append({"text": Text.t("BRIEF_SKIP"), "call": _skip_story, "colour": Hud.C.dim})
+	items.append({"buttons": row, "row": true, "focus": 1})
 	hud.show_menu(items)
 
 
@@ -1107,9 +1117,25 @@ func _news_items() -> Array:
 	]
 
 
+## The story's first page: which job this is, the piece turning under a
+## light, its name, what it is like and its tale.
+func _story_items() -> Array:
+	# Rebuilt each time: the last round's piece may still be on the stand.
+	_build_preview()
+	return [
+		{"text": _brief_heading(), "size": 17, "colour": Hud.C.dim},
+		{"picture": preview.get_texture(), "smooth": true, "height": 200},
+		{"text": Heist.first_upper(Heist.loot.name), "size": 32, "colour": Color(Heist.loot.colour), "wrap": true, "width": 760},
+		{"text": Heist.loot.blurb, "size": 18, "colour": Hud.C.gold, "wrap": true, "width": 760},
+		{"gap": 6},
+		{"text": Heist.loot.get("story", ""), "size": 19, "wrap": true, "width": 760},
+		{"gap": 12},
+	]
+
+
 ## The plan: the map on the left; on the right, the piece (turning under a
-## light, its name and how long it takes), its story when it has one, and
-## tips worked out from the night (Briefing).
+## light, its name and how long it takes) and the rules for the night
+## worked out from it (Briefing).
 func _plan_items() -> Array:
 	var colours := _thief_colours().slice(0, thieves.size())
 	var keys := ["thief", "gem", "exit", "guard", "prop", "route"]
@@ -1126,19 +1152,15 @@ func _plan_items() -> Array:
 	var piece: Array = [
 		{"text": _brief_heading(), "size": 15, "colour": Hud.C.dim, "align": "left"},
 		{"text": Heist.first_upper(Heist.loot.name), "size": 26, "colour": Color(Heist.loot.colour), "wrap": true, "width": 330, "align": "left"},
-		{"text": Heist.loot.blurb, "size": 17, "colour": Hud.C.gold, "wrap": true, "width": 330, "align": "left"},
 		{"text": Text.t("BRIEF_TAKES") % _seconds(Heist.loot.seconds), "size": 15, "colour": Hud.C.dim, "wrap": true, "width": 330, "align": "left"},
 	]
 	var right: Array = [{"columns": [
 		{"items": [{"picture": preview.get_texture(), "smooth": true, "height": 120}], "middle": true},
 		{"items": piece, "separation": 4, "middle": true},
 	], "separation": 12}]
-	var story: String = Heist.loot.get("story", "")
-	if story.strip_edges() != "":
-		right.append({"text": story, "size": 17, "wrap": true, "width": 540, "align": "left"})
 	right.append({"gap": 4})
 	right.append({"title": Text.t("BRIEF_TIPS_TITLE"), "size": 24, "align": "left"})
-	for tip in Briefing.tips(guards):
+	for tip in Briefing.tips(guards, level if mode == "story" else 0):
 		right.append({"text": "• " + tip, "size": 17, "wrap": true, "width": 540, "align": "left"})
 	return [{"columns": [
 		{"items": left, "separation": 6, "middle": true},
@@ -1150,7 +1172,7 @@ func _plan_items() -> Array:
 func _brief_heading() -> String:
 	match mode:
 		"story":
-			return Text.t("BRIEF_NIGHT_OF") % [level, Story.count()]
+			return Story.heading(level, players)
 		"challenge":
 			if challenge_map and challenge_map.name != "":
 				return challenge_map.name.to_upper()
@@ -1377,6 +1399,7 @@ func _start_countdown() -> void:
 	_drop_preview()
 	hud.hide_panel()
 	hud.countdown(_count_beep, _start_playing)
+	_intro_camera(Hud.COUNT_S * Hud.COUNT.size())
 
 
 func _count_beep(i: int) -> void:
@@ -1498,6 +1521,9 @@ func _new_round(n: int) -> void:
 var pad_frame := -1
 ## Pad crouch and roll buttons held over from a menu, ignored until released.
 var pad_stale := {}
+## each thief's controls as last read (_seat_input), for the prompts to see
+## a press as it happens
+var seat_now: Array = []
 
 
 func _pressed_keys() -> Dictionary:
@@ -1509,8 +1535,10 @@ func _pressed_keys() -> Dictionary:
 	# Each thief's controls, as the key names Sim reads for that thief. P3's
 	# and P4's are only names now: they play with a pad, never those keys.
 	var names := [["w", "s", "a", "d", "c", "e", "space", "lalt"], ["up", "down", "left", "right", "minus", "period", "enter", "ralt"], ["i", "k", "j", "l", "u", "o", "y", "h"], ["kp8", "kp5", "kp4", "kp6", "kp0", "kpadd", "kpmul", "kpsub"]]
+	seat_now.resize(mini(seats.size(), thieves.size()))
 	for i in mini(seats.size(), thieves.size()):
 		var got := _seat_input(seats[i], resumed)
+		seat_now[i] = got
 		for k in 8:
 			if got[k]:
 				keys[names[i][k]] = true
@@ -1532,10 +1560,13 @@ func _input(event: InputEvent) -> void:
 		last_pad = false
 	elif (event is InputEventJoypadButton and event.pressed) or (event is InputEventJoypadMotion and absf(event.axis_value) > 0.5):
 		last_pad = true
+		last_pad_device = event.device
 
 
-## The last thing touched was a pad (for the hints of a thief on "any").
+## The last thing touched was a pad (for the hints of a thief on "any"),
+## and which one.
 var last_pad := false
+var last_pad_device := 0
 
 
 ## The names of a thief's controls, for the hints: the directions ("move"),
@@ -1734,7 +1765,12 @@ func _draw_game_boxes() -> void:
 		var p: Thief = thieves[i] if i < thieves.size() else null
 		var g: Minigame = p.game if p and phase in ["playing", "paused"] else null
 		var head := camera.unproject_position(_to_world(p.x, p.y, 1.6)) if g else Vector2.ZERO
-		game_boxes[i].follow(g, head, _thief_colours()[i], _controls(i))
+		var controls := _controls(i)
+		controls.glyphs = {"action": _glyph(i, "action"), "cancel": _glyph(i, "roll"), "move": _glyph(i, "move")}
+		if controls.glyphs.move.kind == "stick":
+			controls.glyphs.lr = controls.glyphs.move
+			controls.glyphs.ud = controls.glyphs.move
+		game_boxes[i].follow(g, head, _thief_colours()[i], controls)
 
 
 ## How a thief's figure stands: curled in a roll, dizzy, posing as a statue.
@@ -1742,31 +1778,100 @@ func _pose_of(p: Thief) -> String:
 	return "statue" if p.posing else Roll.pose(p)
 
 
-## "E: TIRAR LA PAPELERA" when a thief has something within reach.
-func _push_hint() -> String:
-	if phase != "playing":
-		return ""
-	for i in thieves.size():
-		var job := Heist.game_for(thieves[i])
-		if not job.is_empty():
-			var hint: String = {"lockpick": "HUD_GAME_PICK_HINT", "steady": "HUD_GAME_STEADY_HINT"}.get(job.kind, "HUD_GAME_WIRES_HINT")
-			return Text.t(hint) % _controls(i).action
-	for i in thieves.size():
-		var keys := _controls(i)
-		if thieves[i].posing:
-			# Keeping its balance, the box says how; without, any way is down.
-			if not thieves[i].game:
-				return Text.t("HUD_PLINTH_DOWN")
-			continue
-		if Plinths.within_reach(thieves[i], thieves) != null:
-			return Text.t("HUD_PLINTH_HINT") % keys.action
-	for i in thieves.size():
-		var p := Props.within_reach(thieves[i])
-		if p:
-			return Text.t("HUD_PUSH_HINT") % [_controls(i).action, Props.name_of(p.kind).to_upper()]
-		if Sim.switch_within_reach(thieves[i]):
-			return Text.t("HUD_SWITCH_HINT") % _controls(i).action
-	return ""
+# --- Prompts: what each thief can do, over its head ------------------------------
+
+## Each thief's bubble of what it can do now (Prompt).
+var prompts: Array[Prompt] = []
+## what each thief held last frame, to see a press begin
+var seat_before: Array = []
+## the inputs by their place in _seat_input's answer
+const INPUT_AT := {"move": [0, 1, 2, 3], "crouch": [4], "action": [5], "roll": [6]}
+
+
+func _draw_prompts(dt: float) -> void:
+	while prompts.size() < thieves.size():
+		var p := Prompt.new()
+		hud.add_child(p)
+		prompts.append(p)
+	for i in prompts.size():
+		var p: Thief = thieves[i] if i < thieves.size() else null
+		var rows := _prompt_rows(i) if p else []
+		var head := camera.unproject_position(_to_world(p.x, p.y, 1.9)) if p else Vector2.ZERO
+		prompts[i].show_rows(rows, head, _thief_colours()[i], dt)
+		# A press on this thief's controls sinks the glyph for it.
+		if i < seat_now.size():
+			var was: Array = seat_before[i] if i < seat_before.size() else []
+			for input in INPUT_AT:
+				for k in INPUT_AT[input]:
+					if seat_now[i][k] and not (k < was.size() and was[k]):
+						prompts[i].press(input)
+	seat_before = seat_now.duplicate(true)
+
+
+## What thief i can do where it stands, one row each (Prompt): the action
+## key for what it would do (the one it would do: a minigame, the pedestal,
+## a prop, a switch, in that order), why it waits, or how the job goes.
+func _prompt_rows(i: int) -> Array:
+	var p := thieves[i]
+	if phase != "playing" or p.out or p.game or map_open:
+		return []
+	var row := func(input: String, verb: String) -> Dictionary:
+		return {"input": input, "glyph": _glyph(i, input), "verb": verb}
+	# At the case: how the job goes, or why it will not give.
+	if Heist.by == p.id and not Heist.taken:
+		if Heist.waiting:
+			var two: bool = Heist.panel2.x >= 0
+			if Heist.minigames():
+				return [{"verb": Text.t("HUD_JOB_WAIT_CUTS" if two else "HUD_JOB_WAIT_CUT")}]
+			return [{"verb": Text.t("HUD_JOB_WAIT_PANELS" if two else "HUD_JOB_WAIT_PANEL")}]
+		if Heist.short_hand:
+			return [{"verb": Text.t("HUD_JOB_TWO_LOCKS")}]
+		return [{"verb": Heist.loot.verb, "progress": Heist.progress}]
+	if Heist.carrier == p.id:
+		return [{"verb": Text.t("HUD_JOB_CARRYING") % String(Heist.loot.name).to_upper()}]
+	var job := Heist.game_for(p)
+	if not job.is_empty():
+		return [row.call("action", Text.t({"lockpick": "HUD_GAME_PICK_HINT", "steady": "HUD_GAME_STEADY_HINT"}.get(job.kind, "HUD_GAME_WIRES_HINT")))]
+	if p.posing:
+		return [row.call("move", Text.t("HUD_PLINTH_DOWN"))]
+	if Plinths.within_reach(p, thieves) != null:
+		return [row.call("action", Text.t("HUD_PLINTH_HINT"))]
+	var prop := Props.within_reach(p)
+	if prop:
+		return [row.call("action", Text.t("HUD_PUSH_HINT") % Props.name_of(prop.kind).to_upper())]
+	if Sim.switch_within_reach(p):
+		return [row.call("action", Text.t("HUD_SWITCH_HINT"))]
+	return []
+
+
+## The glyph (Glyph spec) for one of thief i's inputs, on whatever it plays
+## with: its keyboard half, or its pad drawn as that pad's maker draws it.
+func _glyph(i: int, input: String) -> Dictionary:
+	var seat: String = seats[i] if i < seats.size() else "any"
+	var pad := seat.begins_with("pad:") or (seat == "any" and last_pad)
+	if pad:
+		if input == "move":
+			return {"kind": "stick"}
+		var device := int(seat.substr(4)) if seat.begins_with("pad:") else last_pad_device
+		var place: String = {"action": "west", "crouch": "south", "roll": "east"}.get(input, "south")
+		return {"kind": "pad", "pos": place, "family": _pad_family(device)}
+	var keys := _controls(i)
+	var label: String = {"move": keys.move, "action": keys.action, "roll": keys.cancel,
+		"crouch": "-" if seat == "kb_right" else "C"}.get(input, "?")
+	return {"kind": "key", "label": label}
+
+
+## Whose pad it is, by its name: PlayStation and Nintendo draw their buttons
+## their own way; anything else, the Xbox way (as most pads do).
+static func _pad_family(device: int) -> String:
+	var name := Input.get_joy_name(device).to_lower()
+	for mark in ["playstation", "dualsense", "dualshock", "ps3", "ps4", "ps5", "sony"]:
+		if name.contains(mark):
+			return "ps"
+	for mark in ["nintendo", "switch", "joy-con", "pro controller"]:
+		if name.contains(mark):
+			return "nintendo"
+	return "xbox"
 
 
 ## Each guard's boots, a step every stride: heard from where they are, so
@@ -1959,8 +2064,7 @@ func _tick(dt: float) -> void:
 	for w in Sim.warn_partners(guards, now):
 		sfx.at("whisper", _to_world(w.x, w.y), 0.6)
 		_log(Text.t("LOG_WARN") % [w.from, w.to])
-	for t in Sim.thoughts:
-		_log("%s: %s" % [t.by, t.text])
+	# What the guards think stays off the screen.
 	Sim.thoughts.clear()
 	for e in Sim.light_events:
 		var label := Text.t("LOG_THE_ROOM_OF")
@@ -2032,12 +2136,7 @@ func _on_decided(decisions: Dictionary, _ms: int) -> void:
 	for g in guards:
 		if g.sees_player or not decisions.has(g.id):
 			continue
-		var before := g.decision.label if g.decision else ""
 		Sim.apply_decision(g, decisions[g.id])
-		# Log what it actually does: a committed guard keeps its plan.
-		if g.decision.label != before:
-			var p: float = g.decision.probabilities.get(g.decision.option, 0.0)
-			_log(Text.t("LOG_DECISION") % [g.name, g.decision.label, roundi(p * 100), Text.t("LOG_TORN") if g.decision.torn else ""])
 
 
 func _on_brain_failed(reason: String) -> void:
@@ -2442,6 +2541,7 @@ func _draw_panel() -> void:
 func _draw_frame(dt: float) -> void:
 	if camera and hud:
 		_draw_game_boxes()
+		_draw_prompts(dt)
 	# The ears between the thieves still in, facing the way the camera does
 	# (so left on screen is left in the ear).
 	if ear and camera:
@@ -2675,6 +2775,11 @@ const SHAKE_DECAY := 1.2
 const CAM_MARGIN_X := 0.82
 const CAM_MARGIN_Y := 0.7
 const CAM_MAX_ZOOM := 4.0
+## How close the camera starts a night, as a share of the usual distance.
+const CAM_INTRO_NEAR := 0.5
+## How far up the plan from the gang the camera looks then, so the count in
+## the middle of the screen does not cover them.
+const CAM_INTRO_LOW := 0.6
 ## How long (s) the pull back takes, and the coming back in: out quickly
 ## (someone is about to leave the picture), in lazily.
 const CAM_ZOOM_OUT := 0.12
@@ -2700,6 +2805,10 @@ var cam_zoom := 1.0
 ## the Environment, for the fog to reach as far as the camera pulls back
 var world_env: Environment
 var punch_tween: Tween
+## 0..1: how close the camera is on the gang at the start of a night (1 on top
+## of them, 0 the usual follow), so you see where you are before you go
+var intro := 0.0
+var intro_tween: Tween
 
 
 ## The thieves the camera keeps in: those still in, or everyone at the end.
@@ -2760,6 +2869,9 @@ func _snap_camera() -> void:
 	punch = 0.0
 	if punch_tween:
 		punch_tween.kill()
+	intro = 0.0
+	if intro_tween:
+		intro_tween.kill()
 	camera.h_offset = 0.0
 	camera.v_offset = 0.0
 	camera.position = t + CAM_OFFSET * cam_zoom
@@ -2797,7 +2909,13 @@ func _follow_camera(dt: float) -> void:
 	var ease := CAM_ZOOM_OUT if want > cam_zoom else CAM_ZOOM_IN
 	cam_zoom = lerpf(cam_zoom, want, 1.0 - exp(-dt / ease))
 	_fog_follows_zoom()
-	camera.position = focus + CAM_OFFSET * cam_zoom * (1.0 - 0.22 * punch)
+	# The way in: close on the gang itself (not the frame kept inside the
+	# building), easing out to the usual follow.
+	# The gang sits below the middle, clear of the count.
+	if intro > 0.0:
+		focus = focus.lerp(_gang_middle() + Vector3(0, 0, -CAM_INTRO_LOW), intro)
+	var near := lerpf(1.0, CAM_INTRO_NEAR, intro)
+	camera.position = focus + CAM_OFFSET * cam_zoom * near * (1.0 - 0.22 * punch)
 	camera.look_at(focus)
 	# The shake slides the picture rather than moving the camera, so the
 	# lights nearest the camera do not flicker from room to room.
@@ -2807,6 +2925,27 @@ func _follow_camera(dt: float) -> void:
 	camera.h_offset = SHAKE_MOVE * s * (sin(time * 47.0) + 0.5 * sin(time * 83.0 + 1.3)) / 1.5
 	camera.v_offset = SHAKE_MOVE * s * (sin(time * 53.0 + 2.1) + 0.5 * sin(time * 71.0 + 0.4)) / 1.5
 	camera.rotate_object_local(Vector3.BACK, SHAKE_ROLL * s * sin(time * 37.0 + 0.7))
+
+
+## The middle of the gang on the plan, where the way in starts.
+func _gang_middle() -> Vector3:
+	var lo := Vector2(INF, INF)
+	var hi := Vector2(-INF, -INF)
+	for p in _watched():
+		lo = Vector2(minf(lo.x, p.x), minf(lo.y, p.y))
+		hi = Vector2(maxf(hi.x, p.x), maxf(hi.y, p.y))
+	var mid := (lo + hi) / 2.0
+	return _to_world(mid.x, mid.y, 0.6)
+
+
+## The camera starts right on the gang and pulls back to the usual follow
+## over `seconds`: slow at first, so you spot yourself, then away.
+func _intro_camera(seconds: float) -> void:
+	if intro_tween:
+		intro_tween.kill()
+	intro = 1.0
+	intro_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	intro_tween.tween_property(self, "intro", 0.0, seconds).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
 
 
 ## A jolt of the camera: 0.6 for a guard's first yell, less for a crash.
@@ -2835,31 +2974,25 @@ func _draw_hud(dt: float) -> void:
 	var alarm := 0
 	for g in guards:
 		alarm = maxi(alarm, g.suspicion)
-	# The arrow at the screen edge, from whoever is nearest: to the piece, or
-	# to the door once someone has it.
+	# The kunai at the edge of the screen, pointing from whoever is nearest
+	# straight at the objective: the piece, or the door once someone has it.
 	var goal := Heist.objective()
 	var ref := thieves[0]
 	for p in thieves:
 		if not p.out and (ref.out or Museum.dist(p.x, p.y, goal.x, goal.y) < Museum.dist(ref.x, ref.y, goal.x, goal.y)):
 			ref = p
-	var d := Museum.dist(ref.x, ref.y, goal.x, goal.y)
-	var angle := atan2(goal.y - ref.y, goal.x - ref.x) if d > 6 and phase == "playing" else NAN
+	var way := {}
+	if phase == "playing" and not ref.out and Museum.dist(ref.x, ref.y, goal.x, goal.y) > 1.5:
+		var from := camera.unproject_position(_to_world(ref.x, ref.y))
+		var to := camera.unproject_position(_to_world(goal.x, goal.y, 1.0))
+		way = {"from": from, "goal": to}
 	var job := {
-		"working": Heist.by != "",
-		"progress": Heist.progress,
-		"verb": Heist.loot.verb,
-		"carrying": Heist.carrier != "",
 		"dropped": Heist.dropped != Vector2.INF,
 		"name": Heist.loot.name,
-		"waiting": Heist.waiting,
-		"cut": Heist.minigames(),
-		"short_hand": Heist.short_hand,
 		"panel": Heist.panels_held() and not Heist.taken,
-		"panels": 2 if Heist.panel2.x >= 0 else 1,
-		"hint": _push_hint(),
 	}
 	if not hud.menu_open():
-		hud.update_play(log_lines, job, angle, COLOURS.switch_on if Heist.carrier != "" else Color(Heist.loot.colour), alarm)
+		hud.update_play(log_lines, job, way, COLOURS.switch_on if Heist.carrier != "" else Color(Heist.loot.colour), alarm)
 	var cards: Array = []
 	for g in guards:
 		var card := {"name": g.name, "title": Text.t("MIND_SEEN") if g.sees_player else (g.decision.label if g.decision else Text.t("MIND_THINKING")), "colour": COLOURS.alert if g.sees_player else Hud.C.text}

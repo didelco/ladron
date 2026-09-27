@@ -56,7 +56,7 @@ func _init() -> void:
 	_how.position = Vector2(0, STAGE.y + PAD)
 	_how.size = Vector2(SIZE.x, STRIP - 6)
 	_how.alignment = BoxContainer.ALIGNMENT_CENTER
-	_how.add_theme_constant_override("separation", 5)
+	_how.add_theme_constant_override("separation", 3)
 	_how.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_how)
 
@@ -95,7 +95,8 @@ func follow(g: Minigame, head: Vector2, thief_colour: Color, controls: Dictionar
 
 
 ## Builds the lines of how to play, if they changed: "{action}" and the like
-## become keycaps with this thief's keys on them, the rest plain words.
+## become this thief's key or button, drawn (Glyph) where there is one in
+## controls.glyphs, else a keycap with its name; the rest plain words.
 func _show_how(lines: Array[String], controls: Dictionary) -> void:
 	var key := "|".join(lines) + str(controls)
 	if key == _how_for:
@@ -118,7 +119,14 @@ func _show_how(lines: Array[String], controls: Dictionary) -> void:
 				break
 			if open > 0:
 				row.add_child(_words(rest.substr(0, open).strip_edges()))
-			row.add_child(_keycap(String(controls.get(rest.substr(open + 1, close - open - 1), "?"))))
+			var name := rest.substr(open + 1, close - open - 1)
+			var glyphs: Dictionary = controls.get("glyphs", {})
+			if glyphs.has(name):
+				var g := Glyph.new()
+				g.set_spec(glyphs[name], 20.0)
+				row.add_child(g)
+			else:
+				row.add_child(_keycap(String(controls.get(name, "?"))))
 			rest = rest.substr(close + 1).strip_edges()
 
 

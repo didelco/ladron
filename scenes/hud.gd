@@ -84,10 +84,8 @@ var _gang: HBoxContainer
 var _portraits: Array[Dictionary] = []
 var _log: Label
 var _job: Label
-var _help: Label
-var _bar_back: ColorRect
-var _bar: ColorRect
-var _arrow: Label
+## the way to the objective: a kunai at the edge of the screen
+var _arrow: Control
 var _shout: Control
 var _shout_word: Label
 var _shout_text: Label
@@ -124,15 +122,7 @@ func _ready() -> void:
 	_log.position = Vector2(24, 64)
 	_job = _label(14, C.gold, self, true)
 	_job.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_bar_back = ColorRect.new()
-	_bar_back.color = Color("#241d52")
-	add_child(_bar_back)
-	_bar = ColorRect.new()
-	_bar.color = C.gold
-	add_child(_bar)
-	_arrow = _label(40, C.gold)
-	_arrow.text = "▶"
-	_arrow.pivot_offset = Vector2(14, 28)
+	_arrow = _pointer()
 
 	_shout = Control.new()
 	_shout.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -202,13 +192,6 @@ func _ready() -> void:
 	_panel_box = VBoxContainer.new()
 	_panel_box.add_theme_constant_override("separation", 10)
 	centre.add_child(_panel_box)
-	# The keys worth remembering, small in the corner.
-	_help = _label(12, C.dim, self)
-	_help.text = Text.t("HUD_HELP")
-	_help.anchor_top = 1.0
-	_help.anchor_bottom = 1.0
-	_help.offset_left = 24
-	_help.offset_top = -34
 	# Up top, only how alarmed the guards are; at the bottom, the gang.
 	_status.visible = false
 	_alarm = TextureRect.new()
@@ -219,7 +202,7 @@ func _ready() -> void:
 	_gang.add_theme_constant_override("separation", 14)
 	_gang.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_gang)
-	_play = [_log, _job, _bar_back, _bar, _arrow, _help, _alarm, _gang]
+	_play = [_log, _job, _arrow, _alarm, _gang]
 
 	# The model's reasoning, for whoever wants to watch it think: a card per
 	# guard with its plan and the probabilities Laya gave each option.
@@ -237,6 +220,27 @@ func _ready() -> void:
 	_ia_box = VBoxContainer.new()
 	_ia.add_child(_ia_box)
 	_ia.visible = false
+
+
+## The kunai's outline: a long point ahead, a short one behind.
+const KUNAI_BLADE := [Vector2(30, 0), Vector2(-4, -9), Vector2(-12, 0), Vector2(-4, 9)]
+
+
+## A kunai's blade pared down to a kite, drawn round its own origin and
+## pointing right until rotated: a long point ahead and a short one behind, so
+## there is no doubt which end leads. Its colour is its modulate.
+func _pointer() -> Control:
+	var c := Control.new()
+	c.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	c.visible = false
+	add_child(c)
+	var blade := PackedVector2Array(KUNAI_BLADE)
+	c.draw.connect(func() -> void:
+		var ring := blade.duplicate()
+		ring.append(blade[0])
+		c.draw_polyline(ring, MAP_INK, 3.0, true)
+		c.draw_colored_polygon(blade, Color.WHITE))
+	return c
 
 
 func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> Label:
@@ -1030,7 +1034,7 @@ const MAP_WIDTH := 720.0
 const MAP_INK := Color("#1c1210")
 const MAP_FLOOR := Color("#e8d6b4")
 const MAP_CASE := Color("#b89a70")
-const MAP_PROP := Color("#ff8c2e")
+const MAP_PROP := Color("#c4906a")
 const MAP_ROUTE := Color("#5a3a22")
 const MAP_WALL := Color("#4a2f22")
 const MAP_GUARD := Color("#c42a3c")
@@ -1051,26 +1055,26 @@ static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard
 	var s := clampi(int(MAP_WIDTH / Museum.w), 8, 32)
 	var img := Image.create(Museum.w * s, Museum.h * s, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
-	# The plan in three tones: floor, the cases on it, walls.
+	# The plan in three tones: floor, the cases on it, walls; and what can be
+	# knocked over, still standing, a tile a shade off the cases.
 	for y in Museum.h:
 		for x in Museum.w:
 			if Museum.is_outside(x, y):
 				continue
 			var t := Museum.grid[y * Museum.w + x]
 			img.fill_rect(Rect2i(x * s, y * s, s, s), MAP_WALL if t == Tiles.WALL else (MAP_CASE if t == Tiles.COVER else MAP_FLOOR))
+	for p in Props.list:
+		if not p.fallen:
+			img.fill_rect(Rect2i(p.tile.x * s, p.tile.y * s, s, s), MAP_PROP)
 	var at := func(p: Vector2) -> Vector2i: return Vector2i(int(p.x * s), int(p.y * s))
 	var mid := func(t: Vector2i) -> Vector2: return Vector2(t.x + 0.5, t.y + 0.5)
 	# The plan, before the job: the way from the way in to the piece to the door.
 	if not start_colours.is_empty():
-		var d := maxi(4, s / 3)
+		var d := maxi(6, s / 2)
 		for i in Heist.route.size():
 			if i % 2 == 0:
 				var t: Vector2i = Heist.route[i]
 				img.fill_rect(Rect2i(t.x * s + s / 2 - d / 2, t.y * s + s / 2 - d / 2, d, d), MAP_ROUTE)
-	# What can be knocked over, still standing: an orange triangle each.
-	for p in Props.list:
-		if not p.fallen:
-			_triangle(img, at.call(Vector2(p.x, p.y)), 13, MAP_PROP)
 	# The door, in green, and its sign just inside it.
 	var door: Vector2i = Heist.exit + Heist.exit_face
 	img.fill_rect(Rect2i(door.x * s, door.y * s, s, s), C.green)
@@ -1089,8 +1093,9 @@ static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard
 		gem.call(Heist.dropped, 16)
 	for g in guards:
 		_square(img, at.call(Vector2(g.x, g.y)), 12, MAP_GUARD)
-	# The way out: a green arrow through the door, pointing out.
-	_draw_arrow(img, at.call(mid.call(Heist.exit) + Vector2(Heist.exit_face) * 0.3), Vector2(Heist.exit_face), 64, C.green)
+	# The way out: the kunai that points the way in play, green, through the
+	# door and pointing out.
+	_kunai(img, at.call(mid.call(Heist.exit) + Vector2(Heist.exit_face) * 0.3), Vector2(Heist.exit_face), 1.6, C.green)
 	# Where you come in: a dot for each thief who will, side by side.
 	for i in start_colours.size():
 		var off := Vector2((i - (start_colours.size() - 1) / 2.0) * 34.0 / s, 0)
@@ -1105,17 +1110,6 @@ static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard
 			_glow(img, c, 44, Color(Heist.loot.colour))
 		_dot(img, c, 14, colours[i], Color.WHITE)
 	return img
-
-
-## Something to knock over: a triangle on its base, outlined, a pale dot in it.
-static func _triangle(img: Image, c: Vector2i, r: int, colour: Color) -> void:
-	for pass_n in 2:
-		var rr := r + 4 - pass_n * 4
-		for dy in range(-rr, rr + 1):
-			# From the apex (top) widening to the base (bottom).
-			var half := int((dy + rr) * 0.58)
-			img.fill_rect(Rect2i(c.x - half, c.y + dy, half * 2 + 1, 1), MAP_INK if pass_n == 0 else colour)
-	img.fill_rect(Rect2i(c.x - 2, c.y + r / 3 - 2, 4, 4), Color("#fff3d6"))
 
 
 ## A thief: a disc in its colour with a ring round it.
@@ -1169,30 +1163,22 @@ static func _diamond(img: Image, c: Vector2i, r: int, colour: Color) -> void:
 	img.fill_rect(Rect2i(c.x - r / 3, c.y - r / 2, r / 4 + 2, r / 4 + 2), Color.WHITE)
 
 
-## A fat arrow of length len centred on c, pointing along dir, outlined.
-static func _draw_arrow(img: Image, c: Vector2i, dir: Vector2, len: int, colour: Color) -> void:
-	dir = dir.normalized()
-	var side := dir.orthogonal()
-	var half := len / 2.0
-	var shaft := len * 0.16
-	var head := len * 0.4
-	var inside := func(p: Vector2, grow: float) -> bool:
-		var u := p.dot(dir)
-		var v := absf(p.dot(side))
-		if u < -half - grow or u > half + grow:
-			return false
-		if u < half - head:
-			return v <= shaft + grow
-		# The head: widest at its base, to a point at the tip.
-		var t := (u - (half - head)) / head
-		return v <= head * 0.9 * (1.0 - t) + grow
-	var reach := int(half + head) + 4
+## The HUD's kunai (KUNAI_BLADE) scaled by k, centred on c and pointing
+## along dir, outlined.
+static func _kunai(img: Image, c: Vector2i, dir: Vector2, k: float, colour: Color) -> void:
+	var angle := dir.angle()
+	var blade := PackedVector2Array()
+	for q in KUNAI_BLADE:
+		# Centred on its length: the blade runs from -12 to 30.
+		blade.append(((q - Vector2(9, 0)) * k).rotated(angle))
+	var ring: PackedVector2Array = Geometry2D.offset_polygon(blade, 3.5)[0]
+	var reach := int(30 * k) + 4
 	for y in range(maxi(0, c.y - reach), mini(img.get_height(), c.y + reach + 1)):
 		for x in range(maxi(0, c.x - reach), mini(img.get_width(), c.x + reach + 1)):
 			var p := Vector2(x - c.x, y - c.y)
-			if inside.call(p, 0.0):
+			if Geometry2D.is_point_in_polygon(p, blade):
 				img.set_pixel(x, y, colour)
-			elif inside.call(p, 3.5):
+			elif Geometry2D.is_point_in_polygon(p, ring):
 				img.set_pixel(x, y, MAP_INK)
 
 
@@ -1217,11 +1203,13 @@ static func legend_icon(key: String, colour := Color.WHITE) -> ImageTexture:
 		"gem": _diamond(img, c, 9, colour)
 		"guard": _square(img, c, 10, MAP_GUARD)
 		"panel": _stamp(img, ICON_PANEL, c, 4, {"#": Color("#ff922b"), "w": MAP_INK})
-		"prop": _triangle(img, c, 11, MAP_PROP)
+		"prop":
+			img.fill_rect(Rect2i(c.x - 12, c.y - 12, 24, 24), MAP_WALL)
+			img.fill_rect(Rect2i(c.x - 10, c.y - 10, 20, 20), MAP_PROP)
 		"route":
 			for k in 3:
-				img.fill_rect(Rect2i(12 + k * 16, 17, 7, 7), Color("#e8d6b4"))
-		"exit": _draw_arrow(img, c, Vector2.RIGHT, 44, C.green)
+				img.fill_rect(Rect2i(10 + k * 17, 15, 10, 10), Color("#e8d6b4"))
+		"exit": _kunai(img, c, Vector2.RIGHT, 1.2, C.green)
 	return ImageTexture.create_from_image(img)
 
 
@@ -1312,52 +1300,77 @@ static func mission_map(guards: Array[Guard]) -> ImageTexture:
 # --- During play -----------------------------------------------------------------
 
 ## The status line, the log, the job and the arrow to the objective.
-## job is {"working": bool, "progress": float, "verb": String, "carrying":
-## bool, "dropped": bool, "name": String}; objective_angle is in screen terms,
-## or NAN to hide the arrow.
-func update_play(log_lines: Array[String], job: Dictionary, objective_angle: float, objective_colour: Color, alarm: int) -> void:
+## job is {"dropped": bool, "name": String, "panel": bool}: what the whole
+## gang should know (each thief's own goes in its Prompt); way is {} to hide
+## the kunai, or
+## {"from": Vector2, "goal": Vector2} in screen terms: the thief, and the
+## objective it points at.
+func update_play(log_lines: Array[String], job: Dictionary, way: Dictionary, objective_colour: Color, alarm: int) -> void:
 	var view := get_viewport().get_visible_rect().size
 	_log.text = "\n".join(log_lines)
-	# What happened lately: bottom left, over the keys.
-	_log.position = Vector2(24, view.y - 44 - _log.get_minimum_size().y)
+	# What happened lately: bottom left.
+	_log.position = Vector2(24, view.y - 20 - _log.get_minimum_size().y)
 	_draw_alarm(alarm, view)
 	_gang.position = Vector2(view.x / 2 - _gang.get_combined_minimum_size().x / 2, view.y - PORTRAIT - 22)
-	var working: bool = job.get("working", false) and not job.get("waiting", false) and not job.get("short_hand", false)
-	_bar_back.visible = working
-	_bar.visible = working
-	if working:
-		var w := 360.0
-		_bar_back.position = Vector2(view.x / 2 - w / 2, view.y - PORTRAIT - 44)
-		_bar_back.size = Vector2(w, 14)
-		_bar.position = _bar_back.position
-		_bar.size = Vector2(w * float(job.progress), 14)
-	if job.get("waiting", false):
-		var two: bool = job.get("panels", 1) > 1
-		if job.get("cut", false):
-			_job.text = Text.t("HUD_JOB_WAIT_CUTS" if two else "HUD_JOB_WAIT_CUT")
-		else:
-			_job.text = Text.t("HUD_JOB_WAIT_PANELS" if two else "HUD_JOB_WAIT_PANEL")
-	elif job.get("short_hand", false):
-		_job.text = Text.t("HUD_JOB_TWO_LOCKS")
-	elif working:
-		_job.text = job.verb
-	elif job.get("carrying", false):
-		_job.text = Text.t("HUD_JOB_CARRYING") % String(job.name).to_upper()
-	elif job.get("dropped", false):
+	# What one thief can do, or is doing, goes over its head (Prompt); here
+	# only what the whole gang should know.
+	if job.get("dropped", false):
 		_job.text = Text.t("HUD_JOB_DROPPED") % String(job.name).to_upper()
 	elif job.get("panel", false):
 		_job.text = Text.t("HUD_JOB_PANEL_HELD")
-	elif job.get("hint", "") != "":
-		_job.text = job.hint
 	else:
 		_job.text = ""
 	_job.size = Vector2(view.x, 30)
 	_job.position = Vector2(0, view.y - PORTRAIT - 84)
-	_arrow.visible = not is_nan(objective_angle)
-	if _arrow.visible:
-		_arrow.add_theme_color_override("font_color", objective_colour)
-		_arrow.position = view / 2 + Vector2(cos(objective_angle) * view.x * 0.45, sin(objective_angle) * view.y * 0.42) - Vector2(14, 28)
-		_arrow.rotation = objective_angle
+	# The kunai rides the edge of the screen, where the line from the thief
+	# to the objective leaves it, or sits on the objective once it is in
+	# sight. It glides there on a spring of its own, looser than the camera.
+	_arrow.visible = not way.is_empty()
+	if not _arrow.visible:
+		_kunai_tip = Vector2.INF
+	else:
+		var inside := Rect2(Vector2.ONE * KUNAI_MARGIN, view - Vector2.ONE * KUNAI_MARGIN * 2)
+		var from: Vector2 = way.from.clamp(inside.position, inside.end)
+		var target: Vector2 = way.goal
+		if not inside.has_point(target):
+			target = _to_edge(from, (target - from).normalized(), inside)
+		var dt := get_process_delta_time()
+		if _kunai_tip == Vector2.INF:
+			_kunai_tip = target
+			_kunai_vel = Vector2.ZERO
+		_kunai_vel += ((target - _kunai_tip) * KUNAI_PULL - _kunai_vel * KUNAI_DAMP) * dt
+		_kunai_tip += _kunai_vel * dt
+		var angle: float = (way.goal - way.from).angle()
+		var dir := Vector2.from_angle(angle)
+		_arrow.modulate = objective_colour
+		_arrow.position = _kunai_tip - dir * (30.0 + sin(_clock * 6.0) * 4.0)
+		_arrow.rotation = angle
+		_arrow.queue_redraw()
+
+
+## How far in from the edge of the screen the kunai's point keeps.
+const KUNAI_MARGIN := 36.0
+## Its spring: a little under critical damping, so it settles with a sway.
+const KUNAI_PULL := 28.0
+const KUNAI_DAMP := 7.5
+## Where its point is on screen and how fast it is going; INF when hidden, to
+## appear straight in place.
+var _kunai_tip := Vector2.INF
+var _kunai_vel := Vector2.ZERO
+
+
+## Where a ray from p (inside r) along dir leaves r.
+static func _to_edge(p: Vector2, dir: Vector2, r: Rect2) -> Vector2:
+	var t := INF
+	if dir.x > 0.0001:
+		t = minf(t, (r.end.x - p.x) / dir.x)
+	elif dir.x < -0.0001:
+		t = minf(t, (r.position.x - p.x) / dir.x)
+	if dir.y > 0.0001:
+		t = minf(t, (r.end.y - p.y) / dir.y)
+	elif dir.y < -0.0001:
+		t = minf(t, (r.position.y - p.y) / dir.y)
+	return p + dir * t
 
 
 ## Size of a thief's portrait, in pixels.
@@ -1533,7 +1546,8 @@ func _draw_count(dt: float) -> void:
 	var t := fmod(elapsed, COUNT_S) / COUNT_S
 	var view := get_viewport().get_visible_rect().size
 	_count.size = Vector2(view.x, 260)
-	_count.position = Vector2(0, view.y / 2 - 130)
+	# Above the middle, where the camera coming in on the gang leaves room.
+	_count.position = Vector2(0, view.y * 0.34 - 130)
 	_count.pivot_offset = Vector2(view.x / 2, 130)
 	# Pops in, then keeps growing as it fades away.
 	var pop := 0.4 + 0.75 * minf(1.0, t / 0.12)
