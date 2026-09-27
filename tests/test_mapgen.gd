@@ -106,6 +106,12 @@ func _check_museum(tag: String) -> void:
 			if solid:
 				failures.append("%s: bloque macizo en (%d, %d)" % [tag, x, y])
 				return
+	# No case between two walls, left and right or above and below.
+	for t in Museum.cover_tiles:
+		var wall := func(dx: int, dy: int) -> bool: return Museum.grid[(t.y + dy) * w + t.x + dx] == Tiles.WALL
+		if (wall.call(0, -1) and wall.call(0, 1)) or (wall.call(-1, 0) and wall.call(1, 0)):
+			failures.append("%s: vitrina entre dos paredes en (%d, %d)" % [tag, t.x, t.y])
+			return
 	# Names.
 	var names := {}
 	for z in Museum.zones:

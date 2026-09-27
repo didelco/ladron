@@ -7,9 +7,9 @@ extends RefCounted
 ##
 ## Each stands on a case tile (Tiles.COVER), so it blocks the way like any
 ## other piece of furniture; a guard never walks into the statue. The trick
-## only works unseen: climb up in front of a guard and it knows what it saw
-## (Thief.pose_blown) until it loses sight of you — and a guard right beside
-## a statue it knows is you takes you down off it.
+## only works unseen: climb up in front of a guard and it remembers what it
+## saw (Guard.knows) and comes straight for you — and a guard right beside a
+## statue it knows is you takes you down off it.
 
 ## Closer than this to one's middle to climb up.
 const REACH := 1.2
@@ -74,7 +74,7 @@ static func _floor_beside(t: Vector2i) -> Array[Vector2i]:
 ## The empty pedestal within reach of this thief, nearest first, or null
 ## (as a Variant: a Vector2i, or null).
 static func within_reach(p: Thief, thieves: Array[Thief]) -> Variant:
-	if p.out or p.posing or p.rolling or p.dizzy > 0.0:
+	if p.out or p.posing or p.hiding or p.rolling or p.dizzy > 0.0:
 		return null
 	var best: Variant = null
 	var best_d := REACH
@@ -90,7 +90,8 @@ static func within_reach(p: Thief, thieves: Array[Thief]) -> Variant:
 
 ## Up on it and still as stone. Seen doing it, the pose fools nobody.
 static func climb(p: Thief, t: Vector2i, guards: Array[Guard]) -> void:
-	p.pose_blown = not Sim.is_hidden(guards, p)
+	var saw := Sim.witnesses(guards, p)
+	p.pose_blown = not saw.is_empty()
 	p.posing = true
 	p.perch = t
 	# Facing the room's south side, the camera's: a statue shows its front.
@@ -103,14 +104,23 @@ static func climb(p: Thief, t: Vector2i, guards: Array[Guard]) -> void:
 	p.moving = false
 	p.sprinting = false
 	p.slow = false
+	for g in saw:
+		Sim.learn(g, p)
 
 
 ## How hard it is to keep the pose on one foot (Minigame "balance"), 0..1:
-## the gallery's lights on, a guard close by.
+## mostly the guards, harder the closer they come (from GUARD_NEAR tiles
+## away, full with one right by it), and a little the gallery's lights on.
+const GUARD_NEAR := 10.0
+const LIT_PRESSURE := 0.15
+
+
 static func pressure(p: Thief, guards: Array[Guard]) -> float:
-	var out := 0.5 if Museum.is_lit(p.x, p.y) else 0.0
+	var out := LIT_PRESSURE if Museum.is_lit(p.x, p.y) else 0.0
 	for g in guards:
-		out += clampf(1.0 - Museum.dist(g.x, g.y, p.x, p.y) / 8.0, 0.0, 1.0) * 0.8
+		var near := clampf(1.0 - Museum.dist(g.x, g.y, p.x, p.y) / GUARD_NEAR, 0.0, 1.0)
+		# Eased in: a guard far off barely counts, one close counts a lot.
+		out += near * near
 	return clampf(out, 0.0, 1.0)
 
 

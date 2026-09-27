@@ -115,8 +115,9 @@ func set_ghost(colour: Color, strength: float) -> void:
 
 
 ## How far the figure sways, as a statue on one foot (Minigame "balance"):
-## -1 over to the screen's left .. 1 over to its right, about the foot it
-## stands on. The pedestal's statue faces the camera, so the screen's right
+## MAX_LEAN radians for each 1 of lean, negative over to the screen's left,
+## positive to its right, about the foot it stands on (it falls at
+## Minigame.FALL). The pedestal's statue faces the camera, so the screen's right
 ## is its own left. Past Minigame.WOBBLE a big drop of sweat runs down
 ## beside its head.
 const MAX_LEAN := 0.4

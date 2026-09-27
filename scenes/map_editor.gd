@@ -61,7 +61,7 @@ const LOOT_SECONDS := [1.5, 2.0, 3.0, 4.0, 5.0, 6.0]
 const MAIN_TOOLS := ["spawn", "piece", "exit", "guard"]
 const TOOL_ICONS := {"spawn": "spawn", "piece": "piece", "exit": "exit_door", "guard": "guard"}
 ## Ready-made rooms, as MapFile.stamp takes them: '#' wall, '.' floor, 'o'
-## case, 'D' dinosaur, 'S' sarcophagus, 'b' a bust. The gaps in the border
+## case, 'D' dinosaur, 'S' sarcophagus, 'O' bear, 'b' a bust. The gaps in the border
 ## are doors. gallery: its inside is a room with a light and a name.
 const TEMPLATES := [
 	{"key": "EDITOR_T_EMPTY", "gallery": true, "rows": [
@@ -546,7 +546,7 @@ func _template_picture(i: int) -> ImageTexture:
 	for y in rows.size():
 		for x in String(rows[0]).length():
 			var ch := String(rows[y])[x]
-			var col: Color = Hud.MAP_WALL if ch == "#" else (Hud.MAP_CASE if ch in ["o", "D", "S", "b"] else Hud.MAP_FLOOR)
+			var col: Color = Hud.MAP_WALL if ch == "#" else (Hud.MAP_CASE if ch in ["o", "D", "S", "O", "b"] else Hud.MAP_FLOOR)
 			img.fill_rect(Rect2i(x * cell, y * cell, cell, cell), col)
 	return ImageTexture.create_from_image(img)
 
@@ -1484,7 +1484,7 @@ func _draw_plan() -> void:
 		var r: Rect2i = b.rect
 		var area := Rect2(o + Vector2(r.position) * c, Vector2(r.size) * c).grow(-c * 0.1)
 		_plan.draw_rect(area, Color("#6b4a2e"))
-		_plan.draw_string(Hud.ARCADE, area.get_center() + Vector2(-c * 0.3, c * 0.25), "D" if b.kind == "dinosaur" else "S", HORIZONTAL_ALIGNMENT_LEFT, -1, int(c * 0.6), Hud.CREAM)
+		_plan.draw_string(Hud.ARCADE, area.get_center() + Vector2(-c * 0.3, c * 0.25), {"dinosaur": "D", "sarcophagus": "S", "bear": "O"}.get(b.kind, "?"), HORIZONTAL_ALIGNMENT_LEFT, -1, int(c * 0.6), Hud.CREAM)
 	# A chosen piece: its initial on the case.
 	for t in map.exhibits:
 		if map.big_at(t).is_empty():
@@ -1525,7 +1525,7 @@ func _draw_plan() -> void:
 			for y in rows.size():
 				for x in String(rows[0]).length():
 					var ch := String(rows[y])[x]
-					var col := Hud.MAP_WALL if ch == "#" else (Hud.MAP_CASE if ch in ["o", "D", "S"] else Hud.MAP_FLOOR)
+					var col := Hud.MAP_WALL if ch == "#" else (Hud.MAP_CASE if ch in ["o", "D", "S", "O"] else Hud.MAP_FLOOR)
 					col.a = 0.7
 					_plan.draw_rect(box.call(corner + Vector2i(x, y)), col)
 			_plan.draw_rect(Rect2(o + Vector2(corner) * c, Vector2(String(rows[0]).length(), rows.size()) * c), Hud.CREAM, false, 2.0)

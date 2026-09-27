@@ -547,6 +547,13 @@ static func step_thief(p: Thief, keys: Dictionary, dt: float, scheme: String = "
 		if (dx != 0 or dy != 0) and Plinths.step_down(p, dx, dy):
 			return {"bumped": "", "entered_cover": false, "roll": "", "plinth": "down"}
 		return {"bumped": "", "entered_cover": false, "roll": ""}
+	# Inside a hideout: nothing moves it but a way out.
+	if p.hiding:
+		p.roll_key = _pressed(keys, pad.roll)
+		p.crouch_key = _pressed(keys, pad.crouch)
+		if (dx != 0 or dy != 0) and Hideouts.get_out(p, dx, dy):
+			return {"bumped": "", "entered_cover": false, "roll": "", "hideout": "out"}
+		return {"bumped": "", "entered_cover": false, "roll": ""}
 	# Hands busy at a lock or a panel (Minigame): the keys are the job's, and
 	# the thief stays put, crouched or standing as it was.
 	if p.game:
@@ -659,9 +666,12 @@ static func visible_to(g: Guard, thieves: Array[Thief]) -> Thief:
 
 
 static func can_see(g: Guard, p: Thief) -> bool:
-	# Striking a pose on a pedestal: one more statue, unless seen getting up
-	# or wobbling on one foot (Minigame.wobbling).
-	if p.posing and not p.pose_blown and not (p.game and p.game.wobbling()):
+	# Striking a pose on a pedestal: one more statue, unless this guard saw it
+	# get up (Guard.knows) or it is wobbling on one foot (Minigame.wobbling).
+	if p.posing and g.knows != p.id and not (p.game and p.game.wobbling()):
+		return false
+	# Inside a sarcophagus or a suit of armour: unless this guard saw it get in.
+	if p.hiding and g.knows != p.id:
 		return false
 	var d := Museum.dist(g.x, g.y, p.x, p.y)
 	var view := view_of(g)
@@ -719,6 +729,57 @@ static func _see(g: Guard, x: float, y: float, now: float) -> void:
 		g.seen_at[cy * Museum.w + cx] = now
 
 
+## The guards that see this thief right now, as it gets up on a pedestal or
+## into a hideout: they will know where it is (learn).
+static func witnesses(guards: Array[Guard], p: Thief) -> Array[Guard]:
+	return guards.filter(func(g): return can_see(g, p))
+
+
+## This guard knows the thief is up there, or in there, where it is now.
+static func learn(g: Guard, p: Thief) -> void:
+	g.knows = p.id
+	g.knows_at = Vector2(p.x, p.y)
+	g.knows_kind = "plinth" if p.posing else p.hideout.kind
+
+
+## The thief this guard knows is on a pedestal or in a hideout, if it is
+## still there; if not, it forgets.
+static func known_thief(g: Guard, thieves: Array[Thief]) -> Thief:
+	if g.knows == "":
+		return null
+	for p in thieves:
+		if p.id == g.knows and not p.out and (p.posing or p.hiding) and Vector2(p.x, p.y) == g.knows_at:
+			return p
+	g.knows = ""
+	g.knows_at = Vector2.INF
+	g.knows_kind = ""
+	return null
+
+
+## The way to a thief: to its tile, or, up on a pedestal or in a hideout,
+## to the free floor beside it nearest the guard.
+static func _path_to(g: Guard, p: Thief) -> Array[Vector2i]:
+	if not (p.posing or p.hiding):
+		return Museum.bfs_path(_tile(g), Vector2i(int(floor(p.x)), int(floor(p.y))))
+	var spot: Array[Vector2i] = [p.perch]
+	if p.hiding:
+		spot = p.hideout.tiles
+	var best := Vector2i(-1, -1)
+	var best_d := INF
+	for t in spot:
+		for d in Museum.DIRS:
+			var n: Vector2i = t + d
+			if n in spot or Museum.tile_at(n.x + 0.5, n.y + 0.5) != Tiles.FLOOR:
+				continue
+			var dd := Museum.dist(g.x, g.y, n.x + 0.5, n.y + 0.5)
+			if dd < best_d:
+				best_d = dd
+				best = n
+	if best.x < 0:
+		return [] as Array[Vector2i]
+	return Museum.bfs_path(_tile(g), best)
+
+
 static func is_hidden(guards: Array[Guard], p: Thief) -> bool:
 	for g in guards:
 		if can_see(g, p):
@@ -733,7 +794,12 @@ static func caught(guards: Array[Guard], p: Thief) -> bool:
 		var d := Museum.dist(g.x, g.y, p.x, p.y)
 		# A statue is a statue — unless it knows it is you, and is right there.
 		if p.posing:
-			if p.pose_blown and d < Plinths.GRAB:
+			if g.knows == p.id and d < Plinths.GRAB:
+				return true
+			continue
+		# In hiding: only a guard that saw it get in, and is right there.
+		if p.hiding:
+			if Hideouts.grabbed(p, g):
 				return true
 			continue
 		if d < CATCH_RANGE:
@@ -823,6 +889,11 @@ static func _default_decision(g: Guard) -> Decision:
 ## One frame of one guard.
 static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent], now: float, dt: float) -> void:
 	var player := visible_to(g, thieves)
+	# It saw one get up on a pedestal or into a hideout: it goes to get it
+	# out, as sure as if it saw it.
+	var known := known_thief(g, thieves)
+	if player == null and known:
+		player = known
 	g.sees_player = player != null
 	_mark_seen(g, now)
 
@@ -844,7 +915,7 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 		m.vx = cos(player.dir)
 		m.vy = sin(player.dir)
 		g.memory = m
-		g.path = Museum.bfs_path(_tile(g), Vector2i(int(floor(player.x)), int(floor(player.y))))
+		g.path = _path_to(g, player)
 	elif not noises.is_empty():
 		# Footsteps come every stride: latch the heard spot and let it settle.
 		var stale := g.memory == null or g.memory.kind != "noise" or now - g.memory.at > NOISE_REFRESH_MS
@@ -1122,7 +1193,7 @@ static func _switch_on(room: int, by: String) -> void:
 ## The room whose switch this thief can reach, or null: on its tile or the
 ## next one, and not while rolling or lying dizzy after a roll.
 static func switch_within_reach(t: Thief) -> Museum.Room:
-	if t.out or t.posing or t.rolling or t.dizzy > 0.0 or not feature("lights"):
+	if t.out or t.posing or t.hiding or t.rolling or t.dizzy > 0.0 or not feature("lights"):
 		return null
 	var best: Museum.Room = null
 	var best_d := SWITCH_REACH

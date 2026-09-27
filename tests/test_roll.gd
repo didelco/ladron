@@ -61,7 +61,12 @@ func time_down(p: Thief) -> Dictionary:
 
 func _init() -> void:
 	Sim.custom = {}
-	Sim.new_map(4242, "small")
+	# A small museum with a straight run long enough to roll down, and a
+	# one-tile gap against a wall: the first seed from 4242 that has both.
+	for seed in range(4242, 4342):
+		Sim.new_map(seed, "small")
+		if not lane(int(Roll.DISTANCE) + 2, 40).is_empty() and not lane(1, 1).is_empty():
+			break
 	Props.list.clear()
 
 	# --- A clear run: eight tiles, fast, low and silent ---------------------

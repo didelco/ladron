@@ -3,8 +3,12 @@ cabezón, bigote, gorra de plato echada atrás con escudo, camisa blanca de
 manga corta con corbata, pantalón y botas negras, cinturón con fundas, radio y
 linterna.
 
-    Blender -b -P art/characters/guardia.py            # guarda art/guardia.blend
+    Blender -b -P art/characters/guardia.py            # guarda art/personajes/guardia.blend
     Blender -b -P art/characters/guardia.py -- --sheet /ruta/guardia
+
+Así se hizo el personaje. Ahora se retoca a mano en art/personajes/guardia.blend
+y sale con art/export.py (o el panel «Ladrón» de Blender): volver a ejecutar
+esto pisa esos retoques.
 """
 import math
 import os
@@ -397,7 +401,10 @@ def main():
         import sheet
         sheet.render(root, ARGS[ARGS.index("--sheet") + 1], only=ARGS[ARGS.index("--views") + 1].split(",") if "--views" in ARGS else None)
     else:
-        bpy.ops.wm.save_as_mainfile(filepath=os.path.join(ART, "guardia.blend"))
+        sys.path.append(ART)
+        import catalogo
+        catalogo.mark("personaje")
+        bpy.ops.wm.save_as_mainfile(filepath=os.path.join(ART, "personajes", "guardia.blend"))
         if not ARGS:
             import rig
             rig.export(os.path.join(ART, "..", "assets", "models", "guardia.glb"))

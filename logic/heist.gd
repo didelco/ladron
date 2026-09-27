@@ -250,11 +250,11 @@ static func _place_panel(stand: Vector2i, from_start: PackedInt32Array, second :
 
 
 static func at_panel(p: Thief) -> bool:
-	return not p.out and not p.posing and Museum.dist(p.x, p.y, panel.x + 0.5, panel.y + 0.5) < PANEL_REACH
+	return not p.out and not p.posing and not p.hiding and Museum.dist(p.x, p.y, panel.x + 0.5, panel.y + 0.5) < PANEL_REACH
 
 
 static func at_panel2(p: Thief) -> bool:
-	return panel2.x >= 0 and not p.out and not p.posing and Museum.dist(p.x, p.y, panel2.x + 0.5, panel2.y + 0.5) < PANEL_REACH
+	return panel2.x >= 0 and not p.out and not p.posing and not p.hiding and Museum.dist(p.x, p.y, panel2.x + 0.5, panel2.y + 0.5) < PANEL_REACH
 
 
 ## The alarm is off: its panel held — both of them, for a gang of four. With
@@ -274,7 +274,7 @@ static func minigames() -> bool:
 ## The minigame this thief would start with the action key where it stands:
 ## {kind, what, steps}, or empty if there is none to start.
 static func game_for(p: Thief) -> Dictionary:
-	if not minigames() or p.out or p.game or p.posing or p.rolling or p.dizzy > 0.0:
+	if not minigames() or p.out or p.game or p.posing or p.hiding or p.rolling or p.dizzy > 0.0:
 		return {}
 	if not taken and Museum.dist(p.x, p.y, at.x + 0.5, at.y + 0.5) <= REACH:
 		return {"kind": "lockpick", "what": "case", "steps": Minigame.pins_for(float(loot.seconds))}
@@ -365,7 +365,7 @@ static func _stand_tiles(t: Vector2i) -> Array[Vector2i]:
 ## Standing still next to the case?
 static func at_case(p: Thief) -> bool:
 	# Down after a roll is not working the lock.
-	if p.out or p.posing or p.moving or p.speed > 0.2 or p.rolling or p.dizzy > 0.0:
+	if p.out or p.posing or p.hiding or p.moving or p.speed > 0.2 or p.rolling or p.dizzy > 0.0:
 		return false
 	return Museum.dist(p.x, p.y, at.x + 0.5, at.y + 0.5) <= REACH
 

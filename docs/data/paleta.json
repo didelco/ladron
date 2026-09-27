@@ -1,0 +1,1350 @@
+[
+	{
+		"colours": [
+			{
+				"hex": "#5a3a26",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "MOUSTACHE",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#c9ced8",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "STEEL",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ff7a7a",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "BLUSH",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#9fe0ff",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "SWEAT",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#131217",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "SUIT",
+		"note": "The ninja suit: near black, the same for every player."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#f3d2b3",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "SKIN",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#fff1e0",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "FACE",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#1b1d26",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "DARK",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#23304f",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "NAVY",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#15131c",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "EYE",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#fbfaff",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "WHITE",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#f5c451",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "GOLD",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#c9b48a",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "BAG",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#9fd8ff",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "GLASS",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ffe39a",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "LENS",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#8f94a3",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "RACCOON",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#3a3d48",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "RACCOON_DARK",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#d4a676",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "BULLDOG",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#9b6f47",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "BULLDOG_DARK",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#08070c",
+				"key": ""
+			}
+		],
+		"file": "scenes/bean.gd",
+		"name": "INK",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#08070c",
+				"key": ""
+			}
+		],
+		"file": "scenes/figure.gd",
+		"name": "INK",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#141418",
+				"key": ""
+			}
+		],
+		"file": "scenes/figure.gd",
+		"name": "BELT",
+		"note": "A shade of the player's colour, and what is black on a coloured suit."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ffd23f",
+				"key": ""
+			}
+		],
+		"file": "scenes/figure.gd",
+		"name": "DAZE_COLOUR",
+		"note": "The stars going round the head: how many, how far out, turns a second, and each one's size (m); drawn bigger than life, to read from up high."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#9fe0ff",
+				"key": ""
+			}
+		],
+		"file": "scenes/figure.gd",
+		"name": "SWEAT_COLOUR",
+		"note": "The drop of sweat: its size (m, radius of the round end), where it sits beside the head, how far it runs down before it starts again, and how fast."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#f1dfbd",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "CREAM",
+		"note": "The menus' toy palette: cream cards and buttons, dark ink text."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#2a160d",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "INK",
+		"note": "The menus' toy palette: cream cards and buttons, dark ink text."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#b9a07a",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "INK_SOFT",
+		"note": "The menus' toy palette: cream cards and buttons, dark ink text."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#35211a",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "WALNUT",
+		"note": "The night museum's furniture: walnut panels, brass fittings, parchment."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#4a2f24",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "WALNUT_LIT",
+		"note": "The night museum's furniture: walnut panels, brass fittings, parchment."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#120906",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "WALNUT_EDGE",
+		"note": "The night museum's furniture: walnut panels, brass fittings, parchment."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#d8ac5c",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "BRASS",
+		"note": "The night museum's furniture: walnut panels, brass fittings, parchment."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#7a5a32",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "BRASS_DARK",
+		"note": "The night museum's furniture: walnut panels, brass fittings, parchment."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#eef2ff",
+				"key": "text"
+			},
+			{
+				"hex": "#9aa0c8",
+				"key": "dim"
+			},
+			{
+				"hex": "#ffe066",
+				"key": "gold"
+			},
+			{
+				"hex": "#ff3d6e",
+				"key": "alert"
+			},
+			{
+				"hex": "#22d3ee",
+				"key": "safe"
+			},
+			{
+				"hex": "#4ade80",
+				"key": "green"
+			},
+			{
+				"hex": "#0b0820eb",
+				"key": "panel"
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "C",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#1c1210",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "MAP_INK",
+		"note": "Pixels a tile: the plan fills about MAP_WIDTH whatever the museum's size, so the icons (a fixed size in pixels) read the same on every map."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#e8d6b4",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "MAP_FLOOR",
+		"note": "Pixels a tile: the plan fills about MAP_WIDTH whatever the museum's size, so the icons (a fixed size in pixels) read the same on every map."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#b89a70",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "MAP_CASE",
+		"note": "Pixels a tile: the plan fills about MAP_WIDTH whatever the museum's size, so the icons (a fixed size in pixels) read the same on every map."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#c4906a",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "MAP_PROP",
+		"note": "Pixels a tile: the plan fills about MAP_WIDTH whatever the museum's size, so the icons (a fixed size in pixels) read the same on every map."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#5a3a22",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "MAP_ROUTE",
+		"note": "Pixels a tile: the plan fills about MAP_WIDTH whatever the museum's size, so the icons (a fixed size in pixels) read the same on every map."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#4a2f22",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "MAP_WALL",
+		"note": "Pixels a tile: the plan fills about MAP_WIDTH whatever the museum's size, so the icons (a fixed size in pixels) read the same on every map."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#c42a3c",
+				"key": ""
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "MAP_GUARD",
+		"note": "Pixels a tile: the plan fills about MAP_WIDTH whatever the museum's size, so the icons (a fixed size in pixels) read the same on every map."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#3a2a40",
+				"key": "0"
+			},
+			{
+				"hex": "#ffd43b",
+				"key": "1"
+			},
+			{
+				"hex": "#ff922b",
+				"key": "2"
+			},
+			{
+				"hex": "#ff3048",
+				"key": "3"
+			}
+		],
+		"file": "scenes/hud.gd",
+		"name": "ALARM_COLOURS",
+		"note": "The alarm's marks: one slot per level, lit up to the level in its colour."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ff922b",
+				"key": ""
+			}
+		],
+		"file": "scenes/lesson_stage.gd",
+		"name": "ORANGE",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ff3048",
+				"key": ""
+			}
+		],
+		"file": "scenes/lesson_stage.gd",
+		"name": "RED",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ffe7a8",
+				"key": ""
+			}
+		],
+		"file": "scenes/lesson_stage.gd",
+		"name": "BEAM",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#0f0d14",
+				"key": "night"
+			},
+			{
+				"hex": "#2ec4a6",
+				"key": "thief"
+			},
+			{
+				"hex": "#12705f",
+				"key": "thief_dark"
+			},
+			{
+				"hex": "#f0a13a",
+				"key": "thief2"
+			},
+			{
+				"hex": "#8a5410",
+				"key": "thief2_dark"
+			},
+			{
+				"hex": "#b07cff",
+				"key": "thief3"
+			},
+			{
+				"hex": "#5b3a99",
+				"key": "thief3_dark"
+			},
+			{
+				"hex": "#4dabf7",
+				"key": "thief4"
+			},
+			{
+				"hex": "#1c5d99",
+				"key": "thief4_dark"
+			},
+			{
+				"hex": "#9b2c3f",
+				"key": "guard"
+			},
+			{
+				"hex": "#5e1826",
+				"key": "guard_dark"
+			},
+			{
+				"hex": "#08070c",
+				"key": "ink"
+			},
+			{
+				"hex": "#ff3d6e",
+				"key": "alert"
+			},
+			{
+				"hex": "#ffd479",
+				"key": "cone"
+			},
+			{
+				"hex": "#ffa94d",
+				"key": "cone_alert"
+			},
+			{
+				"hex": "#eef3ff",
+				"key": "lit"
+			},
+			{
+				"hex": "#f87171",
+				"key": "switch_off"
+			},
+			{
+				"hex": "#4ade80",
+				"key": "switch_on"
+			},
+			{
+				"hex": "#22d3ee",
+				"key": "safe"
+			}
+		],
+		"file": "scenes/main.gd",
+		"name": "COLOURS",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#fff1d8",
+				"key": ""
+			}
+		],
+		"file": "scenes/main.gd",
+		"name": "TORCH_COLOUR",
+		"note": "The torch is the hero light: a crisp near-white beam that owns the dark, brighter when its guard is on the hunt. Its colour is warmer than the moon and cooler than the lamps, so it never reads as either."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ffc47e",
+				"key": ""
+			}
+		],
+		"file": "scenes/main.gd",
+		"name": "ROOM_LIGHT_COLOUR",
+		"note": "Lit rooms glow warm, like a hotel lobby with the chandeliers on."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#6256aa",
+				"key": ""
+			}
+		],
+		"file": "scenes/main.gd",
+		"name": "AMBIENT_COLOUR",
+		"note": "The night, graded: deep blue-violet shadows and a cold moon, so the warm practical lights and the torches are the only warm things on screen."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#8ea2ff",
+				"key": ""
+			}
+		],
+		"file": "scenes/main.gd",
+		"name": "MOON_COLOUR",
+		"note": "The night, graded: deep blue-violet shadows and a cold moon, so the warm practical lights and the torches are the only warm things on screen."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#0a0918",
+				"key": ""
+			}
+		],
+		"file": "scenes/main.gd",
+		"name": "BACKGROUND",
+		"note": "The night, graded: deep blue-violet shadows and a cold moon, so the warm practical lights and the torches are the only warm things on screen."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ffffff00",
+				"key": "0"
+			},
+			{
+				"hex": "#ffd43b",
+				"key": "1"
+			},
+			{
+				"hex": "#ff922b",
+				"key": "2"
+			},
+			{
+				"hex": "#ff3048",
+				"key": "3"
+			}
+		],
+		"file": "scenes/main.gd",
+		"name": "SUSPICION_COLOURS",
+		"note": "The colour of each level of suspicion: a hunch, alert, after you."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#1c1210",
+				"key": ""
+			}
+		],
+		"file": "scenes/map_editor.gd",
+		"name": "INK",
+		"note": "The plan's colours: the paper map's (Hud), so the editor and the map you take out mid-job look like the same drawing."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#140d18",
+				"key": ""
+			}
+		],
+		"file": "scenes/map_editor.gd",
+		"name": "OUTSIDE",
+		"note": "The plan's colours: the paper map's (Hud), so the editor and the map you take out mid-job look like the same drawing."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#2ec4a6",
+				"key": ""
+			}
+		],
+		"file": "scenes/map_editor.gd",
+		"name": "THIEF",
+		"note": "The plan's colours: the paper map's (Hud), so the editor and the map you take out mid-job look like the same drawing."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#c42a3c",
+				"key": ""
+			}
+		],
+		"file": "scenes/map_editor.gd",
+		"name": "GUARD",
+		"note": "The plan's colours: the paper map's (Hud), so the editor and the map you take out mid-job look like the same drawing."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#4ade80",
+				"key": ""
+			}
+		],
+		"file": "scenes/map_editor.gd",
+		"name": "EXIT",
+		"note": "The plan's colours: the paper map's (Hud), so the editor and the map you take out mid-job look like the same drawing."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ffe066",
+				"key": ""
+			}
+		],
+		"file": "scenes/map_editor.gd",
+		"name": "PIECE",
+		"note": "The plan's colours: the paper map's (Hud), so the editor and the map you take out mid-job look like the same drawing."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ff8c2e",
+				"key": ""
+			}
+		],
+		"file": "scenes/map_editor.gd",
+		"name": "PROP",
+		"note": "The plan's colours: the paper map's (Hud), so the editor and the map you take out mid-job look like the same drawing."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#d8ac5c",
+				"key": ""
+			}
+		],
+		"file": "scenes/map_editor.gd",
+		"name": "ROOM",
+		"note": "The plan's colours: the paper map's (Hud), so the editor and the map you take out mid-job look like the same drawing."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#e8d6b4",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "CREAM",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#1c1210",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "INK",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#7a6496",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "LILAC",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#3f2e52",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "LILAC_DARK",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#7a2e44",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "PINK",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#551e30",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "PINK_DARK",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#4f8a7a",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "MINT",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#3d6b52",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "GRASS",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#2c4f45",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "GRASS_NIGHT",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#4a2f22",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "SOIL",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#d8ac5c",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "GOLD",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#8a7299",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "WALL",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#8fc4d6",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "CASE",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#b8324c",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "GUARD",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#6e1a2c",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "GUARD_DARK",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#5a3a26",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "WOOD",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#5c1f33",
+				"key": ""
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "VELVET",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#15112a",
+				"key": "story"
+			},
+			{
+				"hex": "#1b1526",
+				"key": "generative"
+			},
+			{
+				"hex": "#221510",
+				"key": "players"
+			},
+			{
+				"hex": "#221510",
+				"key": "seat"
+			},
+			{
+				"hex": "#161b24",
+				"key": "guards:easy"
+			},
+			{
+				"hex": "#221a12",
+				"key": "guards:medium"
+			},
+			{
+				"hex": "#2a1016",
+				"key": "guards:hard"
+			},
+			{
+				"hex": "#1a1422",
+				"key": "museum"
+			},
+			{
+				"hex": "#1a1422",
+				"key": "lesson"
+			}
+		],
+		"file": "scenes/menu_stage.gd",
+		"name": "BACKDROP",
+		"note": "Each card's backdrop: the dark behind its island."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#e8d6b4",
+				"key": ""
+			}
+		],
+		"file": "scenes/minigame_stage.gd",
+		"name": "CREAM",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#1c1210",
+				"key": ""
+			}
+		],
+		"file": "scenes/minigame_stage.gd",
+		"name": "INK",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#d8ac5c",
+				"key": ""
+			}
+		],
+		"file": "scenes/minigame_stage.gd",
+		"name": "GOLD",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#5a3a26",
+				"key": ""
+			}
+		],
+		"file": "scenes/minigame_stage.gd",
+		"name": "WOOD",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#b8bcc8",
+				"key": ""
+			}
+		],
+		"file": "scenes/minigame_stage.gd",
+		"name": "STEEL",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#4ade80",
+				"key": ""
+			}
+		],
+		"file": "scenes/minigame_stage.gd",
+		"name": "GREEN",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ff3d6e",
+				"key": ""
+			}
+		],
+		"file": "scenes/minigame_stage.gd",
+		"name": "RED",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#e8594f",
+				"key": "0"
+			},
+			{
+				"hex": "#4dabf7",
+				"key": "1"
+			},
+			{
+				"hex": "#ffd43b",
+				"key": "2"
+			},
+			{
+				"hex": "#5cc98a",
+				"key": "3"
+			},
+			{
+				"hex": "#c77dff",
+				"key": "4"
+			},
+			{
+				"hex": "#e8d6b4",
+				"key": "5"
+			}
+		],
+		"file": "scenes/minigame_stage.gd",
+		"name": "WIRE_COLOURS",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ffb45a",
+				"key": ""
+			}
+		],
+		"file": "scenes/museum_view.gd",
+		"name": "SCONCE_COLOUR",
+		"note": "Warm wall lamps, one on the north wall of a gallery: the warm pools in the blue night. Few, small and shadowless, so they cost next to nothing."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#0f0d14",
+				"key": "night"
+			},
+			{
+				"hex": "#2b2834",
+				"key": "floor"
+			},
+			{
+				"hex": "#474357",
+				"key": "floor_line"
+			},
+			{
+				"hex": "#f0c46a",
+				"key": "gold"
+			},
+			{
+				"hex": "#9a7a3c",
+				"key": "gold_dim"
+			},
+			{
+				"hex": "#544a5e",
+				"key": "wall_top"
+			},
+			{
+				"hex": "#e8ddc0",
+				"key": "bone"
+			},
+			{
+				"hex": "#b9a883",
+				"key": "bone_dark"
+			},
+			{
+				"hex": "#7ad6ff",
+				"key": "mineral"
+			},
+			{
+				"hex": "#ff8ab5",
+				"key": "mineral_warm"
+			},
+			{
+				"hex": "#4f9e5e",
+				"key": "fern"
+			},
+			{
+				"hex": "#5a5560",
+				"key": "stone"
+			},
+			{
+				"hex": "#9b2c3f",
+				"key": "crimson"
+			},
+			{
+				"hex": "#211d29",
+				"key": "wall_side"
+			},
+			{
+				"hex": "#6f6479",
+				"key": "wall_cap"
+			},
+			{
+				"hex": "#08070c",
+				"key": "ink"
+			},
+			{
+				"hex": "#15111d",
+				"key": "core"
+			},
+			{
+				"hex": "#232634",
+				"key": "case_dark"
+			},
+			{
+				"hex": "#a8d8e8",
+				"key": "glass"
+			},
+			{
+				"hex": "#4ade80",
+				"key": "emergency"
+			}
+		],
+		"file": "scenes/museum_view.gd",
+		"name": "C",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#15111d",
+				"key": ""
+			}
+		],
+		"file": "scenes/night_map.gd",
+		"name": "GROUND",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#1f1929",
+				"key": ""
+			}
+		],
+		"file": "scenes/night_map.gd",
+		"name": "BLOCK",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#3a3246",
+				"key": ""
+			}
+		],
+		"file": "scenes/night_map.gd",
+		"name": "STREET",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#0c0a12",
+				"key": ""
+			}
+		],
+		"file": "scenes/night_map.gd",
+		"name": "STREET_EDGE",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#e9d3a4",
+				"key": ""
+			}
+		],
+		"file": "scenes/night_map.gd",
+		"name": "ROAD",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#2a160d",
+				"key": ""
+			}
+		],
+		"file": "scenes/night_map.gd",
+		"name": "ROAD_EDGE",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#1f3a5e",
+				"key": ""
+			}
+		],
+		"file": "scenes/night_map.gd",
+		"name": "RIVER",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ffd479",
+				"key": ""
+			}
+		],
+		"file": "scenes/night_map.gd",
+		"name": "WINDOW",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#08070c",
+				"key": ""
+			}
+		],
+		"file": "scenes/night_map.gd",
+		"name": "DARK",
+		"note": ""
+	},
+	{
+		"colours": [
+			{
+				"hex": "#f1ecdc",
+				"key": ""
+			}
+		],
+		"file": "scenes/props_view.gd",
+		"name": "PAPER",
+		"note": "Drawn this much bigger than life, to read from the camera up high."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#e8e4dc",
+				"key": ""
+			}
+		],
+		"file": "scenes/smoke_fx.gd",
+		"name": "LIGHT",
+		"note": "The smoke's colours: pale and a little warm where it is thick, cool grey where it thins, as ash smoke goes."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#a9a8b0",
+				"key": ""
+			}
+		],
+		"file": "scenes/smoke_fx.gd",
+		"name": "MID",
+		"note": "The smoke's colours: pale and a little warm where it is thick, cool grey where it thins, as ash smoke goes."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#6d6c78",
+				"key": ""
+			}
+		],
+		"file": "scenes/smoke_fx.gd",
+		"name": "DARK",
+		"note": "The smoke's colours: pale and a little warm where it is thick, cool grey where it thins, as ash smoke goes."
+	}
+]

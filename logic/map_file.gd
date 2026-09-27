@@ -12,10 +12,20 @@ extends RefCounted
 ##
 ## What is left unset — the piece, the door (NONE), the number of guards (0)
 ## — the job picks the way it does in a generated museum.
+##
+## A story night's museum can be one too (night > 0): taken from the museum
+## the night builds (from_museum), touched up in the editor and saved as
+## maps/historia/noche_NN.json; the night then plays it instead of building
+## its own (for_night). Its piece, guards and difficulty stay the night's.
 
 ## The player's maps, and the ones that come with the game.
 const FOLDER := "user://maps"
 const BUILT_IN := "res://maps"
+## The story's nights as edited: with the game (while it runs from the
+## project, so they ship with it), and the player's (once it is exported,
+## where the game's own folder cannot be written).
+const STORY_BUILT_IN := "res://maps/historia"
+const STORY_MINE := "user://maps/historia"
 const FORMAT := 1
 ## A tile as a character; a space is no building at all.
 const CHARS := {Tiles.FLOOR: ".", Tiles.WALL: "#", Tiles.COVER: "o"}
@@ -72,6 +82,11 @@ var props: Array[Dictionary] = []
 ## where it was read from ("" if never saved), and whether it came with the game
 var path := ""
 var built_in := false
+## the story night it is the museum of (Story), 0 for a challenge
+var night := 0
+## whether the seed drew the museum's outline (Museum.regenerate): not when
+## the night fixed it, and then the galleries' names draw one number sooner
+var drew_outline := true
 
 
 ## An empty building: an outer wall round one big hall.
@@ -136,6 +151,8 @@ func resized(width: int, height: int) -> MapFile:
 	m.wall_look = wall_look
 	m.path = path
 	m.built_in = built_in
+	m.night = night
+	m.drew_outline = drew_outline
 	var keep := Rect2i(1, 1, width - 2, height - 2)
 	for y in range(1, mini(h, height - 1)):
 		for x in range(1, mini(w, width - 1)):
@@ -232,8 +249,8 @@ func _bare_wall(t: Vector2i) -> bool:
 
 
 ## Stamp a ready-made room down, its top left corner at `corner`: rows of
-## characters as on disk, and 'D' and 'S' for the dinosaur's and the
-## sarcophagus' cases, 'b' for a bust on its pedestal. Whatever was under it
+## characters as on disk, and 'D', 'S' and 'O' for the dinosaur's, the
+## sarcophagus' and the bear's cases, 'b' for a bust on its pedestal. Whatever was under it
 ## goes; the plan's own edge stays as it was. gallery: its inside is a room
 ## (a light, a switch, a name), not corridor.
 func stamp(rows: Array, corner: Vector2i, gallery: bool) -> void:
@@ -258,9 +275,9 @@ func stamp(rows: Array, corner: Vector2i, gallery: bool) -> void:
 					put(t, Tiles.WALL)
 				"o":
 					put(t, Tiles.COVER)
-				"D", "S":
+				"D", "S", "O":
 					put(t, Tiles.COVER)
-					var kind := "dinosaur" if c == "D" else "sarcophagus"
+					var kind: String = {"D": "dinosaur", "S": "sarcophagus", "O": "bear"}[c]
 					blocks[kind] = (blocks[kind] as Rect2i).merge(Rect2i(t, Vector2i.ONE)) if blocks.has(kind) else Rect2i(t, Vector2i.ONE)
 				"b":
 					put(t, Tiles.FLOOR)
@@ -509,9 +526,10 @@ func loot_piece() -> Dictionary:
 ## Make this the museum being played.
 func apply() -> void:
 	var rand := Mulberry32.new(seed ^ 0x5bd1e995)
-	# Museum.regenerate draws the outline first: so do we, and a generated
-	# map keeps its galleries' names.
-	rand.next()
+	# Museum.regenerate draws the outline first (unless it was given one): so
+	# do we, and a generated map keeps its galleries' names.
+	if drew_outline:
+		rand.next()
 	Museum.shape = "custom"
 	Museum.size_name = size_name()
 	var big_copy: Array[Dictionary] = []
@@ -560,7 +578,7 @@ func to_dict() -> Dictionary:
 		"props": props.map(func(p): return {"kind": p.kind, "at": pair.call(p.at)}),
 		"loot": loot,
 		"exhibits": exhibits.keys().map(func(t): return {"kind": exhibits[t], "at": pair.call(t)}),
-	}
+	}.merged({"night": night} if night > 0 else {}).merged({"drew_outline": false} if not drew_outline else {})
 
 
 ## A map from its JSON, or null if it is not one.
@@ -581,6 +599,8 @@ static func from_dict(d: Variant) -> MapFile:
 	var rect := func(v: Variant) -> Rect2i:
 		return Rect2i(int(v[0]), int(v[1]), int(v[2]), int(v[3])) if v is Array and (v as Array).size() == 4 else Rect2i()
 	m.name = String(d.get("name", ""))
+	m.night = maxi(0, int(d.get("night", 0)))
+	m.drew_outline = bool(d.get("drew_outline", true))
 	m.seed = int(d.get("seed", 0))
 	m.difficulty = String(d.get("difficulty", "medium"))
 	if not Sim.DIFFICULTIES.has(m.difficulty):
@@ -636,21 +656,70 @@ static func slug(text: String) -> String:
 
 
 ## Write it to the player's maps, under its name. A map from the game, once
-## changed, is saved as the player's own.
+## changed, is saved as the player's own. A story night's goes where its
+## night looks for it (story_file).
 func save() -> Error:
-	DirAccess.make_dir_recursive_absolute(FOLDER)
-	var file := "%s/%s.json" % [FOLDER, slug(name)]
+	var file := story_file(night) if night > 0 else "%s/%s.json" % [FOLDER, slug(name)]
+	DirAccess.make_dir_recursive_absolute(file.get_base_dir())
 	var f := FileAccess.open(file, FileAccess.WRITE)
 	if f == null:
 		return FileAccess.get_open_error()
 	f.store_string(JSON.stringify(to_dict(), "\t"))
 	f.close()
 	# Renamed: the old file goes.
-	if path != "" and path != file and not built_in:
+	if night == 0 and path != "" and path != file and not built_in:
 		DirAccess.remove_absolute(path)
 	path = file
-	built_in = false
+	built_in = night > 0 and file.begins_with(BUILT_IN)
 	return OK
+
+
+## Where a story night's museum is saved: with the game while it runs from
+## the project, the player's own once exported.
+static func story_file(n: int) -> String:
+	return "%s/noche_%02d.json" % [STORY_MINE if OS.has_feature("template") else STORY_BUILT_IN, n]
+
+
+## A story night's museum as edited, or null if the night builds its own:
+## the player's first, then the game's.
+static func for_night(n: int) -> MapFile:
+	for folder in [STORY_MINE, STORY_BUILT_IN]:
+		var file := "%s/noche_%02d.json" % [folder, n]
+		if FileAccess.file_exists(file):
+			var m := read(file)
+			if m:
+				m.night = n
+				return m
+	return null
+
+
+## The museum being played, as a map: the plan, its galleries and big pieces,
+## the way in, the piece and the door, the guards where they start, the things
+## to knock over and the empty pedestals. For a story night (n), to touch up.
+static func from_museum(n: int, seed_: int, guard_tiles: Array[Vector2i]) -> MapFile:
+	var m := MapFile.new()
+	m.night = n
+	m.seed = seed_
+	# A night gives its museum's outline (Story's "shape"): not drawn.
+	m.drew_outline = String(Story.level(n).get("shape", "")) == ""
+	m.w = Museum.w
+	m.h = Museum.h
+	m.grid = Museum.grid.duplicate()
+	m.outside = Museum.outside.duplicate()
+	for r in Museum.rooms:
+		m.rooms.append(r.rect)
+	m.big = Museum.big_pieces.duplicate(true)
+	m.spawn = Museum.spawn
+	m.piece = Heist.at
+	m.exit = Heist.exit
+	m.guards = guard_tiles.duplicate()
+	for p in Props.list:
+		m.props.append({"kind": p.kind, "at": p.tile})
+	for t in MuseumView.exhibits:
+		m.exhibits[t] = MuseumView.exhibits[t]
+	for t in Plinths.list:
+		m.exhibits[t] = "plinth"
+	return m
 
 
 ## The maps there are: the game's first, then the player's, each by name.
@@ -669,6 +738,9 @@ static func list() -> Array[MapFile]:
 	return out
 
 
+## A story night's goes too, even the game's while it runs from the project:
+## the night builds its own museum again.
 static func remove(m: MapFile) -> void:
-	if m.path != "" and not m.built_in:
+	var writable := not m.built_in or (m.night > 0 and not OS.has_feature("template"))
+	if m.path != "" and writable:
 		DirAccess.remove_absolute(m.path)

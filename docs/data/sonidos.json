@@ -1,0 +1,152 @@
+[
+	{
+		"file": "assets/sonidos/ok.wav",
+		"name": "ok",
+		"seconds": 0.42
+	},
+	{
+		"file": "assets/sonidos/nav.wav",
+		"name": "nav",
+		"seconds": 0.12
+	},
+	{
+		"file": "assets/sonidos/spark.wav",
+		"name": "spark",
+		"seconds": 0.28
+	},
+	{
+		"file": "assets/sonidos/snip.wav",
+		"name": "snip",
+		"seconds": 0.05
+	},
+	{
+		"file": "assets/sonidos/slip.wav",
+		"name": "slip",
+		"seconds": 0.12
+	},
+	{
+		"file": "assets/sonidos/boot.wav",
+		"name": "boot",
+		"seconds": 0.14
+	},
+	{
+		"file": "assets/sonidos/roll_bump.wav",
+		"name": "roll_bump",
+		"seconds": 0.38
+	},
+	{
+		"file": "assets/sonidos/kick_dry.wav",
+		"name": "kick_dry",
+		"seconds": 0.18
+	},
+	{
+		"file": "assets/sonidos/kick_metal.wav",
+		"name": "kick_metal",
+		"seconds": 0.36
+	},
+	{
+		"file": "assets/sonidos/armour.wav",
+		"name": "armour",
+		"seconds": 0.88
+	},
+	{
+		"file": "assets/sonidos/bust.wav",
+		"name": "bust",
+		"seconds": 0.58
+	},
+	{
+		"file": "assets/sonidos/bin.wav",
+		"name": "bin",
+		"seconds": 0.8
+	},
+	{
+		"file": "assets/sonidos/sting.wav",
+		"name": "sting",
+		"seconds": 1.3
+	},
+	{
+		"file": "assets/sonidos/go.wav",
+		"name": "go",
+		"seconds": 0.9
+	},
+	{
+		"file": "assets/sonidos/escaped.wav",
+		"name": "escaped",
+		"seconds": 0.96
+	},
+	{
+		"file": "assets/sonidos/stolen.wav",
+		"name": "stolen",
+		"seconds": 1.47
+	},
+	{
+		"file": "assets/sonidos/whisper.wav",
+		"name": "whisper",
+		"seconds": 0.35
+	},
+	{
+		"file": "assets/sonidos/shelf.wav",
+		"name": "shelf",
+		"seconds": 0.46
+	},
+	{
+		"file": "assets/sonidos/bump.wav",
+		"name": "bump",
+		"seconds": 0.09
+	},
+	{
+		"file": "assets/sonidos/alarm.wav",
+		"name": "alarm",
+		"seconds": 0.75
+	},
+	{
+		"file": "assets/sonidos/pick.wav",
+		"name": "pick",
+		"seconds": 0.4
+	},
+	{
+		"file": "assets/sonidos/shout.wav",
+		"name": "shout",
+		"seconds": 0.46
+	},
+	{
+		"file": "assets/sonidos/tick.wav",
+		"name": "tick",
+		"seconds": 0.25
+	},
+	{
+		"file": "assets/sonidos/back.wav",
+		"name": "back",
+		"seconds": 0.19
+	},
+	{
+		"file": "assets/sonidos/step.wav",
+		"name": "step",
+		"seconds": 0.05
+	},
+	{
+		"file": "assets/sonidos/panel.wav",
+		"name": "panel",
+		"seconds": 0.21
+	},
+	{
+		"file": "assets/sonidos/pin.wav",
+		"name": "pin",
+		"seconds": 0.12
+	},
+	{
+		"file": "assets/sonidos/lights.wav",
+		"name": "lights",
+		"seconds": 0.55
+	},
+	{
+		"file": "assets/sonidos/caught.wav",
+		"name": "caught",
+		"seconds": 2.0
+	},
+	{
+		"file": "assets/sonidos/roll.wav",
+		"name": "roll",
+		"seconds": 0.35
+	}
+]

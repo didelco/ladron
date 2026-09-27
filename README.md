@@ -12,12 +12,12 @@ logic/   lógica pura, sin nodos (GDScript con tipos): se prueba sola
 scenes/  lo visual: main (bucle y HUD), museum_view (museo), figure (personajes)
 brain/   el cerebro: FastAPI sobre Laya, igual que en la web
 tests/   pruebas sin ventana
-art/     fuentes en Blender (.blend) de las piezas del museo; se exportan a assets/models
+art/     el catálogo en Blender (.blend por grupos) y su exportador a assets/models
 ```
 
 ## Piezas modeladas
 
-Lo que tiene forma fija se modela en Blender (`art/<nombre>.blend`) y el juego carga el `.glb`
+Lo que tiene forma fija se modela en Blender y el juego carga el `.glb`
 de `assets/models/` con su sombreado toon (`MuseumView.asset`): vitrina (una para todas; el código
 pone dentro lo que toque), papelera, pedestal y lo que va encima (cuatro bustos, una regadera y un
 váter), panel, armadura (por piezas, para que se desmonte al caer), cráneo y cabeza de Lego, ánfora,
@@ -27,12 +27,42 @@ Lo que depende del mapa o de la semilla sigue en código: muros, suelo, plintos,
 minerales, dioramas, cuadros (paisaje, retrato, abstracto, pipa, plátano, helado), la lámina de
 cada panel y las luces.
 
-Tras retocar una pieza, guarda el `.blend` y reexporta (las convenciones están en `art/export.py`):
+### El catálogo en Blender
+
+Las piezas están agrupadas en pocos ficheros; dentro, cada pieza es una colección, en fila y con
+su nombre escrito delante, y sale a su propio `.glb`:
+
+| Fichero | Qué hay | Sale a |
+|---|---|---|
+| `art/museo.blend` | el mobiliario: vitrina, pedestal, panel, papelera | `assets/models/` |
+| `art/coleccion.blend` | bustos, regadera, váter, cráneos, ánfora, globo, tótem, amonite, meteorito, oso, armadura, sarcófago, dinosaurio | `assets/models/` |
+| `art/tema_antiguo.blend` | las piezas del tema antiguo (Egipto) | `assets/models/temas/antiguo/` |
+| `art/tema_edad_media.blend` | las piezas de la Edad Media | `assets/models/temas/edad_media/` |
+| `art/personajes/guardia.blend`, `ninja.blend` | un personaje con esqueleto y acciones cada uno | `assets/models/` |
+
+Para retocar: abre el fichero, cambia la pieza **sin moverla de su sitio en la fila** (la colección
+recuerda dónde está su origen) y exporta. Desde Blender, con el panel **Ladrón** de la barra lateral
+(tecla `N`): *Exportar pieza* (la del objeto seleccionado), *Exportar fichero*, *Exportar todo*,
+*Nueva pieza* y *Ordenar fila*; guarda, exporta y hace que Godot reimporte. Se instala una vez:
+Preferencias → Add-ons → Instalar desde disco… → `art/ladron_addon.py`. Desde la terminal:
 
 ```bash
-/Applications/Blender.app/Contents/MacOS/Blender -b -P art/export.py -- vitrina   # sin nombres: todas
-godot --headless --import
+B=/Applications/Blender.app/Contents/MacOS/Blender
+$B -b -P art/export.py                           # todo
+$B -b -P art/export.py -- vitrina anubis         # esas piezas
+$B -b -P art/export.py -- --godot tema_antiguo   # un fichero entero, y Godot reimporta
 ```
+
+**Claude dentro de Blender** (`art/claude_addon.py`, se instala igual): pestaña *Claude* de la barra
+lateral, un chat que va por Claude Code (la suscripción, sin clave de API). Con cada mensaje le llega
+un resumen de la escena (y, si se marca, una captura del visor); si hay que cambiar algo, contesta con
+código que se ejecuta ahí mismo como un solo paso (Ctrl+Z lo deshace; antes guarda una copia en la
+carpeta temporal). Si falla, *Pedir arreglo* le manda el error.
+
+Una pieza nueva: *Nueva pieza* en el fichero que le toque (o una colección nueva), modelar con el
+pie en z = 0 y el frente a -Y sobre el cursor, y exportar. Convenciones y nombres que busca el
+juego: `art/catalogo.py`. Los scripts de `art/characters/` y `art/temas/` son cómo se hizo la
+primera versión: volver a ejecutarlos pisa los retoques hechos a mano.
 
 ## Plan
 
@@ -54,7 +84,7 @@ godot --headless --import
 ```bash
 godot --headless --script tests/test_mapgen.gd   # museos bien formados (306 de todos los tamaños y formas)
 godot --headless --script tests/test_sim.gd      # escenarios de la simulación
-godot --headless --script tests/test_heist.gd    # el golpe, el cuadro de alarma y las diez noches
+godot --headless --script tests/test_heist.gd    # el golpe, el cuadro de alarma y las noches de la historia
 godot --headless --script tests/test_mapfile.gd  # mapas guardados: ida y vuelta, validación y que se juegan
 godot --headless --script tests/test_story.gd    # la historia: noches por museo, progreso por jugadores
 godot --headless --script tests/test_roll.gd     # rodar: ocho casillas, bajo y callado; limpia o contra la pared (golpe y estrellas)
@@ -68,12 +98,26 @@ godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (ne
 
 En macOS, `godot` es `/Applications/Godot.app/Contents/MacOS/Godot`.
 
+## Documentación
+
+`docs/index.html` enseña el estilo y las decisiones gráficas (`docs/ESTILO.md`, lo único escrito a
+mano), la paleta completa, capturas de cada pantalla, todos los assets (piezas, objetos, modelos 3D y
+sonidos) y todos los textos, con la historia en orden. Todo sale del propio juego:
+
+```bash
+python3 tools/docs.py build          # lo regenera todo (abre una ventana del juego unos minutos)
+python3 tools/docs.py build --fast   # solo datos y textos
+python3 tools/docs.py serve          # http://localhost:8765: además, los textos se editan ahí
+```
+
+Editar un texto en el visor lo cambia en `locale/texts.csv` (solo esa fila) y Godot lo reimporta.
+
 ## Controles
 
 En el título se elige el modo:
 
-- **Historia**: diez noches fijas, de muy fácil (un guardia medio dormido en un museo pequeño) a
-  difícil (cinco guardias en uno grande). La Banda del Calcetín recupera las cosas que el Barón Von
+- **Historia**: veinte noches fijas, de muy fácil (un museo pequeño sin guardias) a
+  difícil (cuatro guardias en uno grande). La Banda del Calcetín recupera las cosas que el Barón Von
   Bostezo se llevó del pueblo (`logic/story.gd`). Primero se elige cuántos ladrones; luego, en el
   mapa de la ciudad, uno de los cinco museos (cada uno con sus colores de pared y suelo) y dentro,
   una de sus cuatro noches. El progreso se guarda aparte para cada número de jugadores y se puede
@@ -87,7 +131,13 @@ En el título se elige el modo:
   dinosaurio...), la entrada, la pieza, la salida, guardias y objetos, o partir de un mapa
   aleatorio del generador; tamaño, dificultad y guardias; vista 3D, probar y guardar. Solo deja
   jugar mapas cerrados, sin espacios a los que no se llega, con pieza y salida alcanzables.
-  `-- --menu=challenges` (o `editor`) los abre directamente.
+  `-- --menu=challenges` (o `editor`) los abre directamente. La pantalla es una lista (las noches
+  de la historia, luego los retos) con el plano del que está elegido a la derecha.
+  Las **noches de la historia** también se retocan ahí: se abre el museo tal como lo monta la
+  noche (`MapFile.from_museum`), se edita y se guarda en `maps/historia/noche_NN.json` (en
+  `user://maps/historia/` si el juego está exportado); desde entonces la noche juega ese museo,
+  con su pieza, sus guardias y su dificultad de siempre. *Volver al original* borra el fichero.
+  Probar una noche desde el editor no cuenta como partida de la historia.
 
 Antes de cada golpe, el plan: el mapa a la izquierda y, a la derecha, la pieza, su historia y
 consejos sacados de cómo es la noche (`logic/briefing.gd`: cuántos guardias, si son rápidos u

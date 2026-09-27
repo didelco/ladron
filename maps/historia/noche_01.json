@@ -1,0 +1,335 @@
+{
+	"big": [
+		{
+			"kind": "sarcophagus",
+			"rect": [
+				9,
+				4,
+				3,
+				1
+			]
+		},
+		{
+			"kind": "dinosaur",
+			"rect": [
+				9,
+				10,
+				3,
+				2
+			]
+		}
+	],
+	"difficulty": "medium",
+	"drew_outline": false,
+	"exhibits": [
+		{
+			"at": [
+				11,
+				2
+			],
+			"kind": "temas/antiguo/busto_faraon"
+		},
+		{
+			"at": [
+				9,
+				2
+			],
+			"kind": "temas/antiguo/gato_bastet"
+		},
+		{
+			"at": [
+				19,
+				4
+			],
+			"kind": "temas/antiguo/canopos"
+		},
+		{
+			"at": [
+				20,
+				4
+			],
+			"kind": "temas/antiguo/amuletos"
+		},
+		{
+			"at": [
+				17,
+				4
+			],
+			"kind": "temas/antiguo/amuletos"
+		},
+		{
+			"at": [
+				16,
+				4
+			],
+			"kind": "temas/antiguo/amuletos"
+		},
+		{
+			"at": [
+				14,
+				4
+			],
+			"kind": "temas/antiguo/amuletos"
+		},
+		{
+			"at": [
+				20,
+				1
+			],
+			"kind": "temas/antiguo/amuletos"
+		},
+		{
+			"at": [
+				17,
+				1
+			],
+			"kind": "temas/antiguo/amuletos"
+		},
+		{
+			"at": [
+				15,
+				1
+			],
+			"kind": "temas/antiguo/gato_bastet"
+		},
+		{
+			"at": [
+				18,
+				1
+			],
+			"kind": "temas/antiguo/gato_bastet"
+		},
+		{
+			"at": [
+				9,
+				13
+			],
+			"kind": "ammonite"
+		},
+		{
+			"at": [
+				11,
+				13
+			],
+			"kind": "meteorite"
+		},
+		{
+			"at": [
+				9,
+				15
+			],
+			"kind": "minerals"
+		},
+		{
+			"at": [
+				8,
+				15
+			],
+			"kind": "amphora"
+		},
+		{
+			"at": [
+				12,
+				15
+			],
+			"kind": "temas/antiguo/escarabajo"
+		},
+		{
+			"at": [
+				9,
+				8
+			],
+			"kind": "diorama"
+		},
+		{
+			"at": [
+				8,
+				8
+			],
+			"kind": "diorama"
+		},
+		{
+			"at": [
+				6,
+				6
+			],
+			"kind": "temas/edad_media/corona"
+		},
+		{
+			"at": [
+				2,
+				6
+			],
+			"kind": "temas/edad_media/manuscrito"
+		},
+		{
+			"at": [
+				1,
+				8
+			],
+			"kind": "temas/edad_media/codice_leonardo"
+		},
+		{
+			"at": [
+				3,
+				8
+			],
+			"kind": "temas/edad_media/astrolabio"
+		},
+		{
+			"at": [
+				5,
+				8
+			],
+			"kind": "temas/edad_media/astrolabio"
+		},
+		{
+			"at": [
+				4,
+				7
+			],
+			"kind": "temas/edad_media/astrolabio"
+		},
+		{
+			"at": [
+				3,
+				9
+			],
+			"kind": "temas/edad_media/escudo"
+		},
+		{
+			"at": [
+				6,
+				12
+			],
+			"kind": "temas/edad_media/yelmo"
+		},
+		{
+			"at": [
+				4,
+				12
+			],
+			"kind": "temas/edad_media/caliz"
+		},
+		{
+			"at": [
+				2,
+				12
+			],
+			"kind": "skull"
+		},
+		{
+			"at": [
+				2,
+				15
+			],
+			"kind": "minerals"
+		},
+		{
+			"at": [
+				5,
+				15
+			],
+			"kind": "minerals"
+		},
+		{
+			"at": [
+				4,
+				15
+			],
+			"kind": "minerals"
+		},
+		{
+			"at": [
+				3,
+				15
+			],
+			"kind": "minerals"
+		}
+	],
+	"exit": [
+		4,
+		1
+	],
+	"floor_look": -1,
+	"format": 1,
+	"guard_count": 0,
+	"guards": [],
+	"loot": {},
+	"name": "NOCHE 1 · LA DENTADURA DEL ABUELO PACO",
+	"night": 1,
+	"piece": [
+		18,
+		11
+	],
+	"props": [],
+	"rooms": [
+		[
+			1,
+			1,
+			6,
+			4
+		],
+		[
+			1,
+			6,
+			6,
+			4
+		],
+		[
+			1,
+			11,
+			6,
+			5
+		],
+		[
+			8,
+			1,
+			5,
+			6
+		],
+		[
+			14,
+			1,
+			8,
+			6
+		],
+		[
+			8,
+			8,
+			5,
+			8
+		],
+		[
+			17,
+			8,
+			5,
+			8
+		]
+	],
+	"rows": [
+		"#######################",
+		"#......#.....#.o.oo.o.#",
+		"#......#.o.o..........#",
+		"#......#.....#........#",
+		"#......#.ooo.#o#oo.oo.#",
+		"####.###.....#........#",
+		"#.o...o#.....#........#",
+		"#...o..###.######..####",
+		"#o.o.o.#oo...#........#",
+		"#..o.........#........#",
+		"#......#.ooo.#.#....#.#",
+		"########.ooo.#....o...#",
+		"#.o.o.o#.....#........#",
+		"#........o.o.#.#....#.#",
+		"#......#.....#........#",
+		"#.oooo.#oo..o#........#",
+		"#######################"
+	],
+	"seed": 432161,
+	"spawn": [
+		3,
+		13
+	],
+	"wall_look": -1
+}

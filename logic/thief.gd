@@ -43,8 +43,15 @@ var roll_key := false
 ## up on an empty pedestal, still as a statue (Plinths): which one
 var posing := false
 var perch := Vector2i(-1, -1)
-## a guard saw it climb up: the statue fools nobody until it is out of sight
+## a guard saw it climb up (or wobble): that guard knows (Guard.knows)
 var pose_blown := false
+## inside something (Hideouts): the sarcophagus or a suit of armour
+var hiding := false
+## which one (Hideouts.Spot), and where it stood before getting in
+var hideout: Hideouts.Spot = null
+var hide_entry := Vector2.ZERO
+## a guard saw it get in: that guard knows (Guard.knows)
+var hide_blown := false
 ## at a job with the hands (Minigame): the lock or the alarm's glass, or
 ## the balance on a pedestal; it
 ## stands where it is until done or it lets go

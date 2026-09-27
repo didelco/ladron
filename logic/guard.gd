@@ -77,3 +77,10 @@ var errand := ""
 ## the room (lights) or the guard id (warn) the errand is about
 var errand_room := -1
 var errand_partner := ""
+## A thief it saw get into a hideout or up on a pedestal (its id, or ""):
+## it goes to get it out, whether it still sees it or not, until it does or
+## the thief is no longer there. Where that was, and in what: "plinth",
+## "sarcophagus" or "armour" (shown over its head).
+var knows := ""
+var knows_at := Vector2.INF
+var knows_kind := ""

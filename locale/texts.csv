@@ -298,6 +298,8 @@ HUD_SWITCH_HINT,INTERRUPTOR DE LA LUZ
 EDITOR_TOOL_EXHIBIT_PLINTH,PEDESTAL
 HUD_PLINTH_HINT,SUBIR AL PEDESTAL
 HUD_PLINTH_DOWN,BAJAR DEL PEDESTAL
+HUD_HIDE_HINT,ESCONDERTE EN %s
+HUD_HIDE_OUT,SALIR
 HUD_GAME_PICK_HINT,GANZÚA
 HUD_GAME_WIRES_HINT,CORTAR LOS CABLES
 HUD_GAME_STEADY_HINT,VENTOSA EN LA ALARMA
@@ -335,6 +337,9 @@ LOG_KNOCKED,¡Has tirado %s!
 LOG_ROLL_WALL,¡Pum! Te has estampado contra la pared
 LOG_PLINTH_UP,Quieto como una estatua… nadie sospecha nada
 LOG_PLINTH_BLOWN,¡Te han visto subir! Así no cuela
+LOG_HIDE_IN,Dentro de %s… ni respiras
+LOG_HIDE_BLOWN,¡Te han visto meterte! Saben dónde estás
+LOG_HIDE_TIPPED,¡Se cae la armadura y sales rodando!
 LOG_ROLL_CASE,¡Pum! Te has estampado contra la vitrina
 LOG_CASE_ALARM,¡Salta la alarma de la vitrina!
 LOG_GOT_IT,"Tienes %s: ahora, a la salida"
@@ -382,6 +387,7 @@ PROP_BIN,la papelera
 PROP_BUST,el busto
 PROP_PANEL,el panel
 PROP_ARMOUR,la armadura
+HIDE_SARCOPHAGUS,el sarcófago
 ZONE_MUSEUM,el museo
 ZONE_NUMBERED,%s (%d)
 ZONE_CORRIDOR,el pasillo
@@ -466,7 +472,7 @@ MUSEUM_5_TEXT,"La casa del Barón. Grande, oscura y llena de guardias"
 MENU_CHALLENGE,RETOS
 MENU_CHALLENGE_TEXT,Mapas hechos a mano y tu editor
 CHALLENGE_TITLE,RETOS
-CHALLENGE_TEXT,Elige un mapa o dibuja el tuyo
+CHALLENGE_TEXT,"Elige un mapa o una noche de la historia, o dibuja el tuyo"
 CHALLENGE_NEW,+ NUEVO MAPA
 CHALLENGE_EDIT,EDITAR
 CHALLENGE_DELETE,BORRAR
@@ -477,6 +483,15 @@ CHALLENGE_UNPLAYABLE,Sin terminar: ábrelo en el editor
 CHALLENGE_INFO,%s · %s · %d guardias
 CHALLENGE_EMPTY,Aún no hay mapas: crea uno.
 CHALLENGE_PAGE,Página %d de %d
+CHALLENGE_STORY_HEAD,HISTORIA
+CHALLENGE_MAPS_HEAD,RETOS
+CHALLENGE_HINT,Enter o clic: abrir
+CHALLENGE_NIGHT_EDITED,retocada a mano
+CHALLENGE_NIGHT_BUILT,como la genera el juego
+CHALLENGE_GUARDS,%d guardias
+CHALLENGE_NIGHT_TEXT,"Retócala en el editor y guárdala: la noche jugará este museo, con su pieza, sus guardias y su dificultad de siempre."
+CHALLENGE_RESTORE,VOLVER AL ORIGINAL
+CHALLENGE_RESTORE_SURE,¿SEGURO? VOLVER AL ORIGINAL
 EDITOR_TITLE,EDITOR
 EDITOR_NAME,Nombre del mapa
 EDITOR_UNTITLED,Mi museo
@@ -594,6 +609,7 @@ EDITOR_TOOL_EXHIBIT_TOTEM,TOTEM
 EDITOR_TOOL_EXHIBIT_BEAR,OSO
 EDITOR_TOOL_BIG_DINOSAUR,DINOSAURIO
 EDITOR_TOOL_BIG_SARCOPHAGUS,SARCOFAGO
+EDITOR_TOOL_BIG_BEAR,OSO
 EDITOR_HINT_EXHIBIT,"Clic: esta pieza en una vitrina (en el suelo, pone la vitrina); otra vez, la quita. Clic derecho: borrar."
 EDITOR_HINT_BIG,"Clic: la pieza grande, sobre sus vitrinas · R: girarla · Clic derecho: borrar"
 EDITOR_KIND_HEIST,EL ROBO

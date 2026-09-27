@@ -1,29 +1,41 @@
-"""Exporta cada art/<nombre>.blend a assets/models/<nombre>.glb.
+"""Exporta el catálogo (art/*.blend y art/personajes/*.blend) a assets/models.
 
-Tras retocar una pieza en Blender, guarda el .blend y ejecuta:
-    /Applications/Blender.app/Contents/MacOS/Blender -b -P art/export.py            # todas
-    /Applications/Blender.app/Contents/MacOS/Blender -b -P art/export.py -- vitrina # solo esas
-y abre Godot para que las reimporte (o: godot --headless --import).
+    Blender -b -P art/export.py                        # todo
+    Blender -b -P art/export.py -- vitrina anubis      # esas piezas
+    Blender -b -P art/export.py -- tema_antiguo        # un fichero entero
+    Blender -b -P art/export.py -- --godot vitrina     # y que Godot las reimporte
+    Blender -b -P art/export.py -- --salida /tmp/x     # a otra carpeta (para comparar)
 
-Convenciones de las piezas: 1 unidad = una casilla, el pie en z=0, el frente
-mirando a -Y (el +Z de Godot). Los materiales guardan su color base; Godot les
-pone el sombreado toon (MuseumView.asset). Nombres de objeto que el juego busca:
-  vitrina: "glass" (transparente, sin sombra)
-  panel:   "board" (la lámina, que el juego pinta por panel)
-  armadura: una pieza por objeto (stand, leg_l, leg_r, torso, arm_l, arm_r,
-            helm, lance): al caer, cada una es un cuerpo aparte.
+(Blender es /Applications/Blender.app/Contents/MacOS/Blender.) Desde Blender, el
+panel «Ladrón» de la barra lateral (N) hace lo mismo con un botón: art/ladron_addon.py.
+Qué hay en cada fichero y las convenciones de las piezas: art/catalogo.py.
 """
-import bpy, glob, os, sys
+import os
+import subprocess
+import sys
 
-ART = os.path.dirname(os.path.abspath(__file__))
-MODELS = os.path.join(ART, "..", "assets", "models")
-only = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+import catalogo  # noqa: E402
 
-for path in sorted(glob.glob(os.path.join(ART, "*.blend"))):
-    name = os.path.splitext(os.path.basename(path))[0]
-    if only and name not in only:
-        continue
-    bpy.ops.wm.open_mainfile(filepath=path)
-    bpy.ops.export_scene.gltf(filepath=os.path.join(MODELS, name + ".glb"), export_format="GLB",
-                              export_apply=True, export_yup=True)
-    print("[export]", name)
+GODOT = os.environ.get("GODOT", "/Applications/Godot.app/Contents/MacOS/Godot")
+
+args = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+godot = "--godot" in args
+out_dir = None
+if "--salida" in args:
+    out_dir = args[args.index("--salida") + 1]
+    args.remove(out_dir)
+wanted = [a for a in args if not a.startswith("--")]
+
+done = []
+for path in catalogo.blend_files():
+    done += catalogo.export_file(path, wanted, out_dir)
+missing = [w for w in wanted if w not in done and not any(
+    os.path.splitext(os.path.basename(p))[0] == w.removesuffix(".blend") for p in catalogo.blend_files())]
+if missing:
+    print("[export] no encontradas:", ", ".join(missing))
+print(f"[export] {len(done)} piezas")
+if godot and done and os.path.exists(GODOT):
+    subprocess.run([GODOT, "--headless", "--import", "--path", os.path.join(catalogo.ART, "..")],
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    print("[export] Godot ha reimportado")

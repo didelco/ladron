@@ -5,7 +5,9 @@ extends SceneTree
 ##   - what makes a map unplayable is caught (a hole to the outside, a closed
 ##     room, no piece, no door...);
 ##   - a saved map plays: its piece, its door and its guards where it says,
-##     and the job can be done.
+##     and the job can be done;
+##   - a story night's museum, taken as a map, builds the same museum and the
+##     same job; saved, the night finds it, and taken away it builds its own.
 ##   godot --headless --script tests/test_mapfile.gd
 
 var failures: Array[String] = []
@@ -23,6 +25,7 @@ func _init() -> void:
 	_on_disk()
 	_plays()
 	_heist()
+	_story_nights()
 	if failures.is_empty():
 		print("OK: mapas guardados")
 		quit(0)
@@ -47,6 +50,36 @@ func _heist() -> void:
 	Heist.plan_job(1, back.loot_piece(), 1, back.job())
 	check(Heist.loot.name == "el patito de la reina" and Heist.loot.story == "La reina lo echa de menos." and Heist.loot.shape == "duck" and Heist.loot.seconds == 4.0,
 		"el golpe roba la pieza del mapa")
+
+
+func _story_nights() -> void:
+	var same := 0
+	var nights := [1, 5, 9, 14, 20]
+	for n in nights:
+		var night := Story.level(n)
+		Sim.custom = Story.tuning(n)
+		var seed_ := Story.seed_for(n, 1)
+		Sim.new_map(seed_, night.size, -1, night.shape)
+		Heist.plan_job(n, night.loot, 1, {})
+		var want := _museum_print() + "%s %s" % [Heist.at, Heist.exit]
+		var none: Array[Vector2i] = []
+		var m := MapFile.from_museum(n, seed_, none)
+		var back := MapFile.from_dict(JSON.parse_string(JSON.stringify(m.to_dict())))
+		back.apply()
+		Heist.plan_job(n, night.loot, 1, back.job())
+		if _museum_print() + "%s %s" % [Heist.at, Heist.exit] == want and back.night == n:
+			same += 1
+	check(same == nights.size(), "el museo de una noche, como mapa, es el mismo museo y el mismo golpe (%d de %d)" % [same, nights.size()])
+	Sim.custom = {}
+	var made := MapFile.generated(4242, "small")
+	made.night = 99
+	made.name = "noche de prueba"
+	check(made.save() == OK and made.path == MapFile.story_file(99), "el mapa de una noche se guarda donde la noche lo busca")
+	var found := MapFile.for_night(99)
+	check(found != null and found.night == 99 and found.grid == made.grid, "la noche encuentra su mapa")
+	check(not MapFile.list().any(func(x: MapFile) -> bool: return x.night == 99), "y no sale entre los retos")
+	MapFile.remove(found)
+	check(MapFile.for_night(99) == null, "volver al original lo quita")
 
 
 func _museum_print() -> String:
