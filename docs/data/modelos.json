@@ -1,0 +1,502 @@
+[
+	{
+		"file": "assets/modelos/amonite.webp",
+		"group": "museo",
+		"name": "amonite",
+		"size": [
+			0.26,
+			0.33,
+			0.12
+		]
+	},
+	{
+		"file": "assets/modelos/anfora.webp",
+		"group": "museo",
+		"name": "anfora",
+		"size": [
+			0.35,
+			0.5,
+			0.35
+		]
+	},
+	{
+		"file": "assets/modelos/armadura.webp",
+		"group": "museo",
+		"name": "armadura",
+		"size": [
+			0.96,
+			1.44,
+			0.58
+		]
+	},
+	{
+		"file": "assets/modelos/bear.webp",
+		"group": "museo",
+		"name": "bear",
+		"size": [
+			6.68,
+			10.22,
+			16.13
+		]
+	},
+	{
+		"file": "assets/modelos/busto_dama.webp",
+		"group": "museo",
+		"name": "busto_dama",
+		"size": [
+			0.21,
+			0.33,
+			0.2
+		]
+	},
+	{
+		"file": "assets/modelos/busto_emperador.webp",
+		"group": "museo",
+		"name": "busto_emperador",
+		"size": [
+			0.23,
+			0.35,
+			0.21
+		]
+	},
+	{
+		"file": "assets/modelos/busto_filosofo.webp",
+		"group": "museo",
+		"name": "busto_filosofo",
+		"size": [
+			0.23,
+			0.35,
+			0.2
+		]
+	},
+	{
+		"file": "assets/modelos/busto_reina.webp",
+		"group": "museo",
+		"name": "busto_reina",
+		"size": [
+			0.22,
+			0.33,
+			0.19
+		]
+	},
+	{
+		"file": "assets/modelos/craneo.webp",
+		"group": "museo",
+		"name": "craneo",
+		"size": [
+			0.21,
+			0.26,
+			0.29
+		]
+	},
+	{
+		"file": "assets/modelos/craneo_lego.webp",
+		"group": "museo",
+		"name": "craneo_lego",
+		"size": [
+			0.2,
+			0.28,
+			0.2
+		]
+	},
+	{
+		"file": "assets/modelos/dinosaurio.webp",
+		"group": "museo",
+		"name": "dinosaurio",
+		"size": [
+			2.87,
+			1.79,
+			1.88
+		]
+	},
+	{
+		"file": "assets/modelos/globo.webp",
+		"group": "museo",
+		"name": "globo",
+		"size": [
+			0.68,
+			1.05,
+			0.67
+		]
+	},
+	{
+		"file": "assets/modelos/guardia.webp",
+		"group": "museo",
+		"name": "guardia",
+		"size": [
+			0.83,
+			1.27,
+			0.83
+		]
+	},
+	{
+		"file": "assets/modelos/meteorito.webp",
+		"group": "museo",
+		"name": "meteorito",
+		"size": [
+			0.37,
+			0.39,
+			0.36
+		]
+	},
+	{
+		"file": "assets/modelos/ninja.webp",
+		"group": "museo",
+		"name": "ninja",
+		"size": [
+			0.83,
+			1.1,
+			0.61
+		]
+	},
+	{
+		"file": "assets/modelos/oso.webp",
+		"group": "museo",
+		"name": "oso",
+		"size": [
+			1.37,
+			2.2,
+			0.65
+		]
+	},
+	{
+		"file": "assets/modelos/panel.webp",
+		"group": "museo",
+		"name": "panel",
+		"size": [
+			0.53,
+			0.98,
+			0.26
+		]
+	},
+	{
+		"file": "assets/modelos/papelera.webp",
+		"group": "museo",
+		"name": "papelera",
+		"size": [
+			0.36,
+			0.53,
+			0.35
+		]
+	},
+	{
+		"file": "assets/modelos/pedestal.webp",
+		"group": "museo",
+		"name": "pedestal",
+		"size": [
+			0.31,
+			0.72,
+			0.31
+		]
+	},
+	{
+		"file": "assets/modelos/regadera.webp",
+		"group": "museo",
+		"name": "regadera",
+		"size": [
+			0.21,
+			0.3,
+			0.46
+		]
+	},
+	{
+		"file": "assets/modelos/sarcofago.webp",
+		"group": "museo",
+		"name": "sarcofago",
+		"size": [
+			0.98,
+			1.0,
+			2.96
+		]
+	},
+	{
+		"file": "assets/modelos/statue-a.webp",
+		"group": "museo",
+		"name": "statue-a",
+		"size": [
+			1.74,
+			5.85,
+			3.38
+		]
+	},
+	{
+		"file": "assets/modelos/statue-b.webp",
+		"group": "museo",
+		"name": "statue-b",
+		"size": [
+			1.35,
+			3.75,
+			1.68
+		]
+	},
+	{
+		"file": "assets/modelos/temas__antiguo__amuletos.webp",
+		"group": "antiguo",
+		"name": "temas/antiguo/amuletos",
+		"size": [
+			0.46,
+			0.07,
+			0.3
+		]
+	},
+	{
+		"file": "assets/modelos/temas__antiguo__anubis.webp",
+		"group": "antiguo",
+		"name": "temas/antiguo/anubis",
+		"size": [
+			0.63,
+			0.87,
+			0.45
+		]
+	},
+	{
+		"file": "assets/modelos/temas__antiguo__barca.webp",
+		"group": "antiguo",
+		"name": "temas/antiguo/barca",
+		"size": [
+			0.79,
+			0.79,
+			0.22
+		]
+	},
+	{
+		"file": "assets/modelos/temas__antiguo__busto_faraon.webp",
+		"group": "antiguo",
+		"name": "temas/antiguo/busto_faraon",
+		"size": [
+			0.44,
+			0.48,
+			0.28
+		]
+	},
+	{
+		"file": "assets/modelos/temas__antiguo__canopos.webp",
+		"group": "antiguo",
+		"name": "temas/antiguo/canopos",
+		"size": [
+			0.52,
+			0.34,
+			0.2
+		]
+	},
+	{
+		"file": "assets/modelos/temas__antiguo__escarabajo.webp",
+		"group": "antiguo",
+		"name": "temas/antiguo/escarabajo",
+		"size": [
+			0.27,
+			0.13,
+			0.25
+		]
+	},
+	{
+		"file": "assets/modelos/temas__antiguo__gato_bastet.webp",
+		"group": "antiguo",
+		"name": "temas/antiguo/gato_bastet",
+		"size": [
+			0.17,
+			0.43,
+			0.22
+		]
+	},
+	{
+		"file": "assets/modelos/temas__antiguo__obelisco.webp",
+		"group": "antiguo",
+		"name": "temas/antiguo/obelisco",
+		"size": [
+			0.2,
+			0.48,
+			0.2
+		]
+	},
+	{
+		"file": "assets/modelos/temas__antiguo__papiro.webp",
+		"group": "antiguo",
+		"name": "temas/antiguo/papiro",
+		"size": [
+			0.46,
+			0.26,
+			0.13
+		]
+	},
+	{
+		"file": "assets/modelos/temas__edad_media__astrolabio.webp",
+		"group": "edad_media",
+		"name": "temas/edad_media/astrolabio",
+		"size": [
+			0.16,
+			0.22,
+			0.07
+		]
+	},
+	{
+		"file": "assets/modelos/temas__edad_media__caliz.webp",
+		"group": "edad_media",
+		"name": "temas/edad_media/caliz",
+		"size": [
+			0.38,
+			0.28,
+			0.19
+		]
+	},
+	{
+		"file": "assets/modelos/temas__edad_media__carro_blindado.webp",
+		"group": "edad_media",
+		"name": "temas/edad_media/carro_blindado",
+		"size": [
+			0.43,
+			0.32,
+			0.43
+		]
+	},
+	{
+		"file": "assets/modelos/temas__edad_media__castillo.webp",
+		"group": "edad_media",
+		"name": "temas/edad_media/castillo",
+		"size": [
+			0.48,
+			0.53,
+			0.48
+		]
+	},
+	{
+		"file": "assets/modelos/temas__edad_media__codice_leonardo.webp",
+		"group": "edad_media",
+		"name": "temas/edad_media/codice_leonardo",
+		"size": [
+			0.5,
+			0.13,
+			0.31
+		]
+	},
+	{
+		"file": "assets/modelos/temas__edad_media__corona.webp",
+		"group": "edad_media",
+		"name": "temas/edad_media/corona",
+		"size": [
+			0.36,
+			0.18,
+			0.36
+		]
+	},
+	{
+		"file": "assets/modelos/temas__edad_media__escudo.webp",
+		"group": "edad_media",
+		"name": "temas/edad_media/escudo",
+		"size": [
+			0.3,
+			0.46,
+			0.2
+		]
+	},
+	{
+		"file": "assets/modelos/temas__edad_media__espada_piedra.webp",
+		"group": "edad_media",
+		"name": "temas/edad_media/espada_piedra",
+		"size": [
+			0.6,
+			0.85,
+			0.52
+		]
+	},
+	{
+		"file": "assets/modelos/temas__edad_media__gargola.webp",
+		"group": "edad_media",
+		"name": "temas/edad_media/gargola",
+		"size": [
+			0.34,
+			0.46,
+			0.4
+		]
+	},
+	{
+		"file": "assets/modelos/temas__edad_media__llave_sello.webp",
+		"group": "edad_media",
+		"name": "temas/edad_media/llave_sello",
+		"size": [
+			0.46,
+			0.08,
+			0.3
+		]
+	},
+	{
+		"file": "assets/modelos/temas__edad_media__manuscrito.webp",
+		"group": "edad_media",
+		"name": "temas/edad_media/manuscrito",
+		"size": [
+			0.44,
+			0.22,
+			0.21
+		]
+	},
+	{
+		"file": "assets/modelos/temas__edad_media__maquina_voladora.webp",
+		"group": "edad_media",
+		"name": "temas/edad_media/maquina_voladora",
+		"size": [
+			0.81,
+			0.77,
+			0.62
+		]
+	},
+	{
+		"file": "assets/modelos/temas__edad_media__trono.webp",
+		"group": "edad_media",
+		"name": "temas/edad_media/trono",
+		"size": [
+			0.74,
+			1.13,
+			0.7
+		]
+	},
+	{
+		"file": "assets/modelos/temas__edad_media__vidriera.webp",
+		"group": "edad_media",
+		"name": "temas/edad_media/vidriera",
+		"size": [
+			0.62,
+			1.05,
+			0.22
+		]
+	},
+	{
+		"file": "assets/modelos/temas__edad_media__yelmo.webp",
+		"group": "edad_media",
+		"name": "temas/edad_media/yelmo",
+		"size": [
+			0.24,
+			0.51,
+			0.26
+		]
+	},
+	{
+		"file": "assets/modelos/totem.webp",
+		"group": "museo",
+		"name": "totem",
+		"size": [
+			0.79,
+			1.07,
+			0.43
+		]
+	},
+	{
+		"file": "assets/modelos/vater.webp",
+		"group": "museo",
+		"name": "vater",
+		"size": [
+			0.31,
+			0.67,
+			0.53
+		]
+	},
+	{
+		"file": "assets/modelos/vitrina.webp",
+		"group": "museo",
+		"name": "vitrina",
+		"size": [
+			0.88,
+			0.87,
+			0.88
+		]
+	}
+]

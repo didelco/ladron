@@ -84,7 +84,7 @@ primera versión: volver a ejecutarlos pisa los retoques hechos a mano.
 ```bash
 godot --headless --script tests/test_mapgen.gd   # museos bien formados (306 de todos los tamaños y formas)
 godot --headless --script tests/test_sim.gd      # escenarios de la simulación
-godot --headless --script tests/test_heist.gd    # el golpe, el cuadro de alarma y las diez noches
+godot --headless --script tests/test_heist.gd    # el golpe, el cuadro de alarma y las noches de la historia
 godot --headless --script tests/test_mapfile.gd  # mapas guardados: ida y vuelta, validación y que se juegan
 godot --headless --script tests/test_story.gd    # la historia: noches por museo, progreso por jugadores
 godot --headless --script tests/test_roll.gd     # rodar: ocho casillas, bajo y callado; limpia o contra la pared (golpe y estrellas)
@@ -97,12 +97,26 @@ godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (ne
 
 En macOS, `godot` es `/Applications/Godot.app/Contents/MacOS/Godot`.
 
+## Documentación
+
+`docs/index.html` enseña el estilo y las decisiones gráficas (`docs/ESTILO.md`, lo único escrito a
+mano), la paleta completa, capturas de cada pantalla, todos los assets (piezas, objetos, modelos 3D y
+sonidos) y todos los textos, con la historia en orden. Todo sale del propio juego:
+
+```bash
+python3 tools/docs.py build          # lo regenera todo (abre una ventana del juego unos minutos)
+python3 tools/docs.py build --fast   # solo datos y textos
+python3 tools/docs.py serve          # http://localhost:8765: además, los textos se editan ahí
+```
+
+Editar un texto en el visor lo cambia en `locale/texts.csv` (solo esa fila) y Godot lo reimporta.
+
 ## Controles
 
 En el título se elige el modo:
 
-- **Historia**: diez noches fijas, de muy fácil (un guardia medio dormido en un museo pequeño) a
-  difícil (cinco guardias en uno grande). La Banda del Calcetín recupera las cosas que el Barón Von
+- **Historia**: veinte noches fijas, de muy fácil (un museo pequeño sin guardias) a
+  difícil (cuatro guardias en uno grande). La Banda del Calcetín recupera las cosas que el Barón Von
   Bostezo se llevó del pueblo (`logic/story.gd`). Primero se elige cuántos ladrones; luego, en el
   mapa de la ciudad, uno de los cinco museos (cada uno con sus colores de pared y suelo) y dentro,
   una de sus cuatro noches. El progreso se guarda aparte para cada número de jugadores y se puede

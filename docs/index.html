@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ladrón · Documentación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* La documentación tiene su propio estilo, sobrio, en blanco y negro: no es el juego. */
+@font-face { font-family: "Press Start 2P"; src: url("fuentes/PressStart2P-Regular.ttf") format("truetype"); font-display: swap; }
+:root {
+  --texto: #202122;
+  --tenue: #54595d;
+  --claro: #72777d;
+  --borde: #a2a9b1;
+  --linea: #c8ccd1;
+  --suave: #eaecf0;
+  --fondo2: #f8f9fa;
+  --blanco: #ffffff;
+  --aviso: #b32424;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 16px; }
+body { margin: 0; background: var(--blanco); color: var(--texto); font: 15px/1.6 Inter, -apple-system, "Segoe UI", system-ui, sans-serif; font-feature-settings: "cv11", "ss01"; }
+a { color: var(--texto); text-decoration: underline; text-decoration-color: var(--borde); text-underline-offset: 2px; }
+a:hover { text-decoration-color: var(--texto); }
+code, .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.86em; }
+code { background: var(--fondo2); border: 1px solid var(--suave); border-radius: 2px; padding: 0 4px; }
+h1 { font-size: 28px; font-weight: 600; line-height: 1.25; margin: 0 0 4px; padding-bottom: 6px; border-bottom: 1px solid var(--borde); letter-spacing: -0.01em; }
+h2 { font-size: 20px; font-weight: 600; margin: 32px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--borde); letter-spacing: -0.01em; }
+h3 { font-size: 16px; font-weight: 600; margin: 22px 0 6px; }
+p { margin: 8px 0; }
+.lead { color: var(--tenue); max-width: 760px; }
+.sub { color: var(--tenue); font-size: 13px; margin-bottom: 18px; }
+
+/* Estructura */
+.layout { display: grid; grid-template-columns: 272px minmax(0, 1fr); min-height: 100vh; }
+nav { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 20px 14px 40px 20px; border-right: 1px solid var(--suave); font-size: 14px; }
+nav .marca { font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+nav .marca small { display: block; font-weight: 400; font-size: 13px; color: var(--tenue); }
+nav .grupo { margin-top: 18px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--claro); }
+nav a { display: block; text-decoration: none; padding: 2px 0; }
+nav a:hover { text-decoration: underline; }
+nav a.on { font-weight: 600; }
+nav a.hijo { padding-left: 14px; }
+nav .meta { margin-top: 24px; color: var(--claro); font-size: 12px; }
+main { padding: 26px clamp(16px, 4vw, 48px) 80px; max-width: 1640px; }
+.pagina { display: none; }
+.pagina.on { display: block; }
+
+/* Árbol */
+.arbol, .arbol ul { list-style: none; margin: 0; padding: 0; }
+.arbol ul { padding-left: 14px; border-left: 1px solid var(--suave); margin-left: 5px; }
+.arbol li { margin: 0; }
+.arbol .fila { display: flex; align-items: baseline; gap: 4px; }
+.arbol .flecha { width: 12px; flex: none; cursor: pointer; color: var(--claro); font-size: 10px; user-select: none; background: none; border: 0; padding: 0; font-family: inherit; }
+.arbol .flecha.vacia { cursor: default; }
+.arbol li.cerrado > ul { display: none; }
+.arbol a { padding: 1px 0; }
+.arbol a.on { font-weight: 600; }
+.arbol-grande { font-size: 15px; }
+.arbol-grande ul { padding-left: 20px; margin-left: 6px; }
+.arbol-grande li { margin: 4px 0; }
+.arbol-grande .desc { color: var(--tenue); font-size: 13.5px; margin-left: 16px; }
+.arbol-grande .ops { color: var(--claro); font-size: 12.5px; margin-left: 16px; }
+
+/* Ficha de pantalla, al estilo de una infobox */
+.ruta { color: var(--tenue); font-size: 13px; margin-bottom: 6px; }
+.ruta a { color: var(--tenue); }
+.ficha { float: right; width: 320px; margin: 4px 0 16px 24px; border: 1px solid var(--borde); background: var(--fondo2); font-size: 13.5px; }
+.ficha .cab { text-align: center; font-weight: 600; padding: 8px; background: var(--suave); }
+.ficha img { display: block; width: 100%; cursor: zoom-in; border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde); }
+.ficha table { width: 100%; border-collapse: collapse; }
+.ficha th, .ficha td { text-align: left; vertical-align: top; padding: 5px 8px; border-top: 1px solid var(--suave); }
+.ficha th { width: 38%; font-weight: 600; }
+.boton { display: inline-block; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; border: 1px solid var(--borde); border-radius: 3px; padding: 0 6px; background: var(--blanco); white-space: pre-wrap; }
+table.tabla { border-collapse: collapse; width: 100%; margin: 8px 0 16px; font-size: 14px; }
+.tabla th, .tabla td { border: 1px solid var(--linea); padding: 6px 9px; text-align: left; vertical-align: top; }
+.tabla th { background: var(--fondo2); font-weight: 600; }
+.limpia { clear: both; }
+
+/* Capturas */
+.galeria { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(var(--min, 300px), 1fr)); margin: 10px 0; }
+figure { margin: 0; }
+figure img { width: 100%; display: block; border: 1px solid var(--linea); cursor: zoom-in; background: var(--fondo2); }
+figcaption { font-size: 13px; color: var(--tenue); padding-top: 5px; }
+figcaption b { color: var(--texto); font-weight: 600; }
+.caja { position: fixed; inset: 0; background: rgba(255,255,255,0.97); display: none; align-items: center; justify-content: center; z-index: 10; cursor: zoom-out; padding: 24px; flex-direction: column; gap: 10px; }
+.caja.on { display: flex; }
+.caja img { max-width: 100%; max-height: calc(100vh - 90px); border: 1px solid var(--linea); }
+.caja p { margin: 0; color: var(--tenue); text-align: center; }
+
+/* Pantallas en grande */
+.cabeza { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--borde); padding-bottom: 6px; margin-bottom: 14px; }
+.cabeza h1 { border: 0; padding: 0; margin: 0; }
+.cabeza .sub { margin: 2px 0 0; }
+.pasos { display: flex; gap: 6px; font-size: 13px; }
+.pasos a { text-decoration: none; border: 1px solid var(--linea); border-radius: 3px; padding: 3px 10px; white-space: nowrap; }
+.pasos a:hover { border-color: var(--texto); }
+.pasos .no { visibility: hidden; }
+.grandes { display: grid; gap: 22px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr)); margin: 8px 0 28px; }
+.grandes.una { grid-template-columns: minmax(0, 940px); }
+.grandes figcaption { font-size: 13px; }
+.seccion { display: flex; align-items: baseline; gap: 10px; margin: 30px 0 4px; padding-bottom: 4px; border-bottom: 1px solid var(--suave); }
+.seccion h2 { border: 0; margin: 0; padding: 0; font-size: 18px; }
+.seccion h2 a { text-decoration: none; }
+.seccion h2 a:hover { text-decoration: underline; }
+.seccion .nota { color: var(--claro); font-size: 13px; }
+.seccion.hondo h2 { font-size: 16px; font-weight: 500; }
+.tarjetas { display: grid; gap: 20px 18px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); margin: 10px 0 30px; }
+.tarjeta { display: block; text-decoration: none; }
+.tarjeta .img { position: relative; border: 1px solid var(--linea); background: var(--fondo2); aspect-ratio: 16 / 9; overflow: hidden; }
+.tarjeta img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .2s; }
+.tarjeta:hover img { transform: scale(1.02); }
+.tarjeta:hover .img { border-color: var(--texto); }
+.tarjeta .n { position: absolute; right: 6px; bottom: 6px; background: rgba(0,0,0,0.7); color: #fff; font-size: 12px; padding: 1px 7px; border-radius: 2px; }
+.tarjeta .t { font-weight: 600; margin-top: 6px; }
+.tarjeta .r { color: var(--claro); font-size: 12.5px; }
+details.mas { margin: 26px 0 0; border-top: 1px solid var(--suave); padding-top: 8px; }
+details.mas summary { cursor: pointer; color: var(--tenue); font-size: 14px; }
+details.mas[open] summary { margin-bottom: 8px; }
+.caja .ir { position: absolute; top: 50%; transform: translateY(-50%); font: 32px/1 Inter, sans-serif; background: none; border: 0; color: var(--tenue); cursor: pointer; padding: 20px 14px; }
+.caja .ir:hover { color: var(--texto); }
+.caja .ir.izq { left: 4px; }
+.caja .ir.der { right: 4px; }
+
+/* Paleta */
+.muestras { display: grid; gap: 14px 22px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+.muestra { border-top: 1px solid var(--suave); padding-top: 8px; }
+.muestra .nombre { font-family: ui-monospace, Menlo, monospace; font-size: 13px; font-weight: 600; }
+.muestra .nota { color: var(--tenue); font-size: 13px; }
+.colores { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.color { width: 86px; cursor: copy; }
+.color i { display: block; height: 36px; border: 1px solid rgba(0,0,0,0.15); }
+.color small { display: block; font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: var(--tenue); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Assets */
+.tarjetas.assets { grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); }
+.tarjetas.assets .img { aspect-ratio: 1; display: grid; place-items: center; }
+.tarjetas.assets img { object-fit: contain; }
+.nota-musical { font-size: 64px; color: var(--claro); }
+.pieza { text-align: center; font-size: 13px; }
+.pieza img { width: 100%; aspect-ratio: 1; object-fit: contain; background: var(--fondo2); border: 1px solid var(--suave); cursor: zoom-in; }
+.pieza .t { font-weight: 600; margin-top: 4px; }
+.pieza .s { color: var(--tenue); font-size: 12px; }
+.sonido { display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--suave); padding: 6px 0; }
+.sonido b { width: 130px; font-family: ui-monospace, Menlo, monospace; font-weight: 500; font-size: 13px; }
+.sonido audio { height: 30px; flex: 1; min-width: 0; }
+
+/* Historia */
+.noche { display: grid; grid-template-columns: 44px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid var(--suave); }
+.noche .n { font-weight: 700; color: var(--claro); font-variant-numeric: tabular-nums; }
+.noche .pz { font-weight: 600; }
+.noche p { margin: 3px 0; }
+.etq { color: var(--claro); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 6px; }
+.tag { display: inline-block; font-size: 12px; color: var(--tenue); border: 1px solid var(--linea); border-radius: 2px; padding: 0 6px; margin: 2px 4px 2px 0; }
+.punto { display: inline-block; width: 10px; height: 10px; border: 1px solid rgba(0,0,0,0.2); vertical-align: 0; margin-right: 6px; }
+
+/* Textos */
+.buscar { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.buscar input, .buscar select { font: inherit; border: 1px solid var(--borde); border-radius: 2px; padding: 6px 10px; background: var(--blanco); color: var(--texto); }
+.buscar input { flex: 1; min-width: 220px; }
+.buscar input:focus, .buscar select:focus { outline: 2px solid var(--texto); outline-offset: -1px; }
+.textos td.k { width: 32%; font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; word-break: break-all; }
+.textos td.k small { display: block; color: var(--claro); word-break: normal; margin-top: 2px; }
+.textos td.v { white-space: pre-wrap; }
+.textos tr.roto td { background: #fee7e6; }
+.ph { font-family: ui-monospace, Menlo, monospace; font-size: 0.9em; background: var(--suave); padding: 0 2px; }
+.aviso { border: 1px solid var(--aviso); color: var(--aviso); padding: 8px 12px; margin: 12px 0; font-size: 14px; }
+.estado { font-size: 13px; color: var(--tenue); }
+textarea.editor { width: 100%; min-height: 64px; font: inherit; border: 1px solid var(--texto); padding: 6px 8px; resize: vertical; }
+.botones { display: flex; gap: 8px; margin-top: 6px; align-items: center; }
+.btn { font: inherit; font-size: 13px; border: 1px solid var(--borde); background: var(--fondo2); padding: 3px 12px; cursor: pointer; border-radius: 2px; color: var(--texto); }
+.btn.si { background: var(--texto); color: var(--blanco); border-color: var(--texto); }
+body.editable [data-key]:hover { background: #fff8d6; cursor: text; }
+
+/* Estilo (markdown) */
+.md { max-width: 820px; }
+.md table { border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+.md th, .md td { border: 1px solid var(--linea); padding: 5px 9px; text-align: left; vertical-align: top; }
+.md th { background: var(--fondo2); }
+.md blockquote { border-left: 3px solid var(--borde); margin: 12px 0; padding: 2px 14px; color: var(--tenue); }
+.md .sw { display: inline-block; width: 11px; height: 11px; border: 1px solid rgba(0,0,0,0.2); vertical-align: -1px; margin-right: 4px; }
+.fuente { font-family: "Press Start 2P", monospace; font-size: 16px; line-height: 1.9; }
+.indice { columns: 2; column-gap: 32px; }
+
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; }
+  nav { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--suave); }
+  .ficha { float: none; width: 100%; margin: 12px 0; }
+  .indice { columns: 1; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav id="nav"></nav>
+  <main id="main">
+    <section class="pagina" id="p-inicio"></section>
+    <section class="pagina" id="p-pantalla"></section>
+    <section class="pagina" id="p-capturas"></section>
+    <section class="pagina" id="p-estilo"></section>
+    <section class="pagina" id="p-paleta"></section>
+    <section class="pagina" id="p-assets"></section>
+    <section class="pagina" id="p-assets-piezas"></section>
+    <section class="pagina" id="p-assets-modelos"></section>
+    <section class="pagina" id="p-assets-objetos"></section>
+    <section class="pagina" id="p-assets-sonidos"></section>
+    <section class="pagina" id="p-historia"></section>
+    <section class="pagina" id="p-textos"></section>
+  </main>
+</div>
+<div class="caja" id="caja"><button class="ir izq" data-ir="-1" aria-label="Anterior">‹</button><img alt=""><p></p><button class="ir der" data-ir="1" aria-label="Siguiente">›</button></div>
+
+<script src="data/juego.js"></script>
+<script src="data/textos.js"></script>
+<script src="data/estilo.js"></script>
+<script src="data/funciones.js"></script>
+<script src="pantallas.js"></script>
+<script>
+"use strict";
+const J = window.JUEGO || {};
+const P = window.PANTALLAS || [];
+const F = window.FUNCIONES || {};
+let TX = window.TEXTOS || [];
+let TEXT = {};
+const indexar = () => { TEXT = Object.fromEntries(TX.map(t => [t.key, t.es])); };
+indexar();
+let EDITABLE = false;
+
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const tx = key => TEXT[key] ?? key;
+// %s, %d… los rellena el juego.
+const marcas = s => esc(s).replace(/%(?:[0-9]*d|s|\.?[0-9]*f|%)/g, m => `<span class="ph">${m}</span>`);
+// Un texto del juego, editable en su sitio cuando hay servidor.
+const t = (key, tag = "span", cls = "") => `<${tag} class="${cls}" data-key="${esc(key)}">${marcas(tx(key))}</${tag}>`;
+// Los títulos del juego van en mayúsculas; en la documentación, como una frase.
+const frase = s => { const x = String(s).replace(/\s+/g, " ").trim(); return x === x.toUpperCase() ? x.charAt(0) + x.slice(1).toLowerCase() : x; };
+
+// --- Pantallas: índice, padres y quién lleva a cada una ------------------------------
+const NODOS = {}, PADRE = {}, LLEGAN = {};
+(function recorrer(lista, padre) {
+  for (const n of lista) {
+    NODOS[n.id] = n; PADRE[n.id] = padre;
+    recorrer(n.children || [], n.id);
+  }
+})(P, null);
+for (const n of Object.values(NODOS)) for (const o of n.options || []) if (o.to) (LLEGAN[o.to] = LLEGAN[o.to] || new Set()).add(n.id);
+const nombre = n => n.title.startsWith("«") ? n.title.slice(1, -1) : frase(tx(n.title));
+const ruta = id => { const r = []; for (let x = id; x; x = PADRE[x]) r.unshift(x); return r; };
+// Todas las pantallas en el orden del árbol, para ir a la anterior y la siguiente.
+const ORDEN = [];
+(function aplanar(lista) { for (const n of lista) { ORDEN.push(n.id); aplanar(n.children || []); } })(P);
+// Las capturas de una pantalla, o de la primera de sus subpantallas que tenga.
+const portadaDe = n => (n.shots || [])[0] || (n.children || []).map(portadaDe).find(Boolean);
+const SHOTS = Object.fromEntries((J.capturas || []).map(s => [s.id, s]));
+
+// --- Navegación ----------------------------------------------------------------------
+function arbol(lista, sel) {
+  return `<ul>${lista.map(n => {
+    const hijos = n.children && n.children.length;
+    // Todo abierto: se pliega a mano.
+    const abierto = true;
+    return `<li class="${hijos && !abierto ? "cerrado" : ""}"><div class="fila"><button class="flecha ${hijos ? "" : "vacia"}" data-plegar>${hijos ? (abierto ? "▾" : "▸") : ""}</button><a href="#pantalla/${n.id}" class="${n.id === sel ? "on" : ""}">${esc(nombre(n))}</a></div>${hijos ? arbol(n.children, sel) : ""}</li>`;
+  }).join("")}</ul>`;
+}
+function nav(pag, sel) {
+  const g = J.generado || {};
+  const enlace = (h, txt) => `<a href="#${h}" class="${pag === h ? "on" : ""}">${txt}</a>`;
+  $("#nav").innerHTML = `<div class="marca">Ladrón<small>Documentación del juego</small></div>
+    <div class="grupo">Pantallas</div>${enlace("inicio", "Todas las pantallas")}
+    <div class="arbol">${arbol(P, sel)}</div>
+    ${enlace("capturas", "Todas las capturas, por sección")}
+    <div class="grupo">Contenido</div>${enlace("estilo", "Estilo y decisiones")}${enlace("paleta", "Paleta de colores")}${enlace("assets", "Assets")}${ASSETS.map(([k, txt]) => `<a href="#assets/${k}" class="hijo ${pag === "assets-" + k ? "on" : ""}">${txt}</a>`).join("")}${enlace("historia", "Historia")}${enlace("textos", "Textos")}
+    <div class="meta">Generado el ${esc(g.fecha || "—")}<br>commit ${esc(g.commit || "—")} · ${EDITABLE ? "edición activa" : "solo lectura"}</div>`;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-plegar]");
+  if (!b || b.classList.contains("vacia")) return;
+  const li = b.closest("li");
+  li.classList.toggle("cerrado");
+  b.textContent = li.classList.contains("cerrado") ? "▸" : "▾";
+});
+
+function ir() {
+  let [pag, sub] = decodeURIComponent(location.hash.slice(1) || "inicio").split("/");
+  if (pag === "pantallas") pag = "inicio";
+  // Cada tipo de asset tiene su página: #assets/piezas se pinta en #p-assets-piezas.
+  if (pag === "assets" && ASSETS.some(([k]) => k === sub)) { pag = "assets-" + sub; sub = null; }
+  document.querySelectorAll(".pagina").forEach(p => p.classList.toggle("on", p.id === "p-" + pag));
+  if (pag === "pantalla") pantalla(sub);
+  nav(pag, pag === "pantalla" ? sub : null);
+  const el = sub && pag !== "pantalla" ? document.getElementById(pag + "-" + sub) : null;
+  if (el) el.scrollIntoView(); else window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", ir);
+
+// --- Portada: todas las pantallas --------------------------------------------------------
+const tarjeta = n => {
+  const f = SHOTS[portadaDe(n)], k = (n.shots || []).length;
+  return `<a class="tarjeta" href="#pantalla/${n.id}"><div class="img">${f ? `<img loading="lazy" src="${f.file}" alt="">` : ""}${k > 1 ? `<span class="n">${k}</span>` : ""}</div>
+    <div class="t">${esc(nombre(n))}</div>${PADRE[n.id] ? `<div class="r">${ruta(n.id).slice(0, -1).map(x => esc(nombre(NODOS[x]))).join(" › ")}</div>` : ""}</a>`;
+};
+function inicio() {
+  const g = J.generado || {};
+  const todas = n => [n, ...(n.children || []).flatMap(todas)];
+  $("#p-inicio").innerHTML = `
+    <div class="cabeza"><div><h1>Ladrón</h1><div class="sub">Todas las pantallas del juego · pulsa una para verla con las que cuelgan de ella</div></div></div>
+    ${P.map(r => `<div class="seccion"><h2><a href="#pantalla/${r.id}">${esc(nombre(r))}</a></h2><span class="nota">${todas(r).length} pantallas</span></div>
+      <div class="tarjetas">${todas(r).map(tarjeta).join("")}</div>`).join("")}
+    <details class="mas"><summary>Sobre esta documentación</summary>
+      <p class="estado">Generada el ${esc(g.fecha || "—")} desde <code>${esc(g.rama || "")}</code> @ <code>${esc(g.commit || "")}</code>.
+      <code>python3 tools/docs.py build</code> lo regenera todo (abre el juego unos minutos); <code>build --fast</code>, solo datos y textos;
+      <code>serve</code> la sirve en <code>http://localhost:8765</code> con los textos editables. A mano solo están <code>docs/ESTILO.md</code> y <code>docs/pantallas.js</code>.</p>
+    </details>`;
+}
+
+// --- Una pantalla y todas las que cuelgan de ella ------------------------------------
+function pantalla(id) {
+  const n = NODOS[id];
+  const el = $("#p-pantalla");
+  if (!n) { el.innerHTML = `<h1>No existe</h1><p>No hay ninguna pantalla «${esc(id)}». <a href="#inicio">Todas las pantallas</a>.</p>`; return; }
+  const r = ruta(id);
+  const llegan = [...(LLEGAN[id] || [])].filter(x => x !== PADRE[id]);
+  const lleva = [...new Set((n.options || []).filter(o => o.to).map(o => o.to))];
+  const ln = id2 => NODOS[id2] ? `<a href="#pantalla/${id2}">${esc(nombre(NODOS[id2]))}</a>` : esc(id2);
+  const titulo = n.title.startsWith("«") ? "" : tx(n.title);
+  const i = ORDEN.indexOf(id), antes = ORDEN[i - 1], despues = ORDEN[i + 1];
+  const paso = (x, txt) => x ? `<a href="#pantalla/${x}" title="${esc(nombre(NODOS[x]))}">${txt}</a>` : `<a class="no">${txt}</a>`;
+  // Las capturas en grande: las suyas y, debajo, las de cada subpantalla.
+  const grandes = m => {
+    const shots = (m.shots || []).map(s => SHOTS[s]).filter(Boolean);
+    return shots.length ? `<div class="grandes ${shots.length === 1 ? "una" : ""}">${shots.map(figCorta).join("")}</div>` : "";
+  };
+  const debajo = (m, hondo) => (m.children || []).map(c => `
+    <div class="seccion ${hondo ? "hondo" : ""}"><h2><a href="#pantalla/${c.id}">${esc(nombre(c))}</a></h2>${c.text ? `<span class="nota">${esc(c.text)}</span>` : ""}</div>
+    ${grandes(c)}${debajo(c, true)}`).join("");
+  el.innerHTML = `
+    <div class="ruta">${r.slice(0, -1).map(ln).join(" › ") || `<a href="#inicio">Todas las pantallas</a>`}</div>
+    <div class="cabeza"><div><h1>${esc(nombre(n))}</h1>${n.text ? `<div class="sub">${esc(n.text)}</div>` : ""}</div>
+      <div class="pasos">${paso(antes, "← Anterior")}${paso(despues, "Siguiente →")}</div></div>
+    ${grandes(n)}
+    ${debajo(n, false)}
+    <details class="mas"><summary>Opciones y detalles</summary>
+      <table class="tabla">
+        ${titulo ? `<tr><th style="width:22%">Título en el juego</th><td>${t(n.title, "span", "boton")}</td></tr>` : ""}
+        ${n.fn ? `<tr><th>Función</th><td><code>${esc(n.fn)}</code>${F[n.fn] ? ` <span class="estado">${esc(F[n.fn])}</span>` : ""}</td></tr>` : ""}
+        ${n.phase ? `<tr><th>Fase</th><td><code>${esc(n.phase)}</code></td></tr>` : ""}
+        ${llegan.length ? `<tr><th>También desde</th><td>${llegan.map(ln).join(", ")}</td></tr>` : ""}
+        ${lleva.length ? `<tr><th>Lleva a</th><td>${lleva.map(ln).join(", ")}</td></tr>` : ""}
+      </table>
+      ${(n.options || []).length ? `<table class="tabla"><tr><th style="width:34%">En pantalla</th><th>Qué hace</th><th style="width:20%">Lleva a</th></tr>
+        ${n.options.map(o => `<tr><td>${o.key ? t(o.key, "span", "boton") : `<i>${esc(o.label)}</i>`}</td><td>${esc(o.text || "")}${o.doc ? ` · <a href="#${o.doc}">en esta documentación</a>` : ""}</td><td>${o.to ? ln(o.to) : ""}</td></tr>`).join("")}
+        </table>` : ""}
+    </details>`;
+}
+
+// --- Todas las capturas -----------------------------------------------------------------
+const SECCIONES = { menus: "Menús", ajustes: "Ajustes", previas: "Antes de jugar", juego: "En juego", finales: "Finales", assets: "Página de assets" };
+const fig = s => `<figure><img loading="lazy" src="${s.file}" alt="${esc(s.title)}" data-img="${s.file}" data-cap="${esc(s.title)}${s.text ? " — " + esc(s.text) : ""}"><figcaption><b>${esc(s.title)}</b>${s.text ? ". " + esc(s.text) : ""}</figcaption></figure>`;
+const figCorta = s => `<figure><img loading="lazy" src="${s.file}" alt="${esc(s.title)}" data-img="${s.file}" data-cap="${esc(s.title)}${s.text ? " — " + esc(s.text) : ""}"><figcaption>${esc(s.title)}</figcaption></figure>`;
+function capturas() {
+  const c = J.capturas || [];
+  const donde = {};
+  for (const n of Object.values(NODOS)) for (const s of n.shots || []) donde[s] = n.id;
+  $("#p-capturas").innerHTML = `<h1>Todas las capturas</h1>
+    <div class="sub">${c.length} capturas a 1600×900, sacadas del juego por <code>tools/capture_docs.gd</code></div>
+    <p class="lead">Por secciones. Para verlas junto a su pantalla, <a href="#inicio">todas las pantallas</a>.</p>` +
+    Object.entries(SECCIONES).map(([k, nom]) => {
+      const lista = c.filter(s => s.section === k);
+      return lista.length ? `<h2 id="capturas-${k}">${nom}</h2><div class="galeria">${lista.map(s => fig(s).replace("</figcaption>", donde[s.id] ? ` <a href="#pantalla/${donde[s.id]}">Ver pantalla</a></figcaption>` : "</figcaption>")).join("")}</div>` : "";
+    }).join("");
+}
+
+// --- Estilo ---------------------------------------------------------------------------
+function md(src) {
+  const inline = s => esc(s)
+    .replace(/`([^`]+)`/g, (m, c) => `<code>${c}</code>`)
+    .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>")
+    .replace(/(^|[^*])\*([^*\s][^*]*)\*/g, "$1<i>$2</i>")
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    .replace(/(<code>)?(#[0-9a-fA-F]{6})\b(<\/code>)?/g, (m, a, h, b) => `<span class="sw" style="background:${h}"></span>${a || ""}${h}${b || ""}`);
+  const out = [], lines = src.split("\n");
+  let i = 0;
+  while (i < lines.length) {
+    const l = lines[i];
+    if (/^#{1,4} /.test(l)) { const n = l.match(/^#+/)[0].length; out.push(`<h${n}>${inline(l.slice(n + 1))}</h${n}>`); i++; }
+    else if (/^\s*[-*] /.test(l)) { const it = []; while (i < lines.length && /^\s*[-*] /.test(lines[i])) it.push(`<li>${inline(lines[i++].replace(/^\s*[-*] /, ""))}</li>`); out.push(`<ul>${it.join("")}</ul>`); }
+    else if (/^\d+\. /.test(l)) { const it = []; while (i < lines.length && /^\d+\. /.test(lines[i])) it.push(`<li>${inline(lines[i++].replace(/^\d+\. /, ""))}</li>`); out.push(`<ol>${it.join("")}</ol>`); }
+    else if (/^\|/.test(l)) {
+      const rows = []; while (i < lines.length && /^\|/.test(lines[i])) rows.push(lines[i++]);
+      const cells = r => r.replace(/^\||\|$/g, "").split("|").map(c => c.trim());
+      out.push(`<table><tr>${cells(rows[0]).map(c => `<th>${inline(c)}</th>`).join("")}</tr>${rows.slice(2).map(r => `<tr>${cells(r).map(c => `<td>${inline(c)}</td>`).join("")}</tr>`).join("")}</table>`);
+    }
+    else if (/^> /.test(l)) { const q = []; while (i < lines.length && /^> ?/.test(lines[i])) q.push(lines[i++].replace(/^> ?/, "")); out.push(`<blockquote>${inline(q.join(" "))}</blockquote>`); }
+    else if (/^```/.test(l)) { const c = []; i++; while (i < lines.length && !/^```/.test(lines[i])) c.push(lines[i++]); i++; out.push(`<pre class="mono">${esc(c.join("\n"))}</pre>`); }
+    else if (l.trim() === "") i++;
+    else { const p = []; while (i < lines.length && lines[i].trim() !== "" && !/^(#|\s*[-*] |\||> |```|\d+\. )/.test(lines[i])) p.push(lines[i++]); out.push(`<p>${inline(p.join(" "))}</p>`); }
+  }
+  return out.join("\n");
+}
+function estilo() {
+  $("#p-estilo").innerHTML = `<div class="md">${md(window.ESTILO || "# Estilo\n\nFalta `docs/ESTILO.md`.")}
+    <h2>La fuente del juego</h2>
+    <p class="fuente">¡APAGA LA LUZ QUE TE PILLO! 0123456789</p>
+    <p class="estado">Press Start 2P (<code>assets/fonts/</code>, licencia OFL).</p>
+    <p class="estado">Esta página es la documentación, no el juego: va en blanco y negro con Inter, para no confundir su estilo con el del juego.</p></div>`;
+}
+
+// --- Paleta ---------------------------------------------------------------------------
+const chip = (hex, key) => `<div class="color" data-copy="${hex}" title="${esc(key)} ${hex} (clic para copiar)"><i style="background:${hex}"></i><small>${key ? esc(key) + " " : ""}${hex}</small></div>`;
+function paleta() {
+  const p = J.paleta || [];
+  const orden = ["scenes/hud.gd", "scenes/main.gd", "scenes/menu_stage.gd", "scenes/museum_view.gd"];
+  const ficheros = [...new Set(p.map(e => e.file))].sort((a, b) => (orden.indexOf(a) + 1 || 99) - (orden.indexOf(b) + 1 || 99) || a.localeCompare(b));
+  const id = f => "paleta-" + f.replace(/\W/g, "_");
+  $("#p-paleta").innerHTML = `<h1>Paleta de colores</h1>
+    <div class="sub">Cada constante de color de los scripts del juego, con el comentario que la explica en el código · clic en un color para copiarlo</div>
+    <div class="indice"><ul>${ficheros.map(f => `<li><a href="#paleta/${id(f).slice(7)}">${f}</a></li>`).join("")}<li><a href="#paleta/museos">Los cinco museos</a></li><li><a href="#paleta/piezas">Las piezas de la historia</a></li></ul></div>
+    ${ficheros.map(f => `<h2 id="${id(f)}">${f}</h2><div class="muestras">${p.filter(e => e.file === f).map(e => `
+      <div class="muestra"><div class="nombre">${esc(e.name)}</div>${e.note ? `<div class="nota">${esc(e.note)}</div>` : ""}
+      <div class="colores">${e.colours.map(c => chip(c.hex, c.key)).join("")}</div></div>`).join("")}</div>`).join("")}
+    <h2 id="paleta-museos">Los cinco museos</h2><p class="estado"><code>logic/story.gd</code> · MUSEUMS</p>
+    <div class="muestras">${(J.historia?.museums || []).map(m => `<div class="muestra"><div class="nombre">${esc(tx(m.name))}</div>
+      <div class="colores">${chip(m.colour, "mapa")}${Object.entries(m.palette || {}).filter(([k, v]) => typeof v === "string").map(([k, v]) => chip(v, k)).join("")}</div></div>`).join("")}</div>
+    <h2 id="paleta-piezas">Las piezas de la historia</h2>
+    <div class="colores">${(J.historia?.nights || []).map(n => chip(n.loot.colour, n.n + " " + tx(n.loot.name))).join("")}</div>`;
+}
+
+// --- Assets ---------------------------------------------------------------------------
+const ASSETS = [["piezas", "Piezas a robar"], ["modelos", "Modelos 3D"], ["objetos", "Objetos que se caen"], ["sonidos", "Sonidos"]];
+function assets() {
+  const a = J.assets || {}, m = J.modelos || [], s = J.sonidos || [];
+  const grupos = [...new Set(m.map(x => x.group))];
+  const nombreGrupo = { museo: "Museo y colección", antiguo: "Tema antiguo (Egipto)", edad_media: "Tema Edad Media" };
+  const cuantos = { piezas: (a.piezas || []).length, modelos: m.length, objetos: (a.objetos || []).length, sonidos: s.length };
+  const portada = { piezas: (a.piezas || [])[0], modelos: m[0], objetos: (a.objetos || [])[0] };
+  const cabeza = txt => `<div class="ruta"><a href="#assets">Assets</a></div><h1>${txt}</h1>`;
+  $("#p-assets").innerHTML = `<h1>Assets</h1>
+    <div class="sub">Lo que enseña la <a href="#pantalla/assets_juego">página de assets del juego</a>, fuera de él</div>
+    <div class="tarjetas assets">${ASSETS.map(([k, txt]) => `<a class="tarjeta" href="#assets/${k}"><div class="img">${portada[k] ? `<img loading="lazy" src="${portada[k].file}" alt="">` : `<span class="nota-musical">♪</span>`}</div>
+      <div class="t">${txt}</div><div class="estado">${cuantos[k]}</div></a>`).join("")}</div>`;
+  $("#p-assets-piezas").innerHTML = cabeza("Piezas a robar") + `
+    <p>Las veinte de la historia y una de cada forma que inventa el modo generativo (<code>LootGen</code>), en su peana, como las pinta el juego.</p>
+    <div class="galeria" style="--min:150px">${(a.piezas || []).map(p => `<div class="pieza"><img loading="lazy" src="${p.file}" alt="" data-img="${p.file}" data-cap="${esc(tx(p.name))}">
+      <div class="t">${t(p.name)}</div><div class="s"><span class="punto" style="background:${p.colour}"></span>${p.night ? "Noche " + p.night : "Generativo"} · <code>${esc(p.shape)}</code></div></div>`).join("")}</div>`;
+  $("#p-assets-modelos").innerHTML = cabeza("Modelos 3D") + `
+    <p>Cada <code>.glb</code> de <code>assets/models/</code>, exportado desde Blender (<code>art/*.blend</code>), en tres cuartos y con el sombreado toon del juego (<code>MuseumView.asset</code>).</p>
+    ${grupos.map(g => `<h2>${nombreGrupo[g] || g}</h2><div class="galeria" style="--min:140px">${m.filter(x => x.group === g).map(x => `<div class="pieza"><img loading="lazy" src="${x.file}" alt="" data-img="${x.file}" data-cap="${esc(x.name)}.glb">
+      <div class="t mono">${esc(x.name.split("/").pop())}</div><div class="s">${x.size.map(v => v.toFixed(2)).join(" × ")} m</div></div>`).join("")}</div>`).join("")}`;
+  $("#p-assets-objetos").innerHTML = cabeza("Objetos que se caen") + `
+    <div class="galeria" style="--min:150px">${(a.objetos || []).map(p => `<div class="pieza"><img loading="lazy" src="${p.file}" alt="" data-img="${p.file}" data-cap="${esc(p.name)}"><div class="t">${esc(p.name)}</div><div class="s"><code>${p.kind}</code></div></div>`).join("")}</div>`;
+  $("#p-assets-sonidos").innerHTML = cabeza("Sonidos") + `
+    <p>Generados en código (<code>scenes/sfx.gd</code>) y exportados a <code>.wav</code>.</p>
+    <div style="max-width:720px">${s.map(x => `<div class="sonido"><b>${esc(x.name)}</b><audio controls preload="none" src="${x.file}"></audio><span class="estado">${x.seconds} s</span></div>`).join("")}</div>`;
+}
+
+// --- Historia -------------------------------------------------------------------------
+function historia() {
+  const h = J.historia || {};
+  const museos = h.museums || [], noches = h.nights || [], lecciones = h.lessons || {};
+  $("#p-historia").innerHTML = `<h1>Historia</h1>
+    <div class="sub">Todo el texto de la historia, en el orden en que lo lee el jugador${EDITABLE ? " · pulsa un texto para cambiarlo" : ""}</div>
+    <p class="lead">La Banda del Calcetín devuelve lo que robó el Barón Von Bostezo: veinte noches en cinco museos, cuatro por museo, de fácil a difícil. Algunas noches enseñan algo nuevo (la lección de la previa); las demás lo practican.</p>
+    <div class="indice"><ul><li><a href="#historia/prologo">Prólogo</a></li>${museos.map(m => `<li><a href="#historia/museo${m.n}">${esc(tx(m.name))}</a></li>`).join("")}<li><a href="#historia/final">Final</a></li></ul></div>
+    <h2 id="historia-prologo">Prólogo</h2>
+    <p style="white-space:pre-wrap">${t(h.prologue)}</p>
+    ${museos.map(m => `<h2 id="historia-museo${m.n}"><span class="punto" style="background:${m.colour}"></span>${t(m.name)}</h2>
+      <p class="lead">${t(m.text)}</p>
+      ${(m.nights_list || []).map(n => noche(noches[n - 1], lecciones)).join("")}`).join("")}
+    <h2 id="historia-final">Final</h2>
+    <p style="white-space:pre-wrap">${t(h.ending)}</p>`;
+}
+function noche(n, lecciones) {
+  if (!n) return "";
+  const l = n.loot, les = lecciones[n.teach];
+  const g = n.guards === 0 ? "sin guardias" : n.guards === 1 ? "1 guardia" : n.guards + " guardias";
+  const tam = { small: "pequeño", medium: "mediano", large: "grande" }[n.size] || n.size;
+  return `<div class="noche"><div class="n">${String(n.n).padStart(2, "0")}</div><div>
+    <div class="pz"><span class="punto" style="background:${l.colour}"></span>${t(l.name)}</div>
+    <p><span class="etq">Descripción</span>${t(l.blurb)}</p>
+    <p><span class="etq">Mientras la coge</span>${t(l.verb)}</p>
+    <p><span class="etq">Cuento</span>${t(l.story)}</p>
+    ${les ? `<p><span class="etq">Enseña</span><b>${t(les.title)}</b>: ${t(les.text)}</p>` : ""}
+    <div><span class="tag">museo ${tam}, forma ${n.shape}</span><span class="tag">${g}</span>${n.props ? '<span class="tag">objetos</span>' : ""}${n.lights ? '<span class="tag">luces</span>' : ""}${n.case_alarm ? '<span class="tag">vitrina con alarma</span>' : ""}<span class="tag">${n.alarms} alarma${n.alarms === 1 ? "" : "s"}</span><span class="tag">${l.seconds} s para cogerla</span></div>
+  </div></div>`;
+}
+
+// --- Textos ---------------------------------------------------------------------------
+let filtro = { q: "", grupo: "Todos" };
+function textos() {
+  const grupos = ["Todos", ...new Set(TX.map(x => x.group))];
+  const rotos = TX.filter(x => x.broken);
+  $("#p-textos").innerHTML = `<h1>Textos</h1>
+    <div class="sub">Los ${TX.length} textos de <code>locale/texts.csv</code> y dónde se usan en el código</div>
+    <p class="lead"><span class="ph">%s</span> y <span class="ph">%d</span> los rellena el juego: hay que conservarlos. ${EDITABLE ? "<b>Edición activa</b>: pulsa un texto para cambiarlo; se guarda en <code>locale/texts.csv</code>." : "Solo lectura: para editar, <code>python3 tools/docs.py serve</code> y abre <code>http://localhost:8765</code>."}</p>
+    ${rotos.length ? `<div class="aviso">Filas rotas en el CSV: ${rotos.map(r => `<code>${r.key}</code>`).join(", ")}. Tienen una coma sin comillas y el juego las corta en la coma.${EDITABLE ? " Guárdalas desde aquí para arreglarlas." : ""}</div>` : ""}
+    <div class="buscar"><input id="q" placeholder="Buscar en claves y textos" value="${esc(filtro.q)}">
+      <select id="grupo">${grupos.map(g => `<option ${g === filtro.grupo ? "selected" : ""}>${esc(g)}</option>`).join("")}</select></div>
+    <table class="tabla textos"><thead><tr><th>Clave · dónde se usa</th><th>Texto</th></tr></thead><tbody id="filas"></tbody></table>`;
+  $("#q").addEventListener("input", e => { filtro.q = e.target.value; filas(); });
+  $("#grupo").addEventListener("change", e => { filtro.grupo = e.target.value; filas(); });
+  filas();
+}
+function filas() {
+  const q = filtro.q.toLowerCase();
+  const lista = TX.filter(x => (filtro.grupo === "Todos" || x.group === filtro.grupo) && (!q || x.key.toLowerCase().includes(q) || x.es.toLowerCase().includes(q)));
+  $("#filas").innerHTML = lista.slice(0, 600).map(x => {
+    const donde = x.at.length ? x.at.join(" · ") : x.via.length ? "vía " + x.via.join(", ") : "se arma en código o no se usa";
+    const valor = x.broken ? x.es + "," + x.extra.join(",") : x.es;
+    return `<tr class="${x.broken ? "roto" : ""}"><td class="k">${esc(x.key)}<small>${esc(x.group)} · ${esc(donde)}</small></td><td class="v" data-key="${esc(x.key)}" ${x.broken ? `data-valor="${esc(valor)}"` : ""}>${marcas(valor)}</td></tr>`;
+  }).join("") + (lista.length > 600 ? `<tr><td colspan="2" class="estado">…y ${lista.length - 600} más: afina la búsqueda.</td></tr>` : "");
+}
+
+// --- Clics: copiar, ampliar, editar -------------------------------------------------------
+document.addEventListener("click", async e => {
+  const copia = e.target.closest("[data-copy]");
+  if (copia) { navigator.clipboard?.writeText(copia.dataset.copy); return; }
+  const ir = e.target.closest("[data-ir]");
+  if (ir) { verOtra(+ir.dataset.ir); return; }
+  if (e.target.closest("#caja")) { $("#caja").classList.remove("on"); return; }
+  const img = e.target.closest("img[data-img]");
+  if (img) { ver(img); return; }
+  const el = e.target.closest("[data-key]");
+  if (!EDITABLE || !el || el.querySelector("textarea") || e.target.closest(".botones") || e.target.closest("a")) return;
+  e.preventDefault();
+  const key = el.dataset.key, antes = el.dataset.valor ?? tx(key), html = el.innerHTML, cls = el.className;
+  el.className = "";
+  el.innerHTML = `<textarea class="editor"></textarea><span class="botones"><button class="btn si">Guardar</button><button class="btn">Cancelar</button><span class="estado">${esc(key)}</span></span>`;
+  const ta = el.querySelector("textarea");
+  ta.value = antes; ta.style.height = Math.max(64, ta.scrollHeight + 6) + "px"; ta.focus();
+  const [ok, no] = el.querySelectorAll("button");
+  no.onclick = ev => { ev.stopPropagation(); el.innerHTML = html; el.className = cls; };
+  ok.onclick = async ev => {
+    ev.stopPropagation();
+    ok.disabled = true; ok.textContent = "Guardando…";
+    const r = await fetch("api/texto", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key, es: ta.value }) });
+    const res = await r.json().catch(() => ({}));
+    if (!r.ok) { ok.disabled = false; ok.textContent = "Guardar"; const a = document.createElement("div"); a.className = "aviso"; a.textContent = res.error || "No se pudo guardar"; el.appendChild(a); return; }
+    const src = await (await fetch("data/textos.js?" + Date.now())).text();
+    TX = JSON.parse(src.replace(/^window\.TEXTOS = /, "").replace(/;\s*$/, ""));
+    indexar(); pintar(); ir();
+  };
+});
+// La caja enseña una captura en grande; las flechas pasan a las demás de la página.
+let viendo = null;
+function ver(img) {
+  viendo = img;
+  const c = $("#caja");
+  c.querySelector("img").src = img.dataset.img;
+  c.querySelector("p").textContent = img.dataset.cap || "";
+  c.classList.add("on");
+}
+function verOtra(d) {
+  const todas = [...document.querySelectorAll(".pagina.on img[data-img]")];
+  const i = todas.indexOf(viendo);
+  if (i >= 0 && todas[i + d]) ver(todas[i + d]);
+}
+// Sin la caja, las flechas van a la pantalla anterior o siguiente.
+document.addEventListener("keydown", e => {
+  if (e.target.closest("input, textarea, select")) return;
+  const abierta = $("#caja").classList.contains("on");
+  if (e.key === "Escape") $("#caja").classList.remove("on");
+  else if (abierta && (e.key === "ArrowLeft" || e.key === "ArrowRight")) verOtra(e.key === "ArrowLeft" ? -1 : 1);
+  else if (!abierta && location.hash.startsWith("#pantalla/") && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+    const i = ORDEN.indexOf(decodeURIComponent(location.hash.split("/")[1]));
+    const x = ORDEN[i + (e.key === "ArrowLeft" ? -1 : 1)];
+    if (x) location.hash = "pantalla/" + x;
+  }
+});
+
+function pintar() {
+  inicio(); capturas(); estilo(); paleta(); assets(); historia(); textos();
+  document.body.classList.toggle("editable", EDITABLE);
+}
+pintar();
+ir();
+// Con el servidor de tools/docs.py, los textos se pueden cambiar.
+if (location.protocol.startsWith("http")) {
+  fetch("api/ping").then(r => r.ok && r.json()).then(j => { if (j && j.editable) { EDITABLE = true; pintar(); ir(); } }).catch(() => {});
+}
+</script>
+</body>
+</html>

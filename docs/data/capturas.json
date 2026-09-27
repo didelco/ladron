@@ -1,0 +1,555 @@
+[
+	{
+		"file": "capturas/menu_titulo.webp",
+		"id": "menu_titulo",
+		"section": "menus",
+		"text": "Los tres modos: historia, generativo y retos.",
+		"title": "Pantalla de título"
+	},
+	{
+		"file": "capturas/menu_historia_jugadores.webp",
+		"id": "menu_historia_jugadores",
+		"section": "menus",
+		"text": "Uno a cuatro, cada banda con su progreso.",
+		"title": "Historia: cuántos ladrones"
+	},
+	{
+		"file": "capturas/menu_historia_ciudad.webp",
+		"id": "menu_historia_ciudad",
+		"section": "menus",
+		"text": "Los cinco museos en sus calles.",
+		"title": "Historia: la ciudad"
+	},
+	{
+		"file": "capturas/menu_museo_1.webp",
+		"id": "menu_museo_1",
+		"section": "menus",
+		"text": "Sus noches como salas y la pieza de la elegida.",
+		"title": "Museo 1: El Desván del Barón"
+	},
+	{
+		"file": "capturas/menu_museo_2.webp",
+		"id": "menu_museo_2",
+		"section": "menus",
+		"text": "Sus noches como salas y la pieza de la elegida.",
+		"title": "Museo 2: El Invernadero"
+	},
+	{
+		"file": "capturas/menu_museo_3.webp",
+		"id": "menu_museo_3",
+		"section": "menus",
+		"text": "Sus noches como salas y la pieza de la elegida.",
+		"title": "Museo 3: El Observatorio"
+	},
+	{
+		"file": "capturas/menu_museo_4.webp",
+		"id": "menu_museo_4",
+		"section": "menus",
+		"text": "Sus noches como salas y la pieza de la elegida.",
+		"title": "Museo 4: La Torre del Reloj"
+	},
+	{
+		"file": "capturas/menu_museo_5.webp",
+		"id": "menu_museo_5",
+		"section": "menus",
+		"text": "Sus noches como salas y la pieza de la elegida.",
+		"title": "Museo 5: El Palacio Bostezo"
+	},
+	{
+		"file": "capturas/menu_generativo.webp",
+		"id": "menu_generativo",
+		"section": "menus",
+		"text": "Dificultad, tamaño del museo y número de ladrones.",
+		"title": "Modo generativo"
+	},
+	{
+		"file": "capturas/menu_retos.webp",
+		"id": "menu_retos",
+		"section": "menus",
+		"text": "Las noches de la historia y los mapas hechos a mano, con el plano del elegido.",
+		"title": "Retos"
+	},
+	{
+		"file": "capturas/menu_reto_mapa.webp",
+		"id": "menu_reto_mapa",
+		"section": "menus",
+		"text": "El Ala de los Fósiles",
+		"title": "Un reto elegido"
+	},
+	{
+		"file": "capturas/menu_reto_noche.webp",
+		"id": "menu_reto_noche",
+		"section": "menus",
+		"text": "Para retocar su museo en el editor.",
+		"title": "Retos: una noche de la historia"
+	},
+	{
+		"file": "capturas/menu_editor.webp",
+		"id": "menu_editor",
+		"section": "menus",
+		"text": "",
+		"title": "Editor de mapas"
+	},
+	{
+		"file": "capturas/menu_elegir_mandos.webp",
+		"id": "menu_elegir_mandos",
+		"section": "menus",
+		"text": "Cada ladrón pulsa en su mando o en su mitad del teclado.",
+		"title": "Elegir mandos"
+	},
+	{
+		"file": "capturas/ajustes_inicio.webp",
+		"id": "ajustes_inicio",
+		"section": "ajustes",
+		"text": "",
+		"title": "Ajustes"
+	},
+	{
+		"file": "capturas/ajustes_sound.webp",
+		"id": "ajustes_sound",
+		"section": "ajustes",
+		"text": "",
+		"title": "Ajustes: sonido"
+	},
+	{
+		"file": "capturas/ajustes_screen.webp",
+		"id": "ajustes_screen",
+		"section": "ajustes",
+		"text": "",
+		"title": "Ajustes: pantalla"
+	},
+	{
+		"file": "capturas/ajustes_pads.webp",
+		"id": "ajustes_pads",
+		"section": "ajustes",
+		"text": "",
+		"title": "Ajustes: mandos y controles"
+	},
+	{
+		"file": "capturas/previa_prologo_1.webp",
+		"id": "previa_prologo_1",
+		"section": "previas",
+		"text": "",
+		"title": "Prólogo, página 1 de 3"
+	},
+	{
+		"file": "capturas/previa_prologo_2.webp",
+		"id": "previa_prologo_2",
+		"section": "previas",
+		"text": "",
+		"title": "Prólogo, página 2 de 3"
+	},
+	{
+		"file": "capturas/previa_prologo_3.webp",
+		"id": "previa_prologo_3",
+		"section": "previas",
+		"text": "",
+		"title": "Prólogo, página 3 de 3"
+	},
+	{
+		"file": "capturas/previa_noche_01_story.webp",
+		"id": "previa_noche_01_story",
+		"section": "previas",
+		"text": "la dentadura del abuelo Paco",
+		"title": "Noche 1: la historia"
+	},
+	{
+		"file": "capturas/previa_noche_01_news.webp",
+		"id": "previa_noche_01_news",
+		"section": "previas",
+		"text": "la dentadura del abuelo Paco",
+		"title": "Noche 1: la noticia"
+	},
+	{
+		"file": "capturas/previa_noche_01_plan.webp",
+		"id": "previa_noche_01_plan",
+		"section": "previas",
+		"text": "la dentadura del abuelo Paco",
+		"title": "Noche 1: el plan"
+	},
+	{
+		"file": "capturas/previa_noche_02_story.webp",
+		"id": "previa_noche_02_story",
+		"section": "previas",
+		"text": "el pato que canta ópera",
+		"title": "Noche 2: la historia"
+	},
+	{
+		"file": "capturas/previa_noche_02_news.webp",
+		"id": "previa_noche_02_news",
+		"section": "previas",
+		"text": "el pato que canta ópera",
+		"title": "Noche 2: la noticia"
+	},
+	{
+		"file": "capturas/previa_noche_02_plan.webp",
+		"id": "previa_noche_02_plan",
+		"section": "previas",
+		"text": "el pato que canta ópera",
+		"title": "Noche 2: el plan"
+	},
+	{
+		"file": "capturas/previa_noche_04_story.webp",
+		"id": "previa_noche_04_story",
+		"section": "previas",
+		"text": "el calcetín del yeti",
+		"title": "Noche 4: la historia"
+	},
+	{
+		"file": "capturas/previa_noche_04_news.webp",
+		"id": "previa_noche_04_news",
+		"section": "previas",
+		"text": "el calcetín del yeti",
+		"title": "Noche 4: la noticia"
+	},
+	{
+		"file": "capturas/previa_noche_04_plan.webp",
+		"id": "previa_noche_04_plan",
+		"section": "previas",
+		"text": "el calcetín del yeti",
+		"title": "Noche 4: el plan"
+	},
+	{
+		"file": "capturas/previa_noche_06_story.webp",
+		"id": "previa_noche_06_story",
+		"section": "previas",
+		"text": "la tostada con la cara del Barón",
+		"title": "Noche 6: la historia"
+	},
+	{
+		"file": "capturas/previa_noche_06_news.webp",
+		"id": "previa_noche_06_news",
+		"section": "previas",
+		"text": "la tostada con la cara del Barón",
+		"title": "Noche 6: la noticia"
+	},
+	{
+		"file": "capturas/previa_noche_06_plan.webp",
+		"id": "previa_noche_06_plan",
+		"section": "previas",
+		"text": "la tostada con la cara del Barón",
+		"title": "Noche 6: el plan"
+	},
+	{
+		"file": "capturas/previa_noche_08_story.webp",
+		"id": "previa_noche_08_story",
+		"section": "previas",
+		"text": "la corona de la Reina de los Pepinillos",
+		"title": "Noche 8: la historia"
+	},
+	{
+		"file": "capturas/previa_noche_08_news.webp",
+		"id": "previa_noche_08_news",
+		"section": "previas",
+		"text": "la corona de la Reina de los Pepinillos",
+		"title": "Noche 8: la noticia"
+	},
+	{
+		"file": "capturas/previa_noche_08_plan.webp",
+		"id": "previa_noche_08_plan",
+		"section": "previas",
+		"text": "la corona de la Reina de los Pepinillos",
+		"title": "Noche 8: el plan"
+	},
+	{
+		"file": "capturas/previa_noche_09_story.webp",
+		"id": "previa_noche_09_story",
+		"section": "previas",
+		"text": "el trofeo del campeón de siestas",
+		"title": "Noche 9: la historia"
+	},
+	{
+		"file": "capturas/previa_noche_09_plan.webp",
+		"id": "previa_noche_09_plan",
+		"section": "previas",
+		"text": "el trofeo del campeón de siestas",
+		"title": "Noche 9: el plan"
+	},
+	{
+		"file": "capturas/previa_noche_11_story.webp",
+		"id": "previa_noche_11_story",
+		"section": "previas",
+		"text": "la máscara del dragón estornudón",
+		"title": "Noche 11: la historia"
+	},
+	{
+		"file": "capturas/previa_noche_11_news.webp",
+		"id": "previa_noche_11_news",
+		"section": "previas",
+		"text": "la máscara del dragón estornudón",
+		"title": "Noche 11: la noticia"
+	},
+	{
+		"file": "capturas/previa_noche_11_plan.webp",
+		"id": "previa_noche_11_plan",
+		"section": "previas",
+		"text": "la máscara del dragón estornudón",
+		"title": "Noche 11: el plan"
+	},
+	{
+		"file": "capturas/previa_noche_13_story.webp",
+		"id": "previa_noche_13_story",
+		"section": "previas",
+		"text": "el despertador que canta tangos",
+		"title": "Noche 13: la historia"
+	},
+	{
+		"file": "capturas/previa_noche_13_news.webp",
+		"id": "previa_noche_13_news",
+		"section": "previas",
+		"text": "el despertador que canta tangos",
+		"title": "Noche 13: la noticia"
+	},
+	{
+		"file": "capturas/previa_noche_13_plan.webp",
+		"id": "previa_noche_13_plan",
+		"section": "previas",
+		"text": "el despertador que canta tangos",
+		"title": "Noche 13: el plan"
+	},
+	{
+		"file": "capturas/previa_noche_15_story.webp",
+		"id": "previa_noche_15_story",
+		"section": "previas",
+		"text": "el huevo de chocolate que nunca se acaba",
+		"title": "Noche 15: la historia"
+	},
+	{
+		"file": "capturas/previa_noche_15_news.webp",
+		"id": "previa_noche_15_news",
+		"section": "previas",
+		"text": "el huevo de chocolate que nunca se acaba",
+		"title": "Noche 15: la noticia"
+	},
+	{
+		"file": "capturas/previa_noche_15_plan.webp",
+		"id": "previa_noche_15_plan",
+		"section": "previas",
+		"text": "el huevo de chocolate que nunca se acaba",
+		"title": "Noche 15: el plan"
+	},
+	{
+		"file": "capturas/previa_noche_17_story.webp",
+		"id": "previa_noche_17_story",
+		"section": "previas",
+		"text": "los dientes de oro del pirata Mellado",
+		"title": "Noche 17: la historia"
+	},
+	{
+		"file": "capturas/previa_noche_17_news.webp",
+		"id": "previa_noche_17_news",
+		"section": "previas",
+		"text": "los dientes de oro del pirata Mellado",
+		"title": "Noche 17: la noticia"
+	},
+	{
+		"file": "capturas/previa_noche_17_plan.webp",
+		"id": "previa_noche_17_plan",
+		"section": "previas",
+		"text": "los dientes de oro del pirata Mellado",
+		"title": "Noche 17: el plan"
+	},
+	{
+		"file": "capturas/previa_noche_20_story.webp",
+		"id": "previa_noche_20_story",
+		"section": "previas",
+		"text": "el Diamante Bostezo",
+		"title": "Noche 20: la historia"
+	},
+	{
+		"file": "capturas/previa_noche_20_news.webp",
+		"id": "previa_noche_20_news",
+		"section": "previas",
+		"text": "el Diamante Bostezo",
+		"title": "Noche 20: la noticia"
+	},
+	{
+		"file": "capturas/previa_noche_20_plan.webp",
+		"id": "previa_noche_20_plan",
+		"section": "previas",
+		"text": "el Diamante Bostezo",
+		"title": "Noche 20: el plan"
+	},
+	{
+		"file": "capturas/previa_generativo_plan.webp",
+		"id": "previa_generativo_plan",
+		"section": "previas",
+		"text": "",
+		"title": "Generativo: el plan, dos ladrones"
+	},
+	{
+		"file": "capturas/previa_cuenta_atras.webp",
+		"id": "previa_cuenta_atras",
+		"section": "previas",
+		"text": "",
+		"title": "La cuenta atrás"
+	},
+	{
+		"file": "capturas/juego_noche_01.webp",
+		"id": "juego_noche_01",
+		"section": "juego",
+		"text": "Sin guardias: aprender a llevarse la pieza.",
+		"title": "Noche 1: el museo vacío"
+	},
+	{
+		"file": "capturas/juego_noche_04_linterna.webp",
+		"id": "juego_noche_04_linterna",
+		"section": "juego",
+		"text": "Un guardia con ronda fija y su cono de luz.",
+		"title": "Noche 4: la linterna"
+	},
+	{
+		"file": "capturas/juego_noche_08_objetos.webp",
+		"id": "juego_noche_08_objetos",
+		"section": "juego",
+		"text": "Papeleras, bustos, paneles y armaduras que hacen ruido.",
+		"title": "Noche 8: objetos que se caen"
+	},
+	{
+		"file": "capturas/juego_noche_13_dos.webp",
+		"id": "juego_noche_13_dos",
+		"section": "juego",
+		"text": "",
+		"title": "Noche 13: dos guardias, dos ladrones"
+	},
+	{
+		"file": "capturas/juego_noche_15_luces.webp",
+		"id": "juego_noche_15_luces",
+		"section": "juego",
+		"text": "Salas encendidas e interruptores.",
+		"title": "Noche 15: las luces"
+	},
+	{
+		"file": "capturas/juego_noche_20_final.webp",
+		"id": "juego_noche_20_final",
+		"section": "juego",
+		"text": "Cuatro guardias y la banda de cuatro.",
+		"title": "Noche 20: la final"
+	},
+	{
+		"file": "capturas/juego_algo_raro.webp",
+		"id": "juego_algo_raro",
+		"section": "juego",
+		"text": "Un guardia con el ladrón delante: la marca ! sobre él.",
+		"title": "Algo raro"
+	},
+	{
+		"file": "capturas/juego_persecucion.webp",
+		"id": "juego_persecucion",
+		"section": "juego",
+		"text": "Los guardias en alerta: linternas rojas y marcas !!! sobre ellos.",
+		"title": "Alerta"
+	},
+	{
+		"file": "capturas/juego_minijuego_lockpick.webp",
+		"id": "juego_minijuego_lockpick",
+		"section": "juego",
+		"text": "Forzar la cerradura de la vitrina.",
+		"title": "Minijuego: la ganzúa"
+	},
+	{
+		"file": "capturas/juego_minijuego_wires.webp",
+		"id": "juego_minijuego_wires",
+		"section": "juego",
+		"text": "Desconectar el cuadro de alarma.",
+		"title": "Minijuego: los cables"
+	},
+	{
+		"file": "capturas/juego_minijuego_steady.webp",
+		"id": "juego_minijuego_steady",
+		"section": "juego",
+		"text": "Cortar el cristal sin moverse.",
+		"title": "Minijuego: la ventosa"
+	},
+	{
+		"file": "capturas/juego_minijuego_balance.webp",
+		"id": "juego_minijuego_balance",
+		"section": "juego",
+		"text": "Hacerse pasar por estatua sobre un pedestal.",
+		"title": "Minijuego: el equilibrio"
+	},
+	{
+		"file": "capturas/juego_mapa.webp",
+		"id": "juego_mapa",
+		"section": "juego",
+		"text": "El plano con la banda, la pieza, la salida y los guardias.",
+		"title": "El mapa"
+	},
+	{
+		"file": "capturas/juego_generativo.webp",
+		"id": "juego_generativo",
+		"section": "juego",
+		"text": "",
+		"title": "Generativo: un museo nuevo"
+	},
+	{
+		"file": "capturas/juego_reto.webp",
+		"id": "juego_reto",
+		"section": "juego",
+		"text": "",
+		"title": "Un reto hecho a mano"
+	},
+	{
+		"file": "capturas/juego_pausa.webp",
+		"id": "juego_pausa",
+		"section": "juego",
+		"text": "",
+		"title": "Pausa"
+	},
+	{
+		"file": "capturas/final_pillado.webp",
+		"id": "final_pillado",
+		"section": "finales",
+		"text": "",
+		"title": "Te han pillado"
+	},
+	{
+		"file": "capturas/final_escapado.webp",
+		"id": "final_escapado",
+		"section": "finales",
+		"text": "",
+		"title": "¡Lo habéis conseguido!"
+	},
+	{
+		"file": "capturas/final_historia.webp",
+		"id": "final_historia",
+		"section": "finales",
+		"text": "",
+		"title": "El final de la historia"
+	},
+	{
+		"file": "capturas/assets_piezas.webp",
+		"id": "assets_piezas",
+		"section": "assets",
+		"text": "",
+		"title": "Assets: piezas"
+	},
+	{
+		"file": "capturas/assets_props.webp",
+		"id": "assets_props",
+		"section": "assets",
+		"text": "",
+		"title": "Assets: objetos"
+	},
+	{
+		"file": "capturas/assets_people.webp",
+		"id": "assets_people",
+		"section": "assets",
+		"text": "",
+		"title": "Assets: personajes"
+	},
+	{
+		"file": "capturas/assets_sounds.webp",
+		"id": "assets_sounds",
+		"section": "assets",
+		"text": "",
+		"title": "Assets: sonidos"
+	},
+	{
+		"file": "capturas/assets_map.webp",
+		"id": "assets_map",
+		"section": "assets",
+		"text": "",
+		"title": "Assets: mapa"
+	}
+]

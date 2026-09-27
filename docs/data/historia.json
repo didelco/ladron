@@ -1,0 +1,798 @@
+{
+	"ending": "STORY_ENDING",
+	"lessons": {
+		"big": {
+			"stage": "lesson:big",
+			"text": "LESSON_BIG_TEXT",
+			"title": "LESSON_BIG_TITLE"
+		},
+		"case_alarm": {
+			"stage": "lesson:case_alarm",
+			"text": "LESSON_CASE_ALARM_TEXT",
+			"title": "LESSON_CASE_ALARM_TITLE"
+		},
+		"finale": {
+			"stage": "lesson:finale",
+			"text": "LESSON_FINALE_TEXT",
+			"title": "LESSON_FINALE_TITLE"
+		},
+		"guard": {
+			"stage": "lesson:guard",
+			"text": "LESSON_GUARD_TEXT",
+			"title": "LESSON_GUARD_TITLE"
+		},
+		"heist": {
+			"stage": "lesson:heist",
+			"text": "LESSON_HEIST_TEXT",
+			"title": "LESSON_HEIST_TITLE"
+		},
+		"heist2": {
+			"stage": "lesson:heist2",
+			"text": "LESSON_HEIST2_TEXT",
+			"title": "LESSON_HEIST2_TITLE"
+		},
+		"heist3": {
+			"stage": "lesson:heist3",
+			"text": "LESSON_HEIST3_TEXT",
+			"title": "LESSON_HEIST3_TITLE"
+		},
+		"heist4": {
+			"stage": "lesson:heist4",
+			"text": "LESSON_HEIST4_TEXT",
+			"title": "LESSON_HEIST4_TITLE"
+		},
+		"lights": {
+			"stage": "lesson:lights",
+			"text": "LESSON_LIGHTS_TEXT",
+			"title": "LESSON_LIGHTS_TITLE"
+		},
+		"noise": {
+			"stage": "lesson:noise",
+			"text": "LESSON_NOISE_TEXT",
+			"title": "LESSON_NOISE_TITLE"
+		},
+		"props": {
+			"stage": "lesson:props",
+			"text": "LESSON_PROPS_TEXT",
+			"title": "LESSON_PROPS_TITLE"
+		},
+		"torch": {
+			"stage": "lesson:torch",
+			"text": "LESSON_TORCH_TEXT",
+			"title": "LESSON_TORCH_TITLE"
+		},
+		"two": {
+			"stage": "lesson:two",
+			"text": "LESSON_TWO_TEXT",
+			"title": "LESSON_TWO_TITLE"
+		}
+	},
+	"museums": [
+		{
+			"colour": "#4dabf7",
+			"n": 1,
+			"name": "MUSEUM_1_NAME",
+			"nights": 4,
+			"nights_list": [
+				1,
+				2,
+				3,
+				4
+			],
+			"palette": {
+				"cap": "#5c5040",
+				"dado": 0.5,
+				"floor": 2,
+				"gloss": 0.45,
+				"joint": "#150d08",
+				"paper": "#1f2e4a",
+				"paper2": "#27395a",
+				"skirt": "#150d08",
+				"stone": "#3a2a1c",
+				"stone2": "#46321f",
+				"trim": "#b08d4a",
+				"wainscot": "#3b2a1a",
+				"wallpaper": 2
+			},
+			"text": "MUSEUM_1_TEXT"
+		},
+		{
+			"colour": "#7bc043",
+			"n": 2,
+			"name": "MUSEUM_2_NAME",
+			"nights": 4,
+			"nights_list": [
+				5,
+				6,
+				7,
+				8
+			],
+			"palette": {
+				"cap": "#5a6a4a",
+				"dado": 0.45,
+				"floor": 1,
+				"gloss": 0.3,
+				"joint": "#0e1611",
+				"paper": "#1e4a2c",
+				"paper2": "#285c38",
+				"skirt": "#0e1611",
+				"stone": "#23352a",
+				"stone2": "#2a3f31",
+				"trim": "#c9a34a",
+				"wainscot": "#2e2418",
+				"wallpaper": 1
+			},
+			"text": "MUSEUM_2_TEXT"
+		},
+		{
+			"colour": "#9b5de5",
+			"n": 3,
+			"name": "MUSEUM_3_NAME",
+			"nights": 4,
+			"nights_list": [
+				9,
+				10,
+				11,
+				12
+			],
+			"palette": {
+				"cap": "#5e5670",
+				"dado": 0.5,
+				"floor": 0,
+				"gloss": 0.18,
+				"joint": "#5a5488",
+				"paper": "#3a2656",
+				"paper2": "#462f66",
+				"skirt": "#0a0818",
+				"stone": "#25243a",
+				"stone2": "#2e2d46",
+				"trim": "#a8a0d8",
+				"wainscot": "#1c1636",
+				"wallpaper": 1
+			},
+			"text": "MUSEUM_3_TEXT"
+		},
+		{
+			"colour": "#e8590c",
+			"n": 4,
+			"name": "MUSEUM_4_NAME",
+			"nights": 4,
+			"nights_list": [
+				13,
+				14,
+				15,
+				16
+			],
+			"palette": {
+				"cap": "#6a4a36",
+				"dado": 0.55,
+				"floor": 1,
+				"gloss": 0.35,
+				"joint": "#1c0f0a",
+				"paper": "#5a4418",
+				"paper2": "#6b521e",
+				"skirt": "#1c0f0a",
+				"stone": "#5c3420",
+				"stone2": "#683c25",
+				"trim": "#d9a441",
+				"wainscot": "#3a1e12",
+				"wallpaper": 2
+			},
+			"text": "MUSEUM_4_TEXT"
+		},
+		{
+			"colour": "#e03131",
+			"n": 5,
+			"name": "MUSEUM_5_NAME",
+			"nights": 4,
+			"nights_list": [
+				17,
+				18,
+				19,
+				20
+			],
+			"palette": {
+				"cap": "#7a6040",
+				"dado": 0.5,
+				"floor": 0,
+				"gloss": 0.15,
+				"joint": "#8a6a3a",
+				"paper": "#5e1222",
+				"paper2": "#74182c",
+				"skirt": "#08070c",
+				"stone": "#1a1618",
+				"stone2": "#262024",
+				"trim": "#f0c46a",
+				"wainscot": "#1a1014",
+				"wallpaper": 1
+			},
+			"text": "MUSEUM_5_TEXT"
+		}
+	],
+	"nights": [
+		{
+			"alarms": 3,
+			"calm_after": 5.0,
+			"case_alarm": false,
+			"guards": 0,
+			"hearing": 0.2,
+			"lights": false,
+			"loot": {
+				"blurb": "NIGHT_01_BLURB",
+				"colour": "#f4f1e6",
+				"name": "NIGHT_01_NAME",
+				"seconds": 1.5,
+				"shape": "teeth",
+				"story": "NIGHT_01_TALE",
+				"verb": "NIGHT_01_VERB"
+			},
+			"museum": 1,
+			"n": 1,
+			"news": [
+				{
+					"stage": "lesson:heist",
+					"text": "Quieto junto a la vitrina hasta que se abra, y sal por la flecha verde.",
+					"title": "EL GOLPE"
+				}
+			],
+			"props": false,
+			"shape": "rect",
+			"size": "small",
+			"speed": 0.4,
+			"teach": "heist",
+			"view": 0.45
+		},
+		{
+			"alarms": 3,
+			"calm_after": 5.0,
+			"case_alarm": false,
+			"guards": 1,
+			"hearing": 0.2,
+			"lights": false,
+			"loot": {
+				"blurb": "NIGHT_02_BLURB",
+				"colour": "#ffd43b",
+				"name": "NIGHT_02_NAME",
+				"seconds": 2.0,
+				"shape": "duck",
+				"story": "NIGHT_02_TALE",
+				"verb": "NIGHT_02_VERB"
+			},
+			"museum": 1,
+			"n": 2,
+			"news": [
+				{
+					"stage": "lesson:guard",
+					"text": "Si su linterna te pilla, va a por ti. Espera tras una pared a que pase.",
+					"title": "EL GUARDIA"
+				}
+			],
+			"props": false,
+			"shape": "L",
+			"size": "small",
+			"speed": 0.4,
+			"teach": "guard",
+			"view": 0.45
+		},
+		{
+			"alarms": 3,
+			"calm_after": 5.0,
+			"case_alarm": false,
+			"guards": 1,
+			"hearing": 0.25,
+			"lights": false,
+			"loot": {
+				"blurb": "NIGHT_03_BLURB",
+				"colour": "#ff6b6b",
+				"name": "NIGHT_03_NAME",
+				"seconds": 2.0,
+				"shape": "sock",
+				"story": "NIGHT_03_TALE",
+				"verb": "NIGHT_03_VERB"
+			},
+			"museum": 1,
+			"n": 3,
+			"news": [],
+			"props": false,
+			"shape": "T",
+			"size": "small",
+			"speed": 0.45,
+			"teach": "",
+			"view": 0.5
+		},
+		{
+			"alarms": 3,
+			"calm_after": 6.0,
+			"case_alarm": false,
+			"guards": 1,
+			"hearing": 0.25,
+			"lights": false,
+			"loot": {
+				"blurb": "NIGHT_04_BLURB",
+				"colour": "#dee2e6",
+				"name": "NIGHT_04_NAME",
+				"seconds": 2.5,
+				"shape": "sock",
+				"story": "NIGHT_04_TALE",
+				"verb": "NIGHT_04_VERB"
+			},
+			"museum": 1,
+			"n": 4,
+			"news": [
+				{
+					"stage": "lesson:torch",
+					"text": "De lejos, su linterna solo ve a quien va de pie. Cruza agachado (C).",
+					"title": "AGÁCHATE"
+				}
+			],
+			"post": "route",
+			"props": false,
+			"shape": "rect",
+			"size": "small",
+			"speed": 0.45,
+			"teach": "torch",
+			"view": 0.95
+		},
+		{
+			"alarms": 3,
+			"calm_after": 6.0,
+			"case_alarm": false,
+			"guards": 1,
+			"hearing": 0.3,
+			"lights": false,
+			"loot": {
+				"blurb": "NIGHT_05_BLURB",
+				"colour": "#e03131",
+				"name": "NIGHT_05_NAME",
+				"seconds": 2.5,
+				"shape": "idol",
+				"story": "NIGHT_05_TALE",
+				"verb": "NIGHT_05_VERB"
+			},
+			"museum": 2,
+			"n": 5,
+			"news": [],
+			"props": false,
+			"shape": "U",
+			"size": "small",
+			"speed": 0.5,
+			"teach": "",
+			"view": 0.6
+		},
+		{
+			"alarms": 3,
+			"calm_after": 6.0,
+			"case_alarm": false,
+			"guards": 1,
+			"hearing": 0.8,
+			"lights": false,
+			"loot": {
+				"blurb": "NIGHT_06_BLURB",
+				"colour": "#d4a15a",
+				"name": "NIGHT_06_NAME",
+				"seconds": 3.0,
+				"shape": "toast",
+				"story": "NIGHT_06_TALE",
+				"verb": "NIGHT_06_VERB"
+			},
+			"museum": 2,
+			"n": 6,
+			"news": [
+				{
+					"stage": "lesson:noise",
+					"text": "Corriendo te oyen lejos; andando, poco; a gatas, nada.",
+					"title": "EL RUIDO"
+				}
+			],
+			"post": "quiet",
+			"props": false,
+			"shape": "L",
+			"size": "small",
+			"speed": 0.5,
+			"teach": "noise",
+			"view": 0.6
+		},
+		{
+			"alarms": 3,
+			"calm_after": 7.0,
+			"case_alarm": false,
+			"guards": 1,
+			"hearing": 0.85,
+			"lights": false,
+			"loot": {
+				"blurb": "NIGHT_07_BLURB",
+				"colour": "#f783ac",
+				"name": "NIGHT_07_NAME",
+				"seconds": 3.0,
+				"shape": "rock",
+				"story": "NIGHT_07_TALE",
+				"verb": "NIGHT_07_VERB"
+			},
+			"museum": 2,
+			"n": 7,
+			"news": [],
+			"props": false,
+			"shape": "notched",
+			"size": "small",
+			"speed": 0.55,
+			"teach": "",
+			"view": 0.65
+		},
+		{
+			"alarms": 3,
+			"calm_after": 7.0,
+			"case_alarm": false,
+			"guards": 1,
+			"hearing": 0.85,
+			"lights": false,
+			"loot": {
+				"blurb": "NIGHT_08_BLURB",
+				"colour": "#7bc043",
+				"name": "NIGHT_08_NAME",
+				"seconds": 3.5,
+				"shape": "crown",
+				"story": "NIGHT_08_TALE",
+				"verb": "NIGHT_08_VERB"
+			},
+			"museum": 2,
+			"n": 8,
+			"news": [
+				{
+					"stage": "lesson:props",
+					"text": "Tira algo lejos (E, o X): el guardia irá a mirar y la pieza quedará libre.",
+					"title": "LA DISTRACCIÓN"
+				}
+			],
+			"post": "case",
+			"props": true,
+			"shape": "rect",
+			"size": "small",
+			"speed": 0.55,
+			"teach": "props",
+			"view": 0.7
+		},
+		{
+			"alarms": 3,
+			"calm_after": 7.0,
+			"case_alarm": false,
+			"guards": 1,
+			"hearing": 0.9,
+			"lights": false,
+			"loot": {
+				"blurb": "NIGHT_09_BLURB",
+				"colour": "#fcc419",
+				"name": "NIGHT_09_NAME",
+				"seconds": 3.5,
+				"shape": "idol",
+				"story": "NIGHT_09_TALE",
+				"verb": "NIGHT_09_VERB"
+			},
+			"museum": 3,
+			"n": 9,
+			"news": [],
+			"props": true,
+			"shape": "U",
+			"size": "medium",
+			"speed": 0.6,
+			"teach": "",
+			"view": 0.68
+		},
+		{
+			"alarms": 3,
+			"calm_after": 8.0,
+			"case_alarm": false,
+			"guards": 1,
+			"hearing": 0.9,
+			"lights": false,
+			"loot": {
+				"blurb": "NIGHT_10_BLURB",
+				"colour": "#ffe066",
+				"name": "NIGHT_10_NAME",
+				"seconds": 4.0,
+				"shape": "rock",
+				"story": "NIGHT_10_TALE",
+				"verb": "NIGHT_10_VERB"
+			},
+			"museum": 3,
+			"n": 10,
+			"news": [],
+			"props": true,
+			"shape": "L",
+			"size": "medium",
+			"speed": 0.62,
+			"teach": "",
+			"view": 0.72
+		},
+		{
+			"alarms": 2,
+			"calm_after": 8.0,
+			"case_alarm": true,
+			"guards": 1,
+			"hearing": 0.9,
+			"lights": false,
+			"loot": {
+				"blurb": "NIGHT_11_BLURB",
+				"colour": "#2b8a3e",
+				"name": "NIGHT_11_NAME",
+				"seconds": 4.0,
+				"shape": "mask",
+				"story": "NIGHT_11_TALE",
+				"verb": "NIGHT_11_VERB"
+			},
+			"museum": 3,
+			"n": 11,
+			"news": [
+				{
+					"stage": "lesson:case_alarm",
+					"text": "La vitrina pita mientras la abres. Si viene alguien, suéltala y escóndete.",
+					"title": "LA VITRINA CON ALARMA"
+				}
+			],
+			"props": true,
+			"shape": "T",
+			"size": "medium",
+			"speed": 0.62,
+			"teach": "case_alarm",
+			"view": 0.72
+		},
+		{
+			"alarms": 2,
+			"calm_after": 8.0,
+			"case_alarm": true,
+			"guards": 1,
+			"hearing": 0.95,
+			"lights": false,
+			"loot": {
+				"blurb": "NIGHT_12_BLURB",
+				"colour": "#9b5de5",
+				"name": "NIGHT_12_NAME",
+				"seconds": 4.5,
+				"shape": "mask",
+				"story": "NIGHT_12_TALE",
+				"verb": "NIGHT_12_VERB"
+			},
+			"museum": 3,
+			"n": 12,
+			"news": [],
+			"props": true,
+			"shape": "notched",
+			"size": "medium",
+			"speed": 0.68,
+			"teach": "",
+			"view": 0.78
+		},
+		{
+			"alarms": 2,
+			"calm_after": 9.0,
+			"case_alarm": true,
+			"guards": 2,
+			"hearing": 0.95,
+			"lights": false,
+			"loot": {
+				"blurb": "NIGHT_13_BLURB",
+				"colour": "#e8590c",
+				"name": "NIGHT_13_NAME",
+				"seconds": 4.5,
+				"shape": "clock",
+				"story": "NIGHT_13_TALE",
+				"verb": "NIGHT_13_VERB"
+			},
+			"museum": 4,
+			"n": 13,
+			"news": [
+				{
+					"stage": "lesson:two",
+					"text": "Si uno te ve, grita y el otro viene corriendo.",
+					"title": "DOS GUARDIAS"
+				}
+			],
+			"props": true,
+			"shape": "cross",
+			"size": "medium",
+			"speed": 0.65,
+			"teach": "two",
+			"view": 0.72
+		},
+		{
+			"alarms": 2,
+			"calm_after": 9.0,
+			"case_alarm": true,
+			"guards": 2,
+			"hearing": 1.0,
+			"lights": false,
+			"loot": {
+				"blurb": "NIGHT_14_BLURB",
+				"colour": "#4dabf7",
+				"name": "NIGHT_14_NAME",
+				"seconds": 5.0,
+				"shape": "clock",
+				"story": "NIGHT_14_TALE",
+				"verb": "NIGHT_14_VERB"
+			},
+			"museum": 4,
+			"n": 14,
+			"news": [],
+			"props": true,
+			"shape": "U",
+			"size": "medium",
+			"speed": 0.7,
+			"teach": "",
+			"view": 0.78
+		},
+		{
+			"alarms": 2,
+			"calm_after": 10.0,
+			"case_alarm": true,
+			"guards": 2,
+			"hearing": 1.0,
+			"lights": true,
+			"loot": {
+				"blurb": "NIGHT_15_BLURB",
+				"colour": "#8b5a2b",
+				"name": "NIGHT_15_NAME",
+				"seconds": 5.0,
+				"shape": "egg",
+				"story": "NIGHT_15_TALE",
+				"verb": "NIGHT_15_VERB"
+			},
+			"museum": 4,
+			"n": 15,
+			"news": [
+				{
+					"stage": "lesson:lights",
+					"text": "En alerta encienden la luz: solo te tapan las vitrinas, a gatas. Con E en el interruptor la apagas.",
+					"title": "LAS LUCES"
+				}
+			],
+			"props": true,
+			"shape": "L",
+			"size": "medium",
+			"speed": 0.72,
+			"teach": "lights",
+			"view": 0.8
+		},
+		{
+			"alarms": 2,
+			"calm_after": 10.0,
+			"case_alarm": true,
+			"guards": 2,
+			"hearing": 1.0,
+			"lights": true,
+			"loot": {
+				"blurb": "NIGHT_16_BLURB",
+				"colour": "#e8c89a",
+				"name": "NIGHT_16_NAME",
+				"seconds": 5.5,
+				"shape": "egg",
+				"story": "NIGHT_16_TALE",
+				"verb": "NIGHT_16_VERB"
+			},
+			"museum": 4,
+			"n": 16,
+			"news": [],
+			"props": true,
+			"shape": "T",
+			"size": "medium",
+			"speed": 0.78,
+			"teach": "",
+			"view": 0.85
+		},
+		{
+			"alarms": 2,
+			"calm_after": 11.0,
+			"case_alarm": true,
+			"guards": 2,
+			"hearing": 1.0,
+			"lights": true,
+			"loot": {
+				"blurb": "NIGHT_17_BLURB",
+				"colour": "#ffd43b",
+				"name": "NIGHT_17_NAME",
+				"seconds": 5.5,
+				"shape": "teeth",
+				"story": "NIGHT_17_TALE",
+				"verb": "NIGHT_17_VERB"
+			},
+			"museum": 5,
+			"n": 17,
+			"news": [
+				{
+					"stage": "lesson:big",
+					"text": "Más salas, nada nuevo. Planea la ruta en el plano antes de entrar.",
+					"title": "UN MUSEO GRANDE"
+				}
+			],
+			"props": true,
+			"shape": "U",
+			"size": "large",
+			"speed": 0.75,
+			"teach": "big",
+			"view": 0.82
+		},
+		{
+			"alarms": 2,
+			"calm_after": 12.0,
+			"case_alarm": true,
+			"guards": 3,
+			"hearing": 1.05,
+			"lights": true,
+			"loot": {
+				"blurb": "NIGHT_18_BLURB",
+				"colour": "#339af0",
+				"name": "NIGHT_18_NAME",
+				"seconds": 6.0,
+				"shape": "duck",
+				"story": "NIGHT_18_TALE",
+				"verb": "NIGHT_18_VERB"
+			},
+			"museum": 5,
+			"n": 18,
+			"news": [],
+			"props": true,
+			"shape": "notched",
+			"size": "large",
+			"speed": 0.85,
+			"teach": "",
+			"view": 0.9
+		},
+		{
+			"alarms": 1,
+			"calm_after": 13.0,
+			"case_alarm": true,
+			"guards": 3,
+			"hearing": 1.1,
+			"lights": true,
+			"loot": {
+				"blurb": "NIGHT_19_BLURB",
+				"colour": "#ffec99",
+				"name": "NIGHT_19_NAME",
+				"seconds": 6.5,
+				"shape": "gem",
+				"story": "NIGHT_19_TALE",
+				"verb": "NIGHT_19_VERB"
+			},
+			"museum": 5,
+			"n": 19,
+			"news": [],
+			"props": true,
+			"shape": "T",
+			"size": "large",
+			"speed": 0.92,
+			"teach": "",
+			"view": 0.95
+		},
+		{
+			"alarms": 1,
+			"calm_after": 14.0,
+			"case_alarm": true,
+			"guards": 4,
+			"hearing": 1.15,
+			"lights": true,
+			"loot": {
+				"blurb": "NIGHT_20_BLURB",
+				"colour": "#74c0fc",
+				"name": "NIGHT_20_NAME",
+				"seconds": 7.0,
+				"shape": "gem",
+				"story": "NIGHT_20_TALE",
+				"verb": "NIGHT_20_VERB"
+			},
+			"museum": 5,
+			"n": 20,
+			"news": [
+				{
+					"stage": "lesson:finale",
+					"text": "Todos despiertos y sin calmarse. Todo lo que sabes, a la vez. Suerte.",
+					"title": "LA ÚLTIMA NOCHE"
+				}
+			],
+			"props": true,
+			"shape": "cross",
+			"size": "large",
+			"speed": 1.0,
+			"teach": "finale",
+			"view": 1.05
+		}
+	],
+	"prologue": "STORY_PROLOGUE"
+}
