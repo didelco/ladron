@@ -128,6 +128,11 @@ func how() -> String:
 	return "GAME_HOW_" + kind.to_upper()
 
 
+## The key into Text of the line on how to let go of it, under the box.
+func let_go() -> String:
+	return "GAME_LET_GO"
+
+
 ## It gives the thief away to a guard looking (Sim.can_see): a statue
 ## wobbling on one foot.
 func wobbling() -> bool:

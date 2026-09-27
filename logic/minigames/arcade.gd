@@ -55,6 +55,11 @@ func progress() -> float:
 	return 0.0
 
 
+## Letting go is the same key as ever, told as what it is.
+func let_go() -> String:
+	return "GAME_LET_GO_ARCADE"
+
+
 func _play(input: Dictionary, _press: Dictionary, dt: float) -> String:
 	me = clampf(me + push_of(input).y * -MY_SPEED * dt, -HALF_H + PADDLE_H, HALF_H - PADDLE_H)
 	# The machine goes after the ball when it comes its way, else back to the
