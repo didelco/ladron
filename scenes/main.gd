@@ -1452,6 +1452,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		if phase == "settings":
 			_show_settings(settings_from, settings_page)
 		return
+	# Space (and Start, which stands for it) goes on only where no button is
+	# picked: with one in focus, it presses that one. Space is ui_accept too,
+	# so the button answers it by itself; Start is pressed here.
+	if key == KEY_SPACE:
+		var focus := get_viewport().gui_get_focus_owner()
+		if focus is Button and focus.is_visible_in_tree():
+			if not event.is_action("ui_accept"):
+				(focus as Button).pressed.emit()
+			return
 	match phase:
 		"menu":
 			if key == KEY_ESCAPE:
