@@ -549,7 +549,7 @@ function piezasComoObjetos() {
       detalle: () => `<div class="imgs una"><figure>${img(p.file, tx(l.name))}</figure></div>
         <div class="nom"><span class="punto" style="background:${l.colour}"></span>${t(l.name)}</div>
         ${campo("Descripción", t(l.blurb))}${campo("Mientras la coge", t(l.verb))}${campo("Cuento", t(l.story))}
-        <div><a class="tag" href="#historia/museo${n.museum}">noche ${n.n}</a><span class="tag">forma <code>${esc(l.shape)}</code></span><span class="tag">${l.seconds} s para cogerla</span></div>` });
+        <div><a class="tag" href="#historia/museo${n.museum}">robo ${n.n}</a><span class="tag">forma <code>${esc(l.shape)}</code></span><span class="tag">${l.seconds} s para cogerla</span></div>` });
   }
   for (const p of gen) {
     const k = "GEN_" + p.shape.toUpperCase() + "_", ks = claves(k);
@@ -681,7 +681,7 @@ function historia() {
   const museos = h.museums || [], noches = h.nights || [], lecciones = h.lessons || {};
   $("#p-historia").innerHTML = `<h1>Historia</h1>
     <div class="sub">Todo el texto de la historia, en el orden en que lo lee el jugador${EDITABLE ? " · pulsa un texto para cambiarlo" : ""}</div>
-    <p class="lead">La Banda del Calcetín devuelve lo que robó el Barón Von Bostezo: veinte noches en cinco museos, cuatro por museo, de fácil a difícil. Algunas noches enseñan algo nuevo (la lección de la previa); las demás lo practican.</p>
+    <p class="lead">La Banda del Calcetín rescata las obras de los cinco museos de los que se ha adueñado el Barón Von Bostezo: 25 robos, cinco por museo, de fácil a difícil. Cada museo es de un tema; sus cuatro primeras salas son robos normales y la quinta, su gran golpe, tiene algo especial. Algunos robos enseñan algo nuevo (la lección de la previa); los demás lo practican.</p>
     <div class="indice"><ul><li><a href="#historia/prologo">Prólogo</a></li>${museos.map(m => `<li><a href="#historia/museo${m.n}">${esc(tx(m.name))}</a></li>`).join("")}<li><a href="#historia/final">Final</a></li></ul></div>
     <h2 id="historia-prologo">Prólogo</h2>
     <p style="white-space:pre-wrap">${t(h.prologue)}</p>
@@ -703,6 +703,7 @@ function noche(n, lecciones) {
     <p><span class="etq">Mientras la coge</span>${t(l.verb)}</p>
     <p><span class="etq">Cuento</span>${t(l.story)}</p>
     ${les ? `<p><span class="etq">Enseña</span><b>${t(les.title)}</b>: ${t(les.text)}</p>` : ""}
+    ${n.boss ? `<p><span class="etq">Gran golpe</span>${t(n.tip)}</p>` : ""}
     <div><span class="tag">museo ${tam}, forma ${n.shape}</span><span class="tag">${g}</span>${n.props ? '<span class="tag">objetos</span>' : ""}${n.lights ? '<span class="tag">luces</span>' : ""}${n.case_alarm ? '<span class="tag">vitrina con alarma</span>' : ""}<span class="tag">${n.alarms} alarma${n.alarms === 1 ? "" : "s"}</span><span class="tag">${l.seconds} s para cogerla</span></div>
   </div></div>`;
 }
