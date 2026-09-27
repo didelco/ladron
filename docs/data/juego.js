@@ -2147,6 +2147,177 @@ window.JUEGO = {
   ],
   "prologue": "STORY_PROLOGUE"
  },
+ "catalogo": {
+  "big": [
+   "dinosaur",
+   "sarcophagus",
+   "bear"
+  ],
+  "exhibits": [
+   "butterflies",
+   "minerals",
+   "ammonite",
+   "meteorite",
+   "statue",
+   "skull",
+   "lego_skull",
+   "diorama",
+   "amphora",
+   "globe",
+   "totem",
+   "bear",
+   "plinth"
+  ],
+  "model_of": {
+   "big:bear": "oso",
+   "big:dinosaur": "dinosaurio",
+   "big:sarcophagus": "sarcofago",
+   "exhibit:ammonite": "amonite",
+   "exhibit:amphora": "anfora",
+   "exhibit:bear": "oso",
+   "exhibit:globe": "globo",
+   "exhibit:lego_skull": "craneo_lego",
+   "exhibit:meteorite": "meteorito",
+   "exhibit:plinth": "pedestal",
+   "exhibit:skull": "craneo",
+   "exhibit:statue": "statue-a",
+   "exhibit:totem": "totem"
+  },
+  "prop_themes": {
+   "armour": "edad_media",
+   "bin": "",
+   "bust": "antiguo",
+   "panel": ""
+  },
+  "props": [
+   "bin",
+   "bust",
+   "panel",
+   "armour"
+  ],
+  "themes": {
+   "antiguo": {
+    "big": "sarcophagus",
+    "case": [
+     "temas/antiguo/escarabajo",
+     "temas/antiguo/canopos",
+     "temas/antiguo/amuletos",
+     "temas/antiguo/papiro"
+    ],
+    "floor": [
+     "temas/antiguo/anubis",
+     "temas/antiguo/barca"
+    ],
+    "gallery": [
+     "the ancient world gallery",
+     "GALLERY_ANCIENT"
+    ],
+    "paintings": [
+     "pyramids",
+     "hieroglyphs",
+     "nile"
+    ],
+    "plinth": [
+     "temas/antiguo/busto_faraon",
+     "temas/antiguo/gato_bastet",
+     "temas/antiguo/obelisco",
+     "@amphora",
+     "@statue"
+    ]
+   },
+   "edad_media": {
+    "case": [
+     "temas/edad_media/corona",
+     "temas/edad_media/caliz",
+     "temas/edad_media/manuscrito",
+     "temas/edad_media/llave_sello",
+     "temas/edad_media/codice_leonardo",
+     "temas/edad_media/astrolabio"
+    ],
+    "floor": [
+     "temas/edad_media/espada_piedra",
+     "temas/edad_media/trono",
+     "temas/edad_media/maquina_voladora",
+     "temas/edad_media/vidriera"
+    ],
+    "gallery": [
+     "the medieval hall",
+     "GALLERY_MEDIEVAL"
+    ],
+    "paintings": [
+     "castle",
+     "dragon",
+     "tapestry",
+     "gioconda",
+     "vitruvian"
+    ],
+    "plinth": [
+     "temas/edad_media/yelmo",
+     "temas/edad_media/escudo",
+     "temas/edad_media/castillo",
+     "temas/edad_media/gargola",
+     "temas/edad_media/carro_blindado"
+    ]
+   },
+   "moderna": {
+    "case": [],
+    "floor": [
+     "@globe",
+     "@totem"
+    ],
+    "gallery": [
+     "the modern age gallery",
+     "GALLERY_MODERN"
+    ],
+    "paintings": [
+     "abstract",
+     "pipe",
+     "banana",
+     "ice_cream",
+     "portrait"
+    ],
+    "plinth": [
+     "@lego_skull"
+    ]
+   },
+   "naturaleza": {
+    "big": "bear",
+    "case": [
+     "@butterflies"
+    ],
+    "floor": [
+     "@diorama"
+    ],
+    "gallery": [
+     "the natural history gallery",
+     "GALLERY_NATURE"
+    ],
+    "paintings": [
+     "landscape"
+    ],
+    "plinth": []
+   },
+   "prehistoria": {
+    "big": "dinosaur",
+    "case": [
+     "@ammonite",
+     "@minerals",
+     "@meteorite"
+    ],
+    "floor": [],
+    "gallery": [
+     "the prehistory gallery",
+     "GALLERY_PREHISTORY"
+    ],
+    "paintings": [
+     "landscape"
+    ],
+    "plinth": [
+     "@skull"
+    ]
+   }
+  }
+ },
  "capturas": [
   {
    "file": "capturas/menu_titulo.webp",
@@ -3479,6 +3650,733 @@ window.JUEGO = {
    ]
   }
  ],
+ "objetos": [
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__escarabajo.webp",
+   "desc": "DESC_ESCARABAJO",
+   "kind": "temas/antiguo/escarabajo",
+   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__escarabajo.webp",
+   "model": "temas/antiguo/escarabajo",
+   "name": "PIECE_ESCARABAJO",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/antiguo/escarabajo",
+   "type": "case"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__canopos.webp",
+   "desc": "DESC_CANOPOS",
+   "kind": "temas/antiguo/canopos",
+   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__canopos.webp",
+   "model": "temas/antiguo/canopos",
+   "name": "PIECE_CANOPOS",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/antiguo/canopos",
+   "type": "case"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__amuletos.webp",
+   "desc": "DESC_AMULETOS",
+   "kind": "temas/antiguo/amuletos",
+   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__amuletos.webp",
+   "model": "temas/antiguo/amuletos",
+   "name": "PIECE_AMULETOS",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/antiguo/amuletos",
+   "type": "case"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__papiro.webp",
+   "desc": "DESC_PAPIRO",
+   "kind": "temas/antiguo/papiro",
+   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__papiro.webp",
+   "model": "temas/antiguo/papiro",
+   "name": "PIECE_PAPIRO",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/antiguo/papiro",
+   "type": "case"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__busto_faraon.webp",
+   "desc": "DESC_BUSTO_FARAON",
+   "kind": "temas/antiguo/busto_faraon",
+   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__busto_faraon.webp",
+   "model": "temas/antiguo/busto_faraon",
+   "name": "PIECE_BUSTO_FARAON",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/antiguo/busto_faraon",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__gato_bastet.webp",
+   "desc": "DESC_GATO_BASTET",
+   "kind": "temas/antiguo/gato_bastet",
+   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__gato_bastet.webp",
+   "model": "temas/antiguo/gato_bastet",
+   "name": "PIECE_GATO_BASTET",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/antiguo/gato_bastet",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__obelisco.webp",
+   "desc": "DESC_OBELISCO",
+   "kind": "temas/antiguo/obelisco",
+   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__obelisco.webp",
+   "model": "temas/antiguo/obelisco",
+   "name": "PIECE_OBELISCO",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/antiguo/obelisco",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__amphora.webp",
+   "desc": "DESC_AMPHORA",
+   "kind": "amphora",
+   "mapa": "assets/objetos/mapa/exhibit__amphora.webp",
+   "model": "anfora",
+   "name": "EDITOR_TOOL_EXHIBIT_AMPHORA",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:amphora",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__statue.webp",
+   "desc": "DESC_STATUE",
+   "kind": "statue",
+   "mapa": "assets/objetos/mapa/exhibit__statue.webp",
+   "model": "statue-a",
+   "name": "EDITOR_TOOL_EXHIBIT_STATUE",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:statue",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__anubis.webp",
+   "desc": "DESC_ANUBIS",
+   "kind": "temas/antiguo/anubis",
+   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__anubis.webp",
+   "model": "temas/antiguo/anubis",
+   "name": "PIECE_ANUBIS",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/antiguo/anubis",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__antiguo__barca.webp",
+   "desc": "DESC_BARCA",
+   "kind": "temas/antiguo/barca",
+   "mapa": "assets/objetos/mapa/exhibit__temas__antiguo__barca.webp",
+   "model": "temas/antiguo/barca",
+   "name": "PIECE_BARCA",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/antiguo/barca",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__corona.webp",
+   "desc": "DESC_CORONA",
+   "kind": "temas/edad_media/corona",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__corona.webp",
+   "model": "temas/edad_media/corona",
+   "name": "PIECE_CORONA",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/corona",
+   "type": "case"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__caliz.webp",
+   "desc": "DESC_CALIZ",
+   "kind": "temas/edad_media/caliz",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__caliz.webp",
+   "model": "temas/edad_media/caliz",
+   "name": "PIECE_CALIZ",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/caliz",
+   "type": "case"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__manuscrito.webp",
+   "desc": "DESC_MANUSCRITO",
+   "kind": "temas/edad_media/manuscrito",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__manuscrito.webp",
+   "model": "temas/edad_media/manuscrito",
+   "name": "PIECE_MANUSCRITO",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/manuscrito",
+   "type": "case"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__llave_sello.webp",
+   "desc": "DESC_LLAVE_SELLO",
+   "kind": "temas/edad_media/llave_sello",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__llave_sello.webp",
+   "model": "temas/edad_media/llave_sello",
+   "name": "PIECE_LLAVE_SELLO",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/llave_sello",
+   "type": "case"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__codice_leonardo.webp",
+   "desc": "DESC_CODICE_LEONARDO",
+   "kind": "temas/edad_media/codice_leonardo",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__codice_leonardo.webp",
+   "model": "temas/edad_media/codice_leonardo",
+   "name": "PIECE_CODICE_LEONARDO",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/codice_leonardo",
+   "type": "case"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__astrolabio.webp",
+   "desc": "DESC_ASTROLABIO",
+   "kind": "temas/edad_media/astrolabio",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__astrolabio.webp",
+   "model": "temas/edad_media/astrolabio",
+   "name": "PIECE_ASTROLABIO",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/astrolabio",
+   "type": "case"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__yelmo.webp",
+   "desc": "DESC_YELMO",
+   "kind": "temas/edad_media/yelmo",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__yelmo.webp",
+   "model": "temas/edad_media/yelmo",
+   "name": "PIECE_YELMO",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/yelmo",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__escudo.webp",
+   "desc": "DESC_ESCUDO",
+   "kind": "temas/edad_media/escudo",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__escudo.webp",
+   "model": "temas/edad_media/escudo",
+   "name": "PIECE_ESCUDO",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/escudo",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__castillo.webp",
+   "desc": "DESC_CASTILLO",
+   "kind": "temas/edad_media/castillo",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__castillo.webp",
+   "model": "temas/edad_media/castillo",
+   "name": "PIECE_CASTILLO",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/castillo",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__gargola.webp",
+   "desc": "DESC_GARGOLA",
+   "kind": "temas/edad_media/gargola",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__gargola.webp",
+   "model": "temas/edad_media/gargola",
+   "name": "PIECE_GARGOLA",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/gargola",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__carro_blindado.webp",
+   "desc": "DESC_CARRO_BLINDADO",
+   "kind": "temas/edad_media/carro_blindado",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__carro_blindado.webp",
+   "model": "temas/edad_media/carro_blindado",
+   "name": "PIECE_CARRO_BLINDADO",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/carro_blindado",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__espada_piedra.webp",
+   "desc": "DESC_ESPADA_PIEDRA",
+   "kind": "temas/edad_media/espada_piedra",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__espada_piedra.webp",
+   "model": "temas/edad_media/espada_piedra",
+   "name": "PIECE_ESPADA_PIEDRA",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/espada_piedra",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__trono.webp",
+   "desc": "DESC_TRONO",
+   "kind": "temas/edad_media/trono",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__trono.webp",
+   "model": "temas/edad_media/trono",
+   "name": "PIECE_TRONO",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/trono",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__maquina_voladora.webp",
+   "desc": "DESC_MAQUINA_VOLADORA",
+   "kind": "temas/edad_media/maquina_voladora",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__maquina_voladora.webp",
+   "model": "temas/edad_media/maquina_voladora",
+   "name": "PIECE_MAQUINA_VOLADORA",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/maquina_voladora",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__temas__edad_media__vidriera.webp",
+   "desc": "DESC_VIDRIERA",
+   "kind": "temas/edad_media/vidriera",
+   "mapa": "assets/objetos/mapa/exhibit__temas__edad_media__vidriera.webp",
+   "model": "temas/edad_media/vidriera",
+   "name": "PIECE_VIDRIERA",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:temas/edad_media/vidriera",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__ammonite.webp",
+   "desc": "DESC_AMMONITE",
+   "kind": "ammonite",
+   "mapa": "assets/objetos/mapa/exhibit__ammonite.webp",
+   "model": "amonite",
+   "name": "EDITOR_TOOL_EXHIBIT_AMMONITE",
+   "themes": [
+    "prehistoria"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:ammonite",
+   "type": "case"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__minerals.webp",
+   "desc": "DESC_MINERALS",
+   "kind": "minerals",
+   "mapa": "assets/objetos/mapa/exhibit__minerals.webp",
+   "model": "",
+   "name": "EDITOR_TOOL_EXHIBIT_MINERALS",
+   "themes": [
+    "prehistoria"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:minerals",
+   "type": "case"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__meteorite.webp",
+   "desc": "DESC_METEORITE",
+   "kind": "meteorite",
+   "mapa": "assets/objetos/mapa/exhibit__meteorite.webp",
+   "model": "meteorito",
+   "name": "EDITOR_TOOL_EXHIBIT_METEORITE",
+   "themes": [
+    "prehistoria"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:meteorite",
+   "type": "case"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__skull.webp",
+   "desc": "DESC_SKULL",
+   "kind": "skull",
+   "mapa": "assets/objetos/mapa/exhibit__skull.webp",
+   "model": "craneo",
+   "name": "EDITOR_TOOL_EXHIBIT_SKULL",
+   "themes": [
+    "prehistoria"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:skull",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__butterflies.webp",
+   "desc": "DESC_BUTTERFLIES",
+   "kind": "butterflies",
+   "mapa": "assets/objetos/mapa/exhibit__butterflies.webp",
+   "model": "",
+   "name": "EDITOR_TOOL_EXHIBIT_BUTTERFLIES",
+   "themes": [
+    "naturaleza"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:butterflies",
+   "type": "case"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__diorama.webp",
+   "desc": "DESC_DIORAMA",
+   "kind": "diorama",
+   "mapa": "assets/objetos/mapa/exhibit__diorama.webp",
+   "model": "",
+   "name": "EDITOR_TOOL_EXHIBIT_DIORAMA",
+   "themes": [
+    "naturaleza"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:diorama",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__lego_skull.webp",
+   "desc": "DESC_LEGO_SKULL",
+   "kind": "lego_skull",
+   "mapa": "assets/objetos/mapa/exhibit__lego_skull.webp",
+   "model": "craneo_lego",
+   "name": "EDITOR_TOOL_EXHIBIT_LEGO_SKULL",
+   "themes": [
+    "moderna"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:lego_skull",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__globe.webp",
+   "desc": "DESC_GLOBE",
+   "kind": "globe",
+   "mapa": "assets/objetos/mapa/exhibit__globe.webp",
+   "model": "globo",
+   "name": "EDITOR_TOOL_EXHIBIT_GLOBE",
+   "themes": [
+    "moderna"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:globe",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__totem.webp",
+   "desc": "DESC_TOTEM",
+   "kind": "totem",
+   "mapa": "assets/objetos/mapa/exhibit__totem.webp",
+   "model": "totem",
+   "name": "EDITOR_TOOL_EXHIBIT_TOTEM",
+   "themes": [
+    "moderna"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:totem",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/exhibit__plinth.webp",
+   "desc": "DESC_PLINTH",
+   "kind": "plinth",
+   "mapa": "assets/objetos/mapa/exhibit__plinth.webp",
+   "model": "pedestal",
+   "name": "EDITOR_TOOL_EXHIBIT_PLINTH",
+   "themes": [],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "exhibit:plinth",
+   "type": "small"
+  },
+  {
+   "cerca": "assets/objetos/cerca/big__dinosaur.webp",
+   "desc": "DESC_BIG_DINOSAUR",
+   "kind": "dinosaur",
+   "mapa": "assets/objetos/mapa/big__dinosaur.webp",
+   "model": "dinosaurio",
+   "name": "EDITOR_TOOL_BIG_DINOSAUR",
+   "themes": [
+    "prehistoria"
+   ],
+   "tiles": [
+    2,
+    3
+   ],
+   "tool": "big:dinosaur",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/big__sarcophagus.webp",
+   "desc": "DESC_BIG_SARCOPHAGUS",
+   "kind": "sarcophagus",
+   "mapa": "assets/objetos/mapa/big__sarcophagus.webp",
+   "model": "sarcofago",
+   "name": "EDITOR_TOOL_BIG_SARCOPHAGUS",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    3
+   ],
+   "tool": "big:sarcophagus",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/big__bear.webp",
+   "desc": "DESC_BIG_BEAR",
+   "kind": "bear",
+   "mapa": "assets/objetos/mapa/big__bear.webp",
+   "model": "oso",
+   "name": "EDITOR_TOOL_BIG_BEAR",
+   "themes": [
+    "naturaleza"
+   ],
+   "tiles": [
+    1,
+    2
+   ],
+   "tool": "big:bear",
+   "type": "big"
+  },
+  {
+   "cerca": "assets/objetos/cerca/prop__bust.webp",
+   "desc": "DESC_PROP_BUST",
+   "kind": "bust",
+   "mapa": "assets/objetos/mapa/prop__bust.webp",
+   "model": "",
+   "name": "PROP_BUST",
+   "themes": [
+    "antiguo"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "prop:bust",
+   "type": "prop"
+  },
+  {
+   "cerca": "assets/objetos/cerca/prop__armour.webp",
+   "desc": "DESC_PROP_ARMOUR",
+   "kind": "armour",
+   "mapa": "assets/objetos/mapa/prop__armour.webp",
+   "model": "",
+   "name": "PROP_ARMOUR",
+   "themes": [
+    "edad_media"
+   ],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "prop:armour",
+   "type": "prop"
+  },
+  {
+   "cerca": "assets/objetos/cerca/prop__bin.webp",
+   "desc": "DESC_PROP_BIN",
+   "kind": "bin",
+   "mapa": "assets/objetos/mapa/prop__bin.webp",
+   "model": "",
+   "name": "PROP_BIN",
+   "themes": [],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "prop:bin",
+   "type": "prop"
+  },
+  {
+   "cerca": "assets/objetos/cerca/prop__panel.webp",
+   "desc": "DESC_PROP_PANEL",
+   "kind": "panel",
+   "mapa": "assets/objetos/mapa/prop__panel.webp",
+   "model": "",
+   "name": "PROP_PANEL",
+   "themes": [],
+   "tiles": [
+    1,
+    1
+   ],
+   "tool": "prop:panel",
+   "type": "prop"
+  }
+ ],
  "sonidos": [
   {
    "file": "assets/sonidos/ok.wav",
@@ -3632,8 +4530,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "27-09-2026 09:55",
-  "commit": "5896060",
+  "fecha": "27-09-2026 10:30",
+  "commit": "3888cd5",
   "rama": "worktree-equilibrio-guardias"
  }
 };

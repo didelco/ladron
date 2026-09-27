@@ -2,7 +2,7 @@ extends SceneTree
 ## The documentation's pictures and data, taken from the game itself (docs/).
 ##
 ##   godot --path . --script tools/capture_docs.gd            # everything
-##   godot --path . --script tools/capture_docs.gd -- shots   # only: shots, assets, models, sounds, data
+##   godot --path . --script tools/capture_docs.gd -- shots   # only: shots, assets, models, objects, sounds, data
 ##
 ## It opens the game in a window of its own, with settings and progress of
 ## its own (user://docs/), so the player's are never touched: every screen,
@@ -13,6 +13,17 @@ extends SceneTree
 const OUT := "res://docs/"
 const SIZE := Vector2i(1600, 900)
 const MODEL_SIZE := 480
+
+## The .glb each of MuseumView's own pieces and each big piece is shown with
+## (museum_view.gd), for the docs' catalogue: the theme's pieces are their
+## own path, and the props have their own picture (_assets). Butterflies, minerals and the diorama
+## are built in code and have none.
+const MODEL_OF := {
+	"exhibit:ammonite": "amonite", "exhibit:meteorite": "meteorito", "exhibit:statue": "statue-a", "exhibit:skull": "craneo",
+	"exhibit:lego_skull": "craneo_lego", "exhibit:amphora": "anfora", "exhibit:globe": "globo", "exhibit:totem": "totem",
+	"exhibit:bear": "oso", "exhibit:plinth": "pedestal",
+	"big:dinosaur": "dinosaurio", "big:sarcophagus": "sarcofago", "big:bear": "oso",
+}
 
 var main: Node3D
 var shots: Array = []
@@ -40,7 +51,7 @@ func _run() -> void:
 	Settings.write(s)
 	for n in range(1, 5):
 		Story.unlock(Story.count(), n)
-	for d in ["capturas", "assets/piezas", "assets/objetos", "assets/modelos", "assets/sonidos", "data"]:
+	for d in ["capturas", "assets/piezas", "assets/objetos", "assets/objetos/mapa", "assets/objetos/cerca", "assets/modelos", "assets/sonidos", "data"]:
 		DirAccess.make_dir_recursive_absolute(_path(d))
 	root.size = SIZE
 	root.content_scale_size = Vector2i(1280, 720)
@@ -58,6 +69,8 @@ func _run() -> void:
 		_sounds()
 	if _wants("models"):
 		await _models()
+	if _wants("objects"):
+		await _objects()
 	if _wants("shots") or _wants("assets"):
 		_save_shots()
 	print("docs: hecho")
@@ -419,6 +432,131 @@ func _bounds(node: Node3D) -> AABB:
 	return box
 
 
+# --- Objects -------------------------------------------------------------------------
+
+## The camera's distance for the tiles round a piece, and for the piece close up.
+const OBJECT_FAR := 4.2
+const OBJECT_NEAR := 1.9
+const OBJECT_SIZE := 480
+
+## Each piece of the editor's catalogue (Themes.catalogue) as the game shows
+## it: stood the way the editor stands it (in its glass case, on a plinth,
+## on the floor, a big piece on its block, a prop), in a little gallery of
+## its own, from the game's camera: with the tiles round it, and close up.
+func _objects() -> void:
+	print("docs: objetos")
+	var out: Array = []
+	for entry in Themes.catalogue():
+		var tool: String = entry[0]
+		if tool == "case":
+			continue
+		# "exhibit", "big" (the big pieces, not the theme's floor pieces) or "prop"
+		var what: String = tool.split(":", true, 1)[0]
+		var kind: String = tool.split(":", true, 1)[1]
+		var id := tool.replace(":", "__").replace("/", "__")
+		var m := MapFile.blank(11, 11)
+		m.seed = 7
+		m.rooms.append(Rect2i(1, 1, 9, 9))
+		m.spawn = Vector2i(1, 9)
+		# The piece to steal and the guards, well out of the picture.
+		m.grid[1 * m.w + 1] = Tiles.COVER
+		m.piece = Vector2i(1, 1)
+		for g in [Vector2i(9, 9), Vector2i(8, 9), Vector2i(9, 8)]:
+			m.guards.append(g)
+		var at := Vector2i(5, 5)
+		var tiles := Vector2i(1, 1)
+		if what == "prop":
+			m.props.append({"kind": kind, "at": at})
+		else:
+			# A prop of its own out of sight, or the night stands a few at random.
+			m.props.append({"kind": "bin", "at": Vector2i(9, 1)})
+			if what == "big":
+				tiles = MapGen.BIG[kind]
+				var r := Rect2i(at - (tiles - Vector2i.ONE) / 2, tiles)
+				for y in range(r.position.y, r.end.y):
+					for x in range(r.position.x, r.end.x):
+						m.grid[y * m.w + x] = Tiles.COVER
+				m.big.append({"kind": kind, "rect": r})
+			else:
+				m.grid[at.y * m.w + at.x] = Tiles.COVER
+				m.exhibits[at] = kind
+		var centre := Vector2(at) + Vector2(tiles) / 2.0 - Vector2((tiles.x - 1) / 2, (tiles.y - 1) / 2)
+		_reset()
+		main.mode = "challenge"
+		main.players = 1
+		var seats: Array[String] = ["any"]
+		main.seats = seats
+		main.challenge_map = m
+		main._new_round(1)
+		main._start_playing()
+		await _wait(0.4)
+		# Still (not quite 0: a step of nothing divides by it), with nobody
+		# about: no thieves, no guards, nor their torches and cones.
+		Engine.time_scale = 0.001
+		main.hud.visible = false
+		for f in main.thief_nodes + main.guard_nodes:
+			f.visible = false
+		for t in main.torches:
+			t.visible = false
+		for c in main.cones:
+			c.visible = false
+		var files := {}
+		for view in [["mapa", OBJECT_FAR], ["cerca", OBJECT_NEAR]]:
+			_aim(MuseumView.to_world(centre.x, centre.y, 0.35), view[1] * maxf(1.0, maxf(tiles.x, tiles.y) / 2.2 if view[0] == "cerca" else 1.0))
+			for i in 3:
+				await RenderingServer.frame_post_draw
+			var img := root.get_texture().get_image()
+			var side := mini(img.get_width(), img.get_height())
+			img = img.get_region(Rect2i((img.get_width() - side) / 2, (img.get_height() - side) / 2, side, side))
+			img.resize(OBJECT_SIZE, OBJECT_SIZE, Image.INTERPOLATE_LANCZOS)
+			files[view[0]] = "assets/objetos/%s/%s.webp" % [view[0], id]
+			img.save_webp(_path(files[view[0]]), true, 0.88)
+		Engine.time_scale = 1.0
+		main.camera.make_current()
+		main.hud.visible = true
+		out.append({"tool": tool, "kind": kind, "type": entry[2], "themes": entry[1], "tiles": [tiles.x, tiles.y],
+			"model": MODEL_OF.get(tool, kind if "/" in kind else ""), "mapa": files.mapa, "cerca": files.cerca,
+			"name": _object_name(what, kind), "desc": _object_desc(what, kind)})
+		print("  ", tool)
+	_reset()
+	main._show_title()
+	_save_json("data/objetos.json", out)
+
+
+## A camera of our own at the game's (its angle and lens, not its zoom, and
+## not following anyone), looking at this point from this far.
+var _cam: Camera3D
+
+func _aim(target: Vector3, dist: float) -> void:
+	if _cam == null:
+		_cam = Camera3D.new()
+		main.add_child(_cam)
+	_cam.fov = main.camera.fov
+	_cam.position = target + main.CAM_OFFSET.normalized() * dist
+	_cam.look_at(target)
+	_cam.make_current()
+	main.cam_zoom = dist / main.CAM_OFFSET.length()
+	main._fog_follows_zoom()
+
+
+## A piece's name on screen (Themes.label), as its key.
+func _object_name(what: String, kind: String) -> String:
+	if what == "prop":
+		return "PROP_" + kind.to_upper()
+	if what == "big":
+		return "EDITOR_TOOL_BIG_" + kind.to_upper()
+	if "/" in kind:
+		return "PIECE_" + kind.get_file().to_upper()
+	return "EDITOR_TOOL_EXHIBIT_" + kind.to_upper()
+
+
+## The key of its description, written in the docs (DESC_...).
+func _object_desc(what: String, kind: String) -> String:
+	if what == "prop" or what == "big":
+		return "DESC_%s_%s" % [what.to_upper(), kind.to_upper()]
+	return "DESC_" + kind.get_file().to_upper()
+
+
 # --- Data ----------------------------------------------------------------------------
 
 ## The palette (every Color constant in the game's scripts, and every table
@@ -456,6 +594,8 @@ func _data() -> void:
 		museums.append(_plain(mu))
 	_save_json("data/historia.json", {"museums": museums, "nights": nights, "lessons": _plain(Story.LESSONS),
 		"prologue": Story.PROLOGUE, "ending": Story.ENDING})
+	_save_json("data/catalogo.json", {"themes": _plain(Themes.ALL), "exhibits": MuseumView.EXHIBITS, "big": MapGen.BIG.keys(),
+		"props": Props.KINDS, "prop_themes": Themes.PROP_THEMES, "model_of": MODEL_OF})
 
 
 ## The "## ..." lines right above each const, by name.

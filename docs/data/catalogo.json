@@ -1,0 +1,171 @@
+{
+	"big": [
+		"dinosaur",
+		"sarcophagus",
+		"bear"
+	],
+	"exhibits": [
+		"butterflies",
+		"minerals",
+		"ammonite",
+		"meteorite",
+		"statue",
+		"skull",
+		"lego_skull",
+		"diorama",
+		"amphora",
+		"globe",
+		"totem",
+		"bear",
+		"plinth"
+	],
+	"model_of": {
+		"big:bear": "oso",
+		"big:dinosaur": "dinosaurio",
+		"big:sarcophagus": "sarcofago",
+		"exhibit:ammonite": "amonite",
+		"exhibit:amphora": "anfora",
+		"exhibit:bear": "oso",
+		"exhibit:globe": "globo",
+		"exhibit:lego_skull": "craneo_lego",
+		"exhibit:meteorite": "meteorito",
+		"exhibit:plinth": "pedestal",
+		"exhibit:skull": "craneo",
+		"exhibit:statue": "statue-a",
+		"exhibit:totem": "totem"
+	},
+	"prop_themes": {
+		"armour": "edad_media",
+		"bin": "",
+		"bust": "antiguo",
+		"panel": ""
+	},
+	"props": [
+		"bin",
+		"bust",
+		"panel",
+		"armour"
+	],
+	"themes": {
+		"antiguo": {
+			"big": "sarcophagus",
+			"case": [
+				"temas/antiguo/escarabajo",
+				"temas/antiguo/canopos",
+				"temas/antiguo/amuletos",
+				"temas/antiguo/papiro"
+			],
+			"floor": [
+				"temas/antiguo/anubis",
+				"temas/antiguo/barca"
+			],
+			"gallery": [
+				"the ancient world gallery",
+				"GALLERY_ANCIENT"
+			],
+			"paintings": [
+				"pyramids",
+				"hieroglyphs",
+				"nile"
+			],
+			"plinth": [
+				"temas/antiguo/busto_faraon",
+				"temas/antiguo/gato_bastet",
+				"temas/antiguo/obelisco",
+				"@amphora",
+				"@statue"
+			]
+		},
+		"edad_media": {
+			"case": [
+				"temas/edad_media/corona",
+				"temas/edad_media/caliz",
+				"temas/edad_media/manuscrito",
+				"temas/edad_media/llave_sello",
+				"temas/edad_media/codice_leonardo",
+				"temas/edad_media/astrolabio"
+			],
+			"floor": [
+				"temas/edad_media/espada_piedra",
+				"temas/edad_media/trono",
+				"temas/edad_media/maquina_voladora",
+				"temas/edad_media/vidriera"
+			],
+			"gallery": [
+				"the medieval hall",
+				"GALLERY_MEDIEVAL"
+			],
+			"paintings": [
+				"castle",
+				"dragon",
+				"tapestry",
+				"gioconda",
+				"vitruvian"
+			],
+			"plinth": [
+				"temas/edad_media/yelmo",
+				"temas/edad_media/escudo",
+				"temas/edad_media/castillo",
+				"temas/edad_media/gargola",
+				"temas/edad_media/carro_blindado"
+			]
+		},
+		"moderna": {
+			"case": [],
+			"floor": [
+				"@globe",
+				"@totem"
+			],
+			"gallery": [
+				"the modern age gallery",
+				"GALLERY_MODERN"
+			],
+			"paintings": [
+				"abstract",
+				"pipe",
+				"banana",
+				"ice_cream",
+				"portrait"
+			],
+			"plinth": [
+				"@lego_skull"
+			]
+		},
+		"naturaleza": {
+			"big": "bear",
+			"case": [
+				"@butterflies"
+			],
+			"floor": [
+				"@diorama"
+			],
+			"gallery": [
+				"the natural history gallery",
+				"GALLERY_NATURE"
+			],
+			"paintings": [
+				"landscape"
+			],
+			"plinth": []
+		},
+		"prehistoria": {
+			"big": "dinosaur",
+			"case": [
+				"@ammonite",
+				"@minerals",
+				"@meteorite"
+			],
+			"floor": [],
+			"gallery": [
+				"the prehistory gallery",
+				"GALLERY_PREHISTORY"
+			],
+			"paintings": [
+				"landscape"
+			],
+			"plinth": [
+				"@skull"
+			]
+		}
+	}
+}
