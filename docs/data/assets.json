@@ -24,103 +24,103 @@
 	"paginas": [],
 	"piezas": [
 		{
-			"blurb": "De marfil de mamut. La primera dentadura postiza de la historia.",
+			"blurb": "Postiza, de porcelana. Tan vieja que parece un fósil.",
 			"colour": "#f4f1e6",
 			"file": "assets/piezas/01.webp",
-			"name": "la dentadura de Ugg",
+			"name": "la dentadura del abuelo Paco",
 			"night": 1,
 			"shape": "teeth"
 		},
 		{
-			"blurb": "Un muñeco de piedra. Pesa como tres gatos.",
-			"colour": "#d08a3a",
+			"blurb": "Talla 98. Huele a glaciar... y a pie.",
+			"colour": "#dee2e6",
 			"file": "assets/piezas/02.webp",
-			"name": "el primer juguete del mundo",
+			"name": "el calcetín del yeti",
 			"night": 2,
-			"shape": "idol"
+			"shape": "sock"
 		},
 		{
-			"blurb": "Lleva millones de años dentro. Y todavía tiene hambre.",
-			"colour": "#f4a81c",
-			"file": "assets/piezas/03.webp",
-			"name": "el mosquito en ámbar",
-			"night": 3,
-			"shape": "gem"
-		},
-		{
-			"blurb": "Cayó del cielo hace mucho, mucho tiempo.",
+			"blurb": "Lleva tanto tiempo en la nevera que ya es prehistórico.",
 			"colour": "#ffe066",
-			"file": "assets/piezas/04.webp",
-			"name": "el meteorito que huele a queso",
-			"night": 4,
+			"file": "assets/piezas/03.webp",
+			"name": "el queso de la nevera de Jake",
+			"night": 3,
 			"shape": "rock"
+		},
+		{
+			"blurb": "De barro, con zapatos de metal. Ya bailaba para los dinosaurios.",
+			"colour": "#e03131",
+			"file": "assets/piezas/04.webp",
+			"name": "el gnomo que baila claqué",
+			"night": 4,
+			"shape": "idol"
 		},
 		{
 			"blurb": "Setenta millones de años. Aún está calentito.",
 			"colour": "#e8c89a",
 			"file": "assets/piezas/05.webp",
-			"name": "el huevo de la mamá diplodocus",
+			"name": "el huevo del dinosaurio despistado",
 			"night": 5,
 			"shape": "egg"
 		},
 		{
-			"blurb": "El único pato tenor del mundo.",
-			"colour": "#ffd43b",
-			"file": "assets/piezas/06.webp",
-			"name": "el pato que canta ópera",
-			"night": 6,
-			"shape": "duck"
-		},
-		{
 			"blurb": "Verde, con granitos. Muy real.",
 			"colour": "#7bc043",
-			"file": "assets/piezas/07.webp",
+			"file": "assets/piezas/06.webp",
 			"name": "la corona de la Reina de los Pepinillos",
-			"night": 7,
+			"night": 6,
 			"shape": "crown"
 		},
 		{
-			"blurb": "Trescientos dientes. Ni una caries.",
-			"colour": "#dee2e6",
-			"file": "assets/piezas/08.webp",
-			"name": "la dentadura de repuesto del tiburón",
-			"night": 8,
-			"shape": "teeth"
-		},
-		{
-			"blurb": "Azul claro. Nadie sabe de quién es.",
-			"colour": "#9ad0ec",
-			"file": "assets/piezas/09.webp",
-			"name": "el huevo del cuco despistado",
-			"night": 9,
-			"shape": "egg"
-		},
-		{
-			"blurb": "Del tamaño de un melón. La hizo una almeja muy gruñona.",
-			"colour": "#f3eef7",
-			"file": "assets/piezas/10.webp",
-			"name": "la perla gigante",
-			"night": 10,
-			"shape": "gum"
-		},
-		{
-			"blurb": "Cuatro mil años. Todavía cruje.",
-			"colour": "#d4a15a",
-			"file": "assets/piezas/11.webp",
-			"name": "el pan del faraón Tutanpán",
-			"night": 11,
-			"shape": "toast"
-		},
-		{
-			"blurb": "Protegía su talón, el único punto débil del héroe.",
-			"colour": "#e03131",
-			"file": "assets/piezas/12.webp",
-			"name": "el calcetín de Aquiles",
-			"night": 12,
+			"blurb": "Seis metros de lana. Para un cuello muy largo... y muy lento.",
+			"colour": "#ff6b6b",
+			"file": "assets/piezas/07.webp",
+			"name": "la bufanda del caracol friolero",
+			"night": 7,
 			"shape": "sock"
 		},
 		{
-			"blurb": "Con él descubrió que el agua empuja hacia arriba.",
+			"blurb": "Del luchador con más brazos del mundo.",
+			"colour": "#9b5de5",
+			"file": "assets/piezas/08.webp",
+			"name": "la máscara del Pulpo Enmascarado",
+			"night": 8,
+			"shape": "mask"
+		},
+		{
+			"blurb": "La más gorda del mundo. Tiene trofeo y todo.",
+			"colour": "#e8a860",
+			"file": "assets/piezas/09.webp",
+			"name": "la bola de pelo del gato Misifú",
+			"night": 9,
+			"shape": "gum"
+		},
+		{
+			"blurb": "Amarillo, de goma, con voz de tenor.",
+			"colour": "#ffd43b",
+			"file": "assets/piezas/10.webp",
+			"name": "el pato que canta ópera",
+			"night": 10,
+			"shape": "duck"
+		},
+		{
+			"blurb": "Salió en un huevo sorpresa. El Barón jura que es de oro.",
+			"colour": "#e8b53a",
+			"file": "assets/piezas/11.webp",
+			"name": "el faraón de juguete de Pablito",
+			"night": 11,
+			"shape": "idol"
+		},
+		{
+			"blurb": "Suena cada tres mil años. Le toca el martes.",
+			"colour": "#2ec4b6",
+			"file": "assets/piezas/12.webp",
+			"name": "el despertador de la momia Ramona",
+			"night": 12,
+			"shape": "clock"
+		},
+		{
+			"blurb": "Arquímedes, el fontanero, no se baña sin él.",
 			"colour": "#4dabf7",
 			"file": "assets/piezas/13.webp",
 			"name": "el pato de goma de Arquímedes",
@@ -128,23 +128,23 @@
 			"shape": "duck"
 		},
 		{
-			"blurb": "Con serpientes por pelo. No la mires a los ojos.",
-			"colour": "#2b8a3e",
+			"blurb": "Lleva siglos en la fiambrera. Nadie se atreve a olerlo.",
+			"colour": "#f4f1e6",
 			"file": "assets/piezas/14.webp",
-			"name": "la máscara de Medusa",
+			"name": "el huevo duro del tío Ramsés",
 			"night": 14,
-			"shape": "mask"
+			"shape": "egg"
 		},
 		{
-			"blurb": "Una de las siete maravillas. Esta cabe en la mochila.",
-			"colour": "#d9a441",
+			"blurb": "De caramelo verde. Ella dice que es una esmeralda.",
+			"colour": "#12b886",
 			"file": "assets/piezas/15.webp",
-			"name": "el Coloso de Rodas, tamaño bolsillo",
+			"name": "el anillo de Cleopatra, la del quinto",
 			"night": 15,
-			"shape": "idol"
+			"shape": "gem"
 		},
 		{
-			"blurb": "Funciona con agua. Te despierta levantándote los pies.",
+			"blurb": "Suena con un tango y te tira de la cama.",
 			"colour": "#e8590c",
 			"file": "assets/piezas/16.webp",
 			"name": "el despertador de Leonardo",
@@ -152,10 +152,10 @@
 			"shape": "clock"
 		},
 		{
-			"blurb": "Lo convierte todo en oro. Bueno, casi todo en queso.",
-			"colour": "#fcc419",
+			"blurb": "Tan dura que los caballeros la usaban de munición.",
+			"colour": "#8b5a2b",
 			"file": "assets/piezas/17.webp",
-			"name": "la piedra filosofal",
+			"name": "la albóndiga de la catapulta",
 			"night": 17,
 			"shape": "rock"
 		},
@@ -163,23 +163,23 @@
 			"blurb": "Enseña el futuro. Hoy sale una banda con calcetines.",
 			"colour": "#b197fc",
 			"file": "assets/piezas/18.webp",
-			"name": "la bola de cristal de Merlín",
+			"name": "la bola de cristal de la bruja Paca",
 			"night": 18,
 			"shape": "gum"
 		},
 		{
-			"blurb": "Rojo y calentito. Lo tenía un dragón bajo la almohada.",
-			"colour": "#d0263e",
+			"blurb": "Verde, con escamas. Pica un poco la nariz.",
+			"colour": "#40c057",
 			"file": "assets/piezas/19.webp",
-			"name": "el rubí del dragón",
+			"name": "la mascarilla del dragón estornudón",
 			"night": 19,
-			"shape": "gem"
+			"shape": "mask"
 		},
 		{
-			"blurb": "De oro y armiño. Solo le cabe a un rey de verdad.",
+			"blurb": "De oro y armiño. Huele un poco a fritanga.",
 			"colour": "#f0c46a",
 			"file": "assets/piezas/20.webp",
-			"name": "la corona del rey Arturo",
+			"name": "la corona del rey de las croquetas",
 			"night": 20,
 			"shape": "crown"
 		},
@@ -200,20 +200,20 @@
 			"shape": "gum"
 		},
 		{
-			"blurb": "Suena a las siete. Con bandoneón.",
-			"colour": "#339af0",
+			"blurb": "De la abuela Tomasa. Ahora es una lámpara de diseño.",
+			"colour": "#f4f1e6",
 			"file": "assets/piezas/23.webp",
-			"name": "el despertador que canta tangos",
+			"name": "la dentadura que brilla en la oscuridad",
 			"night": 23,
-			"shape": "clock"
+			"shape": "teeth"
 		},
 		{
-			"blurb": "Del luchador más famoso del mundo.",
-			"colour": "#9b5de5",
+			"blurb": "Su pareja se perdió en la lavadora hace años.",
+			"colour": "#dee2e6",
 			"file": "assets/piezas/24.webp",
-			"name": "la máscara del Pulpo Enmascarado",
+			"name": "el calcetín desparejado de Jake",
 			"night": 24,
-			"shape": "mask"
+			"shape": "sock"
 		},
 		{
 			"blurb": "Quien lo mira, bosteza y se duerme.",

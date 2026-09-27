@@ -14,8 +14,12 @@ extends RefCounted
 ## The tale, for kids: the Banda del Calcetín only steals what was stolen
 ## first. The Barón Von Bostezo made the directors of the town's five
 ## museums yawn with his diamond until they signed them over to him; now he
-## keeps their treasures for himself. One a night, the gang takes them
-## back, until the museums are everybody's again.
+## keeps them, and fills their cases with things nicked from the town (the
+## grandad's dentures, the cheese in Jake's fridge), labelled as treasures.
+## Kids' humour: everyday things, a neighbour with a name, an absurd upshot
+## in town; a piece fits its museum by the joke, not the history lesson.
+## One a night, the gang takes them back, until the museums are
+## everybody's again.
 
 const PROLOGUE := "STORY_PROLOGUE"
 
@@ -36,13 +40,13 @@ const LEVELS := [
 		"loot": {"name": "NIGHT_01_NAME", "blurb": "NIGHT_01_BLURB", "verb": "NIGHT_01_VERB", "seconds": 1.5, "colour": "#f4f1e6", "shape": "teeth",
 			"story": "NIGHT_01_TALE"}},
 	{"size": "small", "shape": "L", "guards": 1, "view": 0.45, "hearing": 0.2, "speed": 0.4, "calm_after": 5.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "guard",
-		"loot": {"name": "NIGHT_02_NAME", "blurb": "NIGHT_02_BLURB", "verb": "NIGHT_02_VERB", "seconds": 2.0, "colour": "#d08a3a", "shape": "idol",
+		"loot": {"name": "NIGHT_02_NAME", "blurb": "NIGHT_02_BLURB", "verb": "NIGHT_02_VERB", "seconds": 2.0, "colour": "#dee2e6", "shape": "sock",
 			"story": "NIGHT_02_TALE"}},
 	{"size": "small", "shape": "T", "guards": 1, "view": 0.5, "hearing": 0.25, "speed": 0.45, "calm_after": 5.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "",
-		"loot": {"name": "NIGHT_03_NAME", "blurb": "NIGHT_03_BLURB", "verb": "NIGHT_03_VERB", "seconds": 2.0, "colour": "#f4a81c", "shape": "gem",
+		"loot": {"name": "NIGHT_03_NAME", "blurb": "NIGHT_03_BLURB", "verb": "NIGHT_03_VERB", "seconds": 2.0, "colour": "#ffe066", "shape": "rock",
 			"story": "NIGHT_03_TALE"}},
 	{"size": "small", "shape": "rect", "guards": 1, "post": "route", "view": 0.95, "hearing": 0.25, "speed": 0.45, "calm_after": 6.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "torch",
-		"loot": {"name": "NIGHT_04_NAME", "blurb": "NIGHT_04_BLURB", "verb": "NIGHT_04_VERB", "seconds": 2.5, "colour": "#ffe066", "shape": "rock",
+		"loot": {"name": "NIGHT_04_NAME", "blurb": "NIGHT_04_BLURB", "verb": "NIGHT_04_VERB", "seconds": 2.5, "colour": "#e03131", "shape": "idol",
 			"story": "NIGHT_04_TALE"}},
 	# The big job: the cave's keeper, alone, far-sighted and quick, in the
 	# first bigger museum. Seen, you lose it and hide (a mammoth, an egg).
@@ -52,42 +56,42 @@ const LEVELS := [
 			"story": "NIGHT_05_TALE"}},
 	# --- La Casa de los Bichos: nature. The noise, then things to knock over.
 	{"size": "small", "shape": "L", "guards": 1, "post": "quiet", "view": 0.6, "hearing": 0.8, "speed": 0.5, "calm_after": 6.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "noise",
-		"loot": {"name": "NIGHT_06_NAME", "blurb": "NIGHT_06_BLURB", "verb": "NIGHT_06_VERB", "seconds": 3.0, "colour": "#ffd43b", "shape": "duck",
+		"loot": {"name": "NIGHT_06_NAME", "blurb": "NIGHT_06_BLURB", "verb": "NIGHT_06_VERB", "seconds": 3.0, "colour": "#7bc043", "shape": "crown",
 			"story": "NIGHT_06_TALE"}},
 	{"size": "small", "shape": "notched", "guards": 1, "view": 0.65, "hearing": 0.85, "speed": 0.55, "calm_after": 7.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "",
-		"loot": {"name": "NIGHT_07_NAME", "blurb": "NIGHT_07_BLURB", "verb": "NIGHT_07_VERB", "seconds": 3.0, "colour": "#7bc043", "shape": "crown",
+		"loot": {"name": "NIGHT_07_NAME", "blurb": "NIGHT_07_BLURB", "verb": "NIGHT_07_VERB", "seconds": 3.0, "colour": "#ff6b6b", "shape": "sock",
 			"story": "NIGHT_07_TALE"}},
 	{"size": "small", "shape": "rect", "guards": 1, "post": "case", "view": 0.7, "hearing": 0.85, "speed": 0.55, "calm_after": 7.0, "alarms": 3, "props": true, "lights": false, "case_alarm": false, "teach": "props",
-		"loot": {"name": "NIGHT_08_NAME", "blurb": "NIGHT_08_BLURB", "verb": "NIGHT_08_VERB", "seconds": 3.5, "colour": "#dee2e6", "shape": "teeth",
+		"loot": {"name": "NIGHT_08_NAME", "blurb": "NIGHT_08_BLURB", "verb": "NIGHT_08_VERB", "seconds": 3.5, "colour": "#9b5de5", "shape": "mask",
 			"story": "NIGHT_08_TALE"}},
 	{"size": "medium", "shape": "U", "guards": 1, "view": 0.68, "hearing": 0.9, "speed": 0.6, "calm_after": 7.0, "alarms": 3, "props": true, "lights": false, "case_alarm": false, "teach": "",
-		"loot": {"name": "NIGHT_09_NAME", "blurb": "NIGHT_09_BLURB", "verb": "NIGHT_09_VERB", "seconds": 3.5, "colour": "#9ad0ec", "shape": "egg",
+		"loot": {"name": "NIGHT_09_NAME", "blurb": "NIGHT_09_BLURB", "verb": "NIGHT_09_VERB", "seconds": 3.5, "colour": "#e8a860", "shape": "gum",
 			"story": "NIGHT_09_TALE"}},
-	# The big job: a guard that never leaves the pearl, sharp-eared and
+	# The big job: a guard that never leaves the duck, sharp-eared and
 	# jumpy. One lure to move it, and only one: after that it is on alert.
 	{"size": "medium", "shape": "T", "guards": 1, "post": "case", "view": 0.8, "hearing": 1.15, "speed": 0.65, "calm_after": 9.0, "alarms": 1, "props": true, "lights": false, "case_alarm": false, "teach": "",
 		"boss": true, "tip": "NIGHT_10_TIP",
-		"loot": {"name": "NIGHT_10_NAME", "blurb": "NIGHT_10_BLURB", "verb": "NIGHT_10_VERB", "seconds": 4.0, "colour": "#f3eef7", "shape": "gum",
+		"loot": {"name": "NIGHT_10_NAME", "blurb": "NIGHT_10_BLURB", "verb": "NIGHT_10_VERB", "seconds": 4.0, "colour": "#ffd43b", "shape": "duck",
 			"story": "NIGHT_10_TALE"}},
 	# --- El Templo de las Momias: the ancient world. The case's alarm, then
 	# two guards.
 	{"size": "medium", "shape": "L", "guards": 1, "view": 0.72, "hearing": 0.9, "speed": 0.62, "calm_after": 8.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "case_alarm",
-		"loot": {"name": "NIGHT_11_NAME", "blurb": "NIGHT_11_BLURB", "verb": "NIGHT_11_VERB", "seconds": 4.0, "colour": "#d4a15a", "shape": "toast",
+		"loot": {"name": "NIGHT_11_NAME", "blurb": "NIGHT_11_BLURB", "verb": "NIGHT_11_VERB", "seconds": 4.0, "colour": "#e8b53a", "shape": "idol",
 			"story": "NIGHT_11_TALE"}},
 	{"size": "medium", "shape": "notched", "guards": 1, "view": 0.78, "hearing": 0.95, "speed": 0.68, "calm_after": 8.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "",
-		"loot": {"name": "NIGHT_12_NAME", "blurb": "NIGHT_12_BLURB", "verb": "NIGHT_12_VERB", "seconds": 4.5, "colour": "#e03131", "shape": "sock",
+		"loot": {"name": "NIGHT_12_NAME", "blurb": "NIGHT_12_BLURB", "verb": "NIGHT_12_VERB", "seconds": 4.5, "colour": "#2ec4b6", "shape": "clock",
 			"story": "NIGHT_12_TALE"}},
 	{"size": "medium", "shape": "cross", "guards": 2, "view": 0.72, "hearing": 0.95, "speed": 0.65, "calm_after": 9.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "two",
 		"loot": {"name": "NIGHT_13_NAME", "blurb": "NIGHT_13_BLURB", "verb": "NIGHT_13_VERB", "seconds": 4.5, "colour": "#4dabf7", "shape": "duck",
 			"story": "NIGHT_13_TALE"}},
 	{"size": "medium", "shape": "U", "guards": 2, "view": 0.78, "hearing": 1.0, "speed": 0.7, "calm_after": 9.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "",
-		"loot": {"name": "NIGHT_14_NAME", "blurb": "NIGHT_14_BLURB", "verb": "NIGHT_14_VERB", "seconds": 5.0, "colour": "#2b8a3e", "shape": "mask",
+		"loot": {"name": "NIGHT_14_NAME", "blurb": "NIGHT_14_BLURB", "verb": "NIGHT_14_VERB", "seconds": 5.0, "colour": "#f4f1e6", "shape": "egg",
 			"story": "NIGHT_14_TALE"}},
 	# The big job: three guards for the first time, one of them standing by
 	# the way in: past it on all fours, while the other two walk their rounds.
 	{"size": "medium", "shape": "T", "guards": 3, "post": "route", "view": 0.9, "hearing": 1.0, "speed": 0.75, "calm_after": 10.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "",
 		"boss": true, "tip": "NIGHT_15_TIP",
-		"loot": {"name": "NIGHT_15_NAME", "blurb": "NIGHT_15_BLURB", "verb": "NIGHT_15_VERB", "seconds": 5.5, "colour": "#d9a441", "shape": "idol",
+		"loot": {"name": "NIGHT_15_NAME", "blurb": "NIGHT_15_BLURB", "verb": "NIGHT_15_VERB", "seconds": 5.5, "colour": "#12b886", "shape": "gem",
 			"story": "NIGHT_15_TALE"}},
 	# --- El Castillo de los Inventos: the middle ages. The lights, then the
 	# pick and the cutters (LOCKPICK_NIGHT).
@@ -95,7 +99,7 @@ const LEVELS := [
 		"loot": {"name": "NIGHT_16_NAME", "blurb": "NIGHT_16_BLURB", "verb": "NIGHT_16_VERB", "seconds": 5.0, "colour": "#e8590c", "shape": "clock",
 			"story": "NIGHT_16_TALE"}},
 	{"size": "medium", "shape": "T", "guards": 2, "view": 0.85, "hearing": 1.0, "speed": 0.78, "calm_after": 10.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
-		"loot": {"name": "NIGHT_17_NAME", "blurb": "NIGHT_17_BLURB", "verb": "NIGHT_17_VERB", "seconds": 5.5, "colour": "#fcc419", "shape": "rock",
+		"loot": {"name": "NIGHT_17_NAME", "blurb": "NIGHT_17_BLURB", "verb": "NIGHT_17_VERB", "seconds": 5.5, "colour": "#8b5a2b", "shape": "rock",
 			"story": "NIGHT_17_TALE"}},
 	# From here the case is picked: its seconds are the pick's pins now
 	# (Minigame.pins_for), one on the first night.
@@ -103,7 +107,7 @@ const LEVELS := [
 		"loot": {"name": "NIGHT_18_NAME", "blurb": "NIGHT_18_BLURB", "verb": "NIGHT_18_VERB", "seconds": 3.5, "colour": "#b197fc", "shape": "gum",
 			"story": "NIGHT_18_TALE"}},
 	{"size": "medium", "shape": "U", "guards": 2, "view": 0.88, "hearing": 1.05, "speed": 0.82, "calm_after": 11.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "",
-		"loot": {"name": "NIGHT_19_NAME", "blurb": "NIGHT_19_BLURB", "verb": "NIGHT_19_VERB", "seconds": 4.0, "colour": "#d0263e", "shape": "gem",
+		"loot": {"name": "NIGHT_19_NAME", "blurb": "NIGHT_19_BLURB", "verb": "NIGHT_19_VERB", "seconds": 4.0, "colour": "#40c057", "shape": "mask",
 			"story": "NIGHT_19_TALE"}},
 	# The big job: the throne room. Three guards slow to calm down, one of
 	# them standing with its back to the way, all ears: not a step running.
@@ -119,10 +123,10 @@ const LEVELS := [
 		"loot": {"name": "NIGHT_22_NAME", "blurb": "NIGHT_22_BLURB", "verb": "NIGHT_22_VERB", "seconds": 5.0, "colour": "#f783ac", "shape": "gum",
 			"story": "NIGHT_22_TALE"}},
 	{"size": "large", "shape": "T", "guards": 3, "view": 0.95, "hearing": 1.1, "speed": 0.92, "calm_after": 13.0, "alarms": 1, "props": true, "lights": true, "case_alarm": true, "teach": "",
-		"loot": {"name": "NIGHT_23_NAME", "blurb": "NIGHT_23_BLURB", "verb": "NIGHT_23_VERB", "seconds": 5.5, "colour": "#339af0", "shape": "clock",
+		"loot": {"name": "NIGHT_23_NAME", "blurb": "NIGHT_23_BLURB", "verb": "NIGHT_23_VERB", "seconds": 5.5, "colour": "#f4f1e6", "shape": "teeth",
 			"story": "NIGHT_23_TALE"}},
 	{"size": "large", "shape": "L", "guards": 3, "view": 1.0, "hearing": 1.1, "speed": 0.95, "calm_after": 13.0, "alarms": 1, "props": true, "lights": true, "case_alarm": true, "teach": "",
-		"loot": {"name": "NIGHT_24_NAME", "blurb": "NIGHT_24_BLURB", "verb": "NIGHT_24_VERB", "seconds": 6.0, "colour": "#9b5de5", "shape": "mask",
+		"loot": {"name": "NIGHT_24_NAME", "blurb": "NIGHT_24_BLURB", "verb": "NIGHT_24_VERB", "seconds": 6.0, "colour": "#dee2e6", "shape": "sock",
 			"story": "NIGHT_24_TALE"}},
 	# The last big job: the Barón's own diamond, four guards wide awake.
 	{"size": "large", "shape": "cross", "guards": 4, "view": 1.05, "hearing": 1.15, "speed": 1.0, "calm_after": 14.0, "alarms": 1, "props": true, "lights": true, "case_alarm": true, "teach": "finale",

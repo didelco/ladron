@@ -1698,10 +1698,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_02_BLURB",
-     "colour": "#d08a3a",
+     "colour": "#dee2e6",
      "name": "NIGHT_02_NAME",
      "seconds": 2.0,
-     "shape": "idol",
+     "shape": "sock",
      "story": "NIGHT_02_TALE",
      "verb": "NIGHT_02_VERB"
     },
@@ -1730,10 +1730,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_03_BLURB",
-     "colour": "#f4a81c",
+     "colour": "#ffe066",
      "name": "NIGHT_03_NAME",
      "seconds": 2.0,
-     "shape": "gem",
+     "shape": "rock",
      "story": "NIGHT_03_TALE",
      "verb": "NIGHT_03_VERB"
     },
@@ -1756,10 +1756,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_04_BLURB",
-     "colour": "#ffe066",
+     "colour": "#e03131",
      "name": "NIGHT_04_NAME",
      "seconds": 2.5,
-     "shape": "rock",
+     "shape": "idol",
      "story": "NIGHT_04_TALE",
      "verb": "NIGHT_04_VERB"
     },
@@ -1817,10 +1817,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_06_BLURB",
-     "colour": "#ffd43b",
+     "colour": "#7bc043",
      "name": "NIGHT_06_NAME",
      "seconds": 3.0,
-     "shape": "duck",
+     "shape": "crown",
      "story": "NIGHT_06_TALE",
      "verb": "NIGHT_06_VERB"
     },
@@ -1850,10 +1850,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_07_BLURB",
-     "colour": "#7bc043",
+     "colour": "#ff6b6b",
      "name": "NIGHT_07_NAME",
      "seconds": 3.0,
-     "shape": "crown",
+     "shape": "sock",
      "story": "NIGHT_07_TALE",
      "verb": "NIGHT_07_VERB"
     },
@@ -1876,10 +1876,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_08_BLURB",
-     "colour": "#dee2e6",
+     "colour": "#9b5de5",
      "name": "NIGHT_08_NAME",
      "seconds": 3.5,
-     "shape": "teeth",
+     "shape": "mask",
      "story": "NIGHT_08_TALE",
      "verb": "NIGHT_08_VERB"
     },
@@ -1909,10 +1909,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_09_BLURB",
-     "colour": "#9ad0ec",
+     "colour": "#e8a860",
      "name": "NIGHT_09_NAME",
      "seconds": 3.5,
-     "shape": "egg",
+     "shape": "gum",
      "story": "NIGHT_09_TALE",
      "verb": "NIGHT_09_VERB"
     },
@@ -1936,10 +1936,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_10_BLURB",
-     "colour": "#f3eef7",
+     "colour": "#ffd43b",
      "name": "NIGHT_10_NAME",
      "seconds": 4.0,
-     "shape": "gum",
+     "shape": "duck",
      "story": "NIGHT_10_TALE",
      "verb": "NIGHT_10_VERB"
     },
@@ -1964,10 +1964,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_11_BLURB",
-     "colour": "#d4a15a",
+     "colour": "#e8b53a",
      "name": "NIGHT_11_NAME",
      "seconds": 4.0,
-     "shape": "toast",
+     "shape": "idol",
      "story": "NIGHT_11_TALE",
      "verb": "NIGHT_11_VERB"
     },
@@ -1996,10 +1996,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_12_BLURB",
-     "colour": "#e03131",
+     "colour": "#2ec4b6",
      "name": "NIGHT_12_NAME",
      "seconds": 4.5,
-     "shape": "sock",
+     "shape": "clock",
      "story": "NIGHT_12_TALE",
      "verb": "NIGHT_12_VERB"
     },
@@ -2054,10 +2054,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_14_BLURB",
-     "colour": "#2b8a3e",
+     "colour": "#f4f1e6",
      "name": "NIGHT_14_NAME",
      "seconds": 5.0,
-     "shape": "mask",
+     "shape": "egg",
      "story": "NIGHT_14_TALE",
      "verb": "NIGHT_14_VERB"
     },
@@ -2081,10 +2081,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_15_BLURB",
-     "colour": "#d9a441",
+     "colour": "#12b886",
      "name": "NIGHT_15_NAME",
      "seconds": 5.5,
-     "shape": "idol",
+     "shape": "gem",
      "story": "NIGHT_15_TALE",
      "verb": "NIGHT_15_VERB"
     },
@@ -2141,7 +2141,7 @@ window.JUEGO = {
     "lights": true,
     "loot": {
      "blurb": "NIGHT_17_BLURB",
-     "colour": "#fcc419",
+     "colour": "#8b5a2b",
      "name": "NIGHT_17_NAME",
      "seconds": 5.5,
      "shape": "rock",
@@ -2193,10 +2193,10 @@ window.JUEGO = {
     "lights": true,
     "loot": {
      "blurb": "NIGHT_19_BLURB",
-     "colour": "#d0263e",
+     "colour": "#40c057",
      "name": "NIGHT_19_NAME",
      "seconds": 4.0,
-     "shape": "gem",
+     "shape": "mask",
      "story": "NIGHT_19_TALE",
      "verb": "NIGHT_19_VERB"
     },
@@ -2306,10 +2306,10 @@ window.JUEGO = {
     "lights": true,
     "loot": {
      "blurb": "NIGHT_23_BLURB",
-     "colour": "#339af0",
+     "colour": "#f4f1e6",
      "name": "NIGHT_23_NAME",
      "seconds": 5.5,
-     "shape": "clock",
+     "shape": "teeth",
      "story": "NIGHT_23_TALE",
      "verb": "NIGHT_23_VERB"
     },
@@ -2332,10 +2332,10 @@ window.JUEGO = {
     "lights": true,
     "loot": {
      "blurb": "NIGHT_24_BLURB",
-     "colour": "#9b5de5",
+     "colour": "#dee2e6",
      "name": "NIGHT_24_NAME",
      "seconds": 6.0,
-     "shape": "mask",
+     "shape": "sock",
      "story": "NIGHT_24_TALE",
      "verb": "NIGHT_24_VERB"
     },
@@ -2781,154 +2781,154 @@ window.JUEGO = {
    "file": "capturas/previa_robo_01_story.webp",
    "id": "previa_robo_01_story",
    "section": "previas",
-   "text": "la dentadura de Ugg",
+   "text": "la dentadura del abuelo Paco",
    "title": "Robo 1: la historia"
   },
   {
    "file": "capturas/previa_robo_01_news.webp",
    "id": "previa_robo_01_news",
    "section": "previas",
-   "text": "la dentadura de Ugg",
+   "text": "la dentadura del abuelo Paco",
    "title": "Robo 1: la noticia"
   },
   {
    "file": "capturas/previa_robo_01_plan.webp",
    "id": "previa_robo_01_plan",
    "section": "previas",
-   "text": "la dentadura de Ugg",
+   "text": "la dentadura del abuelo Paco",
    "title": "Robo 1: el plan"
   },
   {
    "file": "capturas/previa_robo_02_story.webp",
    "id": "previa_robo_02_story",
    "section": "previas",
-   "text": "el primer juguete del mundo",
+   "text": "el calcetín del yeti",
    "title": "Robo 2: la historia"
   },
   {
    "file": "capturas/previa_robo_02_news.webp",
    "id": "previa_robo_02_news",
    "section": "previas",
-   "text": "el primer juguete del mundo",
+   "text": "el calcetín del yeti",
    "title": "Robo 2: la noticia"
   },
   {
    "file": "capturas/previa_robo_02_plan.webp",
    "id": "previa_robo_02_plan",
    "section": "previas",
-   "text": "el primer juguete del mundo",
+   "text": "el calcetín del yeti",
    "title": "Robo 2: el plan"
   },
   {
    "file": "capturas/previa_robo_04_story.webp",
    "id": "previa_robo_04_story",
    "section": "previas",
-   "text": "el meteorito que huele a queso",
+   "text": "el gnomo que baila claqué",
    "title": "Robo 4: la historia"
   },
   {
    "file": "capturas/previa_robo_04_news.webp",
    "id": "previa_robo_04_news",
    "section": "previas",
-   "text": "el meteorito que huele a queso",
+   "text": "el gnomo que baila claqué",
    "title": "Robo 4: la noticia"
   },
   {
    "file": "capturas/previa_robo_04_plan.webp",
    "id": "previa_robo_04_plan",
    "section": "previas",
-   "text": "el meteorito que huele a queso",
+   "text": "el gnomo que baila claqué",
    "title": "Robo 4: el plan"
   },
   {
    "file": "capturas/previa_robo_05_story.webp",
    "id": "previa_robo_05_story",
    "section": "previas",
-   "text": "el huevo de la mamá diplodocus",
+   "text": "el huevo del dinosaurio despistado",
    "title": "Robo 5 (gran golpe): la historia"
   },
   {
    "file": "capturas/previa_robo_05_plan.webp",
    "id": "previa_robo_05_plan",
    "section": "previas",
-   "text": "el huevo de la mamá diplodocus",
+   "text": "el huevo del dinosaurio despistado",
    "title": "Robo 5 (gran golpe): el plan"
   },
   {
    "file": "capturas/previa_robo_06_story.webp",
    "id": "previa_robo_06_story",
    "section": "previas",
-   "text": "el pato que canta ópera",
+   "text": "la corona de la Reina de los Pepinillos",
    "title": "Robo 6: la historia"
   },
   {
    "file": "capturas/previa_robo_06_news.webp",
    "id": "previa_robo_06_news",
    "section": "previas",
-   "text": "el pato que canta ópera",
+   "text": "la corona de la Reina de los Pepinillos",
    "title": "Robo 6: la noticia"
   },
   {
    "file": "capturas/previa_robo_06_plan.webp",
    "id": "previa_robo_06_plan",
    "section": "previas",
-   "text": "el pato que canta ópera",
+   "text": "la corona de la Reina de los Pepinillos",
    "title": "Robo 6: el plan"
   },
   {
    "file": "capturas/previa_robo_08_story.webp",
    "id": "previa_robo_08_story",
    "section": "previas",
-   "text": "la dentadura de repuesto del tiburón",
+   "text": "la máscara del Pulpo Enmascarado",
    "title": "Robo 8: la historia"
   },
   {
    "file": "capturas/previa_robo_08_news.webp",
    "id": "previa_robo_08_news",
    "section": "previas",
-   "text": "la dentadura de repuesto del tiburón",
+   "text": "la máscara del Pulpo Enmascarado",
    "title": "Robo 8: la noticia"
   },
   {
    "file": "capturas/previa_robo_08_plan.webp",
    "id": "previa_robo_08_plan",
    "section": "previas",
-   "text": "la dentadura de repuesto del tiburón",
+   "text": "la máscara del Pulpo Enmascarado",
    "title": "Robo 8: el plan"
   },
   {
    "file": "capturas/previa_robo_10_story.webp",
    "id": "previa_robo_10_story",
    "section": "previas",
-   "text": "la perla gigante",
+   "text": "el pato que canta ópera",
    "title": "Robo 10 (gran golpe): la historia"
   },
   {
    "file": "capturas/previa_robo_10_plan.webp",
    "id": "previa_robo_10_plan",
    "section": "previas",
-   "text": "la perla gigante",
+   "text": "el pato que canta ópera",
    "title": "Robo 10 (gran golpe): el plan"
   },
   {
    "file": "capturas/previa_robo_11_story.webp",
    "id": "previa_robo_11_story",
    "section": "previas",
-   "text": "el pan del faraón Tutanpán",
+   "text": "el faraón de juguete de Pablito",
    "title": "Robo 11: la historia"
   },
   {
    "file": "capturas/previa_robo_11_news.webp",
    "id": "previa_robo_11_news",
    "section": "previas",
-   "text": "el pan del faraón Tutanpán",
+   "text": "el faraón de juguete de Pablito",
    "title": "Robo 11: la noticia"
   },
   {
    "file": "capturas/previa_robo_11_plan.webp",
    "id": "previa_robo_11_plan",
    "section": "previas",
-   "text": "el pan del faraón Tutanpán",
+   "text": "el faraón de juguete de Pablito",
    "title": "Robo 11: el plan"
   },
   {
@@ -2956,14 +2956,14 @@ window.JUEGO = {
    "file": "capturas/previa_robo_15_story.webp",
    "id": "previa_robo_15_story",
    "section": "previas",
-   "text": "el Coloso de Rodas, tamaño bolsillo",
+   "text": "el anillo de Cleopatra, la del quinto",
    "title": "Robo 15 (gran golpe): la historia"
   },
   {
    "file": "capturas/previa_robo_15_plan.webp",
    "id": "previa_robo_15_plan",
    "section": "previas",
-   "text": "el Coloso de Rodas, tamaño bolsillo",
+   "text": "el anillo de Cleopatra, la del quinto",
    "title": "Robo 15 (gran golpe): el plan"
   },
   {
@@ -2991,14 +2991,14 @@ window.JUEGO = {
    "file": "capturas/previa_robo_20_story.webp",
    "id": "previa_robo_20_story",
    "section": "previas",
-   "text": "la corona del rey Arturo",
+   "text": "la corona del rey de las croquetas",
    "title": "Robo 20 (gran golpe): la historia"
   },
   {
    "file": "capturas/previa_robo_20_plan.webp",
    "id": "previa_robo_20_plan",
    "section": "previas",
-   "text": "la corona del rey Arturo",
+   "text": "la corona del rey de las croquetas",
    "title": "Robo 20 (gran golpe): el plan"
   },
   {
@@ -3259,103 +3259,103 @@ window.JUEGO = {
   "paginas": [],
   "piezas": [
    {
-    "blurb": "De marfil de mamut. La primera dentadura postiza de la historia.",
+    "blurb": "Postiza, de porcelana. Tan vieja que parece un fósil.",
     "colour": "#f4f1e6",
     "file": "assets/piezas/01.webp",
-    "name": "la dentadura de Ugg",
+    "name": "la dentadura del abuelo Paco",
     "night": 1,
     "shape": "teeth"
    },
    {
-    "blurb": "Un muñeco de piedra. Pesa como tres gatos.",
-    "colour": "#d08a3a",
+    "blurb": "Talla 98. Huele a glaciar... y a pie.",
+    "colour": "#dee2e6",
     "file": "assets/piezas/02.webp",
-    "name": "el primer juguete del mundo",
+    "name": "el calcetín del yeti",
     "night": 2,
-    "shape": "idol"
+    "shape": "sock"
    },
    {
-    "blurb": "Lleva millones de años dentro. Y todavía tiene hambre.",
-    "colour": "#f4a81c",
-    "file": "assets/piezas/03.webp",
-    "name": "el mosquito en ámbar",
-    "night": 3,
-    "shape": "gem"
-   },
-   {
-    "blurb": "Cayó del cielo hace mucho, mucho tiempo.",
+    "blurb": "Lleva tanto tiempo en la nevera que ya es prehistórico.",
     "colour": "#ffe066",
-    "file": "assets/piezas/04.webp",
-    "name": "el meteorito que huele a queso",
-    "night": 4,
+    "file": "assets/piezas/03.webp",
+    "name": "el queso de la nevera de Jake",
+    "night": 3,
     "shape": "rock"
+   },
+   {
+    "blurb": "De barro, con zapatos de metal. Ya bailaba para los dinosaurios.",
+    "colour": "#e03131",
+    "file": "assets/piezas/04.webp",
+    "name": "el gnomo que baila claqué",
+    "night": 4,
+    "shape": "idol"
    },
    {
     "blurb": "Setenta millones de años. Aún está calentito.",
     "colour": "#e8c89a",
     "file": "assets/piezas/05.webp",
-    "name": "el huevo de la mamá diplodocus",
+    "name": "el huevo del dinosaurio despistado",
     "night": 5,
     "shape": "egg"
    },
    {
-    "blurb": "El único pato tenor del mundo.",
-    "colour": "#ffd43b",
-    "file": "assets/piezas/06.webp",
-    "name": "el pato que canta ópera",
-    "night": 6,
-    "shape": "duck"
-   },
-   {
     "blurb": "Verde, con granitos. Muy real.",
     "colour": "#7bc043",
-    "file": "assets/piezas/07.webp",
+    "file": "assets/piezas/06.webp",
     "name": "la corona de la Reina de los Pepinillos",
-    "night": 7,
+    "night": 6,
     "shape": "crown"
    },
    {
-    "blurb": "Trescientos dientes. Ni una caries.",
-    "colour": "#dee2e6",
-    "file": "assets/piezas/08.webp",
-    "name": "la dentadura de repuesto del tiburón",
-    "night": 8,
-    "shape": "teeth"
-   },
-   {
-    "blurb": "Azul claro. Nadie sabe de quién es.",
-    "colour": "#9ad0ec",
-    "file": "assets/piezas/09.webp",
-    "name": "el huevo del cuco despistado",
-    "night": 9,
-    "shape": "egg"
-   },
-   {
-    "blurb": "Del tamaño de un melón. La hizo una almeja muy gruñona.",
-    "colour": "#f3eef7",
-    "file": "assets/piezas/10.webp",
-    "name": "la perla gigante",
-    "night": 10,
-    "shape": "gum"
-   },
-   {
-    "blurb": "Cuatro mil años. Todavía cruje.",
-    "colour": "#d4a15a",
-    "file": "assets/piezas/11.webp",
-    "name": "el pan del faraón Tutanpán",
-    "night": 11,
-    "shape": "toast"
-   },
-   {
-    "blurb": "Protegía su talón, el único punto débil del héroe.",
-    "colour": "#e03131",
-    "file": "assets/piezas/12.webp",
-    "name": "el calcetín de Aquiles",
-    "night": 12,
+    "blurb": "Seis metros de lana. Para un cuello muy largo... y muy lento.",
+    "colour": "#ff6b6b",
+    "file": "assets/piezas/07.webp",
+    "name": "la bufanda del caracol friolero",
+    "night": 7,
     "shape": "sock"
    },
    {
-    "blurb": "Con él descubrió que el agua empuja hacia arriba.",
+    "blurb": "Del luchador con más brazos del mundo.",
+    "colour": "#9b5de5",
+    "file": "assets/piezas/08.webp",
+    "name": "la máscara del Pulpo Enmascarado",
+    "night": 8,
+    "shape": "mask"
+   },
+   {
+    "blurb": "La más gorda del mundo. Tiene trofeo y todo.",
+    "colour": "#e8a860",
+    "file": "assets/piezas/09.webp",
+    "name": "la bola de pelo del gato Misifú",
+    "night": 9,
+    "shape": "gum"
+   },
+   {
+    "blurb": "Amarillo, de goma, con voz de tenor.",
+    "colour": "#ffd43b",
+    "file": "assets/piezas/10.webp",
+    "name": "el pato que canta ópera",
+    "night": 10,
+    "shape": "duck"
+   },
+   {
+    "blurb": "Salió en un huevo sorpresa. El Barón jura que es de oro.",
+    "colour": "#e8b53a",
+    "file": "assets/piezas/11.webp",
+    "name": "el faraón de juguete de Pablito",
+    "night": 11,
+    "shape": "idol"
+   },
+   {
+    "blurb": "Suena cada tres mil años. Le toca el martes.",
+    "colour": "#2ec4b6",
+    "file": "assets/piezas/12.webp",
+    "name": "el despertador de la momia Ramona",
+    "night": 12,
+    "shape": "clock"
+   },
+   {
+    "blurb": "Arquímedes, el fontanero, no se baña sin él.",
     "colour": "#4dabf7",
     "file": "assets/piezas/13.webp",
     "name": "el pato de goma de Arquímedes",
@@ -3363,23 +3363,23 @@ window.JUEGO = {
     "shape": "duck"
    },
    {
-    "blurb": "Con serpientes por pelo. No la mires a los ojos.",
-    "colour": "#2b8a3e",
+    "blurb": "Lleva siglos en la fiambrera. Nadie se atreve a olerlo.",
+    "colour": "#f4f1e6",
     "file": "assets/piezas/14.webp",
-    "name": "la máscara de Medusa",
+    "name": "el huevo duro del tío Ramsés",
     "night": 14,
-    "shape": "mask"
+    "shape": "egg"
    },
    {
-    "blurb": "Una de las siete maravillas. Esta cabe en la mochila.",
-    "colour": "#d9a441",
+    "blurb": "De caramelo verde. Ella dice que es una esmeralda.",
+    "colour": "#12b886",
     "file": "assets/piezas/15.webp",
-    "name": "el Coloso de Rodas, tamaño bolsillo",
+    "name": "el anillo de Cleopatra, la del quinto",
     "night": 15,
-    "shape": "idol"
+    "shape": "gem"
    },
    {
-    "blurb": "Funciona con agua. Te despierta levantándote los pies.",
+    "blurb": "Suena con un tango y te tira de la cama.",
     "colour": "#e8590c",
     "file": "assets/piezas/16.webp",
     "name": "el despertador de Leonardo",
@@ -3387,10 +3387,10 @@ window.JUEGO = {
     "shape": "clock"
    },
    {
-    "blurb": "Lo convierte todo en oro. Bueno, casi todo en queso.",
-    "colour": "#fcc419",
+    "blurb": "Tan dura que los caballeros la usaban de munición.",
+    "colour": "#8b5a2b",
     "file": "assets/piezas/17.webp",
-    "name": "la piedra filosofal",
+    "name": "la albóndiga de la catapulta",
     "night": 17,
     "shape": "rock"
    },
@@ -3398,23 +3398,23 @@ window.JUEGO = {
     "blurb": "Enseña el futuro. Hoy sale una banda con calcetines.",
     "colour": "#b197fc",
     "file": "assets/piezas/18.webp",
-    "name": "la bola de cristal de Merlín",
+    "name": "la bola de cristal de la bruja Paca",
     "night": 18,
     "shape": "gum"
    },
    {
-    "blurb": "Rojo y calentito. Lo tenía un dragón bajo la almohada.",
-    "colour": "#d0263e",
+    "blurb": "Verde, con escamas. Pica un poco la nariz.",
+    "colour": "#40c057",
     "file": "assets/piezas/19.webp",
-    "name": "el rubí del dragón",
+    "name": "la mascarilla del dragón estornudón",
     "night": 19,
-    "shape": "gem"
+    "shape": "mask"
    },
    {
-    "blurb": "De oro y armiño. Solo le cabe a un rey de verdad.",
+    "blurb": "De oro y armiño. Huele un poco a fritanga.",
     "colour": "#f0c46a",
     "file": "assets/piezas/20.webp",
-    "name": "la corona del rey Arturo",
+    "name": "la corona del rey de las croquetas",
     "night": 20,
     "shape": "crown"
    },
@@ -3435,20 +3435,20 @@ window.JUEGO = {
     "shape": "gum"
    },
    {
-    "blurb": "Suena a las siete. Con bandoneón.",
-    "colour": "#339af0",
+    "blurb": "De la abuela Tomasa. Ahora es una lámpara de diseño.",
+    "colour": "#f4f1e6",
     "file": "assets/piezas/23.webp",
-    "name": "el despertador que canta tangos",
+    "name": "la dentadura que brilla en la oscuridad",
     "night": 23,
-    "shape": "clock"
+    "shape": "teeth"
    },
    {
-    "blurb": "Del luchador más famoso del mundo.",
-    "colour": "#9b5de5",
+    "blurb": "Su pareja se perdió en la lavadora hace años.",
+    "colour": "#dee2e6",
     "file": "assets/piezas/24.webp",
-    "name": "la máscara del Pulpo Enmascarado",
+    "name": "el calcetín desparejado de Jake",
     "night": 24,
-    "shape": "mask"
+    "shape": "sock"
    },
    {
     "blurb": "Quien lo mira, bosteza y se duerme.",
@@ -5238,8 +5238,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "27-09-2026 19:57",
-  "commit": "7f5e7da",
+  "fecha": "27-09-2026 20:28",
+  "commit": "3be4930",
   "rama": "worktree-agent-ad004bd406de77a2b"
  }
 };

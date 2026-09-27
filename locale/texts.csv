@@ -106,18 +106,18 @@ ENDING_TITLE,"¡OPERACIÓN
 DEVOLVERLO TODO!"
 STORY_PROLOGUE,"Esta es la Banda del Calcetín: ladrones que solo roban lo que ya estaba robado.
 
-El Barón Von Bostezo visitó a los directores de los cinco museos de la ciudad con su Diamante Bostezo: quien lo mira, bosteza. Y bostezando firmaron un papel sin leerlo: «Regalo mi museo al Barón».
+El Barón Von Bostezo enseñó su Diamante Bostezo a los directores de los cinco museos de la ciudad. Bostezaron tanto que le firmaron un papel sin leerlo: «Regalo mi museo al Barón».
 
-Ahora los cinco museos son suyos. Ha cerrado las puertas, ha puesto guardias y dice que las obras son solo para él.
+Luego se coló en todas las casas del pueblo. Se llevó la dentadura del abuelo Paco, el pato que canta ópera y hasta el queso de la nevera de Jake, y lo ha puesto todo en vitrinas con un cartel: «Tesoro antiquísimo».
 
-Esta noche empieza la operación DEVOLVERLO TODO: cinco museos, cinco salas en cada uno. Primera parada: la Gran Cueva."
+Esta noche empieza la operación DEVOLVERLO TODO: cinco museos, cinco salas en cada uno. Primera parada: la Gran Cueva. Huele a queso."
 STORY_ENDING,"¡Lo habéis conseguido!
 
-Sin su Diamante Bostezo, al Barón se le acabó el truco: los cinco directores se despertaron del todo, rompieron aquel papel y abrieron otra vez sus museos.
+El abuelo Paco vuelve a masticar turrón, el pato canta a las siete en punto, el yeti tiene los pies calentitos y Jake ya tiene su queso (su nevera vuelve a oler fatal, como debe ser).
 
-Las veinticinco piezas vuelven a sus vitrinas. El meteorito sigue oliendo a queso y Arquímedes vuelve a bañarse con su pato.
+Sin su diamante, los directores dejaron de bostezar, rompieron aquel papel y abrieron otra vez sus museos. Gratis para los niños.
 
-Al Barón Von Bostezo solo le quedó mirar su despacho vacío... y bostezar. Se quedó dormido de pie. Dicen que todavía ronca.
+Al Barón Von Bostezo solo le quedó mirar sus vitrinas vacías... y bostezar. Se quedó dormido de pie. Dicen que todavía ronca.
 
 FIN (de momento)"
 BRIEF_TAB_NEWS,LO NUEVO
@@ -186,89 +186,89 @@ LESSON_BIG_TEXT,"Más salas, nada nuevo. Planea la ruta en el plano antes de ent
 LESSON_FINALE_TITLE,EL ÚLTIMO GOLPE
 LESSON_FINALE_TEXT,"Todos despiertos y sin calmarse. Todo lo que sabes, a la vez. Suerte."
 LESSON_CASE_ALARM_TEXT,"La vitrina pita mientras la abres. Si viene alguien, suéltala y escóndete."
-NIGHT_01_NAME,la dentadura de Ugg
-NIGHT_01_BLURB,De marfil de mamut. La primera dentadura postiza de la historia.
+NIGHT_01_NAME,la dentadura del abuelo Paco
+NIGHT_01_BLURB,"Postiza, de porcelana. Tan vieja que parece un fósil."
 NIGHT_01_VERB,DESENROSCANDO EL TARRO
-NIGHT_01_TALE,"Ugg el cavernícola perdió los dientes mordiendo una piedra que parecía un pan. Su nieta le talló esta dentadura. Desde que el Barón se la quitó, Ugg solo come puré de mamut. Y hoy el museo no tiene guardias."
-NIGHT_02_NAME,el primer juguete del mundo
-NIGHT_02_BLURB,Un muñeco de piedra. Pesa como tres gatos.
-NIGHT_02_VERB,LEVANTANDO LA PIEDRA
-NIGHT_02_TALE,"Lo talló un niño de las cavernas para no aburrirse los días de lluvia, hace diez mil años. Los niños de hoy iban a verlo cada domingo. Ahora el Barón lo usa de pisapapeles."
-NIGHT_03_NAME,el mosquito en ámbar
-NIGHT_03_BLURB,Lleva millones de años dentro. Y todavía tiene hambre.
-NIGHT_03_VERB,PULIENDO EL ÁMBAR
-NIGHT_03_TALE,"Este mosquito se quedó pegado en la resina de un árbol cuando aún había dinosaurios. El Barón quiere hacerse un anillo con él. El mosquito, desde dentro, no está nada de acuerdo."
-NIGHT_04_NAME,el meteorito que huele a queso
-NIGHT_04_BLURB,"Cayó del cielo hace mucho, mucho tiempo."
-NIGHT_04_VERB,TAPANDO EL OLOR
-NIGHT_04_TALE,Dicen que los dinosaurios no se extinguieron: se fueron corriendo porque no aguantaban el olor. Los ratones de tres pueblos se han mudado al museo solo para olerlo.
-NIGHT_05_NAME,el huevo de la mamá diplodocus
+NIGHT_01_TALE,El Barón la expone con un cartel: «Mandíbula de cavernícola». Desde entonces el abuelo Paco solo come sopa y a todo contesta «mmmfff». Y hoy la cueva no tiene guardias.
+NIGHT_02_NAME,el calcetín del yeti
+NIGHT_02_BLURB,Talla 98. Huele a glaciar... y a pie.
+NIGHT_02_VERB,DOBLANDO LA LANA
+NIGHT_02_TALE,"Un yeti muy educado se lo dejó en la lavandería, y el Barón lo expone como «piel de mamut». Ahora el yeti tiene frío en un pie y, cada vez que estornuda, provoca una avalancha."
+NIGHT_03_NAME,el queso de la nevera de Jake
+NIGHT_03_BLURB,Lleva tanto tiempo en la nevera que ya es prehistórico.
+NIGHT_03_VERB,TAPANDO EL OLOR
+NIGHT_03_TALE,"Jake lo compró para una merienda del siglo pasado y se le olvidó. El Barón dice que es un meteorito. Sin él, la nevera de Jake huele a limpio, y Jake no pega ojo."
+NIGHT_04_NAME,el gnomo que baila claqué
+NIGHT_04_BLURB,"De barro, con zapatos de metal. Ya bailaba para los dinosaurios."
+NIGHT_04_VERB,CALMANDO AL GNOMO
+NIGHT_04_TALE,"Era el gnomo del jardín de la señora Remedios, y por las noches bailaba claqué para espantar a los topos. El Barón lo expone como «ídolo de las cavernas». Sin él, los topos han montado una discoteca bajo las lechugas."
+NIGHT_05_NAME,el huevo del dinosaurio despistado
 NIGHT_05_BLURB,Setenta millones de años. Aún está calentito.
 NIGHT_05_VERB,SOLTANDO EL HUEVO
-NIGHT_05_TALE,"La joya de la Gran Cueva. Una mamá diplodocus lo olvidó hace setenta millones de años y ha vuelto a buscarlo. Espera en la puerta, muy seria, pisando coches sin querer. Lo vigila el guardián de la cueva, que ve muy lejos."
+NIGHT_05_TALE,"Una mamá diplodocus lo olvidó en un aparcamiento y ha vuelto a buscarlo. Espera en la puerta de la cueva, muy seria, pisando coches sin querer. Lo vigila el guardián de la cueva, que ve una miga a cien metros."
 NIGHT_05_TIP,"Si te persigue, piérdelo de vista y métete en un escondite."
-NIGHT_06_NAME,el pato que canta ópera
-NIGHT_06_BLURB,El único pato tenor del mundo.
-NIGHT_06_VERB,CALMANDO AL PATO
-NIGHT_06_TALE,"Cada mañana cantaba ópera a las siete en punto en el estanque del parque. El Barón le ha puesto un cartel que dice «Pato. No tocar». Sin su canto nadie se despierta, y el panadero ya ha quemado cuarenta barras de pan."
-NIGHT_07_NAME,la corona de la Reina de los Pepinillos
-NIGHT_07_BLURB,"Verde, con granitos. Muy real."
-NIGHT_07_VERB,DESATORNILLANDO
-NIGHT_07_TALE,"La Reina de los Pepinillos manda en el huerto del pueblo. Sin su corona, los pepinillos no le hacen caso y se pasan la noche bailando la conga por las calles. Nadie consigue dormir."
-NIGHT_08_NAME,la dentadura de repuesto del tiburón
-NIGHT_08_BLURB,Trescientos dientes. Ni una caries.
-NIGHT_08_VERB,CONTANDO DIENTES
-NIGHT_08_TALE,"Los tiburones cambian de dientes toda la vida, y este guardaba los de repuesto en una concha. El Barón se la llevó mientras dormía la siesta. Ahora el tiburón solo come sopa de algas, y está de muy mal humor."
-NIGHT_09_NAME,el huevo del cuco despistado
-NIGHT_09_BLURB,Azul claro. Nadie sabe de quién es.
-NIGHT_09_VERB,ENVOLVIENDO EL HUEVO
-NIGHT_09_TALE,"El cuco pone sus huevos en nidos ajenos para no tener que cuidarlos. Este lo puso en el sombrero del Barón, que lo expone como «huevo de Barón». Mamá gorriona lo busca desde el martes."
-NIGHT_10_NAME,la perla gigante
-NIGHT_10_BLURB,Del tamaño de un melón. La hizo una almeja muy gruñona.
-NIGHT_10_VERB,ABRIENDO LA CONCHA
-NIGHT_10_TALE,"La joya de la Casa de los Bichos. La almeja Remedios tardó cien años en hacerla, y la sacaba a pasear los domingos por el fondo del mar. Ahora tiene un guardia al lado que no se aparta ni para estornudar."
-NIGHT_10_TIP,El guardia no se aparta de la perla: tira algo lejos para moverlo.
-NIGHT_11_NAME,el pan del faraón Tutanpán
-NIGHT_11_BLURB,Cuatro mil años. Todavía cruje.
-NIGHT_11_VERB,DESPEGANDO EL PAN
-NIGHT_11_TALE,"Los egipcios ya hacían pan, y el faraón Tutanpán se llevó esta rebanada a su pirámide para merendar. El Barón dice que la cara tostada es la suya. Es la del faraón, y está muy enfadado."
-NIGHT_12_NAME,el calcetín de Aquiles
-NIGHT_12_BLURB,"Protegía su talón, el único punto débil del héroe."
-NIGHT_12_VERB,DOBLANDO LA LANA
-NIGHT_12_TALE,"Aquiles, el gran héroe griego, era invencible menos en un talón. Por eso nunca se quitaba este calcetín. Desde que se lo llevó el Barón, Aquiles va de puntillas y se asusta hasta de las hormigas."
+NIGHT_06_NAME,la corona de la Reina de los Pepinillos
+NIGHT_06_BLURB,"Verde, con granitos. Muy real."
+NIGHT_06_VERB,DESATORNILLANDO
+NIGHT_06_TALE,"El Barón la expone como «hortaliza coronada, especie rarísima». Sin su corona, los pepinillos no le hacen caso a su reina y se pasan la noche bailando la conga por las calles. Nadie consigue dormir."
+NIGHT_07_NAME,la bufanda del caracol friolero
+NIGHT_07_BLURB,Seis metros de lana. Para un cuello muy largo... y muy lento.
+NIGHT_07_VERB,DESENROLLANDO LA BUFANDA
+NIGHT_07_TALE,El caracol Anselmo tardó once años en tejerla. El Barón se la quitó en diez segundos. Ahora Anselmo no sale de su concha y dice que hace frío hasta en agosto.
+NIGHT_08_NAME,la máscara del Pulpo Enmascarado
+NIGHT_08_BLURB,Del luchador con más brazos del mundo.
+NIGHT_08_VERB,CORTANDO EL SELLO
+NIGHT_08_TALE,"El Barón la ha puesto en la sección de bichos del mar, entre una sardina y un mejillón. Sin su máscara, el Pulpo Enmascarado no puede subir al ring y lleva una semana escondido detrás de una maceta. Sus fans lloran tinta."
+NIGHT_09_NAME,la bola de pelo del gato Misifú
+NIGHT_09_BLURB,La más gorda del mundo. Tiene trofeo y todo.
+NIGHT_09_VERB,PEINANDO LA BOLA
+NIGHT_09_TALE,"Misifú tardó tres años en toserla y ganó el concurso del pueblo. El Barón dice que es un erizo en peligro de extinción. Misifú está tan triste que ya ha empezado a toser otra, por si acaso."
+NIGHT_10_NAME,el pato que canta ópera
+NIGHT_10_BLURB,"Amarillo, de goma, con voz de tenor."
+NIGHT_10_VERB,CALMANDO AL PATO
+NIGHT_10_TALE,"Cada mañana cantaba ópera a las siete en punto y despertaba a todo el pueblo. Sin él nadie se levanta, y el panadero ya ha quemado cuarenta barras de pan. El Barón lo tiene en su mejor vitrina, con un guardia pegado que se sabe todas las canciones."
+NIGHT_10_TIP,El guardia no se aparta del pato: tira algo lejos para moverlo.
+NIGHT_11_NAME,el faraón de juguete de Pablito
+NIGHT_11_BLURB,Salió en un huevo sorpresa. El Barón jura que es de oro.
+NIGHT_11_VERB,SOLTANDO EL JUGUETE
+NIGHT_11_TALE,"El Barón lo expone como «estatua auténtica de un faraón». Pablito dice que es suyo y que se llama Tutankaleco. Hasta que vuelva, Pablito no se come la verdura."
+NIGHT_12_NAME,el despertador de la momia Ramona
+NIGHT_12_BLURB,Suena cada tres mil años. Le toca el martes.
+NIGHT_12_VERB,PARANDO LA ALARMA
+NIGHT_12_TALE,"La momia Ramona lo pone para no dormirse el día de su cumpleaños. Si el martes no suena, se pierde la tarta, y lleva tres mil años esperándola. Está muy vendada y muy enfadada."
 NIGHT_13_NAME,el pato de goma de Arquímedes
-NIGHT_13_BLURB,Con él descubrió que el agua empuja hacia arriba.
+NIGHT_13_BLURB,"Arquímedes, el fontanero, no se baña sin él."
 NIGHT_13_VERB,ESCURRIENDO EL PATO
-NIGHT_13_TALE,"Arquímedes estaba en la bañera con su pato cuando lo entendió todo y salió a la calle gritando «¡Eureka!». Sin el pato no quiere bañarse, y los vecinos lo notan. Mucho."
-NIGHT_14_NAME,la máscara de Medusa
-NIGHT_14_BLURB,Con serpientes por pelo. No la mires a los ojos.
-NIGHT_14_VERB,TAPANDO LOS OJOS
-NIGHT_14_TALE,"Dicen que quien miraba a Medusa se quedaba de piedra. El Barón la usa para asustar a sus guardias cuando se duermen, y por eso vigilan tan despiertos. Mejor cogerla sin mirar, por si acaso."
-NIGHT_15_NAME,"el Coloso de Rodas, tamaño bolsillo"
-NIGHT_15_BLURB,Una de las siete maravillas. Esta cabe en la mochila.
-NIGHT_15_VERB,SOLTANDO AL COLOSO
-NIGHT_15_TALE,"La joya del Templo de las Momias. El Coloso de verdad era un gigante de bronce más alto que diez casas; esta es su copia de bolsillo, la única que queda. Tres guardias la vigilan, y uno no se mueve de la entrada."
+NIGHT_13_TALE,"Arquímedes se baña con su pato gritando «¡Eureka!», y nadie sabe por qué. El Barón lo expone como «pato sagrado del Nilo». Desde entonces Arquímedes no se baña, y los vecinos lo notan. Mucho."
+NIGHT_14_NAME,el huevo duro del tío Ramsés
+NIGHT_14_BLURB,Lleva siglos en la fiambrera. Nadie se atreve a olerlo.
+NIGHT_14_VERB,ABRIENDO LA FIAMBRERA
+NIGHT_14_TALE,El tío Ramsés se lo llevó de excursión a las pirámides y se le olvidó comérselo. El Barón lo expone como «huevo de faraón». El tío Ramsés lo quiere de vuelta: dice que ahora está en su punto.
+NIGHT_15_NAME,"el anillo de Cleopatra, la del quinto"
+NIGHT_15_BLURB,De caramelo verde. Ella dice que es una esmeralda.
+NIGHT_15_VERB,DESPEGANDO EL CARAMELO
+NIGHT_15_TALE,"Cleopatra, la vecina del quinto, dice que es reina de Egipto y del ascensor. Sin su anillo nadie la cree, y ahora tiene que esperar el ascensor como todo el mundo. Tres guardias lo vigilan, y uno no se mueve del camino."
 NIGHT_15_TIP,"Un guardia vigila tu camino: pasa a gatas, fuera de su luz."
 NIGHT_16_NAME,el despertador de Leonardo
-NIGHT_16_BLURB,Funciona con agua. Te despierta levantándote los pies.
-NIGHT_16_VERB,PARANDO LA ALARMA
-NIGHT_16_TALE,"Leonardo da Vinci inventó un despertador que te levantaba los pies para que te despertaras. Sin él, los inventores del pueblo se quedan dormidos y no inventan nada. Ayer uno inventó la cuchara. Otra vez."
-NIGHT_17_NAME,la piedra filosofal
-NIGHT_17_BLURB,"Lo convierte todo en oro. Bueno, casi todo en queso."
-NIGHT_17_VERB,PESANDO LA PIEDRA
-NIGHT_17_TALE,"Los alquimistas la buscaron durante siglos para fabricar oro. Esta solo lo consigue a veces; casi siempre hace queso. El Barón la quiere para hacerse rico. Los ratones del castillo, para merendar."
-NIGHT_18_NAME,la bola de cristal de Merlín
+NIGHT_16_BLURB,Suena con un tango y te tira de la cama.
+NIGHT_16_VERB,PARANDO EL TANGO
+NIGHT_16_TALE,"Leonardo, el inventor del pueblo, lo hizo para despertar a la panadera. Sin él, el pueblo lleva una semana desayunando a la hora de comer. Leonardo, mientras, ha inventado la cuchara. Otra vez."
+NIGHT_17_NAME,la albóndiga de la catapulta
+NIGHT_17_BLURB,Tan dura que los caballeros la usaban de munición.
+NIGHT_17_VERB,LEVANTANDO LA BOLA
+NIGHT_17_TALE,"El cocinero del castillo hace las albóndigas más duras del reino, y esta es la campeona. El Barón la expone como «bala de cañón medieval». El cocinero está tan ofendido que ha prometido hacer otra... más grande."
+NIGHT_18_NAME,la bola de cristal de la bruja Paca
 NIGHT_18_BLURB,Enseña el futuro. Hoy sale una banda con calcetines.
 NIGHT_18_VERB,LIMPIANDO EL CRISTAL
-NIGHT_18_TALE,"El mago Merlín la usaba para ver venir a los dragones. El Barón la mira cada noche para saber quién viene a robarle, pero solo ve niebla: con tanto bostezo, la bola se empaña."
-NIGHT_19_NAME,el rubí del dragón
-NIGHT_19_BLURB,Rojo y calentito. Lo tenía un dragón bajo la almohada.
-NIGHT_19_VERB,SOPLANDO LA PIEDRA
-NIGHT_19_TALE,"El dragón del monte dormía abrazado a su rubí. Sin él no pega ojo, y cuando está cansado estornuda fuego. Ya ha tostado tres pajares y el sombrero del alcalde. ¡Achís!"
-NIGHT_20_NAME,la corona del rey Arturo
-NIGHT_20_BLURB,De oro y armiño. Solo le cabe a un rey de verdad.
+NIGHT_18_TALE,"Sin su bola, la bruja Paca no sabe si va a llover, y ya se le ha mojado tres veces la escoba. El Barón la mira cada noche para ver quién viene a robarle, pero solo ve niebla: con tanto bostezo, se empaña."
+NIGHT_19_NAME,la mascarilla del dragón estornudón
+NIGHT_19_BLURB,"Verde, con escamas. Pica un poco la nariz."
+NIGHT_19_VERB,SOPLANDO EL POLVO
+NIGHT_19_TALE,El dragón del monte se la pone para no quemar nada cuando estornuda. Sin ella ya ha tostado tres pajares y el sombrero del alcalde. ¡Achís!
+NIGHT_20_NAME,la corona del rey de las croquetas
+NIGHT_20_BLURB,De oro y armiño. Huele un poco a fritanga.
 NIGHT_20_VERB,DESATORNILLANDO LA CORONA
-NIGHT_20_TALE,"La joya del Castillo de los Inventos. El Barón se la prueba cada noche delante del espejo, pero le queda grande y se le cae hasta la nariz. En la sala del trono, un guardia le da la espalda a todo... y lo oye todo."
+NIGHT_20_TALE,"Arturo, el del bar, la ganó en el concurso de croquetas. Sin corona nadie le hace caso, y las croquetas le salen cuadradas. El Barón se la prueba cada noche en su sala del trono, con un guardia que lo oye todo."
 NIGHT_20_TIP,"El guardia del trono te da la espalda, pero lo oye todo: sin correr."
 NIGHT_21_NAME,la tostada con la cara del Barón
 NIGHT_21_BLURB,Con mantequilla. El Barón dice que es arte moderno.
@@ -277,30 +277,30 @@ NIGHT_21_TALE,"En esta tostada se ve clavadita la cara del Barón, y la ha colga
 NIGHT_22_NAME,la bola de chicle del récord
 NIGHT_22_BLURB,Masticada por todo el pueblo durante cien años.
 NIGHT_22_VERB,DESPEGANDO EL CHICLE
-NIGHT_22_TALE,"Cada vecino le añadía un chicle el día de su cumpleaños. El Barón dice que es una escultura moderna. Los vecinos dicen que es suya, y que aún sabe a fresa."
-NIGHT_23_NAME,el despertador que canta tangos
-NIGHT_23_BLURB,Suena a las siete. Con bandoneón.
-NIGHT_23_VERB,PARANDO EL TANGO
-NIGHT_23_TALE,"Despertaba a la panadera cada mañana con un tango muy dramático. Sin él, el pueblo lleva una semana desayunando a la hora de comer."
-NIGHT_24_NAME,la máscara del Pulpo Enmascarado
-NIGHT_24_BLURB,Del luchador más famoso del mundo.
-NIGHT_24_VERB,CORTANDO EL SELLO
-NIGHT_24_TALE,"El Pulpo Enmascarado tiene ocho brazos y ninguna gana de enseñar la cara. Sin su máscara no puede subir al ring, y lleva una semana escondido detrás de una maceta. Sus fans están desesperados."
+NIGHT_22_TALE,Cada vecino le añadía un chicle el día de su cumpleaños. El Barón dice que es una escultura moderna y le ha puesto un cartel: «No tocar». Nadie la toca: se queda pegado.
+NIGHT_23_NAME,la dentadura que brilla en la oscuridad
+NIGHT_23_BLURB,De la abuela Tomasa. Ahora es una lámpara de diseño.
+NIGHT_23_VERB,APAGANDO LA SONRISA
+NIGHT_23_TALE,El Barón la ha colgado del techo de su torre como si fuera una lámpara carísima. La abuela Tomasa sonríe con la boca cerrada y su gato ya no la reconoce. Y de noche no encuentra el baño.
+NIGHT_24_NAME,el calcetín desparejado de Jake
+NIGHT_24_BLURB,Su pareja se perdió en la lavadora hace años.
+NIGHT_24_VERB,DOBLANDO LA OBRA DE ARTE
+NIGHT_24_TALE,"El Barón lo expone como escultura moderna, con el título «Soledad». Jake lo quiere de vuelta: el pie izquierdo lleva años pasando frío. Y la lavadora, que tiene al otro, no suelta prenda."
 NIGHT_25_NAME,el Diamante Bostezo
 NIGHT_25_BLURB,"Quien lo mira, bosteza y se duerme."
 NIGHT_25_VERB,ABRIENDO LA CAJA FUERTE
-NIGHT_25_TALE,"Es el tesoro del Barón y su gran truco: con él hizo bostezar a los cinco directores hasta que firmaron. Sin el diamante, se le acaba el truco. Está arriba del todo de la torre, con los cuatro guardias más despiertos de la ciudad."
+NIGHT_25_TALE,"Es el tesoro del Barón y su gran truco: con él hizo bostezar a los directores de los museos hasta que firmaron. Sin el diamante, se le acaba el truco. Está arriba del todo de la torre, con los cuatro guardias más despiertos de la ciudad."
 NIGHT_25_TIP,El gran final: mira el mapa y planea la ruta antes de moverte.
 END_CAUGHT,TE HAN PILLADO
 END_BACK_IN_CASE,%s vuelve a su vitrina.
 END_STILL_THERE,%s sigue en su sitio.
 END_AGAIN,▶ OTRA VEZ
 END_PERFECT,¡GOLPE PERFECTO!
-END_HOME,%s ya está a salvo.
+END_HOME,%s vuelve a casa.
 END_LEVEL_DONE,Nivel %d superado: %s ya es tuyo.
 END_NEXT_NIGHT,▶ SIGUIENTE SALA
 END_NEXT_MUSEUM,▶ AL SIGUIENTE MUSEO
-END_MUSEUM_DONE,%s ya está a salvo. ¡Museo terminado: %s!
+END_MUSEUM_DONE,%s vuelve a casa. ¡Museo desvalijado: %s!
 END_NEXT_HEIST,▶ SIGUIENTE GOLPE
 END_TO_MENU,< VOLVER AL MENÚ
 HUD_HELP,P pausa · M mapa · E acción · F humo · C a gatas · Shift andar lento · Espacio rodar
@@ -493,15 +493,15 @@ STORY_ROOM_PIECE,SALA %d · %s
 STORY_BOSS_PIECE,GRAN GOLPE · %s
 STORY_BOSS_ROOM,GRAN GOLPE
 MUSEUM_1_NAME,La Gran Cueva
-MUSEUM_1_TEXT,"Dinosaurios, mamuts y cavernícolas. Aquí empieza todo"
+MUSEUM_1_TEXT,"Dinosaurios, mamuts y cosas tan viejas que ya son fósiles"
 MUSEUM_2_NAME,La Casa de los Bichos
-MUSEUM_2_TEXT,"Animales, plantas y bichos del mar, quietos en sus vitrinas"
+MUSEUM_2_TEXT,"Bichos, plantas y un pulpo que no quiere que lo miren"
 MUSEUM_3_NAME,El Templo de las Momias
-MUSEUM_3_TEXT,"Faraones, dioses griegos y romanos en sandalias"
+MUSEUM_3_TEXT,"Momias, faraones y un huevo duro que nadie se atreve a oler"
 MUSEUM_4_NAME,El Castillo de los Inventos
-MUSEUM_4_TEXT,"Caballeros, dragones y las máquinas de Leonardo"
+MUSEUM_4_TEXT,"Caballeros, dragones que estornudan e inventos que casi funcionan"
 MUSEUM_5_NAME,La Torre de Cristal
-MUSEUM_5_TEXT,"Arte moderno, teles y tostadoras. Y arriba, el despacho del Barón"
+MUSEUM_5_TEXT,"Arte moderno, o eso dice el Barón. Y arriba del todo, su despacho"
 MENU_CHALLENGE,RETOS
 MENU_CHALLENGE_TEXT,Mapas hechos a mano y tu editor
 CHALLENGE_TITLE,RETOS

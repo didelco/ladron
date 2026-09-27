@@ -256,10 +256,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_02_BLURB",
-				"colour": "#d08a3a",
+				"colour": "#dee2e6",
 				"name": "NIGHT_02_NAME",
 				"seconds": 2.0,
-				"shape": "idol",
+				"shape": "sock",
 				"story": "NIGHT_02_TALE",
 				"verb": "NIGHT_02_VERB"
 			},
@@ -288,10 +288,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_03_BLURB",
-				"colour": "#f4a81c",
+				"colour": "#ffe066",
 				"name": "NIGHT_03_NAME",
 				"seconds": 2.0,
-				"shape": "gem",
+				"shape": "rock",
 				"story": "NIGHT_03_TALE",
 				"verb": "NIGHT_03_VERB"
 			},
@@ -314,10 +314,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_04_BLURB",
-				"colour": "#ffe066",
+				"colour": "#e03131",
 				"name": "NIGHT_04_NAME",
 				"seconds": 2.5,
-				"shape": "rock",
+				"shape": "idol",
 				"story": "NIGHT_04_TALE",
 				"verb": "NIGHT_04_VERB"
 			},
@@ -375,10 +375,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_06_BLURB",
-				"colour": "#ffd43b",
+				"colour": "#7bc043",
 				"name": "NIGHT_06_NAME",
 				"seconds": 3.0,
-				"shape": "duck",
+				"shape": "crown",
 				"story": "NIGHT_06_TALE",
 				"verb": "NIGHT_06_VERB"
 			},
@@ -408,10 +408,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_07_BLURB",
-				"colour": "#7bc043",
+				"colour": "#ff6b6b",
 				"name": "NIGHT_07_NAME",
 				"seconds": 3.0,
-				"shape": "crown",
+				"shape": "sock",
 				"story": "NIGHT_07_TALE",
 				"verb": "NIGHT_07_VERB"
 			},
@@ -434,10 +434,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_08_BLURB",
-				"colour": "#dee2e6",
+				"colour": "#9b5de5",
 				"name": "NIGHT_08_NAME",
 				"seconds": 3.5,
-				"shape": "teeth",
+				"shape": "mask",
 				"story": "NIGHT_08_TALE",
 				"verb": "NIGHT_08_VERB"
 			},
@@ -467,10 +467,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_09_BLURB",
-				"colour": "#9ad0ec",
+				"colour": "#e8a860",
 				"name": "NIGHT_09_NAME",
 				"seconds": 3.5,
-				"shape": "egg",
+				"shape": "gum",
 				"story": "NIGHT_09_TALE",
 				"verb": "NIGHT_09_VERB"
 			},
@@ -494,10 +494,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_10_BLURB",
-				"colour": "#f3eef7",
+				"colour": "#ffd43b",
 				"name": "NIGHT_10_NAME",
 				"seconds": 4.0,
-				"shape": "gum",
+				"shape": "duck",
 				"story": "NIGHT_10_TALE",
 				"verb": "NIGHT_10_VERB"
 			},
@@ -522,10 +522,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_11_BLURB",
-				"colour": "#d4a15a",
+				"colour": "#e8b53a",
 				"name": "NIGHT_11_NAME",
 				"seconds": 4.0,
-				"shape": "toast",
+				"shape": "idol",
 				"story": "NIGHT_11_TALE",
 				"verb": "NIGHT_11_VERB"
 			},
@@ -554,10 +554,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_12_BLURB",
-				"colour": "#e03131",
+				"colour": "#2ec4b6",
 				"name": "NIGHT_12_NAME",
 				"seconds": 4.5,
-				"shape": "sock",
+				"shape": "clock",
 				"story": "NIGHT_12_TALE",
 				"verb": "NIGHT_12_VERB"
 			},
@@ -612,10 +612,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_14_BLURB",
-				"colour": "#2b8a3e",
+				"colour": "#f4f1e6",
 				"name": "NIGHT_14_NAME",
 				"seconds": 5.0,
-				"shape": "mask",
+				"shape": "egg",
 				"story": "NIGHT_14_TALE",
 				"verb": "NIGHT_14_VERB"
 			},
@@ -639,10 +639,10 @@
 			"lights": false,
 			"loot": {
 				"blurb": "NIGHT_15_BLURB",
-				"colour": "#d9a441",
+				"colour": "#12b886",
 				"name": "NIGHT_15_NAME",
 				"seconds": 5.5,
-				"shape": "idol",
+				"shape": "gem",
 				"story": "NIGHT_15_TALE",
 				"verb": "NIGHT_15_VERB"
 			},
@@ -699,7 +699,7 @@
 			"lights": true,
 			"loot": {
 				"blurb": "NIGHT_17_BLURB",
-				"colour": "#fcc419",
+				"colour": "#8b5a2b",
 				"name": "NIGHT_17_NAME",
 				"seconds": 5.5,
 				"shape": "rock",
@@ -751,10 +751,10 @@
 			"lights": true,
 			"loot": {
 				"blurb": "NIGHT_19_BLURB",
-				"colour": "#d0263e",
+				"colour": "#40c057",
 				"name": "NIGHT_19_NAME",
 				"seconds": 4.0,
-				"shape": "gem",
+				"shape": "mask",
 				"story": "NIGHT_19_TALE",
 				"verb": "NIGHT_19_VERB"
 			},
@@ -864,10 +864,10 @@
 			"lights": true,
 			"loot": {
 				"blurb": "NIGHT_23_BLURB",
-				"colour": "#339af0",
+				"colour": "#f4f1e6",
 				"name": "NIGHT_23_NAME",
 				"seconds": 5.5,
-				"shape": "clock",
+				"shape": "teeth",
 				"story": "NIGHT_23_TALE",
 				"verb": "NIGHT_23_VERB"
 			},
@@ -890,10 +890,10 @@
 			"lights": true,
 			"loot": {
 				"blurb": "NIGHT_24_BLURB",
-				"colour": "#9b5de5",
+				"colour": "#dee2e6",
 				"name": "NIGHT_24_NAME",
 				"seconds": 6.0,
-				"shape": "mask",
+				"shape": "sock",
 				"story": "NIGHT_24_TALE",
 				"verb": "NIGHT_24_VERB"
 			},

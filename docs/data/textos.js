@@ -1163,23 +1163,23 @@ window.TEXTOS = [
  },
  {
   "key": "STORY_PROLOGUE",
-  "es": "Esta es la Banda del Calcetín: ladrones que solo roban lo que ya estaba robado.\n\nEl Barón Von Bostezo visitó a los directores de los cinco museos de la ciudad con su Diamante Bostezo: quien lo mira, bosteza. Y bostezando firmaron un papel sin leerlo: «Regalo mi museo al Barón».\n\nAhora los cinco museos son suyos. Ha cerrado las puertas, ha puesto guardias y dice que las obras son solo para él.\n\nEsta noche empieza la operación DEVOLVERLO TODO: cinco museos, cinco salas en cada uno. Primera parada: la Gran Cueva.",
+  "es": "Esta es la Banda del Calcetín: ladrones que solo roban lo que ya estaba robado.\n\nEl Barón Von Bostezo enseñó su Diamante Bostezo a los directores de los cinco museos de la ciudad. Bostezaron tanto que le firmaron un papel sin leerlo: «Regalo mi museo al Barón».\n\nLuego se coló en todas las casas del pueblo. Se llevó la dentadura del abuelo Paco, el pato que canta ópera y hasta el queso de la nevera de Jake, y lo ha puesto todo en vitrinas con un cartel: «Tesoro antiquísimo».\n\nEsta noche empieza la operación DEVOLVERLO TODO: cinco museos, cinco salas en cada uno. Primera parada: la Gran Cueva. Huele a queso.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:20"
+   "logic/story.gd:24"
   ],
   "via": []
  },
  {
   "key": "STORY_ENDING",
-  "es": "¡Lo habéis conseguido!\n\nSin su Diamante Bostezo, al Barón se le acabó el truco: los cinco directores se despertaron del todo, rompieron aquel papel y abrieron otra vez sus museos.\n\nLas veinticinco piezas vuelven a sus vitrinas. El meteorito sigue oliendo a queso y Arquímedes vuelve a bañarse con su pato.\n\nAl Barón Von Bostezo solo le quedó mirar su despacho vacío... y bostezar. Se quedó dormido de pie. Dicen que todavía ronca.\n\nFIN (de momento)",
+  "es": "¡Lo habéis conseguido!\n\nEl abuelo Paco vuelve a masticar turrón, el pato canta a las siete en punto, el yeti tiene los pies calentitos y Jake ya tiene su queso (su nevera vuelve a oler fatal, como debe ser).\n\nSin su diamante, los directores dejaron de bostezar, rompieron aquel papel y abrieron otra vez sus museos. Gratis para los niños.\n\nAl Barón Von Bostezo solo le quedó mirar sus vitrinas vacías... y bostezar. Se quedó dormido de pie. Dicen que todavía ronca.\n\nFIN (de momento)",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:22"
+   "logic/story.gd:26"
   ],
   "via": []
  },
@@ -1621,7 +1621,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:148"
+   "logic/story.gd:152"
   ],
   "via": []
  },
@@ -1632,7 +1632,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:149"
+   "logic/story.gd:153"
   ],
   "via": []
  },
@@ -1643,7 +1643,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:151"
+   "logic/story.gd:155"
   ],
   "via": []
  },
@@ -1654,7 +1654,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:152"
+   "logic/story.gd:156"
   ],
   "via": []
  },
@@ -1665,7 +1665,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:153"
+   "logic/story.gd:157"
   ],
   "via": []
  },
@@ -1676,7 +1676,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:154"
+   "logic/story.gd:158"
   ],
   "via": []
  },
@@ -1687,7 +1687,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:157"
+   "logic/story.gd:161"
   ],
   "via": []
  },
@@ -1698,7 +1698,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:158"
+   "logic/story.gd:162"
   ],
   "via": []
  },
@@ -1709,7 +1709,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:159"
+   "logic/story.gd:163"
   ],
   "via": []
  },
@@ -1720,7 +1720,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:160"
+   "logic/story.gd:164"
   ],
   "via": []
  },
@@ -1731,7 +1731,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:161"
+   "logic/story.gd:165"
   ],
   "via": []
  },
@@ -1742,7 +1742,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:162"
+   "logic/story.gd:166"
   ],
   "via": []
  },
@@ -1753,7 +1753,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:163"
+   "logic/story.gd:167"
   ],
   "via": []
  },
@@ -1764,7 +1764,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:164"
+   "logic/story.gd:168"
   ],
   "via": []
  },
@@ -1775,7 +1775,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:165"
+   "logic/story.gd:169"
   ],
   "via": []
  },
@@ -1786,7 +1786,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:167"
+   "logic/story.gd:171"
   ],
   "via": []
  },
@@ -1797,7 +1797,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:168"
+   "logic/story.gd:172"
   ],
   "via": []
  },
@@ -1808,7 +1808,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:169"
+   "logic/story.gd:173"
   ],
   "via": []
  },
@@ -1819,7 +1819,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:170"
+   "logic/story.gd:174"
   ],
   "via": []
  },
@@ -1830,7 +1830,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:171"
+   "logic/story.gd:175"
   ],
   "via": []
  },
@@ -1841,7 +1841,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:172"
+   "logic/story.gd:176"
   ],
   "via": []
  },
@@ -1852,7 +1852,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:173"
+   "logic/story.gd:177"
   ],
   "via": []
  },
@@ -1863,7 +1863,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:174"
+   "logic/story.gd:178"
   ],
   "via": []
  },
@@ -1874,29 +1874,29 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:166"
+   "logic/story.gd:170"
   ],
   "via": []
  },
  {
   "key": "NIGHT_01_NAME",
-  "es": "la dentadura de Ugg",
+  "es": "la dentadura del abuelo Paco",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:36"
+   "logic/story.gd:40"
   ],
   "via": []
  },
  {
   "key": "NIGHT_01_BLURB",
-  "es": "De marfil de mamut. La primera dentadura postiza de la historia.",
+  "es": "Postiza, de porcelana. Tan vieja que parece un fósil.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:36"
+   "logic/story.gd:40"
   ],
   "via": []
  },
@@ -1907,101 +1907,24 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:36"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_01_TALE",
-  "es": "Ugg el cavernícola perdió los dientes mordiendo una piedra que parecía un pan. Su nieta le talló esta dentadura. Desde que el Barón se la quitó, Ugg solo come puré de mamut. Y hoy el museo no tiene guardias.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:37"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_02_NAME",
-  "es": "el primer juguete del mundo",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:39"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_02_BLURB",
-  "es": "Un muñeco de piedra. Pesa como tres gatos.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:39"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_02_VERB",
-  "es": "LEVANTANDO LA PIEDRA",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:39"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_02_TALE",
-  "es": "Lo talló un niño de las cavernas para no aburrirse los días de lluvia, hace diez mil años. Los niños de hoy iban a verlo cada domingo. Ahora el Barón lo usa de pisapapeles.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
    "logic/story.gd:40"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_03_NAME",
-  "es": "el mosquito en ámbar",
+  "key": "NIGHT_01_TALE",
+  "es": "El Barón la expone con un cartel: «Mandíbula de cavernícola». Desde entonces el abuelo Paco solo come sopa y a todo contesta «mmmfff». Y hoy la cueva no tiene guardias.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:42"
+   "logic/story.gd:41"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_03_BLURB",
-  "es": "Lleva millones de años dentro. Y todavía tiene hambre.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:42"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_03_VERB",
-  "es": "PULIENDO EL ÁMBAR",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:42"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_03_TALE",
-  "es": "Este mosquito se quedó pegado en la resina de un árbol cuando aún había dinosaurios. El Barón quiere hacerse un anillo con él. El mosquito, desde dentro, no está nada de acuerdo.",
+  "key": "NIGHT_02_NAME",
+  "es": "el calcetín del yeti",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2011,41 +1934,41 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_04_NAME",
-  "es": "el meteorito que huele a queso",
+  "key": "NIGHT_02_BLURB",
+  "es": "Talla 98. Huele a glaciar... y a pie.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:45"
+   "logic/story.gd:43"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_04_BLURB",
-  "es": "Cayó del cielo hace mucho, mucho tiempo.",
+  "key": "NIGHT_02_VERB",
+  "es": "DOBLANDO LA LANA",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:45"
+   "logic/story.gd:43"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_04_VERB",
-  "es": "TAPANDO EL OLOR",
+  "key": "NIGHT_02_TALE",
+  "es": "Un yeti muy educado se lo dejó en la lavandería, y el Barón lo expone como «piel de mamut». Ahora el yeti tiene frío en un pie y, cada vez que estornuda, provoca una avalancha.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:45"
+   "logic/story.gd:44"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_04_TALE",
-  "es": "Dicen que los dinosaurios no se extinguieron: se fueron corriendo porque no aguantaban el olor. Los ratones de tres pueblos se han mudado al museo solo para olerlo.",
+  "key": "NIGHT_03_NAME",
+  "es": "el queso de la nevera de Jake",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2055,13 +1978,90 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_05_NAME",
-  "es": "el huevo de la mamá diplodocus",
+  "key": "NIGHT_03_BLURB",
+  "es": "Lleva tanto tiempo en la nevera que ya es prehistórico.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:51"
+   "logic/story.gd:46"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_03_VERB",
+  "es": "TAPANDO EL OLOR",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:46"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_03_TALE",
+  "es": "Jake lo compró para una merienda del siglo pasado y se le olvidó. El Barón dice que es un meteorito. Sin él, la nevera de Jake huele a limpio, y Jake no pega ojo.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:47"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_04_NAME",
+  "es": "el gnomo que baila claqué",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:49"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_04_BLURB",
+  "es": "De barro, con zapatos de metal. Ya bailaba para los dinosaurios.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:49"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_04_VERB",
+  "es": "CALMANDO AL GNOMO",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:49"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_04_TALE",
+  "es": "Era el gnomo del jardín de la señora Remedios, y por las noches bailaba claqué para espantar a los topos. El Barón lo expone como «ídolo de las cavernas». Sin él, los topos han montado una discoteca bajo las lechugas.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:50"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_05_NAME",
+  "es": "el huevo del dinosaurio despistado",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:55"
   ],
   "via": []
  },
@@ -2072,7 +2072,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:51"
+   "logic/story.gd:55"
   ],
   "via": []
  },
@@ -2083,18 +2083,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:51"
+   "logic/story.gd:55"
   ],
   "via": []
  },
  {
   "key": "NIGHT_05_TALE",
-  "es": "La joya de la Gran Cueva. Una mamá diplodocus lo olvidó hace setenta millones de años y ha vuelto a buscarlo. Espera en la puerta, muy seria, pisando coches sin querer. Lo vigila el guardián de la cueva, que ve muy lejos.",
+  "es": "Una mamá diplodocus lo olvidó en un aparcamiento y ha vuelto a buscarlo. Espera en la puerta de la cueva, muy seria, pisando coches sin querer. Lo vigila el guardián de la cueva, que ve una miga a cien metros.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:52"
+   "logic/story.gd:56"
   ],
   "via": []
  },
@@ -2105,90 +2105,13 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:50"
+   "logic/story.gd:54"
   ],
   "via": []
  },
  {
   "key": "NIGHT_06_NAME",
-  "es": "el pato que canta ópera",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:55"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_06_BLURB",
-  "es": "El único pato tenor del mundo.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:55"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_06_VERB",
-  "es": "CALMANDO AL PATO",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:55"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_06_TALE",
-  "es": "Cada mañana cantaba ópera a las siete en punto en el estanque del parque. El Barón le ha puesto un cartel que dice «Pato. No tocar». Sin su canto nadie se despierta, y el panadero ya ha quemado cuarenta barras de pan.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:56"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_07_NAME",
   "es": "la corona de la Reina de los Pepinillos",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:58"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_07_BLURB",
-  "es": "Verde, con granitos. Muy real.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:58"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_07_VERB",
-  "es": "DESATORNILLANDO",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:58"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_07_TALE",
-  "es": "La Reina de los Pepinillos manda en el huerto del pueblo. Sin su corona, los pepinillos no le hacen caso y se pasan la noche bailando la conga por las calles. Nadie consigue dormir.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2198,41 +2121,41 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_08_NAME",
-  "es": "la dentadura de repuesto del tiburón",
+  "key": "NIGHT_06_BLURB",
+  "es": "Verde, con granitos. Muy real.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:61"
+   "logic/story.gd:59"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_08_BLURB",
-  "es": "Trescientos dientes. Ni una caries.",
+  "key": "NIGHT_06_VERB",
+  "es": "DESATORNILLANDO",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:61"
+   "logic/story.gd:59"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_08_VERB",
-  "es": "CONTANDO DIENTES",
+  "key": "NIGHT_06_TALE",
+  "es": "El Barón la expone como «hortaliza coronada, especie rarísima». Sin su corona, los pepinillos no le hacen caso a su reina y se pasan la noche bailando la conga por las calles. Nadie consigue dormir.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:61"
+   "logic/story.gd:60"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_08_TALE",
-  "es": "Los tiburones cambian de dientes toda la vida, y este guardaba los de repuesto en una concha. El Barón se la llevó mientras dormía la siesta. Ahora el tiburón solo come sopa de algas, y está de muy mal humor.",
+  "key": "NIGHT_07_NAME",
+  "es": "la bufanda del caracol friolero",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2242,41 +2165,41 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_09_NAME",
-  "es": "el huevo del cuco despistado",
+  "key": "NIGHT_07_BLURB",
+  "es": "Seis metros de lana. Para un cuello muy largo... y muy lento.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:64"
+   "logic/story.gd:62"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_09_BLURB",
-  "es": "Azul claro. Nadie sabe de quién es.",
+  "key": "NIGHT_07_VERB",
+  "es": "DESENROLLANDO LA BUFANDA",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:64"
+   "logic/story.gd:62"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_09_VERB",
-  "es": "ENVOLVIENDO EL HUEVO",
+  "key": "NIGHT_07_TALE",
+  "es": "El caracol Anselmo tardó once años en tejerla. El Barón se la quitó en diez segundos. Ahora Anselmo no sale de su concha y dice que hace frío hasta en agosto.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:64"
+   "logic/story.gd:63"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_09_TALE",
-  "es": "El cuco pone sus huevos en nidos ajenos para no tener que cuidarlos. Este lo puso en el sombrero del Barón, que lo expone como «huevo de Barón». Mamá gorriona lo busca desde el martes.",
+  "key": "NIGHT_08_NAME",
+  "es": "la máscara del Pulpo Enmascarado",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2286,52 +2209,74 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_10_NAME",
-  "es": "la perla gigante",
+  "key": "NIGHT_08_BLURB",
+  "es": "Del luchador con más brazos del mundo.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:70"
+   "logic/story.gd:65"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_10_BLURB",
-  "es": "Del tamaño de un melón. La hizo una almeja muy gruñona.",
+  "key": "NIGHT_08_VERB",
+  "es": "CORTANDO EL SELLO",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:70"
+   "logic/story.gd:65"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_10_VERB",
-  "es": "ABRIENDO LA CONCHA",
+  "key": "NIGHT_08_TALE",
+  "es": "El Barón la ha puesto en la sección de bichos del mar, entre una sardina y un mejillón. Sin su máscara, el Pulpo Enmascarado no puede subir al ring y lleva una semana escondido detrás de una maceta. Sus fans lloran tinta.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:70"
+   "logic/story.gd:66"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_10_TALE",
-  "es": "La joya de la Casa de los Bichos. La almeja Remedios tardó cien años en hacerla, y la sacaba a pasear los domingos por el fondo del mar. Ahora tiene un guardia al lado que no se aparta ni para estornudar.",
+  "key": "NIGHT_09_NAME",
+  "es": "la bola de pelo del gato Misifú",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:71"
+   "logic/story.gd:68"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_10_TIP",
-  "es": "El guardia no se aparta de la perla: tira algo lejos para moverlo.",
+  "key": "NIGHT_09_BLURB",
+  "es": "La más gorda del mundo. Tiene trofeo y todo.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:68"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_09_VERB",
+  "es": "PEINANDO LA BOLA",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:68"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_09_TALE",
+  "es": "Misifú tardó tres años en toserla y ganó el concurso del pueblo. El Barón dice que es un erizo en peligro de extinción. Misifú está tan triste que ya ha empezado a toser otra, por si acaso.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2341,90 +2286,145 @@ window.TEXTOS = [
   "via": []
  },
  {
+  "key": "NIGHT_10_NAME",
+  "es": "el pato que canta ópera",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:74"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_10_BLURB",
+  "es": "Amarillo, de goma, con voz de tenor.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:74"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_10_VERB",
+  "es": "CALMANDO AL PATO",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:74"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_10_TALE",
+  "es": "Cada mañana cantaba ópera a las siete en punto y despertaba a todo el pueblo. Sin él nadie se levanta, y el panadero ya ha quemado cuarenta barras de pan. El Barón lo tiene en su mejor vitrina, con un guardia pegado que se sabe todas las canciones.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:75"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_10_TIP",
+  "es": "El guardia no se aparta del pato: tira algo lejos para moverlo.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:73"
+  ],
+  "via": []
+ },
+ {
   "key": "NIGHT_11_NAME",
-  "es": "el pan del faraón Tutanpán",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:75"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_11_BLURB",
-  "es": "Cuatro mil años. Todavía cruje.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:75"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_11_VERB",
-  "es": "DESPEGANDO EL PAN",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:75"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_11_TALE",
-  "es": "Los egipcios ya hacían pan, y el faraón Tutanpán se llevó esta rebanada a su pirámide para merendar. El Barón dice que la cara tostada es la suya. Es la del faraón, y está muy enfadado.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:76"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_12_NAME",
-  "es": "el calcetín de Aquiles",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:78"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_12_BLURB",
-  "es": "Protegía su talón, el único punto débil del héroe.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:78"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_12_VERB",
-  "es": "DOBLANDO LA LANA",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:78"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_12_TALE",
-  "es": "Aquiles, el gran héroe griego, era invencible menos en un talón. Por eso nunca se quitaba este calcetín. Desde que se lo llevó el Barón, Aquiles va de puntillas y se asusta hasta de las hormigas.",
+  "es": "el faraón de juguete de Pablito",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
    "logic/story.gd:79"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_11_BLURB",
+  "es": "Salió en un huevo sorpresa. El Barón jura que es de oro.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:79"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_11_VERB",
+  "es": "SOLTANDO EL JUGUETE",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:79"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_11_TALE",
+  "es": "El Barón lo expone como «estatua auténtica de un faraón». Pablito dice que es suyo y que se llama Tutankaleco. Hasta que vuelva, Pablito no se come la verdura.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:80"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_12_NAME",
+  "es": "el despertador de la momia Ramona",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:82"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_12_BLURB",
+  "es": "Suena cada tres mil años. Le toca el martes.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:82"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_12_VERB",
+  "es": "PARANDO LA ALARMA",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:82"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_12_TALE",
+  "es": "La momia Ramona lo pone para no dormirse el día de su cumpleaños. Si el martes no suena, se pierde la tarta, y lleva tres mil años esperándola. Está muy vendada y muy enfadada.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:83"
   ],
   "via": []
  },
@@ -2435,18 +2435,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:81"
+   "logic/story.gd:85"
   ],
   "via": []
  },
  {
   "key": "NIGHT_13_BLURB",
-  "es": "Con él descubrió que el agua empuja hacia arriba.",
+  "es": "Arquímedes, el fontanero, no se baña sin él.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:81"
+   "logic/story.gd:85"
   ],
   "via": []
  },
@@ -2457,106 +2457,106 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:81"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_13_TALE",
-  "es": "Arquímedes estaba en la bañera con su pato cuando lo entendió todo y salió a la calle gritando «¡Eureka!». Sin el pato no quiere bañarse, y los vecinos lo notan. Mucho.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:82"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_14_NAME",
-  "es": "la máscara de Medusa",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:84"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_14_BLURB",
-  "es": "Con serpientes por pelo. No la mires a los ojos.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:84"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_14_VERB",
-  "es": "TAPANDO LOS OJOS",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:84"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_14_TALE",
-  "es": "Dicen que quien miraba a Medusa se quedaba de piedra. El Barón la usa para asustar a sus guardias cuando se duermen, y por eso vigilan tan despiertos. Mejor cogerla sin mirar, por si acaso.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
    "logic/story.gd:85"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_15_NAME",
-  "es": "el Coloso de Rodas, tamaño bolsillo",
+  "key": "NIGHT_13_TALE",
+  "es": "Arquímedes se baña con su pato gritando «¡Eureka!», y nadie sabe por qué. El Barón lo expone como «pato sagrado del Nilo». Desde entonces Arquímedes no se baña, y los vecinos lo notan. Mucho.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:90"
+   "logic/story.gd:86"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_14_NAME",
+  "es": "el huevo duro del tío Ramsés",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:88"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_14_BLURB",
+  "es": "Lleva siglos en la fiambrera. Nadie se atreve a olerlo.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:88"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_14_VERB",
+  "es": "ABRIENDO LA FIAMBRERA",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:88"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_14_TALE",
+  "es": "El tío Ramsés se lo llevó de excursión a las pirámides y se le olvidó comérselo. El Barón lo expone como «huevo de faraón». El tío Ramsés lo quiere de vuelta: dice que ahora está en su punto.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:89"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_15_NAME",
+  "es": "el anillo de Cleopatra, la del quinto",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:94"
   ],
   "via": []
  },
  {
   "key": "NIGHT_15_BLURB",
-  "es": "Una de las siete maravillas. Esta cabe en la mochila.",
+  "es": "De caramelo verde. Ella dice que es una esmeralda.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:90"
+   "logic/story.gd:94"
   ],
   "via": []
  },
  {
   "key": "NIGHT_15_VERB",
-  "es": "SOLTANDO AL COLOSO",
+  "es": "DESPEGANDO EL CARAMELO",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:90"
+   "logic/story.gd:94"
   ],
   "via": []
  },
  {
   "key": "NIGHT_15_TALE",
-  "es": "La joya del Templo de las Momias. El Coloso de verdad era un gigante de bronce más alto que diez casas; esta es su copia de bolsillo, la única que queda. Tres guardias la vigilan, y uno no se mueve de la entrada.",
+  "es": "Cleopatra, la vecina del quinto, dice que es reina de Egipto y del ascensor. Sin su anillo nadie la cree, y ahora tiene que esperar el ascensor como todo el mundo. Tres guardias lo vigilan, y uno no se mueve del camino.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:91"
+   "logic/story.gd:95"
   ],
   "via": []
  },
@@ -2567,7 +2567,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:89"
+   "logic/story.gd:93"
   ],
   "via": []
  },
@@ -2578,79 +2578,13 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:95"
+   "logic/story.gd:99"
   ],
   "via": []
  },
  {
   "key": "NIGHT_16_BLURB",
-  "es": "Funciona con agua. Te despierta levantándote los pies.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:95"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_16_VERB",
-  "es": "PARANDO LA ALARMA",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:95"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_16_TALE",
-  "es": "Leonardo da Vinci inventó un despertador que te levantaba los pies para que te despertaras. Sin él, los inventores del pueblo se quedan dormidos y no inventan nada. Ayer uno inventó la cuchara. Otra vez.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:96"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_17_NAME",
-  "es": "la piedra filosofal",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:98"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_17_BLURB",
-  "es": "Lo convierte todo en oro. Bueno, casi todo en queso.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:98"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_17_VERB",
-  "es": "PESANDO LA PIEDRA",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:98"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_17_TALE",
-  "es": "Los alquimistas la buscaron durante siglos para fabricar oro. Esta solo lo consigue a veces; casi siempre hace queso. El Barón la quiere para hacerse rico. Los ratones del castillo, para merendar.",
+  "es": "Suena con un tango y te tira de la cama.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2660,13 +2594,79 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "NIGHT_18_NAME",
-  "es": "la bola de cristal de Merlín",
+  "key": "NIGHT_16_VERB",
+  "es": "PARANDO EL TANGO",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:99"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_16_TALE",
+  "es": "Leonardo, el inventor del pueblo, lo hizo para despertar a la panadera. Sin él, el pueblo lleva una semana desayunando a la hora de comer. Leonardo, mientras, ha inventado la cuchara. Otra vez.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:100"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_17_NAME",
+  "es": "la albóndiga de la catapulta",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:102"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_17_BLURB",
+  "es": "Tan dura que los caballeros la usaban de munición.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:102"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_17_VERB",
+  "es": "LEVANTANDO LA BOLA",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:102"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_17_TALE",
+  "es": "El cocinero del castillo hace las albóndigas más duras del reino, y esta es la campeona. El Barón la expone como «bala de cañón medieval». El cocinero está tan ofendido que ha prometido hacer otra... más grande.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
    "logic/story.gd:103"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_18_NAME",
+  "es": "la bola de cristal de la bruja Paca",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:107"
   ],
   "via": []
  },
@@ -2677,7 +2677,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:103"
+   "logic/story.gd:107"
   ],
   "via": []
  },
@@ -2688,84 +2688,84 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:103"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_18_TALE",
-  "es": "El mago Merlín la usaba para ver venir a los dragones. El Barón la mira cada noche para saber quién viene a robarle, pero solo ve niebla: con tanto bostezo, la bola se empaña.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:104"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_19_NAME",
-  "es": "el rubí del dragón",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:106"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_19_BLURB",
-  "es": "Rojo y calentito. Lo tenía un dragón bajo la almohada.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:106"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_19_VERB",
-  "es": "SOPLANDO LA PIEDRA",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:106"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_19_TALE",
-  "es": "El dragón del monte dormía abrazado a su rubí. Sin él no pega ojo, y cuando está cansado estornuda fuego. Ya ha tostado tres pajares y el sombrero del alcalde. ¡Achís!",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
    "logic/story.gd:107"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_20_NAME",
-  "es": "la corona del rey Arturo",
+  "key": "NIGHT_18_TALE",
+  "es": "Sin su bola, la bruja Paca no sabe si va a llover, y ya se le ha mojado tres veces la escoba. El Barón la mira cada noche para ver quién viene a robarle, pero solo ve niebla: con tanto bostezo, se empaña.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:112"
+   "logic/story.gd:108"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_19_NAME",
+  "es": "la mascarilla del dragón estornudón",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:110"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_19_BLURB",
+  "es": "Verde, con escamas. Pica un poco la nariz.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:110"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_19_VERB",
+  "es": "SOPLANDO EL POLVO",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:110"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_19_TALE",
+  "es": "El dragón del monte se la pone para no quemar nada cuando estornuda. Sin ella ya ha tostado tres pajares y el sombrero del alcalde. ¡Achís!",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:111"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_20_NAME",
+  "es": "la corona del rey de las croquetas",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:116"
   ],
   "via": []
  },
  {
   "key": "NIGHT_20_BLURB",
-  "es": "De oro y armiño. Solo le cabe a un rey de verdad.",
+  "es": "De oro y armiño. Huele un poco a fritanga.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:112"
+   "logic/story.gd:116"
   ],
   "via": []
  },
@@ -2776,18 +2776,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:112"
+   "logic/story.gd:116"
   ],
   "via": []
  },
  {
   "key": "NIGHT_20_TALE",
-  "es": "La joya del Castillo de los Inventos. El Barón se la prueba cada noche delante del espejo, pero le queda grande y se le cae hasta la nariz. En la sala del trono, un guardia le da la espalda a todo... y lo oye todo.",
+  "es": "Arturo, el del bar, la ganó en el concurso de croquetas. Sin corona nadie le hace caso, y las croquetas le salen cuadradas. El Barón se la prueba cada noche en su sala del trono, con un guardia que lo oye todo.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:113"
+   "logic/story.gd:117"
   ],
   "via": []
  },
@@ -2798,7 +2798,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:111"
+   "logic/story.gd:115"
   ],
   "via": []
  },
@@ -2809,7 +2809,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:116"
+   "logic/story.gd:120"
   ],
   "via": []
  },
@@ -2820,7 +2820,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:116"
+   "logic/story.gd:120"
   ],
   "via": []
  },
@@ -2831,7 +2831,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:116"
+   "logic/story.gd:120"
   ],
   "via": []
  },
@@ -2842,7 +2842,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:117"
+   "logic/story.gd:121"
   ],
   "via": []
  },
@@ -2853,7 +2853,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:119"
+   "logic/story.gd:123"
   ],
   "via": []
  },
@@ -2864,7 +2864,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:119"
+   "logic/story.gd:123"
   ],
   "via": []
  },
@@ -2875,106 +2875,106 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:119"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_22_TALE",
-  "es": "Cada vecino le añadía un chicle el día de su cumpleaños. El Barón dice que es una escultura moderna. Los vecinos dicen que es suya, y que aún sabe a fresa.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:120"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_23_NAME",
-  "es": "el despertador que canta tangos",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:122"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_23_BLURB",
-  "es": "Suena a las siete. Con bandoneón.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:122"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_23_VERB",
-  "es": "PARANDO EL TANGO",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:122"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_23_TALE",
-  "es": "Despertaba a la panadera cada mañana con un tango muy dramático. Sin él, el pueblo lleva una semana desayunando a la hora de comer.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
    "logic/story.gd:123"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_24_NAME",
-  "es": "la máscara del Pulpo Enmascarado",
+  "key": "NIGHT_22_TALE",
+  "es": "Cada vecino le añadía un chicle el día de su cumpleaños. El Barón dice que es una escultura moderna y le ha puesto un cartel: «No tocar». Nadie la toca: se queda pegado.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:125"
+   "logic/story.gd:124"
   ],
   "via": []
  },
  {
-  "key": "NIGHT_24_BLURB",
-  "es": "Del luchador más famoso del mundo.",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:125"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_24_VERB",
-  "es": "CORTANDO EL SELLO",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:125"
-  ],
-  "via": []
- },
- {
-  "key": "NIGHT_24_TALE",
-  "es": "El Pulpo Enmascarado tiene ocho brazos y ninguna gana de enseñar la cara. Sin su máscara no puede subir al ring, y lleva una semana escondido detrás de una maceta. Sus fans están desesperados.",
+  "key": "NIGHT_23_NAME",
+  "es": "la dentadura que brilla en la oscuridad",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
    "logic/story.gd:126"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_23_BLURB",
+  "es": "De la abuela Tomasa. Ahora es una lámpara de diseño.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:126"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_23_VERB",
+  "es": "APAGANDO LA SONRISA",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:126"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_23_TALE",
+  "es": "El Barón la ha colgado del techo de su torre como si fuera una lámpara carísima. La abuela Tomasa sonríe con la boca cerrada y su gato ya no la reconoce. Y de noche no encuentra el baño.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:127"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_24_NAME",
+  "es": "el calcetín desparejado de Jake",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:129"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_24_BLURB",
+  "es": "Su pareja se perdió en la lavadora hace años.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:129"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_24_VERB",
+  "es": "DOBLANDO LA OBRA DE ARTE",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:129"
+  ],
+  "via": []
+ },
+ {
+  "key": "NIGHT_24_TALE",
+  "es": "El Barón lo expone como escultura moderna, con el título «Soledad». Jake lo quiere de vuelta: el pie izquierdo lleva años pasando frío. Y la lavadora, que tiene al otro, no suelta prenda.",
+  "broken": false,
+  "extra": [],
+  "group": "Historia",
+  "at": [
+   "logic/story.gd:130"
   ],
   "via": []
  },
@@ -2985,7 +2985,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:130"
+   "logic/story.gd:134"
   ],
   "via": []
  },
@@ -2996,7 +2996,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:130"
+   "logic/story.gd:134"
   ],
   "via": []
  },
@@ -3007,18 +3007,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:130"
+   "logic/story.gd:134"
   ],
   "via": []
  },
  {
   "key": "NIGHT_25_TALE",
-  "es": "Es el tesoro del Barón y su gran truco: con él hizo bostezar a los cinco directores hasta que firmaron. Sin el diamante, se le acaba el truco. Está arriba del todo de la torre, con los cuatro guardias más despiertos de la ciudad.",
+  "es": "Es el tesoro del Barón y su gran truco: con él hizo bostezar a los directores de los museos hasta que firmaron. Sin el diamante, se le acaba el truco. Está arriba del todo de la torre, con los cuatro guardias más despiertos de la ciudad.",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:131"
+   "logic/story.gd:135"
   ],
   "via": []
  },
@@ -3029,7 +3029,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:129"
+   "logic/story.gd:133"
   ],
   "via": []
  },
@@ -3090,7 +3090,7 @@ window.TEXTOS = [
  },
  {
   "key": "END_HOME",
-  "es": "%s ya está a salvo.",
+  "es": "%s vuelve a casa.",
   "broken": false,
   "extra": [],
   "group": "Juego",
@@ -3134,7 +3134,7 @@ window.TEXTOS = [
  },
  {
   "key": "END_MUSEUM_DONE",
-  "es": "%s ya está a salvo. ¡Museo terminado: %s!",
+  "es": "%s vuelve a casa. ¡Museo desvalijado: %s!",
   "broken": false,
   "extra": [],
   "group": "Juego",
@@ -5035,7 +5035,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:155"
+   "logic/story.gd:159"
   ],
   "via": []
  },
@@ -5046,7 +5046,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:156"
+   "logic/story.gd:160"
   ],
   "via": []
  },
@@ -5200,18 +5200,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:196"
+   "logic/story.gd:200"
   ],
   "via": []
  },
  {
   "key": "MUSEUM_1_TEXT",
-  "es": "Dinosaurios, mamuts y cavernícolas. Aquí empieza todo",
+  "es": "Dinosaurios, mamuts y cosas tan viejas que ya son fósiles",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:196"
+   "logic/story.gd:200"
   ],
   "via": []
  },
@@ -5222,18 +5222,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:202"
+   "logic/story.gd:206"
   ],
   "via": []
  },
  {
   "key": "MUSEUM_2_TEXT",
-  "es": "Animales, plantas y bichos del mar, quietos en sus vitrinas",
+  "es": "Bichos, plantas y un pulpo que no quiere que lo miren",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:202"
+   "logic/story.gd:206"
   ],
   "via": []
  },
@@ -5244,18 +5244,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:208"
+   "logic/story.gd:212"
   ],
   "via": []
  },
  {
   "key": "MUSEUM_3_TEXT",
-  "es": "Faraones, dioses griegos y romanos en sandalias",
+  "es": "Momias, faraones y un huevo duro que nadie se atreve a oler",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:208"
+   "logic/story.gd:212"
   ],
   "via": []
  },
@@ -5266,18 +5266,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:214"
+   "logic/story.gd:218"
   ],
   "via": []
  },
  {
   "key": "MUSEUM_4_TEXT",
-  "es": "Caballeros, dragones y las máquinas de Leonardo",
+  "es": "Caballeros, dragones que estornudan e inventos que casi funcionan",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:214"
+   "logic/story.gd:218"
   ],
   "via": []
  },
@@ -5288,18 +5288,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:219"
+   "logic/story.gd:223"
   ],
   "via": []
  },
  {
   "key": "MUSEUM_5_TEXT",
-  "es": "Arte moderno, teles y tostadoras. Y arriba, el despacho del Barón",
+  "es": "Arte moderno, o eso dice el Barón. Y arriba del todo, su despacho",
   "broken": false,
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:219"
+   "logic/story.gd:223"
   ],
   "via": []
  },
