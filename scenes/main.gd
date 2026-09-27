@@ -1212,7 +1212,8 @@ func _quit_to_title() -> void:
 
 ## Before a night: a briefing of a page or three, back and next along the
 ## bottom — in the story, the piece and its tale, then what is new tonight
-## (if anything is); in every mode, the plan: the map and the rules for the
+## (if anything is); a saved map, its tale if it was given one; in every
+## mode, the plan: the map and the rules for the
 ## night (Briefing).
 func _brief_pages() -> Array:
 	var pages := []
@@ -1220,6 +1221,9 @@ func _brief_pages() -> Array:
 		pages.append("story")
 		if not Story.news(level, players).is_empty():
 			pages.append("news")
+	elif mode == "challenge" and String(Heist.loot.get("story", "")).strip_edges() != "":
+		# A saved map's tale, written by hand in the editor.
+		pages.append("story")
 	pages.append("plan")
 	return pages
 
@@ -1274,20 +1278,30 @@ func _news_items() -> Array:
 	]
 
 
-## The story's first page: which job this is, the piece turning under a
-## light, its name, what it is like and its tale.
+## The story's first page, like a card beside an exhibit: the piece turning
+## under a light, big, on the left; on the right which job this is, its
+## name, what it is like and its tale.
 func _story_items() -> Array:
 	# Rebuilt each time: the last round's piece may still be on the stand.
 	_build_preview()
-	return [
-		{"text": _brief_heading(), "size": 17, "colour": Hud.C.dim},
-		{"picture": preview.get_texture(), "smooth": true, "height": 200},
-		{"text": Heist.first_upper(Heist.loot.name), "size": 32, "colour": Color(Heist.loot.colour), "wrap": true, "width": 760},
-		{"text": Heist.loot.blurb, "size": 18, "colour": Hud.C.gold, "wrap": true, "width": 760},
-		{"gap": 6},
-		{"text": Heist.loot.get("story", ""), "size": 19, "wrap": true, "width": 760},
-		{"gap": 12},
+	var card: Array = [
+		{"text": _brief_heading().to_upper(), "size": 15, "colour": Hud.C.dim, "align": "left"},
+		{"text": Heist.first_upper(Heist.loot.name), "size": 40, "colour": Color(Heist.loot.colour), "wrap": true, "width": STORY_WIDTH, "align": "left"},
+		{"text": Heist.loot.blurb, "size": 19, "colour": Hud.C.gold, "wrap": true, "width": STORY_WIDTH, "align": "left"},
+		{"gap": 10},
+		{"text": Heist.loot.get("story", ""), "size": 20, "wrap": true, "width": STORY_WIDTH, "align": "left"},
 	]
+	return [
+		{"columns": [
+			{"items": [{"picture": preview.get_texture(), "smooth": true, "height": 290}], "middle": true},
+			{"items": card, "width": STORY_WIDTH, "separation": 8, "middle": true},
+		], "separation": 48},
+		{"gap": 16},
+	]
+
+
+## How wide the tale runs beside the piece on the story's page.
+const STORY_WIDTH := 520
 
 
 ## The plan: the map on the left; on the right, the piece (turning under a
