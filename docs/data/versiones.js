@@ -455,6 +455,22 @@ window.VERSIONES = {
    "bytes": 108248
   },
   {
+   "asunto": "ciudad",
+   "fecha": "2026-09-28T19:13",
+   "commit": "df36288",
+   "titulo": "El museo elegido, dentro de una estrella ninja",
+   "porque": "El anillo dorado del museo elegido pasa a ser una estrella ninja que gira",
+   "cambio": "Una estrella ninja de cinco puntas, dorada y en dos tonos, rodea el museo elegido y gira despacio al revés que las agujas del reloj",
+   "file": "versiones/ciudad/2026-09-28-el-museo-elegido-dentro-de-una-estrella-.webp",
+   "from": "docs/capturas/menu_historia_ciudad.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 81976
+  },
+  {
    "asunto": "museo",
    "fecha": "2026-09-27T10:02",
    "commit": "3888cd5",
@@ -551,5 +567,5 @@ window.VERSIONES = {
    "bytes": 68042
   }
  ],
- "bytes": 2190300
+ "bytes": 2272276
 };
