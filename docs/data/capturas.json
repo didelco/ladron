@@ -24,7 +24,7 @@
 		"file": "capturas/menu_historia_ciudad.webp",
 		"id": "menu_historia_ciudad",
 		"section": "menus",
-		"text": "La ciudad en 3D a pantalla completa: calles, casas, tiendas, parques y el río; entre ellos, los cinco museos y la ruta desde el escondite de la banda.",
+		"text": "La ciudad en 3D, más grande que la pantalla: la cámara mira al museo elegido y se desliza por las calles hasta el siguiente, siguiendo la ruta desde el escondite de la banda.",
 		"title": "Historia: la ciudad"
 	},
 	{

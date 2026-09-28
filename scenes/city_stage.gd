@@ -1,12 +1,16 @@
 class_name CityStage
 extends SubViewport
 ## The story's way in to a heist, as one 3D place seen from above at the
-## menus' axonometric angle: the town at night filling the screen (streets,
+## menus' axonometric angle: the town at night, bigger than the screen (streets,
 ## blocks of houses and shops, parks, a river, lamps: TownBuilder) and in
 ## it the five museums, each a museum building in its own colour
 ## (MuseumBuilding), a lit road from the gang's hideout past their doors;
 ## and inside the museum picked, its five rooms as a doll's house with the
-## roof off. Tour drives it and draws the words over it.
+## roof off. Tour drives it and draws the words over it. The town is bigger
+## than the screen: the camera looks at the museum picked, two or three of
+## them in sight (CITY_VIEW), and glides over the town to the next
+## (FOLLOW_S). They zigzag (MUSEUM_BLOCKS), so each step goes another way,
+## up and down as well as across.
 ##
 ## Everything is laid out on the town's own plan: x across the screen, z
 ## towards the viewer; the plan is turned a little (YAW) so the buildings
@@ -28,13 +32,17 @@ const LOCK_SIZE := 1.6
 ## The plan's turn under the camera.
 const YAW := 20.0
 ## The blocks the museums stand on, in the order they open (TownBuilder's
-## grid), and the gang's hideout's.
-const MUSEUM_BLOCKS := [Vector2i(-2, 1), Vector2i(-2, -1), Vector2i(0, 0), Vector2i(0, -2), Vector2i(2, 0)]
-const HIDEOUT_BLOCK := Vector2i(-3, 0)
-## The river runs down this street (tiles across).
-const RIVER_STREET := -1
+## grid), and the gang's hideout's: in a zigzag, right, up and left, up and
+## right, down and right, a step or two of blocks apart.
+const MUSEUM_BLOCKS := [Vector2i(-2, 2), Vector2i(0, 1), Vector2i(-1, -1), Vector2i(1, -2), Vector2i(3, -1)]
+const HIDEOUT_BLOCK := Vector2i(-4, 2)
+## The river runs down this street (in streets across: its tiles over PITCH).
+const RIVER_STREET := -2
 ## How far the camera sees (orthographic height) over the town, and over a museum.
-const CITY_VIEW := 23.0
+const CITY_VIEW := 21.0
+## How quickly the camera glides to the museum picked (the larger, the
+## quicker: it closes this share of the way in a second, as an exponential).
+const FOLLOW_S := 2.6
 const MUSEUM_VIEW := 7.0
 ## How long the camera takes into a museum and back out (s).
 const ZOOM_S := 1.5
@@ -191,7 +199,7 @@ func build(open_to: int, pick: int) -> void:
 	_ring_light.rotation_degrees = Vector3(-90, 0, 0)
 	town.add_child(_ring_light)
 	picked = clampi(pick, 0, _museums.size() - 1)
-	focus = _town_middle()
+	focus = _look_at(picked)
 	view = CITY_VIEW
 	_place_camera()
 
@@ -201,7 +209,8 @@ func is_open(m: int) -> bool:
 	return m >= 0 and m < _open.size() and _open[m]
 
 
-## Pick museum m (the ring moves over, the building hops).
+## Pick museum m (the ring moves over, the building hops, and the camera
+## glides over the town to it).
 func pick(m: int) -> void:
 	picked = clampi(m, 0, _museums.size() - 1)
 
@@ -250,7 +259,7 @@ func go_out(done: Callable) -> void:
 	if _tween:
 		_tween.kill()
 	_tween = create_tween().set_parallel()
-	_tween.tween_method(_zoom_step.bind(focus, view, _town_middle(), CITY_VIEW), 0.0, 1.0, secs).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	_tween.tween_method(_zoom_step.bind(focus, view, _look_at(m), CITY_VIEW), 0.0, 1.0, secs).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
 	_tween.tween_method(_dim, 1.0, 0.0, secs * 0.6)
 	_tween.chain().tween_callback(func() -> void:
 		inside = -1
@@ -301,17 +310,24 @@ func _place_camera() -> void:
 	_cam.position = focus + _cam.basis.z * 80.0
 
 
-## Where the camera looks over the whole town: the middle of the museums.
-func _town_middle() -> Vector3:
-	var sum := Vector3.ZERO
-	for b in MUSEUM_BLOCKS:
-		sum += town.transform * TownBuilder.block_centre(b)
-	# A little up the screen, to leave room over the back ones for their signs.
-	return sum / MUSEUM_BLOCKS.size() + Vector3(0, 0.6, 0) + _cam.basis.y * 2.2
+## Where the camera looks over the town with museum m picked: at it, a
+## little up the screen to leave room over it for its sign.
+func _look_at(m: int) -> Vector3:
+	return town.transform * TownBuilder.block_centre(MUSEUM_BLOCKS[m]) + Vector3(0, 0.6, 0) + _cam.basis.y * 1.0
+
+
+## Gliding (not going in or out): nothing between the camera and the
+## museum picked but the way there.
+func _gliding() -> bool:
+	return inside < 0 and not (_tween and _tween.is_running())
 
 
 func _process(dt: float) -> void:
 	_t += dt
+	# Over the town, the camera follows the museum picked.
+	if _gliding() and not _museums.is_empty():
+		focus = focus.lerp(_look_at(picked), 1.0 - exp(-dt * (40.0 if hurry else FOLLOW_S)))
+		_place_camera()
 	# The picked museum hops a little and its ring breathes round it.
 	for m in _museums.size():
 		var shell := _shells[m]

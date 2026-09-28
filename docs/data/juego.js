@@ -465,17 +465,6 @@ window.JUEGO = {
   {
    "colours": [
     {
-     "hex": "#141418",
-     "key": ""
-    }
-   ],
-   "file": "scenes/figure.gd",
-   "name": "FACE_INK",
-   "note": "The lids: as round as the eye on top, their straight edge this far above its middle."
-  },
-  {
-   "colours": [
-    {
      "hex": "#8fb4ff",
      "key": "cross"
     },
@@ -1417,50 +1406,6 @@ window.JUEGO = {
    "file": "scenes/minigame_view.gd",
    "name": "RED",
    "note": ""
-  },
-  {
-   "colours": [
-    {
-     "hex": "#b9c3cc",
-     "key": ""
-    }
-   ],
-   "file": "scenes/mugshot_stage.gd",
-   "name": "CHART_WALL",
-   "note": "The wall and its chart."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#2b3440",
-     "key": ""
-    }
-   ],
-   "file": "scenes/mugshot_stage.gd",
-   "name": "CHART_INK",
-   "note": "The wall and its chart."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#2ec4a6",
-     "key": ""
-    }
-   ],
-   "file": "scenes/mugshot_stage.gd",
-   "name": "SUIT",
-   "note": "The thief's suit: grey in the photo, but a colour for the light to shade."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#12705f",
-     "key": ""
-    }
-   ],
-   "file": "scenes/mugshot_stage.gd",
-   "name": "SUIT_SHADE",
-   "note": "The thief's suit: grey in the photo, but a colour for the light to shade."
   },
   {
    "colours": [
@@ -4531,7 +4476,7 @@ window.JUEGO = {
    "file": "capturas/menu_historia_ciudad.webp",
    "id": "menu_historia_ciudad",
    "section": "menus",
-   "text": "La ciudad en 3D a pantalla completa: calles, casas, tiendas, parques y el río; entre ellos, los cinco museos y la ruta desde el escondite de la banda.",
+   "text": "La ciudad en 3D, más grande que la pantalla: la cámara mira al museo elegido y se desliza por las calles hasta el siguiente, siguiendo la ruta desde el escondite de la banda.",
    "title": "Historia: la ciudad"
   },
   {
@@ -7444,8 +7389,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "28-09-2026 08:40",
-  "commit": "fa7941a",
-  "rama": "previa2"
+  "fecha": "28-09-2026 10:03",
+  "commit": "c150f4a",
+  "rama": "main"
  }
 };

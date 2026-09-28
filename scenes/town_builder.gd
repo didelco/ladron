@@ -1,7 +1,7 @@
 class_name TownBuilder
 extends RefCounted
-## The town round the museums (CityStage), wide enough to fill the screen
-## whatever it is looking at: a grid of streets with their pavements and
+## The town round the museums (CityStage), far bigger than the screen, the
+## camera gliding over it from one museum to the next: a grid of streets with their pavements and
 ## crossings, and between them blocks of buildings from Kenney's city kits
 ## (CC0: City Kit Commercial, Suburban and Roads, in assets/models/ciudad):
 ## shops and offices in the middle, tall ones in the very middle, houses
@@ -23,7 +23,7 @@ const KITS := "res://assets/models/ciudad/"
 const TILE := 1.4
 const PITCH := 5
 const BLOCK := 4
-const REACH := 5
+const REACH := 9
 
 ## The town's own colours at night: all here, to change in one place.
 const PAVEMENT := Color("#443c58")
@@ -183,7 +183,7 @@ func _block(b: Vector2i) -> void:
 		if maxi(absi(m.x - b.x), absi(m.y - b.y)) <= 1:
 			near = true
 	var kind := "houses"
-	if b.y <= -3 and absi(b.x) <= 3:
+	if b.y <= -6 and absi(b.x) <= 5:
 		kind = "tall"
 	elif near and posmod(b.x + b.y, 2) == 0:
 		kind = "shops"

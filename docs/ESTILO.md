@@ -8,6 +8,10 @@ Lo que decide cómo se ve el juego y por qué. Es la única página escrita a ma
 
 Un museo de noche visto desde arriba, **cartoon nocturno a lo Luigi's Mansion 3**: sombras azul-violeta, una luna fría, y solo dos cosas cálidas, las lámparas de las salas y las linternas de los guardias. Los menús son **un museo de noche por dentro**: la sala del museo de fondo, marcos de cristal ahumado que brillan en cálido con el foco, como las vitrinas, y dioramas 3D axonométricos.
 
+## Nombre y logo
+
+El juego se llama **Ninja Karma** (28-09-2026). El logo, en `art/logo_original.png` (sobre fondo gris), va recortado sobre transparente en `docs/logo.webp`: arriba del índice de la documentación y como icono de la pestaña. Letras gruesas y redondeadas con contorno negro, «NINJA» en crema y «KARMA» en oro, con cintas rojas y dos shuriken: el mismo tono gamberro del juego.
+
 ## Reglas
 
 1. **La noche es azul, no gris**: «un hotel encantado, no un apagón» (`scenes/main.gd`, `AMBIENT_COLOUR` `#6256aa`). Solo lámparas y linternas son cálidas.
@@ -101,7 +105,7 @@ Cada museo de la historia tiene su paleta (suelo, papel pintado, zócalo, remate
 - **Plano**: suelo crema, vitrinas tostadas y lo que se puede tirar en una casilla de un tono algo más cálido que las vitrinas, sin icono, para que no llame la atención. La salida se marca con el mismo kunai verde que señala el camino en el juego. La ruta va en puntos de media casilla.
 - **Antes de una noche**: en la historia, «la historia» (rango y robo: «Ladronzuelo · tu quinto robo», nunca «noche n de 20») → «lo nuevo» (si hay algo) → «el plan»; en el generativo y los retos, solo el plan. Sin pestañas: abajo, VOLVER a la izquierda, la siguiente sección en el centro y SALTAR Y JUGAR a la derecha.
 - **Reglas del plan**: salen de la propia noche (`logic/briefing.gd`, con sus normas en la cabecera): tres si se puede y cinco como mucho, de catorce palabras como máximo; lo normal no se dice, y una mecánica se cuenta en «lo nuevo» la noche que se enseña y en el plan la siguiente, luego ya no.
-- **Mapa de la historia**: la ciudad de noche vista desde arriba, con cada museo en sus colores. Las calles se iluminan hasta el último museo abierto.
+- **Mapa de la historia**: la ciudad de noche vista desde arriba, con cada museo en sus colores. Las calles se iluminan hasta el último museo abierto. La ciudad es más grande que la pantalla: la cámara sigue al museo elegido, con dos o tres a la vista, y se desliza hasta el siguiente. Los museos van en zigzag, no en fila, para que cada paso sea en una dirección distinta, también arriba y abajo.
 - **Pantalla final**: SIGUIENTE en grande, VOLVER en pequeño.
 
 ## Cómo llegó hasta aquí (y lo que se descartó)

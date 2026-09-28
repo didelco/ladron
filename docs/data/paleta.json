@@ -464,17 +464,6 @@
 	{
 		"colours": [
 			{
-				"hex": "#141418",
-				"key": ""
-			}
-		],
-		"file": "scenes/figure.gd",
-		"name": "FACE_INK",
-		"note": "The lids: as round as the eye on top, their straight edge this far above its middle."
-	},
-	{
-		"colours": [
-			{
 				"hex": "#8fb4ff",
 				"key": "cross"
 			},
@@ -1416,50 +1405,6 @@
 		"file": "scenes/minigame_view.gd",
 		"name": "RED",
 		"note": ""
-	},
-	{
-		"colours": [
-			{
-				"hex": "#b9c3cc",
-				"key": ""
-			}
-		],
-		"file": "scenes/mugshot_stage.gd",
-		"name": "CHART_WALL",
-		"note": "The wall and its chart."
-	},
-	{
-		"colours": [
-			{
-				"hex": "#2b3440",
-				"key": ""
-			}
-		],
-		"file": "scenes/mugshot_stage.gd",
-		"name": "CHART_INK",
-		"note": "The wall and its chart."
-	},
-	{
-		"colours": [
-			{
-				"hex": "#2ec4a6",
-				"key": ""
-			}
-		],
-		"file": "scenes/mugshot_stage.gd",
-		"name": "SUIT",
-		"note": "The thief's suit: grey in the photo, but a colour for the light to shade."
-	},
-	{
-		"colours": [
-			{
-				"hex": "#12705f",
-				"key": ""
-			}
-		],
-		"file": "scenes/mugshot_stage.gd",
-		"name": "SUIT_SHADE",
-		"note": "The thief's suit: grey in the photo, but a colour for the light to shade."
 	},
 	{
 		"colours": [

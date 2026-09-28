@@ -219,6 +219,36 @@
    ]
   },
   {
+   "asunto": "ciudad",
+   "fecha": "2026-09-28T09:32",
+   "commit": "c150f4a",
+   "titulo": "La ciudad entera a la vista",
+   "porque": "La última versión con los cinco museos cerca y toda la ciudad en pantalla, antes de agrandarla",
+   "cambio": "La ciudad en 3D de verdad (calles, manzanas, río, farolas) con los cinco museos como edificios, todos a la vista a la vez",
+   "file": "versiones/ciudad/2026-09-28-la-ciudad-entera-a-la-vista.webp",
+   "from": "docs/capturas/menu_historia_ciudad.webp",
+   "commit_msg": "test_transiciones: su .uid",
+   "size": [
+    1280,
+    720
+   ]
+  },
+  {
+   "asunto": "ciudad",
+   "fecha": "2026-09-28T10:03",
+   "commit": "c150f4a",
+   "titulo": "Una ciudad para recorrer",
+   "porque": "La ciudad pasa a ser más grande que la pantalla",
+   "cambio": "Los museos en zigzag, dos o tres a la vista; la cámara sigue al elegido y se desliza hasta el siguiente, en horizontal y en vertical",
+   "file": "versiones/ciudad/2026-09-28-una-ciudad-para-recorrer.webp",
+   "from": "docs/capturas/menu_historia_ciudad.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ]
+  },
+  {
    "asunto": "museo",
    "fecha": "2026-09-27T10:02",
    "commit": "3888cd5",
