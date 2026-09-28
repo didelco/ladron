@@ -1264,6 +1264,13 @@ var _bubble_tail: Control
 var _bubble_anchor: Control
 var _bubble_buttons: Array[Button] = []
 var _bubble_closed: Callable
+## The spotlight on the choice with the focus: a warm pool at its feet and a
+## faint beam over it, sliding from one choice to the next (_spot_on).
+var _bubble_spot: Control
+var _spot_target: Button
+## A choice in the bubble: how wide, and how tall its little stage.
+const CHOICE_W := 124.0
+const DIM := 0.5
 ## the tail's size, and the least room kept between the bubble and the edge
 const TAIL := Vector2(26, 14)
 const BUBBLE_EDGE := 12.0
@@ -1340,6 +1347,10 @@ func pop_bubble(anchor_id: String, heading: String, choices: Array, focus: int, 
 		b.focus_next = right
 		b.focus_neighbor_top = b.get_path_to(b)
 		b.focus_neighbor_bottom = b.get_path_to(b)
+	_bubble_spot = _spotlight()
+	root.add_child(_bubble_spot)
+	for b in _bubble_buttons:
+		b.focus_entered.connect(_spot_on.bind(b, true))
 	_bubble_tail = Control.new()
 	_bubble_tail.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_bubble_tail.size = TAIL + Vector2(0, 3)
@@ -1363,6 +1374,8 @@ func _bubble_open(root: Control, first: Button) -> void:
 		first.grab_focus()
 		_quiet = false
 	_place_bubble()
+	if first:
+		_spot_on(first, false)
 	var up: bool = _bubble_tail.get_meta("up", false)
 	_bubble_box.pivot_offset = Vector2(_bubble_tail.position.x + TAIL.x / 2 - _bubble_box.position.x, _bubble_box.size.y if up else 0.0)
 	_bubble_box.scale = Vector2.ONE * 0.92
@@ -1371,12 +1384,84 @@ func _bubble_open(root: Control, first: Button) -> void:
 	tw.tween_property(_bubble_box, "scale", Vector2.ONE, SWAP_S)
 
 
+## The spotlight: a warm pool of light on the floor and a faint beam down to
+## it, both glowing over what is under them (added, not painted).
+func _spotlight() -> Control:
+	var spot := Control.new()
+	spot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	spot.size = Vector2(CHOICE_W + 30, _choice_picture().y + 10)
+	var add := CanvasItemMaterial.new()
+	add.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	# The beam: brightest at the pool, fading up and to its sides.
+	var beam_fade := Gradient.new()
+	beam_fade.set_color(0, Color(GLOW, 0.26))
+	beam_fade.set_color(1, Color(GLOW, 0.0))
+	var beam_tex := GradientTexture2D.new()
+	beam_tex.gradient = beam_fade
+	beam_tex.fill = GradientTexture2D.FILL_RADIAL
+	# Round its foot (the texture's bottom middle), out to its sides: a half
+	# oval, gone by the sides and the top of what shows.
+	beam_tex.fill_from = Vector2(0.5, 1.0)
+	beam_tex.fill_to = Vector2(1.0, 1.0)
+	var beam := TextureRect.new()
+	beam.texture = beam_tex
+	beam.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	beam.stretch_mode = TextureRect.STRETCH_SCALE
+	beam.material = add
+	beam.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var beam_h := spot.size.y - 18
+	beam.size = Vector2(CHOICE_W * 0.8, beam_h * 2.0)
+	beam.position = Vector2((spot.size.x - beam.size.x) * 0.5, beam_h - beam.size.y)
+	spot.add_child(beam)
+	# The pool on the floor, round and soft.
+	var pool_fade := Gradient.new()
+	pool_fade.set_color(0, Color(GLOW, 0.75))
+	pool_fade.set_color(1, Color(GLOW, 0.0))
+	var pool_tex := GradientTexture2D.new()
+	pool_tex.gradient = pool_fade
+	pool_tex.fill = GradientTexture2D.FILL_RADIAL
+	pool_tex.fill_from = Vector2(0.5, 0.5)
+	pool_tex.fill_to = Vector2(1.0, 0.5)
+	var pool := TextureRect.new()
+	pool.texture = pool_tex
+	pool.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	pool.stretch_mode = TextureRect.STRETCH_SCALE
+	pool.material = add
+	pool.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pool.size = Vector2(spot.size.x, 40)
+	pool.position = Vector2(0, spot.size.y - 40)
+	spot.add_child(pool)
+	return spot
+
+
+## The spotlight onto choice b: it slides there (_follow_spot), or is there
+## at once.
+func _spot_on(b: Button, slide: bool) -> void:
+	_spot_target = b
+	if not slide:
+		_follow_spot(0.0, true)
+
+
+## The spotlight after its choice, every frame (the bubble moves with its
+## card): a quick ease there, or straight there.
+func _follow_spot(dt: float, now := false) -> void:
+	if not is_instance_valid(_bubble_spot) or not is_instance_valid(_bubble) or not is_instance_valid(_spot_target):
+		return
+	var at := _spot_target.global_position - _bubble.global_position + Vector2((_spot_target.size.x - _bubble_spot.size.x) * 0.5, 4)
+	_bubble_spot.position = at if now else _bubble_spot.position.lerp(at, 1.0 - exp(-dt * 14.0))
+
+
+## How big a choice's little stage is in the bubble.
+func _choice_picture() -> Vector2:
+	return Vector2(CHOICE_W - 16, (CHOICE_W - 16) * MenuStage.SIZE.y / MenuStage.SIZE.x)
+
+
 ## One choice in the bubble: no frame of its own, just its 3D stage with no
 ## backdrop, its title in its colour and maybe a line under it. The one with
-## the focus grows, its stage plays and its title lights up; the rest dim.
+## the focus is in the spotlight (_spot_on): it grows, its stage plays and
+## its title lights up; the rest stand in the dark.
 func _bubble_choice(c: Dictionary) -> Button:
-	const WIDTH := 124.0
-	const DIM := 0.62
+	const WIDTH := CHOICE_W
 	var b := Button.new()
 	b.focus_mode = Control.FOCUS_ALL
 	var colour: Color = c.get("colour", C.safe)
@@ -2450,6 +2535,7 @@ func _process(dt: float) -> void:
 	# The bubble follows its card as it springs and moves.
 	if _bubble:
 		_place_bubble()
+		_follow_spot(dt)
 	for i in _titles.size():
 		var t := _titles[i]
 		if is_instance_valid(t):
