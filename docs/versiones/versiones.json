@@ -594,6 +594,21 @@
    ]
   },
   {
+   "asunto": "museo",
+   "fecha": "2026-09-28T19:52",
+   "commit": "c2535ab",
+   "titulo": "La Torre de Cristal: el salón de siempre",
+   "porque": "Antes de rehacer el museo contemporáneo como una torre de volúmenes apilados",
+   "cambio": "El museo 5 era aún el salón clásico genérico con cúpula: cada sala una ventana con candado",
+   "file": "versiones/museo/2026-09-28-la-torre-de-cristal-el-salon-de-siempre.webp",
+   "from": "/tmp/contemp/before/llegada.png",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ]
+  },
+  {
    "asunto": "recreativa",
    "fecha": "2026-09-27T14:55",
    "commit": "59b9a18",
