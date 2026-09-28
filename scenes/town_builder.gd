@@ -216,6 +216,8 @@ var root: Node3D
 ## what each model is made of, and where each copy of it goes:
 ## path -> {"mesh", "inner": Transform3D, "at": [Transform3D], "own": [Color]}
 var _batches := {}
+## the plain boxes (_box), by [material, shadow]: their transforms
+var _boxes := {}
 var _materials := {}
 var _rng := RandomNumberGenerator.new()
 ## the way the river runs and the way up to the far bank, on the plan
@@ -425,6 +427,7 @@ func build() -> void:
 	_loose_houses()
 	_woods()
 	_flush()
+	_flush_boxes()
 	_light_pools()
 
 
@@ -514,8 +517,7 @@ func _terrain() -> void:
 ## along the bends.
 func _water() -> void:
 	var span := (REACH + 8.0) * 2.0
-	var sheet := _box(root, Vector3(span, 0.02, span), WATER, Vector3(0, -0.22, 0))
-	sheet.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_box(Vector3(span, 0.02, span), WATER, Vector3(0, -0.22, 0), Basis.IDENTITY, false)
 	var s := -REACH * 1.5
 	while s < REACH * 1.5:
 		s += _rng.randf_range(0.8, 2.2)
@@ -523,9 +525,7 @@ func _water() -> void:
 		if absf(at.x) > REACH + 6.0 or absf(at.y) > REACH + 6.0:
 			continue
 		var dir := _tangent(s)
-		var glint := _box(root, Vector3(0.05, 0.02, _rng.randf_range(0.3, 0.9)), WATER_GLINT, Vector3(at.x, -0.2, at.y), Basis.looking_at(Vector3(dir.x, 0, dir.y), Vector3.UP))
-		if glint:
-			glint.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		_box(Vector3(0.05, 0.02, _rng.randf_range(0.3, 0.9)), WATER_GLINT, Vector3(at.x, -0.2, at.y), Basis.looking_at(Vector3(dir.x, 0, dir.y), Vector3.UP), false)
 
 
 # --- The districts ------------------------------------------------------------------
@@ -580,8 +580,8 @@ func _streets(d: District) -> void:
 func _pavement(d: District, b: Vector2i, colour: Color) -> void:
 	var c := d.centre(b)
 	var s := block_size()
-	_box(root, Vector3(s + 0.02, 0.08, s + 0.02), PAVEMENT_EDGE, c + Vector3(0, 0.03, 0), d.basis())
-	_box(root, Vector3(s - 0.1, 0.08, s - 0.1), colour, c + Vector3(0, 0.05, 0), d.basis())
+	_box(Vector3(s + 0.02, 0.08, s + 0.02), PAVEMENT_EDGE, c + Vector3(0, 0.03, 0), d.basis())
+	_box(Vector3(s - 0.1, 0.08, s - 0.1), colour, c + Vector3(0, 0.05, 0), d.basis())
 
 
 ## What goes on block b: at the back of the high town, the tall buildings,
@@ -649,7 +649,7 @@ func _houses(d: District, b: Vector2i) -> void:
 	_pavement(d, b, PAVEMENT)
 	var c := d.centre(b)
 	var s := block_size()
-	_box(root, Vector3(s - 0.5, 0.06, s - 0.5), GARDEN, c + Vector3(0, 0.1, 0), d.basis())
+	_box(Vector3(s - 0.5, 0.06, s - 0.5), GARDEN, c + Vector3(0, 0.1, 0), d.basis())
 	var letters := "abcdefghijklmnopqrstu"
 	for qx in [-1, 1]:
 		for qz in [-1, 1]:
@@ -669,9 +669,9 @@ func _park(d: District, b: Vector2i) -> void:
 	_pavement(d, b, PAVEMENT)
 	var c := d.centre(b)
 	var s := block_size()
-	_box(root, Vector3(s - 0.4, 0.06, s - 0.4), PARK, c + Vector3(0, 0.1, 0), d.basis())
-	_box(root, Vector3(s - 0.4, 0.07, 0.35), PATH, c + Vector3(0, 0.105, 0), d.basis())
-	_box(root, Vector3(0.35, 0.07, s - 0.4), PATH, c + Vector3(0, 0.105, 0), d.basis())
+	_box(Vector3(s - 0.4, 0.06, s - 0.4), PARK, c + Vector3(0, 0.1, 0), d.basis())
+	_box(Vector3(s - 0.4, 0.07, 0.35), PATH, c + Vector3(0, 0.105, 0), d.basis())
+	_box(Vector3(0.35, 0.07, s - 0.4), PATH, c + Vector3(0, 0.105, 0), d.basis())
 	for k in 14:
 		var off := Vector3(_rng.randf_range(-s * 0.42, s * 0.42), 0.13, _rng.randf_range(-s * 0.42, s * 0.42))
 		if absf(off.x) < 0.4 or absf(off.z) < 0.4:
@@ -712,17 +712,17 @@ func _bridges() -> void:
 		bridges.append([low, high])
 		var deck := low + Vector3(0, 0.12, 0)
 		var top := high + Vector3(0, 0.12, 0)
-		_beam(root, deck, top, TILE * 1.05, 0.14, STONE)
-		_beam(root, deck + Vector3(0, 0.02, 0), top + Vector3(0, 0.02, 0), TILE * 0.8, 0.14, ROAD)
+		_beam(deck, top, TILE * 1.05, 0.14, STONE)
+		_beam(deck + Vector3(0, 0.02, 0), top + Vector3(0, 0.02, 0), TILE * 0.8, 0.14, ROAD)
 		var side := Vector3(-dir.y, 0, dir.x) * TILE * 0.5
 		for sgn in [-1, 1]:
-			_beam(root, deck + side * sgn + Vector3(0, 0.2, 0), top + side * sgn + Vector3(0, 0.2, 0), 0.07, 0.1, RAIL)
+			_beam(deck + side * sgn + Vector3(0, 0.2, 0), top + side * sgn + Vector3(0, 0.2, 0), 0.07, 0.1, RAIL)
 			for e in [deck, top]:
 				_lamp(e + side * sgn * 1.15 - Vector3(0, 0.1, 0), atan2(dir.x, dir.y))
 		# Piers in the water.
 		for k in [0.3, 0.55]:
 			var at := deck.lerp(top, k)
-			_box(root, Vector3(TILE * 0.9, at.y + 0.3, 0.35), STONE.darkened(0.25), Vector3(at.x, (at.y - 0.3) * 0.5 - 0.15, at.z), Basis.looking_at(Vector3(dir.x, 0, dir.y), Vector3.UP))
+			_box(Vector3(TILE * 0.9, at.y + 0.3, 0.35), STONE.darkened(0.25), Vector3(at.x, (at.y - 0.3) * 0.5 - 0.15, at.z), Basis.looking_at(Vector3(dir.x, 0, dir.y), Vector3.UP))
 		var low_id := Vector3i(-1, bridges.size(), 0)
 		var high_id := Vector3i(-1, bridges.size(), 1)
 		_node(low_id, deck)
@@ -775,8 +775,8 @@ func _road(a: Vector3i, b: Vector3i) -> void:
 	var to: Vector3 = _nodes[b]
 	_roads.append([Vector2(from.x, from.z), Vector2(to.x, to.z)])
 	var lift := Vector3(0, 0.01, 0)
-	_beam(root, from + lift, to + lift, TILE * 1.0, 0.05, PAVEMENT_EDGE)
-	_beam(root, from + lift + Vector3(0, 0.01, 0), to + lift + Vector3(0, 0.01, 0), TILE * 0.8, 0.05, ROAD)
+	_beam(from + lift, to + lift, TILE * 1.0, 0.05, PAVEMENT_EDGE)
+	_beam(from + lift + Vector3(0, 0.01, 0), to + lift + Vector3(0, 0.01, 0), TILE * 0.8, 0.05, ROAD)
 	var length := from.distance_to(to)
 	var dir := (to - from).normalized()
 	var side := Vector3(-dir.z, 0, dir.x) * TILE * 0.62
@@ -941,15 +941,13 @@ func _loose_houses() -> void:
 			var at := Vector3(p.x, h, p.y)
 			var chalet := _rng.randf() < 0.45
 			var lot := 2.9 if chalet else 2.3
-			_box(root, Vector3(lot, 0.05, lot), GARDEN, at + Vector3(0, 0.02, 0), basis)
+			_box(Vector3(lot, 0.05, lot), GARDEN, at + Vector3(0, 0.02, 0), basis)
 			var path := "suburbios/building-type-%s.glb" % letters[_rng.randi() % letters.length()]
 			_add(path, at + basis * Vector3(0, 0.05, -0.2), turn, _fit(path, lot * (0.62 if chalet else 0.72)), _own(1.0))
 			_pool(at + basis * Vector3(0, 0, 0.9), 1.4, GLOW_HOUSE)
 			if chalet and _rng.randf() < POOL_SHARE / 0.45:
 				var water := basis * Vector3(0.75, 0.06, 0.95) + at
-				var pool := _box(root, Vector3(0.8, 0.04, 0.5), POOL_WATER, water, basis)
-				if pool:
-					pool.material_override = _glow(POOL_WATER, 1.4)
+				_box(Vector3(0.8, 0.04, 0.5), POOL_WATER, water, basis, true, _glow(POOL_WATER, 1.4))
 				_pool(water, 1.5, GLOW_POOL)
 			if _rng.randf() < 0.7:
 				_tree(at + basis * Vector3(-lot * 0.4, 0, lot * 0.35))
@@ -974,7 +972,7 @@ func _walk() -> void:
 			continue
 		var here := Vector3(mid.x, 0.03, mid.y)
 		if prev != Vector3.INF:
-			_beam(root, prev, here, WALK_WIDTH, 0.04, PATH)
+			_beam(prev, here, WALK_WIDTH, 0.04, PATH)
 		prev = here
 		next_lamp -= step
 		if next_lamp <= 0.0:
@@ -983,7 +981,7 @@ func _walk() -> void:
 			_lamp(here + side, atan2(dir.x, dir.y))
 			# A bench facing the water, between two lamps.
 			var bench := here + side - Vector3(_tangent(s).x, 0, _tangent(s).y) * WALK_LAMP * 0.5
-			_box(root, Vector3(0.5, 0.12, 0.16), Color("#6b4a3a"), bench + Vector3(0, 0.08, 0), Basis(Vector3.UP, atan2(dir.x, dir.y)))
+			_box(Vector3(0.5, 0.12, 0.16), Color("#6b4a3a"), bench + Vector3(0, 0.08, 0), Basis(Vector3.UP, atan2(dir.x, dir.y)))
 
 
 ## The sports ground on the near bank: a football pitch, a basketball court
@@ -1009,12 +1007,12 @@ func _sports() -> void:
 		var c2: Vector2 = base + dir * off.x + across_dir * off.y
 		var c := Vector3(c2.x, 0.0, c2.y)
 		# The ground and its lines: the edge, the halfway line, a circle.
-		_box(root, Vector3(size.y + 0.4, 0.05, size.x + 0.4), PATH.darkened(0.3), c + Vector3(0, 0.02, 0), basis)
-		_box(root, Vector3(size.y, 0.06, size.x), f[2], c + Vector3(0, 0.03, 0), basis)
+		_box(Vector3(size.y + 0.4, 0.05, size.x + 0.4), PATH.darkened(0.3), c + Vector3(0, 0.02, 0), basis)
+		_box(Vector3(size.y, 0.06, size.x), f[2], c + Vector3(0, 0.03, 0), basis)
 		for sgn in [-1, 1]:
-			_box(root, Vector3(0.05, 0.07, size.x), LINE, c + basis * Vector3(sgn * size.y * 0.5, 0.035, 0), basis)
-			_box(root, Vector3(size.y, 0.07, 0.05), LINE, c + basis * Vector3(0, 0.035, sgn * size.x * 0.5), basis)
-		_box(root, Vector3(size.y, 0.07, 0.05), LINE, c + Vector3(0, 0.035, 0), basis)
+			_box(Vector3(0.05, 0.07, size.x), LINE, c + basis * Vector3(sgn * size.y * 0.5, 0.035, 0), basis)
+			_box(Vector3(size.y, 0.07, 0.05), LINE, c + basis * Vector3(0, 0.035, sgn * size.x * 0.5), basis)
+		_box(Vector3(size.y, 0.07, 0.05), LINE, c + Vector3(0, 0.035, 0), basis)
 		if f[3] == "pitch":
 			var ring := MeshInstance3D.new()
 			var torus := TorusMesh.new()
@@ -1026,20 +1024,18 @@ func _sports() -> void:
 			ring.position = c + Vector3(0, 0.07, 0)
 			root.add_child(ring)
 			for sgn in [-1, 1]:
-				_box(root, Vector3(0.9, 0.35, 0.06), LINE, c + basis * Vector3(0, 0.2, sgn * size.x * 0.5), basis)
+				_box(Vector3(0.9, 0.35, 0.06), LINE, c + basis * Vector3(0, 0.2, sgn * size.x * 0.5), basis)
 		else:
 			# A low fence round the court.
 			for sgn in [-1, 1]:
-				_box(root, Vector3(0.03, 0.4, size.x + 0.4), RAIL, c + basis * Vector3(sgn * (size.y * 0.5 + 0.2), 0.2, 0), basis)
-				_box(root, Vector3(size.y + 0.4, 0.4, 0.03), RAIL, c + basis * Vector3(0, 0.2, sgn * (size.x * 0.5 + 0.2)), basis)
+				_box(Vector3(0.03, 0.4, size.x + 0.4), RAIL, c + basis * Vector3(sgn * (size.y * 0.5 + 0.2), 0.2, 0), basis)
+				_box(Vector3(size.y + 0.4, 0.4, 0.03), RAIL, c + basis * Vector3(0, 0.2, sgn * (size.x * 0.5 + 0.2)), basis)
 		# Floodlights at the corners, and their light.
 		for sx in [-1, 1]:
 			for sz in [-1, 1]:
 				var post := c + basis * Vector3(sx * (size.y * 0.5 + 0.35), 0, sz * (size.x * 0.5 + 0.35))
-				_box(root, Vector3(0.06, 1.6, 0.06), RAIL, post + Vector3(0, 0.8, 0))
-				var head := _box(root, Vector3(0.22, 0.1, 0.1), LINE, post + Vector3(0, 1.62, 0), basis)
-				if head:
-					head.material_override = _glow(Color(0.9, 0.95, 1.0), 2.5)
+				_box(Vector3(0.06, 1.6, 0.06), RAIL, post + Vector3(0, 0.8, 0))
+				_box(Vector3(0.22, 0.1, 0.1), LINE, post + Vector3(0, 1.62, 0), basis, true, _glow(Color(0.9, 0.95, 1.0), 2.5))
 		_pool(c, maxf(size.x, size.y) * 0.75, GLOW_FLOOD)
 		var span := maxf(size.x, size.y) * 0.6 + 0.6
 		_take(c2, span)
@@ -1124,12 +1120,16 @@ func _shown(at: Vector3, r: float, kind: String) -> bool:
 	return ok
 
 
+## A glowing material, one for each colour and energy (so its boxes batch).
 func _glow(colour: Color, energy: float) -> StandardMaterial3D:
-	var m := MenuStage._material(colour).duplicate() as StandardMaterial3D
-	m.emission_enabled = true
-	m.emission = colour
-	m.emission_energy_multiplier = energy
-	return m
+	var key := [colour, energy]
+	if not _materials.has(key):
+		var m := MenuStage._material(colour).duplicate() as StandardMaterial3D
+		m.emission_enabled = true
+		m.emission = colour
+		m.emission_energy_multiplier = energy
+		_materials[key] = m
+	return _materials[key]
 
 
 # --- The way between two places ----------------------------------------------------
@@ -1287,23 +1287,42 @@ func _night(kit: String) -> ShaderMaterial:
 	return _materials[kit]
 
 
-func _box(parent: Node3D, s: Vector3, colour: Color, at: Vector3, turn := Basis.IDENTITY) -> MeshInstance3D:
-	# Never seen: not made at all (null).
+## A box of size s: one unit box scaled, kept with every other of its
+## material (and shadow) to be drawn as one MultiMesh (_flush_boxes).
+## Never seen: not made at all.
+func _box(s: Vector3, colour: Color, at: Vector3, turn := Basis.IDENTITY, shadow := true, material: Material = null) -> void:
 	if not _shown(at, s.length() * 0.5, "box"):
-		return null
-	var b := BoxMesh.new()
-	b.size = s
-	var mi := MeshInstance3D.new()
-	mi.mesh = b
-	mi.material_override = MenuStage._material(colour)
-	mi.transform = Transform3D(turn, at)
-	parent.add_child(mi)
-	return mi
+		return
+	var m: Material = material if material else MenuStage._material(colour)
+	var key := [m, shadow]
+	if not _boxes.has(key):
+		_boxes[key] = []
+	(_boxes[key] as Array).append(Transform3D(turn * Basis.from_scale(s), at))
 
 
 ## A box from a to b (their middles), w wide and h thick, tilted with the
 ## slope between them.
-func _beam(parent: Node3D, a: Vector3, b: Vector3, w: float, h: float, colour: Color) -> MeshInstance3D:
+func _beam(a: Vector3, b: Vector3, w: float, h: float, colour: Color) -> void:
 	var along := b - a
 	var basis := Basis.looking_at(along.normalized(), Vector3.UP)
-	return _box(parent, Vector3(w, h, along.length()), colour, (a + b) * 0.5, basis)
+	_box(Vector3(w, h, along.length()), colour, (a + b) * 0.5, basis)
+
+
+## Every box as one MultiMesh per material (and shadow).
+func _flush_boxes() -> void:
+	var unit := BoxMesh.new()
+	for key in _boxes:
+		var at: Array = _boxes[key]
+		var mm := MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.mesh = unit
+		mm.instance_count = at.size()
+		for i in at.size():
+			mm.set_instance_transform(i, at[i])
+		var mmi := MultiMeshInstance3D.new()
+		mmi.multimesh = mm
+		mmi.material_override = key[0]
+		if not key[1]:
+			mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(mmi)
+	_boxes.clear()
