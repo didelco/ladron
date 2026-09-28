@@ -1092,17 +1092,20 @@ func _lift(c: Control, grow := 1.07, rest := 1.0) -> void:
 	c.mouse_entered.connect(func() -> void:
 		if c is BaseButton and not (c as BaseButton).disabled:
 			c.grab_focus())
-	# A springy pop, overshooting a little, like a jelly button.
+	# A springy pop, overshooting a little; always the same both ways, so
+	# nothing ever looks squashed.
 	c.focus_entered.connect(func() -> void:
-		c.scale = Vector2(0.96, 1.04)
+		c.scale = Vector2.ONE * rest * 0.97
 		create_tween().tween_property(c, "scale", Vector2.ONE * grow, 0.35).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT))
 	c.focus_exited.connect(func() -> void:
 		# Held up for the bubble it opened (pop_bubble): it stays as it is.
 		if not c.get_meta("held", false):
 			create_tween().tween_property(c, "scale", Vector2.ONE * rest, 0.15).set_trans(Tween.TRANS_QUAD))
 	if c is BaseButton:
-		# A squash on the press.
-		(c as BaseButton).button_down.connect(func() -> void: c.scale = Vector2(1.1, 0.92))
+		# On the press, a little dip and back up to its size.
+		(c as BaseButton).button_down.connect(func() -> void:
+			c.scale = Vector2.ONE * grow * 0.95
+			create_tween().tween_property(c, "scale", Vector2.ONE * grow, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT))
 
 
 const DIM_CARD := Color(0.7, 0.7, 0.8)
