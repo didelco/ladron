@@ -69,6 +69,10 @@ const P_ROOMS := [
 	{"side": 1, "across": -1.98, "floor": 2},
 ]
 const P_COLUMNS_X := [-0.95, -0.47, 0.47, 0.95]
+## A window lit that is not a room: a dim, dull light behind its bars, so
+## the rooms' (warm and bright, nothing in them) stand out.
+const P_DIM := Color("#b08a64")
+const P_DIM_ENERGY := 0.2
 const P_PORCH := 0.62
 const P_SQUARE := 2.8
 const SANDSTONE := Color("#e6d2a8")
@@ -320,7 +324,7 @@ func _hall(rooms: Array) -> void:
 
 
 ## Each room's window on the front: four in the wings, the big job's tall
-## one in the middle. In each, a lit back wall and its piece (or a dark
+## one in the middle. In each, a lit back wall and nothing in it (or a dark
 ## one and a padlock), under glass.
 func _windows(rooms: Array) -> void:
 	var slots: Array = []
@@ -361,15 +365,12 @@ func _windows(rooms: Array) -> void:
 			ag.material_override = back.material_override
 		# The sill.
 		_box_in(node, Vector3(size.x + 0.2, 0.06, 0.14), STONE if open else STONE.darkened(SHUT), Vector3(0, -size.y * 0.5 - 0.04, 0.06))
+		# Nothing in it: the piece's place, kept empty.
 		var piece := Node3D.new()
 		piece.position = Vector3(0, -size.y * 0.18, 0.16)
 		node.add_child(piece)
 		var lock: Node3D = null
-		if r.has("shape") and lit:
-			var model := LootModels.build(r.shape, Color(r.colour))
-			model.scale = Vector3.ONE * (0.66 if r.boss else 0.5)
-			piece.add_child(model)
-		elif r.has("shape"):
+		if r.has("shape") and not lit:
 			lock = CityStage.padlock()
 			lock.scale = Vector3.ONE * 0.3
 			lock.position = Vector3(0, 0.05, 0.12)
@@ -471,11 +472,11 @@ func _prehistory(rooms: Array) -> void:
 	for f in P_FLOORS:
 		for x in P_WINGS_X:
 			if not taken.has(_slot_key(0, x, f)):
-				_plain(_slot_at(0, x, f), P_WINDOW, open and rng.randf() < 0.35, true, _slot_turn(0))
+				_p_window(_slot_at(0, x, f), P_WINDOW, open and rng.randf() < 0.35, _slot_turn(0))
 		for side in [-1, 1]:
 			for z in P_SIDE_Z:
 				if not taken.has(_slot_key(side, z, f)):
-					_plain(_slot_at(side, z, f), P_SIDE_WINDOW, open and rng.randf() < 0.35, true, _slot_turn(side))
+					_p_window(_slot_at(side, z, f), P_SIDE_WINDOW, open and rng.randf() < 0.35, _slot_turn(side))
 	# The lamps on the square, each side of the steps.
 	for sx in [-1, 1]:
 		var post := CylinderMesh.new()
@@ -505,9 +506,10 @@ func _prehistory(rooms: Array) -> void:
 		else:
 			_long_neck(dino)
 	# The rooms: some of the wings' windows and the side's (P_ROOMS), the big
-	# job's over the door. Only one reached shows as a room: lit, its piece in
-	# it (and the crown on the pediment for the big job's); the rest are
-	# windows like any other, bars and all, and nothing to pick.
+	# job's over the door. Only one reached shows as a room: its window lit up
+	# warm and bright, no bars across it and nothing in it (and the crown on
+	# the pediment for the big job's); the rest are windows like any other,
+	# bars and all, dim if lit, and nothing to pick.
 	var boss_at := Vector3(0.0, P_BASE + P_FLOOR * 1.5, 0.1)
 	var normal := 0
 	var count := rooms.size() if not rooms.is_empty() else Story.ROOMS
@@ -523,21 +525,18 @@ func _prehistory(rooms: Array) -> void:
 			turn = _slot_turn(s.side)
 			size = P_WINDOW if s.side == 0 else P_SIDE_WINDOW
 		var shown: bool = open and r.has("shape") and bool(r.get("open", false))
-		var w := _plain(at, size, shown or (open and rng.randf() < 0.35), not shown, turn)
+		var w := _plain(at, size, true, false, turn) if shown else _p_window(at, size, open and rng.randf() < 0.35, turn)
 		var node: Node3D = w.node
+		# Nothing in it: the piece's place, kept empty.
 		var piece := Node3D.new()
 		piece.position = Vector3(0, -size.y * 0.18, 0.1)
 		node.add_child(piece)
-		if shown:
-			var model := LootModels.build(r.shape, Color(r.colour))
-			model.scale = Vector3.ONE * (0.4 if r.boss else 0.3)
-			piece.add_child(model)
-			if r.boss:
-				# The big job's crown, on the pediment's top.
-				var crown := Node3D.new()
-				crown.position = Vector3(0, porch_top + 0.78 - at.y, 0.35 - at.z)
-				node.add_child(crown)
-				CityStage.crown(crown, Vector3.ZERO, MenuStage.GOLD, 1.3)
+		if shown and r.boss:
+			# The big job's crown, on the pediment's top.
+			var crown := Node3D.new()
+			crown.position = Vector3(0, porch_top + 0.78 - at.y, 0.35 - at.z)
+			node.add_child(crown)
+			CityStage.crown(crown, Vector3.ZERO, MenuStage.GOLD, 1.3)
 		windows.append({"node": node, "back": w.glass, "glass": w.glass, "piece": piece, "lock": null, "boss": r.boss, "open": shown,
 			"size": size, "frame": w.frame, "stone": w.stone, "arch": false, "face": node.basis})
 
@@ -559,6 +558,15 @@ func _slot_turn(side: int) -> float:
 
 func _slot_key(side: int, across: float, f: int) -> String:
 	return "%d:%.2f:%d" % [side, across, f]
+
+
+## A window of the prehistory museum that is not a room: bars and all, and
+## if lit, only dimly (P_DIM). As _plain.
+func _p_window(at: Vector3, size: Vector2, lit: bool, turn: float) -> Dictionary:
+	var w := _plain(at, size, lit, true, turn)
+	if lit:
+		(w.glass as MeshInstance3D).material_override = _lit_material(P_DIM, P_DIM_ENERGY)
+	return w
 
 
 ## A plain window, its middle at `at` on a wall, turned `turn` round y from
@@ -1638,9 +1646,9 @@ func _middle_ages(rooms: Array) -> void:
 		for z: float in M_SIDE_Z:
 			_m_grille(Vector3(side * half, M_BASE + 0.45, z), side * PI * 0.5, open and rng.randf() < 0.3)
 	# The rooms: some of the windows (M_ROOMS), the big job's the balcony's.
-	# Only one reached shows as a room: clear glass lit, its piece in it (and
-	# the crown on the crest for the big job's); the rest are stained glass
-	# like any other window, and nothing to pick.
+	# Only one reached shows as a room: clear glass lit up warm, nothing in it
+	# (and the crown on the crest for the big job's); the rest are stained
+	# glass like any other window, and nothing to pick.
 	var boss_at := _m_slot(0, 0.0, 1, M_BIG)
 	var normal := 0
 	var count := rooms.size() if not rooms.is_empty() else Story.ROOMS
@@ -1658,18 +1666,15 @@ func _middle_ages(rooms: Array) -> void:
 		var shown: bool = open and r.has("shape") and bool(r.get("open", false))
 		var w := _m_bifora(at, size, turn, "room" if shown else _m_look(rng))
 		var node: Node3D = w.node
+		# Nothing in it: the piece's place, kept empty.
 		var piece := Node3D.new()
 		piece.position = Vector3(0, -size.y * 0.18, 0.14)
 		node.add_child(piece)
-		if shown:
-			var model := LootModels.build(r.shape, Color(r.colour))
-			model.scale = Vector3.ONE * (0.55 if r.boss else 0.45)
-			piece.add_child(model)
-			if r.boss:
-				var crown := Node3D.new()
-				crown.position = Vector3(0, crest_y + 0.2 - at.y, 0.05)
-				node.add_child(crown)
-				CityStage.crown(crown, Vector3.ZERO, MenuStage.GOLD, 1.1)
+		if shown and r.boss:
+			var crown := Node3D.new()
+			crown.position = Vector3(0, crest_y + 0.2 - at.y, 0.05)
+			node.add_child(crown)
+			CityStage.crown(crown, Vector3.ZERO, MenuStage.GOLD, 1.1)
 		windows.append({"node": node, "back": w.back, "glass": w.glass, "piece": piece, "lock": null, "boss": r.boss, "open": shown,
 			"size": size, "frame": w.frame, "stone": w.stone, "arch": true, "face": node.basis})
 	_m_flush()

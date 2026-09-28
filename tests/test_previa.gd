@@ -82,6 +82,8 @@ func _init() -> void:
 	check(shown == [0] and cave.windows.filter(func(w: Dictionary) -> bool: return w.open).size() == 1, "al llegar a un museo, solo la ventana de la sala 1 es una sala")
 	check(cave.windows.all(func(w: Dictionary) -> bool: return w.lock == null), "... las demás, ventanas normales: sin candado")
 	check((cave.windows[1].piece as Node3D).get_child_count() == 0 and not cave.windows[4].open, "... sin pieza, y el gran golpe tampoco se ve aún")
+	check((cave.windows[0].piece as Node3D).get_child_count() == 0 and ((cave.windows[0].glass as MeshInstance3D).material_override as StandardMaterial3D).emission_enabled,
+		"la sala 1, sin pieza: solo su ventana, iluminada")
 	await frames()
 	check(t._room_stars[0].visible and not t._room_stars[1].visible and not t._room_stars[4].visible, "... ni estrellas ni número bajo las que no son salas")
 	t._pick_room(2)
@@ -440,8 +442,9 @@ func _init() -> void:
 	var boss_w: Dictionary = castle.windows[4]
 	check(boss_w.boss and (boss_w.node as Node3D).position.x == 0.0 and (boss_w.size as Vector2).x > (castle.windows[0].size as Vector2).x,
 		"... el gran golpe, la ventana grande del centro")
-	check((boss_w.piece as Node3D).get_child_count() == 1 and (boss_w.node as Node3D).get_child_count() > (castle.windows[0].node as Node3D).get_child_count(),
-		"... con su pieza, y la corona")
+	check((boss_w.node as Node3D).get_child_count() > (castle.windows[0].node as Node3D).get_child_count(), "... con la corona")
+	var bare := func(w: Dictionary) -> bool: return (w.piece as Node3D).get_child_count() == 0 and ((w.back as MeshInstance3D).material_override as StandardMaterial3D).emission_enabled
+	check(castle.windows.all(bare), "... y en ninguna ventana su pieza: solo la bífora iluminada")
 	var tower_room := -1
 	for i in 4:
 		if (castle.windows[i].node as Node3D).position.x > 2.0:
