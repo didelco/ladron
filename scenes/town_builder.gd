@@ -3,8 +3,10 @@ extends RefCounted
 ## The town round the museums (CityStage), far bigger than the screen, the
 ## camera gliding over it from one museum to the next. Not one grid: a
 ## river crosses it on the slant, winding in wide bends (river_at), and
-## splits it into districts (District), each its own grid of streets turned
-## its own way, two on either bank; between them and along the water, woods
+## splits it into districts, two on either bank, each cut into patches
+## (District), each its own grid of streets: the museum's patch square to
+## its district, the next turned a little, the one past that square again,
+## meeting on roads at an angle with small squares between; between them and along the water, woods
 ## and grass, and houses and chalets of their own, each its own way (loose
 ## houses). The far bank stands higher (RISE), up a wooded slope from the
 ## water, and rolls on up in low hills, its blocks on terraces; to the north
@@ -72,10 +74,42 @@ const TERRACE_WALL := Color("#4a4260")
 ## line between two districts of one bank.
 const BANK_CLEAR := 1.0
 const SPLIT_CLEAR := 2.6
+## No district is one grid: each is cut into patches, each its own grid of
+## streets. The cuts (PATCH_CUTS, for each district) run along streets of
+## its own grid, the one round its museum's block (block (0, 0)): [0, n,
+## side] the street between its blocks n - 1 and n across x, [1, n, side]
+## across z; side, which way of it (+1 past n, -1 before) is cut off. The
+## patch its museum is on keeps the district's own grid; one past a cut
+## turns TWIST degrees (give or take TWIST_SPREAD), about the corner where
+## the cuts cross, each cut its own way; past both, it squares up to the
+## district's own again. PATCH_CLEAR past a cut is left clear: the streets
+## of the next patch meet the museum's across it on roads at an angle (up
+## to JOIN_ROADS between two patches, from crossings no further apart than
+## JOIN_REACH), and the wedges of land left between the grids are gardens.
+const PATCH_CUTS := [
+	[[0, 1, 1], [1, 4, 1]],
+	[[0, 3, 1], [1, 2, 1]],
+	[[0, -5, -1], [1, 3, 1]],
+	[[1, -3, -1]],
+]
+const TWIST := 13.0
+const TWIST_SPREAD := 4.0
+const PATCH_CLEAR := 1.6
+const JOIN_ROADS := 4
+const JOIN_REACH := 11.0
+## The small squares between patches: how far across, and how far apart.
+const PLAZA := 2.4
+const PLAZA_GAP := 12.0
 ## The bridges, where they cross (s along the river).
 const BRIDGES := [-6.0, 17.5]
 ## Trees in the woods: one every WOOD_STEP or so, where there is room.
 const WOOD_STEP := 1.25
+## The rocks: how many rough shapes (a MultiMesh each), about one heap for
+## every ROCK_HEAP rocks of an outcrop, and how close two may stand (their
+## reaches added, times this: under 1 they lean into each other).
+const ROCK_KINDS := 8
+const ROCK_HEAP := 12
+const ROCK_SPACING := 0.38
 ## The rocky outcrops: where (s along, q up from the river), how wide, how
 ## high the ground rises under them, how many rocks on them and how big the
 ## biggest, and one in how many a crag standing up. The great hill of rocks
@@ -229,9 +263,13 @@ void fragment() {
 """
 
 
-## One district: a grid of streets turned `angle` about its `origin`, on one
-## bank (`high`: the far one, RISE up).
+## One patch of a district (PATCH_CUTS): a grid of streets turned `angle`
+## about its `origin`, on one bank (`high`: the far one, RISE up).
 class District:
+	## which of the four it is part of (two a bank), and which patch of it
+	## (PATCH_CUTS: a bit for each cut it is past)
+	var group := 0
+	var patch := 0
 	var angle := 0.0
 	var origin := Vector2.ZERO
 	var high := false
@@ -278,7 +316,11 @@ var up := Vector2(0, -1)
 ## where the districts of each bank meet (s along the river)
 var split_low := 0.0
 var split_high := 6.0
+## the districts' patches, each its own grid (every patch of every
+## district, in order)
 var districts: Array[District] = []
+## which of them is patch k of district g: Vector2i(g, k) -> its index
+var _patches := {}
 ## the blocks taken by something else (the museums, the hideout), built as
 ## bare pavement: Vector3i(district, x, y) -> true
 var skip := {}
@@ -510,6 +552,13 @@ func _across_dir(s: float) -> Vector2:
 ## The district a point belongs to, or -1: on a bank clear of the water and
 ## the slope, and clear of the line between the two districts of its bank.
 func district_of(p: Vector2) -> int:
+	var g := _land_of(p)
+	return -1 if g < 0 else _patch_at(g, p, PATCH_CLEAR)
+
+
+## Which of the four districts' land a point is on (0, 1 on the near bank,
+## 2, 3 on the high one), whatever its patch; -1 off them all.
+func _land_of(p: Vector2) -> int:
 	if absf(p.x) > REACH or absf(p.y) > REACH:
 		return -1
 	if _rocky(p) > 0.0 or _in_sports(p):
@@ -517,13 +566,37 @@ func district_of(p: Vector2) -> int:
 	var d := across(p)
 	var s := frame(p).x
 	var half := RIVER_WIDTH * 0.5
+	var g := 0
 	if d < 0.0:
 		if d > -(half + BANK_CLEAR) or absf(s - split_low) < SPLIT_CLEAR:
 			return -1
-		return 0 if s < split_low else 1
-	if d < half + SLOPE + 0.3 or absf(s - split_high) < SPLIT_CLEAR:
+		g = 0 if s < split_low else 1
+	else:
+		if d < half + SLOPE + 0.3 or absf(s - split_high) < SPLIT_CLEAR:
+			return -1
+		g = 2 if s < split_high else 3
+	return g
+
+
+## The patch of district g a point is on (its index in districts): by which
+## side of each of the district's cuts it is; -1 if not yet planned, or
+## past a cut by less than `clear`.
+func _patch_at(g: int, p: Vector2, clear := 0.0) -> int:
+	var home: int = _patches.get(Vector2i(g, 0), -1)
+	if home < 0:
 		return -1
-	return 2 if s < split_high else 3
+	var l := districts[home].local(p) / (PITCH * TILE)
+	var k := 0
+	var cuts: Array = PATCH_CUTS[g]
+	for j in cuts.size():
+		var cut: Array = cuts[j]
+		var past := ((l.x if cut[0] == 0 else l.z) - float(cut[1])) * float(cut[2]) * PITCH * TILE
+		# (A hair over the line is on it: a block of its own up to it.)
+		if past > 0.01:
+			if past < clear:
+				return -1
+			k |= 1 << j
+	return _patches.get(Vector2i(g, k), -1)
 
 
 # --- Laying it out ------------------------------------------------------------------
@@ -532,26 +605,93 @@ func district_of(p: Vector2) -> int:
 ## whole square (streets and all) falls in its district. Angles: each its own.
 func plan(angles: Array, origins: Array[Vector2]) -> void:
 	districts.clear()
-	for i in 4:
-		var d := District.new()
-		d.angle = deg_to_rad(float(angles[i]))
-		d.origin = origins[i]
-		d.high = i >= 2
-		districts.append(d)
-		var r := int(REACH * 2.0 / (PITCH * TILE)) + 2
-		for bx in range(-r, r):
-			for bz in range(-r, r):
-				var b := Vector2i(bx, bz)
-				var inside := true
-				for c in [Vector2(0, 0), Vector2(1, 0), Vector2(0, 1), Vector2(1, 1), Vector2(0.5, 0.5)]:
-					var w := d.world(Vector3((b.x + c.x) * PITCH * TILE, 0, (b.y + c.y) * PITCH * TILE))
-					if district_of(Vector2(w.x, w.z)) != i:
-						inside = false
-						break
-				if inside:
-					d.blocks[b] = ""
+	_patches.clear()
+	for g in 4:
+		var cuts: Array = PATCH_CUTS[g]
+		var home: District = null
+		for k in 1 << cuts.size():
+			var d := District.new()
+			d.group = g
+			d.patch = k
+			d.high = g >= 2
+			d.angle = deg_to_rad(float(angles[g]) + _twist(g, k))
+			d.origin = origins[g]
+			if k == 0:
+				home = d
+			else:
+				# From the corner where the cuts cross, PATCH_CLEAR past each
+				# cut it is past.
+				var at := Vector3.ZERO
+				for j in cuts.size():
+					var cut: Array = cuts[j]
+					var axis := Vector3.RIGHT if cut[0] == 0 else Vector3.BACK
+					at += axis * float(cut[1]) * PITCH * TILE
+					if k & (1 << j):
+						at += axis * float(cut[2]) * PATCH_CLEAR
+				var w := home.world(at)
+				d.origin = Vector2(w.x, w.z)
+			_patches[Vector2i(g, k)] = districts.size()
+			districts.append(d)
+	var r := int(REACH * 2.0 / (PITCH * TILE)) + 2
+	for i in districts.size():
+		var d := districts[i]
+		d.blocks = _fill(i, d, Vector2i(-r, -r), Vector2i(r, r))
+		# A patch off its museum's: its grid slid two tiles at a time, each way,
+		# to where the most blocks fit (its streets meet the next patch's at
+		# an angle anyway).
+		if d.patch != 0 and not d.blocks.is_empty():
+			var lo := Vector2i(r, r)
+			var hi := Vector2i(-r, -r)
+			for b in d.blocks:
+				lo = lo.min(b)
+				hi = hi.max(b)
+			var base := d.origin
+			var best := [d.blocks, base]
+			for sx in range(0, PITCH, 2):
+				for sz in range(0, PITCH, 2):
+					if sx == 0 and sz == 0:
+						continue
+					var slide := d.basis() * Vector3(sx, 0, sz) * TILE
+					d.origin = base + Vector2(slide.x, slide.z)
+					var got := _fill(i, d, lo - Vector2i(2, 2), hi + Vector2i(2, 2))
+					if got.size() > (best[0] as Dictionary).size():
+						best = [got, d.origin]
+			d.blocks = best[0]
+			d.origin = best[1]
 		for b in d.blocks:
 			_ring_of(d, b)
+
+
+## The blocks of district i (d) from block lo to hi whose whole square
+## (streets and all) falls in it.
+func _fill(i: int, d: District, lo: Vector2i, hi: Vector2i) -> Dictionary:
+	var blocks := {}
+	for bx in range(lo.x, hi.x):
+		for bz in range(lo.y, hi.y):
+			var b := Vector2i(bx, bz)
+			var inside := true
+			for c in [Vector2(0.5, 0.5), Vector2(0, 0), Vector2(1, 0), Vector2(0, 1), Vector2(1, 1), Vector2(0.5, 0), Vector2(0, 0.5), Vector2(1, 0.5), Vector2(0.5, 1)]:
+				var w := d.world(Vector3((b.x + c.x) * PITCH * TILE, 0, (b.y + c.y) * PITCH * TILE))
+				if district_of(Vector2(w.x, w.z)) != i:
+					inside = false
+					break
+			if inside:
+				blocks[b] = ""
+	return blocks
+
+
+## How far (degrees) patch k of district g turns from the district's own
+## grid (k: a bit for each cut it is past): past one cut, TWIST one way or
+## the other; past two, square again.
+func _twist(g: int, k: int) -> float:
+	var n := 0
+	for j in 8:
+		n += (k >> j) & 1
+	if n % 2 == 0:
+		return 0.0
+	var sgn := 1.0 if (k + g) % 2 == 0 else -1.0
+	var spread := TWIST_SPREAD * (float(posmod(g * 7 + k * 3, 5)) / 2.0 - 1.0)
+	return sgn * (TWIST + spread)
 
 
 ## The street tiles round block b.
@@ -562,13 +702,16 @@ func _ring_of(d: District, b: Vector2i) -> void:
 			d.tiles[tu] = true
 
 
-## The district a point is on, by its bank and its side of the line between
-## the two of that bank, however close to the water or that line.
+## The district patch a point is on, by its bank, its side of the line between
+## the two of that bank and of its cuts, however close to the water or a line.
 func bank_of(p: Vector2) -> int:
 	var s := frame(p).x
+	var g := 0
 	if across(p) < 0.0:
-		return 0 if s < split_low else 1
-	return 2 if s < split_high else 3
+		g = 0 if s < split_low else 1
+	else:
+		g = 2 if s < split_high else 3
+	return _patch_at(g, p)
 
 
 ## The block of district i under a point, built on from now on (and kept
@@ -599,6 +742,7 @@ func build() -> void:
 	_sports()
 	_rocks()
 	_places()
+	_plazas()
 	_loose_houses()
 	_hedgerows()
 	_woods()
@@ -1133,24 +1277,202 @@ func _bridges() -> void:
 		_road_to_nearest(high_id, top, true)
 
 
-## Each two districts of a bank joined by a road across the woods between
-## them: from the closest two of their crossings.
+## The patches of each bank joined where they meet: between facing
+## crossings of two patches, roads across the clear land at whatever angle
+## it takes (up to JOIN_ROADS, spread out, none over a block); the
+## museums' patches of each bank's two districts joined between their
+## nearest crossings (the way from one museum to the next); then, while a
+## bank is in pieces, the nearest two crossings of two pieces joined.
 func _join_districts() -> void:
+	var by := {}
+	for k in _nodes:
+		if k.x >= 0:
+			if not by.has(k.x):
+				by[k.x] = []
+			(by[k.x] as Array).append(k)
+	for a in by:
+		for b in by:
+			if a < b and districts[a].high == districts[b].high:
+				_join(by[a], by[b])
+	# The two museums' patches of each bank joined straight, as the way
+	# from one museum to the next.
 	for pair in [[0, 1], [2, 3]]:
 		var best := []
 		var best_d := INF
-		for a in _nodes:
-			if a.x != pair[0]:
-				continue
-			for b in _nodes:
-				if b.x != pair[1]:
-					continue
+		for a in by.get(_patches.get(Vector2i(pair[0], 0), -1), []):
+			for b in by.get(_patches.get(Vector2i(pair[1], 0), -1), []):
 				var dd: float = (_nodes[a] as Vector3).distance_to(_nodes[b])
 				if dd < best_d:
 					best_d = dd
 					best = [a, b]
-		if not best.is_empty():
+		if not best.is_empty() and not (_links[best[0]] as Dictionary).has(best[1]):
 			_road(best[0], best[1])
+	for high in [false, true]:
+		_one_bank(high)
+
+
+## Roads between facing crossings of two patches (their nodes a and b).
+func _join(a: Array, b: Array) -> void:
+	var pairs := []
+	for from in [a, b]:
+		var to: Array = b if from == a else a
+		for ka in from:
+			var pa: Vector3 = _nodes[ka]
+			var best = null
+			var best_d := JOIN_REACH
+			for kb in to:
+				var dd := Vector2(pa.x, pa.z).distance_to(Vector2((_nodes[kb] as Vector3).x, (_nodes[kb] as Vector3).z))
+				if dd < best_d:
+					best_d = dd
+					best = kb
+			if best != null:
+				pairs.append([best_d, ka, best])
+	pairs.sort_custom(func(x: Array, y: Array) -> bool: return x[0] < y[0])
+	var used := {}
+	var mids: Array[Vector2] = []
+	for pr in pairs:
+		if mids.size() >= JOIN_ROADS:
+			break
+		if used.has(pr[1]) or used.has(pr[2]) or (_links[pr[1]] as Dictionary).has(pr[2]):
+			continue
+		var pa: Vector3 = _nodes[pr[1]]
+		var pb: Vector3 = _nodes[pr[2]]
+		var mid := Vector2(pa.x + pb.x, pa.z + pb.z) * 0.5
+		if mids.any(func(m: Vector2) -> bool: return m.distance_to(mid) < PITCH * TILE * 1.2):
+			continue
+		if not _clear_way(Vector2(pa.x, pa.z), Vector2(pb.x, pb.z)):
+			continue
+		used[pr[1]] = true
+		used[pr[2]] = true
+		mids.append(mid)
+		_road(pr[1], pr[2])
+
+
+## Whether a road from a to b keeps off every block (it may run along a
+## street at either end).
+func _clear_way(a: Vector2, b: Vector2) -> bool:
+	var n := maxi(2, ceili(a.distance_to(b) / (TILE * 0.5)))
+	for j in range(1, n):
+		var p := a.lerp(b, float(j) / n)
+		for d in districts:
+			var l := d.local(p)
+			var cell := PITCH * TILE
+			var bl := Vector2i(floori(l.x / cell), floori(l.z / cell))
+			if not d.blocks.has(bl):
+				continue
+			var inx := l.x - bl.x * cell
+			var inz := l.z - bl.y * cell
+			var e := TILE * 0.75
+			if inx > e and inx < cell - e and inz > e and inz < cell - e:
+				return false
+	return true
+
+
+## The crossings of one bank all reachable from one another: while not,
+## a road between the nearest two crossings of two pieces.
+func _one_bank(high: bool) -> void:
+	var all := _nodes.keys().filter(func(k: Vector3i) -> bool: return k.x >= 0 and districts[k.x].high == high)
+	for guard in 40:
+		var piece := {}
+		var pieces := 0
+		for start in all:
+			if piece.has(start):
+				continue
+			piece[start] = pieces
+			var todo: Array = [start]
+			while not todo.is_empty():
+				var k = todo.pop_back()
+				for n in _links[k]:
+					if not piece.has(n) and n.x >= 0:
+						piece[n] = pieces
+						todo.append(n)
+			pieces += 1
+		if pieces <= 1:
+			return
+		var best := []
+		var best_d := INF
+		for a in all:
+			var pa: Vector3 = _nodes[a]
+			for b in all:
+				if piece[a] >= piece[b]:
+					continue
+				var dd := pa.distance_to(_nodes[b])
+				if dd < best_d:
+					best_d = dd
+					best = [a, b]
+		_road(best[0], best[1])
+
+
+## Small squares in the wedges of clear land where one patch meets the
+## next (PLAZA across): along each cut, on its far side, wherever there is
+## room clear of blocks and roads; no two too near.
+func _plazas() -> void:
+	var placed: Array[Vector2] = []
+	for g in PATCH_CUTS.size():
+		var home: int = _patches.get(Vector2i(g, 0), -1)
+		if home < 0:
+			continue
+		var d := districts[home]
+		for cut in PATCH_CUTS[g]:
+			var axis := Vector3.RIGHT if cut[0] == 0 else Vector3.BACK
+			var run := Vector3.BACK if cut[0] == 0 else Vector3.RIGHT
+			var t := -10.0 * PITCH * TILE
+			while t < 10.0 * PITCH * TILE:
+				t += TILE
+				var local := axis * (float(cut[1]) * PITCH * TILE + float(cut[2]) * (PATCH_CLEAR * 0.5 + PLAZA * 0.75)) + run * t
+				var w := d.world(local)
+				var c := Vector2(w.x, w.z)
+				if placed.any(func(q: Vector2) -> bool: return q.distance_to(c) < PLAZA_GAP):
+					continue
+				if _plaza_room(g, c):
+					placed.append(c)
+					_plaza(c, d.angle + deg_to_rad(float(_twist(g, 1))) * 0.5)
+
+
+## Room for a square at c on district g's land: clear of blocks, roads,
+## the rocks and anything else there (the mall, the park), flat enough, seen.
+func _plaza_room(g: int, c: Vector2) -> bool:
+	if seen.is_valid() and not seen.call(Vector3(c.x, ground(c), c.y), PLAZA):
+		return false
+	var g0 := ground(c)
+	for k in 13:
+		var q := c if k == 12 else c + Vector2.from_angle(k * TAU / 12.0 + 0.2) * PLAZA * (0.75 if k % 2 else 0.6)
+		if _land_of(q) != g or _built(q, 0.35) or _on_road(q) or _near_taken(q) or absf(ground(q) - g0) > 0.6:
+			return false
+	return true
+
+
+## A small square at c, turned `turn`: paved, on a plinth where the ground
+## falls away, a fountain in the middle, a tree at each corner, lamps and
+## benches between them.
+func _plaza(c: Vector2, turn: float) -> void:
+	var basis := Basis(Vector3.UP, turn)
+	var top := -INF
+	var low := INF
+	for k in 9:
+		var q := c if k == 8 else c + Vector2.from_angle(k * TAU / 8.0) * PLAZA
+		top = maxf(top, ground(q))
+		low = minf(low, ground(q))
+	var o := Vector3(c.x, top + 0.03, c.y)
+	var side := PLAZA * 1.5
+	if top - low > 0.04:
+		var drop := top - low + 0.3
+		_box(Vector3(side + 0.1, drop, side + 0.1), TERRACE_WALL, o + Vector3(0, 0.02 - drop * 0.5, 0), basis)
+	_box(Vector3(side + 0.1, 0.08, side + 0.1), PAVEMENT_EDGE, o + Vector3(0, 0.03, 0), basis)
+	_box(Vector3(side - 0.1, 0.08, side - 0.1), PATH, o + Vector3(0, 0.05, 0), basis)
+	# The fountain: a stone basin, its water lit.
+	_box(Vector3(1.2, 0.22, 1.2), STONE, o + Vector3(0, 0.18, 0), basis)
+	_box(Vector3(1.0, 0.04, 1.0), POOL_WATER, o + Vector3(0, 0.29, 0), basis, false, _glow(POOL_WATER, 0.9))
+	_box(Vector3(0.18, 0.5, 0.18), STONE, o + Vector3(0, 0.45, 0), basis)
+	_pool(o, 1.8, GLOW_POOL)
+	var h := side * 0.5 - 0.45
+	for sx in [-1, 1]:
+		for sz in [-1, 1]:
+			_tree(o + basis * Vector3(sx * h, 0.09, sz * h))
+			var a := turn + atan2(float(sx), float(sz))
+			_lamp(o + basis * Vector3(sx * h * 0.55, 0.09, sz * h * 1.05), a)
+		_box(Vector3(0.16, 0.12, 0.6), Color("#6b4a3a"), o + basis * Vector3(sx * (h - 0.6), 0.16, 0), basis)
+	_take(c, PLAZA * 1.2)
 
 
 ## A road from a place (a bridge's end) to the nearest crossing of the
@@ -1315,44 +1637,67 @@ func _on_road(p: Vector2) -> bool:
 
 # --- The rocky outcrops --------------------------------------------------------------
 
-## Great rocks piled on each outcrop (OUTCROPS), the biggest at its top,
-## crags standing up among them, and a few strays down its sides: four
-## rough stones, one MultiMesh each, for all the outcrops.
+## Rocks on each outcrop (OUTCROPS), never in rows: a few heaps spread over
+## it (a Poisson spread, the most near its top), each a great rock or a crag
+## in the middle and smaller ones leaning in round it, and strays down its
+## sides, every one kept its own room from the rest (ROCK_SPACING). Each
+## stone one of ROCK_KINDS rough shapes, never the same as a neighbour's,
+## stretched its own way and tipped over on all three axes, sat into the
+## ground so no edge floats: one MultiMesh a shape, for all the outcrops.
 func _rocks() -> void:
-	var meshes: Array[ArrayMesh] = [_rock_mesh(1), _rock_mesh(2), _rock_mesh(3), _rock_mesh(4)]
-	var at: Array = [[], [], [], []]
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 41
+	var at: Array = []
+	for k in ROCK_KINDS:
+		at.append([])
+	# every rock laid: Vector4(x, z, its reach, its shape)
+	var laid: Array[Vector4] = []
 	for o in OUTCROPS.size():
 		var c := _outcrop_at(o)
 		var r: float = OUTCROPS[o][1]
 		var count: int = OUTCROPS[o][3]
 		var big: float = OUTCROPS[o][4]
 		var crag: float = OUTCROPS[o][5]
-		var placed := 0
+		# The heaps' middles: darts thrown at the outcrop, the nearer its top
+		# the likelier, none too near another.
+		var want := clampi(count / ROCK_HEAP, 1, 12)
+		var gap := r * 1.3 / sqrt(float(want))
+		var heaps: Array[Vector2] = []
 		var tries := 0
-		while placed < count and tries < count * 20:
+		while heaps.size() < want and tries < want * 60:
 			tries += 1
-			var p := c + Vector2(_rng.randf_range(-1, 1), _rng.randf_range(-1, 1)) * r * 1.2
-			var k := _rocky(p)
-			if k <= 0.05 or _built(p) or _on_road(p) or _near_bridge(p, TILE * 2.0) or absf(across(p)) < RIVER_WIDTH * 0.5 + 0.6:
+			var p := c + Vector2.from_angle(rng.randf() * TAU) * sqrt(rng.randf()) * r
+			if rng.randf() > pow(_rocky(p), 1.5) or heaps.any(func(h: Vector2) -> bool: return h.distance_to(p) < gap):
+				continue
+			heaps.append(p)
+		var placed := 0
+		# A great one in the middle of each heap, then smaller ones round it.
+		for h in heaps:
+			var k := _rocky(h)
+			var core := lerpf(1.0, big, k) * rng.randf_range(0.85, 1.25)
+			var reach := _lay_rock(rng, h, core, crag * 1.5, laid, at)
+			if reach <= 0.0:
 				continue
 			placed += 1
-			var size := lerpf(0.6, big, k * k) * _rng.randf_range(0.5, 1.25)
-			# Mostly squat boulders; now and then a crag standing up, the
-			# tallest near the top.
-			var tall := _rng.randf_range(0.45, 0.85)
-			if _rng.randf() < crag:
-				tall = _rng.randf_range(1.3, 1.9 + 0.8 * k)
-				size *= 0.8
-			var basis := Basis(Vector3.UP, _rng.randf() * TAU) * Basis(Vector3.RIGHT, _rng.randf_range(-0.35, 0.35)) * Basis(Vector3.FORWARD, _rng.randf_range(-0.25, 0.25))
-			basis = basis.scaled(Vector3(size * _rng.randf_range(0.7, 1.5), size * tall, size * _rng.randf_range(0.7, 1.2)))
-			# Sat down on the lowest ground under it, so no side floats.
-			var low := ground(p)
-			for e in 4:
-				low = minf(low, ground(p + Vector2.from_angle(e * TAU / 4.0) * size * 0.4))
-			var rock := [Transform3D(basis, Vector3(p.x, low + size * tall * 0.12, p.y)), ROCK.lerp(ROCK_LIGHT, _rng.randf())]
-			_take(p, size * 0.6)
-			if _shown(rock[0].origin, size * 1.5, "rock"):
-				(at[_rng.randi() % at.size()] as Array).append(rock)
+			var ring := rng.randi_range(6, 11)
+			var heaped := 0
+			for j in ring * 4:
+				if heaped >= ring or placed >= count:
+					break
+				var size := core * rng.randf_range(0.35, 0.8)
+				var p := h + Vector2.from_angle(rng.randf() * TAU) * (reach + size * 0.5) * rng.randf_range(0.45, 1.3)
+				if _lay_rock(rng, p, size, crag * 0.5, laid, at) > 0.0:
+					placed += 1
+					heaped += 1
+		# Strays: whatever is left, smaller, anywhere on it.
+		tries = 0
+		while placed < count and tries < count * 30:
+			tries += 1
+			var p := c + Vector2(rng.randf_range(-1, 1), rng.randf_range(-1, 1)) * r * 1.25
+			var k := _rocky(p)
+			var size := lerpf(0.3, big * 0.35, k) * rng.randf_range(0.5, 1.2)
+			if _lay_rock(rng, p, size, crag * 0.3, laid, at) > 0.0:
+				placed += 1
 	var m := StandardMaterial3D.new()
 	m.vertex_color_use_as_albedo = true
 	m.vertex_color_is_srgb = true
@@ -1365,7 +1710,7 @@ func _rocks() -> void:
 		var mm := MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
 		mm.use_colors = true
-		mm.mesh = meshes[i]
+		mm.mesh = _rock_mesh(i + 1)
 		mm.instance_count = at[i].size()
 		for j in at[i].size():
 			mm.set_instance_transform(j, at[i][j][0])
@@ -1376,26 +1721,72 @@ func _rocks() -> void:
 		root.add_child(mmi)
 
 
-## A rough stone: a ball of few faces, each corner pushed in or out a little,
-## flat-faced, squat.
+## One rock `size` across at p, if there is room for it (on its outcrop,
+## clear of what is built and of every rock laid: ROCK_SPACING); a crag
+## standing up one in `crag`. Its reach round p, or 0 if not laid.
+func _lay_rock(rng: RandomNumberGenerator, p: Vector2, size: float, crag: float, laid: Array[Vector4], at: Array) -> float:
+	var k := _rocky(p)
+	if k <= 0.05 or _built(p) or _on_road(p) or _near_bridge(p, TILE * 2.0) or absf(across(p)) < RIVER_WIDTH * 0.5 + 0.6:
+		return 0.0
+	# Squat boulders, slabs and, now and then, a crag, each its own stretch.
+	var dims := Vector3(rng.randf_range(0.7, 1.6), rng.randf_range(0.5, 0.9), rng.randf_range(0.6, 1.3)) * size
+	var tip := 0.3
+	if rng.randf() < crag:
+		dims = Vector3(rng.randf_range(0.6, 1.0), rng.randf_range(1.3, 1.9 + 0.8 * k), rng.randf_range(0.5, 0.9)) * size * 0.8
+		tip = 0.25
+	var reach := maxf(dims.x, dims.z) * 0.5
+	var near: Array[int] = []
+	for q in laid:
+		var dd := Vector2(q.x, q.y).distance_to(p)
+		if dd < (q.z + reach) * ROCK_SPACING:
+			return 0.0
+		if dd < (q.z + reach) * 1.8:
+			near.append(int(q.w))
+	# A shape none of its neighbours has.
+	var kinds: Array[int] = []
+	for i in ROCK_KINDS:
+		if not i in near:
+			kinds.append(i)
+	var kind: int = kinds[rng.randi() % kinds.size()] if not kinds.is_empty() else rng.randi() % ROCK_KINDS
+	var tx := rng.randf_range(-tip, tip)
+	var tz := rng.randf_range(-tip, tip)
+	var basis := Basis(Vector3.UP, rng.randf() * TAU) * Basis(Vector3.RIGHT, tx) * Basis(Vector3.BACK, tz) * Basis(Vector3.UP, rng.randf() * TAU) * Basis.from_scale(dims)
+	# Sat down on the lowest ground under it, and in as far as it is tipped.
+	var low := ground(p)
+	for e in 6:
+		low = minf(low, ground(p + Vector2.from_angle(e * TAU / 6.0) * reach * 0.8))
+	var sink := sin(maxf(absf(tx), absf(tz))) * reach * 0.5
+	var rock := [Transform3D(basis, Vector3(p.x, low + dims.y * 0.12 - sink, p.y)), ROCK.lerp(ROCK_LIGHT, rng.randf())]
+	laid.append(Vector4(p.x, p.y, reach, kind))
+	_take(p, reach * 1.1)
+	if _shown(rock[0].origin, maxf(reach, dims.y) * 1.5, "rock"):
+		(at[kind] as Array).append(rock)
+	return reach
+
+
+## A rough stone of its own (seed): a ball of few faces, more or fewer by
+## its seed, each corner pushed in or out, its foot cut flat; one in four a
+## slab, its top cut flat too.
 func _rock_mesh(seed: int) -> ArrayMesh:
 	var ball := SphereMesh.new()
 	ball.radius = 0.5
 	ball.height = 1.0
-	ball.radial_segments = 6
-	ball.rings = 3
+	ball.radial_segments = 5 + seed % 3
+	ball.rings = 3 + (seed / 3) % 2
 	var arrays := ball.get_mesh_arrays()
 	var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
 	var index: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	var spread := 0.45 + 0.1 * (seed % 4)
+	var top := 0.4 if seed % 4 == 0 else 1.0
 	# The same push for the same corner, seams and all.
 	var push := func(v: Vector3) -> Vector3:
 		var h := sin(roundf(v.x * 40.0) * 12.9898 + roundf(v.y * 40.0) * 78.233 + roundf(v.z * 40.0) * 37.719 + seed * 4.1) * 43758.5453
-		return v * (0.62 + 0.7 * (h - floorf(h)))
+		return v * (1.0 - spread * 0.5 + spread * (h - floorf(h)))
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i in index:
 		var v: Vector3 = push.call(verts[i])
-		st.add_vertex(Vector3(v.x, maxf(v.y, -0.3), v.z))
+		st.add_vertex(Vector3(v.x, clampf(v.y, -0.3, top), v.z))
 	st.generate_normals()
 	return st.commit()
 
@@ -1548,10 +1939,15 @@ func _places() -> void:
 	if at != Vector2.INF:
 		_mall(at)
 		_take(at, MALL_REACH)
-	at = _clear_spot(BIG_PARK_REACH)
-	if at != Vector2.INF:
-		_big_park(at)
-		_take(at, BIG_PARK_REACH)
+	# The park a little smaller if that is all there is room for.
+	var r := BIG_PARK_REACH
+	while r >= BIG_PARK_REACH * 0.7:
+		at = _clear_spot(r)
+		if at != Vector2.INF:
+			_big_park(at, r)
+			_take(at, r)
+			break
+		r -= 0.5
 
 
 ## The clear round of land r across nearest a museum (Vector2.INF if none).
@@ -1577,7 +1973,7 @@ func _clear_spot(r: float) -> Vector2:
 ## Land round p, r across, that can be seen, flat and all on one bank, with
 ## nothing on it: no block, road, walk, rock, pitch or loose house.
 func _clear(p: Vector2, r: float) -> bool:
-	if seen.is_valid() and not seen.call(Vector3(p.x, ground(p), p.y), r):
+	if seen.is_valid() and not seen.call(Vector3(p.x, ground(p), p.y), 0.0):
 		return false
 	var bank := signf(across(p))
 	var g0 := ground(p)
@@ -1664,11 +2060,10 @@ func _car(at: Vector3, basis: Basis) -> void:
 	_box(Vector3(0.27, 0.11, 0.32), CAR_GLASS, at + basis * Vector3(0, 0.2, -0.04), basis)
 
 
-## The big park: a round lawn with a hedge round it, a fountain in the
+## The big park, r round: a round lawn with a hedge round it, a fountain in the
 ## middle ringed by a path with benches and lamps, winding paths out to the
 ## edge, a kiosk, flower beds, and trees of every kind round it all.
-func _big_park(c: Vector2) -> void:
-	var r := BIG_PARK_REACH
+func _big_park(c: Vector2, r: float) -> void:
 	var o := Vector3(c.x, ground(c), c.y)
 	_disc(o + Vector3(0, 0.03, 0), r, 0.06, PARK)
 	var paths: Array = []
