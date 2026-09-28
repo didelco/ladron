@@ -124,6 +124,63 @@ const CONE := Color("#ff7424")
 ## How dark a shut museum is.
 const SHUT := 0.62
 
+## The middle-ages museum, a castle made a Renaissance palace: across
+## (between its towers' middles), deep (behind its front, at z 0), its
+## plinth, each floor's height from the ground up (the noble one tallest).
+const M_W := 4.6
+const M_D := 2.4
+const M_BASE := 0.15
+const M_FLOORS := [0.72, 0.92, 0.9]
+## Its front's bays across (the middle one the big job's, the crest over
+## it), the pilasters between them; down each side, the same (back from the
+## front, z), past the tower.
+const M_BAYS_X := [-1.45, -0.75, 0.0, 0.75, 1.45]
+const M_PILASTERS_X := [-1.8, -1.1, -0.375, 0.375, 1.1, 1.8]
+const M_SIDE_Z := [-1.2, -1.85]
+const M_SIDE_PILASTERS_Z := [-0.86, -1.53, -2.2]
+## The towers on its front corners: how wide, where their middles are (z),
+## how high their walls go (the gallery and the battlements on top).
+const M_TOWER := 0.95
+const M_TOWER_Z := -0.3
+const M_TOWER_H := 3.25
+## The two-light arched windows: across and tall to where the arch springs
+## (it is half as high as it is wide); the big job's; the little barred ones
+## of the ground floor; the column between the two lights.
+const M_WINDOW := Vector2(0.38, 0.32)
+const M_BIG := Vector2(0.5, 0.4)
+const M_GRILLE := Vector2(0.26, 0.3)
+const M_MULLION := 0.035
+## Where the rooms but the big job's are, in the rooms' order (as P_ROOMS):
+## windows of its front on a noble floor, or high on a tower's front
+## (across, the tower's middle). The camera sees this museum from before
+## it, its sides hardly: none down a side.
+const M_ROOMS := [
+	{"side": 0, "across": -1.45, "floor": 1},
+	{"side": 0, "across": 0.75, "floor": 2},
+	{"side": 0, "across": -M_W * 0.5, "floor": 2},
+	{"side": 0, "across": M_W * 0.5, "floor": 2},
+]
+## How deep the cobbled yard before it.
+const M_YARD := 2.8
+const M_SAND := Color("#ecd3a0")
+const M_SAND_DARK := Color("#b7976a")
+const M_JOINT := Color("#c9ab78")
+const M_TRIM := Color("#ecd9ae")
+const M_TOWER_STONE := Color("#e0c290")
+const M_TILE := Color("#8a4e3e")
+const M_IRON := Color("#2b2530")
+const M_LEAD := Color("#2a2030")
+## The stained glass: warm and cold panes between the lead.
+const M_STAINED := [Color("#e0304a"), Color("#3f6fe0"), Color("#f2c24a"), Color("#3fae6a"), Color("#9a55e0"),
+	Color("#f07a2a"), Color("#44c4d8")]
+const M_COBBLE := [Color("#8f8478"), Color("#a09484"), Color("#7c7268"), Color("#978a7b")]
+const M_COBBLE_EDGE := Color("#5e554c")
+const M_MOAT := Color("#3a3028")
+const M_STEEL := Color("#a9b2c4")
+const M_FLAME := Color("#ff9a3a")
+const M_DUCK := Color("#ffd23a")
+const M_CROQUETTE := Color("#c98a3e")
+
 var museum := 0
 var open := true
 ## each room's window: {"node" (its middle), "glass", "back", "piece",
@@ -159,6 +216,7 @@ func build(m: int, is_open: bool, rooms: Array = []) -> void:
 			_antiquity(rooms)
 		"moderna":
 			_contemporary(rooms)
+		"edad_media": _middle_ages(rooms)
 		_:
 			_hall(rooms)
 
@@ -1405,6 +1463,624 @@ func _c_bits(bits: Array) -> void:
 	m.roughness = 0.45
 	mmi.material_override = m
 	add_child(mmi)
+
+
+
+
+# --- The middle-ages museum ---------------------------------------------------------
+
+## The small parts of the middle-ages museum (joints, corbels, battlements,
+## cobbles, bars...), gathered by colour and drawn as one MultiMesh each.
+var _m_parts := {}
+static var _m_glass := {}
+static var _m_lights := {}
+static var _m_glass_texture: ImageTexture
+
+
+## The middle-ages museum, a castle made a museum: a Renaissance palace of
+## three floors in sand coloured ashlar (its joints drawn), flat pilasters
+## on each floor, a band between the floors (the museum's name on the first)
+## and a great cornice on corbels, battlements on it; a square tower on each
+## front corner, higher, with a gallery on corbels and its battlements, a
+## banner in the museum's colour down its front and a pennant on top. Its
+## windows two-light arched ones with stained glass, a column between the
+## lights and a round one over them, some lit, on the two noble floors of
+## its front and both its sides; little barred ones on the ground floor. The
+## rooms' are some of them (M_ROOMS); the big job's the big one in the
+## middle of the noble floor, on a balcony, the family's crest over it (and
+## the crown on the crest). Before it, a cobbled yard: a little drawbridge
+## over a dry moat (a rubber duck in it), a brazier each side, a well, and a
+## knight in armour holding up a plunger for a lance.
+func _middle_ages(rooms: Array) -> void:
+	_m_parts.clear()
+	var sand := _shade(M_SAND)
+	var sand_dark := _shade(M_SAND_DARK)
+	var joint := _shade(M_JOINT)
+	var trim := _shade(M_TRIM)
+	var tower_stone := _shade(M_TOWER_STONE)
+	var accent := _shade(_colour)
+	var half := M_W * 0.5
+	var roof_y := _m_floor_y(M_FLOORS.size())
+	var front := M_W - M_TOWER
+	front_z = 0.1
+	look_y = M_BASE + 1.75
+	top = M_TOWER_H + 1.0
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 5071 + museum
+	var taken := {}
+	for s: Dictionary in M_ROOMS:
+		taken[_m_key(s.side, s.across, s.floor)] = true
+	_m_yard(rng)
+	# The plinth, the walls, their joints (bigger blocks on the ground floor).
+	_box(Vector3(M_W + 0.12, M_BASE, M_D + 0.12), sand_dark, Vector3(0, M_BASE * 0.5, -M_D * 0.5))
+	_box(Vector3(M_W, roof_y - M_BASE, M_D), sand, Vector3(0, (roof_y + M_BASE) * 0.5, -M_D * 0.5))
+	var side_from := M_TOWER_Z - M_TOWER * 0.5
+	var side_long := M_D + side_from
+	var ground_h: float = M_FLOORS[0]
+	var walls: Array[Transform3D] = [Transform3D(Basis.IDENTITY, Vector3(0, M_BASE, 0))]
+	for s: int in [-1, 1]:
+		walls.append(Transform3D(Basis(Vector3.UP, s * PI * 0.5), Vector3(s * half, M_BASE, side_from - side_long * 0.5)))
+	for k in walls.size():
+		var across := front if k == 0 else side_long
+		_m_ashlar(walls[k], Vector2(across, ground_h), 0.16, 0.4, joint)
+		_m_ashlar(walls[k].translated_local(Vector3(0, ground_h, 0)), Vector2(across, roof_y - M_BASE - ground_h), 0.12, 0.3, joint)
+	# The bands between the floors (the first a frieze), the pilasters on
+	# each floor with their capitals, on the front and down the sides.
+	for f in range(1, M_FLOORS.size()):
+		var y := _m_floor_y(f)
+		var tall := 0.1 if f == 1 else 0.07
+		_box(Vector3(M_W + 0.06, tall, M_D + 0.06), trim, Vector3(0, y, -M_D * 0.5))
+		_box(Vector3(M_W + 0.1, 0.025, M_D + 0.1), trim, Vector3(0, y + tall * 0.5 + 0.0125, -M_D * 0.5))
+	for f in M_FLOORS.size():
+		var foot := _m_floor_y(f) + (0.07 if f > 0 else 0.0)
+		var tall := _m_floor_y(f + 1) - foot - (0.05 if f == 0 else 0.035 if f < M_FLOORS.size() - 1 else 0.13)
+		for x: float in M_PILASTERS_X:
+			_m_part(Vector3(0.1, tall, 0.035), trim, Vector3(x, foot + tall * 0.5, 0.017))
+			_m_part(Vector3(0.14, 0.04, 0.05), trim, Vector3(x, foot + tall - 0.02, 0.025))
+		for s: int in [-1, 1]:
+			for z: float in M_SIDE_PILASTERS_Z:
+				_m_part(Vector3(0.035, tall, 0.1), trim, Vector3(s * (half + 0.017), foot + tall * 0.5, z))
+				_m_part(Vector3(0.05, 0.04, 0.14), trim, Vector3(s * (half + 0.025), foot + tall - 0.02, z))
+	# The great cornice on its corbels, the battlements on it, the roof.
+	_box(Vector3(M_W + 0.36, 0.1, M_D + 0.36), trim, Vector3(0, roof_y + 0.13, -M_D * 0.5))
+	var x0 := -half
+	while x0 <= half:
+		_m_part(Vector3(0.06, 0.08, 0.16), trim, Vector3(x0, roof_y + 0.04, 0.06))
+		x0 += 0.2
+	for s: int in [-1, 1]:
+		var z0 := side_from
+		while z0 >= -M_D:
+			_m_part(Vector3(0.16, 0.08, 0.06), trim, Vector3(s * (half + 0.06), roof_y + 0.04, z0))
+			z0 -= 0.2
+	var deck := roof_y + 0.18
+	var e := 0.12
+	_m_battlement(Vector3(-front * 0.5, deck, e), Vector3(front * 0.5, deck, e), trim)
+	for s: int in [-1, 1]:
+		_m_battlement(Vector3(s * (half + e), deck, side_from), Vector3(s * (half + e), deck, -M_D - e), trim)
+	_m_battlement(Vector3(half + e, deck, -M_D - e), Vector3(-half - e, deck, -M_D - e), trim)
+	_box(Vector3(M_W + 0.2, 0.02, M_D + 0.2), _shade(M_SAND_DARK), Vector3(0, deck + 0.01, -M_D * 0.5))
+	var roof := PrismMesh.new()
+	roof.size = Vector3(M_D - 1.0, 0.3, M_W - 1.4)
+	var tiles := _mesh(roof, _shade(M_TILE), Vector3(0, deck + 0.15, -M_D * 0.5 - 0.1))
+	tiles.rotation.y = PI * 0.5
+	# The towers on the front corners.
+	for s: int in [-1, 1]:
+		_m_tower(Vector3(s * half, 0, M_TOWER_Z), s, tower_stone, trim, accent, rng, taken.has(_m_key(0, s * half, 2)))
+	# The door: a stone frame, the door in the museum's colour studded in
+	# gold, lit round its edge when open; a cornice over it.
+	_box(Vector3(0.66, 0.66, 0.05), trim, Vector3(0, M_BASE + 0.33, 0.015))
+	_box(Vector3(0.48, 0.55, 0.04), accent.darkened(0.3), Vector3(0, M_BASE + 0.275, 0.03))
+	for k in 3:
+		_m_part(Vector3(0.012, 0.55, 0.01), _shade(WOOD), Vector3((k - 1) * 0.12, M_BASE + 0.275, 0.052))
+	for x: float in [-0.18, -0.06, 0.06, 0.18]:
+		for j in 3:
+			_m_part(Vector3(0.025, 0.025, 0.02), _shade(GOLD), Vector3(x, M_BASE + 0.12 + j * 0.17, 0.055))
+	if open:
+		_glow(Vector3(0.52, 0.03, 0.03), LIT, Vector3(0, M_BASE + 0.565, 0.04), 1.5)
+	_box(Vector3(0.82, 0.07, 0.1), trim, Vector3(0, M_BASE + 0.7, 0.04))
+	# The bench along its foot, each side of the door.
+	for s: int in [-1, 1]:
+		_box(Vector3(1.05, 0.2, 0.18), sand_dark, Vector3(s * 1.28, 0.1, 0.12))
+		_box(Vector3(1.09, 0.03, 0.22), trim, Vector3(s * 1.28, 0.215, 0.12))
+	# Its name on the frieze under the cornice.
+	_box(Vector3(front, 0.13, 0.03), trim, Vector3(0, roof_y - 0.065, 0.015))
+	var label := Label3D.new()
+	label.text = String(Story.museum(museum).name).to_upper()
+	label.font_size = 44
+	label.pixel_size = 0.0021
+	label.outline_size = 0
+	label.modulate = WOOD if open else WOOD.lightened(0.2)
+	label.position = Vector3(0, roof_y - 0.065, 0.032)
+	label.width = 3.0 / 0.0021
+	add_child(label)
+	# The big job's balcony: a slab, a railing hung with a cloth in the
+	# museum's colour, gold along its foot.
+	var noble := _m_floor_y(1)
+	var slab_y := noble + 0.08
+	_box(Vector3(M_BIG.x + 0.4, 0.05, 0.28), trim, Vector3(0, slab_y, 0.14))
+	for k in 5:
+		_m_part(Vector3(0.035, 0.12, 0.035), trim, Vector3((k - 2) * 0.2, slab_y + 0.085, 0.26))
+	_box(Vector3(M_BIG.x + 0.4, 0.035, 0.05), trim, Vector3(0, slab_y + 0.16, 0.26))
+	_box(Vector3(M_BIG.x + 0.1, 0.12, 0.012), accent, Vector3(0, slab_y + 0.08, 0.29))
+	_box(Vector3(M_BIG.x + 0.1, 0.025, 0.014), _shade(GOLD), Vector3(0, slab_y + 0.03, 0.29))
+	# The crest on the top floor, over the big job's window: a shield in the
+	# museum's colour edged in gold, a croquette on it.
+	var crest_y := _m_floor_y(2) + 0.34
+	_box(Vector3(0.34, 0.26, 0.02), _shade(GOLD), Vector3(0, crest_y, 0.01))
+	var point := PrismMesh.new()
+	point.size = Vector3(0.34, 0.16, 0.02)
+	_mesh(point, _shade(GOLD), Vector3(0, crest_y - 0.21, 0.01)).rotation.z = PI
+	_box(Vector3(0.28, 0.22, 0.03), accent, Vector3(0, crest_y + 0.005, 0.02))
+	var tip := PrismMesh.new()
+	tip.size = Vector3(0.28, 0.12, 0.03)
+	_mesh(tip, accent, Vector3(0, crest_y - 0.165, 0.02)).rotation.z = PI
+	var croquette := _mesh(_ball(0.06), _shade(M_CROQUETTE), Vector3(0, crest_y - 0.02, 0.045))
+	croquette.scale = Vector3(1.3, 0.75, 0.6)
+	# The windows: two-light ones on the noble floors of the front and down
+	# both sides, little barred ones on the ground floor; but where a room is
+	# (it has its own) and in the middle (the big job's and the crest).
+	for f: int in [1, 2]:
+		for x: float in M_BAYS_X:
+			if x != 0.0 and not taken.has(_m_key(0, x, f)):
+				_m_bifora(_m_slot(0, x, f, M_WINDOW), M_WINDOW, 0.0, _m_look(rng))
+		for side: int in [-1, 1]:
+			for z: float in M_SIDE_Z:
+				if not taken.has(_m_key(side, z, f)):
+					_m_bifora(_m_slot(side, z, f, M_WINDOW), M_WINDOW, side * PI * 0.5, _m_look(rng))
+	for x: float in M_BAYS_X:
+		if x != 0.0:
+			_m_grille(Vector3(x, M_BASE + 0.45, 0.0), 0.0, open and rng.randf() < 0.3)
+	for side: int in [-1, 1]:
+		for z: float in M_SIDE_Z:
+			_m_grille(Vector3(side * half, M_BASE + 0.45, z), side * PI * 0.5, open and rng.randf() < 0.3)
+	# The rooms: some of the windows (M_ROOMS), the big job's the balcony's.
+	# Only one reached shows as a room: clear glass lit, its piece in it (and
+	# the crown on the crest for the big job's); the rest are stained glass
+	# like any other window, and nothing to pick.
+	var boss_at := _m_slot(0, 0.0, 1, M_BIG)
+	var normal := 0
+	var count := rooms.size() if not rooms.is_empty() else Story.ROOMS
+	for i in count:
+		var r: Dictionary = rooms[i] if not rooms.is_empty() else {"boss": i == count - 1, "open": false}
+		var at := boss_at
+		var turn := 0.0
+		var size := M_BIG
+		if not r.boss:
+			var s: Dictionary = M_ROOMS[mini(normal, M_ROOMS.size() - 1)]
+			normal += 1
+			size = M_WINDOW
+			at = _m_slot(s.side, s.across, s.floor, size)
+			turn = s.side * PI * 0.5
+		var shown: bool = open and r.has("shape") and bool(r.get("open", false))
+		var w := _m_bifora(at, size, turn, "room" if shown else _m_look(rng))
+		var node: Node3D = w.node
+		var piece := Node3D.new()
+		piece.position = Vector3(0, -size.y * 0.18, 0.14)
+		node.add_child(piece)
+		if shown:
+			var model := LootModels.build(r.shape, Color(r.colour))
+			model.scale = Vector3.ONE * (0.55 if r.boss else 0.45)
+			piece.add_child(model)
+			if r.boss:
+				var crown := Node3D.new()
+				crown.position = Vector3(0, crest_y + 0.2 - at.y, 0.05)
+				node.add_child(crown)
+				CityStage.crown(crown, Vector3.ZERO, MenuStage.GOLD, 1.1)
+		windows.append({"node": node, "back": w.back, "glass": w.glass, "piece": piece, "lock": null, "boss": r.boss, "open": shown,
+			"size": size, "frame": w.frame, "stone": w.stone, "arch": true, "face": node.basis})
+	_m_flush()
+
+
+## The floor f's foot (0 the ground floor's; past the last, the roof's).
+func _m_floor_y(f: int) -> float:
+	var y := M_BASE
+	for k in mini(f, M_FLOORS.size()):
+		y += M_FLOORS[k]
+	return y
+
+
+## Where a window of the middle-ages museum goes: on its front (side 0,
+## across its x) or down a side (-1, 1: across its z), on floor f, its
+## glass's foot a little over the band; on the front, at a tower's middle,
+## on the tower's front.
+func _m_slot(side: int, across: float, f: int, size: Vector2) -> Vector3:
+	var y := _m_floor_y(f) + 0.12 + size.y * 0.5
+	if side == 0:
+		var tower := absf(across) > M_W * 0.5 - 0.01
+		return Vector3(across, y, M_TOWER_Z + M_TOWER * 0.5 if tower else 0.0)
+	return Vector3(side * M_W * 0.5, y, across)
+
+
+func _m_key(side: int, across: float, f: int) -> String:
+	return "%d:%.2f:%d" % [side, across, f]
+
+
+## A window not a room: its stained glass lit here and there.
+func _m_look(rng: RandomNumberGenerator) -> String:
+	return "lit" if open and rng.randf() < 0.45 else "dark"
+
+
+## A tower on a front corner (s: -1 left, 1 right), its foot's middle at
+## c: a battered foot, its walls with their joints, bands at the palace's
+## floors, arrow slits, a two-light window high up on its front (but where
+## a room is: room) and its outer side, a banner down its front; a gallery
+## on corbels at the top, battlements round it, a pennant on a pole (the
+## right one's waves).
+func _m_tower(c: Vector3, s: int, stone: Color, trim: Color, accent: Color, rng: RandomNumberGenerator, room: bool) -> void:
+	var hw := M_TOWER * 0.5
+	_box(Vector3(M_TOWER + 0.16, 0.4, M_TOWER + 0.16), _shade(M_SAND_DARK), c + Vector3(0, 0.2, 0))
+	_box(Vector3(M_TOWER, M_TOWER_H, M_TOWER), stone, c + Vector3(0, M_TOWER_H * 0.5, 0))
+	var joint := _shade(M_JOINT)
+	_m_ashlar(Transform3D(Basis.IDENTITY, c + Vector3(0, 0.4, hw)), Vector2(M_TOWER, M_TOWER_H - 0.4), 0.15, 0.32, joint)
+	for side: int in [-1, 1]:
+		_m_ashlar(Transform3D(Basis(Vector3.UP, side * PI * 0.5), c + Vector3(side * hw, 0.4, 0)), Vector2(M_TOWER, M_TOWER_H - 0.4), 0.15, 0.32, joint)
+	for f: int in [1, 2]:
+		_box(Vector3(M_TOWER + 0.05, 0.07, M_TOWER + 0.05), trim, c + Vector3(0, _m_floor_y(f), 0))
+	# Its windows: slits low and high, a two-light one on the top floor, on
+	# its front and on its outer side.
+	for turn: float in [0.0, s * PI * 0.5]:
+		var out := Basis(Vector3.UP, turn)
+		for y: float in [0.6, M_TOWER_H - 0.45]:
+			_m_part(Vector3(0.05, 0.3, 0.02), _shade(M_IRON), c + out * Vector3(0, y, hw + 0.005), out)
+			_m_part(Vector3(0.12, 0.04, 0.03), trim, c + out * Vector3(0, y - 0.17, hw + 0.01), out)
+		if turn == 0.0 and room:
+			continue
+		_m_bifora(c + out * Vector3(0, _m_floor_y(2) + 0.12 + M_WINDOW.y * 0.5, hw), M_WINDOW, turn, _m_look(rng))
+	# The banner down its front, gold along its foot, a gold lozenge on it.
+	var fz := c.z + hw
+	_box(Vector3(0.36, 0.76, 0.02), accent, Vector3(c.x, _m_floor_y(1) + 0.48, fz + 0.012))
+	_box(Vector3(0.36, 0.06, 0.024), _shade(GOLD), Vector3(c.x, _m_floor_y(1) + 0.13, fz + 0.013))
+	_box(Vector3(0.44, 0.035, 0.05), POLE, Vector3(c.x, _m_floor_y(1) + 0.87, fz + 0.02))
+	var lozenge := _box(Vector3(0.13, 0.13, 0.01), _shade(GOLD), Vector3(c.x, _m_floor_y(1) + 0.52, fz + 0.025))
+	lozenge.rotation.z = PI * 0.25
+	# The gallery on its corbels, the battlements round it.
+	var g := M_TOWER_H
+	_box(Vector3(M_TOWER + 0.22, 0.2, M_TOWER + 0.22), trim, c + Vector3(0, g + 0.1, 0))
+	for k in 4:
+		var face := Basis(Vector3.UP, k * PI * 0.5)
+		for off: float in [-0.32, 0.0, 0.32]:
+			_m_part(Vector3(0.08, 0.14, 0.12), trim, c + face * Vector3(off, g - 0.06, hw + 0.05), face)
+	var ring := hw + 0.06
+	var deck := g + 0.2
+	_m_battlement(c + Vector3(-ring, deck, ring), c + Vector3(ring, deck, ring), trim)
+	_m_battlement(c + Vector3(ring, deck, ring), c + Vector3(ring, deck, -ring), trim)
+	_m_battlement(c + Vector3(ring, deck, -ring), c + Vector3(-ring, deck, -ring), trim)
+	_m_battlement(c + Vector3(-ring, deck, -ring), c + Vector3(-ring, deck, ring), trim)
+	# The pennant on its pole.
+	_box(Vector3(0.03, 0.7, 0.03), POLE, c + Vector3(0, deck + 0.35, 0))
+	var pennant := PrismMesh.new()
+	pennant.size = Vector3(0.22, 0.46, 0.02)
+	var flag := _mesh(pennant, _colour if open else accent, c + Vector3(0.23, deck + 0.58, 0))
+	flag.rotation.z = -PI * 0.5
+	if s > 0:
+		flag.name = "Flag"
+
+
+## Ashlar joints on a wall: at, its foot's middle on its face (its basis x
+## along the wall, y up, z out of it); size across and up; courses course
+## high, blocks block long, each course's joints half a block on.
+func _m_ashlar(at: Transform3D, size: Vector2, course: float, block: float, colour: Color) -> void:
+	var rows := maxi(1, int(round(size.y / course)))
+	var step := size.y / rows
+	for r in rows:
+		var y := r * step
+		if r > 0:
+			_m_part(Vector3(size.x, 0.014, 0.01), colour, at * Vector3(0, y, 0.004), at.basis)
+		var x := -size.x * 0.5 + block * (0.5 if r % 2 == 1 else 1.0)
+		while x < size.x * 0.5 - 0.05:
+			_m_part(Vector3(0.014, step, 0.01), colour, at * Vector3(x, y + step * 0.5, 0.004), at.basis)
+			x += block
+
+
+## Battlements from a to b, on the deck: a low wall and on it
+## swallow-tailed merlons (the same seen from either side).
+func _m_battlement(a: Vector3, b: Vector3, colour: Color) -> void:
+	var along := (b - a).normalized()
+	var turned := Basis(along, Vector3.UP, along.cross(Vector3.UP))
+	var long := a.distance_to(b)
+	_m_part(Vector3(long + 0.1, 0.1, 0.1), colour, (a + b) * 0.5 + Vector3(0, 0.05, 0), turned)
+	var n := maxi(1, int(round(long / 0.32)))
+	for k in n + 1:
+		var at := a.lerp(b, float(k) / n) + Vector3(0, 0.1, 0)
+		_m_part(Vector3(0.15, 0.12, 0.1), colour, at + Vector3(0, 0.06, 0), turned)
+		for sx: int in [-1, 1]:
+			var horn := turned * Basis(Vector3.BACK, -sx * 0.35)
+			_m_part(Vector3(0.05, 0.09, 0.1), colour, at + turned * Vector3(sx * 0.05, 0.15, 0), horn)
+
+
+## A two-light window, its middle (where its arch springs, less half its
+## height) at `at`, turned `turn` round y from facing the front: a round
+## arch of stone on its jambs, a sill and a keystone; in it, two arched
+## lights with a column between them and a round one over them in the stone
+## under the arch. look: "lit" or "dark" stained glass, or "room" (clear
+## glass, lit). Returns {"node", "back" (the lights), "glass" (the round
+## one), "frame", "stone"}.
+func _m_bifora(at: Vector3, size: Vector2, turn: float, look: String) -> Dictionary:
+	var node := Node3D.new()
+	node.position = at
+	node.rotation.y = turn
+	add_child(node)
+	var stone := _shade(M_TRIM)
+	var r := size.x * 0.5
+	var frame: Array = []
+	var arch := _mesh_in(node, _m_disc(r + 0.075, 0.04), stone, Vector3(0, size.y * 0.5, 0.0))
+	arch.rotation.x = PI * 0.5
+	frame.append(arch)
+	for sx: int in [-1, 1]:
+		frame.append(_box_in(node, Vector3(0.075, size.y + 0.02, 0.04), stone, Vector3(sx * (r + 0.0375), 0, 0.0)))
+	frame.append(_box_in(node, Vector3(size.x + 0.22, 0.05, 0.1), stone, Vector3(0, -size.y * 0.5 - 0.03, 0.04)))
+	frame.append(_box_in(node, Vector3(0.06, 0.09, 0.05), stone, Vector3(0, size.y * 0.5 + r + 0.035, 0.01)))
+	var tympanum := _mesh_in(node, _m_disc(r, 0.02), stone.darkened(0.08), Vector3(0, size.y * 0.5, 0.012))
+	tympanum.rotation.x = PI * 0.5
+	var glass: Material = _lit_material(LIT, 0.9) if look == "room" else _m_stained(look == "lit")
+	var lights := MeshInstance3D.new()
+	lights.mesh = _m_lights_mesh(size.x, size.y)
+	lights.material_override = glass
+	lights.position = Vector3(0, 0, 0.026)
+	node.add_child(lights)
+	frame.append(_box_in(node, Vector3(M_MULLION, size.y, 0.04), stone, Vector3(0, 0, 0.045)))
+	frame.append(_box_in(node, Vector3(0.075, 0.03, 0.05), stone, Vector3(0, size.y * 0.5, 0.045)))
+	var eye_y := size.y * 0.5 + r * 0.6
+	var eye_ring := _mesh_in(node, _m_disc(r * 0.34, 0.012), stone, Vector3(0, eye_y, 0.028))
+	eye_ring.rotation.x = PI * 0.5
+	frame.append(eye_ring)
+	var eye := MeshInstance3D.new()
+	eye.mesh = _m_disc(r * 0.24, 0.012)
+	eye.material_override = glass
+	eye.position = Vector3(0, eye_y, 0.034)
+	eye.rotation.x = PI * 0.5
+	node.add_child(eye)
+	return {"node": node, "back": lights, "glass": eye, "frame": frame, "stone": arch.material_override}
+
+
+## A little window of the ground floor, high up, with a grille: a stone
+## frame, a cornice and a sill; the glass dark or lit behind iron bars.
+func _m_grille(at: Vector3, turn: float, lit: bool) -> void:
+	var node := Node3D.new()
+	node.position = at
+	node.rotation.y = turn
+	add_child(node)
+	var stone := _shade(M_TRIM)
+	var size := M_GRILLE
+	_box_in(node, Vector3(size.x + 0.1, size.y + 0.1, 0.04), stone, Vector3(0, 0, 0.01))
+	var glass := _box_in(node, Vector3(size.x, size.y, 0.03), GLASS_DARK, Vector3(0, 0, 0.022))
+	if lit:
+		glass.material_override = _lit_material(LIT, 0.55)
+	_box_in(node, Vector3(size.x + 0.18, 0.05, 0.08), stone, Vector3(0, size.y * 0.5 + 0.075, 0.03))
+	_box_in(node, Vector3(size.x + 0.14, 0.04, 0.08), stone, Vector3(0, -size.y * 0.5 - 0.07, 0.03))
+	var iron := _shade(M_IRON)
+	for k in 3:
+		_m_part(Vector3(0.018, size.y, 0.018), iron, node.transform * Vector3((k - 1) * size.x * 0.3, 0, 0.045), node.basis)
+	for y: float in [-size.y * 0.2, size.y * 0.2]:
+		_m_part(Vector3(size.x, 0.018, 0.018), iron, node.transform * Vector3(0, y, 0.05), node.basis)
+
+
+## The yard before the middle-ages museum: cobbles on a kerb; a dry moat
+## before the door, a rubber duck in it, a little drawbridge over it on its
+## chains; a brazier each side; a well on the left, a knight on the right.
+func _m_yard(rng: RandomNumberGenerator) -> void:
+	var w := M_W + 0.9
+	_box(Vector3(w + 0.1, 0.03, M_YARD + 0.04), _shade(M_COBBLE_EDGE), Vector3(0, 0.015, M_YARD * 0.5))
+	var cobble := 0.2
+	var nx := int(w / cobble)
+	var nz := int(M_YARD / cobble)
+	for j in nz:
+		for i in nx:
+			var x := (i - (nx - 1) * 0.5 + (0.25 if j % 2 == 1 else -0.25)) * cobble
+			var z := (j + 0.5) * cobble
+			if absf(x) < 0.72 and z < 0.72:
+				continue
+			var at := Vector3(x + rng.randf_range(-0.012, 0.012), 0.035, z + rng.randf_range(-0.012, 0.012))
+			var tone: Color = M_COBBLE[rng.randi() % M_COBBLE.size()]
+			_m_part(Vector3(cobble - 0.035, 0.03, cobble - 0.035), _shade(tone), at, Basis(Vector3.UP, rng.randf_range(-0.15, 0.15)))
+	# The moat: a dark pit in stone kerbs, the duck, the drawbridge.
+	var trim := _shade(M_TRIM)
+	_box(Vector3(1.36, 0.012, 0.62), _shade(M_MOAT), Vector3(0, 0.03, 0.38))
+	_m_part(Vector3(1.44, 0.06, 0.06), trim, Vector3(0, 0.05, 0.72))
+	for sx: int in [-1, 1]:
+		_m_part(Vector3(0.06, 0.06, 0.64), trim, Vector3(sx * 0.7, 0.05, 0.38))
+	var duck := Node3D.new()
+	duck.position = Vector3(0.45, 0.04, 0.42)
+	duck.rotation.y = -0.6
+	add_child(duck)
+	_mesh_in(duck, _ball(0.065), _shade(M_DUCK), Vector3(0, 0.05, 0)).scale = Vector3(1, 0.8, 1.3)
+	_mesh_in(duck, _ball(0.04), _shade(M_DUCK), Vector3(0, 0.12, 0.05))
+	_box_in(duck, Vector3(0.04, 0.015, 0.04), _shade(M_FLAME), Vector3(0, 0.115, 0.1))
+	var wood := _shade(WOOD.lightened(0.15))
+	_box(Vector3(0.5, 0.04, 0.68), wood, Vector3(0, 0.08, 0.38))
+	for k in 4:
+		_m_part(Vector3(0.5, 0.01, 0.012), _shade(WOOD), Vector3(0, 0.102, 0.12 + k * 0.17))
+	for sx: int in [-1, 1]:
+		_m_link(Vector3(sx * 0.23, 0.1, 0.7), Vector3(sx * 0.3, M_BASE + 0.62, 0.05), _shade(M_IRON))
+	# A brazier each side of it, burning.
+	for sx: int in [-1, 1]:
+		var at := Vector3(sx * 1.0, 0, 0.95)
+		_mesh(_cone(0.035, 0.025, 0.55), _shade(M_IRON), at + Vector3(0, 0.275, 0))
+		_mesh(_cone(0.05, 0.1, 0.08), _shade(M_IRON), at + Vector3(0, 0.59, 0))
+		var fire := _mesh(_cone(0.08, 0.0, 0.2), M_FLAME, at + Vector3(0, 0.72, 0))
+		var core := _mesh(_cone(0.045, 0.0, 0.14), GOLD, at + Vector3(0, 0.7, 0))
+		if open:
+			fire.material_override = _lit_material(M_FLAME, 2.5)
+			core.material_override = _lit_material(GOLD, 3.0)
+		else:
+			fire.material_override = MenuStage._material(_shade(M_IRON))
+			core.material_override = fire.material_override
+	_m_well(Vector3(-1.7, 0, 1.8))
+	var knight := Node3D.new()
+	knight.position = Vector3(1.7, 0, 1.85)
+	knight.rotation.y = -0.45
+	add_child(knight)
+	_m_knight(knight)
+
+
+## A chain (a thin bar) from a to b.
+func _m_link(a: Vector3, b: Vector3, colour: Color) -> void:
+	var up := (b - a).normalized()
+	var x := Vector3.RIGHT
+	var z := x.cross(up).normalized()
+	_m_part(Vector3(0.015, a.distance_to(b), 0.015), colour, (a + b) * 0.5, Basis(up.cross(z), up, z))
+
+
+## A well: a round stone kerb, the water dark in it, two posts and a beam,
+## a little tiled roof, a bucket on its rope.
+func _m_well(at: Vector3) -> void:
+	var stone := _shade(M_SAND_DARK)
+	var wood := _shade(WOOD)
+	_mesh(_cone(0.27, 0.27, 0.3), stone, at + Vector3(0, 0.15, 0))
+	_mesh(_cone(0.3, 0.3, 0.05), _shade(M_TRIM), at + Vector3(0, 0.32, 0))
+	_mesh(_cone(0.22, 0.22, 0.02), _shade(Color("#1c2a44")), at + Vector3(0, 0.34, 0))
+	for sx: int in [-1, 1]:
+		_box(Vector3(0.05, 0.6, 0.05), wood, at + Vector3(sx * 0.25, 0.6, 0))
+	var beam := _mesh(_cone(0.022, 0.022, 0.56), wood, at + Vector3(0, 0.8, 0))
+	beam.rotation.z = PI * 0.5
+	var roof := PrismMesh.new()
+	roof.size = Vector3(0.44, 0.2, 0.68)
+	var tiles := _mesh(roof, _shade(M_TILE), at + Vector3(0, 1.0, 0))
+	tiles.rotation.y = PI * 0.5
+	_box(Vector3(0.012, 0.26, 0.012), _shade(M_IRON), at + Vector3(0, 0.66, 0))
+	_mesh(_cone(0.06, 0.075, 0.1), _shade(POLE), at + Vector3(0, 0.49, 0))
+
+
+## A knight in armour on a plinth, standing proud, a red plume on his helmet
+## and a shield with a croquette on it; for a lance, a plunger held high.
+func _m_knight(at: Node3D) -> void:
+	var steel := _shade(M_STEEL)
+	var dark := _shade(M_STEEL.darkened(0.35))
+	var accent := _shade(_colour)
+	_box_in(at, Vector3(0.52, 0.26, 0.52), _shade(M_SAND_DARK), Vector3(0, 0.13, 0))
+	_box_in(at, Vector3(0.58, 0.04, 0.58), _shade(M_TRIM), Vector3(0, 0.28, 0))
+	var k := Node3D.new()
+	k.position = Vector3(0, 0.3, 0)
+	k.scale = Vector3.ONE * 1.25
+	at.add_child(k)
+	for sx: int in [-1, 1]:
+		_mesh_in(k, _cone(0.04, 0.045, 0.3), steel, Vector3(sx * 0.06, 0.17, 0))
+		_box_in(k, Vector3(0.07, 0.04, 0.13), dark, Vector3(sx * 0.06, 0.02, 0.03))
+	_mesh_in(k, _cone(0.14, 0.1, 0.12), dark, Vector3(0, 0.36, 0))
+	_mesh_in(k, _ball(0.13), steel, Vector3(0, 0.52, 0)).scale = Vector3(1.0, 1.15, 0.8)
+	for sx: int in [-1, 1]:
+		_mesh_in(k, _ball(0.06), steel, Vector3(sx * 0.14, 0.62, 0))
+	# The helmet, its visor's slit, the plume.
+	_mesh_in(k, _cone(0.085, 0.08, 0.17), steel, Vector3(0, 0.78, 0))
+	_mesh_in(k, _ball(0.08), steel, Vector3(0, 0.86, 0))
+	_box_in(k, Vector3(0.12, 0.02, 0.02), M_IRON, Vector3(0, 0.8, 0.08))
+	var plume := _mesh_in(k, _cone(0.04, 0.0, 0.22), accent, Vector3(0, 1.0, -0.04))
+	plume.rotation.x = -0.45
+	# The arm up with the plunger; the other with the shield.
+	var arm := _box_in(k, Vector3(0.05, 0.24, 0.05), steel, Vector3(0.17, 0.74, 0.02))
+	arm.rotation.z = -0.15
+	_mesh_in(k, _cone(0.014, 0.014, 0.95), _shade(WOOD.lightened(0.3)), Vector3(0.2, 0.95, 0.05))
+	_mesh_in(k, _ball(0.075), accent, Vector3(0.2, 1.44, 0.05)).scale = Vector3(1, 0.75, 1)
+	_mesh_in(k, _cone(0.085, 0.085, 0.02), accent.darkened(0.2), Vector3(0.2, 1.4, 0.05))
+	_box_in(k, Vector3(0.05, 0.22, 0.05), steel, Vector3(-0.16, 0.5, 0.02))
+	_box_in(k, Vector3(0.18, 0.22, 0.025), accent, Vector3(-0.16, 0.46, 0.09))
+	_box_in(k, Vector3(0.2, 0.03, 0.03), _shade(GOLD), Vector3(-0.16, 0.57, 0.09))
+	_mesh_in(k, _ball(0.04), _shade(M_CROQUETTE), Vector3(-0.16, 0.45, 0.11)).scale = Vector3(1.3, 0.75, 0.6)
+
+
+## A flat disc facing +y (turn it to face out of a wall).
+func _m_disc(radius: float, thick: float) -> CylinderMesh:
+	var d := CylinderMesh.new()
+	d.top_radius = radius
+	d.bottom_radius = radius
+	d.height = thick
+	d.radial_segments = 16
+	d.rings = 0
+	return d
+
+
+## A small box to draw with the rest of its colour (_m_flush).
+func _m_part(size: Vector3, colour: Color, at: Vector3, turned := Basis.IDENTITY) -> void:
+	if not _m_parts.has(colour):
+		_m_parts[colour] = []
+	(_m_parts[colour] as Array).append(Transform3D(turned * Basis.from_scale(size), at))
+
+
+func _m_flush() -> void:
+	var cube := BoxMesh.new()
+	for colour: Color in _m_parts:
+		var list: Array = _m_parts[colour]
+		var mm := MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.mesh = cube
+		mm.instance_count = list.size()
+		for i in list.size():
+			mm.set_instance_transform(i, list[i])
+		var mmi := MultiMeshInstance3D.new()
+		mmi.multimesh = mm
+		mmi.material_override = MenuStage._material(colour)
+		add_child(mmi)
+	_m_parts.clear()
+
+
+## The two lights of a two-light window w across, h tall to where their
+## arches spring: side by side, a column's width between them, each with its
+## round top; one mesh, its UVs across each light (for the stained glass).
+static func _m_lights_mesh(w: float, h: float) -> ArrayMesh:
+	var key := Vector2(w, h)
+	if _m_lights.has(key):
+		return _m_lights[key]
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var lw := (w - M_MULLION) * 0.5
+	var tall := h + lw * 0.5
+	for sx: int in [-1, 1]:
+		var cx := sx * (M_MULLION + lw) * 0.5
+		var left := cx - lw * 0.5
+		# Round it anticlockwise, seen from the front: the foot, up the right,
+		# over the top.
+		var pts: Array[Vector2] = [Vector2(left, -h * 0.5), Vector2(left + lw, -h * 0.5)]
+		for k in 9:
+			var a := PI * k / 8.0
+			pts.append(Vector2(cx + cos(a) * lw * 0.5, h * 0.5 + sin(a) * lw * 0.5))
+		for k in range(1, pts.size() - 1):
+			# Godot's front faces wind clockwise.
+			for p: Vector2 in [pts[0], pts[k + 1], pts[k]]:
+				st.set_normal(Vector3.BACK)
+				st.set_uv(Vector2((p.x - left) / lw, 1.0 - (p.y + h * 0.5) / tall))
+				st.add_vertex(Vector3(p.x, p.y, 0))
+	var mesh := st.commit()
+	_m_lights[key] = mesh
+	return mesh
+
+
+## The stained glass, lit or dark (and darker with the museum shut).
+func _m_stained(lit: bool) -> StandardMaterial3D:
+	var key := "%s:%s" % [lit, open]
+	if not _m_glass.has(key):
+		var m := StandardMaterial3D.new()
+		m.albedo_texture = _m_glass_image()
+		m.albedo_color = Color.WHITE if lit else Color(0.36, 0.34, 0.46)
+		if not open:
+			m.albedo_color = m.albedo_color.darkened(SHUT)
+		m.roughness = 0.3
+		if open:
+			# Lit, its colours glow through; dark, just a hint of them.
+			m.emission_enabled = true
+			m.emission_texture = m.albedo_texture
+			m.emission = Color.WHITE
+			m.emission_energy_multiplier = 0.35 if lit else 0.06
+		_m_glass[key] = m
+	return _m_glass[key]
+
+
+## Lozenges of coloured glass between lines of lead, a lead edge round it.
+static func _m_glass_image() -> ImageTexture:
+	if _m_glass_texture == null:
+		var img := Image.create(48, 96, false, Image.FORMAT_RGB8)
+		var cell := 12.0
+		for y in 96:
+			for x in 48:
+				var u := (x + y) / cell
+				var v := (x - y + 96) / cell
+				var c: Color = M_LEAD
+				var edge := x < 2 or x >= 46 or y < 2 or y >= 94
+				if not edge and fposmod(u, 1.0) > 0.16 and fposmod(v, 1.0) > 0.16:
+					c = M_STAINED[absi(int(floor(u)) * 7 + int(floor(v)) * 13) % M_STAINED.size()]
+				img.set_pixel(x, y, c)
+		img.generate_mipmaps()
+		_m_glass_texture = ImageTexture.create_from_image(img)
+	return _m_glass_texture
 
 
 ## Pick room i's window (-1 none): it lights up brighter, its piece turns.

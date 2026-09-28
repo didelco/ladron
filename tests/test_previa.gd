@@ -373,6 +373,52 @@ func _init() -> void:
 	check(a_seen.size() == 5 and a_seen[0] == 4 and a_order, "... las flechas, de la puerta a las del costado, de izquierda a derecha " + str(a_seen))
 	tour.queue_free()
 
+	# The castle of the middle ages (a palace with towers): on arriving only
+	# room 1 is a room; later, its rooms on its front and up its towers, the
+	# big job's the big window in the middle of the noble floor.
+	var knights: Array[int] = Story.nights_in(3)
+	Story.unlock(knights[0], 1)
+	var castle_tour := Tour.new()
+	root.add_child(castle_tour)
+	castle_tour.stage.hurry = true
+	castle_tour.open_museum(1, knights[0])
+	await frames()
+	var castle: MuseumBuilding = castle_tour.stage._body(3)
+	var castle_shown: Array = range(5).filter(func(i: int) -> bool: return castle_tour.stage.room_open(i))
+	check(castle.windows.size() == 5 and castle_shown == [0] and castle.windows.filter(func(w: Dictionary) -> bool: return w.open).size() == 1,
+		"el castillo, al llegar: solo la ventana de la sala 1 es una sala")
+	check(castle.windows.all(func(w: Dictionary) -> bool: return w.lock == null) and (castle.windows[4].piece as Node3D).get_child_count() == 0
+		and (castle.windows[4].node as Node3D).get_child_count() == (castle.windows[1].node as Node3D).get_child_count(),
+		"... las demás, vidrieras sin candado ni pieza; el gran golpe, sin corona")
+	castle_tour.queue_free()
+	Story.unlock(knights[4], 1)
+	castle_tour = Tour.new()
+	root.add_child(castle_tour)
+	castle_tour.stage.hurry = true
+	castle_tour.open_museum(1, knights[0])
+	await frames()
+	castle = castle_tour.stage._body(3)
+	check(range(5).all(func(i: int) -> bool: return castle_tour.stage.room_open(i)), "el castillo con todo desbloqueado: cinco salas")
+	var on_towers := castle.windows.filter(func(w: Dictionary) -> bool: return absf((w.node as Node3D).position.x) > MuseumBuilding.M_W * 0.5 - 0.01).size()
+	var on_front := castle.windows.filter(func(w: Dictionary) -> bool: return (w.face as Basis).z.z > 0.9).size()
+	check(on_front == 5 and on_towers == 2, "... en la fachada, dos en lo alto de las torres (%d y %d)" % [on_front, on_towers])
+	var boss_w: Dictionary = castle.windows[4]
+	check(boss_w.boss and (boss_w.node as Node3D).position.x == 0.0 and (boss_w.size as Vector2).x > (castle.windows[0].size as Vector2).x,
+		"... el gran golpe, la ventana grande del centro")
+	check((boss_w.piece as Node3D).get_child_count() == 1 and (boss_w.node as Node3D).get_child_count() > (castle.windows[0].node as Node3D).get_child_count(),
+		"... con su pieza, y la corona")
+	var tower_room := -1
+	for i in 4:
+		if (castle.windows[i].node as Node3D).position.x > 2.0:
+			tower_room = i
+	castle_tour._pick_room(tower_room)
+	await frames()
+	var tower_face := castle_tour.stage.room_face(tower_room)
+	check(castle_tour.stage.room == tower_room and castle_tour.stage._room_ring.global_basis.y.normalized().dot(tower_face.z) > 0.99,
+		"... se elige la de la torre, su aro sobre su pared")
+	castle_tour.queue_free()
+	await frames()
+
 	# A gang of two: its own way through, the gang's words.
 	m.players = 2
 	m.seats.assign(["kb_left", "kb_right"])
