@@ -119,10 +119,10 @@ var inside := -1
 var _rooms: Array[Dictionary] = []
 var room := -1
 var _room_ring: MeshInstance3D
-## round a room that is a whole floor (its window's "shape" "floor"), a
-## frame of light round its front instead: its four bars, and how big
+## round a room that is a whole floor (its window's "shape" "floor"), the
+## edges of its box in light instead: its twelve bars, and how big
 var _room_frame: Node3D
-var _frame_size := Vector2.ZERO
+var _frame_size := Vector3.ZERO
 var _room_light: SpotLight3D
 var _tween: Tween
 ## everything moves at once (the tests)
@@ -702,7 +702,7 @@ func _open_rooms(m: int, rooms: Array) -> void:
 		_room_light.spot_angle = 14.0
 		town.add_child(_room_light)
 		_room_frame = Node3D.new()
-		for k in 4:
+		for k in 12:
 			var bar := MeshInstance3D.new()
 			bar.mesh = BoxMesh.new()
 			bar.material_override = _room_ring.material_override
@@ -840,15 +840,18 @@ func _animate_rooms(dt: float) -> void:
 	_room_light.look_at(mid)
 
 
-## Round a room that is a whole floor: a frame of light round its front,
-## out from it as far as it says (to clear the box over it), breathing;
-## it glides from floor to floor. Its lamp out in front, a little above.
+## Round a room that is a whole floor: the edges of its whole box in light
+## (its "volume", round its node; without one, a frame round its front),
+## a little out from it, breathing; it glides from floor to floor. Its
+## lamp out in front, a little above.
 func _frame_floor(dt: float, w: Dictionary) -> void:
 	var size: Vector2 = w.size
 	var face := room_face(room)
-	var mid := room_centre(room) + face.z * float(w.get("out", 0.1))
+	var node := w.node as Node3D
+	var volume: AABB = w.get("volume", AABB(Vector3(-size.x * 0.5, -size.y * 0.5, -0.05), Vector3(size.x, size.y, 0.1)))
+	var mid := node.global_transform * volume.get_center()
 	var breathe: float = 1.0 + sin(_t * 4.0) * 0.015
-	var goal_size := (size + Vector2(0.14, 0.1)) * breathe
+	var goal_size := (volume.size + Vector3(0.08, 0.08, 0.08)) * breathe
 	var goal := Transform3D(face, mid)
 	var was := _room_frame.global_transform
 	if _room_frame.visible and was.basis.z.normalized().dot(face.z) > 0.99:
@@ -856,22 +859,35 @@ func _frame_floor(dt: float, w: Dictionary) -> void:
 		goal_size = _frame_size.lerp(goal_size, 1.0 - exp(-dt * 12.0))
 	_frame_size = goal_size
 	_room_frame.global_transform = goal
-	var t := 0.06
+	# Four edges along each axis, one at each corner of the other two.
+	var t := 0.05
+	var half := _frame_size * 0.5
 	var bars := _room_frame.get_children()
-	for k in 4:
+	for k in 12:
 		var bar := bars[k] as MeshInstance3D
-		var across := k < 2
-		var end := -1.0 if k % 2 == 0 else 1.0
-		(bar.mesh as BoxMesh).size = Vector3(_frame_size.x + t, t, t) if across else Vector3(t, _frame_size.y + t, t)
-		bar.position = Vector3(0, end * _frame_size.y * 0.5, 0) if across else Vector3(end * _frame_size.x * 0.5, 0, 0)
+		var axis := k >> 2
+		var a := -1.0 if k % 2 == 0 else 1.0
+		var b := -1.0 if ((k >> 1) & 1) == 0 else 1.0
+		var long := _frame_size[axis] + t
+		match axis:
+			0:
+				(bar.mesh as BoxMesh).size = Vector3(long, t, t)
+				bar.position = Vector3(0, a * half.y, b * half.z)
+			1:
+				(bar.mesh as BoxMesh).size = Vector3(t, long, t)
+				bar.position = Vector3(a * half.x, 0, b * half.z)
+			_:
+				(bar.mesh as BoxMesh).size = Vector3(t, t, long)
+				bar.position = Vector3(a * half.x, b * half.y, 0)
 	var ring := _room_ring.material_override as StandardMaterial3D
 	ring.albedo_color = RING if _rooms[room].open else LOCK
 	ring.emission = ring.albedo_color
 	_room_ring.visible = false
 	_room_frame.visible = true
 	_room_light.visible = _rooms[room].open
-	_room_light.global_position = mid + face.z * 4.0 + face.y * 2.5
-	_room_light.look_at(mid)
+	var front := room_centre(room)
+	_room_light.global_position = front + face.z * 4.0 + face.y * 2.5
+	_room_light.look_at(front)
 
 
 ## A little crown: a gold band with three points; k times as big.

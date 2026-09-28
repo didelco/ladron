@@ -324,7 +324,11 @@ func _init() -> void:
 	check(floors_up and tower.windows[4].boss, "... en orden hacia arriba, y el gran golpe, la de arriba del todo")
 	var reached_rooms: Array = range(5).filter(func(i: int) -> bool: return tour.stage.room_open(i))
 	check(reached_rooms == [0, 1, 2] and tower.windows.filter(func(w: Dictionary) -> bool: return w.open).size() == 3, "con tres salas, solo esas tres plantas son salas")
-	check(tower.windows.all(func(w: Dictionary) -> bool: return w.lock == null) and (tower.windows[3].piece as Node3D).get_child_count() == 0 and (tower.windows[2].piece as Node3D).get_child_count() == 1, "... las demás, cajas a oscuras: sin candado ni pieza")
+	check(tower.windows.all(func(w: Dictionary) -> bool: return w.lock == null and (w.piece as Node3D).get_child_count() == 0), "... sin candados y sin piezas a la vista: ni en las salas")
+	var lit_joint := func(k: int) -> bool: return (tower.windows[k].back as MeshInstance3D).material_override == tower.windows[k].rest
+	check(lit_joint.call(1) and lit_joint.call(2) and not lit_joint.call(3) and not lit_joint.call(4), "... la junta de luz bajo cada sala, encendida; bajo las demás cajas, apagada")
+	check((tower.windows[1].frame[0] as MeshInstance3D).material_override == tower.windows[1].stone and (tower.windows[3].frame[0] as MeshInstance3D).material_override != tower.windows[1].stone,
+		"... y la caja de una sala, con un leve brillo")
 	tour._pick_room(3)
 	tour.stage.pick_room(4)
 	check(tour.stage.room == 0, "... ni se pueden elegir")
@@ -342,7 +346,16 @@ func _init() -> void:
 	tour.act("left")
 	check(went_down and right_up and tour.stage.room == 1, "abajo baja; derecha e izquierda, siguiente y anterior")
 	await frames()
-	check(tour.stage._room_frame.visible and not tour.stage._room_ring.visible, "un marco de luz alrededor de la planta, no el aro")
+	check(tour.stage._room_frame.visible and not tour.stage._room_ring.visible and tour.stage._room_frame.get_child_count() == 12, "las aristas de luz de la caja entera, no el aro")
+	# Once it has glided there.
+	await frames(60)
+	var volume: AABB = tower.windows[1].volume
+	var frame_size: Vector3 = tour.stage._frame_size
+	var frame_mid := (tower.windows[1].node as Node3D).global_transform * volume.get_center()
+	check(frame_size.z > 2.0 and absf(frame_size.x - volume.size.x) < 0.2 and absf(frame_size.y - volume.size.y) < 0.2 and tour.stage._room_frame.global_position.distance_to(frame_mid) < 0.05,
+		"... alrededor de todo su volumen (fachada, costado y fondo)")
+	check((tower.windows[1].frame[0] as MeshInstance3D).material_override == tower.windows[1].frame_glow and (tower.windows[1].back as MeshInstance3D).material_override == tower.windows[1].glow
+		and (tower.windows[0].frame[0] as MeshInstance3D).material_override == tower.windows[0].stone, "... la caja elegida, encendida entera, y su junta brilla más")
 	var floor_win := tour.stage.room_window(1)
 	check((floor_win.centre as Vector3).distance_to((tower.windows[1].node as Node3D).global_position) < 0.01 and floor_win.size == tower.windows[1].size and (floor_win.size as Vector2).x > 2.0,
 		"el plano saldría del centro de su fachada, del tamaño de la planta")
