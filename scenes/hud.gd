@@ -106,7 +106,8 @@ void fragment() {
 	if (cctv > 0.0) {
 		c = mix(c, vec4(monitor(UV, FRAGCOORD.xy, SCREEN_PIXEL_SIZE), 1.0), cctv);
 	}
-	COLOR = c;
+	// Faded with the panel (modulate), like everything on it.
+	COLOR = c * vec4(1.0, 1.0, 1.0, COLOR.a);
 }
 """
 ## The security monitor's colours (the pause, cctv), all here to change in
@@ -162,8 +163,10 @@ void fragment() {
 	if (q.x < radius && q.y < radius) {
 		a = 1.0 - smoothstep(radius - 1.5, radius, length(vec2(radius) - q));
 	}
-	COLOR = texture(TEXTURE, UV);
-	COLOR.a *= a;
+	// Its alpha from the card's (modulate), to fade with it; its colour
+	// as it is, bright even on a card waiting in the dark.
+	vec4 t = texture(TEXTURE, UV);
+	COLOR = vec4(t.rgb, t.a * a * COLOR.a);
 }
 """
 
@@ -180,8 +183,28 @@ const C := {
 const SHOUT_S := 1.4
 ## A menu sound to play: "nav" moving about, "ok" choosing, "back" going back.
 signal ui_sound(kind: String)
-## How long a full-screen menu takes to fade in or out over the game.
-const FADE_S := 0.2
+## The ways one screen gives way to the next, the same everywhere, all here
+## to change in one place. Short, so they never hold anyone up, and never in
+## the way of a press: what comes in answers at once, even while it fades.
+##   fade: a menu (or the editor, or the cover) coming up over the game or
+##     going away from it (FADE_S).
+##   swap: one menu to the next: the old one fades out as the new one fades
+##     in over it (SWAP_S); the same screen built again (a setting changed, a
+##     seat taken) changes at once, the focus where it was.
+##   hold: a night just over, frozen a moment before its page comes up
+##     (HOLD_S); and into a night, the count waits for the menu to be gone.
+## The papers (EndPages) come in their own way on top of these. All ease in
+## and out on the same curve (TRANS, EASE); the picture behind the menus
+## pans across, from one menu's spot to the next's, over PAN_S.
+const FADE_S := 0.25
+const SWAP_S := 0.18
+const HOLD_S := 0.45
+const PAN_S := 0.8
+const TRANS := Tween.TRANS_SINE
+const EASE := Tween.EASE_IN_OUT
+## Frames a new menu stays unseen for, while its 3D cards and pictures draw
+## for the first time (black until then).
+const SWAP_WAIT_FRAMES := 2
 ## The arcade face, for titles, buttons, the clock and the yell only: it is a
 ## shouting font and unreadable in paragraphs, so the log and the IA panel keep
 ## the plain one.
@@ -208,10 +231,21 @@ var _shout_left := 0.0
 var _shout_angle := 0.0
 var _panel: ColorRect
 var _panel_box: VBoxContainer
+## what the menus are centred in: the one on show and, for a moment, the one
+## it took over from, fading out behind it
+var _centre: CenterContainer
 ## whether a menu is up, as far as the game is concerned: false the moment it
 ## starts fading out, while the panel itself is still visible
 var _shown := false
 var _fade: Tween
+## the screen on show (show_menu's screen): built again as itself, it
+## changes in place; another one swaps in
+var _screen := ""
+## each menu shown bumps it: a swap still waiting for its first frames drawn
+## gives up if another menu has come since
+var _swap_id := 0
+## the game's own HUD fading away as a menu comes up over it
+var _play_fade: Tween
 ## The backdrop panning or fading between the picture and the wall.
 var _backdrop: Tween
 ## where in the picture it looks (the wall keeps the last, to fade from)
@@ -225,6 +259,8 @@ var _count_left := 0.0
 var _count_step := -1
 var _count_on_step: Callable
 var _count_on_done: Callable
+## how long the count waits before its first number (countdown's wait)
+var _count_wait := 0.0
 var _map: Control
 var _map_picture: TextureRect
 var _map_stage: MapStage
@@ -313,7 +349,8 @@ func _ready() -> void:
 	_map_stage.process_mode = Node.PROCESS_MODE_DISABLED
 
 	_panel = ColorRect.new()
-	_panel.color = C.panel
+	# Opaque: the shader paints it, and only takes its fade (modulate) from it.
+	_panel.color = Color(C.panel, 1.0)
 	_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
 	var backdrop := Shader.new()
 	backdrop.code = BACKDROP_SHADER
@@ -321,12 +358,10 @@ func _ready() -> void:
 	(_panel.material as ShaderMaterial).shader = backdrop
 	add_child(_panel)
 	_build_cctv()
-	var centre := CenterContainer.new()
-	centre.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_panel.add_child(centre)
-	_panel_box = VBoxContainer.new()
-	_panel_box.add_theme_constant_override("separation", 10)
-	centre.add_child(_panel_box)
+	_centre = CenterContainer.new()
+	_centre.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_panel.add_child(_centre)
+	_panel_box = _new_box()
 	# Up top, only how alarmed the guards are; at the bottom, the gang.
 	_status.visible = false
 	_alarm = TextureRect.new()
@@ -429,10 +464,22 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 ##   {"footer": text}                                 what to press
 ## Buttons work with the mouse, and with the arrows and Enter; the first one
 ## has the focus.
-func show_menu(items: Array) -> void:
+## screen: which screen this is. The same one again (a setting changed, a
+## seat taken, a size picked) changes in place, the focus kept where it was;
+## another swaps in (SWAP_S), and "" is always another.
+func show_menu(items: Array, screen := "") -> void:
 	_version.visible = false
-	for c in _panel_box.get_children():
-		c.queue_free()
+	var same := _shown and screen != "" and screen == _screen
+	var swap := _shown and not same
+	# Where the focus was, to keep it there on the same screen.
+	var was := _focus_place() if same else Vector2i(-1, -1)
+	_screen = screen
+	var old := _panel_box
+	if _panel.visible and _panel.modulate.a > 0.0:
+		_let_go(old)
+	else:
+		old.queue_free()
+	_panel_box = _new_box()
 	# What the items leave behind: rows of focusable controls, top to
 	# bottom, for the arrows, and the control to start on.
 	var st := MenuState.new()
@@ -445,32 +492,109 @@ func show_menu(items: Array) -> void:
 	var rows := st.rows
 	var first := st.first
 	var focus_on := st.focus_on
-	# Only a menu coming up over the game fades in; one replacing another
-	# (a difficulty picked, a night chosen) is rebuilt in place, at once.
 	if not _shown:
 		_shown = true
 		# The controls in it are brand new; only the frame around them was
 		# made click-through by hide_panel.
 		_panel.mouse_filter = Control.MOUSE_FILTER_STOP
-		(_panel_box.get_parent() as Control).mouse_filter = Control.MOUSE_FILTER_PASS
-		_panel_box.mouse_filter = Control.MOUSE_FILTER_PASS
+		_centre.mouse_filter = Control.MOUSE_FILTER_PASS
+		var over_game := not _panel.visible or _panel.modulate.a < 1.0
 		if not _panel.visible:
 			_panel.modulate.a = 0.0
 		_panel.visible = true
 		_fade_panel(1.0)
-	for c in _play:
-		c.visible = false
+		_fade_play_out(over_game)
+	_show_box(_panel_box, old if is_instance_valid(old) and old.is_inside_tree() else null, swap)
 	_wire(rows)
 	# Once laid out, up and down go by where things are on screen.
 	_rows = rows
 	_rewire.call_deferred(rows)
 	if focus_on:
 		first = focus_on
+	if was.x >= 0 and was.x < rows.size() and not (rows[was.x] as Array).is_empty():
+		first = rows[was.x][mini(was.y, (rows[was.x] as Array).size() - 1)]
 	if first:
 		# The focus a menu opens with is not a move: no sound for it.
 		_quiet = true
 		first.grab_focus.call_deferred()
 		set_deferred("_quiet", false)
+
+
+## A new, empty box for a menu's items, in the middle of the screen.
+func _new_box() -> VBoxContainer:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 10)
+	box.mouse_filter = Control.MOUSE_FILTER_PASS
+	_centre.add_child(box)
+	return box
+
+
+## The menu that was on show, on its way out: no longer pressable, clicked
+## or focused, whatever happens to it next (_show_box).
+func _let_go(box: Control) -> void:
+	var focus := get_viewport().gui_get_focus_owner()
+	if focus and box.is_ancestor_of(focus):
+		get_viewport().gui_release_focus()
+	box.propagate_call("set", ["mouse_filter", Control.MOUSE_FILTER_IGNORE])
+	box.propagate_call("set", ["focus_mode", Control.FOCUS_NONE])
+
+
+## A menu just built comes in: unseen for its first frames (its 3D cards
+## draw black until they have drawn once), with the one before still up;
+## then, as another screen, the old one fades out as it fades in (swap), or,
+## as the same screen, it simply takes over. Its buttons answer throughout.
+func _show_box(box: Control, old: Control, swap: bool) -> void:
+	_swap_id += 1
+	var id := _swap_id
+	box.modulate.a = 0.0
+	for i in SWAP_WAIT_FRAMES:
+		await get_tree().process_frame
+	if not is_instance_valid(box):
+		return
+	if id != _swap_id:
+		# Another menu came in the meantime: this one is already on its way out.
+		box.modulate.a = 1.0
+		return
+	if not swap or old == null or not is_instance_valid(old):
+		box.modulate.a = 1.0
+		if old and is_instance_valid(old):
+			old.queue_free()
+		return
+	var tw := create_tween().set_parallel().set_trans(TRANS).set_ease(EASE)
+	tw.tween_property(box, "modulate:a", 1.0, SWAP_S)
+	tw.tween_property(old, "modulate:a", 0.0, SWAP_S * 0.7)
+	tw.chain().tween_callback(old.queue_free)
+
+
+## Where the focus is in the menu on show: [row, place in it], or -1s.
+func _focus_place() -> Vector2i:
+	var focus := get_viewport().gui_get_focus_owner()
+	for r in _rows.size():
+		var i := (_rows[r] as Array).find(focus)
+		if i >= 0:
+			return Vector2i(r, i)
+	return Vector2i(-1, -1)
+
+
+## The game's own HUD (the gang, the alarm, the kunai) going as a menu comes
+## up over it, rather than all at once.
+## Straight away (not over_game) when the menus already cover it.
+func _fade_play_out(over_game: bool) -> void:
+	if _play_fade:
+		_play_fade.kill()
+	var on := _play.filter(func(c): return (c as Control).visible)
+	if on.is_empty() or not over_game:
+		for c in _play:
+			c.visible = false
+			c.modulate.a = 1.0
+		return
+	_play_fade = create_tween().set_parallel().set_trans(TRANS).set_ease(EASE)
+	for c in on:
+		_play_fade.tween_property(c, "modulate:a", 0.0, FADE_S)
+	_play_fade.chain().tween_callback(func() -> void:
+		for c in _play:
+			c.visible = false
+			c.modulate.a = 1.0)
 
 
 ## A menu being built: its rows of focusable controls, top to bottom, the
@@ -1193,10 +1317,19 @@ func show_panel(title: String, title_colour: Color, lines: Array, footer: String
 ## the focus and lets clicks through while it fades, so a menu on its way out
 ## never swallows a key or a click. Calling it again when hidden does nothing.
 func hide_panel() -> void:
+	if _play_fade:
+		_play_fade.kill()
 	for c in _play:
+		if not c.visible or not _shown:
+			c.modulate.a = 1.0
 		c.visible = true
 	if not _shown:
 		return
+	# The game's HUD comes back as the menu goes.
+	_play_fade = create_tween().set_parallel().set_trans(TRANS).set_ease(EASE)
+	for c in _play:
+		c.modulate.a = 0.0
+		_play_fade.tween_property(c, "modulate:a", 1.0, FADE_S)
 	_shown = false
 	get_viewport().gui_release_focus()
 	_panel.propagate_call("set", ["mouse_filter", Control.MOUSE_FILTER_IGNORE])
@@ -1207,16 +1340,58 @@ func hide_panel() -> void:
 func _fade_panel(to: float) -> void:
 	if _fade:
 		_fade.kill()
-	_fade = create_tween()
+	_fade = create_tween().set_trans(TRANS).set_ease(EASE)
 	_fade.tween_property(_panel, "modulate:a", to, FADE_S * absf(to - _panel.modulate.a))
 	if to == 0.0:
-		_fade.tween_callback(func() -> void:
-			_panel.visible = false
-			# The monitor goes off with the menus it was behind.
-			_cctv_on = false
-			_cctv.visible = false
-			(_panel.material as ShaderMaterial).set_shader_parameter("cctv", 0.0)
-			backdrop(null))
+		_fade.tween_callback(_panel_gone)
+
+
+func _panel_gone() -> void:
+	_panel.visible = false
+	# The monitor goes off with the menus it was behind.
+	_cctv_on = false
+	_cctv.visible = false
+	(_panel.material as ShaderMaterial).set_shader_parameter("cctv", 0.0)
+	backdrop(null)
+
+
+## The menus' panel up at once, whole, with nothing on it yet: for what
+## covered the whole screen (the editor) to fade away over it, not over the
+## game. The next show_menu fills it without fading in.
+func cover_now() -> void:
+	if _fade:
+		_fade.kill()
+	_panel.visible = true
+	_panel.modulate.a = 1.0
+	_panel_box.queue_free()
+	_panel_box = _new_box()
+
+
+## Gone at once, menus and all, for something that already covers the whole
+## screen (the editor, once it has faded in over them). The focus is left
+## alone: it is that something's now.
+func put_away() -> void:
+	if _fade:
+		_fade.kill()
+	_shown = false
+	_panel.propagate_call("set", ["mouse_filter", Control.MOUSE_FILTER_IGNORE])
+	_panel.propagate_call("set", ["focus_mode", Control.FOCUS_NONE])
+	_panel.modulate.a = 0.0
+	_panel_gone()
+	visible = false
+
+
+## A whole layer drawn over the rest (the editor) fading in (to 1) or out
+## (to 0), the way the menus do; what to do once it has, chained after.
+static func fade_layer(layer: CanvasLayer, to: float) -> Tween:
+	var tw := layer.create_tween().set_parallel().set_trans(TRANS).set_ease(EASE)
+	tw.tween_interval(FADE_S)
+	for c in layer.get_children():
+		if c is CanvasItem:
+			if to > 0.0:
+				(c as CanvasItem).modulate.a = 0.0
+			tw.tween_property(c, "modulate:a", to, FADE_S)
+	return tw.chain()
 
 
 ## Behind the menus, one of PICTURES (the hall unless said) looking at focus
@@ -1243,14 +1418,14 @@ func backdrop(focus: Variant, picture := "hall") -> void:
 		m.set_shader_parameter("cover", cover)
 		m.set_shader_parameter("focus", _focus)
 		return
-	_backdrop = create_tween().set_parallel().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_backdrop = create_tween().set_parallel().set_trans(TRANS).set_ease(EASE)
 	# Through set_shader_parameter: a parameter never set yet is not a
 	# property the tween can find.
 	var was_cover: Variant = m.get_shader_parameter("cover")
 	var was_focus: Variant = m.get_shader_parameter("focus")
-	_backdrop.tween_method(func(v: float) -> void: m.set_shader_parameter("cover", v), 0.0 if was_cover == null else float(was_cover), cover, 0.5)
+	_backdrop.tween_method(func(v: float) -> void: m.set_shader_parameter("cover", v), 0.0 if was_cover == null else float(was_cover), cover, FADE_S)
 	if was_focus != null and typeof(was_focus) == typeof(_focus):
-		_backdrop.tween_method(func(v: Variant) -> void: m.set_shader_parameter("focus", v), was_focus, _focus, 1.4)
+		_backdrop.tween_method(func(v: Variant) -> void: m.set_shader_parameter("focus", v), was_focus, _focus, PAN_S)
 	else:
 		m.set_shader_parameter("focus", _focus)
 
@@ -1334,9 +1509,9 @@ func cctv(on: bool, where := "", museum := "", seconds := 0.0) -> void:
 		return
 	_cctv_on = false
 	# Off with the menus still up (out to the title): it fades to the wall.
-	_cctv_fade = create_tween().set_parallel()
-	_cctv_fade.tween_method(func(v: float) -> void: m.set_shader_parameter("cctv", v), 1.0, 0.0, 0.35)
-	_cctv_fade.tween_property(_cctv, "modulate:a", 0.0, 0.2)
+	_cctv_fade = create_tween().set_parallel().set_trans(TRANS).set_ease(EASE)
+	_cctv_fade.tween_method(func(v: float) -> void: m.set_shader_parameter("cctv", v), 1.0, 0.0, FADE_S)
+	_cctv_fade.tween_property(_cctv, "modulate:a", 0.0, FADE_S)
 	_cctv_fade.chain().tween_callback(func() -> void: _cctv.visible = false)
 
 
@@ -1969,12 +2144,14 @@ const COUNT := ["3", "2", "1", "HUD_COUNT_GO"]
 const COUNT_S := 0.8
 
 
-func countdown(on_step: Callable, on_done: Callable) -> void:
+## wait: seconds before the first number, for the menu to be gone.
+func countdown(on_step: Callable, on_done: Callable, wait := 0.0) -> void:
 	_count_on_step = on_step
 	_count_on_done = on_done
 	_count_left = COUNT_S * COUNT.size()
+	_count_wait = wait
 	_count_step = -1
-	_count.visible = true
+	_count.visible = wait <= 0.0
 
 
 func counting() -> bool:
@@ -2017,7 +2194,10 @@ func _process(dt: float) -> void:
 		if is_instance_valid(t):
 			t.rotation = sin(_clock * 1.3 + i) * 0.025
 			t.scale = Vector2.ONE * (1.0 + sin(_clock * 2.1 + i) * 0.025)
-	if _count_left > 0:
+	if _count_wait > 0.0:
+		_count_wait -= dt
+		_count.visible = _count_wait <= 0.0
+	elif _count_left > 0:
 		_draw_count(dt)
 	if _shout_left <= 0:
 		return
