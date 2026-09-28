@@ -4844,35 +4844,35 @@ window.JUEGO = {
    "file": "capturas/menu_museo_1.webp",
    "id": "menu_museo_1",
    "section": "menus",
-   "text": "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.",
+   "text": "Su edificio de cerca, cada museo el suyo: cada sala, una ventana de la fachada o del costado que se ve, con su pieza a contraluz, su número y sus estrellas (solo las desbloqueadas; las demás son ventanas como las otras); el gran golpe, en el centro de la fachada: la ventana grande o la misma puerta.",
    "title": "Museo 1: La Gran Cueva"
   },
   {
    "file": "capturas/menu_museo_2.webp",
    "id": "menu_museo_2",
    "section": "menus",
-   "text": "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.",
+   "text": "Su edificio de cerca, cada museo el suyo: cada sala, una ventana de la fachada o del costado que se ve, con su pieza a contraluz, su número y sus estrellas (solo las desbloqueadas; las demás son ventanas como las otras); el gran golpe, en el centro de la fachada: la ventana grande o la misma puerta.",
    "title": "Museo 2: La Casa de los Bichos"
   },
   {
    "file": "capturas/menu_museo_3.webp",
    "id": "menu_museo_3",
    "section": "menus",
-   "text": "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.",
+   "text": "Su edificio de cerca, cada museo el suyo: cada sala, una ventana de la fachada o del costado que se ve, con su pieza a contraluz, su número y sus estrellas (solo las desbloqueadas; las demás son ventanas como las otras); el gran golpe, en el centro de la fachada: la ventana grande o la misma puerta.",
    "title": "Museo 3: El Templo de las Momias"
   },
   {
    "file": "capturas/menu_museo_4.webp",
    "id": "menu_museo_4",
    "section": "menus",
-   "text": "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.",
+   "text": "Su edificio de cerca, cada museo el suyo: cada sala, una ventana de la fachada o del costado que se ve, con su pieza a contraluz, su número y sus estrellas (solo las desbloqueadas; las demás son ventanas como las otras); el gran golpe, en el centro de la fachada: la ventana grande o la misma puerta.",
    "title": "Museo 4: El Castillo de los Inventos"
   },
   {
    "file": "capturas/menu_museo_5.webp",
    "id": "menu_museo_5",
    "section": "menus",
-   "text": "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.",
+   "text": "Su edificio de cerca, cada museo el suyo: cada sala, una ventana de la fachada o del costado que se ve, con su pieza a contraluz, su número y sus estrellas (solo las desbloqueadas; las demás son ventanas como las otras); el gran golpe, en el centro de la fachada: la ventana grande o la misma puerta.",
    "title": "Museo 5: La Torre de Cristal"
   },
   {
@@ -7757,8 +7757,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "28-09-2026 19:35",
-  "commit": "1ae2af0",
-  "rama": "generativo-ajustes"
+  "fecha": "28-09-2026 19:47",
+  "commit": "0f0e136",
+  "rama": "worktree-agent-a45c2d198b33759e3"
  }
 };

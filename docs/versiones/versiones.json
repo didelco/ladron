@@ -579,6 +579,21 @@
    ]
   },
   {
+   "asunto": "museo",
+   "fecha": "2026-09-28T19:48",
+   "commit": "0f0e136",
+   "titulo": "El Templo de las Momias: una villa palladiana",
+   "porque": "El museo de la Antigüedad deja la sala de siempre y es una villa palladiana a la manera de La Rotonda",
+   "cambio": "Bloque de estuco claro con cúpula baja, pórtico dórico de seis columnas con frontón y bustos, escalinata entre pretiles con un caballo con cono y un zorro con gorro de fiesta; serlianas en la fachada y los costados, la sala 1 a la derecha del pórtico, la 2, la 3 y la 4 en el costado, y el gran golpe por la puerta",
+   "file": "versiones/museo/2026-09-28-el-templo-de-las-momias-una-villa-pallad.webp",
+   "from": "docs/capturas/menu_museo_3.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ]
+  },
+  {
    "asunto": "recreativa",
    "fecha": "2026-09-27T14:55",
    "commit": "59b9a18",
