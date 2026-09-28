@@ -225,14 +225,15 @@ func _pick_room(i: int) -> void:
 
 
 ## The next room that way (dir -1 left, 1 right) as the windows are seen
-## across the screen, on the museum's front or down its side: only among
-## those reached.
+## across the screen, on the museum's front or down its side; or, the rooms
+## one over another (a tower's floors), -1 down and 1 up (room_along): only
+## among those reached.
 func _step_room(dir: int) -> void:
 	var order: Array[int] = []
 	for i in _nights.size():
 		if stage.room_open(i):
 			order.append(i)
-	order.sort_custom(func(a: int, b: int) -> bool: return stage.room_x(a) < stage.room_x(b))
+	order.sort_custom(func(a: int, b: int) -> bool: return stage.room_along(a) < stage.room_along(b))
 	var at := order.find(stage.room) + dir
 	if at >= 0 and at < order.size():
 		_nav()
@@ -409,8 +410,11 @@ func act(what: String) -> void:
 					left.emit()
 		"museum":
 			match what:
-				"left", "up", "prev": _step_room(-1)
-				"right", "down", "next": _step_room(1)
+				"left", "prev": _step_room(-1)
+				"right", "next": _step_room(1)
+				# Stacked (a tower's floors), up goes up; else, as left.
+				"up": _step_room(1 if stage.rooms_stacked() else -1)
+				"down": _step_room(-1 if stage.rooms_stacked() else 1)
 				"accept": _choose_room()
 				"back": _leave_museum()
 		"plan":

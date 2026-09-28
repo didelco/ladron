@@ -157,6 +157,8 @@ func build(m: int, is_open: bool, rooms: Array = []) -> void:
 			_prehistory(rooms)
 		"antiguo":
 			_antiquity(rooms)
+		"moderna":
+			_contemporary(rooms)
 		_:
 			_hall(rooms)
 
@@ -1034,6 +1036,375 @@ func _cone(bottom: float, top_r: float, h: float) -> CylinderMesh:
 	c.radial_segments = 8
 	c.rings = 0
 	return c
+
+
+## The contemporary museum (La Torre de Cristal, after SANAA's New Museum):
+## a tower of white boxes piled up, each shifted a little from the one
+## under it (some stand out, some step back) and each its own height, in a
+## skin of pale perforated metal (fine ribs); under them a glass ground
+## floor, lit, with the museum's name; railings round the terraces the
+## steps back leave, a giant rubber duck on one; before it a square of
+## polished concrete with long benches, a giant banana and a banner.
+##
+## Each room is a floor, a box, in order up the tower (C_FLOORS), the big
+## job's the top one: a slit of glass runs across its front and round its
+## side. A room reached has it lit and its piece in it (the big job's,
+## the crown on the roof); one not reached yet is just another box, its
+## slit dark. The entry's "shape" is "floor": CityStage frames the whole
+## front of the box ("out": how far out, to clear the box over it).
+
+## How much the camera sees from close (0: CityStage's own): the tower's
+## taller than the rest.
+var view := 0.0
+
+## The glass ground floor: its height and its front (z); how deep the
+## square before it goes.
+const C_LOBBY := 0.7
+const C_LOBBY_Z := 0.1
+const C_SQUARE := 2.8
+## The floors, bottom to top: each box's size (across, tall, deep), its
+## middle across (x) and its front (z). The last is the big job's.
+const C_FLOORS := [
+	{"size": Vector3(3.5, 1.0, 2.7), "x": 0.0, "front": 0.25},
+	{"size": Vector3(3.0, 0.95, 2.3), "x": 0.25, "front": -0.2},
+	{"size": Vector3(3.3, 0.9, 2.5), "x": -0.1, "front": -0.05},
+	{"size": Vector3(2.8, 1.0, 2.2), "x": 0.2, "front": -0.3},
+	{"size": Vector3(2.4, 1.15, 1.9), "x": -0.1, "front": -0.45},
+]
+## The slit of glass across each floor: its height and its middle, as
+## shares of the floor's height (from its middle).
+const C_SLIT := 0.4
+const C_SLIT_Y := -0.1
+## The shadow line under each box; how far apart the skin's ribs are.
+const C_SEAM := 0.05
+const C_RIB := 0.2
+const C_SKIN := [Color("#e9ebf1"), Color("#dde0e8"), Color("#e6e8ef"), Color("#d9dce5"), Color("#eef0f4")]
+const C_RIB_TINT := Color("#c4c8d4")
+const C_LIP := Color("#b3b7c4")
+const C_SEAM_TINT := Color("#474356")
+const C_MULLION := Color("#353142")
+const C_CONCRETE := [Color("#b9b6c0"), Color("#c3c0c9"), Color("#aeabb6"), Color("#bdbac4")]
+const C_GROUND := Color("#8d8998")
+const C_METAL := Color("#8e8e9c")
+const C_DUCK := Color("#ffd23a")
+const C_BEAK := Color("#ff8a1e")
+const C_BANANA := Color("#ffdf4a")
+const C_BANANA_TIP := Color("#5a4630")
+const C_WHITE := Color("#f2f2f6")
+## How much the white skin and the pop art shine of their own at night.
+const C_SKIN_GLOW := 0.2
+const C_POP_GLOW := 0.3
+
+
+func _contemporary(rooms: Array) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 5077 + museum
+	# Where each floor starts, up from the glass ground floor.
+	var base: Array[float] = []
+	var y := C_LOBBY
+	for f: Dictionary in C_FLOORS:
+		base.append(y)
+		y += (f.size as Vector3).y
+	var roof_y := y
+	front_z = 0.0
+	look_y = 2.57
+	top = roof_y + 0.9
+	view = 10.5
+	# Fine boxes in their own colours (the skin's ribs, the glass's
+	# mullions), all in one MultiMesh: [transform, colour].
+	var bits: Array = []
+	_c_square(rng, bits)
+	_c_lobby(bits)
+	for k in C_FLOORS.size():
+		_c_box(k, base[k], bits)
+	# Railings round the terraces a step back leaves, and round the roof.
+	for k in range(1, C_FLOORS.size()):
+		_c_railings(C_FLOORS[k - 1], C_FLOORS[k], base[k])
+	_c_railings(C_FLOORS[-1], {}, roof_y)
+	# The giant rubber duck on the first terrace, looking out.
+	var duck := Node3D.new()
+	duck.position = Vector3(-1.5, base[1], 0.0)
+	duck.rotation.y = 0.35
+	duck.scale = Vector3.ONE * 1.15
+	add_child(duck)
+	_c_duck(duck)
+	# The rooms: a floor each, in order up the tower, the big job's the top.
+	var normal := 0
+	var count := rooms.size() if not rooms.is_empty() else Story.ROOMS
+	for i in count:
+		var r: Dictionary = rooms[i] if not rooms.is_empty() else {"boss": i == count - 1, "open": false}
+		var k := C_FLOORS.size() - 1
+		if not r.boss:
+			k = mini(normal, C_FLOORS.size() - 2)
+			normal += 1
+		var f: Dictionary = C_FLOORS[k]
+		var s: Vector3 = f.size
+		var node := Node3D.new()
+		node.position = Vector3(f.x, base[k] + s.y * 0.5, f.front)
+		add_child(node)
+		var shown: bool = open and r.has("shape") and bool(r.get("open", false))
+		var slit := _c_slit(node, s, shown or (open and rooms.is_empty()), bits)
+		var piece := Node3D.new()
+		piece.position = Vector3(0, -s.y * 0.18, 0.16)
+		node.add_child(piece)
+		if shown:
+			var model := LootModels.build(r.shape, Color(r.colour))
+			model.scale = Vector3.ONE * (1.0 if r.boss else 0.8)
+			piece.add_child(model)
+			if r.boss:
+				# The big job's crown, on the roof.
+				var crown := Node3D.new()
+				crown.position = Vector3(0, s.y * 0.5 + 0.4, -s.z * 0.45)
+				node.add_child(crown)
+				CityStage.crown(crown, Vector3.ZERO, MenuStage.GOLD, 1.6)
+		# How far out its frame must stand to be seen under the box over it.
+		var out := 0.08
+		if k + 1 < C_FLOORS.size():
+			out = maxf(out, float(C_FLOORS[k + 1].front) - float(f.front) + 0.08)
+		windows.append({"node": node, "back": slit.front, "glass": slit.side, "piece": piece, "lock": null, "boss": r.boss, "open": shown,
+			"size": Vector2(s.x, s.y), "frame": slit.frame, "stone": slit.stone, "arch": false, "face": node.basis,
+			"shape": "floor", "out": out})
+	_c_bits(bits)
+
+
+## Floor k of the tower, from y0 up: its box in its skin (a shadow line
+## under it), the skin's ribs up its front and its side, over and under
+## where its slit goes.
+func _c_box(k: int, y0: float, bits: Array) -> void:
+	var f: Dictionary = C_FLOORS[k]
+	var s: Vector3 = f.size
+	var x: float = f.x
+	var front: float = f.front
+	var skin := _shade(C_SKIN[k % C_SKIN.size()])
+	_box(Vector3(s.x - 0.1, C_SEAM, s.z - 0.1), _shade(C_SEAM_TINT), Vector3(x, y0 + C_SEAM * 0.5, front - s.z * 0.5))
+	var box := _box(Vector3(s.x, s.y - C_SEAM, s.z), skin, Vector3(x, y0 + C_SEAM + (s.y - C_SEAM) * 0.5, front - s.z * 0.5))
+	if open:
+		# White at night: lit a little from the town round it.
+		box.material_override = _lit_material(skin, C_SKIN_GLOW)
+	# The ribs: under the slit and over it.
+	var mid := y0 + s.y * 0.5
+	var slit_lo := mid + s.y * (C_SLIT_Y - C_SLIT * 0.5) - 0.03
+	var slit_hi := mid + s.y * (C_SLIT_Y + C_SLIT * 0.5) + 0.03
+	var tint := _shade(C_RIB_TINT)
+	for run in [[y0 + C_SEAM + 0.03, slit_lo], [slit_hi, y0 + s.y - 0.03]]:
+		var lo: float = run[0]
+		var hi: float = run[1]
+		if hi - lo < 0.05:
+			continue
+		var n := int((s.x - 0.16) / C_RIB)
+		for i in n + 1:
+			var at := Vector3(x - (n * C_RIB) * 0.5 + i * C_RIB, (lo + hi) * 0.5, front + 0.006)
+			bits.append([Transform3D(Basis.from_scale(Vector3(0.02, hi - lo, 0.014)), at), tint])
+		var m := int((s.z - 0.16) / C_RIB)
+		for i in m + 1:
+			var at := Vector3(x + s.x * 0.5 + 0.006, (lo + hi) * 0.5, front - s.z * 0.5 - (m * C_RIB) * 0.5 + i * C_RIB)
+			bits.append([Transform3D(Basis.from_scale(Vector3(0.014, hi - lo, 0.02)), at), tint])
+
+
+## A floor's slit of glass, on its node (the middle of its front): across
+## the front and round the side the camera sees, lit or dark, mullions
+## across it and a metal lip over and under it. Returns {"front", "side"
+## (the glass), "frame" (the lips), "stone" (their look)}.
+func _c_slit(node: Node3D, s: Vector3, lit: bool, bits: Array) -> Dictionary:
+	var h := s.y * C_SLIT
+	var cy := s.y * C_SLIT_Y
+	var front := _box_in(node, Vector3(s.x - 0.2, h, 0.04), GLASS_DARK, Vector3(0, cy, 0.0))
+	var side := _box_in(node, Vector3(0.04, h, s.z - 0.2), GLASS_DARK, Vector3(s.x * 0.5, cy, -s.z * 0.5))
+	if lit:
+		front.material_override = _lit_material(LIT, 0.9)
+		side.material_override = front.material_override
+	var lip := _shade(C_LIP)
+	var frame: Array = []
+	for sy in [-1, 1]:
+		frame.append(_box_in(node, Vector3(s.x - 0.14, 0.035, 0.08), lip, Vector3(0, cy + sy * (h * 0.5 + 0.017), 0.02)))
+		frame.append(_box_in(node, Vector3(0.08, 0.035, s.z - 0.14), lip, Vector3(s.x * 0.5 + 0.02, cy + sy * (h * 0.5 + 0.017), -s.z * 0.5)))
+	var mullion := _shade(C_MULLION)
+	var at := node.position
+	var n := int((s.x - 0.2) / 0.36)
+	for i in n + 1:
+		var p := at + Vector3(-(n * 0.36) * 0.5 + i * 0.36, cy, 0.025)
+		bits.append([Transform3D(Basis.from_scale(Vector3(0.022, h, 0.02)), p), mullion])
+	var m := int((s.z - 0.2) / 0.36)
+	for i in m + 1:
+		var p := at + Vector3(s.x * 0.5 + 0.025, cy, -s.z * 0.5 - (m * 0.36) * 0.5 + i * 0.36)
+		bits.append([Transform3D(Basis.from_scale(Vector3(0.02, h, 0.022)), p), mullion])
+	return {"front": front, "side": side, "frame": frame, "stone": (frame[0] as MeshInstance3D).material_override}
+
+
+## The glass ground floor under the first box: lit through when open, its
+## mullions, the doors in the middle, the museum's name in its colour over
+## them; a banner in its colour on a pole and two slim lamps before it.
+func _c_lobby(bits: Array) -> void:
+	var w := 3.2
+	var d := 2.3
+	var glass := _box(Vector3(w, C_LOBBY, d), _shade(GLASS_DARK.lightened(0.1)), Vector3(0, C_LOBBY * 0.5, C_LOBBY_Z - d * 0.5))
+	if open:
+		glass.material_override = _lit_material(LIT.lerp(Color.WHITE, 0.35), 0.75)
+	var mullion := _shade(C_MULLION)
+	var n := int(w / 0.4)
+	for i in n + 1:
+		var x := -w * 0.5 + i * (w / n)
+		bits.append([Transform3D(Basis.from_scale(Vector3(0.03, C_LOBBY, 0.03)), Vector3(x, C_LOBBY * 0.5, C_LOBBY_Z + 0.01)), mullion])
+	var m := int(d / 0.4)
+	for i in m + 1:
+		var z := C_LOBBY_Z - i * (d / m)
+		bits.append([Transform3D(Basis.from_scale(Vector3(0.03, C_LOBBY, 0.03)), Vector3(w * 0.5 + 0.01, C_LOBBY * 0.5, z)), mullion])
+	# A bar over the glass, the doors in a dark frame.
+	_box(Vector3(w + 0.04, 0.04, 0.05), mullion, Vector3(0, C_LOBBY - 0.02, C_LOBBY_Z + 0.01))
+	_box(Vector3(0.62, 0.44, 0.03), mullion, Vector3(0, 0.22, C_LOBBY_Z + 0.02))
+	var door := _box(Vector3(0.54, 0.4, 0.03), _shade(GLASS_DARK), Vector3(0, 0.2, C_LOBBY_Z + 0.03))
+	if open:
+		door.material_override = _lit_material(LIT, 1.2)
+	_box(Vector3(0.02, 0.4, 0.04), mullion, Vector3(0, 0.2, C_LOBBY_Z + 0.04))
+	var name_sign := Label3D.new()
+	name_sign.text = String(Story.museum(museum).name).to_upper()
+	name_sign.font_size = 48
+	name_sign.pixel_size = 0.0021
+	name_sign.outline_size = 10
+	name_sign.outline_modulate = _shade(Color("#2a1030"))
+	name_sign.modulate = _shade(_colour)
+	name_sign.position = Vector3(0, C_LOBBY - 0.14, C_LOBBY_Z + 0.04)
+	add_child(name_sign)
+	# The banner on its pole, left of the doors; the lamps.
+	var metal := _shade(C_METAL)
+	_box(Vector3(0.035, 1.3, 0.035), metal, Vector3(-1.95, 0.65, C_LOBBY_Z + 0.65))
+	_box(Vector3(0.2, 0.7, 0.02), _shade(_colour), Vector3(-1.84, 0.85, C_LOBBY_Z + 0.65))
+	_box(Vector3(0.2, 0.05, 0.025), _shade(C_WHITE), Vector3(-1.84, 0.62, C_LOBBY_Z + 0.65))
+	for sx in [-1, 1]:
+		var x: float = sx * 1.25
+		_box(Vector3(0.03, 0.8, 0.03), metal, Vector3(x, 0.4, C_SQUARE - 0.35))
+		var lamp := _box(Vector3(0.06, 0.2, 0.06), LIT, Vector3(x, 0.86, C_SQUARE - 0.35))
+		if open:
+			lamp.material_override = _lit_material(LIT, 3.0)
+
+
+## The square: the lot in pale concrete, big polished slabs before the
+## tower, long white benches, and the giant banana on its plinth.
+func _c_square(rng: RandomNumberGenerator, bits: Array) -> void:
+	_box(Vector3(5.5, 0.03, 5.5), _shade(C_GROUND), Vector3(0, 0.015, 0))
+	var slab := 0.66
+	var nx := 8
+	var nz := int((C_SQUARE - C_LOBBY_Z) / slab)
+	for i in nx:
+		for j in nz:
+			var at := Vector3((i - (nx - 1) * 0.5) * slab, 0.035, C_SQUARE - (j + 0.5) * slab)
+			bits.append([Transform3D(Basis.from_scale(Vector3(slab - 0.025, 0.03, slab - 0.025)), at), _shade(C_CONCRETE[rng.randi() % C_CONCRETE.size()])])
+	# The benches, long and low, each on two dark feet.
+	for b in [Vector3(-1.2, 0, 1.55), Vector3(1.15, 0, 2.05)]:
+		var at: Vector3 = b
+		_box(Vector3(1.1, 0.07, 0.3), _shade(C_WHITE), at + Vector3(0, 0.2, 0))
+		for sx in [-1, 1]:
+			_box(Vector3(0.06, 0.17, 0.26), _shade(C_MULLION), at + Vector3(sx * 0.42, 0.1, 0))
+	# The banana: bent, standing on its end on a white plinth.
+	var plinth := Vector3(1.95, 0, 1.0)
+	_box(Vector3(0.5, 0.32, 0.5), _shade(C_WHITE), plinth + Vector3(0, 0.16, 0))
+	var banana := Node3D.new()
+	banana.position = plinth + Vector3(-0.08, 0.34, 0)
+	banana.rotation.y = -0.5
+	add_child(banana)
+	_c_banana(banana)
+
+
+## Railings on the top of box `low` (at height y) where the box over it
+## (`high`, or none: the roof) leaves it bare: along its front, and down
+## either side.
+func _c_railings(low: Dictionary, high: Dictionary, y: float) -> void:
+	var s: Vector3 = low.size
+	var x0: float = float(low.x) - s.x * 0.5
+	var x1: float = float(low.x) + s.x * 0.5
+	var z1: float = low.front
+	var z0: float = z1 - s.z
+	var metal := _shade(C_METAL)
+	var bare_front := true
+	var bare_left := true
+	var bare_right := true
+	if not high.is_empty():
+		var hs: Vector3 = high.size
+		bare_front = z1 - float(high.front) > 0.15
+		bare_left = (float(high.x) - hs.x * 0.5) - x0 > 0.15
+		bare_right = x1 - (float(high.x) + hs.x * 0.5) > 0.15
+	var rail := 0.2
+	if bare_front:
+		_c_rail(Vector3(x0 + 0.04, y, z1 - 0.04), Vector3(x1 - 0.04, y, z1 - 0.04), rail, metal)
+	if bare_left:
+		_c_rail(Vector3(x0 + 0.04, y, z0 + 0.04), Vector3(x0 + 0.04, y, z1 - 0.04), rail, metal)
+	if bare_right:
+		_c_rail(Vector3(x1 - 0.04, y, z0 + 0.04), Vector3(x1 - 0.04, y, z1 - 0.04), rail, metal)
+
+
+## A railing from a to b (along x or z), `tall` high: a bar on posts.
+func _c_rail(a: Vector3, b: Vector3, tall: float, colour: Color) -> void:
+	var run := b - a
+	var along := run.length()
+	var bar := Vector3(along, 0.025, 0.025) if absf(run.x) > absf(run.z) else Vector3(0.025, 0.025, along)
+	_box(bar, colour, (a + b) * 0.5 + Vector3(0, tall, 0))
+	var n := maxi(1, int(along / 0.35))
+	for i in n + 1:
+		_box(Vector3(0.02, tall, 0.02), colour, a + run * (float(i) / n) + Vector3(0, tall * 0.5, 0))
+
+
+## A giant rubber duck, its head to +x: a squat yellow body, a round head,
+## an orange beak, two black eyes, its tail cocked.
+func _c_duck(at: Node3D) -> void:
+	var yellow := _shade(C_DUCK)
+	var body := _pop(_mesh_in(at, _ball(0.22), yellow, Vector3(0, 0.17, 0)))
+	body.scale = Vector3(1.35, 0.8, 1.0)
+	_pop(_mesh_in(at, _ball(0.14), yellow, Vector3(0.17, 0.4, 0)))
+	var beak := _box_in(at, Vector3(0.12, 0.045, 0.12), _shade(C_BEAK), Vector3(0.33, 0.37, 0))
+	beak.rotation.z = -0.15
+	for sz in [-1, 1]:
+		_mesh_in(at, _ball(0.022), _shade(Color("#1a1420")), Vector3(0.26, 0.45, sz * 0.08))
+	var tail := _pop(_mesh_in(at, _cone(0.08, 0.0, 0.16), yellow, Vector3(-0.3, 0.28, 0)))
+	tail.rotation.z = 0.8
+
+
+## A giant banana standing on its end, bending over: yellow segments, a
+## brown stalk at the top and a brown tip at its foot.
+func _c_banana(at: Node3D) -> void:
+	var yellow := _shade(C_BANANA)
+	var here := Vector3.ZERO
+	var bend := -0.25
+	for k in 5:
+		var dir := Vector3(sin(bend), cos(bend), 0)
+		var seg := CapsuleMesh.new()
+		seg.radius = 0.11 - absf(k - 2) * 0.012
+		seg.height = 0.34
+		seg.radial_segments = 10
+		seg.rings = 2
+		var mi := _pop(_mesh_in(at, seg, yellow, here + dir * 0.13))
+		mi.rotation.z = -bend
+		here += dir * 0.24
+		bend += 0.24
+	_mesh_in(at, _ball(0.05), _shade(C_BANANA_TIP), Vector3(0, 0.0, 0))
+	var stalk := _mesh_in(at, _cone(0.045, 0.035, 0.14), _shade(C_BANANA_TIP), here + Vector3(sin(bend), cos(bend), 0) * 0.03)
+	stalk.rotation.z = -bend
+
+
+## A piece of pop art, lit a little of its own when the museum's open.
+func _pop(mi: MeshInstance3D) -> MeshInstance3D:
+	if open:
+		mi.material_override = _lit_material((mi.material_override as StandardMaterial3D).albedo_color, C_POP_GLOW)
+	return mi
+
+
+## The fine boxes gathered along the way ([transform, colour]), all in one
+## MultiMesh.
+func _c_bits(bits: Array) -> void:
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.use_colors = true
+	mm.mesh = BoxMesh.new()
+	mm.instance_count = bits.size()
+	for i in bits.size():
+		mm.set_instance_transform(i, bits[i][0])
+		mm.set_instance_color(i, bits[i][1])
+	var mmi := MultiMeshInstance3D.new()
+	mmi.multimesh = mm
+	var m := StandardMaterial3D.new()
+	m.vertex_color_use_as_albedo = true
+	m.roughness = 0.45
+	mmi.material_override = m
+	add_child(mmi)
 
 
 ## Pick room i's window (-1 none): it lights up brighter, its piece turns.

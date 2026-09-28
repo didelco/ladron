@@ -65,6 +65,10 @@ const SAFE := 4.0
 ## quicker: it closes this share of the way in a second, as an exponential).
 const FOLLOW_S := 2.6
 const MUSEUM_VIEW := 7.0
+## A room that is a whole floor (a tower's): how far beside it, left, its
+## sign goes, and right, its stars.
+const FLOOR_SIGN := 1.9
+const FLOOR_STARS := 0.55
 ## How long the camera takes into a museum and back out (s).
 const ZOOM_S := 1.5
 ## How long the plan takes out of its room and open in front of you (s),
@@ -115,6 +119,10 @@ var inside := -1
 var _rooms: Array[Dictionary] = []
 var room := -1
 var _room_ring: MeshInstance3D
+## round a room that is a whole floor (its window's "shape" "floor"), a
+## frame of light round its front instead: its four bars, and how big
+var _room_frame: Node3D
+var _frame_size := Vector2.ZERO
 var _room_light: SpotLight3D
 var _tween: Tween
 ## everything moves at once (the tests)
@@ -316,7 +324,7 @@ func go_in(m: int, rooms: Array, done: Callable) -> void:
 		_tween.kill()
 	var secs := 0.0 if hurry else ZOOM_S
 	_tween = create_tween().set_parallel()
-	_tween.tween_method(_zoom_step.bind(focus, view, _front_of(m), MUSEUM_VIEW), 0.0, 1.0, secs).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	_tween.tween_method(_zoom_step.bind(focus, view, _front_of(m), _view_of(m)), 0.0, 1.0, secs).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
 	_tween.tween_method(_dim, 0.0, 1.0, secs * 0.6).set_delay(secs * 0.4)
 	_tween.chain().tween_callback(done)
 
@@ -338,6 +346,7 @@ func go_out(done: Callable) -> void:
 		room = -1
 		_rooms.clear()
 		_room_ring.visible = false
+		_room_frame.visible = false
 		_room_light.visible = false
 		_body(m).build(m, _open[m])
 		done.call())
@@ -357,6 +366,13 @@ func _front_of(m: int) -> Vector3:
 	var lot := _museums[m]
 	var body := _body(m)
 	return lot.global_transform * Vector3(0, body.look_y, body.front_z)
+
+
+## How much the camera sees of museum m from close: its building's own
+## (a tall one sees more), or MUSEUM_VIEW.
+func _view_of(m: int) -> float:
+	var v: float = _body(m).view
+	return v if v > 0.0 else MUSEUM_VIEW
 
 
 ## The town round the museum gone into, a little darker the nearer it is
@@ -685,7 +701,15 @@ func _open_rooms(m: int, rooms: Array) -> void:
 		_room_light.spot_range = 8.0
 		_room_light.spot_angle = 14.0
 		town.add_child(_room_light)
+		_room_frame = Node3D.new()
+		for k in 4:
+			var bar := MeshInstance3D.new()
+			bar.mesh = BoxMesh.new()
+			bar.material_override = _room_ring.material_override
+			_room_frame.add_child(bar)
+		town.add_child(_room_frame)
 	_room_ring.visible = false
+	_room_frame.visible = false
 	_room_light.visible = false
 
 
@@ -719,12 +743,19 @@ func room_face(i: int) -> Basis:
 
 func room_on_screen(i: int) -> Vector2:
 	var size: Vector2 = _rooms[i].window.size
+	if _is_floor(i):
+		# A whole floor: its sign beside it, on the left, not over the next.
+		var face := room_face(i)
+		return _cam.unproject_position(room_centre(i) - face.x * (size.x * 0.5 + FLOOR_SIGN) + face.y * size.y * 0.25)
 	return _cam.unproject_position(room_centre(i) + room_face(i).y * (size.y * 0.5 + size.x * 0.5 + 0.2))
 
 
 func room_foot_on_screen(i: int) -> Vector2:
 	var size: Vector2 = _rooms[i].window.size
 	var face := room_face(i)
+	if _is_floor(i):
+		# A whole floor: its stars beside it, on the right.
+		return _cam.unproject_position(room_centre(i) + face.x * (size.x * 0.5 + FLOOR_STARS) + face.y * 0.12)
 	return _cam.unproject_position(room_centre(i) - face.y * (size.y * 0.5 + 0.12) + face.z * 0.2)
 
 
@@ -732,6 +763,30 @@ func room_foot_on_screen(i: int) -> Vector2:
 ## or down a side: the arrows go from window to window as they are seen.
 func room_x(i: int) -> float:
 	return on_plane(room_centre(i)).x
+
+
+## Whether room i is a whole floor of its building (a tower's), not a
+## window in a wall.
+func _is_floor(i: int) -> bool:
+	return String(_rooms[i].window.get("shape", "")) == "floor"
+
+
+## Whether the museum's rooms are one over another (a tower's floors)
+## rather than across: they spread further up the screen than across it.
+func rooms_stacked() -> bool:
+	if _rooms.is_empty():
+		return false
+	var box := Rect2(on_plane(room_centre(0)), Vector2.ZERO)
+	for i in _rooms.size():
+		box = box.expand(on_plane(room_centre(i)))
+	return box.size.y > box.size.x
+
+
+## Where room i is along the way its rooms go on screen: left to right,
+## or, stacked (rooms_stacked), bottom to top.
+func room_along(i: int) -> float:
+	var p := on_plane(room_centre(i))
+	return p.y if rooms_stacked() else p.x
 
 
 ## Room i's window, as the world has it: its middle, its size, and the
@@ -751,6 +806,10 @@ func _animate_rooms(dt: float) -> void:
 	var w: Dictionary = _rooms[room].window
 	var size: Vector2 = w.size
 	var face := room_face(room)
+	if _is_floor(room):
+		_frame_floor(dt, w)
+		return
+	_room_frame.visible = false
 	# Round the window (and its arch, if it has one), just out from its
 	# wall and lying on it, whichever way it faces.
 	var arch: bool = w.get("arch", true)
@@ -777,6 +836,40 @@ func _animate_rooms(dt: float) -> void:
 	_room_ring.visible = true
 	_room_light.visible = _rooms[room].open
 	# Its lamp out in front of its wall, a little above.
+	_room_light.global_position = mid + face.z * 4.0 + face.y * 2.5
+	_room_light.look_at(mid)
+
+
+## Round a room that is a whole floor: a frame of light round its front,
+## out from it as far as it says (to clear the box over it), breathing;
+## it glides from floor to floor. Its lamp out in front, a little above.
+func _frame_floor(dt: float, w: Dictionary) -> void:
+	var size: Vector2 = w.size
+	var face := room_face(room)
+	var mid := room_centre(room) + face.z * float(w.get("out", 0.1))
+	var breathe: float = 1.0 + sin(_t * 4.0) * 0.015
+	var goal_size := (size + Vector2(0.14, 0.1)) * breathe
+	var goal := Transform3D(face, mid)
+	var was := _room_frame.global_transform
+	if _room_frame.visible and was.basis.z.normalized().dot(face.z) > 0.99:
+		goal = was.interpolate_with(goal, 1.0 - exp(-dt * 12.0))
+		goal_size = _frame_size.lerp(goal_size, 1.0 - exp(-dt * 12.0))
+	_frame_size = goal_size
+	_room_frame.global_transform = goal
+	var t := 0.06
+	var bars := _room_frame.get_children()
+	for k in 4:
+		var bar := bars[k] as MeshInstance3D
+		var across := k < 2
+		var end := -1.0 if k % 2 == 0 else 1.0
+		(bar.mesh as BoxMesh).size = Vector3(_frame_size.x + t, t, t) if across else Vector3(t, _frame_size.y + t, t)
+		bar.position = Vector3(0, end * _frame_size.y * 0.5, 0) if across else Vector3(end * _frame_size.x * 0.5, 0, 0)
+	var ring := _room_ring.material_override as StandardMaterial3D
+	ring.albedo_color = RING if _rooms[room].open else LOCK
+	ring.emission = ring.albedo_color
+	_room_ring.visible = false
+	_room_frame.visible = true
+	_room_light.visible = _rooms[room].open
 	_room_light.global_position = mid + face.z * 4.0 + face.y * 2.5
 	_room_light.look_at(mid)
 

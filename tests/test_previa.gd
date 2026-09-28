@@ -266,6 +266,59 @@ func _init() -> void:
 	var face := tour.stage.room_face(side_room)
 	check(tour.stage._room_ring.global_basis.y.normalized().dot(face.z) > 0.99, "el aro de una sala del costado, sobre su pared")
 	check(((tour.stage.room_window(side_room).basis as Basis).z).dot(face.z) > 0.99, "... y el plano saldría de ella")
+	check(not tour.stage.rooms_stacked(), "... y las salas de la cueva, a lo ancho")
+	tour.queue_free()
+
+	# The contemporary museum, a tower: each room a floor, in order up it,
+	# the big job's the top one; only a room reached is one; the arrows go
+	# up and down its floors.
+	var modern := Story.nights_in(4)
+	Story.unlock(modern[2], 1)
+	tour = Tour.new()
+	root.add_child(tour)
+	tour.stage.hurry = true
+	tour.open_museum(1, modern[0])
+	await frames()
+	var tower: MuseumBuilding = tour.stage._body(4)
+	check(tower.windows.size() == 5 and tower.windows.all(func(w: Dictionary) -> bool: return w.get("shape", "") == "floor"), "la torre: cada sala, una planta")
+	var floors_up := true
+	for k in 4:
+		floors_up = floors_up and (tower.windows[k].node as Node3D).position.y < (tower.windows[k + 1].node as Node3D).position.y
+	check(floors_up and tower.windows[4].boss, "... en orden hacia arriba, y el gran golpe, la de arriba del todo")
+	var reached_rooms: Array = range(5).filter(func(i: int) -> bool: return tour.stage.room_open(i))
+	check(reached_rooms == [0, 1, 2] and tower.windows.filter(func(w: Dictionary) -> bool: return w.open).size() == 3, "con tres salas, solo esas tres plantas son salas")
+	check(tower.windows.all(func(w: Dictionary) -> bool: return w.lock == null) and (tower.windows[3].piece as Node3D).get_child_count() == 0 and (tower.windows[2].piece as Node3D).get_child_count() == 1, "... las demás, cajas a oscuras: sin candado ni pieza")
+	tour._pick_room(3)
+	tour.stage.pick_room(4)
+	check(tour.stage.room == 0, "... ni se pueden elegir")
+	check(tour.stage.rooms_stacked(), "las salas de la torre, una sobre otra")
+	tour.act("up")
+	var went_up := tour.stage.room == 1
+	tour.act("up")
+	went_up = went_up and tour.stage.room == 2
+	tour.act("up")
+	check(went_up and tour.stage.room == 2, "arriba, planta a planta; la de encima, cerrada: se queda")
+	tour.act("down")
+	var went_down := tour.stage.room == 1
+	tour.act("right")
+	var right_up := tour.stage.room == 2
+	tour.act("left")
+	check(went_down and right_up and tour.stage.room == 1, "abajo baja; derecha e izquierda, siguiente y anterior")
+	await frames()
+	check(tour.stage._room_frame.visible and not tour.stage._room_ring.visible, "un marco de luz alrededor de la planta, no el aro")
+	var floor_win := tour.stage.room_window(1)
+	check((floor_win.centre as Vector3).distance_to((tower.windows[1].node as Node3D).global_position) < 0.01 and floor_win.size == tower.windows[1].size and (floor_win.size as Vector2).x > 2.0,
+		"el plano saldría del centro de su fachada, del tamaño de la planta")
+	tour.queue_free()
+	Story.unlock(modern[4], 1)
+	tour = Tour.new()
+	root.add_child(tour)
+	tour.stage.hurry = true
+	tour.open_museum(1, modern[0])
+	await frames()
+	for k in 4:
+		tour.act("up")
+	check(tour.stage.room == 4 and tour._nights[4] == modern[4], "con todo, arriba del todo, el gran golpe")
 	tour.queue_free()
 
 	# The ancient museum, a Palladian villa: on arriving, only room 1 is a
