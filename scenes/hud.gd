@@ -700,7 +700,6 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 			row.add_child(_card_arrow(">", line, 1))
 			row.add_child(_card_arrow("<", line, -1))
 			row.move_child(row.get_child(-1), 0)
-			parent.add_child(_pedestal(line, item.get("width", 300)))
 	elif item.has("buttons"):
 		var box: BoxContainer = HBoxContainer.new() if item.get("row", false) else VBoxContainer.new()
 		box.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -1125,47 +1124,6 @@ func _card_arrow(text: String, cards: Array, dir: int) -> Button:
 		var at := maxi(0, cards.find(get_viewport().gui_get_focus_owner()))
 		(cards[posmod(at + dir, cards.size())] as Control).grab_focus())
 	return b
-
-
-## Under a row of cards, a stone plinth lit from above that slides under the
-## card with the focus: a slab with a warm glowing lip on a wider, darker one.
-func _pedestal(cards: Array, width: int) -> Control:
-	var holder := Control.new()
-	holder.custom_minimum_size = Vector2(0, 34)
-	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var plinth := Control.new()
-	plinth.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	plinth.size = Vector2(width + 120, 34)
-	holder.add_child(plinth)
-	var slabs := [[Rect2(40, 0, width + 40, 16), Color("#1d1428"), true], [Rect2(0, 14, width + 120, 18), Color("#110b19"), false]]
-	for s in slabs:
-		var panel := Panel.new()
-		panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		panel.position = s[0].position
-		panel.size = s[0].size
-		var st := StyleBoxFlat.new()
-		st.bg_color = s[1]
-		st.set_corner_radius_all(4)
-		if s[2]:
-			st.border_color = GLOW
-			st.border_width_top = 2
-			st.shadow_color = Color(GLOW, 0.35)
-			st.shadow_size = 14
-		panel.add_theme_stylebox_override("panel", st)
-		plinth.add_child(panel)
-	plinth.move_child(plinth.get_child(1), 0)
-	var place := func(card: Control, slide: bool) -> void:
-		var x := card.global_position.x - holder.global_position.x + card.size.x / 2 - plinth.size.x / 2
-		if slide:
-			create_tween().tween_property(plinth, "position:x", x, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		else:
-			plinth.position.x = x
-	for card in cards:
-		(card as Control).focus_entered.connect(func() -> void: place.call(card, true))
-	holder.resized.connect(func() -> void:
-		var focused := get_viewport().gui_get_focus_owner()
-		place.call(focused if focused in cards else cards[0], false))
-	return holder
 
 
 static var _glyphs := {}
