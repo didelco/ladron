@@ -6,13 +6,16 @@ extends Node3D
 ## (_prehistory); the rest, for now, one plain classical hall with a dome
 ## in its own colour (_hall).
 ##
-## Its five rooms are windows on its front: rooms 1 and 2 on the left, 3
-## and 4 on the right, and the big job's the big window in the middle, with
-## a crown over it. A room reached is lit warm, its piece on show in it;
-## one not yet, dark, with a padlock. Picking one (pick) lights it up
-## (CityStage draws the ring).
+## Its five rooms are windows (windows, in the rooms' order), the big job's
+## always the big one in the middle of its front. Only a room reached shows
+## as one: lit warm, its piece on show in it (and the big job's crown). In
+## the prehistory museum, one not reached yet is just another of its many
+## windows (on its front and its sides), dark or lit like the rest; in the
+## hall, where every window is a room, it is dark with a padlock. Picking
+## one (pick) lights it up (CityStage draws the ring).
 ##
-## Built facing +z, its middle on the ground at its origin; x across.
+## Built facing +z, its middle on the ground at its origin; x across. Each
+## window faces its own way (face: out of its wall along its +z).
 
 ## Its size: across, deep, and the walls' height over the plinth.
 const W := 5.4
@@ -49,6 +52,20 @@ const P_FLOORS := 3
 const P_WINDOW := Vector2(0.34, 0.5)
 const P_BIG := Vector2(0.46, 0.62)
 const P_WINGS_X := [-2.05, -1.45, 1.45, 2.05]
+## The windows down each side, where they are back from the front (z), and
+## a little wider than the front's: the camera sees the side askew.
+const P_SIDE_Z := [-0.62, -1.3, -1.98]
+const P_SIDE_WINDOW := Vector2(0.42, 0.5)
+## Where the rooms but the big job's are, in the rooms' order: on the front
+## (side 0, across: x) or on the side the camera sees (side 1, +x; across:
+## z), and on which floor. Spread over both and all three floors; any room
+## past these, in the last.
+const P_ROOMS := [
+	{"side": 0, "across": -2.05, "floor": 1},
+	{"side": 0, "across": 1.45, "floor": 2},
+	{"side": 1, "across": -0.62, "floor": 1},
+	{"side": 1, "across": -1.98, "floor": 2},
+]
 const P_COLUMNS_X := [-0.95, -0.47, 0.47, 0.95]
 const P_PORCH := 0.62
 const P_SQUARE := 2.8
@@ -64,7 +81,9 @@ const SHUT := 0.62
 var museum := 0
 var open := true
 ## each room's window: {"node" (its middle), "glass", "back", "piece",
-## "lock", "boss", "open"}, in the rooms' own order
+## "lock", "boss", "open" (shown as a room: reached, lit, its piece in it),
+## "size", "frame", "stone", "arch", "face" (which way it looks, in the
+## building: its +z out of the wall)}, in the rooms' own order
 var windows: Array[Dictionary] = []
 var _colour: Color
 var _t := 0.0
@@ -249,7 +268,7 @@ func _windows(rooms: Array) -> void:
 			node.add_child(crown)
 			CityStage.crown(crown, Vector3.ZERO, MenuStage.GOLD if lit else MenuStage.GOLD.darkened(0.6), 1.6)
 		windows.append({"node": node, "back": back, "glass": ag, "piece": piece, "lock": lock, "boss": r.boss, "open": lit, "size": size,
-			"frame": [frame, a], "stone": stone_look, "arch": true})
+			"frame": [frame, a], "stone": stone_look, "arch": true, "face": node.basis})
 
 
 ## The prehistory museum: a classical building of three floors in warm
@@ -257,9 +276,10 @@ func _windows(rooms: Array) -> void:
 ## standing out, and before it a portico of four columns two floors high
 ## under a pediment, a flight of steps up to it. In front, a square of
 ## granite flags with a dinosaur in pale stone on a plinth each side of the
-## steps. Its windows plain ones with glazing bars, some lit; the rooms'
-## are the wings' on the first floor, the big job's the big one over the
-## door, between the columns.
+## steps. Its windows plain ones with glazing bars, some lit, on its front
+## and down both its sides; the rooms' are some of them (P_ROOMS), the big
+## job's the big one over the door, between the columns. A room not reached
+## yet is just a window like the rest.
 func _prehistory(rooms: Array) -> void:
 	var wall := _shade(SANDSTONE)
 	var trim := _shade(SANDSTONE_DARK)
@@ -280,8 +300,11 @@ func _prehistory(rooms: Array) -> void:
 		_box(Vector3(P_W + 0.06, 0.06, P_D + 0.06), stone, Vector3(0, P_BASE + f * P_FLOOR, -P_D * 0.5))
 	_box(Vector3(P_W + 0.24, 0.14, P_D + 0.24), stone, Vector3(0, roof_y + 0.07, -P_D * 0.5))
 	_box(Vector3(P_W - 0.1, 0.2, P_D - 0.1), trim, Vector3(0, roof_y + 0.24, -P_D * 0.5))
+	# The pilasters on the corners, seen from the front and from the sides.
 	for sx in [-1, 1]:
 		_box(Vector3(0.16, roof_y - P_BASE, 0.06), stone, Vector3(sx * (P_W * 0.5 - 0.08), (roof_y + P_BASE) * 0.5, 0.02))
+		for z in [-0.08, -P_D + 0.08]:
+			_box(Vector3(0.06, roof_y - P_BASE, 0.16), stone, Vector3(sx * (P_W * 0.5 + 0.02), (roof_y + P_BASE) * 0.5, z))
 	# Its middle standing out, the full height.
 	_box(Vector3(2.3, roof_y - P_BASE, 0.1), wall.lightened(0.05), Vector3(0, (roof_y + P_BASE) * 0.5, 0.05))
 	# The portico: its floor, the steps down to the square, the columns, the
@@ -327,11 +350,19 @@ func _prehistory(rooms: Array) -> void:
 	_box(Vector3(0.03, 0.8, 0.03), POLE, Vector3(0, roof_y + 0.7, -0.4))
 	var flag := _box(Vector3(0.45, 0.26, 0.02), _colour if open else accent, Vector3(0.24, roof_y + 0.95, -0.4))
 	flag.name = "Flag"
-	# The plain windows of the wings on the ground floor and the top one,
-	# lit here and there.
-	for f in [0, 2]:
+	# The plain windows of the wings, three floors of them, and down both
+	# sides, lit here and there; but where a room is (it has its own).
+	var taken := {}
+	for s in P_ROOMS:
+		taken[_slot_key(s.side, s.across, s.floor)] = true
+	for f in P_FLOORS:
 		for x in P_WINGS_X:
-			_plain(Vector3(x, P_BASE + P_FLOOR * (f + 0.5), 0.0), P_WINDOW, open and rng.randf() < 0.35, true)
+			if not taken.has(_slot_key(0, x, f)):
+				_plain(_slot_at(0, x, f), P_WINDOW, open and rng.randf() < 0.35, true, _slot_turn(0))
+		for side in [-1, 1]:
+			for z in P_SIDE_Z:
+				if not taken.has(_slot_key(side, z, f)):
+					_plain(_slot_at(side, z, f), P_SIDE_WINDOW, open and rng.randf() < 0.35, true, _slot_turn(side))
 	# The lamps on the square, each side of the steps.
 	for sx in [-1, 1]:
 		var post := CylinderMesh.new()
@@ -360,52 +391,72 @@ func _prehistory(rooms: Array) -> void:
 			_tyrannosaur(dino)
 		else:
 			_long_neck(dino)
-	# The rooms: the wings' first-floor windows, the big job's over the door.
-	var slots: Array = []
-	for x in P_WINGS_X:
-		slots.append({"x": x, "y": P_BASE + P_FLOOR * 1.5, "z": 0.0, "size": P_WINDOW})
-	var boss_slot := {"x": 0.0, "y": P_BASE + P_FLOOR * 1.5, "z": 0.1, "size": P_BIG}
+	# The rooms: some of the wings' windows and the side's (P_ROOMS), the big
+	# job's over the door. Only one reached shows as a room: lit, its piece in
+	# it (and the crown on the pediment for the big job's); the rest are
+	# windows like any other, bars and all, and nothing to pick.
+	var boss_at := Vector3(0.0, P_BASE + P_FLOOR * 1.5, 0.1)
 	var normal := 0
-	var count := rooms.size() if not rooms.is_empty() else 5
+	var count := rooms.size() if not rooms.is_empty() else Story.ROOMS
 	for i in count:
-		var r: Dictionary = rooms[i] if not rooms.is_empty() else {"boss": i == 4, "open": open}
-		var slot: Dictionary = boss_slot if r.boss else slots[mini(normal, slots.size() - 1)]
+		var r: Dictionary = rooms[i] if not rooms.is_empty() else {"boss": i == count - 1, "open": false}
+		var at := boss_at
+		var turn := 0.0
+		var size := P_BIG
 		if not r.boss:
+			var s: Dictionary = P_ROOMS[mini(normal, P_ROOMS.size() - 1)]
 			normal += 1
-		var lit: bool = open and bool(r.get("open", open))
-		var size: Vector2 = slot.size
-		var w := _plain(Vector3(slot.x, slot.y, slot.z), size, lit, false)
+			at = _slot_at(s.side, s.across, s.floor)
+			turn = _slot_turn(s.side)
+			size = P_WINDOW if s.side == 0 else P_SIDE_WINDOW
+		var shown: bool = open and r.has("shape") and bool(r.get("open", false))
+		var w := _plain(at, size, shown or (open and rng.randf() < 0.35), not shown, turn)
 		var node: Node3D = w.node
 		var piece := Node3D.new()
 		piece.position = Vector3(0, -size.y * 0.18, 0.1)
 		node.add_child(piece)
-		var lock: Node3D = null
-		if r.has("shape") and lit:
+		if shown:
 			var model := LootModels.build(r.shape, Color(r.colour))
 			model.scale = Vector3.ONE * (0.4 if r.boss else 0.3)
 			piece.add_child(model)
-		elif r.has("shape"):
-			lock = CityStage.padlock()
-			lock.scale = Vector3.ONE * 0.22
-			lock.position = Vector3(0, 0.03, 0.12)
-			node.add_child(lock)
-		if r.boss and r.has("shape"):
-			# The big job's crown, on the pediment's top.
-			var crown := Node3D.new()
-			crown.position = Vector3(0, porch_top + 0.78 - float(slot.y), 0.35 - float(slot.z))
-			node.add_child(crown)
-			CityStage.crown(crown, Vector3.ZERO, MenuStage.GOLD if lit else MenuStage.GOLD.darkened(0.6), 1.3)
-		windows.append({"node": node, "back": w.glass, "glass": w.glass, "piece": piece, "lock": lock, "boss": r.boss, "open": lit,
-			"size": size, "frame": w.frame, "stone": w.stone, "arch": false})
+			if r.boss:
+				# The big job's crown, on the pediment's top.
+				var crown := Node3D.new()
+				crown.position = Vector3(0, porch_top + 0.78 - at.y, 0.35 - at.z)
+				node.add_child(crown)
+				CityStage.crown(crown, Vector3.ZERO, MenuStage.GOLD, 1.3)
+		windows.append({"node": node, "back": w.glass, "glass": w.glass, "piece": piece, "lock": null, "boss": r.boss, "open": shown,
+			"size": size, "frame": w.frame, "stone": w.stone, "arch": false, "face": node.basis})
 
 
-## A plain window, its middle at `at` on the front: a stone surround, a
-## lintel over it and a sill, the glass lit or dark, glazing bars (a cross)
-## or, where a piece shows through, just the bar across its top. Returns
-## {"node", "glass", "frame" (the surround's pieces), "stone" (their look)}.
-func _plain(at: Vector3, size: Vector2, lit: bool, bars: bool) -> Dictionary:
+## Where a window of the prehistory museum is: on its front (side 0, across
+## its x) or down a side (-1 left, 1 right, across its z, back from the
+## front), on floor f (0 the ground one): its middle, and its turn to face
+## out of its wall.
+func _slot_at(side: int, across: float, f: int) -> Vector3:
+	var y := P_BASE + P_FLOOR * (f + 0.5)
+	if side == 0:
+		return Vector3(across, y, 0.0)
+	return Vector3(side * P_W * 0.5, y, across)
+
+
+func _slot_turn(side: int) -> float:
+	return side * PI * 0.5
+
+
+func _slot_key(side: int, across: float, f: int) -> String:
+	return "%d:%.2f:%d" % [side, across, f]
+
+
+## A plain window, its middle at `at` on a wall, turned `turn` round y from
+## facing the front (+z): a stone surround, a lintel over it and a sill, the
+## glass lit or dark, glazing bars (a cross) or, where a piece shows
+## through, just the bar across its top. Returns {"node", "glass", "frame"
+## (the surround's pieces), "stone" (their look)}.
+func _plain(at: Vector3, size: Vector2, lit: bool, bars: bool, turn := 0.0) -> Dictionary:
 	var node := Node3D.new()
 	node.position = at
+	node.rotation.y = turn
 	add_child(node)
 	var stone := _shade(STONE)
 	var frame: Array = []

@@ -657,9 +657,10 @@ func _body(m: int) -> MuseumBuilding:
 
 
 ## The museum gone into with its rooms in its windows: rooms is one entry
-## per heist in it, {"n", "boss", "open", "done", "shape", "colour"}: each
-## piece in its window, the rooms not reached yet dark with a padlock, the
-## big job's the tall window in the middle, a crown on the dome over it.
+## per heist in it, {"n", "boss", "open", "done", "shape", "colour"}. Only
+## the rooms reached (open) show as rooms, each piece in its window, and can
+## be picked; the rest are just windows (MuseumBuilding: in the hall, dark
+## with a padlock; elsewhere, windows like any other).
 func _open_rooms(m: int, rooms: Array) -> void:
 	_rooms.clear()
 	room = -1
@@ -669,7 +670,7 @@ func _open_rooms(m: int, rooms: Array) -> void:
 		var r: Dictionary = rooms[i]
 		_rooms.append({"n": r.n, "boss": r.boss, "open": r.open, "window": body.windows[i]})
 	if _room_ring == null:
-		# A ring of light round the window picked, standing on the front.
+		# A ring of light round the window picked, standing on its wall.
 		_room_ring = MeshInstance3D.new()
 		var torus := TorusMesh.new()
 		torus.inner_radius = 0.5
@@ -688,41 +689,58 @@ func _open_rooms(m: int, rooms: Array) -> void:
 	_room_light.visible = false
 
 
-## Pick room i (0-based) of the museum gone into.
+## Pick room i (0-based) of the museum gone into: only one reached (the
+## rest are not rooms yet, just windows).
 func pick_room(i: int) -> void:
-	room = clampi(i, 0, _rooms.size() - 1)
+	if not room_open(i):
+		return
+	room = i
 	if inside >= 0:
 		_body(inside).pick(room)
 
 
+## Whether room i of the museum gone into is reached: shown as a room, to
+## pick, with its ring, its sign and its stars.
+func room_open(i: int) -> bool:
+	return i >= 0 and i < _rooms.size() and bool(_rooms[i].open)
+
+
 ## Room i's window, in the world: its middle; where its sign goes on
-## screen (over it), and its stars (under its sill).
+## screen (over it), and its stars (under its sill, out from its wall).
 func room_centre(i: int) -> Vector3:
 	return (_rooms[i].window.node as Node3D).global_position
 
 
+## Which way room i's window looks, in the world: x across it, y up, z out
+## of its wall (the front's, or a side's).
+func room_face(i: int) -> Basis:
+	return (_rooms[i].window.node as Node3D).global_basis.orthonormalized()
+
+
 func room_on_screen(i: int) -> Vector2:
 	var size: Vector2 = _rooms[i].window.size
-	return _cam.unproject_position(room_centre(i) + town.global_basis.y * (size.y * 0.5 + size.x * 0.5 + 0.2))
+	return _cam.unproject_position(room_centre(i) + room_face(i).y * (size.y * 0.5 + size.x * 0.5 + 0.2))
 
 
 func room_foot_on_screen(i: int) -> Vector2:
 	var size: Vector2 = _rooms[i].window.size
-	return _cam.unproject_position(room_centre(i) - town.global_basis.y * (size.y * 0.5 + 0.12) + town.global_basis.z * 0.2)
+	var face := room_face(i)
+	return _cam.unproject_position(room_centre(i) - face.y * (size.y * 0.5 + 0.12) + face.z * 0.2)
 
 
-## Where room i's window is across the front, left to right: the arrows
-## go from window to window as they are seen.
+## Where room i's window is across the screen, left to right, on the front
+## or down a side: the arrows go from window to window as they are seen.
 func room_x(i: int) -> float:
-	return (_rooms[i].window.node as Node3D).position.x
+	return on_plane(room_centre(i)).x
 
 
 ## Room i's window, as the world has it: its middle, its size, and the
-## way the front faces (the plan comes out of it).
+## way its wall faces (the plan comes out of it).
 func room_window(i: int) -> Dictionary:
-	return {"centre": room_centre(i), "size": _rooms[i].window.size, "basis": town.global_transform.basis}
+	return {"centre": room_centre(i), "size": _rooms[i].window.size, "basis": room_face(i)}
 
 
+## All the rooms of the museum gone into, reached or not (room_open).
 func room_count() -> int:
 	return _rooms.size()
 
@@ -732,22 +750,29 @@ func _animate_rooms(dt: float) -> void:
 		return
 	var w: Dictionary = _rooms[room].window
 	var size: Vector2 = w.size
-	# Round the window (and its arch, if it has one), just in front of it.
+	var face := room_face(room)
+	# Round the window (and its arch, if it has one), just out from its
+	# wall and lying on it, whichever way it faces.
 	var arch: bool = w.get("arch", true)
 	var tall := size.y + (size.x * 0.5 if arch else 0.1)
-	var mid := room_centre(room) + town.global_basis.z * 0.1 + town.global_basis.y * (size.x * 0.25 if arch else 0.02)
-	var goal := town.global_transform.affine_inverse() * mid
-	_room_ring.position = goal if not _room_ring.visible else _room_ring.position.lerp(goal, 1.0 - exp(-dt * 12.0))
-	_room_ring.rotation = Vector3(PI / 2, 0, 0)
+	var mid := room_centre(room) + face.z * 0.1 + face.y * (size.x * 0.25 if arch else 0.02)
 	var r0 := 0.53
 	var breathe: float = 1.0 + sin(_t * 4.0) * 0.04
-	_room_ring.scale = Vector3((size.x * 0.5 + 0.2) / r0, 1, (tall * 0.5 + 0.18) / r0) * breathe
+	var spread := Basis.from_scale(Vector3((size.x * 0.5 + 0.2) / r0, 1, (tall * 0.5 + 0.18) / r0) * breathe)
+	var goal := Transform3D(face * Basis(Vector3.RIGHT, PI / 2) * spread, mid)
+	# It glides from window to window on the same wall; round a corner (the
+	# front to a side) it jumps, not to cut through the building.
+	var was := _room_ring.global_transform
+	if _room_ring.visible and was.basis.y.normalized().dot(face.z) > 0.99:
+		goal = was.interpolate_with(goal, 1.0 - exp(-dt * 12.0))
+	_room_ring.global_transform = goal
 	var ring := _room_ring.material_override as StandardMaterial3D
 	ring.albedo_color = RING if _rooms[room].open else LOCK
 	ring.emission = ring.albedo_color
 	_room_ring.visible = true
 	_room_light.visible = _rooms[room].open
-	_room_light.position = goal + Vector3(0, 2.5, 4.0)
+	# Its lamp out in front of its wall, a little above.
+	_room_light.global_position = mid + face.z * 4.0 + face.y * 2.5
 	_room_light.look_at(mid)
 
 

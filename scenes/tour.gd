@@ -207,37 +207,36 @@ func _inside(m: int, pick_n: int) -> void:
 	_set_hints([["move", Text.t("TOUR_HINT_ROOM")], ["accept", Text.t("TOUR_HINT_PLAN")], ["back", Text.t("TOUR_HINT_TOWN")]])
 
 
+## Pick room i: only one reached (stage.room_open); the rest are not rooms
+## yet, just windows of the building.
 func _pick_room(i: int) -> void:
 	i = clampi(i, 0, _nights.size() - 1)
+	if not stage.room_open(i):
+		return
 	stage.pick_room(i)
 	var n := _nights[i]
 	var loot: Dictionary = Story.level(n).loot
 	_sign.visible = true
-	if n <= reached:
-		_sign_title.text = Text.t("STORY_BOSS_ROOM") if Story.is_boss(n) else Text.t("TOUR_ROOM") % Story.room_of(n)
-		_sign_line.text = Heist.first_upper(loot.name)
-		_sign_title.add_theme_color_override("font_color", Color(loot.colour).lightened(0.2))
-	else:
-		_sign_title.text = Text.t("STORY_BOSS_ROOM") if Story.is_boss(n) else Text.t("TOUR_ROOM") % Story.room_of(n)
-		_sign_line.text = Text.t("TOUR_ROOM_SHUT")
-		_sign_title.add_theme_color_override("font_color", SIGN_SHUT)
+	_sign_title.text = Text.t("STORY_BOSS_ROOM") if Story.is_boss(n) else Text.t("TOUR_ROOM") % Story.room_of(n)
+	_sign_line.text = Heist.first_upper(loot.name)
+	_sign_title.add_theme_color_override("font_color", Color(loot.colour).lightened(0.2))
 	_arcade(_sign_title)
 	_sign_stars.visible = false
 
 
-## The next room that way (dir -1 left, 1 right) across the museum's front,
-## as its windows are seen (the big job's in the middle), past any not
-## reached yet.
+## The next room that way (dir -1 left, 1 right) as the windows are seen
+## across the screen, on the museum's front or down its side: only among
+## those reached.
 func _step_room(dir: int) -> void:
-	var order: Array = range(_nights.size())
+	var order: Array[int] = []
+	for i in _nights.size():
+		if stage.room_open(i):
+			order.append(i)
 	order.sort_custom(func(a: int, b: int) -> bool: return stage.room_x(a) < stage.room_x(b))
 	var at := order.find(stage.room) + dir
-	while at >= 0 and at < order.size():
-		if _nights[order[at]] <= reached:
-			_nav()
-			_pick_room(order[at])
-			return
-		at += dir
+	if at >= 0 and at < order.size():
+		_nav()
+		_pick_room(order[at])
 
 
 func _choose_room() -> void:
@@ -458,8 +457,11 @@ func _on_mouse(event: InputEvent) -> void:
 				_nav()
 				_pick_museum(best)
 		"museum":
+			# Only near a room reached: the rest are just windows.
 			near = 70.0
 			for i in stage.room_count():
+				if not stage.room_open(i):
+					continue
 				var d := at.distance_to(stage.on_screen(stage.room_centre(i)))
 				if d < near:
 					near = d
@@ -496,7 +498,8 @@ func _process(_dt: float) -> void:
 		var l := _room_stars[i]
 		l.size = l.get_combined_minimum_size()
 		l.position = stage.room_foot_on_screen(i) - Vector2(l.size.x * 0.5, -2)
-		l.visible = state == "museum"
+		# Only under a room reached: the rest are not rooms yet.
+		l.visible = state == "museum" and stage.room_open(i)
 	if _sign.visible:
 		var at := Vector2.ZERO
 		if state == "city":

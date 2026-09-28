@@ -75,6 +75,24 @@ func _init() -> void:
 	check(t.state == "museum" and t.stage.room == 0, "al entrar, el museo con su primera sala")
 	t.act("right")
 	check(t.stage.room == 0, "no se elige una sala cerrada")
+	# The prehistory museum on arriving: only room 1 is a room; the rest, and
+	# the big job's, just windows of the building.
+	var cave: MuseumBuilding = t.stage._body(0)
+	var shown: Array = range(5).filter(func(i: int) -> bool: return t.stage.room_open(i))
+	check(shown == [0] and cave.windows.filter(func(w: Dictionary) -> bool: return w.open).size() == 1, "al llegar a un museo, solo la ventana de la sala 1 es una sala")
+	check(cave.windows.all(func(w: Dictionary) -> bool: return w.lock == null), "... las demás, ventanas normales: sin candado")
+	check((cave.windows[1].piece as Node3D).get_child_count() == 0 and not cave.windows[4].open, "... sin pieza, y el gran golpe tampoco se ve aún")
+	await frames()
+	check(t._room_stars[0].visible and not t._room_stars[1].visible and not t._room_stars[4].visible, "... ni estrellas ni número bajo las que no son salas")
+	t._pick_room(2)
+	t.stage.pick_room(4)
+	check(t.stage.room == 0, "... ni se pueden elegir")
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.pressed = true
+	click.position = t.stage.on_screen(t.stage.room_centre(1))
+	t._on_mouse(click)
+	check(t.state == "museum" and t.stage.room == 0, "... ni con el ratón")
 
 	# Further on: two museums open, the second's third room the next to do.
 	Story.unlock(8, 1)
@@ -97,8 +115,10 @@ func _init() -> void:
 	# The museum as a building: each room a window on its front.
 	var body: MuseumBuilding = t.stage._body(1)
 	check(t.stage.room_count() == 5 and body.windows.size() == 5, "el museo, un edificio con una ventana por sala")
-	check(t.stage.room_x(4) == 0.0 and body.windows[4].boss, "el gran golpe, la ventana grande del centro")
-	check(body.windows[2].open and not body.windows[3].open and body.windows[3].lock != null, "las salas cerradas, a oscuras y con candado")
+	check((body.windows[4].node as Node3D).position.x == 0.0 and body.windows[4].boss, "el gran golpe, la ventana grande del centro")
+	check(body.windows[2].open and not body.windows[3].open and body.windows[3].lock != null, "en el edificio de siempre, las salas cerradas a oscuras y con candado")
+	await frames()
+	check(not t.stage.room_open(3) and t._room_stars[2].visible and not t._room_stars[3].visible, "... pero no son salas: ni estrellas ni se eligen")
 	check((body.windows[0].piece as Node3D).get_child_count() == 1, "en cada ventana abierta, su pieza")
 	t.act("right")
 
@@ -214,6 +234,39 @@ func _init() -> void:
 	await frames()
 	t = m.tour
 	check(t != null and t.state == "city" and t.stage.picked == 2 and t.stage.is_open(2), "tras el gran golpe, la ciudad con el museo siguiente abierto y elegido")
+
+	# The prehistory museum with all its rooms reached: rooms on its front and
+	# down its side, the arrows going from one to the next as seen on screen.
+	var tour := Tour.new()
+	root.add_child(tour)
+	tour.stage.hurry = true
+	tour.open_museum(1, 1)
+	await frames()
+	var dinos: MuseumBuilding = tour.stage._body(0)
+	check(range(5).all(func(i: int) -> bool: return tour.stage.room_open(i)) and dinos.windows.all(func(w: Dictionary) -> bool: return w.open), "con todo desbloqueado, las cinco ventanas son salas")
+	var sides := dinos.windows.filter(func(w: Dictionary) -> bool: return (w.face as Basis).z.x > 0.9).size()
+	var fronts := dinos.windows.filter(func(w: Dictionary) -> bool: return (w.face as Basis).z.z > 0.9).size()
+	check(sides >= 1 and fronts >= 2 and sides + fronts == 5, "salas en la fachada y en el costado que se ve (%d y %d)" % [fronts, sides])
+	check((dinos.windows[4].node as Node3D).position.x == 0.0 and dinos.windows[4].boss, "el gran golpe, la ventana grande del centro")
+	var seen: Array[int] = [tour.stage.room]
+	for k in 5:
+		tour.act("right")
+		if tour.stage.room != seen[-1]:
+			seen.append(tour.stage.room)
+	var left_to_right := true
+	for k in seen.size() - 1:
+		left_to_right = left_to_right and tour.stage.room_x(seen[k]) < tour.stage.room_x(seen[k + 1])
+	check(seen.size() == 5 and left_to_right, "las flechas, de ventana en ventana de izquierda a derecha en pantalla " + str(seen))
+	var side_room := -1
+	for i in 5:
+		if (dinos.windows[i].face as Basis).z.x > 0.9:
+			side_room = i
+	tour._pick_room(side_room)
+	await frames()
+	var face := tour.stage.room_face(side_room)
+	check(tour.stage._room_ring.global_basis.y.normalized().dot(face.z) > 0.99, "el aro de una sala del costado, sobre su pared")
+	check(((tour.stage.room_window(side_room).basis as Basis).z).dot(face.z) > 0.99, "... y el plano saldría de ella")
+	tour.queue_free()
 
 	# A gang of two: its own way through, the gang's words.
 	m.players = 2
