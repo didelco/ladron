@@ -268,6 +268,56 @@ func _init() -> void:
 	check(((tour.stage.room_window(side_room).basis as Basis).z).dot(face.z) > 0.99, "... y el plano saldría de ella")
 	tour.queue_free()
 
+	# The ancient museum, a Palladian villa: on arriving, only room 1 is a
+	# room, the rest just serlianas and the big job's a shut door.
+	var nights := Story.nights_in(2)
+	Story.unlock(nights[0], 1)
+	tour = Tour.new()
+	root.add_child(tour)
+	tour.stage.hurry = true
+	tour.open_museum(1, nights[0])
+	await frames()
+	var villa: MuseumBuilding = tour.stage._body(2)
+	check(range(5).filter(func(i: int) -> bool: return tour.stage.room_open(i)) == [0] and villa.windows.filter(func(w: Dictionary) -> bool: return w.open).size() == 1, "el museo antiguo al llegar: solo la sala 1 es una sala")
+	var door: Dictionary = villa.windows[4]
+	check(door.boss and door.size == MuseumBuilding.A_DOOR and (door.node as Node3D).position.x == 0.0 and (door.node as Node3D).position.y < MuseumBuilding.A_BASE + MuseumBuilding.A_DOOR.y, "... el gran golpe, por la puerta")
+	check(not door.open and (door.piece as Node3D).get_child_count() == 0 and not (door.node as Node3D).has_node("Crown"), "... cerrada: sin pieza ni corona")
+	check(villa.windows.all(func(w: Dictionary) -> bool: return w.lock == null), "... y nada con candado")
+	tour.stage.pick_room(4)
+	check(tour.stage.room == 0, "... ni se elige")
+	tour.queue_free()
+	# With all its rooms reached: rooms on its front and down its side, the
+	# door open with its crown and its ring.
+	Story.unlock(nights[4], 1)
+	tour = Tour.new()
+	root.add_child(tour)
+	tour.stage.hurry = true
+	tour.open_museum(1, nights[0])
+	await frames()
+	villa = tour.stage._body(2)
+	check(villa.windows.all(func(w: Dictionary) -> bool: return w.open), "el museo antiguo con todo: las cinco son salas")
+	var a_sides := villa.windows.filter(func(w: Dictionary) -> bool: return (w.face as Basis).z.x > 0.9).size()
+	var a_fronts := villa.windows.filter(func(w: Dictionary) -> bool: return (w.face as Basis).z.z > 0.9 and not w.boss).size()
+	check(a_sides == 3 and a_fronts == 1, "... una en la fachada y tres en el costado que se ve (%d y %d)" % [a_fronts, a_sides])
+	door = villa.windows[4]
+	check(door.open and (door.piece as Node3D).get_child_count() == 1 and (door.node as Node3D).has_node("Crown"), "... la puerta abierta, con su pieza y su corona")
+	tour._pick_room(4)
+	await frames()
+	check(tour.stage.room == 4 and tour.stage._room_ring.visible, "... se elige, con su aro")
+	check(tour.stage._room_ring.global_basis.y.normalized().dot(tour.stage.room_face(4).z) > 0.99, "... el aro sobre la fachada, alrededor de la puerta")
+	for k in 5:
+		tour.act("left")
+	var a_seen: Array[int] = [tour.stage.room]
+	for k in 5:
+		tour.act("right")
+		if tour.stage.room != a_seen[-1]:
+			a_seen.append(tour.stage.room)
+	var a_order := true
+	for k in a_seen.size() - 1:
+		a_order = a_order and tour.stage.room_x(a_seen[k]) < tour.stage.room_x(a_seen[k + 1])
+	check(a_seen.size() == 5 and a_seen[0] == 4 and a_order, "... las flechas, de la puerta a las del costado, de izquierda a derecha " + str(a_seen))
+	tour.queue_free()
+
 	# A gang of two: its own way through, the gang's words.
 	m.players = 2
 	m.seats.assign(["kb_left", "kb_right"])

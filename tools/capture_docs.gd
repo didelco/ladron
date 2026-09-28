@@ -188,7 +188,7 @@ func _shots() -> void:
 	for m in Story.MUSEUMS.size():
 		main._show_museum_tour(Story.nights_in(m)[0])
 		await _wait(1.5)
-		await _shot("menu_museo_%d" % (m + 1), "menus", "Museo %d: %s" % [m + 1, Text.t(Story.MUSEUMS[m].name)], "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.")
+		await _shot("menu_museo_%d" % (m + 1), "menus", "Museo %d: %s" % [m + 1, Text.t(Story.MUSEUMS[m].name)], "Su edificio de cerca, cada museo el suyo: cada sala, una ventana de la fachada o del costado que se ve, con su pieza a contraluz, su número y sus estrellas (solo las desbloqueadas; las demás son ventanas como las otras); el gran golpe, en el centro de la fachada: la ventana grande o la misma puerta.")
 	main._close_tour()
 	main._show_generative_menu()
 	await _wait(1.5)

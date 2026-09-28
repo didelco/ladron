@@ -759,7 +759,12 @@ func _animate_rooms(dt: float) -> void:
 	var r0 := 0.53
 	var breathe: float = 1.0 + sin(_t * 4.0) * 0.04
 	var spread := Basis.from_scale(Vector3((size.x * 0.5 + 0.2) / r0, 1, (tall * 0.5 + 0.18) / r0) * breathe)
-	var goal := Transform3D(face * Basis(Vector3.RIGHT, PI / 2) * spread, mid)
+	# A window deep in a porch (its door behind columns: "near", how far):
+	# its ring drawn that much nearer the camera, straight towards it, over
+	# what stands before it; the camera is orthographic, so on screen it is
+	# still round the window.
+	var near: float = w.get("near", 0.0)
+	var goal := Transform3D(face * Basis(Vector3.RIGHT, PI / 2) * spread, mid + _cam.global_basis.z * near)
 	# It glides from window to window on the same wall; round a corner (the
 	# front to a side) it jumps, not to cut through the building.
 	var was := _room_ring.global_transform
