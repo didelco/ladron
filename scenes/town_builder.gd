@@ -47,10 +47,10 @@ const REACH := 52.0
 const RIVER_WIDTH := 3.0
 const MEANDER := 5.0
 const MEANDER_LENGTH := 50.0
-## The far bank: how much higher the town stands there, and how wide the
+## The far bank (the north): how much higher the town stands there, and how wide the
 ## wooded slope up to it from the water.
-const RISE := 2.2
-const SLOPE := 3.8
+const RISE := 6.0
+const SLOPE := 5.0
 ## Land kept clear of blocks: along the near bank, and either side of the
 ## line between two districts of one bank.
 const BANK_CLEAR := 1.0
