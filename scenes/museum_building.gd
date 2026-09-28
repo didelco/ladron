@@ -12,7 +12,9 @@ extends Node3D
 ## museum its door). Only a room reached shows as one: lit warm, its piece
 ## on show in it (and the big job's crown). In the prehistory and the
 ## ancient museums, one not reached yet is just another of its many windows
-## (on its front and its sides), dark or lit like the rest, or a shut door;
+## (on its front, its sides and its back), dark or lit like the rest, or a
+## shut door; the rooms go round the building, one a wall, so the camera
+## swings round it from one to the next;
 ## in the hall, where every window is a room, it is dark with a padlock.
 ## Picking one (pick) lights it up (CityStage draws the ring).
 ##
@@ -58,15 +60,18 @@ const P_WINGS_X := [-2.05, -1.45, 1.45, 2.05]
 ## a little wider than the front's: the camera sees the side askew.
 const P_SIDE_Z := [-0.62, -1.3, -1.98]
 const P_SIDE_WINDOW := Vector2(0.42, 0.5)
+## The windows across its back (x), a row of them on each floor.
+const P_BACK_X := [-2.05, -1.45, -0.75, 0.0, 0.75, 1.45, 2.05]
 ## Where the rooms but the big job's are, in the rooms' order: on the front
-## (side 0, across: x) or on the side the camera sees (side 1, +x; across:
-## z), and on which floor. Spread over both and all three floors; any room
-## past these, in the last.
+## (side 0, across: x), down a side (1 the right, +x, -1 the left; across:
+## z) or on the back (side 2, across: x), and on which floor. One a wall
+## and each on its own floor, so the camera goes round the building from
+## one to the next; any room past these, in the last.
 const P_ROOMS := [
 	{"side": 0, "across": -2.05, "floor": 1},
-	{"side": 0, "across": 1.45, "floor": 2},
-	{"side": 1, "across": -0.62, "floor": 1},
-	{"side": 1, "across": -1.98, "floor": 2},
+	{"side": 1, "across": -1.3, "floor": 2},
+	{"side": 2, "across": 0.75, "floor": 1},
+	{"side": -1, "across": -0.62, "floor": 0},
 ]
 const P_COLUMNS_X := [-0.95, -0.47, 0.47, 0.95]
 ## A window lit that is not a room: a dim, dull light behind its bars, so
@@ -101,15 +106,18 @@ const A_LIGHT := 0.14
 const A_SMALL := Vector2(0.24, 0.24)
 const A_FRONT_X := [-1.87, 1.87]
 const A_SIDE_Z := [-0.48, -1.4, -2.32]
+## The serliana across the back (x).
+const A_BACK_X := [-1.55, 0.0, 1.55]
 ## Where the rooms but the big job's are, as P_ROOMS (all on the main
-## floor): the serliana right of the portico (the left one is behind the
-## portico, as the camera sees it), then the three down the side the camera
-## sees; the big job's is behind the door, under the portico.
+## floor): the serliana right of the portico, then round the villa: the
+## middle one down its right side, the middle one of its back, the middle
+## one down its left side; the big job's is behind the door, under the
+## portico.
 const A_ROOMS := [
 	{"side": 0, "across": 1.87},
-	{"side": 1, "across": -0.48},
 	{"side": 1, "across": -1.4},
-	{"side": 1, "across": -2.32},
+	{"side": 2, "across": 0.0},
+	{"side": -1, "across": -1.4},
 ]
 const A_COLUMNS_X := [-1.25, -0.79, -0.33, 0.33, 0.79, 1.25]
 const A_PORCH := 0.9
@@ -163,14 +171,15 @@ const M_BIG := Vector2(0.5, 0.4)
 const M_GRILLE := Vector2(0.26, 0.3)
 const M_MULLION := 0.035
 ## Where the rooms but the big job's are, in the rooms' order (as P_ROOMS):
-## windows of its front on a noble floor, or high on a tower's front
-## (across, the tower's middle). The camera sees this museum from before
-## it, its sides hardly: none down a side.
+## windows on a noble floor of its front, down a side or across its back
+## (side 2, across its x); down a side at the tower's middle (M_TOWER_Z),
+## high on the tower's outer side. Round the palace, one a wall: its front,
+## the right tower, its back, its left side.
 const M_ROOMS := [
 	{"side": 0, "across": -1.45, "floor": 1},
-	{"side": 0, "across": 0.75, "floor": 2},
-	{"side": 0, "across": -M_W * 0.5, "floor": 2},
-	{"side": 0, "across": M_W * 0.5, "floor": 2},
+	{"side": 1, "across": M_TOWER_Z, "floor": 2},
+	{"side": 2, "across": -0.75, "floor": 1},
+	{"side": -1, "across": -1.85, "floor": 2},
 ]
 ## How deep the cobbled yard before it.
 const M_YARD := 2.8
@@ -399,7 +408,8 @@ func _windows(rooms: Array) -> void:
 ## under a pediment, a flight of steps up to it. In front, a square of
 ## granite flags with a dinosaur in pale stone on a plinth each side of the
 ## steps. Its windows plain ones with glazing bars, some lit, on its front
-## and down both its sides; the rooms' are some of them (P_ROOMS), the big
+## down both its sides and across its back; the rooms' are some of them
+## (P_ROOMS, one on each wall), the big
 ## job's the big one over the door, between the columns. A room not reached
 ## yet is just a window like the rest.
 func _prehistory(rooms: Array) -> void:
@@ -422,9 +432,11 @@ func _prehistory(rooms: Array) -> void:
 		_box(Vector3(P_W + 0.06, 0.06, P_D + 0.06), stone, Vector3(0, P_BASE + f * P_FLOOR, -P_D * 0.5))
 	_box(Vector3(P_W + 0.24, 0.14, P_D + 0.24), stone, Vector3(0, roof_y + 0.07, -P_D * 0.5))
 	_box(Vector3(P_W - 0.1, 0.2, P_D - 0.1), trim, Vector3(0, roof_y + 0.24, -P_D * 0.5))
-	# The pilasters on the corners, seen from the front and from the sides.
+	# The pilasters on the corners, seen from the front, the back and the
+	# sides.
 	for sx in [-1, 1]:
-		_box(Vector3(0.16, roof_y - P_BASE, 0.06), stone, Vector3(sx * (P_W * 0.5 - 0.08), (roof_y + P_BASE) * 0.5, 0.02))
+		for z in [0.02, -P_D - 0.02]:
+			_box(Vector3(0.16, roof_y - P_BASE, 0.06), stone, Vector3(sx * (P_W * 0.5 - 0.08), (roof_y + P_BASE) * 0.5, z))
 		for z in [-0.08, -P_D + 0.08]:
 			_box(Vector3(0.06, roof_y - P_BASE, 0.16), stone, Vector3(sx * (P_W * 0.5 + 0.02), (roof_y + P_BASE) * 0.5, z))
 	# Its middle standing out, the full height.
@@ -472,8 +484,9 @@ func _prehistory(rooms: Array) -> void:
 	_box(Vector3(0.03, 0.8, 0.03), POLE, Vector3(0, roof_y + 0.7, -0.4))
 	var flag := _box(Vector3(0.45, 0.26, 0.02), _colour if open else accent, Vector3(0.24, roof_y + 0.95, -0.4))
 	flag.name = "Flag"
-	# The plain windows of the wings, three floors of them, and down both
-	# sides, lit here and there; but where a room is (it has its own).
+	# The plain windows of the wings, three floors of them, down both sides
+	# and across the back, lit here and there; but where a room is (it has
+	# its own).
 	var taken := {}
 	for s in P_ROOMS:
 		taken[_slot_key(s.side, s.across, s.floor)] = true
@@ -485,6 +498,9 @@ func _prehistory(rooms: Array) -> void:
 			for z in P_SIDE_Z:
 				if not taken.has(_slot_key(side, z, f)):
 					_p_window(_slot_at(side, z, f), P_SIDE_WINDOW, open and rng.randf() < 0.35, _slot_turn(side))
+		for x in P_BACK_X:
+			if not taken.has(_slot_key(2, x, f)):
+				_p_window(_slot_at(2, x, f), P_WINDOW, open and rng.randf() < 0.35, _slot_turn(2))
 	# The lamps on the square, each side of the steps.
 	for sx in [-1, 1]:
 		var post := CylinderMesh.new()
@@ -531,7 +547,7 @@ func _prehistory(rooms: Array) -> void:
 			normal += 1
 			at = _slot_at(s.side, s.across, s.floor)
 			turn = _slot_turn(s.side)
-			size = P_WINDOW if s.side == 0 else P_SIDE_WINDOW
+			size = P_SIDE_WINDOW if absi(s.side) == 1 else P_WINDOW
 		var shown: bool = open and r.has("shape") and bool(r.get("open", false))
 		var w := _plain(at, size, true, false, turn) if shown else _p_window(at, size, open and rng.randf() < 0.35, turn)
 		var node: Node3D = w.node
@@ -550,13 +566,15 @@ func _prehistory(rooms: Array) -> void:
 
 
 ## Where a window of the prehistory museum is: on its front (side 0, across
-## its x) or down a side (-1 left, 1 right, across its z, back from the
-## front), on floor f (0 the ground one): its middle, and its turn to face
-## out of its wall.
+## its x), down a side (-1 left, 1 right, across its z, back from the front)
+## or on its back (side 2, across its x), on floor f (0 the ground one): its
+## middle, and its turn to face out of its wall.
 func _slot_at(side: int, across: float, f: int) -> Vector3:
 	var y := P_BASE + P_FLOOR * (f + 0.5)
 	if side == 0:
 		return Vector3(across, y, 0.0)
+	if side == 2:
+		return Vector3(across, y, -P_D)
 	return Vector3(side * P_W * 0.5, y, across)
 
 
@@ -683,9 +701,9 @@ func _long_neck(at: Node3D) -> void:
 ## as it down to the gravel, between two solid walls that slope down with
 ## it, a pedestal at the foot of each with a statue on it: a rearing horse
 ## with a traffic cone on its head and a fox in a party hat. Either side of
-## the portico and down both sides, serlianas with a little pediment over
-## them on the main floor, dark, small square windows over those (some
-## lit), little ones in the basement. The rooms' are some of the serlianas
+## the portico, down both sides and across the back, serlianas with a
+## little pediment over them on the main floor, dark, small square windows
+## over those (some lit), little ones in the basement. The rooms' are some of the serlianas
 ## (A_ROOMS), lit once reached (no piece on show: the light is the room);
 ## the big job's is behind the door, under the portico: shut until reached,
 ## then open and lit, the crown over the pediment.
@@ -718,7 +736,8 @@ func _antiquity(rooms: Array) -> void:
 	for y in [A_BASE + 0.02, A_BASE + A_MAIN]:
 		_box(Vector3(A_W + 0.05, 0.05, A_D + 0.05), stone, Vector3(0, y, back_z))
 	# The entablature all round: architrave, frieze (triglyphs along the
-	# front either side of the portico, and down the sides), cornice.
+	# front either side of the portico, across the back and down the sides),
+	# cornice.
 	_box(Vector3(A_W + 0.08, 0.1, A_D + 0.08), stone, Vector3(0, roof_y + 0.05, back_z))
 	_box(Vector3(A_W + 0.1, 0.12, A_D + 0.1), stone, Vector3(0, roof_y + 0.16, back_z))
 	_box(Vector3(A_W + 0.26, 0.08, A_D + 0.26), stone, Vector3(0, roof_y + 0.26, back_z))
@@ -726,6 +745,7 @@ func _antiquity(rooms: Array) -> void:
 		var x := -A_W * 0.5 + 0.1 + k * (A_W - 0.2) / 22.0
 		if absf(x) > 1.52:
 			_box(Vector3(0.07, 0.11, 0.02), glyph, Vector3(x, roof_y + 0.16, 0.06))
+		_box(Vector3(0.07, 0.11, 0.02), glyph, Vector3(x, roof_y + 0.16, -A_D - 0.06))
 	for k in 13:
 		var z := -0.1 - k * (A_D - 0.2) / 12.0
 		for sx in [-1, 1]:
@@ -827,10 +847,10 @@ func _antiquity(rooms: Array) -> void:
 		var at: Vector3 = busts[b]
 		_box(Vector3(0.16, 0.06, 0.16), stone, at + Vector3(0, 0.03, 0))
 		_statue(b, 0.34, at + Vector3(0, 0.06, 0), 0.0, false, false)
-	# The windows: either side of the portico and down both sides, a
-	# serliana on the main floor, dark, so that the rooms' stand out (but
-	# where a room is: it has its own), a small window over it, a little one
-	# in the basement under it.
+	# The windows: either side of the portico, down both sides and across
+	# the back, a serliana on the main floor, dark, so that the rooms' stand
+	# out (but where a room is: it has its own), a small window over it, a
+	# little one in the basement under it.
 	var taken := {}
 	for s in A_ROOMS:
 		taken[_slot_key(s.side, s.across, 0)] = true
@@ -840,6 +860,8 @@ func _antiquity(rooms: Array) -> void:
 	for side in [-1, 1]:
 		for z in A_SIDE_Z:
 			slots.append(Vector2(side, z))
+	for x in A_BACK_X:
+		slots.append(Vector2(2, x))
 	for s in slots:
 		var side := int(s.x)
 		var turn := _slot_turn(side)
@@ -973,10 +995,13 @@ func _a_dome(roof_top: float, z: float) -> float:
 
 
 ## Where a window of the ancient museum is: on its front (side 0, across
-## its x) or down a side (-1 left, 1 right, across its z), at height y.
+## its x), down a side (-1 left, 1 right, across its z) or on its back
+## (side 2, across its x), at height y.
 func _a_slot_at(side: int, across: float, y: float) -> Vector3:
 	if side == 0:
 		return Vector3(across, y, 0.0)
+	if side == 2:
+		return Vector3(across, y, -A_D)
 	return Vector3(side * A_W * 0.5, y, across)
 
 
@@ -1178,7 +1203,8 @@ func _cone(bottom: float, top_r: float, h: float) -> CylinderMesh:
 ## benches, a giant banana and a banner.
 ##
 ## Each room is a floor, a whole box, in order up the tower (C_FLOORS), the
-## big job's the top one. Nothing of what's inside is seen: a room reached
+## big job's the top one; each seen from its own wall (C_FACES), round the
+## tower as it goes up. Nothing of what's inside is seen: a room reached
 ## has the joint under its box lit and its box a little bright (the big
 ## job's, the crown on the roof); one not reached yet is just another box,
 ## its joint dim. Picked, its joint shines and its whole box lights up. The
@@ -1203,6 +1229,10 @@ const C_FLOORS := [
 	{"size": Vector3(2.8, 1.0, 2.2), "x": 0.2, "front": -0.3},
 	{"size": Vector3(2.4, 1.15, 1.9), "x": -0.1, "front": -0.45},
 ]
+## Which of its walls each floor's room is seen from, bottom to top (0 the
+## front, 1 the right, 2 the back, 3 the left): up the tower the camera goes
+## round it. The big job's, the top one, from the front.
+const C_FACES := [0, 1, 2, 3, 0]
 ## The joint under each box: how tall, and how far it is set back from the
 ## box's front and side.
 const C_JOINT := 0.24
@@ -1283,8 +1313,14 @@ func _contemporary(rooms: Array) -> void:
 			normal += 1
 		var f: Dictionary = C_FLOORS[k]
 		var s: Vector3 = f.size
+		# Its node in the middle of the wall it is seen from, looking out of
+		# it; across and deep, as that wall has them.
+		var turn := Basis(Vector3.UP, int(C_FACES[k]) * PI * 0.5)
+		var along := s.x if int(C_FACES[k]) % 2 == 0 else s.z
+		var deep := s.z if int(C_FACES[k]) % 2 == 0 else s.x
 		var node := Node3D.new()
-		node.position = Vector3(f.x, base[k] + s.y * 0.5, f.front)
+		node.basis = turn
+		node.position = Vector3(f.x, base[k] + s.y * 0.5, float(f.front) - s.z * 0.5) + turn.z * deep * 0.5
 		add_child(node)
 		var shown: bool = open and r.has("shape") and bool(r.get("open", false))
 		var box := boxes[k]
@@ -1298,22 +1334,22 @@ func _contemporary(rooms: Array) -> void:
 			if r.boss:
 				# The big job's crown, on the roof.
 				var crown := Node3D.new()
-				crown.position = Vector3(0, s.y * 0.5 + 0.4, -s.z * 0.45)
+				crown.position = Vector3(0, s.y * 0.5 + 0.4, -deep * 0.45)
 				node.add_child(crown)
 				CityStage.crown(crown, Vector3.ZERO, MenuStage.GOLD, 1.6)
 		# Nothing of the room is seen: its piece is left empty.
 		var piece := Node3D.new()
 		node.add_child(piece)
 		windows.append({"node": node, "back": joint, "glass": joint, "piece": piece, "lock": null, "boss": r.boss, "open": shown,
-			"size": Vector2(s.x, s.y), "frame": [box], "stone": reached, "arch": false, "face": node.basis,
+			"size": Vector2(along, s.y), "frame": [box], "stone": reached, "arch": false, "face": node.basis,
 			"rest": rest, "glow": _lit_material(LIT_PICKED, C_JOINT_PICKED),
 			"frame_glow": _lit_material(skin.lerp(LIT_PICKED, C_PICKED_TINT), C_PICKED_GLOW),
-			"shape": "floor", "volume": AABB(Vector3(-s.x * 0.5, -s.y * 0.5 + C_JOINT, -s.z), Vector3(s.x, s.y - C_JOINT, s.z))})
+			"shape": "floor", "volume": AABB(Vector3(-along * 0.5, -s.y * 0.5 + C_JOINT, -deep), Vector3(along, s.y - C_JOINT, deep))})
 	_c_bits(bits)
 
 
 ## Floor k of the tower's box, from y0 up over its joint, blind in its
-## skin, the skin's ribs up its front and its side. Returns the box.
+## skin, the skin's ribs up all four sides. Returns the box.
 func _c_box(k: int, y0: float, bits: Array) -> MeshInstance3D:
 	var f: Dictionary = C_FLOORS[k]
 	var s: Vector3 = f.size
@@ -1330,12 +1366,14 @@ func _c_box(k: int, y0: float, bits: Array) -> MeshInstance3D:
 	var r1 := y0 + s.y - 0.03
 	var n := int((s.x - 0.16) / C_RIB)
 	for i in n + 1:
-		var at := Vector3(x - (n * C_RIB) * 0.5 + i * C_RIB, (r0 + r1) * 0.5, front + 0.006)
-		bits.append([Transform3D(Basis.from_scale(Vector3(0.02, r1 - r0, 0.014)), at), tint])
+		for z: float in [front + 0.006, front - s.z - 0.006]:
+			var at := Vector3(x - (n * C_RIB) * 0.5 + i * C_RIB, (r0 + r1) * 0.5, z)
+			bits.append([Transform3D(Basis.from_scale(Vector3(0.02, r1 - r0, 0.014)), at), tint])
 	var m := int((s.z - 0.16) / C_RIB)
 	for i in m + 1:
-		var at := Vector3(x + s.x * 0.5 + 0.006, (r0 + r1) * 0.5, front - s.z * 0.5 - (m * C_RIB) * 0.5 + i * C_RIB)
-		bits.append([Transform3D(Basis.from_scale(Vector3(0.014, r1 - r0, 0.02)), at), tint])
+		for sx: int in [-1, 1]:
+			var at := Vector3(x + sx * (s.x * 0.5 + 0.006), (r0 + r1) * 0.5, front - s.z * 0.5 - (m * C_RIB) * 0.5 + i * C_RIB)
+			bits.append([Transform3D(Basis.from_scale(Vector3(0.014, r1 - r0, 0.02)), at), tint])
 	return box
 
 
@@ -1356,12 +1394,14 @@ func _c_joint(k: int, y0: float, lit: bool, bits: Array) -> MeshInstance3D:
 	var mullion := _shade(C_MULLION)
 	var n := int(w / 0.3)
 	for i in n + 1:
-		var at := Vector3(x - w * 0.5 + i * (w / n), cy, front + 0.008)
-		bits.append([Transform3D(Basis.from_scale(Vector3(0.018, C_JOINT, 0.016)), at), mullion])
+		for z: float in [front + 0.008, front - d - 0.008]:
+			var at := Vector3(x - w * 0.5 + i * (w / n), cy, z)
+			bits.append([Transform3D(Basis.from_scale(Vector3(0.018, C_JOINT, 0.016)), at), mullion])
 	var m := int(d / 0.3)
 	for i in m + 1:
-		var at := Vector3(x + w * 0.5 + 0.008, cy, front - i * (d / m))
-		bits.append([Transform3D(Basis.from_scale(Vector3(0.016, C_JOINT, 0.018)), at), mullion])
+		for sx: int in [-1, 1]:
+			var at := Vector3(x + sx * (w * 0.5 + 0.008), cy, front - i * (d / m))
+			bits.append([Transform3D(Basis.from_scale(Vector3(0.016, C_JOINT, 0.018)), at), mullion])
 	return glass
 
 
@@ -1378,11 +1418,13 @@ func _c_lobby(bits: Array) -> void:
 	var n := int(w / 0.4)
 	for i in n + 1:
 		var x := -w * 0.5 + i * (w / n)
-		bits.append([Transform3D(Basis.from_scale(Vector3(0.03, C_LOBBY, 0.03)), Vector3(x, C_LOBBY * 0.5, C_LOBBY_Z + 0.01)), mullion])
+		for z: float in [C_LOBBY_Z + 0.01, C_LOBBY_Z - d - 0.01]:
+			bits.append([Transform3D(Basis.from_scale(Vector3(0.03, C_LOBBY, 0.03)), Vector3(x, C_LOBBY * 0.5, z)), mullion])
 	var m := int(d / 0.4)
 	for i in m + 1:
 		var z := C_LOBBY_Z - i * (d / m)
-		bits.append([Transform3D(Basis.from_scale(Vector3(0.03, C_LOBBY, 0.03)), Vector3(w * 0.5 + 0.01, C_LOBBY * 0.5, z)), mullion])
+		for sx: int in [-1, 1]:
+			bits.append([Transform3D(Basis.from_scale(Vector3(0.03, C_LOBBY, 0.03)), Vector3(sx * (w * 0.5 + 0.01), C_LOBBY * 0.5, z)), mullion])
 	# A dark slab over the glass (the first joint's light apart from the
 	# lobby's), the doors in a dark frame.
 	_box(Vector3(w + 0.06, 0.06, d + 0.06), mullion, Vector3(0, C_LOBBY - 0.03, C_LOBBY_Z - d * 0.5))
@@ -1562,8 +1604,8 @@ static var _m_glass_texture: ImageTexture
 ## banner in the museum's colour down its front and a pennant on top. Its
 ## windows two-light arched ones with stained glass, a column between the
 ## lights and a round one over them, some lit, on the two noble floors of
-## its front and both its sides; little barred ones on the ground floor. The
-## rooms' are some of them (M_ROOMS); the big job's the big one in the
+## its front, both its sides and its back; little barred ones on the ground
+## floor. The rooms' are some of them (M_ROOMS, round the palace); the big job's the big one in the
 ## middle of the noble floor, on a balcony, the family's crest over it (and
 ## the crown on the crest). Before it, a cobbled yard: a little drawbridge
 ## over a dry moat (a rubber duck in it), a brazier each side, a well, and a
@@ -1597,12 +1639,14 @@ func _middle_ages(rooms: Array) -> void:
 	var walls: Array[Transform3D] = [Transform3D(Basis.IDENTITY, Vector3(0, M_BASE, 0))]
 	for s: int in [-1, 1]:
 		walls.append(Transform3D(Basis(Vector3.UP, s * PI * 0.5), Vector3(s * half, M_BASE, side_from - side_long * 0.5)))
+	walls.append(Transform3D(Basis(Vector3.UP, PI), Vector3(0, M_BASE, -M_D)))
 	for k in walls.size():
-		var across := front if k == 0 else side_long
+		var across: float = front if k == 0 else M_W if k == 3 else side_long
 		_m_ashlar(walls[k], Vector2(across, ground_h), 0.16, 0.4, joint)
 		_m_ashlar(walls[k].translated_local(Vector3(0, ground_h, 0)), Vector2(across, roof_y - M_BASE - ground_h), 0.12, 0.3, joint)
 	# The bands between the floors (the first a frieze), the pilasters on
-	# each floor with their capitals, on the front and down the sides.
+	# each floor with their capitals, on the front, down the sides and across
+	# the back.
 	for f in range(1, M_FLOORS.size()):
 		var y := _m_floor_y(f)
 		var tall := 0.1 if f == 1 else 0.07
@@ -1612,8 +1656,9 @@ func _middle_ages(rooms: Array) -> void:
 		var foot := _m_floor_y(f) + (0.07 if f > 0 else 0.0)
 		var tall := _m_floor_y(f + 1) - foot - (0.05 if f == 0 else 0.035 if f < M_FLOORS.size() - 1 else 0.13)
 		for x: float in M_PILASTERS_X:
-			_m_part(Vector3(0.1, tall, 0.035), trim, Vector3(x, foot + tall * 0.5, 0.017))
-			_m_part(Vector3(0.14, 0.04, 0.05), trim, Vector3(x, foot + tall - 0.02, 0.025))
+			for z: float in [0.017, -M_D - 0.017]:
+				_m_part(Vector3(0.1, tall, 0.035), trim, Vector3(x, foot + tall * 0.5, z))
+				_m_part(Vector3(0.14, 0.04, 0.05), trim, Vector3(x, foot + tall - 0.02, z + signf(z) * 0.008))
 		for s: int in [-1, 1]:
 			for z: float in M_SIDE_PILASTERS_Z:
 				_m_part(Vector3(0.035, tall, 0.1), trim, Vector3(s * (half + 0.017), foot + tall * 0.5, z))
@@ -1622,7 +1667,8 @@ func _middle_ages(rooms: Array) -> void:
 	_box(Vector3(M_W + 0.36, 0.1, M_D + 0.36), trim, Vector3(0, roof_y + 0.13, -M_D * 0.5))
 	var x0 := -half
 	while x0 <= half:
-		_m_part(Vector3(0.06, 0.08, 0.16), trim, Vector3(x0, roof_y + 0.04, 0.06))
+		for z: float in [0.06, -M_D - 0.06]:
+			_m_part(Vector3(0.06, 0.08, 0.16), trim, Vector3(x0, roof_y + 0.04, z))
 		x0 += 0.2
 	for s: int in [-1, 1]:
 		var z0 := side_from
@@ -1642,7 +1688,8 @@ func _middle_ages(rooms: Array) -> void:
 	tiles.rotation.y = PI * 0.5
 	# The towers on the front corners.
 	for s: int in [-1, 1]:
-		_m_tower(Vector3(s * half, 0, M_TOWER_Z), s, tower_stone, trim, accent, rng, taken.has(_m_key(0, s * half, 2)))
+		var rooms_at: Array[bool] = [taken.has(_m_key(0, s * half, 2)), taken.has(_m_key(s, M_TOWER_Z, 2))]
+		_m_tower(Vector3(s * half, 0, M_TOWER_Z), s, tower_stone, trim, accent, rng, rooms_at)
 	# The door: a stone frame, the door in the museum's colour studded in
 	# gold, lit round its edge when open; a cornice over it.
 	_box(Vector3(0.66, 0.66, 0.05), trim, Vector3(0, M_BASE + 0.33, 0.015))
@@ -1693,13 +1740,16 @@ func _middle_ages(rooms: Array) -> void:
 	_mesh(tip, accent, Vector3(0, crest_y - 0.165, 0.02)).rotation.z = PI
 	var croquette := _mesh(_ball(0.06), _shade(M_CROQUETTE), Vector3(0, crest_y - 0.02, 0.045))
 	croquette.scale = Vector3(1.3, 0.75, 0.6)
-	# The windows: two-light ones on the noble floors of the front and down
-	# both sides, little barred ones on the ground floor; but where a room is
-	# (it has its own) and in the middle (the big job's and the crest).
+	# The windows: two-light ones on the noble floors of the front, down
+	# both sides and across the back, little barred ones on the ground
+	# floor; but where a room is (it has its own) and in the middle of the
+	# front (the big job's and the crest).
 	for f: int in [1, 2]:
 		for x: float in M_BAYS_X:
 			if x != 0.0 and not taken.has(_m_key(0, x, f)):
 				_m_bifora(_m_slot(0, x, f, M_WINDOW), M_WINDOW, 0.0, _m_look(rng))
+			if not taken.has(_m_key(2, x, f)):
+				_m_bifora(_m_slot(2, x, f, M_WINDOW), M_WINDOW, PI, _m_look(rng))
 		for side: int in [-1, 1]:
 			for z: float in M_SIDE_Z:
 				if not taken.has(_m_key(side, z, f)):
@@ -1707,6 +1757,7 @@ func _middle_ages(rooms: Array) -> void:
 	for x: float in M_BAYS_X:
 		if x != 0.0:
 			_m_grille(Vector3(x, M_BASE + 0.45, 0.0), 0.0, open and rng.randf() < 0.3)
+		_m_grille(Vector3(x, M_BASE + 0.45, -M_D), PI, open and rng.randf() < 0.3)
 	for side: int in [-1, 1]:
 		for z: float in M_SIDE_Z:
 			_m_grille(Vector3(side * half, M_BASE + 0.45, z), side * PI * 0.5, open and rng.randf() < 0.3)
@@ -1754,15 +1805,19 @@ func _m_floor_y(f: int) -> float:
 
 
 ## Where a window of the middle-ages museum goes: on its front (side 0,
-## across its x) or down a side (-1, 1: across its z), on floor f, its
-## glass's foot a little over the band; on the front, at a tower's middle,
-## on the tower's front.
+## across its x), down a side (-1, 1: across its z) or on its back (side 2,
+## across its x), on floor f, its glass's foot a little over the band; on
+## the front at a tower's middle, on the tower's front; down a side as far
+## back as a tower's middle, on the tower's outer side.
 func _m_slot(side: int, across: float, f: int, size: Vector2) -> Vector3:
 	var y := _m_floor_y(f) + 0.12 + size.y * 0.5
 	if side == 0:
 		var tower := absf(across) > M_W * 0.5 - 0.01
 		return Vector3(across, y, M_TOWER_Z + M_TOWER * 0.5 if tower else 0.0)
-	return Vector3(side * M_W * 0.5, y, across)
+	if side == 2:
+		return Vector3(across, y, -M_D)
+	var out := M_W * 0.5 + (M_TOWER * 0.5 if across > M_TOWER_Z - M_TOWER * 0.5 else 0.0)
+	return Vector3(side * out, y, across)
 
 
 func _m_key(side: int, across: float, f: int) -> String:
@@ -1776,11 +1831,11 @@ func _m_look(rng: RandomNumberGenerator) -> String:
 
 ## A tower on a front corner (s: -1 left, 1 right), its foot's middle at
 ## c: a battered foot, its walls with their joints, bands at the palace's
-## floors, arrow slits, a two-light window high up on its front (but where
-## a room is: room) and its outer side, a banner down its front; a gallery
-## on corbels at the top, battlements round it, a pennant on a pole (the
-## right one's waves).
-func _m_tower(c: Vector3, s: int, stone: Color, trim: Color, accent: Color, rng: RandomNumberGenerator, room: bool) -> void:
+## floors, arrow slits, a two-light window high up on its front and its
+## outer side (but where a room is: rooms, [front, side]), a banner down its
+## front; a gallery on corbels at the top, battlements round it, a pennant
+## on a pole (the right one's waves).
+func _m_tower(c: Vector3, s: int, stone: Color, trim: Color, accent: Color, rng: RandomNumberGenerator, rooms: Array[bool]) -> void:
 	var hw := M_TOWER * 0.5
 	_box(Vector3(M_TOWER + 0.16, 0.4, M_TOWER + 0.16), _shade(M_SAND_DARK), c + Vector3(0, 0.2, 0))
 	_box(Vector3(M_TOWER, M_TOWER_H, M_TOWER), stone, c + Vector3(0, M_TOWER_H * 0.5, 0))
@@ -1797,7 +1852,7 @@ func _m_tower(c: Vector3, s: int, stone: Color, trim: Color, accent: Color, rng:
 		for y: float in [0.6, M_TOWER_H - 0.45]:
 			_m_part(Vector3(0.05, 0.3, 0.02), _shade(M_IRON), c + out * Vector3(0, y, hw + 0.005), out)
 			_m_part(Vector3(0.12, 0.04, 0.03), trim, c + out * Vector3(0, y - 0.17, hw + 0.01), out)
-		if turn == 0.0 and room:
+		if rooms[0 if turn == 0.0 else 1]:
 			continue
 		_m_bifora(c + out * Vector3(0, _m_floor_y(2) + 0.12 + M_WINDOW.y * 0.5, hw), M_WINDOW, turn, _m_look(rng))
 	# The banner down its front, gold along its foot, a gold lozenge on it.
@@ -2249,9 +2304,9 @@ static func _lit_material(colour: Color, energy: float) -> StandardMaterial3D:
 ## square of white stone slabs with a kerb (so the green tower stands out
 ## from the town's green), beds along the path, trees in planters and a
 ## giant ladybird. Its rooms are holes among the green: wood-lined niches
-## in the balconies, warmly lit, back and floor (N_ROOMS, on its front
-## and down the side the camera sees; the big job's the wide one at the top
-## of its front, the crown over it on the name board). Only a room reached
+## in the balconies, warmly lit, back and floor (N_ROOMS, one on each of
+## its four faces; the big job's the wide one at the top of its front, the
+## crown over it on the name board). Only a room reached
 ## is a hole, empty (no piece: the light tells it); one not reached yet is
 ## a balcony like the rest.
 ## The tower is baked into one mesh, the plants one MultiMesh a kind.
@@ -2270,16 +2325,17 @@ const N_PLANTER := Vector2(0.17, 0.12)
 ## A room's hole and the big job's (across, tall).
 const N_HOLE := Vector2(0.52, 0.42)
 const N_BIG_HOLE := Vector2(0.7, 0.42)
-## Where the rooms but the big job's are, in the rooms' order: on the front
-## (face 0) or on the side the camera sees (face 1, +x), in which of its
-## three bays (0 to 2, left to right as the camera sees them), on which
-## floor (0 the first over the lobby). Spread over both and up the tower;
-## any room past these, in the last. The big job's: the top floor's middle.
+## Where the rooms but the big job's are, in the rooms' order: on which
+## face (_n_face: 0 the front, 1 the right, 2 the back, 3 the left), in
+## which of its three bays (0 to 2, left to right as seen from out in front
+## of it), on which floor (0 the first over the lobby). One a face, round
+## the tower and up it, a spiral to the big job's (the top floor's middle,
+## on the front); any room past these, in the last.
 const N_ROOMS := [
 	{"face": 0, "bay": 0, "floor": 0},
-	{"face": 0, "bay": 2, "floor": 2},
-	{"face": 1, "bay": 0, "floor": 1},
-	{"face": 1, "bay": 2, "floor": 3},
+	{"face": 1, "bay": 2, "floor": 2},
+	{"face": 2, "bay": 1, "floor": 3},
+	{"face": 3, "bay": 2, "floor": 4},
 ]
 const N_BOSS := {"face": 0, "bay": 1, "floor": N_FLOORS - 1}
 ## The name board on the roof: how high its middle, how far back.
@@ -2427,9 +2483,12 @@ func _nature(rooms: Array) -> void:
 				if hole != Vector2.ZERO:
 					_n_niche(face, u, y, bay, out, hole, rng)
 				else:
-					# Under a hole, no trees: nothing in front of a room.
-					var trees := not holes.has(_n_key(k, b, f + 1))
-					_n_planter(face, u, y, bay, out, rng, trees, f == N_FLOORS and k == 0)
+					# Nothing in front of a room: two floors under a hole, no
+					# trees; just under it, only flowers; over it, no vine
+					# hanging down.
+					var trees := not holes.has(_n_key(k, b, f + 1)) and not holes.has(_n_key(k, b, f + 2))
+					var low := (f == N_FLOORS and k == 0) or holes.has(_n_key(k, b, f + 1)) or holes.has(_n_key(k, b, f - 1))
+					_n_planter(face, u, y, bay, out, rng, trees, low)
 	# The roof: a meadow with bushes, solar panels, a little wind turbine.
 	rng.seed = 7127 + museum + 5000
 	_n_roof(roof_y, rng)
@@ -2564,7 +2623,8 @@ static func _n_xf(at: Vector3, s: Vector3, turn := Basis.IDENTITY) -> Transform3
 ## A balcony's planter along its edge, full: trees where it stands far out
 ## (they reach up past the floor over it, which stands in; not with
 ## `trees` off), bushes and flowers where it is near; a vine over its edge
-## here and there. `low`: only flowers (under the crown).
+## here and there. `low`: only flowers, no vine (under the crown, or next
+## to a room).
 func _n_planter(face: Transform3D, u: float, y: float, bay: float, out: float, rng: RandomNumberGenerator, trees: bool, low: bool) -> void:
 	var h := N_PLANTER.x
 	var mid := out - N_PLANTER.y * 0.5

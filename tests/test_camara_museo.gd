@@ -3,8 +3,8 @@ extends SceneTree
 ## edificio hasta mirar su pared (de frente o en tres cuartos, un poco desde
 ## arriba) y se acerca; de una sala a otra se mueve, gira y hace zoom a la
 ## vez, sin saltos; las flechas rodean el edificio en un orden que no cambia
-## al girar; al salir, la ciudad como siempre. También con salas en el
-## costado izquierdo y detrás (ventanas del museo movidas en memoria).
+## al girar; al salir, la ciudad como siempre. También con las salas del
+## costado izquierdo y de detrás de la prehistoria.
 var fails := 0
 func check(ok: bool, what: String) -> void:
 	print(("ok   " if ok else "FALLO ") + what)
@@ -88,8 +88,7 @@ func _init() -> void:
 		tour.queue_free()
 		await frames()
 
-	# Rooms round the back and on the left side: two windows of the
-	# prehistory museum turned half round its middle.
+	# Rooms round the back and on the left side: the prehistory museum's.
 	var tour := Tour.new()
 	root.add_child(tour)
 	var stage := tour.stage
@@ -97,19 +96,14 @@ func _init() -> void:
 	tour.open_museum(1, Story.nights_in(0)[0])
 	await frames()
 	var body := stage._body(0)
-	var mid := Vector3(0, 0, -MuseumBuilding.P_D * 0.5)
-	var half := Transform3D(Basis(Vector3.UP, PI), mid) * Transform3D(Basis(), -mid)
 	var back := -1
 	var left := -1
 	for i in 5:
 		var z := (body.windows[i].face as Basis).z
-		if back < 0 and z.z > 0.9 and i != 4:
+		if back < 0 and z.z < -0.9:
 			back = i
-		elif left < 0 and z.x > 0.9:
+		elif left < 0 and z.x < -0.9:
 			left = i
-	for i in [back, left]:
-		var n: Node3D = body.windows[i].node
-		n.transform = half * n.transform
 	var wall := func(i: int) -> Vector3:
 		return stage._museums[0].global_basis.inverse() * stage.room_face(i).z
 	check((wall.call(back) as Vector3).z < -0.9 and (wall.call(left) as Vector3).x < -0.9, "una sala detrás y otra en el costado izquierdo")

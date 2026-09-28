@@ -47,6 +47,21 @@ func walk_right(tour: Tour) -> Array:
 	return [seen, ok]
 
 
+## How many of its walls a museum's rooms are on (front, sides, back), and
+## whether one is round the back or on the left side.
+func walls(body: MuseumBuilding) -> Array:
+	var out := {}
+	for w in body.windows:
+		var z := (w.face as Basis).z
+		out[Vector2i(roundi(z.x), roundi(z.z))] = true
+	return [out.size(), out.has(Vector2i(0, -1)) or out.has(Vector2i(-1, 0))]
+
+
+func round_walls(body: MuseumBuilding) -> bool:
+	var w := walls(body)
+	return int(w[0]) >= 3 and bool(w[1])
+
+
 func _init() -> void:
 	# Nothing here is saved where the player keeps the story.
 	Story.save = "user://test_previa.cfg"
@@ -138,7 +153,7 @@ func _init() -> void:
 	check(body.windows[2].open and not body.windows[3].open and body.windows[3].lock == null, "en la casa de los bichos, las salas sin desbloquear son balcones normales: sin candado")
 	check((body.windows[3].piece as Node3D).get_child_count() == 0 and (body.windows[4].node as Node3D).get_child_count() == 1, "... sin pieza, y el gran golpe sin pieza ni corona")
 	await frames()
-	check(not t.stage.room_open(3) and t._room_stars[2].visible and not t._room_stars[3].visible, "... ni son salas: ni estrellas ni se eligen")
+	check(not t.stage.room_open(3) and t._room_stars[t.stage.room].visible and not t._room_stars[3].visible, "... ni son salas: ni estrellas ni se eligen")
 	check(body.windows.all(func(w: Dictionary) -> bool: return (w.piece as Node3D).get_child_count() == 0), "en ningún hueco, ninguna pieza: la sala la dice la luz")
 	var hole_lit := func(w: Dictionary) -> bool:
 		var look := (w.back as MeshInstance3D).material_override as StandardMaterial3D
@@ -259,8 +274,8 @@ func _init() -> void:
 	t = m.tour
 	check(t != null and t.state == "city" and t.stage.picked == 2 and t.stage.is_open(2), "tras el gran golpe, la ciudad con el museo siguiente abierto y elegido")
 
-	# The prehistory museum with all its rooms reached: rooms on its front and
-	# down its side, the arrows going from one to the next as seen on screen.
+	# The prehistory museum with all its rooms reached: rooms on its four
+	# walls, the arrows going from one to the next as seen on screen.
 	var tour := Tour.new()
 	root.add_child(tour)
 	tour.stage.hurry = true
@@ -268,10 +283,10 @@ func _init() -> void:
 	await frames()
 	var dinos: MuseumBuilding = tour.stage._body(0)
 	check(range(5).all(func(i: int) -> bool: return tour.stage.room_open(i)) and dinos.windows.all(func(w: Dictionary) -> bool: return w.open), "con todo desbloqueado, las cinco ventanas son salas")
-	var sides := dinos.windows.filter(func(w: Dictionary) -> bool: return (w.face as Basis).z.x > 0.9).size()
-	var fronts := dinos.windows.filter(func(w: Dictionary) -> bool: return (w.face as Basis).z.z > 0.9).size()
-	check(sides >= 1 and fronts >= 2 and sides + fronts == 5, "salas en la fachada y en el costado que se ve (%d y %d)" % [fronts, sides])
+	check(round_walls(dinos) and walls(dinos)[0] == 4, "salas en las cuatro paredes: fachada, costados y detrás")
 	check((dinos.windows[4].node as Node3D).position.x == 0.0 and dinos.windows[4].boss, "el gran golpe, la ventana grande del centro")
+	for k in 5:
+		tour.act("left")
 	var walk := walk_right(tour)
 	var seen: Array = walk[0]
 	check(seen.size() == 5 and walk[1], "las flechas, de ventana en ventana hacia la derecha, rodeando el museo " + str(seen))
@@ -285,8 +300,8 @@ func _init() -> void:
 	check(tour.stage._room_ring.global_basis.y.normalized().dot(face.z) > 0.99, "el aro de una sala del costado, sobre su pared")
 	check(((tour.stage.room_window(side_room).basis as Basis).z).dot(face.z) > 0.99, "... y el plano saldría de ella")
 	check(not tour.stage.rooms_stacked(), "... y las salas de la cueva, a lo ancho")
-	# The museum of the bugs with all its rooms reached: holes on its front
-	# and down its side, the big job's at the top, the arrows in order.
+	# The museum of the bugs with all its rooms reached: holes on its four
+	# faces, the big job's at the top, the arrows in order.
 	tour.queue_free()
 	tour = Tour.new()
 	root.add_child(tour)
@@ -295,9 +310,7 @@ func _init() -> void:
 	await frames()
 	var bugs: MuseumBuilding = tour.stage._body(1)
 	check(range(5).all(func(i: int) -> bool: return tour.stage.room_open(i)) and bugs.windows.all(func(w: Dictionary) -> bool: return w.open), "los bichos, con todo desbloqueado: cinco huecos, cinco salas")
-	sides = bugs.windows.filter(func(w: Dictionary) -> bool: return (w.face as Basis).z.x > 0.9).size()
-	fronts = bugs.windows.filter(func(w: Dictionary) -> bool: return (w.face as Basis).z.z > 0.9).size()
-	check(sides >= 1 and fronts >= 2 and sides + fronts == 5, "... en la fachada y en el costado que se ve (%d y %d)" % [fronts, sides])
+	check(round_walls(bugs) and walls(bugs)[0] == 4, "... uno en cada cara de la torre")
 	var highest := bugs.windows.all(func(w: Dictionary) -> bool: return (w.node as Node3D).position.y <= (bugs.windows[4].node as Node3D).position.y)
 	check(bugs.windows[4].boss and (bugs.windows[4].node as Node3D).position.x == 0.0 and highest, "... el gran golpe, el hueco de arriba del todo en el centro")
 	check((bugs.windows[4].node as Node3D).get_child_count() > 3, "... con su corona")
@@ -308,14 +321,16 @@ func _init() -> void:
 		framed = framed and screen.has_point(tour.stage.room_on_screen(i)) and screen.has_point(tour.stage.room_foot_on_screen(i))
 	check(framed, "... cada uno, al elegirlo, a la vista con su cartel y sus estrellas")
 	tour._pick_room(0)
+	for k in 5:
+		tour.act("left")
 	walk = walk_right(tour)
 	seen = walk[0]
 	check(seen.size() == 5 and walk[1], "... las flechas, de hueco en hueco hacia la derecha " + str(seen))
-	tour._pick_room(2)
+	tour._pick_room(1)
 	await frames()
-	face = tour.stage.room_face(2)
-	check((bugs.windows[2].face as Basis).z.x > 0.9 and tour.stage._room_ring.global_basis.y.normalized().dot(face.z) > 0.99, "... el aro de la sala del costado, sobre su pared")
-	check((bugs.windows[2].back as MeshInstance3D).material_override == bugs.windows[2].glow and (bugs.windows[0].back as MeshInstance3D).material_override == bugs.windows[0].rest, "... la elegida, con su luz suave; las demás, no")
+	face = tour.stage.room_face(1)
+	check((bugs.windows[1].face as Basis).z.x > 0.9 and tour.stage._room_ring.global_basis.y.normalized().dot(face.z) > 0.99, "... el aro de la sala del costado, sobre su pared")
+	check((bugs.windows[1].back as MeshInstance3D).material_override == bugs.windows[1].glow and (bugs.windows[0].back as MeshInstance3D).material_override == bugs.windows[0].rest, "... la elegida, con su luz suave; las demás, no")
 	tour.queue_free()
 
 	# The contemporary museum, a tower: each room a floor, in order up it,
@@ -334,6 +349,7 @@ func _init() -> void:
 	for k in 4:
 		floors_up = floors_up and (tower.windows[k].node as Node3D).position.y < (tower.windows[k + 1].node as Node3D).position.y
 	check(floors_up and tower.windows[4].boss, "... en orden hacia arriba, y el gran golpe, la de arriba del todo")
+	check(walls(tower)[0] == 4 and round_walls(tower), "... cada planta vista desde una pared: la cámara rodea la torre al subir")
 	var reached_rooms: Array = range(5).filter(func(i: int) -> bool: return tour.stage.room_open(i))
 	check(reached_rooms == [0, 1, 2] and tower.windows.filter(func(w: Dictionary) -> bool: return w.open).size() == 3, "con tres salas, solo esas tres plantas son salas")
 	check(tower.windows.all(func(w: Dictionary) -> bool: return w.lock == null and (w.piece as Node3D).get_child_count() == 0), "... sin candados y sin piezas a la vista: ni en las salas")
@@ -365,7 +381,7 @@ func _init() -> void:
 	var frame_size: Vector3 = tour.stage._frame_size
 	var frame_mid := (tower.windows[1].node as Node3D).global_transform * volume.get_center()
 	check(frame_size.z > 2.0 and absf(frame_size.x - volume.size.x) < 0.2 and absf(frame_size.y - volume.size.y) < 0.2 and tour.stage._room_frame.global_position.distance_to(frame_mid) < 0.05,
-		"... alrededor de todo su volumen (fachada, costado y fondo)")
+		"... alrededor de todo su volumen (fachada, costado y fondo), desde su costado")
 	check((tower.windows[1].frame[0] as MeshInstance3D).material_override == tower.windows[1].frame_glow and (tower.windows[1].back as MeshInstance3D).material_override == tower.windows[1].glow
 		and (tower.windows[0].frame[0] as MeshInstance3D).material_override == tower.windows[0].stone, "... la caja elegida, encendida entera, y su junta brilla más")
 	var floor_win := tour.stage.room_window(1)
@@ -410,8 +426,8 @@ func _init() -> void:
 	tour.stage.pick_room(4)
 	check(tour.stage.room == 0, "... ni se elige")
 	tour.queue_free()
-	# With all its rooms reached: rooms on its front and down its side, the
-	# door open with its crown and its ring.
+	# With all its rooms reached: rooms on its front, its sides and its back,
+	# the door open with its crown and its ring.
 	Story.unlock(nights[4], 1)
 	tour = Tour.new()
 	root.add_child(tour)
@@ -420,9 +436,8 @@ func _init() -> void:
 	await frames()
 	villa = tour.stage._body(2)
 	check(villa.windows.all(func(w: Dictionary) -> bool: return w.open), "el museo antiguo con todo: las cinco son salas")
-	var a_sides := villa.windows.filter(func(w: Dictionary) -> bool: return (w.face as Basis).z.x > 0.9).size()
 	var a_fronts := villa.windows.filter(func(w: Dictionary) -> bool: return (w.face as Basis).z.z > 0.9 and not w.boss).size()
-	check(a_sides == 3 and a_fronts == 1, "... una en la fachada y tres en el costado que se ve (%d y %d)" % [a_fronts, a_sides])
+	check(a_fronts == 1 and walls(villa)[0] == 4 and round_walls(villa), "... una en la fachada, una en cada costado y una detrás")
 	door = villa.windows[4]
 	check(door.open and a_lit.call(door) and (door.node as Node3D).has_node("Crown"), "... la puerta abierta e iluminada, con su corona")
 	check(villa.windows.all(func(w: Dictionary) -> bool: return (w.piece as Node3D).get_child_count() == 0 and a_lit.call(w)), "... todas iluminadas, ninguna con su pieza a la vista")
@@ -434,12 +449,14 @@ func _init() -> void:
 		tour.act("left")
 	walk = walk_right(tour)
 	var a_seen: Array = walk[0]
-	check(a_seen.size() == 5 and a_seen[0] == 4 and walk[1], "... las flechas, de la puerta a las del costado, hacia la derecha " + str(a_seen))
+	check(a_seen.size() == 5 and a_seen[0] == 3 and a_seen[1] == 4 and a_seen[-1] == 2 and walk[1],
+		"... las flechas, del costado izquierdo a la puerta y rodeando la villa hasta detrás " + str(a_seen))
 	tour.queue_free()
 
 	# The castle of the middle ages (a palace with towers): on arriving only
-	# room 1 is a room; later, its rooms on its front and up its towers, the
-	# big job's the big window in the middle of the noble floor.
+	# room 1 is a room; later, its rooms round it (its front, high on the
+	# right tower's side, its back, its left side), the big job's the big
+	# window in the middle of the noble floor.
 	var knights: Array[int] = Story.nights_in(3)
 	Story.unlock(knights[0], 1)
 	var castle_tour := Tour.new()
@@ -463,9 +480,10 @@ func _init() -> void:
 	await frames()
 	castle = castle_tour.stage._body(3)
 	check(range(5).all(func(i: int) -> bool: return castle_tour.stage.room_open(i)), "el castillo con todo desbloqueado: cinco salas")
-	var on_towers := castle.windows.filter(func(w: Dictionary) -> bool: return absf((w.node as Node3D).position.x) > MuseumBuilding.M_W * 0.5 - 0.01).size()
+	var on_towers := castle.windows.filter(func(w: Dictionary) -> bool: return absf((w.node as Node3D).position.x) > MuseumBuilding.M_W * 0.5 + 0.1).size()
 	var on_front := castle.windows.filter(func(w: Dictionary) -> bool: return (w.face as Basis).z.z > 0.9).size()
-	check(on_front == 5 and on_towers == 2, "... en la fachada, dos en lo alto de las torres (%d y %d)" % [on_front, on_towers])
+	check(on_front == 2 and on_towers == 1 and walls(castle)[0] == 4 and round_walls(castle),
+		"... dos en la fachada, una en lo alto de una torre, una detrás y otra en el costado (%d y %d)" % [on_front, on_towers])
 	var boss_w: Dictionary = castle.windows[4]
 	check(boss_w.boss and (boss_w.node as Node3D).position.x == 0.0 and (boss_w.size as Vector2).x > (castle.windows[0].size as Vector2).x,
 		"... el gran golpe, la ventana grande del centro")
