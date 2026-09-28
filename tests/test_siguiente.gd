@@ -65,6 +65,18 @@ func walk(m, n: int, players: int) -> void:
 	check(talk.mode == "explore" and talk.cursor == talk.marks.size(), what + ": al final, el plano para explorar con ¡A ROBAR! elegido")
 	var kinds: Array = talk.marks.map(func(k): return k.kind)
 	check("start" in kinds and "exit" in kinds, what + ": la entrada y la salida, para elegir al explorar")
+	# The hint for accepting says what it does: start, or see a mark.
+	var accept_hint := func() -> String:
+		await frames(1)
+		for box in t._hints.get_children():
+			if not box.is_queued_for_deletion() and box.get_meta("what", "") == "accept":
+				return (box.get_child(1) as Label).text
+		return ""
+	var on_start: String = await accept_hint.call()
+	talk._pick(0)
+	var on_mark: String = await accept_hint.call()
+	check(on_start == Text.t("TOUR_START") and on_mark == Text.t("TOUR_HINT_SEE"),
+		what + ": aceptar, en la ayuda, dice lo que hace: '%s' en ¡A ROBAR!, '%s' en una chincheta" % [on_start, on_mark])
 	m._close_tour()
 	await frames()
 

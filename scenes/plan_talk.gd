@@ -594,7 +594,8 @@ func _explore_ui() -> void:
 		_start = _pill(Text.t("TOUR_START"), GO, GO_LIT, GO_EDGE, GO_INK, 20)
 		_start.pressed.connect(func() -> void: go.emit())
 		_start.mouse_entered.connect(func() -> void:
-			cursor = marks.size())
+			cursor = marks.size()
+			_explore_hints())
 		add_child(_start)
 	_start.visible = true
 	if _list == null:
@@ -602,7 +603,16 @@ func _explore_ui() -> void:
 		add_child(_list)
 	_list.visible = true
 	_layout_explore()
-	tour._set_hints([["move", Text.t("TOUR_HINT_LOOK")], ["accept", Text.t("TOUR_HINT_SEE")], ["skip", Text.t("TOUR_START")], ["back", Text.t("TOUR_HINT_MUSEUM")]])
+	_explore_hints()
+
+
+## The hints while looking round: accepting sees the mark picked, or with the
+## start button picked starts (and then skipping, the same, goes unsaid).
+func _explore_hints() -> void:
+	if cursor >= marks.size():
+		tour._set_hints([["move", Text.t("TOUR_HINT_LOOK")], ["accept", Text.t("TOUR_START")], ["back", Text.t("TOUR_HINT_MUSEUM")]])
+	else:
+		tour._set_hints([["move", Text.t("TOUR_HINT_LOOK")], ["accept", Text.t("TOUR_HINT_SEE")], ["skip", Text.t("TOUR_START")], ["back", Text.t("TOUR_HINT_MUSEUM")]])
 
 
 ## The list beside the plan, as the old plan page had it: the piece, its
@@ -699,6 +709,8 @@ func _pick(i: int) -> void:
 	cursor = i
 	tour._nav()
 	_light_rules()
+	if mode == "explore":
+		_explore_hints()
 
 
 ## Where mark i's pin is on screen (the start button for marks.size()).
