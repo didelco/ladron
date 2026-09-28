@@ -353,7 +353,8 @@ func be_in(m: int, rooms: Array) -> void:
 ## Where the camera looks at museum m from close: the middle of its front.
 func _front_of(m: int) -> Vector3:
 	var lot := _museums[m]
-	return lot.global_transform * Vector3(0, MuseumBuilding.PLINTH + MuseumBuilding.H * 0.8, MuseumBuilding.D * 0.5)
+	var body := _body(m)
+	return lot.global_transform * Vector3(0, body.look_y, body.front_z)
 
 
 ## The town round the museum gone into, a little darker the nearer it is
@@ -363,7 +364,7 @@ func _dim(k: float) -> void:
 	_key.light_energy = lerpf(KEY, KEY * 0.6, k)
 	_front_light.light_energy = FRONT_LIGHT * k
 	if inside >= 0:
-		_front_light.global_position = _museums[inside].global_transform * Vector3(0, 4.0, MuseumBuilding.D * 0.5 + 5.0)
+		_front_light.global_position = _museums[inside].global_transform * Vector3(0, 4.0, _body(inside).front_z + 5.0)
 		_front_light.look_at(_front_of(inside))
 
 
@@ -523,8 +524,8 @@ func _dashes(a: Vector3, b: Vector3, colour: Color, lit: bool) -> void:
 			mi.material_override = _glow_material(colour, 1.6)
 
 ## How tall a museum is, for its sign and its padlock.
-func _roof_height(_m: int) -> float:
-	return MuseumBuilding.PLINTH + MuseumBuilding.H + 0.6 + MuseumBuilding.DOME_R * 0.8 + 0.9
+func _roof_height(m: int) -> float:
+	return _body(m).top
 
 
 # --- The museums ------------------------------------------------------------------
@@ -655,14 +656,16 @@ func _animate_rooms(dt: float) -> void:
 		return
 	var w: Dictionary = _rooms[room].window
 	var size: Vector2 = w.size
-	# Round the window and its arch, standing just in front of it.
-	var mid := room_centre(room) + town.global_basis.z * 0.1 + town.global_basis.y * size.x * 0.25
+	# Round the window (and its arch, if it has one), just in front of it.
+	var arch: bool = w.get("arch", true)
+	var tall := size.y + (size.x * 0.5 if arch else 0.1)
+	var mid := room_centre(room) + town.global_basis.z * 0.1 + town.global_basis.y * (size.x * 0.25 if arch else 0.02)
 	var goal := town.global_transform.affine_inverse() * mid
 	_room_ring.position = goal if not _room_ring.visible else _room_ring.position.lerp(goal, 1.0 - exp(-dt * 12.0))
 	_room_ring.rotation = Vector3(PI / 2, 0, 0)
 	var r0 := 0.53
 	var breathe: float = 1.0 + sin(_t * 4.0) * 0.04
-	_room_ring.scale = Vector3((size.x * 0.5 + 0.2) / r0, 1, ((size.y + size.x * 0.5) * 0.5 + 0.18) / r0) * breathe
+	_room_ring.scale = Vector3((size.x * 0.5 + 0.2) / r0, 1, (tall * 0.5 + 0.18) / r0) * breathe
 	var ring := _room_ring.material_override as StandardMaterial3D
 	ring.albedo_color = RING if _rooms[room].open else LOCK
 	ring.emission = ring.albedo_color

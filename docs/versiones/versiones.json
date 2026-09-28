@@ -384,6 +384,36 @@
    ]
   },
   {
+   "asunto": "museo",
+   "fecha": "2026-09-28T17:14",
+   "commit": "4ae6aea",
+   "titulo": "El museo de escaparates",
+   "porque": "Antes de rehacer los museos como edificios de varias plantas, cada uno distinto (empezando por el de la prehistoria)",
+   "cambio": "Un solo edificio para los cinco, de una planta alta con cúpula, y las salas en cinco ventanales tipo escaparate",
+   "file": "versiones/museo/2026-09-28-el-museo-de-escaparates.webp",
+   "from": "docs/capturas/menu_museo_1.webp",
+   "commit_msg": "La ciudad: calles sin rayas blancas (el shader de noche las funde con el asfalto) y pasos de cebra solo junto a las puertas de los museos y en uno de cada nueve cruces",
+   "size": [
+    1280,
+    720
+   ]
+  },
+  {
+   "asunto": "museo",
+   "fecha": "2026-09-28T17:31",
+   "commit": "4ae6aea",
+   "titulo": "La Gran Cueva, un museo de verdad",
+   "porque": "El primer museo rehecho como edificio propio",
+   "cambio": "Tres plantas de arenisca con ventanas normales, pórtico de cuatro columnas con frontón y escalinata, plaza de granito con dos dinosaurios de piedra; las salas en las ventanas de la primera planta y el gran golpe en la grande sobre la puerta",
+   "file": "versiones/museo/2026-09-28-la-gran-cueva-un-museo-de-verdad.webp",
+   "from": "/Users/chema/.claude/jobs/e3409fa1/tmp/museo1b.png",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ]
+  },
+  {
    "asunto": "recreativa",
    "fecha": "2026-09-27T14:55",
    "commit": "59b9a18",
