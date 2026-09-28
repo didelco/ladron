@@ -1041,3 +1041,16 @@ TOUR_MARK_START_ONE,Entras por aquí.
 TOUR_MARK_START_MANY,Entráis por aquí.
 TOUR_MARK_EXIT_ONE,"Con la pieza, sales por aquí."
 TOUR_MARK_EXIT_MANY,"Con la pieza, salís por aquí."
+TOUR_TAG_PIECE,La vitrina
+TOUR_TAG_NEWS,Lo nuevo
+TOUR_TAG_GUARD,Un guardia
+TOUR_TAG_PANEL,La alarma
+TOUR_TAG_START,La entrada
+TOUR_TAG_EXIT,La salida
+TOUR_TAG_RULE,¡Ojo!
+TOUR_MARK_PIECE,Aquí está la pieza. Pulsa para volver a leer su historia.
+TOUR_MARK_GUARD_ROUND,Hace su ronda por las salas.
+TOUR_MARK_GUARD_POST,Vigila quieto desde aquí.
+TOUR_MARK_PANEL_ONE,"La alarma naranja: sujétala para abrir la vitrina."
+TOUR_MARK_PANEL_MANY,"La alarma naranja: uno la sujeta, otro abre la vitrina."
+TOUR_PIECE_HEAD,LA PIEZA

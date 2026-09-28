@@ -9,9 +9,13 @@ extends Control
 ## then the plan to look round (explore). Start or Tab skip to it, B goes
 ## back a page (from the tale, to the museum).
 ##
-## Looking round: the arrows go from pin to pin, A shows what one is about
-## again (the piece's pin, its tale), and ¡A ROBAR! (A on it, or Start)
-## starts the heist. The goals for the stars, top right.
+## Looking round: the plan to the left, pinned with all there is on it
+## (PlanBeats.marks: the case, what is new, the guards, the alarm, the way
+## in and out); on the right, the list for the night: the piece and what
+## getting it out takes, the rules (Briefing.tips) and the goals for the
+## stars, those won ticked. The arrows go from pin to pin, lighting the
+## rules about it on the list; A shows what one is about (the case, the
+## piece's tale again), and ¡A ROBAR! (A on it, or Start) starts the heist.
 ##
 ## modes: "story" the tale, "news" what is new, "explore" looking round,
 ## "look" a pin's card open.
@@ -56,6 +60,18 @@ const NEWS_TEXT_W := 560
 ## A pin's head, and how far over its point it stands.
 const PIN_R := 14.0
 const PIN_UP := 30.0
+## Looking round: where the plan goes (fractions of the screen), the list
+## beside it, and each pin landing this long after the one before.
+const EXPLORE := Rect2(0.015, 0.12, 0.665, 0.76)
+const LIST_W := 360
+const PIN_DROP_S := 0.07
+## Each kind of mark's head while looking round, and the list's colours.
+const MARK_HEADS := {"news": Color("#ffe066"), "guard": Color("#e0405a"), "panel": Color("#ff922b"),
+	"start": Color("#2ec4a6"), "exit": Color("#4ade80"), "rule": Color("#ff6b4a")}
+const LIST_DIM := Color("#b9a9d8")
+const LIST_LIT := Color("#ffe066")
+const TAG := Color("#fff0d6")
+const TAG_INK := Color("#1c1210")
 
 var tour: Tour
 var stage: CityStage
@@ -64,6 +80,10 @@ var beats: Array = []
 var sheet := {}
 ## the goals for the stars, [words, won]
 var goals: Array = []
+## what can be picked looking round (PlanBeats.marks), and what getting
+## the piece out takes (Briefing.takes)
+var marks: Array = []
+var takes := ""
 var mode := ""
 ## the page of the tale, or which of what is new, on screen
 var page := 0
@@ -71,7 +91,7 @@ var page := 0
 var pages: PackedStringArray = []
 ## the news beats, in order (indices into beats)
 var news: Array[int] = []
-## the beat picked while looking round; beats.size() is the start button
+## the mark picked while looking round; marks.size() is the start button
 var cursor := 0
 ## the plan is open (CityStage.raise_plan done): the pages that point at it
 ## wait for it, and so does looking round
@@ -80,13 +100,20 @@ var _pending := ""
 ## beats pinned so far
 var _told := {}
 var _card: Control
+## the beat the card is about (-1 none), and where on the plan it points
+## (INF: a page in the middle of the screen)
 var _card_for := -1
+var _card_at := Vector2.INF
+## when the pins began to land, looking round
+var _dropped := -INF
 var _t := 0.0
 var _veil: ColorRect
 var _veil_tween: Tween
 var _next: Control
 var _start: Button
-var _goals: PanelContainer
+var _list: PanelContainer
+## the rules on the list, each its line, to light up
+var _rule_lines: Array[Label] = []
 var _stages: Array[MenuStage] = []
 
 
@@ -142,11 +169,18 @@ func skip() -> void:
 	_drop_card()
 	_veil_to(0.0)
 	_next_button("")
-	stage.plan_rest(0.0 if stage.hurry else 0.5)
+	_rest()
 	mode = "explore"
 	cursor = 0
+	_dropped = _t
 	_explore_ui()
+	_light_rules()
 	told.emit()
+
+
+## The camera back on the whole plan, to the left of the list.
+func _rest() -> void:
+	stage.plan_frame(EXPLORE, 0.0 if stage.hurry else 0.6)
 
 
 ## The plan is out and open: what was waiting for it goes on.
@@ -231,6 +265,7 @@ func _show(i: int) -> void:
 	stage.plan_look(b.at, ZOOM.get(b.kind, 1.2), Vector2(0.24 if right else 0.76, 0.52), 0.0 if stage.hurry else 0.8)
 	_drop_card()
 	_card_for = i
+	_card_at = b.at
 	match b.kind:
 		"news": _card = _news_card(b)
 		_: _card = _line_card(b)
@@ -260,6 +295,7 @@ func _drop_card() -> void:
 			s.active = false
 	_stages.clear()
 	_card_for = -1
+	_card_at = Vector2.INF
 
 
 func _veil_to(a: float) -> void:
@@ -286,13 +322,15 @@ func _place_card(dt: float) -> void:
 	var view := get_viewport_rect().size
 	var s := _card.get_combined_minimum_size() * _card.scale
 	var goal: Vector2
-	if _card_for < 0:
+	if _card_at == Vector2.INF:
 		goal = Vector2((view.x - s.x) * 0.5, maxf(96.0, (view.y - s.y) * 0.5 - 10.0))
 	else:
-		var at := stage.plan_on_screen(beats[_card_for].at)
+		var at := stage.plan_on_screen(_card_at)
 		var right: bool = _card.get_meta("right", true)
 		goal = Vector2(at.x + 70 if right else at.x - 70 - s.x, at.y - s.y * 0.5)
-		goal.x = clampf(goal.x, 24, view.x - s.x - 24)
+		# Clear of the list for the night, when it is up.
+		var edge := view.x * EXPLORE.end.x if _list and _list.visible else view.x - 24
+		goal.x = clampf(goal.x, 24, edge - s.x)
 		goal.y = clampf(goal.y, 90, view.y - s.y - 90)
 	_card.position = goal if _card.position == Vector2.ZERO else _card.position.lerp(goal, 1.0 - exp(-dt * 14.0))
 
@@ -300,14 +338,19 @@ func _place_card(dt: float) -> void:
 func _draw() -> void:
 	if stage == null or stage.sheet == null or not plan_open:
 		return
-	# The pins of what has been told.
+	# Looking round: every mark pinned, landing one after another.
 	if mode in ["explore", "look"]:
-		for i in beats.size():
-			if _told.has(i):
-				_pin(stage.plan_on_screen(beats[i].at), i, i == _card_for or (mode == "explore" and i == cursor))
+		for i in marks.size():
+			var age := _t - _dropped - i * PIN_DROP_S
+			if age < 0.0 and not stage.hurry:
+				continue
+			var land := 1.0 if stage.hurry else clampf(age / 0.25, 0.0, 1.0)
+			_pin(i, i == cursor and mode == "explore", land)
+		if mode == "explore" and cursor < marks.size():
+			_tag(cursor)
 	# The ring round the point being told, and the line to its card.
-	if _card and _card_for >= 0 and is_instance_valid(_card):
-		var p := stage.plan_on_screen(beats[_card_for].at)
+	if _card and _card_at != Vector2.INF and is_instance_valid(_card):
+		var p := stage.plan_on_screen(_card_at)
 		var r := 30.0 + sin(_t * 5.0) * 4.0
 		draw_arc(p, r, 0, TAU, 48, RING, 4.0, true)
 		draw_arc(p, r + 8.0, 0, TAU, 48, Color(RING, 0.35), 2.0, true)
@@ -317,31 +360,70 @@ func _draw() -> void:
 		if p.distance_to(edge) > r + 6.0:
 			draw_line(p + dir * (r + 2.0), edge, Color(LINE, LINE.a * _card.modulate.a), 3.0, true)
 	# The start button's ring when it is the one picked.
-	if mode == "explore" and cursor == beats.size() and _start:
+	if mode == "explore" and cursor == marks.size() and _start:
 		var box := _start.get_global_rect().grow(8)
 		draw_rect(box, Color(RING, 0.6 + sin(_t * 5.0) * 0.3), false, 3.0)
 
 
-## A pin on the plan, numbered in the order it was told: a head in its
-## kind's colour on a needle stuck in the point, bigger when in hand.
-func _pin(at: Vector2, i: int, lit: bool) -> void:
-	var b: Dictionary = beats[i]
-	var colour: Color = PIN_HEADS.get(b.kind, Color(Heist.loot.get("colour", "#ffffff")))
-	var r := PIN_R * (1.3 if lit else 1.0)
-	var head := at + Vector2(_fan(i), -PIN_UP * (1.15 if lit else 1.0))
-	draw_circle(at, 5, PIN)
-	draw_circle(at, 3, colour)
-	draw_line(at, head, PIN, 3.0, true)
-	draw_circle(head + Vector2(0, 3), r + 2, Color(0, 0, 0, 0.35))
-	draw_circle(head, r + 2.5, RING if lit else PIN)
-	draw_circle(head, r, colour)
+## Mark i's pin: a head in its kind's colour, with its sign on it, on a
+## needle stuck in its point; bigger when picked. land: 0 in the air to 1
+## stuck in.
+func _pin(i: int, lit: bool, land: float) -> void:
+	var m: Dictionary = marks[i]
+	var at := stage.plan_on_screen(m.at)
+	var colour: Color = MARK_HEADS.get(m.kind, Color(Heist.loot.get("colour", "#ffffff")))
+	var r := PIN_R * (1.3 if lit else 1.0) * (1.0 + sin(_t * 6.0) * 0.06 if lit else 1.0)
+	var drop := (1.0 - land) * 40.0
+	var head := at + Vector2(_fan(i), -PIN_UP * (1.15 if lit else 1.0) - drop)
+	var a := clampf(land * 2.0, 0.0, 1.0)
+	if land >= 1.0:
+		draw_circle(at, 5, PIN)
+		draw_circle(at, 3, colour)
+	draw_line(at - Vector2(0, drop), head, Color(PIN, a), 3.0, true)
+	draw_circle(head + Vector2(0, 3), r + 2, Color(0, 0, 0, 0.35 * a))
+	draw_circle(head, r + 2.5, Color(RING if lit else PIN, a))
+	draw_circle(head, r, Color(colour, a))
+	_sign(m.kind, head, r, Color(PIN, a))
 	# A shine on the head, like a real drawing pin.
-	draw_circle(head + Vector2(-r * 0.35, -r * 0.35), r * 0.28, Color(1, 1, 1, 0.45))
+	draw_circle(head + Vector2(-r * 0.4, -r * 0.4), r * 0.24, Color(1, 1, 1, 0.45 * a))
+
+
+## What a mark is, drawn on its pin's head: the case a diamond, what is new
+## a star, a guard or a rule "!", the alarm a bar, the way in an arrow in,
+## the way out an arrow out.
+func _sign(kind: String, c: Vector2, r: float, ink: Color) -> void:
+	var s := r * 0.55
+	match kind:
+		"piece":
+			draw_colored_polygon(PackedVector2Array([c + Vector2(0, -s), c + Vector2(s * 0.8, 0), c + Vector2(0, s), c + Vector2(-s * 0.8, 0)]), ink)
+		"news":
+			draw_colored_polygon(EndPages._star_points(c, s * 1.1, s * 0.45), ink)
+		"guard", "rule":
+			draw_rect(Rect2(c + Vector2(-s * 0.18, -s), Vector2(s * 0.36, s * 1.2)), ink)
+			draw_circle(c + Vector2(0, s * 0.62), s * 0.2, ink)
+		"panel":
+			draw_rect(Rect2(c - Vector2(s * 0.7, s * 0.25), Vector2(s * 1.4, s * 0.5)), ink)
+		"start":
+			draw_colored_polygon(PackedVector2Array([c + Vector2(-s * 0.7, -s * 0.5), c + Vector2(s * 0.7, -s * 0.5), c + Vector2(0, s * 0.7)]), ink)
+		"exit":
+			draw_colored_polygon(PackedVector2Array([c + Vector2(-s * 0.5, -s * 0.7), c + Vector2(s * 0.7, 0), c + Vector2(-s * 0.5, s * 0.7)]), ink)
+
+
+## The name of mark i on a label over its pin.
+func _tag(i: int) -> void:
+	var m: Dictionary = marks[i]
 	var f := get_theme_default_font()
-	var size := int(r * 1.3)
-	var label := str(i + 1)
-	var w := f.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
-	draw_string(f, head + Vector2(-w * 0.5, size * 0.36), label, HORIZONTAL_ALIGNMENT_LEFT, -1, size, PIN)
+	var size := 17
+	var words: String = m.tag
+	var w := f.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
+	var head := stage.plan_on_screen(m.at) + Vector2(_fan(i), -PIN_UP * 1.15)
+	var box := Rect2(head + Vector2(-w * 0.5 - 12, -PIN_R * 1.3 - 40), Vector2(w + 24, 30))
+	var view := get_viewport_rect().size
+	box.position.x = clampf(box.position.x, 8, view.x - box.size.x - 8)
+	draw_rect(Rect2(box.position + Vector2(0, 3), box.size), Color(0, 0, 0, 0.35))
+	draw_rect(box, TAG)
+	draw_rect(box, RING, false, 2.0)
+	draw_string(f, box.position + Vector2(12, 21), words, HORIZONTAL_ALIGNMENT_LEFT, -1, size, TAG_INK)
 
 
 # --- Cards ------------------------------------------------------------------------
@@ -485,36 +567,82 @@ func _place_next() -> void:
 
 # --- Looking round ----------------------------------------------------------------
 
-## The start button and the goals, once the telling is over.
+## The list for the night and the start button, once the telling is over.
 func _explore_ui() -> void:
 	if _start == null:
-		_start = _pill(Text.t("TOUR_START"), GO, GO_LIT, GO_EDGE, GO_INK, 18)
+		_start = _pill(Text.t("TOUR_START"), GO, GO_LIT, GO_EDGE, GO_INK, 20)
 		_start.pressed.connect(func() -> void: go.emit())
 		_start.mouse_entered.connect(func() -> void:
-			cursor = beats.size())
+			cursor = marks.size())
 		add_child(_start)
 	_start.visible = true
-	if _goals == null and not goals.is_empty():
-		_goals = _frame()
-		var col: VBoxContainer = _goals.get_child(0)
-		_text(col, Text.t("TOUR_GOALS"), 18, CARD_TITLE, true)
-		for g in goals:
-			_text(col, ("%s  %s" % [StarSlots.FULL if g[1] else StarSlots.EMPTY, g[0]]), 18, CARD_TITLE if g[1] else CARD_TEXT)
-		add_child(_goals)
-	if _goals:
-		_goals.visible = true
+	if _list == null:
+		_list = _night_list()
+		add_child(_list)
+	_list.visible = true
 	_layout_explore()
 	tour._set_hints([["move", Text.t("TOUR_HINT_LOOK")], ["accept", Text.t("TOUR_HINT_SEE")], ["skip", Text.t("TOUR_START")], ["back", Text.t("TOUR_HINT_MUSEUM")]])
+
+
+## The list beside the plan, as the old plan page had it: the piece, its
+## name in its colour and what getting it out takes; the rules for the
+## night; the goals for the stars, those won already ticked.
+func _night_list() -> PanelContainer:
+	var box := _frame()
+	var col: VBoxContainer = box.get_child(0)
+	col.add_theme_constant_override("separation", 6)
+	var head := _text(col, Text.t("BRIEF_TIPS_TITLE"), 22, CARD_TITLE, true)
+	head.custom_minimum_size.x = LIST_W
+	var name := _text(col, String(sheet.get("name", "")), 22, Color(Heist.loot.get("colour", "#ffffff")).lightened(0.15))
+	name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	name.custom_minimum_size.x = LIST_W
+	if takes != "":
+		var t := _text(col, takes, 16, LIST_DIM)
+		t.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		t.custom_minimum_size.x = LIST_W
+	_gap(col, 4)
+	_rule_lines.clear()
+	for b in beats:
+		if b.kind != "rule":
+			continue
+		var l := _text(col, "• " + String(b.text), 17, CARD_TEXT)
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size.x = LIST_W
+		_rule_lines.append(l)
+	if not goals.is_empty():
+		_gap(col, 6)
+		_text(col, Text.t("TOUR_GOALS"), 18, CARD_TITLE, true)
+		for g in goals:
+			_text(col, ("%s  %s" % [StarSlots.FULL if g[1] else StarSlots.EMPTY, g[0]]), 17, CARD_TITLE if g[1] else CARD_TEXT)
+	return box
+
+
+func _gap(col: Control, h: int) -> void:
+	var gap := Control.new()
+	gap.custom_minimum_size.y = h
+	gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	col.add_child(gap)
+
+
+## The rules about the mark picked, lit on the list; the rest as they are.
+func _light_rules() -> void:
+	var lit: Array = marks[cursor].rules if mode in ["explore", "look"] and cursor < marks.size() else []
+	for r in _rule_lines.size():
+		var on := r in lit
+		_rule_lines[r].add_theme_color_override("font_color", LIST_LIT if on else CARD_TEXT)
+		_rule_lines[r].text = ("▶ " if on else "• ") + _rule_lines[r].text.substr(2)
 
 
 func _layout_explore() -> void:
 	var view := get_viewport_rect().size
 	if _start:
 		_start.size = _start.get_combined_minimum_size()
-		_start.position = Vector2(view.x - _start.size.x - 36, view.y - _start.size.y - 30)
-	if _goals:
-		_goals.size = _goals.get_combined_minimum_size()
-		_goals.position = Vector2(view.x - _goals.size.x - 24, 90)
+		_start.position = Vector2(view.x - _start.size.x - 36, view.y - _start.size.y - 26)
+	if _list:
+		_list.size = _list.get_combined_minimum_size()
+		var top := 92.0
+		var room := (_start.position.y if _start else view.y) - 16.0 - top
+		_list.position = Vector2(view.x - _list.size.x - 24, top + maxf(0.0, (room - _list.size.y) * 0.5))
 
 
 func _notification(what: int) -> void:
@@ -527,7 +655,7 @@ func _move(dir: Vector2) -> void:
 	var from := _at(cursor)
 	var best := -1
 	var score := INF
-	for i in beats.size() + 1:
+	for i in marks.size() + 1:
 		if i == cursor:
 			continue
 		var p := _at(i)
@@ -543,23 +671,28 @@ func _move(dir: Vector2) -> void:
 			score = s
 			best = i
 	if best >= 0:
-		cursor = best
-		tour._nav()
+		_pick(best)
 
 
-## Where pin i is on screen (the start button for beats.size()).
+func _pick(i: int) -> void:
+	cursor = i
+	tour._nav()
+	_light_rules()
+
+
+## Where mark i's pin is on screen (the start button for marks.size()).
 func _at(i: int) -> Vector2:
-	if i >= beats.size():
+	if i >= marks.size():
 		return _start.get_global_rect().get_center() if _start else get_viewport_rect().size
-	return stage.plan_on_screen(beats[i].at) + Vector2(_fan(i), -PIN_UP)
+	return stage.plan_on_screen(marks[i].at) + Vector2(_fan(i), -PIN_UP)
 
 
-## Pins stuck in the same place (the news on the piece, two rules on one
-## guard) fan out side by side, each head this far across from the point.
+## Pins stuck in the same place (what is new on the case, two guards
+## together) fan out side by side, each head this far across from the point.
 func _fan(i: int) -> float:
 	var group: Array[int] = []
-	for j in beats.size():
-		if (beats[j].at as Vector2).distance_to(beats[i].at) < 0.9:
+	for j in marks.size():
+		if (marks[j].at as Vector2).distance_to(marks[i].at) < 0.9:
 			group.append(j)
 	return (group.find(i) - (group.size() - 1) * 0.5) * PIN_R * 2.3
 
@@ -581,14 +714,10 @@ func act(what: String) -> void:
 				"right": _move(Vector2.RIGHT)
 				"up": _move(Vector2.UP)
 				"down": _move(Vector2.DOWN)
-				"prev":
-					cursor = (cursor - 1 + beats.size() + 1) % (beats.size() + 1)
-					tour._nav()
-				"next":
-					cursor = (cursor + 1) % (beats.size() + 1)
-					tour._nav()
+				"prev": _pick((cursor - 1 + marks.size() + 1) % (marks.size() + 1))
+				"next": _pick((cursor + 1) % (marks.size() + 1))
 				"accept":
-					if cursor >= beats.size():
+					if cursor >= marks.size():
 						go.emit()
 					else:
 						tour._sound("ok")
@@ -603,52 +732,78 @@ func act(what: String) -> void:
 				"skip": go.emit()
 
 
-## Pin i's card again: the piece's, its tale as a page; what is new, big
-## beside it; the rest, a line beside it.
+## Mark i's card: the case, the piece's tale again as a page; what is new,
+## big beside it; the rest, what it is and its rules beside it.
 func _look(i: int) -> void:
 	mode = "look"
 	if _start:
 		_start.visible = false
-	if _goals:
-		_goals.visible = false
-	if beats[i].kind == "piece":
+	var m: Dictionary = marks[i]
+	if m.kind == "piece":
+		if _list:
+			_list.visible = false
 		_drop_card()
 		_veil_to(VEIL_STORY)
 		var words := sheet.duplicate()
 		words.story = " ".join(pages)
 		_card = _page_card(words)
 		add_child(_card)
+	elif m.kind == "news":
+		if _list:
+			_list.visible = false
+		_veil_to(VEIL_NEWS)
+		_show(m.beat)
 	else:
-		_veil_to(VEIL_NEWS if beats[i].kind == "news" else 0.0)
-		_show(i)
+		_drop_card()
+		_card_at = m.at
+		_card = _mark_card(m)
+		add_child(_card)
+		_card.set_meta("right", _side(m.at))
 	tour._set_hints([["accept", Text.t("TOUR_HINT_CLOSE")], ["skip", Text.t("TOUR_START")]])
+
+
+## A mark as a card beside it: its name, what it is, and the rules about it.
+func _mark_card(m: Dictionary) -> Control:
+	var box := _frame()
+	var col: VBoxContainer = box.get_child(0)
+	var tag := _text(col, String(m.tag).to_upper(), 20, CARD_TITLE, true)
+	Tour._arcade(tag)
+	if String(m.text) != "" and m.kind != "rule":
+		var text := _text(col, m.text, 21, CARD_TEXT)
+		text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		text.custom_minimum_size.x = 320
+	var rules: Array = beats.filter(func(b): return b.kind == "rule")
+	for r in m.rules:
+		var l := _text(col, "▶ " + String(rules[r].text), 19, LIST_LIT)
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size.x = 320
+	return box
 
 
 func _unlook() -> void:
 	_drop_card()
 	_veil_to(0.0)
-	stage.plan_rest(0.0 if stage.hurry else 0.5)
+	_rest()
 	mode = "explore"
 	_explore_ui()
+	_light_rules()
 
 
-## The mouse over the plan: a click on a page goes on; over a pin picks it,
-## a click shows it.
+## The mouse over the plan: over a pin picks it, a click shows it.
 func mouse(event: InputEvent) -> void:
 	if mode in ["story", "news", ""]:
 		return
 	var at: Vector2 = event.position
 	var best := -1
 	var near := PIN_R * 1.8
-	for i in beats.size():
+	for i in marks.size():
 		var d := at.distance_to(_at(i))
 		if d < near:
 			near = d
 			best = i
 	if event is InputEventMouseMotion:
 		if best >= 0 and best != cursor and mode == "explore":
-			cursor = best
-			tour._nav()
+			_pick(best)
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		if mode == "look":
 			act("back")

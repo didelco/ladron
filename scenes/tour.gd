@@ -275,8 +275,9 @@ func _leave_museum() -> void:
 
 ## Heist n laid out, its plan out of its room (Main._plan_data): image and
 ## tile_px, the plan's picture; heading, over it; beats (PlanBeats), sheet
-## (the job sheet), goals (StarSlots.goals); told, whether to go straight to
-## looking round. The piece's tale comes up big straight away, the plan
+## (the job sheet), goals (StarSlots.goals), marks (PlanBeats.marks) and
+## takes (Briefing.takes), for looking round; told, whether to go straight
+## to looking round. The piece's tale comes up big straight away, the plan
 ## coming out of its room and opening behind it.
 func show_plan(data: Dictionary) -> void:
 	state = "plan"
@@ -296,6 +297,8 @@ func show_plan(data: Dictionary) -> void:
 	talk.beats = data.beats
 	talk.sheet = data.sheet
 	talk.goals = data.goals
+	talk.marks = data.get("marks", [])
+	talk.takes = data.get("takes", "")
 	_root.add_child(talk)
 	_root.move_child(talk, _view.get_index() + 1)
 	talk.go.connect(_go)

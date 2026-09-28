@@ -900,6 +900,17 @@ func plan_look(p: Vector2, zoom: float, frac: Vector2, secs: float) -> void:
 	_cam_to(_plan_cam.at + b.x * across + b.y * up, tall, secs)
 
 
+## The camera on the whole plan, fitting it in area (fractions of the
+## screen, from the top left): room beside it for the list of the night.
+func plan_frame(area: Rect2, secs: float) -> void:
+	if sheet == null or _plan_cam.is_empty():
+		return
+	var aspect := float(size.x) / maxf(size.y, 1.0)
+	var k := sheet.transform.basis.x.length()
+	var tall := maxf(k / (aspect * area.size.x), k * sheet.tall / area.size.y)
+	plan_look(Vector2(Museum.w, Museum.h) * 0.5, _plan_cam.size / tall, area.get_center(), secs)
+
+
 ## The camera back to the whole plan.
 func plan_rest(secs: float) -> void:
 	if not _plan_cam.is_empty():

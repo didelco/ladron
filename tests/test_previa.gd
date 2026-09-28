@@ -125,6 +125,24 @@ func _init() -> void:
 		t.act("accept")
 	check(talk.mode == "explore" and talk._told.size() == talk.beats.size(), "SIGUIENTE tras lo nuevo: el plano para explorar, todo clavado")
 	check(m._told(8), "... y queda contado")
+	# Looking round: the guards, the case, the way in and out, and the list.
+	var mk: Array = talk.marks.map(func(k): return k.kind)
+	check(mk.count("guard") == m.guards.size() and "piece" in mk and "start" in mk and "exit" in mk, "al explorar, los guardias, la vitrina, la entrada y la salida " + str(mk))
+	check(talk._list != null and talk._list.visible and talk._rule_lines.size() == kinds.count("rule"), "a la derecha, la lista de la noche con sus reglas")
+	var ruled := 0
+	for k in talk.marks:
+		ruled += k.rules.size()
+	check(ruled == kinds.count("rule"), "cada regla, con lo que la lleva en el plano")
+	var guard_at: int = mk.find("guard")
+	talk._pick(guard_at)
+	var lit := talk._rule_lines.filter(func(l): return l.text.begins_with("▶")).size()
+	check(lit == talk.marks[guard_at].rules.size(), "elegir un guardia resalta sus reglas en la lista")
+	t.act("accept")
+	check(talk.mode == "look" and talk._card != null and talk._card_at == talk.marks[guard_at].at, "A sobre el guardia: su ficha junto a él")
+	t.act("back")
+	check(talk.mode == "explore" and talk._list.visible, "B la cierra, la lista sigue")
+	var sheet: PlanSheet = t.stage.sheet
+	check(sheet.fold > 0.0 and sheet.fold < 0.2, "el plano abierto sigue con sus pliegues")
 	talk.cursor = 0
 	t.act("accept")
 	check(talk.mode == "look" and talk._card != null and talk._card_for < 0, "A sobre la chincheta de la pieza: su historia otra vez, en grande")
