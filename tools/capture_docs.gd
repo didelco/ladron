@@ -182,11 +182,11 @@ func _shots() -> void:
 	main.story_pick = 1
 	main._show_city()
 	await _wait(1.5)
-	await _shot("menu_historia_ciudad", "menus", "Historia: la ciudad", "La ciudad en 3D: los cinco museos, el río, la carretera y el escondite de la banda.")
+	await _shot("menu_historia_ciudad", "menus", "Historia: la ciudad", "La ciudad en 3D a pantalla completa: calles, casas, tiendas, parques y el río; entre ellos, los cinco museos y la ruta desde el escondite de la banda.")
 	for m in Story.MUSEUMS.size():
 		main._show_museum_tour(Story.nights_in(m)[0])
 		await _wait(1.5)
-		await _shot("menu_museo_%d" % (m + 1), "menus", "Museo %d: %s" % [m + 1, Text.t(Story.MUSEUMS[m].name)], "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.")
+		await _shot("menu_museo_%d" % (m + 1), "menus", "Museo %d: %s" % [m + 1, Text.t(Story.MUSEUMS[m].name)], "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.")
 	main._close_tour()
 	main._show_generative_menu()
 	await _wait(1.5)
@@ -244,7 +244,7 @@ func _shots() -> void:
 			await _shot("previa_robo_%02d_nuevo" % n, "previas", what + ": lo nuevo")
 		talk.skip()
 		await _wait(1.2)
-		await _shot("previa_robo_%02d_plano" % n, "previas", what + ": el plano para explorar", "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!")
+		await _shot("previa_robo_%02d_plano" % n, "previas", what + ": el plano para explorar", "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!")
 		main._close_tour()
 	_reset()
 	main.mode = "generative"

@@ -24,42 +24,42 @@
 		"file": "capturas/menu_historia_ciudad.webp",
 		"id": "menu_historia_ciudad",
 		"section": "menus",
-		"text": "La ciudad en 3D: los cinco museos, el río, la carretera y el escondite de la banda.",
+		"text": "La ciudad en 3D a pantalla completa: calles, casas, tiendas, parques y el río; entre ellos, los cinco museos y la ruta desde el escondite de la banda.",
 		"title": "Historia: la ciudad"
 	},
 	{
 		"file": "capturas/menu_museo_1.webp",
 		"id": "menu_museo_1",
 		"section": "menus",
-		"text": "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.",
+		"text": "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.",
 		"title": "Museo 1: La Gran Cueva"
 	},
 	{
 		"file": "capturas/menu_museo_2.webp",
 		"id": "menu_museo_2",
 		"section": "menus",
-		"text": "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.",
+		"text": "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.",
 		"title": "Museo 2: La Casa de los Bichos"
 	},
 	{
 		"file": "capturas/menu_museo_3.webp",
 		"id": "menu_museo_3",
 		"section": "menus",
-		"text": "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.",
+		"text": "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.",
 		"title": "Museo 3: El Templo de las Momias"
 	},
 	{
 		"file": "capturas/menu_museo_4.webp",
 		"id": "menu_museo_4",
 		"section": "menus",
-		"text": "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.",
+		"text": "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.",
 		"title": "Museo 4: El Castillo de los Inventos"
 	},
 	{
 		"file": "capturas/menu_museo_5.webp",
 		"id": "menu_museo_5",
 		"section": "menus",
-		"text": "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.",
+		"text": "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.",
 		"title": "Museo 5: La Torre de Cristal"
 	},
 	{
@@ -175,17 +175,10 @@
 		"title": "Robo 1: lo nuevo"
 	},
 	{
-		"file": "capturas/previa_robo_01_regla.webp",
-		"id": "previa_robo_01_regla",
-		"section": "previas",
-		"text": "",
-		"title": "Robo 1: una regla"
-	},
-	{
 		"file": "capturas/previa_robo_01_plano.webp",
 		"id": "previa_robo_01_plano",
 		"section": "previas",
-		"text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+		"text": "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!",
 		"title": "Robo 1: el plano para explorar"
 	},
 	{
@@ -203,17 +196,10 @@
 		"title": "Robo 2: lo nuevo"
 	},
 	{
-		"file": "capturas/previa_robo_02_regla.webp",
-		"id": "previa_robo_02_regla",
-		"section": "previas",
-		"text": "",
-		"title": "Robo 2: una regla"
-	},
-	{
 		"file": "capturas/previa_robo_02_plano.webp",
 		"id": "previa_robo_02_plano",
 		"section": "previas",
-		"text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+		"text": "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!",
 		"title": "Robo 2: el plano para explorar"
 	},
 	{
@@ -224,17 +210,10 @@
 		"title": "Robo 5 (gran golpe): la pieza"
 	},
 	{
-		"file": "capturas/previa_robo_05_regla.webp",
-		"id": "previa_robo_05_regla",
-		"section": "previas",
-		"text": "",
-		"title": "Robo 5 (gran golpe): una regla"
-	},
-	{
 		"file": "capturas/previa_robo_05_plano.webp",
 		"id": "previa_robo_05_plano",
 		"section": "previas",
-		"text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+		"text": "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!",
 		"title": "Robo 5 (gran golpe): el plano para explorar"
 	},
 	{
@@ -252,17 +231,10 @@
 		"title": "Robo 6: lo nuevo"
 	},
 	{
-		"file": "capturas/previa_robo_06_regla.webp",
-		"id": "previa_robo_06_regla",
-		"section": "previas",
-		"text": "",
-		"title": "Robo 6: una regla"
-	},
-	{
 		"file": "capturas/previa_robo_06_plano.webp",
 		"id": "previa_robo_06_plano",
 		"section": "previas",
-		"text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+		"text": "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!",
 		"title": "Robo 6: el plano para explorar"
 	},
 	{
@@ -280,17 +252,10 @@
 		"title": "Robo 8: lo nuevo"
 	},
 	{
-		"file": "capturas/previa_robo_08_regla.webp",
-		"id": "previa_robo_08_regla",
-		"section": "previas",
-		"text": "",
-		"title": "Robo 8: una regla"
-	},
-	{
 		"file": "capturas/previa_robo_08_plano.webp",
 		"id": "previa_robo_08_plano",
 		"section": "previas",
-		"text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+		"text": "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!",
 		"title": "Robo 8: el plano para explorar"
 	},
 	{
@@ -308,17 +273,10 @@
 		"title": "Robo 11: lo nuevo"
 	},
 	{
-		"file": "capturas/previa_robo_11_regla.webp",
-		"id": "previa_robo_11_regla",
-		"section": "previas",
-		"text": "",
-		"title": "Robo 11: una regla"
-	},
-	{
 		"file": "capturas/previa_robo_11_plano.webp",
 		"id": "previa_robo_11_plano",
 		"section": "previas",
-		"text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+		"text": "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!",
 		"title": "Robo 11: el plano para explorar"
 	},
 	{
@@ -336,17 +294,10 @@
 		"title": "Robo 16: lo nuevo"
 	},
 	{
-		"file": "capturas/previa_robo_16_regla.webp",
-		"id": "previa_robo_16_regla",
-		"section": "previas",
-		"text": "",
-		"title": "Robo 16: una regla"
-	},
-	{
 		"file": "capturas/previa_robo_16_plano.webp",
 		"id": "previa_robo_16_plano",
 		"section": "previas",
-		"text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+		"text": "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!",
 		"title": "Robo 16: el plano para explorar"
 	},
 	{
@@ -364,17 +315,10 @@
 		"title": "Robo 25 (gran golpe): lo nuevo"
 	},
 	{
-		"file": "capturas/previa_robo_25_regla.webp",
-		"id": "previa_robo_25_regla",
-		"section": "previas",
-		"text": "",
-		"title": "Robo 25 (gran golpe): una regla"
-	},
-	{
 		"file": "capturas/previa_robo_25_plano.webp",
 		"id": "previa_robo_25_plano",
 		"section": "previas",
-		"text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+		"text": "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!",
 		"title": "Robo 25 (gran golpe): el plano para explorar"
 	},
 	{

@@ -109,7 +109,6 @@ ASSETS_LISTEN,▶ ESCUCHAR
 ASSETS_MAP_TEXT,Las marcas del mapa y del plan
 ASSETS_MAP_MARKS,Sobre los guardias: ! algo raro · !! alerta · !!! va a por ti
 PROLOGUE_TITLE,HABÍA UNA VEZ...
-PROLOGUE_GO,▶ ¡VAMOS!
 ENDING_TITLE,"¡OPERACIÓN
 DEVOLVERLO TODO!"
 STORY_PROLOGUE,"Esta es la Banda del Calcetín: ladrones que solo roban lo que ya estaba robado.
@@ -1027,7 +1026,6 @@ TOUR_MUSEUM_DONE,%d de %d salas robadas
 TOUR_MUSEUM_SHUT,Cerrado hasta el gran golpe de %s
 TOUR_ROOM,SALA %d
 TOUR_ROOM_SHUT,"Cerrada: primero, las de antes"
-TOUR_HINT_NEXT,SEGUIR
 TOUR_HINT_PREV,ATRÁS
 TOUR_HINT_SKIP,SALTAR
 TOUR_HINT_MUSEUM,AL MUSEO

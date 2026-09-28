@@ -54,30 +54,31 @@ window.PANTALLAS = [
           },
           {
             id: "ciudad", title: "STORY_MAP_TITLE", fn: "_show_city", phase: "tour",
-            text: "Toda la previa de la historia es una sola escena en 3D (Tour, CityStage), como el plan de un robo en una película. Empieza en la ciudad de noche, en axonometría: los cinco museos de juguete, cada uno de su tema y color (la cueva, el invernadero con mariquita, la pirámide, el castillo y la torre de cristal), un río, la carretera y el escondite de la banda. Los cerrados, apagados y con candado. Sobre el elegido, su nombre, las salas robadas y sus estrellas. La primera vez, antes, el prólogo.",
+            text: "Toda la previa de la historia es una sola escena en 3D (Tour, CityStage), como el plan de un robo en una película. Empieza en la ciudad de noche, en axonometría y a pantalla completa (TownBuilder, con los kits de ciudad de Kenney, CC0): calles con cruces y pasos de cebra, manzanas de tiendas, casas con jardín, rascacielos al fondo, parques, un río con puentes y farolas. Entre ellos, los cinco museos (MuseumBuilding): edificios de museo con escalinata, columnas, frontón y cúpula, cada uno en su color, con sus estandartes y su nombre en el friso, unidos por la ruta encendida desde el escondite de la banda. Los cerrados, apagados y con candado. Sobre el elegido, su nombre, las salas robadas y sus estrellas. La primera vez, antes, el prólogo.",
             shots: ["menu_historia_ciudad"],
             options: [
               { label: "Flechas, WASD, stick o cruceta", text: "Cambian de museo; a uno cerrado no se llega." },
-              { key: "TOUR_HINT_ENTER", text: "A o E: zoom de cámara hasta el museo; la ciudad se hunde y queda el museo por dentro sobre su ilustración, desenfocada.", to: "museo" },
+              { key: "TOUR_HINT_ENTER", text: "A o E: zoom de cámara hasta la fachada del museo; la ciudad alrededor se oscurece un poco.", to: "museo" },
               { key: "TOUR_HINT_BACK", text: "B, Espacio o Esc.", to: "historia" },
             ],
             children: [
               {
                 id: "museo", title: "«Un museo y sus salas»", fn: "_show_museum_tour", phase: "tour",
-                text: "El museo por dentro, como una casa de muñecas sin techo: sus cinco salas en fila, cada una con su pieza en su peana; la del gran golpe, más ancha, con alfombra y corona; las cerradas, a oscuras y con candado. Bajo cada sala, sus estrellas. Se abre en la siguiente sala sin hacer; tras un robo se vuelve aquí con la siguiente elegida.",
+                text: "El edificio del museo de cerca: cada sala es una ventana de su fachada (1 y 2 a la izquierda, 3 y 4 a la derecha; el gran golpe, la ventana alta del centro, con la corona en la cúpula), encendida y con su pieza a contraluz; las cerradas, a oscuras y con candado. Bajo cada ventana, su número y sus estrellas. La elegida brilla más, con el marco dorado y un aro de luz. Se abre en la siguiente sala sin hacer; tras un robo se vuelve aquí con la siguiente elegida.",
                 shots: ["menu_museo_1", "menu_museo_2", "menu_museo_3", "menu_museo_4", "menu_museo_5"],
                 options: [
-                  { label: "Flechas", text: "Cualquier sala ya alcanzada." },
-                  { key: "TOUR_HINT_PLAN", text: "Del suelo de la sala sale su plano, vuela hacia la cámara y se despliega.", to: "plano" },
+                  { label: "Flechas", text: "De ventana en ventana, como se ven; saltan las cerradas." },
+                  { key: "TOUR_HINT_PLAN", text: "De la ventana sale su plano, vuela hacia la cámara y se despliega; a la vez, la historia de la pieza en grande.", to: "plano" },
                   { key: "TOUR_HINT_TOWN", text: "Vuelve a la ciudad.", to: "ciudad" },
                 ],
                 children: [
                   {
                     id: "plano", title: "«El plano de la sala»", fn: "_tour_room", phase: "tour",
-                    text: "Sobre el plano desplegado se cuenta el robo (PlanTalk, PlanBeats), con la cámara acercándose a cada punto: la hoja del encargo junto a la vitrina; lo nuevo, con su maqueta, junto a lo que lo lleva; las reglas de la noche, cada una en su sitio; la entrada y la salida. Cada cosa queda clavada con una chincheta numerada. Luego se explora: las flechas van de chincheta en chincheta y A la vuelve a contar; arriba, las tres estrellas del robo. Un robo ya hecho o ya contado va directo a explorar.",
-                    shots: ["previa_robo_01_pieza", "previa_robo_01_nuevo", "previa_robo_02_regla", "previa_robo_06_nuevo", "previa_robo_08_plano", "previa_robo_11_nuevo", "previa_robo_25_plano"],
+                    text: "Una sola tecla, SIGUIENTE, lleva por todo (PlanTalk, PlanBeats); nada pasa solo. Primero, la historia de la pieza en grande, casi a pantalla completa: la hoja del encargo con la pieza girando en su polaroid, mientras el plano sale de la ventana y se despliega detrás (un relato largo, en dos páginas). Luego lo nuevo, grande, con su maqueta animada, junto a lo que lo lleva en el plano. Luego el plano para explorar, que sigue enseñando sus pliegues (valles oscuros, crestas con brillo, cada panel con su luz): a la izquierda, con chinchetas para la vitrina, lo nuevo, cada guardia, la alarma, la entrada y la salida; a la derecha, la lista de la noche: la pieza y lo que cuesta sacarla, las reglas y las estrellas (las ganadas, marcadas). Elegir algo resalta sus reglas; A abre su ficha (la vitrina, la historia otra vez). Un robo ya hecho o ya contado va directo a explorar.",
+                    shots: ["previa_robo_01_pieza", "previa_robo_01_nuevo", "previa_robo_01_plano", "previa_robo_06_nuevo", "previa_robo_08_plano", "previa_robo_11_nuevo", "previa_robo_25_plano"],
                     options: [
-                      { key: "TOUR_HINT_NEXT", text: "A o E: lo siguiente (las reglas pasan solas)." },
+                      { key: "MENU_NEXT", text: "A, E o Enter: SIGUIENTE, de la historia a lo nuevo y al plano." },
+                      { key: "TOUR_HINT_PREV", text: "B: un paso atrás (de la historia, al museo)." },
                       { key: "TOUR_HINT_SKIP", text: "Start o Tab: a explorar; explorando, a robar." },
                       { key: "TOUR_START", text: "El plano se funde con la partida y empieza la cuenta atrás.", to: "cuenta" },
                       { key: "TOUR_HINT_MUSEUM", text: "B: el plano se pliega y vuelve a su sala.", to: "museo" },
@@ -88,8 +89,7 @@ window.PANTALLAS = [
                     text: "Solo la primera vez, antes de la ciudad: el cuento de la Banda del Calcetín en cuatro páginas.",
                     shots: ["previa_prologo_1", "previa_prologo_2", "previa_prologo_3", "previa_prologo_4"],
                     options: [
-                      { key: "MENU_NEXT", text: "Página siguiente." },
-                      { key: "PROLOGUE_GO", text: "En la última página.", to: "ciudad" },
+                      { key: "MENU_NEXT", text: "Página siguiente; en la última, a la ciudad.", to: "ciudad" },
                       { key: "MENU_SKIP", text: "A la ciudad.", to: "ciudad" },
                       { key: "MENU_BACK", to: "historia" },
                     ],

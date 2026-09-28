@@ -234,116 +234,6 @@ window.JUEGO = {
   {
    "colours": [
     {
-     "hex": "#2a2140",
-     "key": ""
-    }
-   ],
-   "file": "scenes/city_stage.gd",
-   "name": "GROUND",
-   "note": "The town's colours, new with it: all here, to change in one place."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#191327",
-     "key": ""
-    }
-   ],
-   "file": "scenes/city_stage.gd",
-   "name": "GROUND_SIDE",
-   "note": "The town's colours, new with it: all here, to change in one place."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#2f2a48",
-     "key": ""
-    }
-   ],
-   "file": "scenes/city_stage.gd",
-   "name": "GRASS",
-   "note": "The town's colours, new with it: all here, to change in one place."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#27407a",
-     "key": ""
-    }
-   ],
-   "file": "scenes/city_stage.gd",
-   "name": "RIVER",
-   "note": "The town's colours, new with it: all here, to change in one place."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#1a2a52",
-     "key": ""
-    }
-   ],
-   "file": "scenes/city_stage.gd",
-   "name": "RIVER_EDGE",
-   "note": "The town's colours, new with it: all here, to change in one place."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#4a3f5c",
-     "key": ""
-    }
-   ],
-   "file": "scenes/city_stage.gd",
-   "name": "ROAD",
-   "note": "The town's colours, new with it: all here, to change in one place."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#8a7358",
-     "key": ""
-    }
-   ],
-   "file": "scenes/city_stage.gd",
-   "name": "ROAD_LIT",
-   "note": "The town's colours, new with it: all here, to change in one place."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#f0d9a8",
-     "key": ""
-    }
-   ],
-   "file": "scenes/city_stage.gd",
-   "name": "ROAD_DASH",
-   "note": "The town's colours, new with it: all here, to change in one place."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#7d6a8f",
-     "key": ""
-    }
-   ],
-   "file": "scenes/city_stage.gd",
-   "name": "BRIDGE",
-   "note": "The town's colours, new with it: all here, to change in one place."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#3a3050",
-     "key": ""
-    }
-   ],
-   "file": "scenes/city_stage.gd",
-   "name": "LOT",
-   "note": "The town's colours, new with it: all here, to change in one place."
-  },
-  {
-   "colours": [
-    {
      "hex": "#ffc94a",
      "key": ""
     }
@@ -366,13 +256,46 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#e4dcf5",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "PADLOCK",
+   "note": "The padlock over a shut museum: light, to stand out over the town."
+  },
+  {
+   "colours": [
+    {
      "hex": "#ffd479",
      "key": ""
     }
    ],
    "file": "scenes/city_stage.gd",
    "name": "WINDOW",
-   "note": "The town's colours, new with it: all here, to change in one place."
+   "note": "The padlock over a shut museum: light, to stand out over the town."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffc94a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "ROUTE",
+   "note": "The padlock over a shut museum: light, to stand out over the town."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#6a5a7a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "ROUTE_DIM",
+   "note": "The padlock over a shut museum: light, to stand out over the town."
   },
   {
    "colours": [
@@ -1542,6 +1465,94 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#e8dcc4",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "STONE",
+   "note": "The building's own colours: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#b9a98e",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "STONE_DARK",
+   "note": "The building's own colours: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#4a2f22",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "WOOD",
+   "note": "The building's own colours: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#1a1530",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "GLASS_DARK",
+   "note": "The building's own colours: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffd28a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "LIT",
+   "note": "The building's own colours: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#fff0c0",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "LIT_PICKED",
+   "note": "The building's own colours: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#e8b84a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "GOLD",
+   "note": "The building's own colours: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#8a7a6a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "POLE",
+   "note": "The building's own colours: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
      "hex": "#ffb45a",
      "key": ""
     }
@@ -1640,7 +1651,7 @@ window.JUEGO = {
   {
    "colours": [
     {
-     "hex": "#150f24e6",
+     "hex": "#150f24eb",
      "key": ""
     }
    ],
@@ -1740,6 +1751,180 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#0b0816",
+     "key": ""
+    }
+   ],
+   "file": "scenes/plan_talk.gd",
+   "name": "VEIL",
+   "note": "The dark over everything behind the tale, and behind what is new."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffc94a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/plan_talk.gd",
+   "name": "NEXT",
+   "note": "SIGUIENTE's button, and ¡A ROBAR!'s."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffe08a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/plan_talk.gd",
+   "name": "NEXT_LIT",
+   "note": "SIGUIENTE's button, and ¡A ROBAR!'s."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#5a3a10",
+     "key": ""
+    }
+   ],
+   "file": "scenes/plan_talk.gd",
+   "name": "NEXT_EDGE",
+   "note": "SIGUIENTE's button, and ¡A ROBAR!'s."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2a1804",
+     "key": ""
+    }
+   ],
+   "file": "scenes/plan_talk.gd",
+   "name": "NEXT_INK",
+   "note": "SIGUIENTE's button, and ¡A ROBAR!'s."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2ec4a6",
+     "key": ""
+    }
+   ],
+   "file": "scenes/plan_talk.gd",
+   "name": "GO",
+   "note": "SIGUIENTE's button, and ¡A ROBAR!'s."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#3fe0c0",
+     "key": ""
+    }
+   ],
+   "file": "scenes/plan_talk.gd",
+   "name": "GO_LIT",
+   "note": "SIGUIENTE's button, and ¡A ROBAR!'s."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#0c3d34",
+     "key": ""
+    }
+   ],
+   "file": "scenes/plan_talk.gd",
+   "name": "GO_EDGE",
+   "note": "SIGUIENTE's button, and ¡A ROBAR!'s."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#08231d",
+     "key": ""
+    }
+   ],
+   "file": "scenes/plan_talk.gd",
+   "name": "GO_INK",
+   "note": "SIGUIENTE's button, and ¡A ROBAR!'s."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffe066",
+     "key": "news"
+    },
+    {
+     "hex": "#e0405a",
+     "key": "guard"
+    },
+    {
+     "hex": "#ff922b",
+     "key": "panel"
+    },
+    {
+     "hex": "#2ec4a6",
+     "key": "start"
+    },
+    {
+     "hex": "#4ade80",
+     "key": "exit"
+    },
+    {
+     "hex": "#ff6b4a",
+     "key": "rule"
+    }
+   ],
+   "file": "scenes/plan_talk.gd",
+   "name": "MARK_HEADS",
+   "note": "Each kind of mark's head while looking round, and the list's colours."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#b9a9d8",
+     "key": ""
+    }
+   ],
+   "file": "scenes/plan_talk.gd",
+   "name": "LIST_DIM",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffe066",
+     "key": ""
+    }
+   ],
+   "file": "scenes/plan_talk.gd",
+   "name": "LIST_LIT",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#fff0d6",
+     "key": ""
+    }
+   ],
+   "file": "scenes/plan_talk.gd",
+   "name": "TAG",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#1c1210",
+     "key": ""
+    }
+   ],
+   "file": "scenes/plan_talk.gd",
+   "name": "TAG_INK",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
      "hex": "#f1ecdc",
      "key": ""
     }
@@ -1824,6 +2009,203 @@ window.JUEGO = {
    "file": "scenes/tour.gd",
    "name": "SIGN_SHUT",
    "note": "The words over the scene, all here to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#443c58",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "PAVEMENT",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2f2940",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "PAVEMENT_EDGE",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#34503f",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "GARDEN",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2f4a3a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "PARK",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#6d6070",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "PATH",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#27407a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "WATER",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#4b6fc0",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "WATER_GLINT",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#3b3350",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "BANK",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#8a7a9a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "RAIL",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#1f1a2e",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "FAR",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffd479",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "LAMP",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#b9b0e0",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "NIGHT",
+   "note": "The kits' faces, lit by the town at night: how much of the day's colour is left, the windows lit (one in LIT_SHARE), the lamps' glow."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffc86a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "WINDOW_LIT",
+   "note": "The kits' faces, lit by the town at night: how much of the day's colour is left, the windows lit (one in LIT_SHARE), the lamps' glow."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#f3e6ff",
+     "key": "0"
+    },
+    {
+     "hex": "#ffe7d6",
+     "key": "1"
+    },
+    {
+     "hex": "#e2f0ff",
+     "key": "2"
+    },
+    {
+     "hex": "#f5f0e0",
+     "key": "3"
+    },
+    {
+     "hex": "#ffd9e4",
+     "key": "4"
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "WALLS",
+   "note": "Walls and roofs a little different house to house, picked by each building's own number."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#7a4a6e",
+     "key": "0"
+    },
+    {
+     "hex": "#4f5f8a",
+     "key": "1"
+    },
+    {
+     "hex": "#8a4f4a",
+     "key": "2"
+    },
+    {
+     "hex": "#4a6e62",
+     "key": "3"
+    },
+    {
+     "hex": "#6a4a8a",
+     "key": "4"
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "ROOFS",
+   "note": "Walls and roofs a little different house to house, picked by each building's own number."
   }
  ],
  "historia": {
@@ -4149,42 +4531,42 @@ window.JUEGO = {
    "file": "capturas/menu_historia_ciudad.webp",
    "id": "menu_historia_ciudad",
    "section": "menus",
-   "text": "La ciudad en 3D: los cinco museos, el río, la carretera y el escondite de la banda.",
+   "text": "La ciudad en 3D a pantalla completa: calles, casas, tiendas, parques y el río; entre ellos, los cinco museos y la ruta desde el escondite de la banda.",
    "title": "Historia: la ciudad"
   },
   {
    "file": "capturas/menu_museo_1.webp",
    "id": "menu_museo_1",
    "section": "menus",
-   "text": "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.",
+   "text": "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.",
    "title": "Museo 1: La Gran Cueva"
   },
   {
    "file": "capturas/menu_museo_2.webp",
    "id": "menu_museo_2",
    "section": "menus",
-   "text": "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.",
+   "text": "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.",
    "title": "Museo 2: La Casa de los Bichos"
   },
   {
    "file": "capturas/menu_museo_3.webp",
    "id": "menu_museo_3",
    "section": "menus",
-   "text": "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.",
+   "text": "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.",
    "title": "Museo 3: El Templo de las Momias"
   },
   {
    "file": "capturas/menu_museo_4.webp",
    "id": "menu_museo_4",
    "section": "menus",
-   "text": "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.",
+   "text": "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.",
    "title": "Museo 4: El Castillo de los Inventos"
   },
   {
    "file": "capturas/menu_museo_5.webp",
    "id": "menu_museo_5",
    "section": "menus",
-   "text": "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.",
+   "text": "Su fachada de cerca: cada sala una ventana con su pieza a contraluz; el gran golpe, la ventana alta del centro.",
    "title": "Museo 5: La Torre de Cristal"
   },
   {
@@ -4300,17 +4682,10 @@ window.JUEGO = {
    "title": "Robo 1: lo nuevo"
   },
   {
-   "file": "capturas/previa_robo_01_regla.webp",
-   "id": "previa_robo_01_regla",
-   "section": "previas",
-   "text": "",
-   "title": "Robo 1: una regla"
-  },
-  {
    "file": "capturas/previa_robo_01_plano.webp",
    "id": "previa_robo_01_plano",
    "section": "previas",
-   "text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+   "text": "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!",
    "title": "Robo 1: el plano para explorar"
   },
   {
@@ -4328,17 +4703,10 @@ window.JUEGO = {
    "title": "Robo 2: lo nuevo"
   },
   {
-   "file": "capturas/previa_robo_02_regla.webp",
-   "id": "previa_robo_02_regla",
-   "section": "previas",
-   "text": "",
-   "title": "Robo 2: una regla"
-  },
-  {
    "file": "capturas/previa_robo_02_plano.webp",
    "id": "previa_robo_02_plano",
    "section": "previas",
-   "text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+   "text": "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!",
    "title": "Robo 2: el plano para explorar"
   },
   {
@@ -4349,17 +4717,10 @@ window.JUEGO = {
    "title": "Robo 5 (gran golpe): la pieza"
   },
   {
-   "file": "capturas/previa_robo_05_regla.webp",
-   "id": "previa_robo_05_regla",
-   "section": "previas",
-   "text": "",
-   "title": "Robo 5 (gran golpe): una regla"
-  },
-  {
    "file": "capturas/previa_robo_05_plano.webp",
    "id": "previa_robo_05_plano",
    "section": "previas",
-   "text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+   "text": "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!",
    "title": "Robo 5 (gran golpe): el plano para explorar"
   },
   {
@@ -4377,17 +4738,10 @@ window.JUEGO = {
    "title": "Robo 6: lo nuevo"
   },
   {
-   "file": "capturas/previa_robo_06_regla.webp",
-   "id": "previa_robo_06_regla",
-   "section": "previas",
-   "text": "",
-   "title": "Robo 6: una regla"
-  },
-  {
    "file": "capturas/previa_robo_06_plano.webp",
    "id": "previa_robo_06_plano",
    "section": "previas",
-   "text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+   "text": "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!",
    "title": "Robo 6: el plano para explorar"
   },
   {
@@ -4405,17 +4759,10 @@ window.JUEGO = {
    "title": "Robo 8: lo nuevo"
   },
   {
-   "file": "capturas/previa_robo_08_regla.webp",
-   "id": "previa_robo_08_regla",
-   "section": "previas",
-   "text": "",
-   "title": "Robo 8: una regla"
-  },
-  {
    "file": "capturas/previa_robo_08_plano.webp",
    "id": "previa_robo_08_plano",
    "section": "previas",
-   "text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+   "text": "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!",
    "title": "Robo 8: el plano para explorar"
   },
   {
@@ -4433,17 +4780,10 @@ window.JUEGO = {
    "title": "Robo 11: lo nuevo"
   },
   {
-   "file": "capturas/previa_robo_11_regla.webp",
-   "id": "previa_robo_11_regla",
-   "section": "previas",
-   "text": "",
-   "title": "Robo 11: una regla"
-  },
-  {
    "file": "capturas/previa_robo_11_plano.webp",
    "id": "previa_robo_11_plano",
    "section": "previas",
-   "text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+   "text": "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!",
    "title": "Robo 11: el plano para explorar"
   },
   {
@@ -4461,17 +4801,10 @@ window.JUEGO = {
    "title": "Robo 16: lo nuevo"
   },
   {
-   "file": "capturas/previa_robo_16_regla.webp",
-   "id": "previa_robo_16_regla",
-   "section": "previas",
-   "text": "",
-   "title": "Robo 16: una regla"
-  },
-  {
    "file": "capturas/previa_robo_16_plano.webp",
    "id": "previa_robo_16_plano",
    "section": "previas",
-   "text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+   "text": "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!",
    "title": "Robo 16: el plano para explorar"
   },
   {
@@ -4489,17 +4822,10 @@ window.JUEGO = {
    "title": "Robo 25 (gran golpe): lo nuevo"
   },
   {
-   "file": "capturas/previa_robo_25_regla.webp",
-   "id": "previa_robo_25_regla",
-   "section": "previas",
-   "text": "",
-   "title": "Robo 25 (gran golpe): una regla"
-  },
-  {
    "file": "capturas/previa_robo_25_plano.webp",
    "id": "previa_robo_25_plano",
    "section": "previas",
-   "text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+   "text": "Con sus pliegues: chinchetas para la vitrina, los guardias, la entrada y la salida; a la derecha, la lista de la noche; ¡A ROBAR!",
    "title": "Robo 25 (gran golpe): el plano para explorar"
   },
   {
@@ -7118,8 +7444,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "28-09-2026 02:10",
-  "commit": "019e9ac",
-  "rama": "previa-pelicula"
+  "fecha": "28-09-2026 08:40",
+  "commit": "fa7941a",
+  "rama": "previa2"
  }
 };

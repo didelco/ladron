@@ -16,10 +16,14 @@ extends SubViewport
 const SKY := Color("#110d1f")
 const RING := Color("#ffc94a")
 const LOCK := Color("#9a8fb0")
+## The padlock over a shut museum: light, to stand out over the town.
+const PADLOCK := Color("#e4dcf5")
 const WINDOW := Color("#ffd479")
 const ROUTE := Color("#ffc94a")
 const ROUTE_DIM := Color("#6a5a7a")
 const SHUT := 0.62
+## A shut museum's padlock, this big over its dome.
+const LOCK_SIZE := 1.6
 
 ## The plan's turn under the camera.
 const YAW := 20.0
@@ -30,7 +34,7 @@ const HIDEOUT_BLOCK := Vector2i(-3, 0)
 ## The river runs down this street (tiles across).
 const RIVER_STREET := -1
 ## How far the camera sees (orthographic height) over the town, and over a museum.
-const CITY_VIEW := 22.0
+const CITY_VIEW := 23.0
 const MUSEUM_VIEW := 7.0
 ## How long the camera takes into a museum and back out (s).
 const ZOOM_S := 1.5
@@ -166,8 +170,8 @@ func build(open_to: int, pick: int) -> void:
 		shell.add_child(body)
 		body.build(m, m <= open_to)
 		var lock := padlock()
-		lock.scale = Vector3.ONE * 1.6
-		lock.position = Vector3(0, _roof_height(m) + 0.9, 0.4)
+		lock.scale = Vector3.ONE * LOCK_SIZE
+		lock.position = Vector3(0, _roof_height(m) + 1.6, 0.4)
 		lock.visible = m > open_to
 		lot.add_child(lock)
 		_locks.append(lock)
@@ -205,7 +209,7 @@ func pick(m: int) -> void:
 ## Where museum m's sign goes on screen: over its roof.
 func museum_on_screen(m: int) -> Vector2:
 	var lot := _museums[m]
-	return _cam.unproject_position(lot.global_position + Vector3(0, _roof_height(m) + 0.6, 0))
+	return _cam.unproject_position(lot.global_position + Vector3(0, _roof_height(m) + 3.0, 0))
 
 
 ## Where a point of the town (or anything) is on screen.
@@ -302,7 +306,8 @@ func _town_middle() -> Vector3:
 	var sum := Vector3.ZERO
 	for b in MUSEUM_BLOCKS:
 		sum += town.transform * TownBuilder.block_centre(b)
-	return sum / MUSEUM_BLOCKS.size() + Vector3(0, 0.6, 0)
+	# A little up the screen, to leave room over the back ones for their signs.
+	return sum / MUSEUM_BLOCKS.size() + Vector3(0, 0.6, 0) + _cam.basis.y * 2.2
 
 
 func _process(dt: float) -> void:
@@ -317,7 +322,7 @@ func _process(dt: float) -> void:
 		var lock := _locks[m]
 		if lock.visible:
 			lock.rotation.y = sin(_t * 1.6 + m) * 0.35
-			lock.position.y = _roof_height(m) + 0.9 + sin(_t * 2.0 + m) * 0.08
+			lock.position.y = _roof_height(m) + 1.6 + sin(_t * 2.0 + m) * 0.08
 	if _ring and not _museums.is_empty():
 		var lot := _museums[picked]
 		_ring.visible = inside < 0
@@ -410,11 +415,11 @@ static func padlock() -> Node3D:
 	var g := Node3D.new()
 	var body := BoxMesh.new()
 	body.size = Vector3(0.8, 0.65, 0.3)
-	_part(g, body, LOCK, Vector3.ZERO)
+	_part(g, body, PADLOCK, Vector3.ZERO)
 	var shackle := TorusMesh.new()
 	shackle.inner_radius = 0.2
 	shackle.outer_radius = 0.3
-	var s := _part(g, shackle, LOCK.lightened(0.2), Vector3(0, 0.4, 0))
+	var s := _part(g, shackle, PADLOCK.darkened(0.15), Vector3(0, 0.4, 0))
 	s.rotation_degrees.x = 90
 	var hole := BoxMesh.new()
 	hole.size = Vector3(0.1, 0.2, 0.02)
@@ -435,7 +440,7 @@ static func _part(parent: Node3D, mesh: Mesh, colour: Color, at: Vector3) -> Mes
 func relock(m: int) -> void:
 	if m >= 0 and m < _locks.size():
 		_locks[m].visible = true
-		_locks[m].scale = Vector3.ONE
+		_locks[m].scale = Vector3.ONE * LOCK_SIZE
 
 
 ## The padlock of museum m pops off (a museum just opened).
