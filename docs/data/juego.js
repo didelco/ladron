@@ -2002,12 +2002,34 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#2b4436",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "MEADOW",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
      "hex": "#6d6070",
      "key": ""
     }
    ],
    "file": "scenes/town_builder.gd",
    "name": "PATH",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#48425a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "ROAD",
    "note": "The town's own colours at night: all here, to change in one place."
   },
   {
@@ -2046,6 +2068,17 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#1c2238",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "RIVERBED",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
      "hex": "#8a7a9a",
      "key": ""
     }
@@ -2057,12 +2090,12 @@ window.JUEGO = {
   {
    "colours": [
     {
-     "hex": "#1f1a2e",
+     "hex": "#6a5f7e",
      "key": ""
     }
    ],
    "file": "scenes/town_builder.gd",
-   "name": "FAR",
+   "name": "STONE",
    "note": "The town's own colours at night: all here, to change in one place."
   },
   {
@@ -4476,7 +4509,7 @@ window.JUEGO = {
    "file": "capturas/menu_historia_ciudad.webp",
    "id": "menu_historia_ciudad",
    "section": "menus",
-   "text": "La ciudad en 3D, más grande que la pantalla: la cámara mira al museo elegido y se desliza por las calles hasta el siguiente, siguiendo la ruta desde el escondite de la banda.",
+   "text": "La ciudad en 3D, más grande que la pantalla: un río con meandros la parte en barrios de trama propia, con bosque entre ellos y la orilla de arriba más alta; la cámara mira al museo elegido, con dos o tres a la vista, y se desliza hasta el siguiente por calles y puentes.",
    "title": "Historia: la ciudad"
   },
   {
@@ -7389,8 +7422,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "28-09-2026 10:03",
-  "commit": "c150f4a",
+  "fecha": "28-09-2026 10:50",
+  "commit": "bd4785f",
   "rama": "main"
  }
 };

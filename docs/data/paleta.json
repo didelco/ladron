@@ -2001,12 +2001,34 @@
 	{
 		"colours": [
 			{
+				"hex": "#2b4436",
+				"key": ""
+			}
+		],
+		"file": "scenes/town_builder.gd",
+		"name": "MEADOW",
+		"note": "The town's own colours at night: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
 				"hex": "#6d6070",
 				"key": ""
 			}
 		],
 		"file": "scenes/town_builder.gd",
 		"name": "PATH",
+		"note": "The town's own colours at night: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#48425a",
+				"key": ""
+			}
+		],
+		"file": "scenes/town_builder.gd",
+		"name": "ROAD",
 		"note": "The town's own colours at night: all here, to change in one place."
 	},
 	{
@@ -2045,6 +2067,17 @@
 	{
 		"colours": [
 			{
+				"hex": "#1c2238",
+				"key": ""
+			}
+		],
+		"file": "scenes/town_builder.gd",
+		"name": "RIVERBED",
+		"note": "The town's own colours at night: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
 				"hex": "#8a7a9a",
 				"key": ""
 			}
@@ -2056,12 +2089,12 @@
 	{
 		"colours": [
 			{
-				"hex": "#1f1a2e",
+				"hex": "#6a5f7e",
 				"key": ""
 			}
 		],
 		"file": "scenes/town_builder.gd",
-		"name": "FAR",
+		"name": "STONE",
 		"note": "The town's own colours at night: all here, to change in one place."
 	},
 	{

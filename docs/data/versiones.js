@@ -263,6 +263,54 @@ window.VERSIONES = {
    "bytes": 143894
   },
   {
+   "asunto": "ciudad",
+   "fecha": "2026-09-28T10:46",
+   "commit": "bd4785f",
+   "titulo": "La cuadrícula entera, vista desde arriba",
+   "porque": "El plano completo de la ciudad antes del río y los barrios",
+   "cambio": "Una sola cuadrícula de 18×18 manzanas, con el río recto por una calle y los cinco museos en zigzag en el centro",
+   "file": "versiones/ciudad/2026-09-28-la-cuadricula-entera-vista-desde-arriba.webp",
+   "from": "/private/tmp/claude-505/-Users-chema-Code-personal/112f18be-d2e8-4b7c-8d6c-93e9a98ed62d/scratchpad/ciudad_completa.png",
+   "commit_msg": "",
+   "size": [
+    1600,
+    1200
+   ],
+   "bytes": 288276
+  },
+  {
+   "asunto": "ciudad",
+   "fecha": "2026-09-28T10:49",
+   "commit": "bd4785f",
+   "titulo": "El río y los barrios",
+   "porque": "Romper la cuadrícula: un río entre los museos",
+   "cambio": "Un río en diagonal con meandros entre los museos, cuatro barrios con su trama, bosque entre ellos, la orilla de arriba más alta y dos puentes",
+   "file": "versiones/ciudad/2026-09-28-el-rio-y-los-barrios.webp",
+   "from": "docs/capturas/menu_historia_ciudad.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 125072
+  },
+  {
+   "asunto": "ciudad",
+   "fecha": "2026-09-28T10:49",
+   "commit": "bd4785f",
+   "titulo": "El río y los barrios, vista desde arriba",
+   "porque": "El plano completo con el río y los barrios",
+   "cambio": "Cuatro tramas giradas, el río con meandros cruzando en diagonal, dos puentes y carreteras entre barrios",
+   "file": "versiones/ciudad/2026-09-28-el-rio-y-los-barrios-vista-desde-arriba.webp",
+   "from": "/private/tmp/claude-505/-Users-chema-Code-personal/112f18be-d2e8-4b7c-8d6c-93e9a98ed62d/scratchpad/rio_completa.png",
+   "commit_msg": "",
+   "size": [
+    1600,
+    1200
+   ],
+   "bytes": 179022
+  },
+  {
    "asunto": "museo",
    "fecha": "2026-09-27T10:02",
    "commit": "3888cd5",
@@ -327,5 +375,5 @@ window.VERSIONES = {
    "bytes": 68042
   }
  ],
- "bytes": 712496
+ "bytes": 1304866
 };

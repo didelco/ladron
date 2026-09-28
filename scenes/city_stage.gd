@@ -9,7 +9,7 @@ extends SubViewport
 ## roof off. Tour drives it and draws the words over it. The town is bigger
 ## than the screen: the camera looks at the museum picked, two or three of
 ## them in sight (CITY_VIEW), and glides over the town to the next
-## (FOLLOW_S). They zigzag (MUSEUM_BLOCKS), so each step goes another way,
+## (FOLLOW_S). They zigzag (MUSEUM_SPOTS), so each step goes another way,
 ## up and down as well as across.
 ##
 ## Everything is laid out on the town's own plan: x across the screen, z
@@ -31,15 +31,26 @@ const LOCK_SIZE := 1.6
 
 ## The plan's turn under the camera.
 const YAW := 20.0
-## The blocks the museums stand on, in the order they open (TownBuilder's
-## grid), and the gang's hideout's: in a zigzag, right, up and left, up and
-## right, down and right, a step or two of blocks apart.
-const MUSEUM_BLOCKS := [Vector2i(-2, 2), Vector2i(0, 1), Vector2i(-1, -1), Vector2i(1, -2), Vector2i(3, -1)]
-const HIDEOUT_BLOCK := Vector2i(-4, 2)
-## The river runs down this street (in streets across: its tiles over PITCH).
-const RIVER_STREET := -2
+## Where the museums stand, in the order they open, and the gang's hideout:
+## s along the river and q up from its middle (TownBuilder.frame), each on
+## the block under it (TownBuilder.claim). A zigzag across the river and
+## back: the first on the near bank, by the water; over the first bridge,
+## the next two up in the high town, one above the other; across it to the
+## fourth; and over the second bridge to the last, by the water again.
+const MUSEUM_SPOTS := [Vector2(-9, -7), Vector2(-6, 12), Vector2(-2, 20), Vector2(13, 12), Vector2(16, -7)]
+const HIDEOUT_SPOT := Vector2(-18, -8)
+## The river runs across the screen this steeply (up for each one across).
+const RIVER_TILT := 0.45
+## The districts: two on the near bank, two on the high one, each its grid
+## turned its own way (degrees), a block of it right on a point of its own
+## (s, q up from the river: its first museum's), and where the two of each
+## bank meet (s).
+const DISTRICT_ANGLES := [0.0, 20.0, -16.0, 13.0]
+const DISTRICT_ORIGINS := [Vector2(-9, -7), Vector2(16, -7), Vector2(-6, 12), Vector2(13, 12)]
+const SPLIT_LOW := 4.0
+const SPLIT_HIGH := 5.0
 ## How far the camera sees (orthographic height) over the town, and over a museum.
-const CITY_VIEW := 21.0
+const CITY_VIEW := 30.0
 ## How quickly the camera glides to the museum picked (the larger, the
 ## quicker: it closes this share of the way in a second, as an exponential).
 const FOLLOW_S := 2.6
@@ -71,6 +82,11 @@ var _front_light: SpotLight3D
 var focus := Vector3.ZERO
 var view := CITY_VIEW
 var _museums: Array[Node3D] = []
+## the town's plan (TownBuilder): its districts, and where the museums and
+## the hideout stand in it ([district, block])
+var _builder: TownBuilder
+var _lots: Array = []
+var _hideout_lot: Array = []
 var _shells: Array[Node3D] = []
 var _locks: Array[Node3D] = []
 var _open: Array[bool] = []
@@ -158,16 +174,49 @@ func _init() -> void:
 ## the one `pick` picked.
 func build(open_to: int, pick: int) -> void:
 	var builder := TownBuilder.new(_scenery)
-	for b in MUSEUM_BLOCKS:
-		builder.skip[b] = true
-	builder.river_x = RIVER_STREET * TownBuilder.PITCH
-	builder.museums = MUSEUM_BLOCKS
+	_builder = builder
+	# The river runs across the screen, a little uphill; the high bank is
+	# the far one, up the screen.
+	# (By their own transforms: the stage may not be in the tree yet.)
+	var to_plan := town.transform.basis.inverse()
+	var right3 := to_plan * _cam.transform.basis.x
+	var ahead3 := to_plan * -_cam.transform.basis.z
+	var right := Vector2(right3.x, right3.z).normalized()
+	var ahead := Vector2(ahead3.x, ahead3.z).normalized()
+	builder.along = (right + ahead * RIVER_TILT).normalized()
+	builder.up = Vector2(-builder.along.y, builder.along.x)
+	if builder.up.dot(ahead) < 0.0:
+		builder.up = -builder.up
+	builder.split_low = SPLIT_LOW
+	builder.split_high = SPLIT_HIGH
+	# Each grid set so that a block's middle falls right on its point.
+	var origins: Array[Vector2] = []
+	var half := TownBuilder.PITCH * TownBuilder.TILE * 0.5
+	for i in DISTRICT_ORIGINS.size():
+		var o: Vector2 = DISTRICT_ORIGINS[i]
+		var at := builder.point(o.x, builder.river_at(o.x) + o.y)
+		var off := Basis(Vector3.UP, deg_to_rad(DISTRICT_ANGLES[i])) * Vector3(half, 0, half)
+		origins.append(at - Vector2(off.x, off.z))
+	builder.plan(DISTRICT_ANGLES, origins)
+	var spot := func(sq: Vector2) -> Array:
+		var p := builder.point(sq.x, builder.river_at(sq.x) + sq.y)
+		var i := builder.bank_of(p)
+		return [i, builder.claim(i, p)]
+	_lots.clear()
+	for sq in MUSEUM_SPOTS:
+		var lot: Array = spot.call(sq)
+		_lots.append(lot)
+		var c := builder.districts[lot[0]].centre(lot[1])
+		builder.museums.append(Vector2(c.x, c.z))
+	_hideout_lot = spot.call(HIDEOUT_SPOT)
 	builder.build()
 	_hideout()
 	_route(open_to)
 	for m in Story.MUSEUMS.size():
 		var lot := Node3D.new()
-		lot.position = TownBuilder.block_centre(MUSEUM_BLOCKS[m]) + Vector3(0, 0.09, 0)
+		var district: TownBuilder.District = builder.districts[_lots[m][0]]
+		lot.position = district.centre(_lots[m][1]) + Vector3(0, 0.09, 0)
+		lot.rotation.y = district.angle
 		town.add_child(lot)
 		_museums.append(lot)
 		_open.append(m <= open_to)
@@ -313,7 +362,7 @@ func _place_camera() -> void:
 ## Where the camera looks over the town with museum m picked: at it, a
 ## little up the screen to leave room over it for its sign.
 func _look_at(m: int) -> Vector3:
-	return town.transform * TownBuilder.block_centre(MUSEUM_BLOCKS[m]) + Vector3(0, 0.6, 0) + _cam.basis.y * 1.0
+	return town.transform * _museums[m].position + Vector3(0, 0.5, 0) + _cam.basis.y * 2.4
 
 
 ## Gliding (not going in or out): nothing between the camera and the
@@ -343,7 +392,7 @@ func _process(dt: float) -> void:
 		var lot := _museums[picked]
 		_ring.visible = inside < 0
 		_ring_light.visible = inside < 0 and _open[picked]
-		_ring.position = _ring.position.lerp(Vector3(lot.position.x, 0.14, lot.position.z), 1.0 - exp(-dt * 10.0))
+		_ring.position = _ring.position.lerp(lot.position + Vector3(0, 0.05, 0), 1.0 - exp(-dt * 10.0))
 		_ring.scale = Vector3.ONE * (1.0 + sin(_t * 4.0) * 0.03)
 		var ring := _ring.material_override as StandardMaterial3D
 		ring.albedo_color = RING if _open[picked] else LOCK
@@ -360,7 +409,9 @@ func _process(dt: float) -> void:
 func _hideout() -> void:
 	var g := Node3D.new()
 	var h := TownBuilder.block_size() * 0.5 - 0.9
-	g.position = TownBuilder.block_centre(HIDEOUT_BLOCK) + Vector3(h, 0.09, h)
+	var district: TownBuilder.District = _builder.districts[_hideout_lot[0]]
+	g.position = district.centre(_hideout_lot[1]) + district.basis() * Vector3(h, 0.09, h)
+	g.rotation.y = district.angle
 	g.scale = Vector3.ONE * 1.2
 	_scenery.add_child(g)
 	_rounded(g, 1.4, 1.1, 0.8, 0.08, Color("#4a3a2a"), Vector3(0, 0.4, 0))
@@ -377,47 +428,39 @@ func _hideout() -> void:
 	_box(g, Vector3(0.14, 0.3, 0.03), Color("#e2262f"), Vector3(0.86, 1.7, 0))
 
 
-## The way from the hideout past every museum's door, along the streets:
-## a glowing line as far as the last museum open, dim after.
+## The way from the hideout past every museum's door, along the streets
+## and over the bridges (TownBuilder.route): a glowing line as far as the
+## last museum open, dim after.
 func _route(open_to: int) -> void:
-	var t := TownBuilder.TILE
-	var p := TownBuilder.PITCH
-	# In front of each block: the street on its near side, at its middle.
-	var door := func(b: Vector2i) -> Vector2:
-		return Vector2((b.x * p + p * 0.5) * t, (b.y + 1) * p * t)
-	var stops: Array = [door.call(HIDEOUT_BLOCK)]
-	for b in MUSEUM_BLOCKS:
-		stops.append(door.call(b))
+	var stops: Array = [_hideout_lot]
+	stops.append_array(_lots)
 	for i in stops.size() - 1:
-		var a: Vector2 = stops[i]
-		var b: Vector2 = stops[i + 1]
-		# Along a's street to a cross street half way, down it to b's
-		# street, and along that to b.
-		var cross := b.x
-		if not is_equal_approx(a.y, b.y):
-			cross = roundf((a.x + b.x) * 0.5 / (p * t)) * p * t
-		var pts: Array[Vector2] = [a, Vector2(cross, a.y), Vector2(cross, b.y), b]
+		var pts := _builder.route(stops[i], stops[i + 1])
 		var lit := i <= open_to
 		for k in pts.size() - 1:
 			_dashes(pts[k], pts[k + 1], ROUTE if lit else ROUTE_DIM, lit)
 
 
-## A dashed line down the middle of the street from a to b.
-func _dashes(a: Vector2, b: Vector2, colour: Color, lit: bool) -> void:
+## A dashed line down the middle of the street from a to b, up a bridge's
+## slope too.
+func _dashes(a: Vector3, b: Vector3, colour: Color, lit: bool) -> void:
 	var length := a.distance_to(b)
 	if length < 0.01:
 		return
-	var steps := int(length / 0.5)
+	# Over a bridge's deck, higher.
+	var lift := Vector3(0, 0.24 if absf(a.y - b.y) > 0.5 else 0.06, 0)
+	var steps := maxi(1, int(length / 0.5))
+	var turn := Basis.looking_at((b - a).normalized(), Vector3.UP)
 	for k in steps:
 		if k % 2 == 1:
 			continue
 		var p0 := a.lerp(b, float(k) / steps)
 		var p1 := a.lerp(b, float(k + 1) / steps)
-		var mi := _box(_scenery, Vector3(maxf(absf(p1.x - p0.x), 0.12), 0.03, maxf(absf(p1.y - p0.y), 0.12)), colour, Vector3((p0.x + p1.x) * 0.5, 0.035, (p0.y + p1.y) * 0.5))
+		var mi := _box(_scenery, Vector3(0.12, 0.03, p0.distance_to(p1)), colour, (p0 + p1) * 0.5 + lift)
+		mi.basis = turn
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		if lit:
 			mi.material_override = _glow_material(colour, 1.6)
-
 
 ## How tall a museum is, for its sign and its padlock.
 func _roof_height(_m: int) -> float:

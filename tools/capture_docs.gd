@@ -182,7 +182,7 @@ func _shots() -> void:
 	main.story_pick = 1
 	main._show_city()
 	await _wait(1.5)
-	await _shot("menu_historia_ciudad", "menus", "Historia: la ciudad", "La ciudad en 3D, más grande que la pantalla: la cámara mira al museo elegido, con dos o tres a la vista, y se desliza en zigzag hasta el siguiente, siguiendo la ruta desde el escondite de la banda.")
+	await _shot("menu_historia_ciudad", "menus", "Historia: la ciudad", "La ciudad en 3D, más grande que la pantalla: un río con meandros la parte en barrios de trama propia, con bosque entre ellos y la orilla de arriba más alta; la cámara mira al museo elegido, con dos o tres a la vista, y se desliza hasta el siguiente por calles y puentes.")
 	for m in Story.MUSEUMS.size():
 		main._show_museum_tour(Story.nights_in(m)[0])
 		await _wait(1.5)
