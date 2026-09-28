@@ -908,14 +908,14 @@ function previa() {
   const M = MEC.previa || {}, B = "logic/briefing.gd";
   const regla = r => esc(r).replace(/\{(\w+)\}/g, (_, k) => constante(B, k));
   const pag = { story: "la historia", news: "lo nuevo", plan: "el plan" };
-  const fotos = ["previa_robo_01_story", "previa_robo_01_news", "previa_robo_01_plan"].map(x => SHOTS[x]).filter(Boolean);
+  const fotos = ["previa_robo_01_pieza", "previa_robo_01_nuevo", "previa_robo_08_plano"].map(x => SHOTS[x]).filter(Boolean);
   const noches = NOCHES();
   const les = (J.historia || {}).lessons || {};
   $("#p-previa").innerHTML = `<h1>Antes de un robo</h1>
-    <div class="sub">La historia, lo nuevo y el plan (<code>scenes/main.gd</code> <code>_brief_pages</code>, <code>logic/briefing.gd</code>) · las reglas de cada robo salen del juego</div>
+    <div class="sub">En la historia, el plano que sale de la sala y se cuenta encima (<code>scenes/tour.gd</code>, <code>scenes/plan_talk.gd</code>, <code>logic/plan_beats.gd</code>); en generativo y retos, las páginas de siempre (<code>_brief_pages</code>) · las reglas salen de <code>logic/briefing.gd</code></div>
     <p class="lead">${esc(M.intro || "")}</p>
     <div class="grandes">${fotos.map(fig).join("")}</div>
-    <p>Todas las previas capturadas, en la pantalla <a href="#pantalla/previa">«La previa»</a>.</p>
+    <p>Todas las previas capturadas, en la pantalla <a href="#pantalla/plano">«El plano de la sala»</a>.</p>
     <h2 id="previa-reglas">Las reglas del plan</h2>
     <p>${esc(M.reglas_titulo || "")}</p>
     <ul>${(M.reglas || []).map(r => `<li>${regla(r)}</li>`).join("")}</ul>

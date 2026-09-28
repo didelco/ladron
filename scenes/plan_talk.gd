@@ -202,7 +202,7 @@ func _pin(at: Vector2, i: int, lit: bool) -> void:
 	var b: Dictionary = beats[i]
 	var colour: Color = PIN_HEADS.get(b.kind, Color(Heist.loot.get("colour", "#ffffff")))
 	var r := PIN_R * (1.3 if lit else 1.0)
-	var head := at + Vector2(0, -PIN_UP * (1.15 if lit else 1.0))
+	var head := at + Vector2(_fan(i), -PIN_UP * (1.15 if lit else 1.0))
 	draw_circle(at, 5, PIN)
 	draw_circle(at, 3, colour)
 	draw_line(at, head, PIN, 3.0, true)
@@ -390,7 +390,17 @@ func _cursor_at() -> Vector2:
 func _at(i: int) -> Vector2:
 	if i >= beats.size():
 		return _start.get_global_rect().get_center() if _start else get_viewport_rect().size
-	return stage.plan_on_screen(beats[i].at)
+	return stage.plan_on_screen(beats[i].at) + Vector2(_fan(i), -PIN_UP)
+
+
+## Pins stuck in the same place (the news on the piece, two rules on one
+## guard) fan out side by side, each head this far across from the point.
+func _fan(i: int) -> float:
+	var group: Array[int] = []
+	for j in beats.size():
+		if (beats[j].at as Vector2).distance_to(beats[i].at) < 0.9:
+			group.append(j)
+	return (group.find(i) - (group.size() - 1) * 0.5) * PIN_R * 2.3
 
 
 ## A press, in the mode it is in.

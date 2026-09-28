@@ -222,6 +222,160 @@
 	{
 		"colours": [
 			{
+				"hex": "#110d1f",
+				"key": ""
+			}
+		],
+		"file": "scenes/city_stage.gd",
+		"name": "SKY",
+		"note": "The town's colours, new with it: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#2a2140",
+				"key": ""
+			}
+		],
+		"file": "scenes/city_stage.gd",
+		"name": "GROUND",
+		"note": "The town's colours, new with it: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#191327",
+				"key": ""
+			}
+		],
+		"file": "scenes/city_stage.gd",
+		"name": "GROUND_SIDE",
+		"note": "The town's colours, new with it: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#2f2a48",
+				"key": ""
+			}
+		],
+		"file": "scenes/city_stage.gd",
+		"name": "GRASS",
+		"note": "The town's colours, new with it: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#27407a",
+				"key": ""
+			}
+		],
+		"file": "scenes/city_stage.gd",
+		"name": "RIVER",
+		"note": "The town's colours, new with it: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#1a2a52",
+				"key": ""
+			}
+		],
+		"file": "scenes/city_stage.gd",
+		"name": "RIVER_EDGE",
+		"note": "The town's colours, new with it: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#4a3f5c",
+				"key": ""
+			}
+		],
+		"file": "scenes/city_stage.gd",
+		"name": "ROAD",
+		"note": "The town's colours, new with it: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#8a7358",
+				"key": ""
+			}
+		],
+		"file": "scenes/city_stage.gd",
+		"name": "ROAD_LIT",
+		"note": "The town's colours, new with it: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#f0d9a8",
+				"key": ""
+			}
+		],
+		"file": "scenes/city_stage.gd",
+		"name": "ROAD_DASH",
+		"note": "The town's colours, new with it: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#7d6a8f",
+				"key": ""
+			}
+		],
+		"file": "scenes/city_stage.gd",
+		"name": "BRIDGE",
+		"note": "The town's colours, new with it: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#3a3050",
+				"key": ""
+			}
+		],
+		"file": "scenes/city_stage.gd",
+		"name": "LOT",
+		"note": "The town's colours, new with it: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ffc94a",
+				"key": ""
+			}
+		],
+		"file": "scenes/city_stage.gd",
+		"name": "RING",
+		"note": "The town's colours, new with it: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#9a8fb0",
+				"key": ""
+			}
+		],
+		"file": "scenes/city_stage.gd",
+		"name": "LOCK",
+		"note": "The town's colours, new with it: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ffd479",
+				"key": ""
+			}
+		],
+		"file": "scenes/city_stage.gd",
+		"name": "WINDOW",
+		"note": "The town's colours, new with it: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
 				"hex": "#efe6d1",
 				"key": ""
 			}
@@ -1485,123 +1639,102 @@
 	{
 		"colours": [
 			{
-				"hex": "#15111d",
+				"hex": "#150f24e6",
 				"key": ""
 			}
 		],
-		"file": "scenes/night_map.gd",
-		"name": "GROUND",
-		"note": ""
+		"file": "scenes/plan_talk.gd",
+		"name": "CARD",
+		"note": "The cards' look: all here, to change in one place."
 	},
 	{
 		"colours": [
 			{
-				"hex": "#1f1929",
+				"hex": "#ffae42",
 				"key": ""
 			}
 		],
-		"file": "scenes/night_map.gd",
-		"name": "BLOCK",
-		"note": ""
+		"file": "scenes/plan_talk.gd",
+		"name": "CARD_EDGE",
+		"note": "The cards' look: all here, to change in one place."
 	},
 	{
 		"colours": [
 			{
-				"hex": "#3a3246",
+				"hex": "#fff0d6",
 				"key": ""
 			}
 		],
-		"file": "scenes/night_map.gd",
-		"name": "STREET",
-		"note": ""
+		"file": "scenes/plan_talk.gd",
+		"name": "CARD_TEXT",
+		"note": "The cards' look: all here, to change in one place."
 	},
 	{
 		"colours": [
 			{
-				"hex": "#0c0a12",
+				"hex": "#ffe066",
 				"key": ""
 			}
 		],
-		"file": "scenes/night_map.gd",
-		"name": "STREET_EDGE",
-		"note": ""
+		"file": "scenes/plan_talk.gd",
+		"name": "CARD_TITLE",
+		"note": "The cards' look: all here, to change in one place."
 	},
 	{
 		"colours": [
 			{
-				"hex": "#e9d3a4",
+				"hex": "#ffc94a",
 				"key": ""
 			}
 		],
-		"file": "scenes/night_map.gd",
-		"name": "ROAD",
-		"note": ""
+		"file": "scenes/plan_talk.gd",
+		"name": "RING",
+		"note": "The cards' look: all here, to change in one place."
 	},
 	{
 		"colours": [
 			{
-				"hex": "#2a160d",
+				"hex": "#1c1210",
 				"key": ""
 			}
 		],
-		"file": "scenes/night_map.gd",
-		"name": "ROAD_EDGE",
-		"note": ""
+		"file": "scenes/plan_talk.gd",
+		"name": "PIN",
+		"note": "The cards' look: all here, to change in one place."
 	},
 	{
 		"colours": [
 			{
-				"hex": "#1f3a5e",
-				"key": ""
+				"hex": "#ffe066",
+				"key": "news"
+			},
+			{
+				"hex": "#ff6b4a",
+				"key": "rule"
+			},
+			{
+				"hex": "#2ec4a6",
+				"key": "start"
+			},
+			{
+				"hex": "#4ade80",
+				"key": "exit"
 			}
 		],
-		"file": "scenes/night_map.gd",
-		"name": "RIVER",
-		"note": ""
+		"file": "scenes/plan_talk.gd",
+		"name": "PIN_HEADS",
+		"note": "Each kind of pin's head (the piece's is the piece's own colour)."
 	},
 	{
 		"colours": [
 			{
-				"hex": "#ffd479",
+				"hex": "#ffc94ad9",
 				"key": ""
 			}
 		],
-		"file": "scenes/night_map.gd",
-		"name": "WINDOW",
-		"note": ""
-	},
-	{
-		"colours": [
-			{
-				"hex": "#08070c",
-				"key": ""
-			}
-		],
-		"file": "scenes/night_map.gd",
-		"name": "DARK",
-		"note": ""
-	},
-	{
-		"colours": [
-			{
-				"hex": "#8a1c2c",
-				"key": ""
-			}
-		],
-		"file": "scenes/night_map.gd",
-		"name": "CARPET",
-		"note": "The big job's hall: its carpet, its gold, and how much wider it is."
-	},
-	{
-		"colours": [
-			{
-				"hex": "#e8b54a",
-				"key": ""
-			}
-		],
-		"file": "scenes/night_map.gd",
-		"name": "BRASS",
-		"note": "The big job's hall: its carpet, its gold, and how much wider it is."
+		"file": "scenes/plan_talk.gd",
+		"name": "LINE",
+		"note": "Each kind of pin's head (the piece's is the piece's own colour)."
 	},
 	{
 		"colours": [
@@ -1657,5 +1790,38 @@
 		"file": "scenes/title_screen.gd",
 		"name": "BACK",
 		"note": "Where the title is in the picture, as fractions of its width and height, and the margin kept round it."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#fff0d6",
+				"key": ""
+			}
+		],
+		"file": "scenes/tour.gd",
+		"name": "SIGN",
+		"note": "The words over the scene, all here to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#b9a9d8",
+				"key": ""
+			}
+		],
+		"file": "scenes/tour.gd",
+		"name": "SIGN_DIM",
+		"note": "The words over the scene, all here to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#8a7fa3",
+				"key": ""
+			}
+		],
+		"file": "scenes/tour.gd",
+		"name": "SIGN_SHUT",
+		"note": "The words over the scene, all here to change in one place."
 	}
 ]

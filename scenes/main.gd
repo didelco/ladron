@@ -265,7 +265,13 @@ func _ready() -> void:
 				"story": _show_story_menu()
 				# The way in (Tour): the town, or inside the museum of --pick=N
 				# with that room picked.
-				"map", "city": _show_city()
+				# (--opened=M: as just after the big job before museum M).
+				"map", "city":
+					var fresh := -1
+					for a in OS.get_cmdline_user_args():
+						if a.begins_with("--opened="):
+							fresh = clampi(int(a.substr(9)) - 1, 0, Story.MUSEUMS.size() - 1)
+					_show_city(fresh, fresh)
 				"museum": _show_museum_tour(story_pick)
 				"generative": _show_generative_menu()
 				"challenges": _show_challenge_menu()
@@ -838,6 +844,8 @@ func _plan_data() -> Dictionary:
 ## Heist n's plan told already: done before, or told this time round or on
 ## an earlier day (kept with the progress, "tour", "told_<gang>").
 func _told(n: int) -> bool:
+	if retell:
+		return false
 	if n < Story.unlocked(players) or told_now.has([n, players]):
 		return true
 	var cfg := ConfigFile.new()
@@ -846,6 +854,8 @@ func _told(n: int) -> bool:
 
 
 var told_now := {}
+## every plan told as if new (the docs' pictures)
+var retell := false
 
 
 func _remember_told(n: int) -> void:

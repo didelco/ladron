@@ -179,14 +179,15 @@ func _shots() -> void:
 	await _wait(1.5)
 	await _shot("menu_historia_jugadores", "menus", "Historia: cuántos ladrones", "Uno a cuatro, cada banda con su progreso.")
 	main.players = 1
-	main._show_story_map()
+	main.story_pick = 1
+	main._show_city()
 	await _wait(1.5)
-	await _shot("menu_historia_ciudad", "menus", "Historia: la ciudad", "Los cinco museos en sus calles.")
+	await _shot("menu_historia_ciudad", "menus", "Historia: la ciudad", "La ciudad en 3D: los cinco museos, el río, la carretera y el escondite de la banda.")
 	for m in Story.MUSEUMS.size():
-		main.story_pick = Story.nights_in(m)[0]
-		main._show_museum(m)
+		main._show_museum_tour(Story.nights_in(m)[0])
 		await _wait(1.5)
-		await _shot("menu_museo_%d" % (m + 1), "menus", "Museo %d: %s" % [m + 1, Text.t(Story.MUSEUMS[m].name)], "Sus cinco robos como salas, la del gran golpe aparte, y la pieza de la elegida.")
+		await _shot("menu_museo_%d" % (m + 1), "menus", "Museo %d: %s" % [m + 1, Text.t(Story.MUSEUMS[m].name)], "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.")
+	main._close_tour()
 	main._show_generative_menu()
 	await _wait(1.5)
 	await _shot("menu_generativo", "menus", "Modo generativo", "Dificultad, tamaño del museo y número de ladrones.")
@@ -225,18 +226,30 @@ func _shots() -> void:
 		main._show_prologue(p)
 		await _wait(1.5)
 		await _shot("previa_prologo_%d" % (p + 1), "previas", "Prólogo, página %d de %d" % [p + 1, pages.size()])
-	for n in [1, 2, 4, 5, 6, 8, 10, 11, 13, 15, 16, 20, 21, 25]:
+	# The story's way in (Tour): the plan out of its room, what is told over
+	# it (the piece, the news, a rule) and then looked round.
+	for n in [1, 2, 5, 6, 8, 11, 16, 25]:
 		_reset()
-		main.mode = "story"
 		main.players = 1
-		main.story_pick = n
-		main._new_round(n)
-		var brief: Array = main._brief_pages()
-		for i in brief.size():
-			main._show_brief(i)
+		main.retell = true
+		main._show_museum_tour(n)
+		main._tour_room(n)
+		await _wait(2.8)
+		var talk: PlanTalk = main.tour.talk
+		var what := "Robo %d%s" % [n, " (gran golpe)" if Story.is_boss(n) else ""]
+		await _shot("previa_robo_%02d_pieza" % n, "previas", what + ": la pieza", Text.t(Story.level(n).loot.name))
+		for kind in ["news", "rule"]:
+			var at: int = talk.beats.map(func(b): return b.kind).find(kind)
+			if at < 0:
+				continue
+			while talk.step < at:
+				talk._next()
 			await _wait(1.6)
-			await _shot("previa_robo_%02d_%s" % [n, brief[i]], "previas", "Robo %d%s: %s" % [n, " (gran golpe)" if Story.is_boss(n) else "", {"story": "la historia", "news": "la noticia", "plan": "el plan"}[brief[i]]],
-				Text.t(Story.level(n).loot.name))
+			await _shot("previa_robo_%02d_%s" % [n, {"news": "nuevo", "rule": "regla"}[kind]], "previas", what + (": lo nuevo" if kind == "news" else ": una regla"))
+		talk.skip()
+		await _wait(1.2)
+		await _shot("previa_robo_%02d_plano" % n, "previas", what + ": el plano para explorar", "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!")
+		main._close_tour()
 	_reset()
 	main.mode = "generative"
 	main.players = 2

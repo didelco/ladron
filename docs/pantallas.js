@@ -49,41 +49,49 @@ window.PANTALLAS = [
             options: [
               { key: "JOIN_PRESS", text: "En cada tarjeta, hasta que alguien la ocupa." },
               { key: "JOIN_UNDO", text: "Quita al último que se unió o vuelve atrás." },
-              { key: "JOIN_READY", text: "Cuando están todos, sigue solo.", to: "ciudad" },
+              { key: "JOIN_READY", text: "Cuando están todos, sigue solo (en la historia, a la ciudad).", to: "ciudad" },
             ],
           },
           {
-            id: "ciudad", title: "STORY_MAP_TITLE", fn: "_show_story_map", phase: "story_map",
-            text: "La ciudad de noche vista desde arriba: los cinco museos en sus calles, cada uno en sus colores. Las calles se iluminan hasta el último museo abierto para esta banda.",
+            id: "ciudad", title: "STORY_MAP_TITLE", fn: "_show_city", phase: "tour",
+            text: "Toda la previa de la historia es una sola escena en 3D (Tour, CityStage), como el plan de un robo en una película. Empieza en la ciudad de noche, en axonometría: los cinco museos de juguete, cada uno de su tema y color (la cueva, el invernadero con mariquita, la pirámide, el castillo y la torre de cristal), un río, la carretera y el escondite de la banda. Los cerrados, apagados y con candado. Sobre el elegido, su nombre, las salas robadas y sus estrellas. La primera vez, antes, el prólogo.",
             shots: ["menu_historia_ciudad"],
             options: [
-              { key: "MUSEUM_1_NAME", text: "La prehistoria. Robos 1 a 5.", to: "museo" },
-              { key: "MUSEUM_2_NAME", text: "La naturaleza. Robos 6 a 10.", to: "museo" },
-              { key: "MUSEUM_3_NAME", text: "El mundo antiguo. Robos 11 a 15.", to: "museo" },
-              { key: "MUSEUM_4_NAME", text: "La Edad Media. Robos 16 a 20.", to: "museo" },
-              { key: "MUSEUM_5_NAME", text: "La edad moderna. Robos 21 a 25, el final.", to: "museo" },
-              { key: "MENU_BACK", to: "historia" },
+              { label: "Flechas, WASD, stick o cruceta", text: "Cambian de museo; a uno cerrado no se llega." },
+              { key: "TOUR_HINT_ENTER", text: "A o E: zoom de cámara hasta el museo; la ciudad se hunde y queda el museo por dentro sobre su ilustración, desenfocada.", to: "museo" },
+              { key: "TOUR_HINT_BACK", text: "B, Espacio o Esc.", to: "historia" },
             ],
             children: [
               {
-                id: "museo", title: "«Un museo y sus salas»", fn: "_show_museum", phase: "museum",
-                text: "Dentro de un museo, en sus colores: sus cinco robos como salas (se puede elegir cualquiera ya alcanzada), la quinta, la del gran golpe, más ancha, con alfombra roja, corona y puerta dorada; y la pieza de la elegida girando sobre terciopelo.",
+                id: "museo", title: "«Un museo y sus salas»", fn: "_show_museum_tour", phase: "tour",
+                text: "El museo por dentro, como una casa de muñecas sin techo: sus cinco salas en fila, cada una con su pieza en su peana; la del gran golpe, más ancha, con alfombra y corona; las cerradas, a oscuras y con candado. Bajo cada sala, sus estrellas. Se abre en la siguiente sala sin hacer; tras un robo se vuelve aquí con la siguiente elegida.",
                 shots: ["menu_museo_1", "menu_museo_2", "menu_museo_3", "menu_museo_4", "menu_museo_5"],
                 options: [
-                  { label: "Las salas (1 a 5)", text: "Moverse por ellas cambia la pieza y su nombre." },
-                  { key: "STORY_PLAY", text: "El robo 1 empieza con el prólogo; los demás, con la previa.", to: "previa" },
-                  { key: "MENU_BACK", to: "ciudad" },
+                  { label: "Flechas", text: "Cualquier sala ya alcanzada." },
+                  { key: "TOUR_HINT_PLAN", text: "Del suelo de la sala sale su plano, vuela hacia la cámara y se despliega.", to: "plano" },
+                  { key: "TOUR_HINT_TOWN", text: "Vuelve a la ciudad.", to: "ciudad" },
                 ],
                 children: [
                   {
+                    id: "plano", title: "«El plano de la sala»", fn: "_tour_room", phase: "tour",
+                    text: "Sobre el plano desplegado se cuenta el robo (PlanTalk, PlanBeats), con la cámara acercándose a cada punto: la hoja del encargo junto a la vitrina; lo nuevo, con su maqueta, junto a lo que lo lleva; las reglas de la noche, cada una en su sitio; la entrada y la salida. Cada cosa queda clavada con una chincheta numerada. Luego se explora: las flechas van de chincheta en chincheta y A la vuelve a contar; arriba, las tres estrellas del robo. Un robo ya hecho o ya contado va directo a explorar.",
+                    shots: ["previa_robo_01_pieza", "previa_robo_01_nuevo", "previa_robo_02_regla", "previa_robo_06_nuevo", "previa_robo_08_plano", "previa_robo_11_nuevo", "previa_robo_25_plano"],
+                    options: [
+                      { key: "TOUR_HINT_NEXT", text: "A o E: lo siguiente (las reglas pasan solas)." },
+                      { key: "TOUR_HINT_SKIP", text: "Start o Tab: a explorar; explorando, a robar." },
+                      { key: "TOUR_START", text: "El plano se funde con la partida y empieza la cuenta atrás.", to: "cuenta" },
+                      { key: "TOUR_HINT_MUSEUM", text: "B: el plano se pliega y vuelve a su sala.", to: "museo" },
+                    ],
+                  },
+                  {
                     id: "prologo", title: "PROLOGUE_TITLE", fn: "_show_prologue", phase: "prologue",
-                    text: "Solo antes del robo 1: el cuento de la Banda del Calcetín en cuatro páginas.",
+                    text: "Solo la primera vez, antes de la ciudad: el cuento de la Banda del Calcetín en cuatro páginas.",
                     shots: ["previa_prologo_1", "previa_prologo_2", "previa_prologo_3", "previa_prologo_4"],
                     options: [
                       { key: "MENU_NEXT", text: "Página siguiente." },
-                      { key: "PROLOGUE_GO", text: "En la última página.", to: "previa" },
-                      { key: "MENU_SKIP", text: "Salta cuento y previa.", to: "cuenta" },
-                      { key: "MENU_BACK", to: "museo" },
+                      { key: "PROLOGUE_GO", text: "En la última página.", to: "ciudad" },
+                      { key: "MENU_SKIP", text: "A la ciudad.", to: "ciudad" },
+                      { key: "MENU_BACK", to: "historia" },
                     ],
                   },
                 ],
@@ -229,8 +237,8 @@ window.PANTALLAS = [
     children: [
       {
         id: "previa", title: "«La previa»", fn: "_show_brief", phase: "brief",
-        text: "Hasta tres páginas antes de jugar, con la misma norma en todos los modos: «La historia» si la pieza tiene una, «Lo nuevo» solo en los robos de la historia que enseñan algo (la lección, con su escena) y «El plan» siempre: el plano, la pieza y las reglas de esa noche. Más en «Antes de un robo».",
-        shots: ["previa_robo_01_story", "previa_robo_01_news", "previa_robo_01_plan", "previa_robo_02_news", "previa_robo_04_news", "previa_robo_05_story", "previa_robo_05_plan", "previa_robo_06_news", "previa_robo_08_news", "previa_robo_10_plan", "previa_robo_11_news", "previa_robo_13_news", "previa_robo_15_plan", "previa_robo_16_news", "previa_robo_20_plan", "previa_robo_21_news", "previa_robo_25_news", "previa_robo_25_plan", "previa_generativo_plan"],
+        text: "En generativo y retos: la historia de la pieza si la tiene y «El plan» (el plano, la pieza y las reglas). En la historia, la previa es el plano que sale de la sala («El plano de la sala»).",
+        shots: ["previa_generativo_plan"],
         options: [
           { key: "BRIEF_TAB_STORY", text: "La pieza en grande a la izquierda; la ficha y el cuento a la derecha.", doc: "previa" },
           { key: "BRIEF_TAB_NEWS", text: "La lección de la noche." },

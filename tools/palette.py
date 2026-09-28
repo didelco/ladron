@@ -256,7 +256,7 @@ PASO = [
     ("Mundo", "SmokeFx LIGHT · MID · DARK", "scenes/smoke_fx.gd", "#e8e4dc", "lila", "MID → Lavanda clara; DARK → Lavanda"),
     ("Mundo", "CityStage GROUND · GRASS · GROUND_SIDE", "scenes/city_stage.gd", "#2a2140", "berenjena", "la ciudad de la historia"),
     ("Mundo", "CityStage ROAD · ROAD_LIT · ROAD_DASH", "scenes/city_stage.gd", "#8a7358", "laton", "DASH → Pergamino"),
-    ("Mundo", "CityStage RIVER · RING · LOCK", "scenes/city_stage.gd", "#27407a", "cielo", "RING → Oro; LOCK → Lavanda"),
+    ("Mundo", "CityStage RIVER · RING · LOCK", "scenes/city_stage.gd", "#27407a", "l4", "RING → Oro; LOCK → Lavanda"),
     ("Mundo", "Hud.MAP_FLOOR · MapStage paper", "scenes/hud.gd", "#e8d6b4", "laton:1", "Pergamino; ver riesgos"),
     ("Mundo", "Hud.MAP_INK · MAP_WALL · MAP_ROUTE", "scenes/hud.gd", "#1c1210", "noche", "WALL → Nogal; ROUTE → Madera"),
     ("Juego", "Main.COLOURS.thief · thief_dark", "scenes/main.gd", "#2ec4a6", "l1", ""),

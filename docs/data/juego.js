@@ -223,6 +223,160 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#110d1f",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "SKY",
+   "note": "The town's colours, new with it: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2a2140",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "GROUND",
+   "note": "The town's colours, new with it: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#191327",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "GROUND_SIDE",
+   "note": "The town's colours, new with it: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2f2a48",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "GRASS",
+   "note": "The town's colours, new with it: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#27407a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "RIVER",
+   "note": "The town's colours, new with it: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#1a2a52",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "RIVER_EDGE",
+   "note": "The town's colours, new with it: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#4a3f5c",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "ROAD",
+   "note": "The town's colours, new with it: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#8a7358",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "ROAD_LIT",
+   "note": "The town's colours, new with it: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#f0d9a8",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "ROAD_DASH",
+   "note": "The town's colours, new with it: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#7d6a8f",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "BRIDGE",
+   "note": "The town's colours, new with it: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#3a3050",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "LOT",
+   "note": "The town's colours, new with it: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffc94a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "RING",
+   "note": "The town's colours, new with it: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#9a8fb0",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "LOCK",
+   "note": "The town's colours, new with it: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffd479",
+     "key": ""
+    }
+   ],
+   "file": "scenes/city_stage.gd",
+   "name": "WINDOW",
+   "note": "The town's colours, new with it: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
      "hex": "#efe6d1",
      "key": ""
     }
@@ -1486,123 +1640,102 @@ window.JUEGO = {
   {
    "colours": [
     {
-     "hex": "#15111d",
+     "hex": "#150f24e6",
      "key": ""
     }
    ],
-   "file": "scenes/night_map.gd",
-   "name": "GROUND",
-   "note": ""
+   "file": "scenes/plan_talk.gd",
+   "name": "CARD",
+   "note": "The cards' look: all here, to change in one place."
   },
   {
    "colours": [
     {
-     "hex": "#1f1929",
+     "hex": "#ffae42",
      "key": ""
     }
    ],
-   "file": "scenes/night_map.gd",
-   "name": "BLOCK",
-   "note": ""
+   "file": "scenes/plan_talk.gd",
+   "name": "CARD_EDGE",
+   "note": "The cards' look: all here, to change in one place."
   },
   {
    "colours": [
     {
-     "hex": "#3a3246",
+     "hex": "#fff0d6",
      "key": ""
     }
    ],
-   "file": "scenes/night_map.gd",
-   "name": "STREET",
-   "note": ""
+   "file": "scenes/plan_talk.gd",
+   "name": "CARD_TEXT",
+   "note": "The cards' look: all here, to change in one place."
   },
   {
    "colours": [
     {
-     "hex": "#0c0a12",
+     "hex": "#ffe066",
      "key": ""
     }
    ],
-   "file": "scenes/night_map.gd",
-   "name": "STREET_EDGE",
-   "note": ""
+   "file": "scenes/plan_talk.gd",
+   "name": "CARD_TITLE",
+   "note": "The cards' look: all here, to change in one place."
   },
   {
    "colours": [
     {
-     "hex": "#e9d3a4",
+     "hex": "#ffc94a",
      "key": ""
     }
    ],
-   "file": "scenes/night_map.gd",
-   "name": "ROAD",
-   "note": ""
+   "file": "scenes/plan_talk.gd",
+   "name": "RING",
+   "note": "The cards' look: all here, to change in one place."
   },
   {
    "colours": [
     {
-     "hex": "#2a160d",
+     "hex": "#1c1210",
      "key": ""
     }
    ],
-   "file": "scenes/night_map.gd",
-   "name": "ROAD_EDGE",
-   "note": ""
+   "file": "scenes/plan_talk.gd",
+   "name": "PIN",
+   "note": "The cards' look: all here, to change in one place."
   },
   {
    "colours": [
     {
-     "hex": "#1f3a5e",
-     "key": ""
+     "hex": "#ffe066",
+     "key": "news"
+    },
+    {
+     "hex": "#ff6b4a",
+     "key": "rule"
+    },
+    {
+     "hex": "#2ec4a6",
+     "key": "start"
+    },
+    {
+     "hex": "#4ade80",
+     "key": "exit"
     }
    ],
-   "file": "scenes/night_map.gd",
-   "name": "RIVER",
-   "note": ""
+   "file": "scenes/plan_talk.gd",
+   "name": "PIN_HEADS",
+   "note": "Each kind of pin's head (the piece's is the piece's own colour)."
   },
   {
    "colours": [
     {
-     "hex": "#ffd479",
+     "hex": "#ffc94ad9",
      "key": ""
     }
    ],
-   "file": "scenes/night_map.gd",
-   "name": "WINDOW",
-   "note": ""
-  },
-  {
-   "colours": [
-    {
-     "hex": "#08070c",
-     "key": ""
-    }
-   ],
-   "file": "scenes/night_map.gd",
-   "name": "DARK",
-   "note": ""
-  },
-  {
-   "colours": [
-    {
-     "hex": "#8a1c2c",
-     "key": ""
-    }
-   ],
-   "file": "scenes/night_map.gd",
-   "name": "CARPET",
-   "note": "The big job's hall: its carpet, its gold, and how much wider it is."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#e8b54a",
-     "key": ""
-    }
-   ],
-   "file": "scenes/night_map.gd",
-   "name": "BRASS",
-   "note": "The big job's hall: its carpet, its gold, and how much wider it is."
+   "file": "scenes/plan_talk.gd",
+   "name": "LINE",
+   "note": "Each kind of pin's head (the piece's is the piece's own colour)."
   },
   {
    "colours": [
@@ -1658,6 +1791,39 @@ window.JUEGO = {
    "file": "scenes/title_screen.gd",
    "name": "BACK",
    "note": "Where the title is in the picture, as fractions of its width and height, and the margin kept round it."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#fff0d6",
+     "key": ""
+    }
+   ],
+   "file": "scenes/tour.gd",
+   "name": "SIGN",
+   "note": "The words over the scene, all here to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#b9a9d8",
+     "key": ""
+    }
+   ],
+   "file": "scenes/tour.gd",
+   "name": "SIGN_DIM",
+   "note": "The words over the scene, all here to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#8a7fa3",
+     "key": ""
+    }
+   ],
+   "file": "scenes/tour.gd",
+   "name": "SIGN_SHUT",
+   "note": "The words over the scene, all here to change in one place."
   }
  ],
  "historia": {
@@ -3983,42 +4149,42 @@ window.JUEGO = {
    "file": "capturas/menu_historia_ciudad.webp",
    "id": "menu_historia_ciudad",
    "section": "menus",
-   "text": "Los cinco museos en sus calles.",
+   "text": "La ciudad en 3D: los cinco museos, el río, la carretera y el escondite de la banda.",
    "title": "Historia: la ciudad"
   },
   {
    "file": "capturas/menu_museo_1.webp",
    "id": "menu_museo_1",
    "section": "menus",
-   "text": "Sus cinco robos como salas, la del gran golpe aparte, y la pieza de la elegida.",
+   "text": "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.",
    "title": "Museo 1: La Gran Cueva"
   },
   {
    "file": "capturas/menu_museo_2.webp",
    "id": "menu_museo_2",
    "section": "menus",
-   "text": "Sus cinco robos como salas, la del gran golpe aparte, y la pieza de la elegida.",
+   "text": "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.",
    "title": "Museo 2: La Casa de los Bichos"
   },
   {
    "file": "capturas/menu_museo_3.webp",
    "id": "menu_museo_3",
    "section": "menus",
-   "text": "Sus cinco robos como salas, la del gran golpe aparte, y la pieza de la elegida.",
+   "text": "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.",
    "title": "Museo 3: El Templo de las Momias"
   },
   {
    "file": "capturas/menu_museo_4.webp",
    "id": "menu_museo_4",
    "section": "menus",
-   "text": "Sus cinco robos como salas, la del gran golpe aparte, y la pieza de la elegida.",
+   "text": "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.",
    "title": "Museo 4: El Castillo de los Inventos"
   },
   {
    "file": "capturas/menu_museo_5.webp",
    "id": "menu_museo_5",
    "section": "menus",
-   "text": "Sus cinco robos como salas, la del gran golpe aparte, y la pieza de la elegida.",
+   "text": "Por dentro, como una casa de muñecas: sus cinco salas con su pieza, la del gran golpe más ancha.",
    "title": "Museo 5: La Torre de Cristal"
   },
   {
@@ -4120,270 +4286,221 @@ window.JUEGO = {
    "title": "Prólogo, página 4 de 4"
   },
   {
-   "file": "capturas/previa_robo_01_story.webp",
-   "id": "previa_robo_01_story",
+   "file": "capturas/previa_robo_01_pieza.webp",
+   "id": "previa_robo_01_pieza",
    "section": "previas",
    "text": "la dentadura del abuelo Paco",
-   "title": "Robo 1: la historia"
+   "title": "Robo 1: la pieza"
   },
   {
-   "file": "capturas/previa_robo_01_news.webp",
-   "id": "previa_robo_01_news",
+   "file": "capturas/previa_robo_01_nuevo.webp",
+   "id": "previa_robo_01_nuevo",
    "section": "previas",
-   "text": "la dentadura del abuelo Paco",
-   "title": "Robo 1: la noticia"
+   "text": "",
+   "title": "Robo 1: lo nuevo"
   },
   {
-   "file": "capturas/previa_robo_01_plan.webp",
-   "id": "previa_robo_01_plan",
+   "file": "capturas/previa_robo_01_regla.webp",
+   "id": "previa_robo_01_regla",
    "section": "previas",
-   "text": "la dentadura del abuelo Paco",
-   "title": "Robo 1: el plan"
+   "text": "",
+   "title": "Robo 1: una regla"
   },
   {
-   "file": "capturas/previa_robo_02_story.webp",
-   "id": "previa_robo_02_story",
+   "file": "capturas/previa_robo_01_plano.webp",
+   "id": "previa_robo_01_plano",
    "section": "previas",
-   "text": "el calcetín del yeti",
-   "title": "Robo 2: la historia"
+   "text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+   "title": "Robo 1: el plano para explorar"
   },
   {
-   "file": "capturas/previa_robo_02_news.webp",
-   "id": "previa_robo_02_news",
-   "section": "previas",
-   "text": "el calcetín del yeti",
-   "title": "Robo 2: la noticia"
-  },
-  {
-   "file": "capturas/previa_robo_02_plan.webp",
-   "id": "previa_robo_02_plan",
+   "file": "capturas/previa_robo_02_pieza.webp",
+   "id": "previa_robo_02_pieza",
    "section": "previas",
    "text": "el calcetín del yeti",
-   "title": "Robo 2: el plan"
+   "title": "Robo 2: la pieza"
   },
   {
-   "file": "capturas/previa_robo_04_story.webp",
-   "id": "previa_robo_04_story",
+   "file": "capturas/previa_robo_02_nuevo.webp",
+   "id": "previa_robo_02_nuevo",
    "section": "previas",
-   "text": "el gnomo que baila claqué",
-   "title": "Robo 4: la historia"
+   "text": "",
+   "title": "Robo 2: lo nuevo"
   },
   {
-   "file": "capturas/previa_robo_04_news.webp",
-   "id": "previa_robo_04_news",
+   "file": "capturas/previa_robo_02_regla.webp",
+   "id": "previa_robo_02_regla",
    "section": "previas",
-   "text": "el gnomo que baila claqué",
-   "title": "Robo 4: la noticia"
+   "text": "",
+   "title": "Robo 2: una regla"
   },
   {
-   "file": "capturas/previa_robo_04_plan.webp",
-   "id": "previa_robo_04_plan",
+   "file": "capturas/previa_robo_02_plano.webp",
+   "id": "previa_robo_02_plano",
    "section": "previas",
-   "text": "el gnomo que baila claqué",
-   "title": "Robo 4: el plan"
+   "text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+   "title": "Robo 2: el plano para explorar"
   },
   {
-   "file": "capturas/previa_robo_05_story.webp",
-   "id": "previa_robo_05_story",
+   "file": "capturas/previa_robo_05_pieza.webp",
+   "id": "previa_robo_05_pieza",
    "section": "previas",
    "text": "el huevo del dinosaurio despistado",
-   "title": "Robo 5 (gran golpe): la historia"
+   "title": "Robo 5 (gran golpe): la pieza"
   },
   {
-   "file": "capturas/previa_robo_05_plan.webp",
-   "id": "previa_robo_05_plan",
+   "file": "capturas/previa_robo_05_regla.webp",
+   "id": "previa_robo_05_regla",
    "section": "previas",
-   "text": "el huevo del dinosaurio despistado",
-   "title": "Robo 5 (gran golpe): el plan"
+   "text": "",
+   "title": "Robo 5 (gran golpe): una regla"
   },
   {
-   "file": "capturas/previa_robo_06_story.webp",
-   "id": "previa_robo_06_story",
+   "file": "capturas/previa_robo_05_plano.webp",
+   "id": "previa_robo_05_plano",
    "section": "previas",
-   "text": "la corona de la Reina de los Pepinillos",
-   "title": "Robo 6: la historia"
+   "text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+   "title": "Robo 5 (gran golpe): el plano para explorar"
   },
   {
-   "file": "capturas/previa_robo_06_news.webp",
-   "id": "previa_robo_06_news",
-   "section": "previas",
-   "text": "la corona de la Reina de los Pepinillos",
-   "title": "Robo 6: la noticia"
-  },
-  {
-   "file": "capturas/previa_robo_06_plan.webp",
-   "id": "previa_robo_06_plan",
+   "file": "capturas/previa_robo_06_pieza.webp",
+   "id": "previa_robo_06_pieza",
    "section": "previas",
    "text": "la corona de la Reina de los Pepinillos",
-   "title": "Robo 6: el plan"
+   "title": "Robo 6: la pieza"
   },
   {
-   "file": "capturas/previa_robo_08_story.webp",
-   "id": "previa_robo_08_story",
+   "file": "capturas/previa_robo_06_nuevo.webp",
+   "id": "previa_robo_06_nuevo",
+   "section": "previas",
+   "text": "",
+   "title": "Robo 6: lo nuevo"
+  },
+  {
+   "file": "capturas/previa_robo_06_regla.webp",
+   "id": "previa_robo_06_regla",
+   "section": "previas",
+   "text": "",
+   "title": "Robo 6: una regla"
+  },
+  {
+   "file": "capturas/previa_robo_06_plano.webp",
+   "id": "previa_robo_06_plano",
+   "section": "previas",
+   "text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+   "title": "Robo 6: el plano para explorar"
+  },
+  {
+   "file": "capturas/previa_robo_08_pieza.webp",
+   "id": "previa_robo_08_pieza",
    "section": "previas",
    "text": "la máscara del Pulpo Enmascarado",
-   "title": "Robo 8: la historia"
+   "title": "Robo 8: la pieza"
   },
   {
-   "file": "capturas/previa_robo_08_news.webp",
-   "id": "previa_robo_08_news",
+   "file": "capturas/previa_robo_08_nuevo.webp",
+   "id": "previa_robo_08_nuevo",
    "section": "previas",
-   "text": "la máscara del Pulpo Enmascarado",
-   "title": "Robo 8: la noticia"
+   "text": "",
+   "title": "Robo 8: lo nuevo"
   },
   {
-   "file": "capturas/previa_robo_08_plan.webp",
-   "id": "previa_robo_08_plan",
+   "file": "capturas/previa_robo_08_regla.webp",
+   "id": "previa_robo_08_regla",
    "section": "previas",
-   "text": "la máscara del Pulpo Enmascarado",
-   "title": "Robo 8: el plan"
+   "text": "",
+   "title": "Robo 8: una regla"
   },
   {
-   "file": "capturas/previa_robo_10_story.webp",
-   "id": "previa_robo_10_story",
+   "file": "capturas/previa_robo_08_plano.webp",
+   "id": "previa_robo_08_plano",
    "section": "previas",
-   "text": "el pato que canta ópera",
-   "title": "Robo 10 (gran golpe): la historia"
+   "text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+   "title": "Robo 8: el plano para explorar"
   },
   {
-   "file": "capturas/previa_robo_10_plan.webp",
-   "id": "previa_robo_10_plan",
-   "section": "previas",
-   "text": "el pato que canta ópera",
-   "title": "Robo 10 (gran golpe): el plan"
-  },
-  {
-   "file": "capturas/previa_robo_11_story.webp",
-   "id": "previa_robo_11_story",
+   "file": "capturas/previa_robo_11_pieza.webp",
+   "id": "previa_robo_11_pieza",
    "section": "previas",
    "text": "el faraón de juguete de Pablito",
-   "title": "Robo 11: la historia"
+   "title": "Robo 11: la pieza"
   },
   {
-   "file": "capturas/previa_robo_11_news.webp",
-   "id": "previa_robo_11_news",
+   "file": "capturas/previa_robo_11_nuevo.webp",
+   "id": "previa_robo_11_nuevo",
    "section": "previas",
-   "text": "el faraón de juguete de Pablito",
-   "title": "Robo 11: la noticia"
+   "text": "",
+   "title": "Robo 11: lo nuevo"
   },
   {
-   "file": "capturas/previa_robo_11_plan.webp",
-   "id": "previa_robo_11_plan",
+   "file": "capturas/previa_robo_11_regla.webp",
+   "id": "previa_robo_11_regla",
    "section": "previas",
-   "text": "el faraón de juguete de Pablito",
-   "title": "Robo 11: el plan"
+   "text": "",
+   "title": "Robo 11: una regla"
   },
   {
-   "file": "capturas/previa_robo_13_story.webp",
-   "id": "previa_robo_13_story",
+   "file": "capturas/previa_robo_11_plano.webp",
+   "id": "previa_robo_11_plano",
    "section": "previas",
-   "text": "el pato de goma de Arquímedes",
-   "title": "Robo 13: la historia"
+   "text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+   "title": "Robo 11: el plano para explorar"
   },
   {
-   "file": "capturas/previa_robo_13_news.webp",
-   "id": "previa_robo_13_news",
-   "section": "previas",
-   "text": "el pato de goma de Arquímedes",
-   "title": "Robo 13: la noticia"
-  },
-  {
-   "file": "capturas/previa_robo_13_plan.webp",
-   "id": "previa_robo_13_plan",
-   "section": "previas",
-   "text": "el pato de goma de Arquímedes",
-   "title": "Robo 13: el plan"
-  },
-  {
-   "file": "capturas/previa_robo_15_story.webp",
-   "id": "previa_robo_15_story",
-   "section": "previas",
-   "text": "el anillo de Cleopatra, la del quinto",
-   "title": "Robo 15 (gran golpe): la historia"
-  },
-  {
-   "file": "capturas/previa_robo_15_plan.webp",
-   "id": "previa_robo_15_plan",
-   "section": "previas",
-   "text": "el anillo de Cleopatra, la del quinto",
-   "title": "Robo 15 (gran golpe): el plan"
-  },
-  {
-   "file": "capturas/previa_robo_16_story.webp",
-   "id": "previa_robo_16_story",
+   "file": "capturas/previa_robo_16_pieza.webp",
+   "id": "previa_robo_16_pieza",
    "section": "previas",
    "text": "el despertador de Leonardo",
-   "title": "Robo 16: la historia"
+   "title": "Robo 16: la pieza"
   },
   {
-   "file": "capturas/previa_robo_16_news.webp",
-   "id": "previa_robo_16_news",
+   "file": "capturas/previa_robo_16_nuevo.webp",
+   "id": "previa_robo_16_nuevo",
    "section": "previas",
-   "text": "el despertador de Leonardo",
-   "title": "Robo 16: la noticia"
+   "text": "",
+   "title": "Robo 16: lo nuevo"
   },
   {
-   "file": "capturas/previa_robo_16_plan.webp",
-   "id": "previa_robo_16_plan",
+   "file": "capturas/previa_robo_16_regla.webp",
+   "id": "previa_robo_16_regla",
    "section": "previas",
-   "text": "el despertador de Leonardo",
-   "title": "Robo 16: el plan"
+   "text": "",
+   "title": "Robo 16: una regla"
   },
   {
-   "file": "capturas/previa_robo_20_story.webp",
-   "id": "previa_robo_20_story",
+   "file": "capturas/previa_robo_16_plano.webp",
+   "id": "previa_robo_16_plano",
    "section": "previas",
-   "text": "la corona del rey de las croquetas",
-   "title": "Robo 20 (gran golpe): la historia"
+   "text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+   "title": "Robo 16: el plano para explorar"
   },
   {
-   "file": "capturas/previa_robo_20_plan.webp",
-   "id": "previa_robo_20_plan",
-   "section": "previas",
-   "text": "la corona del rey de las croquetas",
-   "title": "Robo 20 (gran golpe): el plan"
-  },
-  {
-   "file": "capturas/previa_robo_21_story.webp",
-   "id": "previa_robo_21_story",
-   "section": "previas",
-   "text": "la tostada con la cara del Barón",
-   "title": "Robo 21: la historia"
-  },
-  {
-   "file": "capturas/previa_robo_21_news.webp",
-   "id": "previa_robo_21_news",
-   "section": "previas",
-   "text": "la tostada con la cara del Barón",
-   "title": "Robo 21: la noticia"
-  },
-  {
-   "file": "capturas/previa_robo_21_plan.webp",
-   "id": "previa_robo_21_plan",
-   "section": "previas",
-   "text": "la tostada con la cara del Barón",
-   "title": "Robo 21: el plan"
-  },
-  {
-   "file": "capturas/previa_robo_25_story.webp",
-   "id": "previa_robo_25_story",
+   "file": "capturas/previa_robo_25_pieza.webp",
+   "id": "previa_robo_25_pieza",
    "section": "previas",
    "text": "el Diamante Bostezo",
-   "title": "Robo 25 (gran golpe): la historia"
+   "title": "Robo 25 (gran golpe): la pieza"
   },
   {
-   "file": "capturas/previa_robo_25_news.webp",
-   "id": "previa_robo_25_news",
+   "file": "capturas/previa_robo_25_nuevo.webp",
+   "id": "previa_robo_25_nuevo",
    "section": "previas",
-   "text": "el Diamante Bostezo",
-   "title": "Robo 25 (gran golpe): la noticia"
+   "text": "",
+   "title": "Robo 25 (gran golpe): lo nuevo"
   },
   {
-   "file": "capturas/previa_robo_25_plan.webp",
-   "id": "previa_robo_25_plan",
+   "file": "capturas/previa_robo_25_regla.webp",
+   "id": "previa_robo_25_regla",
    "section": "previas",
-   "text": "el Diamante Bostezo",
-   "title": "Robo 25 (gran golpe): el plan"
+   "text": "",
+   "title": "Robo 25 (gran golpe): una regla"
+  },
+  {
+   "file": "capturas/previa_robo_25_plano.webp",
+   "id": "previa_robo_25_plano",
+   "section": "previas",
+   "text": "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!",
+   "title": "Robo 25 (gran golpe): el plano para explorar"
   },
   {
    "file": "capturas/previa_generativo_plan.webp",
@@ -7001,8 +7118,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "28-09-2026 01:16",
-  "commit": "59cb4b7",
-  "rama": "worktree-agent-ac8105661808ef839"
+  "fecha": "28-09-2026 02:10",
+  "commit": "019e9ac",
+  "rama": "previa-pelicula"
  }
 };

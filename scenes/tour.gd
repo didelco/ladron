@@ -182,6 +182,9 @@ func _enter_museum() -> void:
 	state = "zoom"
 	_sign.visible = false
 	_set_hints([])
+	_title.text = String(Story.museum(m).name).to_upper()
+	_arcade(_title)
+	_subtitle.text = Story.museum(m).text
 	_show_picture(m)
 	stage.go_in(m, _rooms_of(m), func() -> void:
 		var nights := Story.nights_in(m)
