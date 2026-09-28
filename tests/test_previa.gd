@@ -31,6 +31,22 @@ func pad(b: JoyButton) -> InputEventJoypadButton:
 	return e
 
 
+## Right five times from the room picked: the rooms gone through, and
+## whether each step went on round the museum (room_along) and, the camera
+## swung round to the new one, to its right on screen.
+func walk_right(tour: Tour) -> Array:
+	var seen: Array[int] = [tour.stage.room]
+	var ok := true
+	for k in 5:
+		tour.act("right")
+		var now := tour.stage.room
+		if now != seen[-1]:
+			ok = ok and tour.stage.room_along(seen[-1]) < tour.stage.room_along(now)
+			ok = ok and tour.stage.room_x(seen[-1]) < tour.stage.room_x(now)
+			seen.append(now)
+	return [seen, ok]
+
+
 func _init() -> void:
 	# Nothing here is saved where the player keeps the story.
 	Story.save = "user://test_previa.cfg"
@@ -253,15 +269,9 @@ func _init() -> void:
 	var fronts := dinos.windows.filter(func(w: Dictionary) -> bool: return (w.face as Basis).z.z > 0.9).size()
 	check(sides >= 1 and fronts >= 2 and sides + fronts == 5, "salas en la fachada y en el costado que se ve (%d y %d)" % [fronts, sides])
 	check((dinos.windows[4].node as Node3D).position.x == 0.0 and dinos.windows[4].boss, "el gran golpe, la ventana grande del centro")
-	var seen: Array[int] = [tour.stage.room]
-	for k in 5:
-		tour.act("right")
-		if tour.stage.room != seen[-1]:
-			seen.append(tour.stage.room)
-	var left_to_right := true
-	for k in seen.size() - 1:
-		left_to_right = left_to_right and tour.stage.room_x(seen[k]) < tour.stage.room_x(seen[k + 1])
-	check(seen.size() == 5 and left_to_right, "las flechas, de ventana en ventana de izquierda a derecha en pantalla " + str(seen))
+	var walk := walk_right(tour)
+	var seen: Array = walk[0]
+	check(seen.size() == 5 and walk[1], "las flechas, de ventana en ventana hacia la derecha, rodeando el museo " + str(seen))
 	var side_room := -1
 	for i in 5:
 		if (dinos.windows[i].face as Basis).z.x > 0.9:
@@ -289,16 +299,15 @@ func _init() -> void:
 	check(bugs.windows[4].boss and (bugs.windows[4].node as Node3D).position.x == 0.0 and highest, "... el gran golpe, el hueco de arriba del todo en el centro")
 	check((bugs.windows[4].node as Node3D).get_child_count() > 3, "... con su corona")
 	var screen := Rect2(Vector2.ZERO, Vector2(tour.stage.size))
-	check(range(5).all(func(i: int) -> bool: return screen.has_point(tour.stage.room_on_screen(i)) and screen.has_point(tour.stage.room_foot_on_screen(i))), "... todos a la vista, con su cartel y sus estrellas")
-	seen = [tour.stage.room]
-	for k in 5:
-		tour.act("right")
-		if tour.stage.room != seen[-1]:
-			seen.append(tour.stage.room)
-	left_to_right = true
-	for k in seen.size() - 1:
-		left_to_right = left_to_right and tour.stage.room_x(seen[k]) < tour.stage.room_x(seen[k + 1])
-	check(seen.size() == 5 and left_to_right, "... las flechas, de hueco en hueco de izquierda a derecha " + str(seen))
+	var framed := true
+	for i in 5:
+		tour._pick_room(i)
+		framed = framed and screen.has_point(tour.stage.room_on_screen(i)) and screen.has_point(tour.stage.room_foot_on_screen(i))
+	check(framed, "... cada uno, al elegirlo, a la vista con su cartel y sus estrellas")
+	tour._pick_room(0)
+	walk = walk_right(tour)
+	seen = walk[0]
+	check(seen.size() == 5 and walk[1], "... las flechas, de hueco en hueco hacia la derecha " + str(seen))
 	tour._pick_room(2)
 	await frames()
 	face = tour.stage.room_face(2)
@@ -420,15 +429,9 @@ func _init() -> void:
 	check(tour.stage._room_ring.global_basis.y.normalized().dot(tour.stage.room_face(4).z) > 0.99, "... el aro sobre la fachada, alrededor de la puerta")
 	for k in 5:
 		tour.act("left")
-	var a_seen: Array[int] = [tour.stage.room]
-	for k in 5:
-		tour.act("right")
-		if tour.stage.room != a_seen[-1]:
-			a_seen.append(tour.stage.room)
-	var a_order := true
-	for k in a_seen.size() - 1:
-		a_order = a_order and tour.stage.room_x(a_seen[k]) < tour.stage.room_x(a_seen[k + 1])
-	check(a_seen.size() == 5 and a_seen[0] == 4 and a_order, "... las flechas, de la puerta a las del costado, de izquierda a derecha " + str(a_seen))
+	walk = walk_right(tour)
+	var a_seen: Array = walk[0]
+	check(a_seen.size() == 5 and a_seen[0] == 4 and walk[1], "... las flechas, de la puerta a las del costado, hacia la derecha " + str(a_seen))
 	tour.queue_free()
 
 	# The castle of the middle ages (a palace with towers): on arriving only

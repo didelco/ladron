@@ -224,10 +224,10 @@ func _pick_room(i: int) -> void:
 	_sign_stars.visible = false
 
 
-## The next room that way (dir -1 left, 1 right) as the windows are seen
-## across the screen, on the museum's front or down its side; or, the rooms
-## one over another (a tower's floors), -1 down and 1 up (room_along): only
-## among those reached.
+## The next room that way (dir -1 left, 1 right) round the museum, wall by
+## wall and along each as seen from in front of it (the camera swings round
+## to it); or, the rooms one over another (a tower's floors), -1 down and 1
+## up (room_along): only among those reached.
 func _step_room(dir: int) -> void:
 	var order: Array[int] = []
 	for i in _nights.size():
@@ -238,6 +238,26 @@ func _step_room(dir: int) -> void:
 	if at >= 0 and at < order.size():
 		_nav()
 		_pick_room(order[at])
+
+
+## The nearest room reached higher up (dir 1) or lower down (-1) than the
+## one picked, on any wall; none, it stays.
+func _step_height(dir: int) -> void:
+	var here := stage.room_centre(stage.room)
+	var best := -1
+	var near := INF
+	for i in _nights.size():
+		if i == stage.room or not stage.room_open(i):
+			continue
+		var at := stage.room_centre(i)
+		if (at.y - here.y) * dir < 0.2:
+			continue
+		if at.distance_to(here) < near:
+			near = at.distance_to(here)
+			best = i
+	if best >= 0:
+		_nav()
+		_pick_room(best)
 
 
 func _choose_room() -> void:
@@ -412,9 +432,9 @@ func act(what: String) -> void:
 			match what:
 				"left", "prev": _step_room(-1)
 				"right", "next": _step_room(1)
-				# Stacked (a tower's floors), up goes up; else, as left.
-				"up": _step_room(1 if stage.rooms_stacked() else -1)
-				"down": _step_room(-1 if stage.rooms_stacked() else 1)
+				# Up and down by height, whichever wall.
+				"up": _step_height(1)
+				"down": _step_height(-1)
 				"accept": _choose_room()
 				"back": _leave_museum()
 		"plan":
@@ -464,7 +484,7 @@ func _on_mouse(event: InputEvent) -> void:
 			# Only near a room reached: the rest are just windows.
 			near = 70.0
 			for i in stage.room_count():
-				if not stage.room_open(i):
+				if not stage.room_open(i) or not stage.room_seen(i):
 					continue
 				var d := at.distance_to(stage.on_screen(stage.room_centre(i)))
 				if d < near:
@@ -502,8 +522,9 @@ func _process(_dt: float) -> void:
 		var l := _room_stars[i]
 		l.size = l.get_combined_minimum_size()
 		l.position = stage.room_foot_on_screen(i) - Vector2(l.size.x * 0.5, -2)
-		# Only under a room reached: the rest are not rooms yet.
-		l.visible = state == "museum" and stage.room_open(i)
+		# Only under a room reached (the rest are not rooms yet) on a wall
+		# the camera faces.
+		l.visible = state == "museum" and stage.room_open(i) and stage.room_seen(i)
 	if _sign.visible:
 		var at := Vector2.ZERO
 		if state == "city":

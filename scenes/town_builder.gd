@@ -228,6 +228,12 @@ uniform float lamps = 0.0;
 uniform vec3 walls[5];
 uniform vec3 roofs[5];
 uniform vec3 asphalt : source_color = vec3(0.4, 0.42, 0.5);
+// Close on a museum's room (see_through): what stands between the camera
+// and the window, round the line from it towards the camera (cut_to) as far
+// as cut_r out, seen through (a screen door), so the window always shows.
+uniform vec3 cut_at = vec3(0.0);
+uniform vec3 cut_to = vec3(0.0, 1.0, 0.0);
+uniform float cut_r = 0.0;
 varying vec3 world;
 varying vec4 own;
 float hash(vec3 p) {
@@ -238,6 +244,15 @@ void vertex() {
 	own = INSTANCE_CUSTOM;
 }
 void fragment() {
+	if (cut_r > 0.0) {
+		vec3 d = world - cut_at;
+		float ahead = dot(d, cut_to);
+		float side = length(d - cut_to * ahead);
+		float gone = smoothstep(0.3, 1.0, ahead) * (1.0 - smoothstep(cut_r * 0.6, cut_r, side));
+		if (hash(vec3(floor(FRAGCOORD.xy), 0.0)) < gone * 0.88) {
+			discard;
+		}
+	}
 	vec3 c = texture(colormap, UV).rgb;
 	int k = int(own.r * 4.99);
 	// A street's white lines gone into its tarmac, but where it is marked
@@ -2402,6 +2417,17 @@ func _flush() -> void:
 		if String(path).begins_with("calles/road"):
 			mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(mmi)
+
+
+## What stands between the camera and `at` (from it towards the camera,
+## `to`), as far as `r` round that line, seen through (NIGHT_SHADER); r 0,
+## nothing is.
+func see_through(at: Vector3, to: Vector3, r: float) -> void:
+	for m in _materials.values():
+		if m is ShaderMaterial:
+			(m as ShaderMaterial).set_shader_parameter("cut_at", at)
+			(m as ShaderMaterial).set_shader_parameter("cut_to", to)
+			(m as ShaderMaterial).set_shader_parameter("cut_r", r)
 
 
 ## A kit's night material: its colour map, its windows lit (the buildings),

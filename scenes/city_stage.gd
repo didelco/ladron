@@ -10,7 +10,10 @@ extends SubViewport
 ## than the screen: the camera looks at the museum picked, two or three of
 ## them in sight (CITY_VIEW), and glides over the town to the next
 ## (FOLLOW_S). They zigzag (MUSEUM_SPOTS), so each step goes another way,
-## up and down as well as across.
+## up and down as well as across. Inside a museum, the camera (still
+## orthographic) swings round the building to each room picked, looking at
+## its wall three quarters on from a little above and closing in on it
+## (room_shot); the arrows go round the building wall by wall (room_along).
 ##
 ## Everything is laid out on the town's own plan: x across the screen, z
 ## towards the viewer; the plan is turned a little (YAW) so the buildings
@@ -71,6 +74,33 @@ const FLOOR_SIGN := 1.9
 const FLOOR_STARS := 0.55
 ## How long the camera takes into a museum and back out (s).
 const ZOOM_S := 1.5
+## The camera over the town: this far down (pitch) and turned this way
+## (yaw), in degrees: the menus' axonometric angle.
+const CITY_PITCH := -35.264
+const CITY_YAW := 45.0
+## On a room picked, the camera swings round the museum to look at its
+## window: from this far round from straight on (degrees, a three
+## quarter view that shows the wall and a little of the next), this far
+## down, and this close: at least ROOM_VIEW, and the window ROOM_FIT times
+## over (a whole floor: with room beside it for its sign and its stars).
+const ROOM_TURN := 20.0
+const ROOM_PITCH := -32.0
+const ROOM_VIEW := 4.8
+const ROOM_FIT := 3.2
+## How long it takes from one room to the next (s): Hud's pan, and up to
+## this much more for a half turn round the building.
+const ROOM_S := Hud.PAN_S
+const ROOM_SPIN_S := 0.5
+## Close on a room, all the town nearer the camera than this in front of the
+## window is left out (the camera's near plane): the houses round a museum
+## never stand between the camera and a wall, whichever it looks at.
+const CLIP := 3.5
+## ... and the town's buildings further off, taller than that, seen through
+## round the line from the window to the camera, this share of the view out
+## (TownBuilder.see_through): a neighbour tower never hides a room.
+const SEE_THROUGH := 0.4
+## How far back the camera stands from where it looks.
+const BACK := 80.0
 ## How long the plan takes out of its room and open in front of you (s),
 ## and how much of the screen it fills then, across and up.
 const PLAN_S := 2.1
@@ -92,9 +122,18 @@ var _cam: Camera3D
 var _env: Environment
 var _key: DirectionalLight3D
 var _front_light: SpotLight3D
-## where the camera looks and how much it sees, eased towards the goals
+## where the camera looks and how much it sees, eased towards the goals;
+## which way it looks (degrees, as CITY_PITCH and CITY_YAW) and how much in
+## front of where it looks it keeps (CLIP; INF, all of it)
 var focus := Vector3.ZERO
 var view := CITY_VIEW
+var pitch := CITY_PITCH
+var yaw := CITY_YAW
+var clip := INF
+## the camera swinging round the museum from room to room, and whether the
+## next one is straight there (back from a heist: be_in)
+var _orbit: Tween
+var _jump := false
 var _museums: Array[Node3D] = []
 ## the town's plan (TownBuilder): its districts, and where the museums and
 ## the hideout stand in it ([district, block])
@@ -185,7 +224,7 @@ func _init() -> void:
 	add_child(_front_light)
 	_cam = Camera3D.new()
 	_cam.projection = Camera3D.PROJECTION_ORTHOGONAL
-	_cam.rotation_degrees = Vector3(-35.264, 45, 0)
+	_cam.rotation_degrees = Vector3(CITY_PITCH, CITY_YAW, 0)
 	_cam.near = 0.1
 	_cam.far = 400.0
 	add_child(_cam)
@@ -324,7 +363,10 @@ func go_in(m: int, rooms: Array, done: Callable) -> void:
 		_tween.kill()
 	var secs := 0.0 if hurry else ZOOM_S
 	_tween = create_tween().set_parallel()
-	_tween.tween_method(_zoom_step.bind(focus, view, _front_of(m), _view_of(m)), 0.0, 1.0, secs).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	var whole := _city_shot(m)
+	whole.focus = _front_of(m)
+	whole.view = _view_of(m)
+	_tween.tween_method(_shot_step.bind(_shot(), _towards(whole)), 0.0, 1.0, secs).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
 	_tween.tween_method(_dim, 0.0, 1.0, secs * 0.6).set_delay(secs * 0.4)
 	_tween.chain().tween_callback(done)
 
@@ -338,8 +380,10 @@ func go_out(done: Callable) -> void:
 	var secs := 0.0 if hurry else ZOOM_S * 0.8
 	if _tween:
 		_tween.kill()
+	if _orbit:
+		_orbit.kill()
 	_tween = create_tween().set_parallel()
-	_tween.tween_method(_zoom_step.bind(focus, view, _look_at(m), CITY_VIEW), 0.0, 1.0, secs).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	_tween.tween_method(_shot_step.bind(_shot(), _towards(_city_shot(m))), 0.0, 1.0, secs).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
 	_tween.tween_method(_dim, 1.0, 0.0, secs * 0.6)
 	_tween.chain().tween_callback(func() -> void:
 		inside = -1
@@ -352,13 +396,15 @@ func go_out(done: Callable) -> void:
 		done.call())
 
 
-## Straight into museum m, no glide (back from a heist).
+## Straight into museum m, no glide (back from a heist): its first room
+## picked is straight there too.
 func be_in(m: int, rooms: Array) -> void:
 	var was := hurry
 	hurry = true
 	go_in(m, rooms, func() -> void: pass)
 	_tween.custom_step(1.0)
 	hurry = was
+	_jump = true
 
 
 ## Where the camera looks at museum m from close: the middle of its front.
@@ -381,34 +427,88 @@ func _dim(k: float) -> void:
 	_env.ambient_light_energy = lerpf(AMBIENT, AMBIENT * 0.55, k)
 	_key.light_energy = lerpf(KEY, KEY * 0.6, k)
 	_front_light.light_energy = FRONT_LIGHT * k
-	if inside >= 0:
-		_front_light.global_position = _museums[inside].global_transform * Vector3(0, 4.0, _body(inside).front_z + 5.0)
-		_front_light.look_at(_front_of(inside))
+	_aim_front_light()
 
 
-## How far into the way in or out the camera is: from one look to another,
-## the view eased in steps of scale so the zoom feels even.
-func _zoom_step(k: float, from_focus: Vector3, from_view: float, to_focus: Vector3, to_view: float) -> void:
-	focus = from_focus.lerp(to_focus, k)
-	view = exp(lerpf(log(from_view), log(to_view), k))
+## The lamp on the museum from close: from over the camera's shoulder onto
+## what it looks at, so it lights whichever wall the camera faces.
+func _aim_front_light() -> void:
+	if inside < 0:
+		return
+	var back := _cam.basis.z
+	_front_light.position = focus + Vector3(back.x, 0.0, back.z).normalized() * 5.0 + Vector3(0, 4.0, 0)
+	_front_light.look_at(focus)
+
+
+## The camera as it is: where it looks, how much it sees, which way, and
+## how much in front of where it looks it keeps (a shot: _shot_step).
+func _shot() -> Dictionary:
+	return {"focus": focus, "view": view, "pitch": pitch, "yaw": yaw, "clip": clip}
+
+
+## The camera over the town, museum m picked.
+func _city_shot(m: int) -> Dictionary:
+	return {"focus": _look_at(m), "view": CITY_VIEW, "pitch": CITY_PITCH, "yaw": CITY_YAW, "clip": INF}
+
+
+## Shot `to` with its yaw the nearest way round from the camera's now.
+func _towards(to: Dictionary) -> Dictionary:
+	var out := to.duplicate()
+	out.yaw = yaw + wrapf(float(to.yaw) - yaw, -180.0, 180.0)
+	return out
+
+
+## How far from one shot to another the camera is (0 to 1): where it looks
+## slides straight from one to the other while it turns as the shots say
+## (_towards: the shortest way), so from a wall to another it swings round
+## the building (orthographic: where it looks may cross the building's
+## inside, and the building still shows whole); the view eased in steps of
+## scale so the zoom feels even; the town in front of it left out (clip)
+## only near the end of the way in to a room, and back at once on the way out.
+func _shot_step(k: float, a: Dictionary, b: Dictionary) -> void:
+	focus = (a.focus as Vector3).lerp(b.focus, k)
+	view = exp(lerpf(log(float(a.view)), log(float(b.view)), k))
+	pitch = lerpf(a.pitch, b.pitch, k)
+	yaw = lerpf(a.yaw, b.yaw, k)
+	var ca: float = a.clip
+	var cb: float = b.clip
+	if is_inf(cb):
+		clip = ca if k < 0.05 and not is_inf(ca) else INF
+	elif is_inf(ca):
+		clip = INF if k < 0.6 else lerpf(BACK, cb, smoothstep(0.6, 1.0, k))
+	else:
+		clip = lerpf(ca, cb, k)
 	_place_camera()
 
 
 func _place_camera() -> void:
+	_cam.rotation_degrees = Vector3(pitch, yaw, 0)
 	_cam.size = view
-	_cam.position = focus + _cam.basis.z * 80.0
+	_cam.position = focus + _cam.basis.z * BACK
+	_cam.near = 0.1 if is_inf(clip) else maxf(0.1, BACK - clip)
+	if _builder:
+		var see := not is_inf(clip) or (sheet != null and inside >= 0)
+		_builder.see_through(focus, _cam.basis.z, view * SEE_THROUGH if see else 0.0)
+	_aim_front_light()
+
+
+## The camera's turn over the town (CITY_PITCH, CITY_YAW).
+static func city_basis() -> Basis:
+	return Basis.from_euler(Vector3(deg_to_rad(CITY_PITCH), deg_to_rad(CITY_YAW), 0))
 
 
 ## Where the camera looks over the town with museum m picked: at it, a
 ## little up the screen to leave room over it for its sign.
 func _look_at(m: int) -> Vector3:
-	return town.transform * _spots[m] + Vector3(0, 0.5, 0) + _cam.basis.y * 2.4
+	return town.transform * _spots[m] + Vector3(0, 0.5, 0) + city_basis().y * 2.4
 
 
-## A point (in the stage's own space) on the screen's plane: across and up,
-## as the camera sees it, in the town's units.
+## A point (in the stage's own space) on the town's screen plane: across
+## and up, as the camera sees it over the town, in the town's units (the
+## town is built for this look: sight).
 func on_plane(p: Vector3) -> Vector2:
-	return Vector2(p.dot(_cam.basis.x), p.dot(_cam.basis.y))
+	var b := city_basis()
+	return Vector2(p.dot(b.x), p.dot(b.y))
 
 
 ## All the camera can ever see of the town on a screen `aspect` wide for
@@ -721,6 +821,58 @@ func pick_room(i: int) -> void:
 	room = i
 	if inside >= 0:
 		_body(inside).pick(room)
+		_swing_to(i)
+
+
+## The camera round the museum to room i: turning, rising or falling and
+## closing in all at once, on Hud's curve, longer the further round it goes.
+func _swing_to(i: int) -> void:
+	if _orbit:
+		_orbit.kill()
+	var to := _towards(room_shot(i))
+	var turn := absf(float(to.yaw) - yaw)
+	var secs := 0.0 if hurry or _jump else ROOM_S + ROOM_SPIN_S * minf(turn / 180.0, 1.0)
+	_jump = false
+	if secs <= 0.0:
+		_shot_step(1.0, _shot(), to)
+		return
+	_orbit = create_tween()
+	_orbit.tween_method(_shot_step.bind(_shot(), to), 0.0, 1.0, secs).set_trans(Hud.TRANS).set_ease(Hud.EASE)
+
+
+## The camera, done swinging to the room picked (the plan comes out of a
+## window where it will be seen).
+func _settle() -> void:
+	if _orbit and _orbit.is_running():
+		_orbit.custom_step(INF)
+
+
+## How the camera looks at room i: its window from ROOM_TURN round to the
+## right of straight on and ROOM_PITCH down, close enough to see it well and
+## some of the building round it, its sign over it and its stars under it
+## on screen (a whole floor: its sign and stars beside it).
+func room_shot(i: int) -> Dictionary:
+	var face := room_face(i)
+	var out := Vector2(face.z.x, face.z.z)
+	if out.length() < 0.01:
+		out = Vector2(face.y.x, face.y.z)
+	var size: Vector2 = _rooms[i].window.size
+	var aspect := float(self.size.x) / maxf(self.size.y, 1.0)
+	var wide := size.x * ROOM_FIT
+	var tall := (size.y + size.x * 0.5) * ROOM_FIT
+	if _is_floor(i):
+		wide = size.x + (FLOOR_SIGN + 1.6) * 2.0
+		tall = size.y * 2.2
+	var v := maxf(ROOM_VIEW, maxf(tall, wide / aspect))
+	# Round to the right of a wall, but a side's from its front's end: the
+	# front has its square or its garden before it, open to see from; the
+	# back of a side has the next houses close by.
+	var turn := ROOM_TURN
+	var n := _museums[inside].global_basis.orthonormalized().inverse() * face.z
+	if absf(n.x) > 0.5:
+		turn = -ROOM_TURN * signf(n.x)
+	return {"focus": room_centre(i) + Vector3(0, v * 0.06, 0), "view": v, "pitch": ROOM_PITCH,
+		"yaw": rad_to_deg(atan2(out.x, out.y)) + turn, "clip": CLIP}
 
 
 ## Whether room i of the museum gone into is reached: shown as a room, to
@@ -759,10 +911,15 @@ func room_foot_on_screen(i: int) -> Vector2:
 	return _cam.unproject_position(room_centre(i) - face.y * (size.y * 0.5 + 0.12) + face.z * 0.2)
 
 
-## Where room i's window is across the screen, left to right, on the front
-## or down a side: the arrows go from window to window as they are seen.
+## Where room i's window is across the screen now, left to right.
 func room_x(i: int) -> float:
-	return on_plane(room_centre(i)).x
+	return room_centre(i).dot(_cam.global_basis.x)
+
+
+## Whether room i's window faces the camera now (not round the back of the
+## building): only then its stars show and the mouse finds it.
+func room_seen(i: int) -> bool:
+	return room_face(i).z.dot(_cam.global_basis.z) > 0.05
 
 
 ## Whether room i is a whole floor of its building (a tower's), not a
@@ -771,22 +928,55 @@ func _is_floor(i: int) -> bool:
 	return String(_rooms[i].window.get("shape", "")) == "floor"
 
 
+## Room i's window in its building's own space: x across its front, y up,
+## z out of its front.
+func _room_local(i: int) -> Vector3:
+	return _museums[inside].global_transform.affine_inverse() * room_centre(i)
+
+
 ## Whether the museum's rooms are one over another (a tower's floors)
-## rather than across: they spread further up the screen than across it.
+## rather than round it: they spread further up than across, the building
+## as it stands (not as the camera sees it just now).
 func rooms_stacked() -> bool:
-	if _rooms.is_empty():
+	if _rooms.is_empty() or inside < 0:
 		return false
-	var box := Rect2(on_plane(room_centre(0)), Vector2.ZERO)
+	var low := INF
+	var high := -INF
+	var across := 0.0
 	for i in _rooms.size():
-		box = box.expand(on_plane(room_centre(i)))
-	return box.size.y > box.size.x
+		var p := _room_local(i)
+		low = minf(low, p.y)
+		high = maxf(high, p.y)
+		for j in _rooms.size():
+			var q := _room_local(j)
+			across = maxf(across, Vector2(p.x, p.z).distance_to(Vector2(q.x, q.z)))
+	return high - low > across
 
 
-## Where room i is along the way its rooms go on screen: left to right,
-## or, stacked (rooms_stacked), bottom to top.
+## Which way room i's wall looks, round its building (degrees): 0 its
+## front, 90 its right side (as seen from the front), 180 its back, -90
+## its left; from -135 (the back's left corner) round to 225, so the way
+## round starts down the left side, crosses the front, goes down the right
+## and ends across the back.
+func room_wall(i: int) -> float:
+	var n := _museums[inside].global_basis.orthonormalized().inverse() * room_face(i).z
+	var a := rad_to_deg(atan2(n.x, n.z))
+	return a + 360.0 if a < -135.0 else a
+
+
+## Where room i is on the way round its museum the arrows go (right: on
+## round, as walking along its walls with them in front of you): wall by
+## wall (room_wall), along each from its left to its right as seen from out
+## in front of it; or, stacked (rooms_stacked), bottom to top. Where the
+## building stands, not where the camera is: the order stays put while the
+## camera swings round.
 func room_along(i: int) -> float:
-	var p := on_plane(room_centre(i))
-	return p.y if rooms_stacked() else p.x
+	if rooms_stacked():
+		return _room_local(i).y
+	var wall := snappedf(room_wall(i), 5.0)
+	var face := _museums[inside].global_basis.orthonormalized().inverse() * room_face(i)
+	var along := _room_local(i).dot(face.x)
+	return wall * 100.0 + clampf(along, -49.0, 49.0)
 
 
 ## Room i's window, as the world has it: its middle, its size, and the
@@ -909,7 +1099,13 @@ static func crown(parent: Node3D, at: Vector3, colour: Color, k := 1.0) -> void:
 ## plan: Hud.plan_map's picture, tile_px pixels a tile in it.
 func raise_plan(plan: Image, tile_px: float, done: Callable) -> void:
 	drop_plan()
+	_settle()
+	# Nothing left out in front with the plan out (it flies to well in front
+	# of the town, under its veil); only the town's buildings in the way of
+	# the window still seen through, for it to come out of.
+	clip = INF
 	sheet = PlanSheet.new()
+	_place_camera()
 	add_child(sheet)
 	sheet.print_plan(plan, tile_px)
 	var window := room_window(room)
@@ -941,6 +1137,9 @@ func lower_plan(done: Callable) -> void:
 	_tween.tween_method(_sheet_step, 1.0, 0.0, 0.0 if hurry else PLAN_S * 0.55)
 	_tween.tween_callback(func() -> void:
 		drop_plan()
+		if inside >= 0:
+			clip = CLIP
+			_place_camera()
 		done.call())
 
 
