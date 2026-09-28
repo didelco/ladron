@@ -77,7 +77,7 @@ func _init() -> void:
 		var out := []
 		for e in InputMap.action_get_events(action):
 			if e is InputEventKey:
-				out.append(e.keycode)
+				out.append(e.keycode if e.keycode != KEY_NONE else e.physical_keycode)
 			elif e is InputEventJoypadButton:
 				out.append("pad:%d" % e.button_index)
 		return out
@@ -106,19 +106,68 @@ func _init() -> void:
 		var o: Array = m._seat_input("kb_left" if k == KEY_SPACE else "kb_right", false)
 		check(o[6] and not o[5], name_of(k) + " jugando es rodar (B)")
 		Input.parse_input_event(key_event(k, false)); Input.flush_buffered_events()
-	# Un campo de texto (el editor) sigue escribiendo la E y el espacio.
+	# Moverse: las flechas (el de la derecha, cruceta y stick) y WASD (el de la izquierda).
+	for pair in [["ui_up", KEY_UP, KEY_W], ["ui_down", KEY_DOWN, KEY_S], ["ui_left", KEY_LEFT, KEY_A], ["ui_right", KEY_RIGHT, KEY_D]]:
+		var got: Array = in_map.call(pair[0])
+		check(pair[1] in got and pair[2] in got, "%s: la flecha y %s %s" % [pair[0], OS.get_keycode_string(pair[2]), str(got)])
+	# Un campo de texto (el editor) sigue escribiendo la E, el espacio y WASD.
 	var field := LineEdit.new()
 	root.add_child(field)
 	field.grab_focus()
-	for c in [[KEY_E, "e"], [KEY_SPACE, " "], [KEY_PERIOD, "."]]:
+	for c in [[KEY_E, "e"], [KEY_SPACE, " "], [KEY_PERIOD, "."], [KEY_W, "w"], [KEY_A, "a"], [KEY_S, "s"], [KEY_D, "d"]]:
 		var e := key_event(c[0], true)
 		e.unicode = c[1].unicode_at(0)
 		Input.parse_input_event(e); Input.flush_buffered_events()
 		await frames()
 		Input.parse_input_event(key_event(c[0], false)); Input.flush_buffered_events()
-	check(field.text == "e .", "un campo de texto escribe la E, el espacio y el punto: '%s'" % field.text)
+	check(field.text == "e .wasd", "un campo de texto escribe la E, el espacio, el punto y WASD: '%s'" % field.text)
 	field.queue_free()
 	await frames()
+
+	# --- Moverse por los menús con WASD, igual que con las flechas -----------------------------
+	# Where one key takes the focus from where open() leaves it.
+	# How many places one key takes the focus along its row or column, from
+	# the middle one (a menu built anew keeps the one last in focus: so the
+	# same start for the arrow and for WASD).
+	var steps_after := func(open: Callable, k: Key) -> int:
+		await open.call()
+		await frames(W)
+		var owner: Control = root.gui_get_focus_owner()
+		if owner == null:
+			return -99
+		var row: Array = owner.get_parent().get_children().filter(func(c): return c is Control and c.focus_mode != Control.FOCUS_NONE and c.visible)
+		var mid: int = row.size() / 2
+		(row[mid] as Control).grab_focus()
+		await frames(2)
+		await hit(k)
+		await frames(W)
+		var i := row.find(root.gui_get_focus_owner())
+		return -99 if i < 0 else i - mid
+	var column := func() -> void: m._show_settings("title")
+	var cards := func() -> void:
+		m.players = 1
+		m._show_title()
+	for t in [["ajustes", column, "settings", KEY_DOWN, KEY_S], ["ajustes", column, "settings", KEY_UP, KEY_W],
+			["título", cards, "title", KEY_RIGHT, KEY_D], ["título", cards, "title", KEY_LEFT, KEY_A]]:
+		var by_arrow: int = await steps_after.call(t[1], t[3])
+		var by_wasd: int = await steps_after.call(t[1], t[4])
+		check(by_wasd == by_arrow and by_wasd != 0 and by_wasd != -99 and m.phase == t[2] and not hud.bubble_open(),
+			"%s · %s mueve el foco como %s (%d, %d)" % [t[0], OS.get_keycode_string(t[4]), OS.get_keycode_string(t[3]), by_wasd, by_arrow])
+	var bubble_at := func(k: Key) -> int:
+		m.players = 1
+		m._show_title()
+		await frames(W)
+		m._pick_players("generative")
+		await frames(W)
+		var was: int = hud.bubble_focus()
+		await hit(k)
+		await frames(W)
+		return hud.bubble_focus() - was
+	for pair in [[KEY_RIGHT, KEY_D], [KEY_LEFT, KEY_A]]:
+		var by_arrow: int = await bubble_at.call(pair[0])
+		var by_wasd: int = await bubble_at.call(pair[1])
+		check(by_wasd == by_arrow and by_wasd != 0 and m.phase == "pick",
+			"bocadillo · %s se mueve lo mismo que %s (%d, %d)" % [OS.get_keycode_string(pair[1]), OS.get_keycode_string(pair[0]), by_wasd, by_arrow])
 
 	# --- El título ---------------------------------------------------------------------
 	m.players = 1
@@ -167,7 +216,7 @@ func _init() -> void:
 	# --- Jugando: rodar no es atrás, la acción no es aceptar -------------------------------
 	var play := func() -> void:
 		m._start_playing()
-	await each(["A", "B", KEY_E, KEY_PERIOD, KEY_SPACE, KEY_ENTER, KEY_KP_ENTER], "jugando", play, func(): return m.phase == "playing", "no pausa ni sale")
+	await each(["A", "B", KEY_E, KEY_PERIOD, KEY_SPACE, KEY_ENTER, KEY_KP_ENTER, KEY_W, KEY_A, KEY_S, KEY_D], "jugando", play, func(): return m.phase == "playing", "no pausa ni sale")
 	await each([KEY_ESCAPE], "jugando", play, func(): return m.phase == "paused", "Esc pausa")
 
 	# --- El final de la noche -----------------------------------------------------------------
@@ -231,6 +280,20 @@ func _init() -> void:
 	await hit(KEY_PERIOD)
 	await frames()
 	check(m.joining == ["kb_left", "kb_right"], "E sienta al de la izquierda y el punto al de la derecha " + str(m.joining))
+	# Moverse no es moverse por el menú aquí: W y ↑ sientan, cada una a los suyos.
+	await join.call()
+	await frames(W)
+	await hit(KEY_W)
+	m.joined_at = -INF
+	await hit(KEY_UP)
+	await frames()
+	check(m.joining == ["kb_left", "kb_right"], "W sienta al de la izquierda y ↑ al de la derecha " + str(m.joining))
+	await join.call()
+	await frames(W)
+	await hit(KEY_E)
+	m.joined_at = -INF
+	await hit(KEY_PERIOD)
+	await frames()
 	await hit(KEY_SPACE)
 	await frames()
 	check(m.joining == ["kb_right"], "Espacio levanta al de la izquierda (su B), no al último")
