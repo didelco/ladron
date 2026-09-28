@@ -1711,7 +1711,7 @@ func _police_file() -> Dictionary:
 	var many := "_MANY" if n > 1 else "_ONE"
 	var name := String(Heist.loot.get("name", ""))
 	return {
-		"photos": [MugshotStage.of(false), MugshotStage.of(true)],
+		"photo": load(EndPages.MUGSHOT_PHOTO),
 		"number": Text.t("END_FILE_NUMBER") % files_opened,
 		"letterhead": Text.t("END_FILE_LETTERHEAD"),
 		"stamp": Text.t("END_FILE_STAMP_MANY") % n if n > 1 else Text.t("END_FILE_STAMP_ONE"),

@@ -107,10 +107,8 @@ func _init() -> void:
 			check(file.rows.size() == 2 and file.rows[1][1].contains("Vela"), tag + ": la ficha dice quién te pilló")
 			check(file.rows[0][1].contains(Heist.loot.name), tag + ": ... y qué intentabas llevarte")
 			check(file.stamp.contains(str(n)) if n > 1 else file.stamp == Text.t("END_FILE_STAMP_ONE"), tag + ": el sello cuenta cuántos")
-			check(file.photos.size() == 2 and not file.photos[0].side and file.photos[1].side, tag + ": las dos fotos de siempre, de frente y de perfil")
+			check(file.photo is Texture2D and file.photo.resource_path == EndPages.MUGSHOT_PHOTO, tag + ": la foto de siempre, de frente y de perfil")
 			check(file.number == Text.t("END_FILE_NUMBER") % m.files_opened, tag + ": con su número")
-			for ph in file.photos:
-				ph.free()
 	# A piece with nothing to say about it, and a long name, still make the
 	# page: the headline never runs a name too long for it.
 	Heist.loot.erase("blurb")

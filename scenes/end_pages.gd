@@ -56,13 +56,16 @@ const SHEET_W := 540.0
 const SHEET_H := SHEET_W * 1.414
 const SHEET_SHOWN := 620.0
 const SHEET_MARGIN := 30
-## Each of the two photos on it, and how far the sheet is turned (degrees).
-const SHEET_PHOTO := Vector2(237, 190)
+## The photo on it (the head from the front and in profile, in one picture
+## drawn by hand) and how tall it shows, cropped to the heads.
+const MUGSHOT_PHOTO := "res://assets/ui/ficha_detenido.png"
+const SHEET_PHOTO_H := 260
 ## The job sheet: how wide it is, its words, its photo, and its tilt.
 const CARD_W := 860
 const CARD_TEXT_W := 470
 const CARD_PHOTO := Vector2(260, 220)
 const CARD_TILT := -0.8
+## How far the sheet is turned (degrees).
 const SHEET_TILT := 1.2
 
 ## A photo printed in a newspaper: grey on the paper, in a screen of dots at
@@ -84,22 +87,6 @@ void fragment() {
 	float printed = 1.0 - smoothstep(r - 0.12, r + 0.12, d);
 	float tone = mix(1.0 - l, printed, 0.5);
 	COLOR = vec4(mix(paper.rgb, ink.rgb, tone * 0.92), 1.0);
-}
-"""
-
-## A police photo: black and white, hard — the shadows near black — and
-## grainy.
-const MUGSHOT_SHADER := """
-shader_type canvas_item;
-float grain(vec2 p) {
-	return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
-}
-void fragment() {
-	vec3 c = texture(TEXTURE, UV).rgb;
-	float l = dot(c, vec3(0.299, 0.587, 0.114));
-	l = pow(smoothstep(0.06, 0.82, l), 1.35);
-	l += (grain(floor(FRAGCOORD.xy / 1.5)) - 0.5) * 0.09;
-	COLOR = vec4(vec3(l), 1.0);
 }
 """
 
@@ -263,7 +250,7 @@ static func _polaroid(photo: Texture2D) -> Control:
 	return holder
 
 
-## The police file: {"photos": [MugshotStage front, MugshotStage side],
+## The police file: {"photo": Texture2D (MUGSHOT_PHOTO),
 ## "number", "letterhead", "stamp", "rows": [[label, value], ...], "tick":
 ## [question, "YES|NO"], "more": [label, ...], "prints"}: the sheet, only
 ## its top showing (SHEET_SHOWN), the photos flashing as they come up and
@@ -313,11 +300,8 @@ static func mugshot(d: Dictionary) -> Control:
 	var shots := VBoxContainer.new()
 	shots.add_theme_constant_override("separation", 0)
 	form.add_child(shots)
-	var pair := HBoxContainer.new()
-	pair.add_theme_constant_override("separation", 6)
-	shots.add_child(pair)
-	for stage in d.get("photos", []):
-		pair.add_child(_police_photo(stage))
+	if d.get("photo") is Texture2D:
+		shots.add_child(_police_photo(d.photo))
 	var strip := PanelContainer.new()
 	strip.add_theme_stylebox_override("panel", _box(SHEET_INK, SHEET_INK, 0, 5))
 	shots.add_child(strip)
@@ -440,26 +424,23 @@ static func _star_points(centre: Vector2, outer: float, inner: float) -> PackedV
 	return out
 
 
-## A police photo, grey, with the flash going off.
-static func _police_photo(stage: MugshotStage) -> Control:
+## The police photo: the thief's head from the front and in profile against
+## the height chart, in black and white (MUGSHOT_PHOTO, drawn by hand), as
+## wide as the form, with the flash going off as it comes up.
+static func _police_photo(photo: Texture2D) -> Control:
 	var frame := PanelContainer.new()
 	frame.add_theme_stylebox_override("panel", _box(SHEET_INK, SHEET_INK, 0, 0))
 	var picture := Control.new()
-	picture.custom_minimum_size = SHEET_PHOTO
+	picture.custom_minimum_size = Vector2(SHEET_W - SHEET_MARGIN * 2, SHEET_PHOTO_H)
 	picture.clip_contents = true
 	frame.add_child(picture)
-	picture.add_child(stage)
-	stage.active = true
-	var photo := TextureRect.new()
-	photo.texture = stage.get_texture()
-	photo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	photo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	photo.set_anchors_preset(Control.PRESET_FULL_RECT)
-	var bw := ShaderMaterial.new()
-	bw.shader = Shader.new()
-	bw.shader.code = MUGSHOT_SHADER
-	photo.material = bw
-	picture.add_child(photo)
+	var shot := TextureRect.new()
+	shot.texture = photo
+	shot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	shot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	shot.set_anchors_preset(Control.PRESET_FULL_RECT)
+	shot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	picture.add_child(shot)
 	var flash := ColorRect.new()
 	flash.color = Color.WHITE
 	flash.set_anchors_preset(Control.PRESET_FULL_RECT)
