@@ -449,18 +449,16 @@ func _show_title(pick := "") -> void:
 
 ## How many thieves, for the story or the generative: a bubble out of the
 ## mode's card on the title, over the title as it is (Hud.pop_bubble), one
-## to four, starting on the gang last played. The story's show how far each
-## gang has got (Story.unlocked). Picking goes straight on (_players_picked);
-## Escape, B or a click off it closes it, back to the card.
+## to four, each a sticker of that many ninja heads in their colours
+## (assets/ui/ninjas_N.png, tools/ninja_stickers.py) and just "1P"… under
+## it, starting on the gang last played. Picking goes straight on
+## (_players_picked); Escape, B or a click off it closes it, back to the card.
 func _pick_players(which: String) -> void:
 	phase = "pick"
 	var choices: Array = []
 	for n in range(1, 5):
-		var c := {"title": Text.t("MENU_PLAYERS_%d" % n), "stage": MenuStage.make("players:%d" % n),
-			"colour": _thief_colours()[n - 1], "call": _players_picked.bind(which, n)}
-		if which == "story":
-			c.text = Text.t("STORY_REACHED") % [Story.museum_of(Story.unlocked(n)) + 1, Story.room_of(Story.unlocked(n))]
-		choices.append(c)
+		choices.append({"title": "%dP" % n, "icon": load("res://assets/ui/ninjas_%d.png" % n),
+			"colour": _thief_colours()[n - 1], "call": _players_picked.bind(which, n)})
 	hud.pop_bubble(which, Text.t("MENU_HOW_MANY"), choices, players - 1, func() -> void: phase = "title")
 
 

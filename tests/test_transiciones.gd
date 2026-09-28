@@ -77,6 +77,20 @@ func _init() -> void:
 	await press(KEY_A)
 	await frames()
 	check(hud.bubble_focus() == m.players - 1, "... y A y D también (el jugador de la izquierda)")
+	# Stickers, not 3D: the one with the focus in colour, the rest dark.
+	await create_timer(Hud.SWAP_S + 0.1).timeout
+	var flat := true
+	var lit_ok := true
+	for i in hud._bubble_buttons.size():
+		var b: Button = hud._bubble_buttons[i]
+		if not b.find_children("*", "SubViewport", true, false).is_empty():
+			flat = false
+		var icons := b.find_children("*", "TextureRect", true, false)
+		var lit: float = (icons[0] as TextureRect).material.get("shader_parameter/lit") if icons.size() > 0 else -1.0
+		if lit != (1.0 if i == hud.bubble_focus() else 0.0):
+			lit_ok = false
+	check(flat, "... pegatinas 2D, sin escenas 3D")
+	check(lit_ok, "... la elegida encendida, las demás apagadas")
 	await press(KEY_ESCAPE)
 	await frames(2)
 	check(m.phase == "title" and not hud.bubble_open(), "atrás cierra el bocadillo, en el título")

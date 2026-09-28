@@ -32,7 +32,7 @@ window.PANTALLAS = [
     children: [
       {
         id: "historia", title: "MENU_HOW_MANY", fn: "_pick_players", phase: "pick",
-        text: "No es una pantalla: un bocadillo que sale de la tarjeta de la historia, sobre el título tal cual (sin apagarlo). De 1 a 4 ladrones, con el foco en la banda de la última vez; cada banda guarda su propio progreso y el bocadillo dice hasta dónde ha llegado. Flechas, cruceta o stick (y A/D) para elegir, A, E o Enter (o 1–4) para seguir; B, Esc o un clic fuera lo cierran, con el foco otra vez en la tarjeta.",
+        text: "No es una pantalla: un bocadillo que sale de la tarjeta de la historia, sobre el título tal cual (sin apagarlo). De 1 a 4 ladrones: cada opción, una pegatina plana con tantas cabezas de ninja, cada una del color de su ladrón, y debajo solo «1P»…«4P»; la elegida a todo color y brillante, las demás apagadas, casi siluetas. El foco empieza en la banda de la última vez; cada banda guarda su propio progreso. Flechas, cruceta o stick (y A/D) para elegir, A, E o Enter (o 1–4) para seguir; B, Esc o un clic fuera lo cierran, con el foco otra vez en la tarjeta.",
         shots: ["menu_titulo_ladrones"],
         options: [
           { key: "MENU_PLAYERS_1", text: "Directo a la ciudad.", to: "ciudad" },

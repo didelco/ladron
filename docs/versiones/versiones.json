@@ -129,6 +129,36 @@
    ]
   },
   {
+   "asunto": "menus",
+   "fecha": "2026-09-28T18:46",
+   "commit": "14f32aa",
+   "titulo": "Cuántos ladrones: muñecos 3D bajo un foco",
+   "porque": "Antes de cambiar los muñecos 3D del bocadillo por pegatinas 2D",
+   "cambio": "Cada opción, sus ladrones en 3D sin fondo y su título; la elegida más grande, animada y bajo un foco de luz cálida (haz y charco) que se desliza; las demás en penumbra",
+   "file": "versiones/menus/2026-09-28-cuantos-ladrones-munecos-3d-bajo-un-foco.webp",
+   "from": "/tmp/sel/before.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ]
+  },
+  {
+   "asunto": "menus",
+   "fecha": "2026-09-28T19:04",
+   "commit": "14f32aa",
+   "titulo": "Cuántos ladrones: pegatinas de cabezas ninja",
+   "porque": "Fuera el 3D y el foco del bocadillo: iconos planos",
+   "cambio": "Cada opción, una pegatina plana 2D con 1 a 4 cabezas de ninja del color de cada ladrón (contorno blanco y sombra plana) y debajo solo 1P…4P; la elegida a todo color y brillante, las demás muy oscuras, casi siluetas; sin muñecos 3D, sin foco de luz y sin la línea de hasta dónde ha llegado cada banda",
+   "file": "versiones/menus/2026-09-28-cuantos-ladrones-pegatinas-de-cabezas-ni.webp",
+   "from": "docs/capturas/menu_titulo_ladrones.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ]
+  },
+  {
    "asunto": "fondo-menus",
    "fecha": "2026-09-27T10:02",
    "commit": "3888cd5",

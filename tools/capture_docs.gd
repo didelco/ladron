@@ -178,7 +178,7 @@ func _shots() -> void:
 	main.players = 2
 	main._pick_players("story")
 	await _wait(1.5)
-	await _shot("menu_titulo_ladrones", "menus", "Cuántos ladrones", "Un bocadillo sale de la tarjeta de la historia o del generativo, sin apagar el título: de 1 a 4 ladrones (en la historia, hasta dónde ha llegado cada banda). Elegir sigue adelante; atrás lo cierra.")
+	await _shot("menu_titulo_ladrones", "menus", "Cuántos ladrones", "Un bocadillo sale de la tarjeta de la historia o del generativo, sin apagar el título: de 1 a 4 ladrones, cada uno una pegatina de cabezas de ninja con solo «1P»…«4P» debajo; la elegida a color, las demás apagadas. Elegir sigue adelante; atrás lo cierra.")
 	main.hud.close_bubble()
 	main.players = 1
 	main.story_pick = 1

@@ -1264,13 +1264,24 @@ var _bubble_tail: Control
 var _bubble_anchor: Control
 var _bubble_buttons: Array[Button] = []
 var _bubble_closed: Callable
-## The spotlight on the choice with the focus: a warm pool at its feet and a
-## faint beam over it, sliding from one choice to the next (_spot_on).
-var _bubble_spot: Control
-var _spot_target: Button
-## A choice in the bubble: how wide, and how tall its little stage.
+## A choice in the bubble: how wide, how big its sticker, and how bright the
+## title of one without the focus.
 const CHOICE_W := 124.0
-const DIM := 0.5
+const STICKER := Vector2(120, 80)
+const DIM := 0.35
+## A choice's sticker: in full colour and a touch brighter with the focus
+## (lit 1), nearly a dark silhouette without it (lit 0), grey with a hint of
+## the bubble's purple.
+const STICKER_SHADER := """
+shader_type canvas_item;
+uniform float lit = 0.0;
+void fragment() {
+	float grey = dot(COLOR.rgb, vec3(0.299, 0.587, 0.114));
+	vec3 off = vec3(grey) * vec3(0.2, 0.18, 0.26);
+	vec3 on = min(COLOR.rgb * 1.12, vec3(1.0));
+	COLOR = vec4(mix(off, on, lit), COLOR.a);
+}
+"""
 ## the tail's size, and the least room kept between the bubble and the edge
 const TAIL := Vector2(26, 14)
 const BUBBLE_EDGE := 12.0
@@ -1280,7 +1291,7 @@ const BUBBLE_EDGE := 12.0
 ## (the card with that id, see "cards"), like a speech bubble: the menu stays
 ## as it is, neither dimmed nor covered beyond the bubble, and the card stays
 ## lit while it is up. choices are small cards, left to right:
-##   {"title", "stage": MenuStage, "colour", "call", "text"?}
+##   {"title", "icon": Texture2D, "colour", "call"}
 ## focus: the one to start on. The arrows, the stick or the cross move along
 ## it and A, Enter or a click picks; Escape or B (the game's own
 ## _unhandled_input, through close_bubble) or a click anywhere else closes
@@ -1347,10 +1358,6 @@ func pop_bubble(anchor_id: String, heading: String, choices: Array, focus: int, 
 		b.focus_next = right
 		b.focus_neighbor_top = b.get_path_to(b)
 		b.focus_neighbor_bottom = b.get_path_to(b)
-	_bubble_spot = _spotlight()
-	root.add_child(_bubble_spot)
-	for b in _bubble_buttons:
-		b.focus_entered.connect(_spot_on.bind(b, true))
 	_bubble_tail = Control.new()
 	_bubble_tail.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_bubble_tail.size = TAIL + Vector2(0, 3)
@@ -1360,7 +1367,7 @@ func pop_bubble(anchor_id: String, heading: String, choices: Array, focus: int, 
 	_bubble_open(root, _bubble_buttons[clampi(focus, 0, n - 1)] if n > 0 else null)
 
 
-## The bubble in: once its little stages have drawn (SWAP_WAIT_FRAMES) and
+## The bubble in: once its choices have drawn (SWAP_WAIT_FRAMES) and
 ## the menu under it has taken its own focus, the focus into it and a quick
 ## fade and grow out of the card.
 func _bubble_open(root: Control, first: Button) -> void:
@@ -1374,8 +1381,6 @@ func _bubble_open(root: Control, first: Button) -> void:
 		first.grab_focus()
 		_quiet = false
 	_place_bubble()
-	if first:
-		_spot_on(first, false)
 	var up: bool = _bubble_tail.get_meta("up", false)
 	_bubble_box.pivot_offset = Vector2(_bubble_tail.position.x + TAIL.x / 2 - _bubble_box.position.x, _bubble_box.size.y if up else 0.0)
 	_bubble_box.scale = Vector2.ONE * 0.92
@@ -1384,129 +1389,48 @@ func _bubble_open(root: Control, first: Button) -> void:
 	tw.tween_property(_bubble_box, "scale", Vector2.ONE, SWAP_S)
 
 
-## The spotlight: a warm pool of light on the floor and a faint beam down to
-## it, both glowing over what is under them (added, not painted).
-func _spotlight() -> Control:
-	var spot := Control.new()
-	spot.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	spot.size = Vector2(CHOICE_W + 30, _choice_picture().y + 10)
-	var add := CanvasItemMaterial.new()
-	add.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	# The beam: brightest at the pool, fading up and to its sides.
-	var beam_fade := Gradient.new()
-	beam_fade.set_color(0, Color(GLOW, 0.26))
-	beam_fade.set_color(1, Color(GLOW, 0.0))
-	var beam_tex := GradientTexture2D.new()
-	beam_tex.gradient = beam_fade
-	beam_tex.fill = GradientTexture2D.FILL_RADIAL
-	# Round its foot (the texture's bottom middle), out to its sides: a half
-	# oval, gone by the sides and the top of what shows.
-	beam_tex.fill_from = Vector2(0.5, 1.0)
-	beam_tex.fill_to = Vector2(1.0, 1.0)
-	var beam := TextureRect.new()
-	beam.texture = beam_tex
-	beam.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	beam.stretch_mode = TextureRect.STRETCH_SCALE
-	beam.material = add
-	beam.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var beam_h := spot.size.y - 18
-	beam.size = Vector2(CHOICE_W * 0.8, beam_h * 2.0)
-	beam.position = Vector2((spot.size.x - beam.size.x) * 0.5, beam_h - beam.size.y)
-	spot.add_child(beam)
-	# The pool on the floor, round and soft.
-	var pool_fade := Gradient.new()
-	pool_fade.set_color(0, Color(GLOW, 0.75))
-	pool_fade.set_color(1, Color(GLOW, 0.0))
-	var pool_tex := GradientTexture2D.new()
-	pool_tex.gradient = pool_fade
-	pool_tex.fill = GradientTexture2D.FILL_RADIAL
-	pool_tex.fill_from = Vector2(0.5, 0.5)
-	pool_tex.fill_to = Vector2(1.0, 0.5)
-	var pool := TextureRect.new()
-	pool.texture = pool_tex
-	pool.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	pool.stretch_mode = TextureRect.STRETCH_SCALE
-	pool.material = add
-	pool.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	pool.size = Vector2(spot.size.x, 40)
-	pool.position = Vector2(0, spot.size.y - 40)
-	spot.add_child(pool)
-	return spot
-
-
-## The spotlight onto choice b: it slides there (_follow_spot), or is there
-## at once.
-func _spot_on(b: Button, slide: bool) -> void:
-	_spot_target = b
-	if not slide:
-		_follow_spot(0.0, true)
-
-
-## The spotlight after its choice, every frame (the bubble moves with its
-## card): a quick ease there, or straight there.
-func _follow_spot(dt: float, now := false) -> void:
-	if not is_instance_valid(_bubble_spot) or not is_instance_valid(_bubble) or not is_instance_valid(_spot_target):
-		return
-	var at := _spot_target.global_position - _bubble.global_position + Vector2((_spot_target.size.x - _bubble_spot.size.x) * 0.5, 4)
-	_bubble_spot.position = at if now else _bubble_spot.position.lerp(at, 1.0 - exp(-dt * 14.0))
-
-
-## How big a choice's little stage is in the bubble.
-func _choice_picture() -> Vector2:
-	return Vector2(CHOICE_W - 16, (CHOICE_W - 16) * MenuStage.SIZE.y / MenuStage.SIZE.x)
-
-
-## One choice in the bubble: no frame of its own, just its 3D stage with no
-## backdrop, its title in its colour and maybe a line under it. The one with
-## the focus is in the spotlight (_spot_on): it grows, its stage plays and
-## its title lights up; the rest stand in the dark.
+## One choice in the bubble: no frame of its own, just its sticker (a 2D
+## picture, see tools/ninja_stickers.py) and its short title under it, in
+## its colour. The one with the focus lights up, in colour, and pops a little
+## bigger (_lift); the rest stand dark, nearly silhouettes. Either way it
+## eases there in SWAP_S (_light_choice).
 func _bubble_choice(c: Dictionary) -> Button:
-	const WIDTH := CHOICE_W
 	var b := Button.new()
 	b.focus_mode = Control.FOCUS_ALL
 	var colour: Color = c.get("colour", C.safe)
 	for state in ["normal", "hover", "pressed", "focus"]:
 		b.add_theme_stylebox_override(state, StyleBoxEmpty.new())
-	b.modulate = Color(DIM, DIM, DIM)
-	b.focus_entered.connect(func() -> void: b.modulate = Color.WHITE)
-	b.focus_exited.connect(func() -> void: b.modulate = Color(DIM, DIM, DIM))
 	var box := VBoxContainer.new()
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_theme_constant_override("separation", 6)
+	box.add_theme_constant_override("separation", 4)
 	box.set_anchors_preset(Control.PRESET_FULL_RECT)
-	box.offset_left = 8
-	box.offset_right = -8
-	box.offset_top = 8
-	box.offset_bottom = -8
+	box.offset_left = 2
+	box.offset_right = -2
+	box.offset_top = 4
+	box.offset_bottom = -6
 	b.add_child(box)
-	var picture := Vector2(WIDTH - 16, (WIDTH - 16) * MenuStage.SIZE.y / MenuStage.SIZE.x)
-	var height := 16.0 + picture.y
-	if c.has("stage"):
-		var stage: MenuStage = c.stage
-		stage.see_through()
-		b.add_child(stage)
-		var r := TextureRect.new()
-		r.texture = stage.get_texture()
-		r.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		r.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
-		r.custom_minimum_size = picture
-		box.add_child(r)
-		b.focus_entered.connect(func() -> void: stage.active = true)
-		b.focus_exited.connect(func() -> void: stage.active = false)
-	var t := _label(9, colour.lerp(CREAM, 0.35), box, true)
+	var icon := TextureRect.new()
+	icon.texture = c.icon
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	icon.custom_minimum_size = STICKER
+	var shader := Shader.new()
+	shader.code = STICKER_SHADER
+	var m := ShaderMaterial.new()
+	m.shader = shader
+	m.set_shader_parameter("lit", 0.0)
+	icon.material = m
+	box.add_child(icon)
+	var t := _label(12, colour.lerp(CREAM, 0.2), box, true)
 	t.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
 	t.text = c.title
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	height += 20
-	if c.has("text"):
-		var l := _label(11, C.dim, box)
-		l.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
-		l.text = c.text
-		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		height += 20
-	b.custom_minimum_size = Vector2(WIDTH, height)
+	t.modulate = Color(DIM, DIM, DIM)
+	b.custom_minimum_size = Vector2(CHOICE_W, STICKER.y + 34)
+	b.focus_entered.connect(_light_choice.bind(b, icon, t, true))
+	b.focus_exited.connect(_light_choice.bind(b, icon, t, false))
 	_lift(b, 1.08)
 	var call: Callable = c.call
 	b.pressed.connect(func() -> void:
@@ -1514,6 +1438,20 @@ func _bubble_choice(c: Dictionary) -> Button:
 		close_bubble()
 		call.call())
 	return b
+
+
+## A choice in the bubble lit up (on) or dark: its sticker (STICKER_SHADER)
+## and its title ease there together, from wherever they are.
+func _light_choice(b: Button, icon: TextureRect, title: Label, on: bool) -> void:
+	if b.has_meta("light"):
+		var old: Tween = b.get_meta("light")
+		old.kill()
+	var m := icon.material as ShaderMaterial
+	var from: float = m.get_shader_parameter("lit")
+	var tw := b.create_tween().set_parallel().set_trans(TRANS).set_ease(EASE)
+	tw.tween_method(func(v: float) -> void: m.set_shader_parameter("lit", v), from, 1.0 if on else 0.0, SWAP_S)
+	tw.tween_property(title, "modulate", Color.WHITE if on else Color(DIM, DIM, DIM), SWAP_S)
+	b.set_meta("light", tw)
 
 
 ## The bubble away, if one is up: it fades out (SWAP_S), deaf to every key
@@ -2535,7 +2473,6 @@ func _process(dt: float) -> void:
 	# The bubble follows its card as it springs and moves.
 	if _bubble:
 		_place_bubble()
-		_follow_spot(dt)
 	for i in _titles.size():
 		var t := _titles[i]
 		if is_instance_valid(t):
