@@ -66,8 +66,15 @@
 		"file": "capturas/menu_generativo.webp",
 		"id": "menu_generativo",
 		"section": "menus",
-		"text": "Dificultad y tamaño del museo, y ¡a robar! con los ladrones elegidos en el título.",
+		"text": "Dos tarjetas, la dificultad y el tamaño del museo, cada una con la que hay; debajo, EMPEZAR (con el foco) y VOLVER.",
 		"title": "Modo generativo"
+	},
+	{
+		"file": "capturas/menu_generativo_dificultad.webp",
+		"id": "menu_generativo_dificultad",
+		"section": "menus",
+		"text": "Pulsar una tarjeta saca debajo un bocadillo con sus tres, cada una en su diorama quieto, como el de cuántos ladrones del título; la que hay, encendida.",
+		"title": "Generativo: la dificultad"
 	},
 	{
 		"file": "capturas/menu_retos.webp",

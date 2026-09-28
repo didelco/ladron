@@ -183,6 +183,22 @@ window.VERSIONES = {
    "bytes": 31136
   },
   {
+   "asunto": "menus",
+   "fecha": "2026-09-28T19:36",
+   "commit": "1ae2af0",
+   "titulo": "Modo generativo con dos tarjetas y bocadillos",
+   "porque": "Los ajustes del generativo rehechos: el mismo estilo que el resto de menús",
+   "cambio": "Dos tarjetas grandes (dificultad y tamaño) con el borde de siempre; al pulsar una, un bocadillo con sus tres en dioramas quietos; debajo, solo EMPEZAR y VOLVER, sin ¡A ROBAR! ni ninjas saltando",
+   "file": "versiones/menus/2026-09-28-modo-generativo-con-dos-tarjetas-y-bocad.webp",
+   "from": "docs/capturas/menu_generativo.webp, docs/capturas/menu_generativo_dificultad.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    640
+   ],
+   "bytes": 24062
+  },
+  {
    "asunto": "fondo-menus",
    "fecha": "2026-09-27T10:02",
    "commit": "3888cd5",
@@ -615,5 +631,5 @@ window.VERSIONES = {
    "bytes": 68042
   }
  ],
- "bytes": 2404070
+ "bytes": 2428132
 };

@@ -4830,7 +4830,7 @@ window.JUEGO = {
    "file": "capturas/menu_titulo_ladrones.webp",
    "id": "menu_titulo_ladrones",
    "section": "menus",
-   "text": "Un bocadillo sale de la tarjeta de la historia o del generativo, sin apagar el título: de 1 a 4 ladrones (en la historia, hasta dónde ha llegado cada banda). Elegir sigue adelante; atrás lo cierra.",
+   "text": "Un bocadillo sale de la tarjeta de la historia o del generativo, sin apagar el título: de 1 a 4 ladrones, cada uno una pegatina de cabezas de ninja con solo «1P»…«4P» debajo; la elegida a color, las demás apagadas. Elegir sigue adelante; atrás lo cierra.",
    "title": "Cuántos ladrones"
   },
   {
@@ -4879,8 +4879,15 @@ window.JUEGO = {
    "file": "capturas/menu_generativo.webp",
    "id": "menu_generativo",
    "section": "menus",
-   "text": "Dificultad y tamaño del museo, y ¡a robar! con los ladrones elegidos en el título.",
+   "text": "Dos tarjetas, la dificultad y el tamaño del museo, cada una con la que hay; debajo, EMPEZAR (con el foco) y VOLVER.",
    "title": "Modo generativo"
+  },
+  {
+   "file": "capturas/menu_generativo_dificultad.webp",
+   "id": "menu_generativo_dificultad",
+   "section": "menus",
+   "text": "Pulsar una tarjeta saca debajo un bocadillo con sus tres, cada una en su diorama quieto, como el de cuántos ladrones del título; la que hay, encendida.",
+   "title": "Generativo: la dificultad"
   },
   {
    "file": "capturas/menu_retos.webp",
@@ -7750,8 +7757,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "28-09-2026 17:35",
-  "commit": "4ae6aea",
-  "rama": "worktree-agent-a41e1201fe03c63bc"
+  "fecha": "28-09-2026 19:35",
+  "commit": "1ae2af0",
+  "rama": "generativo-ajustes"
  }
 };
