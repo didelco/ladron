@@ -616,6 +616,22 @@ window.VERSIONES = {
   },
   {
    "asunto": "museo",
+   "fecha": "2026-09-28T19:47",
+   "commit": "c2535ab",
+   "titulo": "El Castillo de los Inventos, un salón con cúpula",
+   "porque": "Antes de rehacer el museo 4 como palacio renacentista con torres de castillo",
+   "cambio": "El salón de siempre en rojo: columnas, frontón, cúpula; cada sala una ventana de la fachada, las cerradas a oscuras con candado",
+   "file": "versiones/museo/2026-09-28-el-castillo-de-los-inventos-un-salon-con.webp",
+   "from": "/tmp/mm_before/llegada.png",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 44400
+  },
+  {
+   "asunto": "museo",
    "fecha": "2026-09-28T19:48",
    "commit": "0f0e136",
    "titulo": "El Templo de las Momias: una villa palladiana",
@@ -695,5 +711,5 @@ window.VERSIONES = {
    "bytes": 68042
   }
  ],
- "bytes": 2655048
+ "bytes": 2699448
 };
