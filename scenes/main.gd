@@ -5,9 +5,10 @@ extends Node3D
 ## The generative: a new museum every time, at the difficulty and size you
 ## pick. Either with one thief or two; with two, the job takes both (Heist).
 ##
-## Screens: title (pick the mode) → the mode's menu (the story: players, the
-## town's map, a museum and its night; the generative: difficulty, size and
-## players) → [prologue] → loot (the piece and its story) → mission
+## Screens: title (pick the mode; for the story and the generative, how many
+## thieves in a bubble out of its card) → the mode's menu (the story: the
+## town's map, a museum and its night; the generative: difficulty and size)
+## → [prologue] → loot (the piece and its story) → mission
 ## (the plan, a map) → countdown → playing ⇄ paused → caught, or escaped with the piece (next level). No
 ## clock: a round lasts as long as it takes. The loop is the web version's Game.tsx tick: thieves and their
 ## noise, the job and its alarm, guards, the yell, the warning, keeping apart,
@@ -262,7 +263,7 @@ func _ready() -> void:
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--menu="):
 			match arg.substr(7):
-				"story": _show_story_menu()
+				"story": _show_title("story")
 				# The way in (Tour): the town, or inside the museum of --pick=N
 				# with that room picked.
 				# (--opened=M: as just after the big job before museum M).
@@ -420,15 +421,19 @@ func _show_cover() -> void:
 	add_child(cover)
 
 
-func _show_title() -> void:
+## The modes as cards. The story and the generative ask how many thieves
+## first, in a bubble out of their card (_pick_players); pick: that bubble
+## up again, coming back to it from what it led to.
+func _show_title(pick := "") -> void:
 	hud.backdrop(Hud.SPOTS.title)
 	phase = "title"
 	testing = null
 	_drop_preview()
+	var on := pick if pick != "" else "story"
 	hud.show_menu([
 		{"cards": [
-			{"title": Text.t("MENU_GENERATIVE"), "text": Text.t("MENU_GENERATIVE_TEXT"), "stage": MenuStage.make("generative"), "call": _show_generative_menu, "colour": Hud.C.gold},
-			{"title": Text.t("MENU_STORY"), "text": Text.t("MENU_STORY_TEXT"), "stage": MenuStage.make("story"), "call": _show_story_menu, "colour": Hud.C.safe, "focus": true},
+			{"title": Text.t("MENU_GENERATIVE"), "text": Text.t("MENU_GENERATIVE_TEXT"), "stage": MenuStage.make("generative"), "call": _pick_players.bind("generative"), "colour": Hud.C.gold, "id": "generative", "focus": on == "generative"},
+			{"title": Text.t("MENU_STORY"), "text": Text.t("MENU_STORY_TEXT"), "stage": MenuStage.make("story"), "call": _pick_players.bind("story"), "colour": Hud.C.safe, "id": "story", "focus": on == "story"},
 			{"title": Text.t("MENU_CHALLENGE"), "text": Text.t("MENU_CHALLENGE_TEXT"), "stage": MenuStage.make("museum:large"), "call": _show_challenge_menu, "colour": Hud.C.green},
 		], "width": 270, "arrows": true},
 		{"gap": 40},
@@ -438,6 +443,36 @@ func _show_title() -> void:
 		], "row": true, "small": true, "width": 260},
 	], "title")
 	hud.show_version()
+	if pick != "":
+		_pick_players(pick)
+
+
+## How many thieves, for the story or the generative: a bubble out of the
+## mode's card on the title, over the title as it is (Hud.pop_bubble), one
+## to four, starting on the gang last played. The story's show how far each
+## gang has got (Story.unlocked). Picking goes straight on (_players_picked);
+## Escape, B or a click off it closes it, back to the card.
+func _pick_players(which: String) -> void:
+	phase = "pick"
+	var choices: Array = []
+	for n in range(1, 5):
+		var c := {"title": Text.t("MENU_PLAYERS_%d" % n), "stage": MenuStage.make("players:%d" % n),
+			"colour": _thief_colours()[n - 1], "call": _players_picked.bind(which, n)}
+		if which == "story":
+			c.text = Text.t("STORY_REACHED") % [Story.museum_of(Story.unlocked(n)) + 1, Story.room_of(Story.unlocked(n))]
+		choices.append(c)
+	hud.pop_bubble(which, Text.t("MENU_HOW_MANY"), choices, players - 1, func() -> void: phase = "title")
+
+
+## n thieves picked in the bubble: the story's gang says which controls are
+## whose (_show_join) and goes on to the town; the generative on to its menu.
+## Kept in players either way, for the bubble to open on it coming back.
+func _players_picked(which: String, n: int) -> void:
+	players = n
+	if which == "story":
+		_story_players(n)
+	else:
+		_show_generative_menu()
 
 
 # --- Challenges ------------------------------------------------------------------------
@@ -737,25 +772,9 @@ func _quit() -> void:
 	get_tree().quit()
 
 
-## The story, first: how many thieves. Each gang has its own way through
-## the nights (Story.unlocked), shown on its card. A gang then says which
-## controls are whose (_show_join), and on to the town (_show_city).
-func _show_story_menu() -> void:
-	hud.backdrop(Hud.SPOTS.story)
-	phase = "story_players"
-	var cards: Array = []
-	for n in range(1, 5):
-		cards.append({"title": Text.t("MENU_PLAYERS_%d" % n),
-			"text": Text.t("MENU_PLAYERS_%d_TEXT" % n) + "\n" + Text.t("STORY_REACHED") % [Story.museum_of(Story.unlocked(n)) + 1, Story.room_of(Story.unlocked(n))],
-			"stage": MenuStage.make("players:%d" % n), "call": _story_players.bind(n), "colour": _thief_colours()[n - 1], "focus": n == players})
-	hud.show_menu([
-		{"title": Text.t("MENU_STORY_TITLE"), "size": 44},
-		{"text": Text.t("MENU_STORY_TAGLINE"), "colour": Hud.C.gold, "size": 17},
-		{"cards": cards, "width": 150},
-		{"buttons": [{"text": Text.t("MENU_BACK"), "call": _show_title, "colour": Hud.C.dim}], "row": true},
-	])
-
-
+## The story with n thieves (picked in the title's bubble): a gang first
+## says which controls are whose (_show_join); then on to the town
+## (_story_gang). Each gang has its own way through the nights (Story.unlocked).
 func _story_players(n: int) -> void:
 	if n >= 2:
 		_show_join("story", n)
@@ -810,7 +829,7 @@ func _open_tour() -> Tour:
 	add_child(tour)
 	tour.left.connect(func() -> void:
 		_close_tour()
-		_show_story_menu())
+		_show_title("story"))
 	tour.room_chosen.connect(_tour_room)
 	tour.go.connect(_tour_go)
 	tour.told.connect(_remember_told)
@@ -896,14 +915,15 @@ func _tour_go(_n: int) -> void:
 
 
 ## The generative mode: difficulty and museum size as cards, then play with
-## one thief, two or three.
+## the thieves picked in the title's bubble (_pick_players), the one to
+## start on. Back goes to that bubble, to change how many.
 func _show_generative_menu() -> void:
 	hud.backdrop(Hud.SPOTS.generative)
-	phase = "menu"
+	phase = "generative"
 	var levels: Array = []
 	for k in ["easy", "medium", "hard"]:
 		levels.append({"title": Text.t(DIFFICULTY_NAMES[k]), "stage": MenuStage.make("guards:" + k), "call": _pick_difficulty.bind(k),
-			"colour": {"easy": Hud.C.green, "medium": Hud.C.gold, "hard": Hud.C.alert}[k], "selected": Sim.difficulty == k, "focus": Sim.difficulty == k, "title_size": 12})
+			"colour": {"easy": Hud.C.green, "medium": Hud.C.gold, "hard": Hud.C.alert}[k], "selected": Sim.difficulty == k, "title_size": 12})
 	var sizes: Array = []
 	for k in ["small", "medium", "large"]:
 		sizes.append({"title": Text.t(SIZE_NAMES[k]), "stage": MenuStage.make("museum:" + k), "call": _pick_size.bind(k),
@@ -913,12 +933,10 @@ func _show_generative_menu() -> void:
 		{"cards": levels, "width": 140},
 		{"cards": sizes, "width": 140},
 		{"cards": [
-			{"title": Text.t("MENU_PLAY_1"), "stage": MenuStage.make("players:1"), "call": _start.bind("generative", 1), "colour": COLOURS.thief, "title_size": 12},
-			{"title": Text.t("MENU_PLAY_2"), "stage": MenuStage.make("players:2"), "call": _start.bind("generative", 2), "colour": COLOURS.thief2, "title_size": 12},
-			{"title": Text.t("MENU_PLAY_3"), "stage": MenuStage.make("players:3"), "call": _start.bind("generative", 3), "colour": COLOURS.thief3, "title_size": 12},
-			{"title": Text.t("MENU_PLAY_4"), "stage": MenuStage.make("players:4"), "call": _start.bind("generative", 4), "colour": COLOURS.thief4, "title_size": 12},
+			{"title": Text.t("MENU_GO"), "text": Text.t("MENU_PLAYERS_%d" % players), "stage": MenuStage.make("players:%d" % players),
+				"call": _start.bind("generative", players), "colour": _thief_colours()[players - 1], "title_size": 12, "focus": true},
 		], "width": 140},
-		{"buttons": [{"text": Text.t("MENU_BACK"), "call": _show_title, "colour": Hud.C.dim}], "row": true},
+		{"buttons": [{"text": Text.t("MENU_BACK"), "call": _show_title.bind("generative"), "colour": Hud.C.dim}], "row": true},
 	], "generative")
 
 
@@ -1050,7 +1068,7 @@ func _unjoin() -> void:
 	sfx.ui("back")
 	if joining.is_empty():
 		if join_for == "story":
-			_show_story_menu()
+			_show_title("story")
 		elif join_for == "challenge":
 			_show_challenge_map(challenge_map)
 		else:
@@ -1089,7 +1107,7 @@ func _prologue_back() -> void:
 	if prologue_page > 0:
 		_show_prologue(prologue_page - 1)
 	else:
-		_show_story_menu()
+		_show_title("story")
 
 
 ## ● ○ ○ : where you are in a run of pages.
@@ -1784,7 +1802,7 @@ func _again() -> void:
 
 
 ## Where Escape (B on a pad) goes back or on, and so sounds.
-const BACK_PHASES := ["menu", "story_players", "challenge", "input", "prologue", "ending", "brief", "paused", "settings", "assets", "caught", "escaped"]
+const BACK_PHASES := ["menu", "pick", "generative", "challenge", "prologue", "ending", "brief", "paused", "settings", "assets", "caught", "escaped"]
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -1827,18 +1845,24 @@ func _unhandled_input(event: InputEvent) -> void:
 		"menu":
 			if key == KEY_ESCAPE:
 				_show_title()
-		"story_players":
+		"pick":
+			# The bubble of how many thieves: its own keys for the left-hand
+			# player (A and D along it, E to pick) and 1 to 4 straight to one;
+			# the arrows, Enter and A move and pick by themselves.
 			if key == KEY_ESCAPE:
-				_show_title()
+				hud.close_bubble(true)
+			elif key == KEY_A or key == KEY_D:
+				hud.bubble_move(-1 if key == KEY_A else 1)
+			elif key == KEY_E:
+				hud.bubble_pick(hud.bubble_focus())
+			elif key >= KEY_1 and key <= KEY_4:
+				hud.bubble_pick(key - KEY_1)
+		"generative":
+			if key == KEY_ESCAPE:
+				_show_title("generative")
 		"challenge":
 			if key == KEY_ESCAPE:
 				_show_challenge_menu()
-		"input":
-			if key == KEY_ESCAPE:
-				if settings_from == "story":
-					_show_story_menu()
-				else:
-					_show_generative_menu()
 		"prologue" when key == KEY_TAB:
 			_show_city()
 		"brief" when key == KEY_TAB:

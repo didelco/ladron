@@ -103,6 +103,38 @@ window.VERSIONES = {
    "bytes": 31874
   },
   {
+   "asunto": "menus",
+   "fecha": "2026-09-28T17:14",
+   "commit": "4ae6aea",
+   "titulo": "Cuántos ladrones, en una pantalla aparte",
+   "porque": "Antes del bocadillo de jugadores: elegir cuántos ladrones era una pantalla (historia) o una fila de tarjetas (generativo)",
+   "cambio": "La historia pasaba por su pantalla de 1 a 4 ladrones; el generativo tenía la fila de ▶ 1–4 LADRONES bajo la dificultad y el tamaño",
+   "file": "versiones/menus/2026-09-28-cuantos-ladrones-en-una-pantalla-aparte.webp",
+   "from": "docs/capturas/menu_titulo.webp, docs/capturas/menu_historia_jugadores.webp, docs/capturas/menu_generativo.webp",
+   "commit_msg": "La ciudad: calles sin rayas blancas (el shader de noche las funde con el asfalto) y pasos de cebra solo junto a las puertas de los museos y en uno de cada nueve cruces",
+   "size": [
+    1280,
+    427
+   ],
+   "bytes": 23700
+  },
+  {
+   "asunto": "menus",
+   "fecha": "2026-09-28T17:35",
+   "commit": "4ae6aea",
+   "titulo": "Cuántos ladrones, en un bocadillo",
+   "porque": "Quitar la pantalla intermedia de jugadores",
+   "cambio": "Al elegir historia o generativo sale un bocadillo de 1 a 4 ladrones de su tarjeta, sin apagar el título; la pantalla de jugadores de la historia desaparece y el generativo cambia su fila de 1–4 por una sola tarjeta de ¡A ROBAR!",
+   "file": "versiones/menus/2026-09-28-cuantos-ladrones-en-un-bocadillo.webp",
+   "from": "docs/capturas/menu_titulo_ladrones.webp, docs/capturas/menu_generativo.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    640
+   ],
+   "bytes": 29670
+  },
+  {
    "asunto": "fondo-menus",
    "fecha": "2026-09-27T10:02",
    "commit": "3888cd5",
@@ -471,5 +503,5 @@ window.VERSIONES = {
    "bytes": 68042
   }
  ],
- "bytes": 1959680
+ "bytes": 2013050
 };

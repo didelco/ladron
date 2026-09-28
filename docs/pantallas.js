@@ -23,23 +23,23 @@ window.PANTALLAS = [
     text: "La primera pantalla: el título y los tres modos de juego como tarjetas con su diorama.",
     shots: ["menu_titulo"],
     options: [
-      { key: "MENU_STORY", text: "Cinco museos, cinco robos en cada uno (el quinto, su gran golpe), con cuento.", to: "historia" },
-      { key: "MENU_GENERATIVE", text: "Un museo nuevo cada vez, con la dificultad y el tamaño que elijas.", to: "generativo" },
+      { key: "MENU_STORY", text: "Cinco museos, cinco robos en cada uno (el quinto, su gran golpe), con cuento. Antes, cuántos ladrones, en un bocadillo.", to: "historia" },
+      { key: "MENU_GENERATIVE", text: "Un museo nuevo cada vez, con la dificultad y el tamaño que elijas. Antes, cuántos ladrones, en un bocadillo.", to: "ladrones_generativo" },
       { key: "MENU_CHALLENGE", text: "Mapas hechos a mano (los de serie y los tuyos) y el editor.", to: "retos" },
       { key: "MENU_SETTINGS", to: "ajustes" },
       { key: "MENU_QUIT", text: "Cierra el juego." },
     ],
     children: [
       {
-        id: "historia", title: "MENU_STORY_TITLE", fn: "_show_story_menu", phase: "story_players",
-        text: "Cuántos ladrones. Cada banda (de 1, 2, 3 o 4) guarda su propio progreso.",
-        shots: ["menu_historia_jugadores"],
+        id: "historia", title: "MENU_HOW_MANY", fn: "_pick_players", phase: "pick",
+        text: "No es una pantalla: un bocadillo que sale de la tarjeta de la historia, sobre el título tal cual (sin apagarlo). De 1 a 4 ladrones, con el foco en la banda de la última vez; cada banda guarda su propio progreso y el bocadillo dice hasta dónde ha llegado. Flechas, cruceta o stick (y A/D) para elegir, A, E o Enter (o 1–4) para seguir; B, Esc o un clic fuera lo cierran, con el foco otra vez en la tarjeta.",
+        shots: ["menu_titulo_ladrones"],
         options: [
           { key: "MENU_PLAYERS_1", text: "Directo a la ciudad.", to: "ciudad" },
           { key: "MENU_PLAYERS_2", text: "Primero cada uno elige su mando.", to: "mandos" },
           { key: "MENU_PLAYERS_3", to: "mandos" },
           { key: "MENU_PLAYERS_4", to: "mandos" },
-          { key: "MENU_BACK", to: "titulo" },
+          { label: "B, Esc o clic fuera", text: "Cierra el bocadillo.", to: "titulo" },
         ],
         children: [
           {
@@ -101,8 +101,20 @@ window.PANTALLAS = [
         ],
       },
       {
-        id: "generativo", title: "MENU_GENERATIVE_TITLE", fn: "_show_generative_menu", phase: "menu",
-        text: "Tres filas de tarjetas: dificultad, tamaño del museo y cuántos ladrones. Dificultad y tamaño se guardan en los ajustes.",
+        id: "ladrones_generativo", title: "MENU_HOW_MANY", fn: "_pick_players", phase: "pick",
+        text: "El mismo bocadillo que en la historia, desde la tarjeta del generativo: de 1 a 4 ladrones, y a su menú.",
+        shots: ["menu_titulo_ladrones"],
+        options: [
+          { key: "MENU_PLAYERS_1", to: "generativo" },
+          { key: "MENU_PLAYERS_2", to: "generativo" },
+          { key: "MENU_PLAYERS_3", to: "generativo" },
+          { key: "MENU_PLAYERS_4", to: "generativo" },
+          { label: "B, Esc o clic fuera", text: "Cierra el bocadillo.", to: "titulo" },
+        ],
+      },
+      {
+        id: "generativo", title: "MENU_GENERATIVE_TITLE", fn: "_show_generative_menu", phase: "generative",
+        text: "Dos filas de tarjetas, dificultad y tamaño del museo (se guardan en los ajustes), y la de ¡A ROBAR! con los ladrones elegidos en el bocadillo, que empieza con el foco.",
         shots: ["menu_generativo"],
         options: [
           { key: "MENU_DIFFICULTY_EASY", text: "Guardias lentos y medio dormidos." },
@@ -111,11 +123,8 @@ window.PANTALLAS = [
           { key: "MENU_SIZE_SMALL" },
           { key: "MENU_SIZE_MEDIUM" },
           { key: "MENU_SIZE_LARGE" },
-          { key: "MENU_PLAY_1", to: "previa" },
-          { key: "MENU_PLAY_2", text: "Con 2 a 4, antes se eligen los mandos.", to: "mandos" },
-          { key: "MENU_PLAY_3", to: "mandos" },
-          { key: "MENU_PLAY_4", to: "mandos" },
-          { key: "MENU_BACK", to: "titulo" },
+          { key: "MENU_GO", text: "Con 1, a la previa; con 2 a 4, antes se eligen los mandos.", to: "previa" },
+          { key: "MENU_BACK", text: "Al bocadillo de cuántos ladrones, para cambiarlo.", to: "ladrones_generativo" },
         ],
       },
       {

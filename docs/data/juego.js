@@ -2189,6 +2189,202 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#5a3b36",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "TRUNK",
+   "note": "The plants made here (_plant_mesh)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#23594f",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "PINE_GREEN",
+   "note": "The plants made here (_plant_mesh)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#3a6a42",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "OAK_GREEN",
+   "note": "The plants made here (_plant_mesh)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#d9d2c4",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "BIRCH_BARK",
+   "note": "The plants made here (_plant_mesh)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#6f9a55",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "BIRCH_GREEN",
+   "note": "The plants made here (_plant_mesh)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#467a48",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "POPLAR_GREEN",
+   "note": "The plants made here (_plant_mesh)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#c26e36",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "AUTUMN_LEAVES",
+   "note": "The plants made here (_plant_mesh)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#335d3d",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "BUSH_GREEN",
+   "note": "The plants made here (_plant_mesh)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#e27cb2",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "BLOSSOM",
+   "note": "The plants made here (_plant_mesh)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2c5738",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "HEDGE_GREEN",
+   "note": "The plants made here (_plant_mesh)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#cbbfe0",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "MALL_WALL",
+   "note": "The mall: its walls, its roof, its sign; the cars parked before it."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#b3a6d4",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "MALL_WING",
+   "note": "The mall: its walls, its roof, its sign; the cars parked before it."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#6f6590",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "MALL_ROOF",
+   "note": "The mall: its walls, its roof, its sign; the cars parked before it."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ff5fa8",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "MALL_SIGN",
+   "note": "The mall: its walls, its roof, its sign; the cars parked before it."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#d94f5c",
+     "key": "0"
+    },
+    {
+     "hex": "#4f7fd9",
+     "key": "1"
+    },
+    {
+     "hex": "#e8c24f",
+     "key": "2"
+    },
+    {
+     "hex": "#e8e4f0",
+     "key": "3"
+    },
+    {
+     "hex": "#3a3550",
+     "key": "4"
+    },
+    {
+     "hex": "#5fbf8f",
+     "key": "5"
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "CARS",
+   "note": "The mall: its walls, its roof, its sign; the cars parked before it."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2b2f4a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "CAR_GLASS",
+   "note": "The mall: its walls, its roof, its sign; the cars parked before it."
+  },
+  {
+   "colours": [
+    {
      "hex": "#ffb8616b",
      "key": ""
     }
@@ -2305,6 +2501,17 @@ window.JUEGO = {
    "file": "scenes/town_builder.gd",
    "name": "ROOFS",
    "note": "Walls and roofs a little different house to house, picked by each building's own number."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#00000000",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "PLAIN",
+   "note": "A street tile without its white lines (NIGHT_SHADER: own.a)."
   }
  ],
  "historia": {
@@ -4620,11 +4827,11 @@ window.JUEGO = {
    "title": "Pantalla de título"
   },
   {
-   "file": "capturas/menu_historia_jugadores.webp",
-   "id": "menu_historia_jugadores",
+   "file": "capturas/menu_titulo_ladrones.webp",
+   "id": "menu_titulo_ladrones",
    "section": "menus",
-   "text": "Uno a cuatro, cada banda con su progreso.",
-   "title": "Historia: cuántos ladrones"
+   "text": "Un bocadillo sale de la tarjeta de la historia o del generativo, sin apagar el título: de 1 a 4 ladrones (en la historia, hasta dónde ha llegado cada banda). Elegir sigue adelante; atrás lo cierra.",
+   "title": "Cuántos ladrones"
   },
   {
    "file": "capturas/menu_historia_ciudad.webp",
@@ -4672,7 +4879,7 @@ window.JUEGO = {
    "file": "capturas/menu_generativo.webp",
    "id": "menu_generativo",
    "section": "menus",
-   "text": "Dificultad, tamaño del museo y número de ladrones.",
+   "text": "Dificultad y tamaño del museo, y ¡a robar! con los ladrones elegidos en el título.",
    "title": "Modo generativo"
   },
   {
@@ -7543,8 +7750,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "28-09-2026 11:52",
-  "commit": "d6daef1",
-  "rama": "ciudad-amarillo-seguridad"
+  "fecha": "28-09-2026 17:35",
+  "commit": "4ae6aea",
+  "rama": "worktree-agent-a41e1201fe03c63bc"
  }
 };

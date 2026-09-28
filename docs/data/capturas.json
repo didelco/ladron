@@ -14,11 +14,11 @@
 		"title": "Pantalla de título"
 	},
 	{
-		"file": "capturas/menu_historia_jugadores.webp",
-		"id": "menu_historia_jugadores",
+		"file": "capturas/menu_titulo_ladrones.webp",
+		"id": "menu_titulo_ladrones",
 		"section": "menus",
-		"text": "Uno a cuatro, cada banda con su progreso.",
-		"title": "Historia: cuántos ladrones"
+		"text": "Un bocadillo sale de la tarjeta de la historia o del generativo, sin apagar el título: de 1 a 4 ladrones (en la historia, hasta dónde ha llegado cada banda). Elegir sigue adelante; atrás lo cierra.",
+		"title": "Cuántos ladrones"
 	},
 	{
 		"file": "capturas/menu_historia_ciudad.webp",
@@ -66,7 +66,7 @@
 		"file": "capturas/menu_generativo.webp",
 		"id": "menu_generativo",
 		"section": "menus",
-		"text": "Dificultad, tamaño del museo y número de ladrones.",
+		"text": "Dificultad y tamaño del museo, y ¡a robar! con los ladrones elegidos en el título.",
 		"title": "Modo generativo"
 	},
 	{

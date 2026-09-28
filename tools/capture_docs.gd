@@ -175,9 +175,11 @@ func _shots() -> void:
 	main._show_title()
 	await _wait(1.5)
 	await _shot("menu_titulo", "menus", "Pantalla de título", "Los tres modos: historia, generativo y retos.")
-	main._show_story_menu()
+	main.players = 2
+	main._pick_players("story")
 	await _wait(1.5)
-	await _shot("menu_historia_jugadores", "menus", "Historia: cuántos ladrones", "Uno a cuatro, cada banda con su progreso.")
+	await _shot("menu_titulo_ladrones", "menus", "Cuántos ladrones", "Un bocadillo sale de la tarjeta de la historia o del generativo, sin apagar el título: de 1 a 4 ladrones (en la historia, hasta dónde ha llegado cada banda). Elegir sigue adelante; atrás lo cierra.")
+	main.hud.close_bubble()
 	main.players = 1
 	main.story_pick = 1
 	main._show_city()
@@ -190,7 +192,7 @@ func _shots() -> void:
 	main._close_tour()
 	main._show_generative_menu()
 	await _wait(1.5)
-	await _shot("menu_generativo", "menus", "Modo generativo", "Dificultad, tamaño del museo y número de ladrones.")
+	await _shot("menu_generativo", "menus", "Modo generativo", "Dificultad y tamaño del museo, y ¡a robar! con los ladrones elegidos en el título.")
 	main._show_challenge_menu()
 	await _wait(1.5)
 	await _shot("menu_retos", "menus", "Retos", "Los robos de la historia y los mapas hechos a mano, con el plano del elegido.")

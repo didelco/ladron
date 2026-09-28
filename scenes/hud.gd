@@ -140,12 +140,11 @@ const PICTURES := {
 ## Where a museum's own picture is looked at: its middle.
 const MUSEUM_FOCUS := Vector2(0.5, 0.55)
 ## Where the menus out of the game look in MENU_PICTURE (Hud.backdrop), as
-## fractions of it: the title at the lit case in the middle, the story at the
-## vase on the left, the generative at the cases on the right, the challenges
-## at the tall windows, the settings at the banners.
+## fractions of it: the title at the lit case in the middle, the generative
+## at the cases on the right, the challenges at the tall windows, the
+## settings at the banners.
 const SPOTS := {
 	"title": Vector2(0.5, 0.6),
-	"story": Vector2(0.15, 0.6),
 	"generative": Vector2(0.85, 0.6),
 	"challenge": Vector2(0.7, 0.2),
 	"settings": Vector2(0.3, 0.2),
@@ -485,6 +484,8 @@ func show_menu(items: Array, screen := "") -> void:
 	var st := MenuState.new()
 	_named.clear()
 	_pictures.clear()
+	_cards.clear()
+	close_bubble()
 	_menu_map = null
 	_titles.clear()
 	for item in items:
@@ -831,6 +832,8 @@ func _columns(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 ## Labels a menu gave an id, to change without rebuilding it; pictures too.
 var _named := {}
 var _pictures := {}
+## the cards of the menu on show that have an id, for a bubble to point at
+var _cards := {}
 ## while a menu takes its first focus
 var _quiet := false
 ## the menu's titles, bobbing gently
@@ -1094,7 +1097,10 @@ func _lift(c: Control, grow := 1.07, rest := 1.0) -> void:
 	c.focus_entered.connect(func() -> void:
 		c.scale = Vector2(0.96, 1.04)
 		create_tween().tween_property(c, "scale", Vector2.ONE * grow, 0.35).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT))
-	c.focus_exited.connect(func() -> void: create_tween().tween_property(c, "scale", Vector2.ONE * rest, 0.15).set_trans(Tween.TRANS_QUAD))
+	c.focus_exited.connect(func() -> void:
+		# Held up for the bubble it opened (pop_bubble): it stays as it is.
+		if not c.get_meta("held", false):
+			create_tween().tween_property(c, "scale", Vector2.ONE * rest, 0.15).set_trans(Tween.TRANS_QUAD))
 	if c is BaseButton:
 		# A squash on the press.
 		(c as BaseButton).button_down.connect(func() -> void: c.scale = Vector2(1.1, 0.92))
@@ -1282,8 +1288,299 @@ func _card(c: Dictionary, width: int, back := false) -> Button:
 	# The ones waiting sit back in the dark; the one with the focus comes up.
 	b.modulate = DIM_CARD
 	b.focus_entered.connect(func() -> void: create_tween().tween_property(b, "modulate", Color.WHITE, 0.2))
-	b.focus_exited.connect(func() -> void: create_tween().tween_property(b, "modulate", DIM_CARD, 0.2))
+	b.focus_exited.connect(func() -> void:
+		if not b.get_meta("held", false):
+			create_tween().tween_property(b, "modulate", DIM_CARD, 0.2))
+	if c.has("id"):
+		_cards[c.id] = b
 	return b
+
+
+# --- The bubble: a quick choice popping out of a card -----------------------------
+
+## The bubble up (pop_bubble), the card it points at, its choices, and what
+## to do when it is closed without a choice.
+var _bubble: Control
+var _bubble_box: PanelContainer
+var _bubble_tail: Control
+var _bubble_anchor: Control
+var _bubble_buttons: Array[Button] = []
+var _bubble_closed: Callable
+## the tail's size, and the least room kept between the bubble and the edge
+const TAIL := Vector2(26, 14)
+const BUBBLE_EDGE := 12.0
+
+
+## A little bubble of choices popping out of a card of the menu on show
+## (the card with that id, see "cards"), like a speech bubble: the menu stays
+## as it is, neither dimmed nor covered beyond the bubble, and the card stays
+## lit while it is up. choices are small cards, left to right:
+##   {"title", "stage": MenuStage, "colour", "call", "text"?}
+## focus: the one to start on. The arrows, the stick or the cross move along
+## it and A, Enter or a click picks; Escape or B (the game's own
+## _unhandled_input, through close_bubble) or a click anywhere else closes
+## it, back to the card, and closed is called. It comes and goes in SWAP_S.
+func pop_bubble(anchor_id: String, heading: String, choices: Array, focus: int, closed: Callable) -> void:
+	close_bubble()
+	var anchor: Control = _cards.get(anchor_id)
+	if anchor == null:
+		return
+	_bubble_anchor = anchor
+	_bubble_closed = closed
+	var root := Control.new()
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	# Nothing under it takes the mouse while it is up; a click off it closes it.
+	root.mouse_filter = Control.MOUSE_FILTER_STOP
+	root.gui_input.connect(func(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.pressed:
+			root.accept_event()
+			ui_sound.emit("back")
+			close_bubble(true))
+	_panel.add_child(root)
+	_bubble = root
+	var box := PanelContainer.new()
+	var st := StyleBoxFlat.new()
+	# Solid, so the tail can sit over its rim; the menu round it stays lit.
+	st.bg_color = Color(GLASS_LIT, 1.0)
+	st.set_corner_radius_all(20)
+	st.anti_aliasing = true
+	st.border_color = GLOW
+	st.set_border_width_all(3)
+	st.shadow_color = Color(0, 0, 0, 0.45)
+	st.shadow_size = 12
+	st.shadow_offset = Vector2(0, 4)
+	st.set_content_margin_all(14)
+	box.add_theme_stylebox_override("panel", st)
+	box.mouse_filter = Control.MOUSE_FILTER_STOP
+	root.add_child(box)
+	_bubble_box = box
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 10)
+	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(column)
+	var head := _label(10, C.gold, column, true)
+	head.text = heading
+	head.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(row)
+	_bubble_buttons.clear()
+	for c in choices:
+		var b := _bubble_choice(c)
+		row.add_child(b)
+		_bubble_buttons.append(b)
+	# Along the row and round the ends; up and down stay put.
+	var n := _bubble_buttons.size()
+	for i in n:
+		var b := _bubble_buttons[i]
+		var left := b.get_path_to(_bubble_buttons[(i - 1 + n) % n])
+		var right := b.get_path_to(_bubble_buttons[(i + 1) % n])
+		b.focus_neighbor_left = left
+		b.focus_previous = left
+		b.focus_neighbor_right = right
+		b.focus_next = right
+		b.focus_neighbor_top = b.get_path_to(b)
+		b.focus_neighbor_bottom = b.get_path_to(b)
+	_bubble_tail = Control.new()
+	_bubble_tail.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_bubble_tail.size = TAIL + Vector2(0, 3)
+	_bubble_tail.draw.connect(_draw_tail)
+	root.add_child(_bubble_tail)
+	root.modulate.a = 0.0
+	_bubble_open(root, _bubble_buttons[clampi(focus, 0, n - 1)] if n > 0 else null)
+
+
+## The bubble in: once its little stages have drawn (SWAP_WAIT_FRAMES) and
+## the menu under it has taken its own focus, the focus into it and a quick
+## fade and grow out of the card.
+func _bubble_open(root: Control, first: Button) -> void:
+	for i in SWAP_WAIT_FRAMES:
+		await get_tree().process_frame
+	if root != _bubble:
+		return
+	_hold(_bubble_anchor, true)
+	if first:
+		_quiet = true
+		first.grab_focus()
+		_quiet = false
+	_place_bubble()
+	var up: bool = _bubble_tail.get_meta("up", false)
+	_bubble_box.pivot_offset = Vector2(_bubble_tail.position.x + TAIL.x / 2 - _bubble_box.position.x, _bubble_box.size.y if up else 0.0)
+	_bubble_box.scale = Vector2.ONE * 0.92
+	var tw := create_tween().set_parallel().set_trans(TRANS).set_ease(EASE)
+	tw.tween_property(root, "modulate:a", 1.0, SWAP_S)
+	tw.tween_property(_bubble_box, "scale", Vector2.ONE, SWAP_S)
+
+
+## One choice in the bubble: a small card with its 3D stage, its title in
+## its colour and maybe a line under it.
+func _bubble_choice(c: Dictionary) -> Button:
+	const WIDTH := 124.0
+	var b := Button.new()
+	b.focus_mode = Control.FOCUS_ALL
+	var colour: Color = c.get("colour", C.safe)
+	for state in ["normal", "hover", "pressed", "focus"]:
+		var st := _frame(colour, state != "normal", false, 16)
+		st.set_content_margin_all(8)
+		b.add_theme_stylebox_override(state, st)
+	var box := VBoxContainer.new()
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_theme_constant_override("separation", 6)
+	box.set_anchors_preset(Control.PRESET_FULL_RECT)
+	box.offset_left = 8
+	box.offset_right = -8
+	box.offset_top = 8
+	box.offset_bottom = -8
+	b.add_child(box)
+	var picture := Vector2(WIDTH - 16, (WIDTH - 16) * MenuStage.SIZE.y / MenuStage.SIZE.x)
+	var height := 16.0 + picture.y
+	if c.has("stage"):
+		var stage: MenuStage = c.stage
+		b.add_child(stage)
+		var r := TextureRect.new()
+		r.texture = stage.get_texture()
+		r.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		r.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+		r.custom_minimum_size = picture
+		_round_corners(r, picture, 12.0)
+		box.add_child(r)
+		b.focus_entered.connect(func() -> void: stage.active = true)
+		b.focus_exited.connect(func() -> void: stage.active = false)
+	var t := _label(9, colour.lerp(CREAM, 0.35), box, true)
+	t.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
+	t.text = c.title
+	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	height += 20
+	if c.has("text"):
+		var l := _label(11, C.dim, box)
+		l.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
+		l.text = c.text
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		height += 20
+	b.custom_minimum_size = Vector2(WIDTH, height)
+	_lift(b, 1.08)
+	var call: Callable = c.call
+	b.pressed.connect(func() -> void:
+		ui_sound.emit("ok")
+		close_bubble()
+		call.call())
+	return b
+
+
+## The bubble away, if one is up: it fades out (SWAP_S), deaf to every key
+## and click as it goes. back: closed without a choice, so the card it came
+## from takes the focus again and closed (pop_bubble) is called.
+func close_bubble(back := false) -> void:
+	if _bubble == null:
+		return
+	var old := _bubble
+	var anchor := _bubble_anchor
+	var closed := _bubble_closed
+	_bubble = null
+	_bubble_anchor = null
+	_bubble_buttons.clear()
+	var focus := get_viewport().gui_get_focus_owner()
+	if focus and old.is_ancestor_of(focus):
+		get_viewport().gui_release_focus()
+	old.propagate_call("set", ["mouse_filter", Control.MOUSE_FILTER_IGNORE])
+	old.propagate_call("set", ["focus_mode", Control.FOCUS_NONE])
+	var tw := create_tween().set_trans(TRANS).set_ease(EASE)
+	tw.tween_property(old, "modulate:a", 0.0, SWAP_S * old.modulate.a)
+	tw.tween_callback(old.queue_free)
+	if is_instance_valid(anchor):
+		_hold(anchor, false)
+		if back and anchor.is_visible_in_tree():
+			anchor.grab_focus()
+	if back and closed.is_valid():
+		closed.call()
+
+
+## Whether a bubble is up.
+func bubble_open() -> bool:
+	return _bubble != null
+
+
+## Which of the bubble's choices has the focus (-1 for none).
+func bubble_focus() -> int:
+	return _bubble_buttons.find(get_viewport().gui_get_focus_owner())
+
+
+## The focus dir choices along the bubble, round the ends (the game's own
+## keys for it: A and D).
+func bubble_move(dir: int) -> void:
+	if _bubble_buttons.is_empty():
+		return
+	_bubble_buttons[posmod(maxi(0, bubble_focus()) + dir, _bubble_buttons.size())].grab_focus()
+
+
+## The bubble's choice i picked, as if pressed (the game's own keys: E, and
+## 1 to 4).
+func bubble_pick(i: int) -> void:
+	if i >= 0 and i < _bubble_buttons.size():
+		_bubble_buttons[i].pressed.emit()
+
+
+## A card lit up and kept so, focus or not (the one a bubble came out of),
+## or let go back to its way.
+func _hold(c: Control, on: bool) -> void:
+	if not (c is Button) or c.get_meta("held", false) == on:
+		return
+	c.set_meta("held", on)
+	var b := c as Button
+	if on:
+		b.set_meta("rest_style", b.get_theme_stylebox("normal"))
+		b.add_theme_stylebox_override("normal", b.get_theme_stylebox("focus"))
+		b.modulate = Color.WHITE
+	elif b.has_meta("rest_style"):
+		b.add_theme_stylebox_override("normal", b.get_meta("rest_style"))
+		if not b.has_focus():
+			b.focus_exited.emit()
+
+
+## The bubble under its card, the tail pointing up at it; above it when
+## there is no room below. Kept on screen, and following the card as it moves.
+func _place_bubble() -> void:
+	if _bubble == null or not is_instance_valid(_bubble_anchor):
+		return
+	var screen := _bubble.size
+	var card := _bubble_anchor.get_global_rect()
+	var inv := _bubble.get_global_transform().affine_inverse()
+	card = Rect2(inv * card.position, card.size)
+	var size := _bubble_box.get_combined_minimum_size()
+	_bubble_box.size = size
+	var x := clampf(card.get_center().x - size.x / 2, BUBBLE_EDGE, maxf(BUBBLE_EDGE, screen.x - size.x - BUBBLE_EDGE))
+	var below := card.end.y + TAIL.y - 2.0
+	var up := below + size.y > screen.y - BUBBLE_EDGE
+	var y := card.position.y - TAIL.y + 2.0 - size.y if up else below
+	_bubble_box.position = Vector2(x, y)
+	var tip := clampf(card.get_center().x, x + 30.0, x + size.x - 30.0)
+	_bubble_tail.position = Vector2(tip - TAIL.x / 2, y + size.y - 3.0 if up else y - TAIL.y)
+	if _bubble_tail.get_meta("up", false) != up:
+		_bubble_tail.set_meta("up", up)
+		_bubble_tail.queue_redraw()
+
+
+## The tail: a triangle of the bubble's glass with its glowing rim on its
+## two sides, over the bubble's own rim where they meet (3 px into it).
+func _draw_tail() -> void:
+	var up: bool = _bubble_tail.get_meta("up", false)
+	var w := TAIL.x
+	var h := TAIL.y
+	var sides: PackedVector2Array
+	var fill: PackedVector2Array
+	if up:
+		# Pointing down, from the bubble's bottom rim (y 0 to 3).
+		sides = PackedVector2Array([Vector2(0, 3), Vector2(w / 2, h + 3), Vector2(w, 3)])
+		fill = PackedVector2Array([Vector2(0, 0), Vector2(w, 0), Vector2(w, 3), Vector2(w / 2, h + 3), Vector2(0, 3)])
+	else:
+		# Pointing up, into the bubble's top rim (y h to h + 3).
+		sides = PackedVector2Array([Vector2(0, h), Vector2(w / 2, 0), Vector2(w, h)])
+		fill = PackedVector2Array([Vector2(0, h), Vector2(w / 2, 0), Vector2(w, h), Vector2(w, h + 3), Vector2(0, h + 3)])
+	_bubble_tail.draw_colored_polygon(fill, Color(GLASS_LIT, 1.0))
+	_bubble_tail.draw_polyline(sides, GLOW, 3.0, true)
 
 
 ## The thief on the title screen, as the web draws it: a hooded figure in
@@ -2189,6 +2486,9 @@ func _process(dt: float) -> void:
 	_clock += dt
 	if _cctv_on:
 		_draw_cctv(dt)
+	# The bubble follows its card as it springs and moves.
+	if _bubble:
+		_place_bubble()
 	for i in _titles.size():
 		var t := _titles[i]
 		if is_instance_valid(t):
