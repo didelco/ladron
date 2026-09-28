@@ -1071,8 +1071,8 @@
 			"arcades": [],
 			"game_level": 0,
 			"h": 17,
-			"heading": "Ladronzuelo · tu primer robo en la Gran Cueva",
-			"heading_gang": "Ladronzuelos · vuestro primer robo en la Gran Cueva",
+			"heading": "Ladronzuelo · tu primer robo en el Museo de la Prehistoria",
+			"heading_gang": "Ladronzuelos · vuestro primer robo en el Museo de la Prehistoria",
 			"hideouts": {
 				"sarcophagus": 1
 			},
@@ -1098,8 +1098,8 @@
 			"arcades": [],
 			"game_level": 0,
 			"h": 17,
-			"heading": "Ladronzuelo · tu segundo robo en la Gran Cueva",
-			"heading_gang": "Ladronzuelos · vuestro segundo robo en la Gran Cueva",
+			"heading": "Ladronzuelo · tu segundo robo en el Museo de la Prehistoria",
+			"heading_gang": "Ladronzuelos · vuestro segundo robo en el Museo de la Prehistoria",
 			"hideouts": {
 				"egg": 2
 			},
@@ -1125,8 +1125,8 @@
 			"arcades": [],
 			"game_level": 0,
 			"h": 17,
-			"heading": "Ladronzuelo · tu tercer robo en la Gran Cueva",
-			"heading_gang": "Ladronzuelos · vuestro tercer robo en la Gran Cueva",
+			"heading": "Ladronzuelo · tu tercer robo en el Museo de la Prehistoria",
+			"heading_gang": "Ladronzuelos · vuestro tercer robo en el Museo de la Prehistoria",
 			"hideouts": {
 				"egg": 2
 			},
@@ -1149,8 +1149,8 @@
 			"arcades": [],
 			"game_level": 0,
 			"h": 17,
-			"heading": "Ladronzuelo · tu cuarto robo en la Gran Cueva",
-			"heading_gang": "Ladronzuelos · vuestro cuarto robo en la Gran Cueva",
+			"heading": "Ladronzuelo · tu cuarto robo en el Museo de la Prehistoria",
+			"heading_gang": "Ladronzuelos · vuestro cuarto robo en el Museo de la Prehistoria",
 			"hideouts": {
 				"egg": 1,
 				"mammoth": 1
@@ -1178,8 +1178,8 @@
 			"arcades": [],
 			"game_level": 0,
 			"h": 25,
-			"heading": "Ladronzuelo · tu gran golpe en la Gran Cueva",
-			"heading_gang": "Ladronzuelos · vuestro gran golpe en la Gran Cueva",
+			"heading": "Ladronzuelo · tu gran golpe en el Museo de la Prehistoria",
+			"heading_gang": "Ladronzuelos · vuestro gran golpe en el Museo de la Prehistoria",
 			"hideouts": {
 				"egg": 2
 			},
@@ -1206,8 +1206,8 @@
 			"arcades": [],
 			"game_level": 0,
 			"h": 17,
-			"heading": "Ratero · tu primer robo en la Casa de los Bichos",
-			"heading_gang": "Rateros · vuestro primer robo en la Casa de los Bichos",
+			"heading": "Ratero · tu primer robo en el Museo de Ciencias Naturales",
+			"heading_gang": "Rateros · vuestro primer robo en el Museo de Ciencias Naturales",
 			"hideouts": {
 				"log": 1,
 				"shell": 1
@@ -1232,8 +1232,8 @@
 			"arcades": [],
 			"game_level": 0,
 			"h": 17,
-			"heading": "Ratero · tu segundo robo en la Casa de los Bichos",
-			"heading_gang": "Rateros · vuestro segundo robo en la Casa de los Bichos",
+			"heading": "Ratero · tu segundo robo en el Museo de Ciencias Naturales",
+			"heading_gang": "Rateros · vuestro segundo robo en el Museo de Ciencias Naturales",
 			"hideouts": {
 				"shell": 2
 			},
@@ -1259,8 +1259,8 @@
 			"arcades": [],
 			"game_level": 0,
 			"h": 17,
-			"heading": "Ratero · tu tercer robo en la Casa de los Bichos",
-			"heading_gang": "Rateros · vuestro tercer robo en la Casa de los Bichos",
+			"heading": "Ratero · tu tercer robo en el Museo de Ciencias Naturales",
+			"heading_gang": "Rateros · vuestro tercer robo en el Museo de Ciencias Naturales",
 			"hideouts": {
 				"shell": 2
 			},
@@ -1286,8 +1286,8 @@
 			"arcades": [],
 			"game_level": 0,
 			"h": 25,
-			"heading": "Ratero · tu cuarto robo en la Casa de los Bichos",
-			"heading_gang": "Rateros · vuestro cuarto robo en la Casa de los Bichos",
+			"heading": "Ratero · tu cuarto robo en el Museo de Ciencias Naturales",
+			"heading_gang": "Rateros · vuestro cuarto robo en el Museo de Ciencias Naturales",
 			"hideouts": {
 				"log": 1,
 				"shell": 1
@@ -1312,8 +1312,8 @@
 			"arcades": [],
 			"game_level": 1,
 			"h": 25,
-			"heading": "Ratero · tu gran golpe en la Casa de los Bichos",
-			"heading_gang": "Rateros · vuestro gran golpe en la Casa de los Bichos",
+			"heading": "Ratero · tu gran golpe en el Museo de Ciencias Naturales",
+			"heading_gang": "Rateros · vuestro gran golpe en el Museo de Ciencias Naturales",
 			"hideouts": {
 				"log": 1,
 				"shell": 1
@@ -1339,8 +1339,8 @@
 			"arcades": [],
 			"game_level": 1,
 			"h": 25,
-			"heading": "Ladrón de guante blanco · tu primer robo en el Templo de las Momias",
-			"heading_gang": "Ladrones de guante blanco · vuestro primer robo en el Templo de las Momias",
+			"heading": "Ladrón de guante blanco · tu primer robo en la Villa de las Antigüedades",
+			"heading_gang": "Ladrones de guante blanco · vuestro primer robo en la Villa de las Antigüedades",
 			"hideouts": {
 				"legionary": 1,
 				"sarcophagus": 1
@@ -1365,8 +1365,8 @@
 			"arcades": [],
 			"game_level": 1,
 			"h": 25,
-			"heading": "Ladrón de guante blanco · tu segundo robo en el Templo de las Momias",
-			"heading_gang": "Ladrones de guante blanco · vuestro segundo robo en el Templo de las Momias",
+			"heading": "Ladrón de guante blanco · tu segundo robo en la Villa de las Antigüedades",
+			"heading_gang": "Ladrones de guante blanco · vuestro segundo robo en la Villa de las Antigüedades",
 			"hideouts": {
 				"legionary": 2,
 				"sarcophagus": 1
@@ -1391,8 +1391,8 @@
 			"arcades": [],
 			"game_level": 1,
 			"h": 25,
-			"heading": "Ladrón de guante blanco · tu tercer robo en el Templo de las Momias",
-			"heading_gang": "Ladrones de guante blanco · vuestro tercer robo en el Templo de las Momias",
+			"heading": "Ladrón de guante blanco · tu tercer robo en la Villa de las Antigüedades",
+			"heading_gang": "Ladrones de guante blanco · vuestro tercer robo en la Villa de las Antigüedades",
 			"hideouts": {
 				"legionary": 2
 			},
@@ -1416,8 +1416,8 @@
 			"arcades": [],
 			"game_level": 1,
 			"h": 25,
-			"heading": "Ladrón de guante blanco · tu cuarto robo en el Templo de las Momias",
-			"heading_gang": "Ladrones de guante blanco · vuestro cuarto robo en el Templo de las Momias",
+			"heading": "Ladrón de guante blanco · tu cuarto robo en la Villa de las Antigüedades",
+			"heading_gang": "Ladrones de guante blanco · vuestro cuarto robo en la Villa de las Antigüedades",
 			"hideouts": {
 				"legionary": 1,
 				"sarcophagus": 1
@@ -1442,8 +1442,8 @@
 			"arcades": [],
 			"game_level": 1,
 			"h": 25,
-			"heading": "Ladrón de guante blanco · tu gran golpe en el Templo de las Momias",
-			"heading_gang": "Ladrones de guante blanco · vuestro gran golpe en el Templo de las Momias",
+			"heading": "Ladrón de guante blanco · tu gran golpe en la Villa de las Antigüedades",
+			"heading_gang": "Ladrones de guante blanco · vuestro gran golpe en la Villa de las Antigüedades",
 			"hideouts": {
 				"legionary": 1,
 				"trojan_horse": 1
@@ -1471,8 +1471,8 @@
 			"arcades": [],
 			"game_level": 1,
 			"h": 25,
-			"heading": "Maestro ladrón · tu primer robo en el Castillo de los Inventos",
-			"heading_gang": "Maestros ladrones · vuestro primer robo en el Castillo de los Inventos",
+			"heading": "Maestro ladrón · tu primer robo en el Museo del Castillo",
+			"heading_gang": "Maestros ladrones · vuestro primer robo en el Museo del Castillo",
 			"hideouts": {
 				"armour": 2,
 				"chest": 1
@@ -1501,8 +1501,8 @@
 			"arcades": [],
 			"game_level": 1,
 			"h": 25,
-			"heading": "Maestro ladrón · tu segundo robo en el Castillo de los Inventos",
-			"heading_gang": "Maestros ladrones · vuestro segundo robo en el Castillo de los Inventos",
+			"heading": "Maestro ladrón · tu segundo robo en el Museo del Castillo",
+			"heading_gang": "Maestros ladrones · vuestro segundo robo en el Museo del Castillo",
 			"hideouts": {
 				"armour": 1,
 				"confessional": 1
@@ -1530,8 +1530,8 @@
 			"arcades": [],
 			"game_level": 1,
 			"h": 25,
-			"heading": "Maestro ladrón · tu tercer robo en el Castillo de los Inventos",
-			"heading_gang": "Maestros ladrones · vuestro tercer robo en el Castillo de los Inventos",
+			"heading": "Maestro ladrón · tu tercer robo en el Museo del Castillo",
+			"heading_gang": "Maestros ladrones · vuestro tercer robo en el Museo del Castillo",
 			"hideouts": {
 				"armour": 1,
 				"chest": 1
@@ -1558,8 +1558,8 @@
 			"arcades": [],
 			"game_level": 1,
 			"h": 25,
-			"heading": "Maestro ladrón · tu cuarto robo en el Castillo de los Inventos",
-			"heading_gang": "Maestros ladrones · vuestro cuarto robo en el Castillo de los Inventos",
+			"heading": "Maestro ladrón · tu cuarto robo en el Museo del Castillo",
+			"heading_gang": "Maestros ladrones · vuestro cuarto robo en el Museo del Castillo",
 			"hideouts": {
 				"chest": 1,
 				"confessional": 1
@@ -1586,8 +1586,8 @@
 			"arcades": [],
 			"game_level": 2,
 			"h": 25,
-			"heading": "Maestro ladrón · tu gran golpe en el Castillo de los Inventos",
-			"heading_gang": "Maestros ladrones · vuestro gran golpe en el Castillo de los Inventos",
+			"heading": "Maestro ladrón · tu gran golpe en el Museo del Castillo",
+			"heading_gang": "Maestros ladrones · vuestro gran golpe en el Museo del Castillo",
 			"hideouts": {
 				"armour": 1,
 				"chest": 1
@@ -1620,8 +1620,8 @@
 			],
 			"game_level": 2,
 			"h": 35,
-			"heading": "Leyenda de la noche · tu primer robo en la Torre de Cristal",
-			"heading_gang": "Leyendas de la noche · vuestro primer robo en la Torre de Cristal",
+			"heading": "Leyenda de la noche · tu primer robo en el Museo de Arte Contemporáneo",
+			"heading_gang": "Leyendas de la noche · vuestro primer robo en el Museo de Arte Contemporáneo",
 			"hideouts": {
 				"box": 1,
 				"car": 2,
@@ -1654,8 +1654,8 @@
 			],
 			"game_level": 2,
 			"h": 35,
-			"heading": "Leyenda de la noche · tu segundo robo en la Torre de Cristal",
-			"heading_gang": "Leyendas de la noche · vuestro segundo robo en la Torre de Cristal",
+			"heading": "Leyenda de la noche · tu segundo robo en el Museo de Arte Contemporáneo",
+			"heading_gang": "Leyendas de la noche · vuestro segundo robo en el Museo de Arte Contemporáneo",
 			"hideouts": {
 				"box": 1,
 				"car": 2,
@@ -1689,8 +1689,8 @@
 			],
 			"game_level": 2,
 			"h": 35,
-			"heading": "Leyenda de la noche · tu tercer robo en la Torre de Cristal",
-			"heading_gang": "Leyendas de la noche · vuestro tercer robo en la Torre de Cristal",
+			"heading": "Leyenda de la noche · tu tercer robo en el Museo de Arte Contemporáneo",
+			"heading_gang": "Leyendas de la noche · vuestro tercer robo en el Museo de Arte Contemporáneo",
 			"hideouts": {
 				"box": 2,
 				"car": 1,
@@ -1719,8 +1719,8 @@
 			],
 			"game_level": 2,
 			"h": 35,
-			"heading": "Leyenda de la noche · tu cuarto robo en la Torre de Cristal",
-			"heading_gang": "Leyendas de la noche · vuestro cuarto robo en la Torre de Cristal",
+			"heading": "Leyenda de la noche · tu cuarto robo en el Museo de Arte Contemporáneo",
+			"heading_gang": "Leyendas de la noche · vuestro cuarto robo en el Museo de Arte Contemporáneo",
 			"hideouts": {
 				"box": 2,
 				"car": 1,

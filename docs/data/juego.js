@@ -3587,8 +3587,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 17,
-    "heading": "Ladronzuelo · tu primer robo en la Gran Cueva",
-    "heading_gang": "Ladronzuelos · vuestro primer robo en la Gran Cueva",
+    "heading": "Ladronzuelo · tu primer robo en el Museo de la Prehistoria",
+    "heading_gang": "Ladronzuelos · vuestro primer robo en el Museo de la Prehistoria",
     "hideouts": {
      "sarcophagus": 1
     },
@@ -3614,8 +3614,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 17,
-    "heading": "Ladronzuelo · tu segundo robo en la Gran Cueva",
-    "heading_gang": "Ladronzuelos · vuestro segundo robo en la Gran Cueva",
+    "heading": "Ladronzuelo · tu segundo robo en el Museo de la Prehistoria",
+    "heading_gang": "Ladronzuelos · vuestro segundo robo en el Museo de la Prehistoria",
     "hideouts": {
      "egg": 2
     },
@@ -3641,8 +3641,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 17,
-    "heading": "Ladronzuelo · tu tercer robo en la Gran Cueva",
-    "heading_gang": "Ladronzuelos · vuestro tercer robo en la Gran Cueva",
+    "heading": "Ladronzuelo · tu tercer robo en el Museo de la Prehistoria",
+    "heading_gang": "Ladronzuelos · vuestro tercer robo en el Museo de la Prehistoria",
     "hideouts": {
      "egg": 2
     },
@@ -3665,8 +3665,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 17,
-    "heading": "Ladronzuelo · tu cuarto robo en la Gran Cueva",
-    "heading_gang": "Ladronzuelos · vuestro cuarto robo en la Gran Cueva",
+    "heading": "Ladronzuelo · tu cuarto robo en el Museo de la Prehistoria",
+    "heading_gang": "Ladronzuelos · vuestro cuarto robo en el Museo de la Prehistoria",
     "hideouts": {
      "egg": 1,
      "mammoth": 1
@@ -3694,8 +3694,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 25,
-    "heading": "Ladronzuelo · tu gran golpe en la Gran Cueva",
-    "heading_gang": "Ladronzuelos · vuestro gran golpe en la Gran Cueva",
+    "heading": "Ladronzuelo · tu gran golpe en el Museo de la Prehistoria",
+    "heading_gang": "Ladronzuelos · vuestro gran golpe en el Museo de la Prehistoria",
     "hideouts": {
      "egg": 2
     },
@@ -3722,8 +3722,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 17,
-    "heading": "Ratero · tu primer robo en la Casa de los Bichos",
-    "heading_gang": "Rateros · vuestro primer robo en la Casa de los Bichos",
+    "heading": "Ratero · tu primer robo en el Museo de Ciencias Naturales",
+    "heading_gang": "Rateros · vuestro primer robo en el Museo de Ciencias Naturales",
     "hideouts": {
      "log": 1,
      "shell": 1
@@ -3748,8 +3748,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 17,
-    "heading": "Ratero · tu segundo robo en la Casa de los Bichos",
-    "heading_gang": "Rateros · vuestro segundo robo en la Casa de los Bichos",
+    "heading": "Ratero · tu segundo robo en el Museo de Ciencias Naturales",
+    "heading_gang": "Rateros · vuestro segundo robo en el Museo de Ciencias Naturales",
     "hideouts": {
      "shell": 2
     },
@@ -3775,8 +3775,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 17,
-    "heading": "Ratero · tu tercer robo en la Casa de los Bichos",
-    "heading_gang": "Rateros · vuestro tercer robo en la Casa de los Bichos",
+    "heading": "Ratero · tu tercer robo en el Museo de Ciencias Naturales",
+    "heading_gang": "Rateros · vuestro tercer robo en el Museo de Ciencias Naturales",
     "hideouts": {
      "shell": 2
     },
@@ -3802,8 +3802,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 25,
-    "heading": "Ratero · tu cuarto robo en la Casa de los Bichos",
-    "heading_gang": "Rateros · vuestro cuarto robo en la Casa de los Bichos",
+    "heading": "Ratero · tu cuarto robo en el Museo de Ciencias Naturales",
+    "heading_gang": "Rateros · vuestro cuarto robo en el Museo de Ciencias Naturales",
     "hideouts": {
      "log": 1,
      "shell": 1
@@ -3828,8 +3828,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Ratero · tu gran golpe en la Casa de los Bichos",
-    "heading_gang": "Rateros · vuestro gran golpe en la Casa de los Bichos",
+    "heading": "Ratero · tu gran golpe en el Museo de Ciencias Naturales",
+    "heading_gang": "Rateros · vuestro gran golpe en el Museo de Ciencias Naturales",
     "hideouts": {
      "log": 1,
      "shell": 1
@@ -3855,8 +3855,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Ladrón de guante blanco · tu primer robo en el Templo de las Momias",
-    "heading_gang": "Ladrones de guante blanco · vuestro primer robo en el Templo de las Momias",
+    "heading": "Ladrón de guante blanco · tu primer robo en la Villa de las Antigüedades",
+    "heading_gang": "Ladrones de guante blanco · vuestro primer robo en la Villa de las Antigüedades",
     "hideouts": {
      "legionary": 1,
      "sarcophagus": 1
@@ -3881,8 +3881,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Ladrón de guante blanco · tu segundo robo en el Templo de las Momias",
-    "heading_gang": "Ladrones de guante blanco · vuestro segundo robo en el Templo de las Momias",
+    "heading": "Ladrón de guante blanco · tu segundo robo en la Villa de las Antigüedades",
+    "heading_gang": "Ladrones de guante blanco · vuestro segundo robo en la Villa de las Antigüedades",
     "hideouts": {
      "legionary": 2,
      "sarcophagus": 1
@@ -3907,8 +3907,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Ladrón de guante blanco · tu tercer robo en el Templo de las Momias",
-    "heading_gang": "Ladrones de guante blanco · vuestro tercer robo en el Templo de las Momias",
+    "heading": "Ladrón de guante blanco · tu tercer robo en la Villa de las Antigüedades",
+    "heading_gang": "Ladrones de guante blanco · vuestro tercer robo en la Villa de las Antigüedades",
     "hideouts": {
      "legionary": 2
     },
@@ -3932,8 +3932,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Ladrón de guante blanco · tu cuarto robo en el Templo de las Momias",
-    "heading_gang": "Ladrones de guante blanco · vuestro cuarto robo en el Templo de las Momias",
+    "heading": "Ladrón de guante blanco · tu cuarto robo en la Villa de las Antigüedades",
+    "heading_gang": "Ladrones de guante blanco · vuestro cuarto robo en la Villa de las Antigüedades",
     "hideouts": {
      "legionary": 1,
      "sarcophagus": 1
@@ -3958,8 +3958,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Ladrón de guante blanco · tu gran golpe en el Templo de las Momias",
-    "heading_gang": "Ladrones de guante blanco · vuestro gran golpe en el Templo de las Momias",
+    "heading": "Ladrón de guante blanco · tu gran golpe en la Villa de las Antigüedades",
+    "heading_gang": "Ladrones de guante blanco · vuestro gran golpe en la Villa de las Antigüedades",
     "hideouts": {
      "legionary": 1,
      "trojan_horse": 1
@@ -3987,8 +3987,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Maestro ladrón · tu primer robo en el Castillo de los Inventos",
-    "heading_gang": "Maestros ladrones · vuestro primer robo en el Castillo de los Inventos",
+    "heading": "Maestro ladrón · tu primer robo en el Museo del Castillo",
+    "heading_gang": "Maestros ladrones · vuestro primer robo en el Museo del Castillo",
     "hideouts": {
      "armour": 2,
      "chest": 1
@@ -4017,8 +4017,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Maestro ladrón · tu segundo robo en el Castillo de los Inventos",
-    "heading_gang": "Maestros ladrones · vuestro segundo robo en el Castillo de los Inventos",
+    "heading": "Maestro ladrón · tu segundo robo en el Museo del Castillo",
+    "heading_gang": "Maestros ladrones · vuestro segundo robo en el Museo del Castillo",
     "hideouts": {
      "armour": 1,
      "confessional": 1
@@ -4046,8 +4046,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Maestro ladrón · tu tercer robo en el Castillo de los Inventos",
-    "heading_gang": "Maestros ladrones · vuestro tercer robo en el Castillo de los Inventos",
+    "heading": "Maestro ladrón · tu tercer robo en el Museo del Castillo",
+    "heading_gang": "Maestros ladrones · vuestro tercer robo en el Museo del Castillo",
     "hideouts": {
      "armour": 1,
      "chest": 1
@@ -4074,8 +4074,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Maestro ladrón · tu cuarto robo en el Castillo de los Inventos",
-    "heading_gang": "Maestros ladrones · vuestro cuarto robo en el Castillo de los Inventos",
+    "heading": "Maestro ladrón · tu cuarto robo en el Museo del Castillo",
+    "heading_gang": "Maestros ladrones · vuestro cuarto robo en el Museo del Castillo",
     "hideouts": {
      "chest": 1,
      "confessional": 1
@@ -4102,8 +4102,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 2,
     "h": 25,
-    "heading": "Maestro ladrón · tu gran golpe en el Castillo de los Inventos",
-    "heading_gang": "Maestros ladrones · vuestro gran golpe en el Castillo de los Inventos",
+    "heading": "Maestro ladrón · tu gran golpe en el Museo del Castillo",
+    "heading_gang": "Maestros ladrones · vuestro gran golpe en el Museo del Castillo",
     "hideouts": {
      "armour": 1,
      "chest": 1
@@ -4136,8 +4136,8 @@ window.JUEGO = {
     ],
     "game_level": 2,
     "h": 35,
-    "heading": "Leyenda de la noche · tu primer robo en la Torre de Cristal",
-    "heading_gang": "Leyendas de la noche · vuestro primer robo en la Torre de Cristal",
+    "heading": "Leyenda de la noche · tu primer robo en el Museo de Arte Contemporáneo",
+    "heading_gang": "Leyendas de la noche · vuestro primer robo en el Museo de Arte Contemporáneo",
     "hideouts": {
      "box": 1,
      "car": 2,
@@ -4170,8 +4170,8 @@ window.JUEGO = {
     ],
     "game_level": 2,
     "h": 35,
-    "heading": "Leyenda de la noche · tu segundo robo en la Torre de Cristal",
-    "heading_gang": "Leyendas de la noche · vuestro segundo robo en la Torre de Cristal",
+    "heading": "Leyenda de la noche · tu segundo robo en el Museo de Arte Contemporáneo",
+    "heading_gang": "Leyendas de la noche · vuestro segundo robo en el Museo de Arte Contemporáneo",
     "hideouts": {
      "box": 1,
      "car": 2,
@@ -4205,8 +4205,8 @@ window.JUEGO = {
     ],
     "game_level": 2,
     "h": 35,
-    "heading": "Leyenda de la noche · tu tercer robo en la Torre de Cristal",
-    "heading_gang": "Leyendas de la noche · vuestro tercer robo en la Torre de Cristal",
+    "heading": "Leyenda de la noche · tu tercer robo en el Museo de Arte Contemporáneo",
+    "heading_gang": "Leyendas de la noche · vuestro tercer robo en el Museo de Arte Contemporáneo",
     "hideouts": {
      "box": 2,
      "car": 1,
@@ -4235,8 +4235,8 @@ window.JUEGO = {
     ],
     "game_level": 2,
     "h": 35,
-    "heading": "Leyenda de la noche · tu cuarto robo en la Torre de Cristal",
-    "heading_gang": "Leyendas de la noche · vuestro cuarto robo en la Torre de Cristal",
+    "heading": "Leyenda de la noche · tu cuarto robo en el Museo de Arte Contemporáneo",
+    "heading_gang": "Leyendas de la noche · vuestro cuarto robo en el Museo de Arte Contemporáneo",
     "hideouts": {
      "box": 2,
      "car": 1,
@@ -4845,35 +4845,35 @@ window.JUEGO = {
    "id": "menu_museo_1",
    "section": "menus",
    "text": "Su edificio de cerca, cada museo el suyo: cada sala, una ventana de la fachada o del costado que se ve, con su pieza a contraluz, su número y sus estrellas (solo las desbloqueadas; las demás son ventanas como las otras); el gran golpe, en el centro de la fachada: la ventana grande o la misma puerta.",
-   "title": "Museo 1: La Gran Cueva"
+   "title": "Museo 1: El Museo de la Prehistoria"
   },
   {
    "file": "capturas/menu_museo_2.webp",
    "id": "menu_museo_2",
    "section": "menus",
    "text": "Su edificio de cerca, cada museo el suyo: cada sala, una ventana de la fachada o del costado que se ve, con su pieza a contraluz, su número y sus estrellas (solo las desbloqueadas; las demás son ventanas como las otras); el gran golpe, en el centro de la fachada: la ventana grande o la misma puerta.",
-   "title": "Museo 2: La Casa de los Bichos"
+   "title": "Museo 2: El Museo de Ciencias Naturales"
   },
   {
    "file": "capturas/menu_museo_3.webp",
    "id": "menu_museo_3",
    "section": "menus",
    "text": "Su edificio de cerca, cada museo el suyo: cada sala, una ventana de la fachada o del costado que se ve, con su pieza a contraluz, su número y sus estrellas (solo las desbloqueadas; las demás son ventanas como las otras); el gran golpe, en el centro de la fachada: la ventana grande o la misma puerta.",
-   "title": "Museo 3: El Templo de las Momias"
+   "title": "Museo 3: La Villa de las Antigüedades"
   },
   {
    "file": "capturas/menu_museo_4.webp",
    "id": "menu_museo_4",
    "section": "menus",
    "text": "Su edificio de cerca, cada museo el suyo: cada sala, una ventana de la fachada o del costado que se ve, con su pieza a contraluz, su número y sus estrellas (solo las desbloqueadas; las demás son ventanas como las otras); el gran golpe, en el centro de la fachada: la ventana grande o la misma puerta.",
-   "title": "Museo 4: El Castillo de los Inventos"
+   "title": "Museo 4: El Museo del Castillo"
   },
   {
    "file": "capturas/menu_museo_5.webp",
    "id": "menu_museo_5",
    "section": "menus",
    "text": "Su edificio de cerca, cada museo el suyo: cada sala, una ventana de la fachada o del costado que se ve, con su pieza a contraluz, su número y sus estrellas (solo las desbloqueadas; las demás son ventanas como las otras); el gran golpe, en el centro de la fachada: la ventana grande o la misma puerta.",
-   "title": "Museo 5: La Torre de Cristal"
+   "title": "Museo 5: El Museo de Arte Contemporáneo"
   },
   {
    "file": "capturas/menu_generativo.webp",
@@ -7757,8 +7757,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "28-09-2026 19:47",
-  "commit": "0f0e136",
-  "rama": "worktree-agent-a45c2d198b33759e3"
+  "fecha": "28-09-2026 20:25",
+  "commit": "bb1a675",
+  "rama": "museo3-nombre"
  }
 };

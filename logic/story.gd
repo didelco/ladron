@@ -38,7 +38,7 @@ const ROOMS := 5
 ## (seed_for), for a museum that suits it better than the first. "par": the
 ## time for the fast star (stars), in seconds.
 const LEVELS := [
-	# --- La Gran Cueva: prehistory. Small museums, one guard at most.
+	# --- El Museo de la Prehistoria: prehistory. Small museums, one guard at most.
 	{"size": "small", "shape": "rect", "guards": 0, "view": 0.45, "hearing": 0.2, "speed": 0.4, "calm_after": 5.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "heist", "par": 30,
 		"loot": {"name": "NIGHT_01_NAME", "blurb": "NIGHT_01_BLURB", "verb": "NIGHT_01_VERB", "seconds": 1.5, "colour": "#f4f1e6", "shape": "teeth",
 			"story": "NIGHT_01_TALE"}},
@@ -59,7 +59,7 @@ const LEVELS := [
 		"boss": true, "tip": "NIGHT_05_TIP",
 		"loot": {"name": "NIGHT_05_NAME", "blurb": "NIGHT_05_BLURB", "verb": "NIGHT_05_VERB", "seconds": 3.0, "colour": "#e8c89a", "shape": "egg",
 			"story": "NIGHT_05_TALE"}},
-	# --- La Casa de los Bichos: nature. The minigames (LOCKPICK_NIGHT), the
+	# --- El Museo de Ciencias Naturales: nature. The minigames (LOCKPICK_NIGHT), the
 	# noise, then things to knock over. From here the case is picked: its
 	# seconds are the pick's pins (Minigame.pins_for), one on the first nights.
 	{"size": "small", "shape": "notched", "guards": 1, "view": 0.6, "hearing": 0.4, "speed": 0.5, "calm_after": 6.0, "alarms": 3, "props": false, "lights": false, "case_alarm": false, "teach": "games", "par": 25,
@@ -81,7 +81,7 @@ const LEVELS := [
 		"boss": true, "tip": "NIGHT_10_TIP",
 		"loot": {"name": "NIGHT_10_NAME", "blurb": "NIGHT_10_BLURB", "verb": "NIGHT_10_VERB", "seconds": 4.0, "colour": "#ffd43b", "shape": "duck",
 			"story": "NIGHT_10_TALE"}},
-	# --- El Templo de las Momias: the ancient world. The case's alarm, then
+	# --- La Villa de las Antigüedades: the ancient world. The case's alarm, then
 	# two guards. The alarm's night, a museum where the guard walks within
 	# earshot of the case now and then: pick it while it is away.
 	{"size": "medium", "shape": "L", "reseed": 2, "guards": 1, "view": 0.72, "hearing": 1.0, "speed": 0.62, "calm_after": 8.0, "alarms": 2, "props": true, "lights": false, "case_alarm": true, "teach": "case_alarm", "par": 35,
@@ -102,7 +102,7 @@ const LEVELS := [
 		"boss": true, "tip": "NIGHT_15_TIP",
 		"loot": {"name": "NIGHT_15_NAME", "blurb": "NIGHT_15_BLURB", "verb": "NIGHT_15_VERB", "seconds": 5.5, "colour": "#12b886", "shape": "gem",
 			"story": "NIGHT_15_TALE"}},
-	# --- El Castillo de los Inventos: the middle ages. The lights: on their
+	# --- El Museo del Castillo: the middle ages. The lights: on their
 	# night the guards hear the case's alarm often (four times in ten), and
 	# on alert they light the rooms, so the lights are seen being used.
 	{"size": "medium", "shape": "rect", "guards": 2, "view": 0.8, "hearing": 1.05, "speed": 0.72, "calm_after": 10.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "lights", "par": 30,
@@ -124,7 +124,7 @@ const LEVELS := [
 		"boss": true, "tip": "NIGHT_20_TIP",
 		"loot": {"name": "NIGHT_20_NAME", "blurb": "NIGHT_20_BLURB", "verb": "NIGHT_20_VERB", "seconds": 5.0, "colour": "#f0c46a", "shape": "crown",
 			"story": "NIGHT_20_TALE"}},
-	# --- La Torre de Cristal: the modern age. Big museums, and the end: more
+	# --- El Museo de Arte Contemporáneo: the modern age. Big museums, and the end: more
 	# guards than anywhere, so they are not lost in so much museum.
 	{"size": "large", "shape": "U", "reseed": 1, "guards": 3, "view": 0.82, "hearing": 1.0, "speed": 0.75, "calm_after": 11.0, "alarms": 2, "props": true, "lights": true, "case_alarm": true, "teach": "big", "par": 60,
 		"loot": {"name": "NIGHT_21_NAME", "blurb": "NIGHT_21_BLURB", "verb": "NIGHT_21_VERB", "seconds": 5.0, "colour": "#e0b060", "shape": "toast",
@@ -219,30 +219,30 @@ static var save := SAVE
 ## nature (the living world, still in the old natural-history style), the
 ## ancient world, the middle ages, and the modern age, the Barón's own tower.
 const MUSEUMS := [
-	# La Gran Cueva: rough ochre stone underfoot, clay walls, dark rock below.
+	# El Museo de la Prehistoria: rough ochre stone underfoot, clay walls, dark rock below.
 	{"name": "MUSEUM_1_NAME", "text": "MUSEUM_1_TEXT", "theme": "prehistoria", "colour": "#d08a3a",
 		"palette": {"floor": 0, "stone": Color("#4a3624"), "stone2": Color("#56402a"), "joint": Color("#1e140c"), "gloss": 0.55,
 			"paper": Color("#6b3f1f"), "paper2": Color("#7a4a25"), "wallpaper": 0, "wainscot": Color("#3a2a1c"), "dado": 0.4,
 			"cap": Color("#6a5a48"), "trim": Color("#c9853a"), "skirt": Color("#120c08")}},
-	# La Casa de los Bichos: oak boards, leafy green damask, like an old
+	# El Museo de Ciencias Naturales: oak boards, leafy green damask, like an old
 	# natural-history museum.
 	{"name": "MUSEUM_2_NAME", "text": "MUSEUM_2_TEXT", "theme": "naturaleza", "colour": "#5cc85c",
 		"palette": {"floor": 2, "stone": Color("#3a2a18"), "stone2": Color("#4a3520"), "joint": Color("#120c06"), "gloss": 0.4,
 			"paper": Color("#1e4a2c"), "paper2": Color("#285c38"), "wallpaper": 1, "wainscot": Color("#2e2418"), "dado": 0.5,
 			"cap": Color("#5a6a4a"), "trim": Color("#c9a34a"), "skirt": Color("#0e1611")}},
-	# El Templo de las Momias: sandstone slabs, lapis and gold stripes over
+	# La Villa de las Antigüedades: sandstone slabs, lapis and gold stripes over
 	# terracotta.
 	{"name": "MUSEUM_3_NAME", "text": "MUSEUM_3_TEXT", "theme": "antiguo", "colour": "#e8b53a",
 		"palette": {"floor": 0, "stone": Color("#6a5638"), "stone2": Color("#78623f"), "joint": Color("#2a200f"), "gloss": 0.35,
 			"paper": Color("#1f3a6e"), "paper2": Color("#8a6a2a"), "wallpaper": 2, "wainscot": Color("#7a3a1e"), "dado": 0.45,
 			"cap": Color("#8a7650"), "trim": Color("#e8b53a"), "skirt": Color("#1a1208")}},
-	# El Castillo de los Inventos: grey flagstones, crimson tapestry damask,
+	# El Museo del Castillo: grey flagstones, crimson tapestry damask,
 	# dark oak.
 	{"name": "MUSEUM_4_NAME", "text": "MUSEUM_4_TEXT", "theme": "edad_media", "colour": "#d0263e",
 		"palette": {"floor": 0, "stone": Color("#3a3a40"), "stone2": Color("#46464e"), "joint": Color("#16161a"), "gloss": 0.4,
 			"paper": Color("#5e1222"), "paper2": Color("#74182c"), "wallpaper": 1, "wainscot": Color("#2a1a10"), "dado": 0.55,
 			"cap": Color("#6a6470"), "trim": Color("#b08d4a"), "skirt": Color("#0a0808")}},
-	# La Torre de Cristal: polished concrete, violet stripes, a pink trim.
+	# El Museo de Arte Contemporáneo: polished concrete, violet stripes, a pink trim.
 	{"name": "MUSEUM_5_NAME", "text": "MUSEUM_5_TEXT", "theme": "moderna", "colour": "#ff4f9a",
 		"palette": {"floor": 1, "stone": Color("#3c3c46"), "stone2": Color("#44444f"), "joint": Color("#1c1c22"), "gloss": 0.25,
 			"paper": Color("#4a2a5e"), "paper2": Color("#5a3470"), "wallpaper": 2, "wainscot": Color("#1c1c22"), "dado": 0.0,
@@ -476,8 +476,8 @@ static func _star_masks(players: int) -> Array[int]:
 # --- Museums ---------------------------------------------------------------------
 
 ## Over the piece before night n: the gang's rank, a step up each museum,
-## and which job this is in words — "Ladronzuelo · tu segundo robo en la
-## Gran Cueva"; a museum's last, its big job.
+## and which job this is in words — "Ladronzuelo · tu segundo robo en el
+## Museo de la Prehistoria"; a museum's last, its big job.
 static func heading(n: int, players := 1) -> String:
 	var many := "_MANY" if players > 1 else "_ONE"
 	var m := museum_of(n)
@@ -518,7 +518,7 @@ static func museum(m: int) -> Dictionary:
 	return Text.fields(MUSEUMS[clampi(m, 0, MUSEUMS.size() - 1)], ["name", "text"])
 
 
-## Museum m's name as it goes after "en" or "de": "la Gran Cueva".
+## Museum m's name as it goes after "en" or "de": "el Museo de la Prehistoria".
 static func museum_in(m: int) -> String:
 	var name: String = museum(m).name
 	return name.left(1).to_lower() + name.substr(1)

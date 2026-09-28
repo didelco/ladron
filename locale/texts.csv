@@ -114,7 +114,7 @@ El Barón Von Bostezo enseñó su Diamante Bostezo a los directores de los cinco
 
 Luego se coló en todas las casas del pueblo. Se llevó la dentadura del abuelo Paco, el pato que canta ópera y hasta el bote de ketchup de la nevera de Jake, y lo ha puesto todo en vitrinas con un cartel: «Tesoro antiquísimo».
 
-Esta noche empieza la operación DEVOLVERLO TODO: cinco museos, cinco salas en cada uno. Primera parada: la Gran Cueva. Huele a ketchup rancio."
+Esta noche empieza la operación DEVOLVERLO TODO: cinco museos, cinco salas en cada uno. Primera parada: el Museo de la Prehistoria. Huele a ketchup rancio."
 STORY_ENDING,"¡Lo habéis conseguido!
 
 El abuelo Paco vuelve a masticar turrón, el pato canta a las siete en punto, el yeti tiene los pies calentitos y Jake ya tiene su ketchup (su nevera vuelve a oler fatal, como debe ser).
@@ -195,7 +195,7 @@ LESSON_CASE_ALARM_TEXT,"La vitrina pita mientras la abres. Si viene alguien, su�
 NIGHT_01_NAME,la dentadura del abuelo Paco
 NIGHT_01_BLURB,"Postiza, de porcelana. Tan vieja que parece un fósil."
 NIGHT_01_VERB,DESENROSCANDO EL TARRO
-NIGHT_01_TALE,El Barón la expone con un cartel: «Mandíbula de cavernícola». Desde entonces el abuelo Paco solo come sopa y a todo contesta «mmmfff». Y hoy la cueva no tiene guardias.
+NIGHT_01_TALE,El Barón la expone con un cartel: «Mandíbula de cavernícola». Desde entonces el abuelo Paco solo come sopa y a todo contesta «mmmfff». Y hoy el museo no tiene guardias.
 NIGHT_02_NAME,el calcetín del yeti
 NIGHT_02_BLURB,Talla 98. Huele a glaciar... y a pie.
 NIGHT_02_VERB,DOBLANDO LA LANA
@@ -211,7 +211,7 @@ NIGHT_04_TALE,"Era el gnomo del jardín de la señora Remedios, y por las noches
 NIGHT_05_NAME,el huevo del dinosaurio despistado
 NIGHT_05_BLURB,Setenta millones de años. Aún está calentito.
 NIGHT_05_VERB,SOLTANDO EL HUEVO
-NIGHT_05_TALE,"Una mamá diplodocus lo olvidó en un aparcamiento y ha vuelto a buscarlo. Espera en la puerta de la cueva, muy seria, pisando coches sin querer. Lo vigila el guardián de la cueva, que ve una miga a cien metros."
+NIGHT_05_TALE,"Una mamá diplodocus lo olvidó en un aparcamiento y ha vuelto a buscarlo. Espera en la puerta del museo, muy seria, pisando coches sin querer. Lo vigila el guardián del museo, que ve una miga a cien metros."
 NIGHT_05_TIP,"Si te persigue, piérdelo de vista y métete en un escondite."
 NIGHT_06_NAME,la corona de la Reina de los Pepinillos
 NIGHT_06_BLURB,"Verde, con granitos. Muy real."
@@ -564,16 +564,16 @@ STORY_MUSEUM_LINE,%s · %d/%d SALAS
 STORY_ROOM_PIECE,SALA %d · %s
 STORY_BOSS_PIECE,GRAN GOLPE · %s
 STORY_BOSS_ROOM,GRAN GOLPE
-MUSEUM_1_NAME,La Gran Cueva
-MUSEUM_1_TEXT,"Dinosaurios, mamuts y cosas tan viejas que ya son fósiles"
-MUSEUM_2_NAME,La Casa de los Bichos
-MUSEUM_2_TEXT,"Bichos, plantas y un pulpo que no quiere que lo miren"
-MUSEUM_3_NAME,El Templo de las Momias
-MUSEUM_3_TEXT,"Momias, faraones y un huevo duro que nadie se atreve a oler"
-MUSEUM_4_NAME,El Castillo de los Inventos
-MUSEUM_4_TEXT,"Caballeros, dragones que estornudan e inventos que casi funcionan"
-MUSEUM_5_NAME,La Torre de Cristal
-MUSEUM_5_TEXT,"Arte moderno, o eso dice el Barón. Y arriba del todo, su despacho"
+MUSEUM_1_NAME,El Museo de la Prehistoria
+MUSEUM_1_TEXT,"Dinosaurios, mamuts y las herramientas de los primeros humanos"
+MUSEUM_2_NAME,El Museo de Ciencias Naturales
+MUSEUM_2_TEXT,"Insectos, plantas y animales de todo el mundo, de la selva al fondo del mar"
+MUSEUM_3_NAME,La Villa de las Antigüedades
+MUSEUM_3_TEXT,"Momias, estatuas y tesoros de Egipto, Grecia y Roma"
+MUSEUM_4_NAME,El Museo del Castillo
+MUSEUM_4_TEXT,"Caballeros, armaduras y los grandes inventos del Renacimiento"
+MUSEUM_5_NAME,El Museo de Arte Contemporáneo
+MUSEUM_5_TEXT,"Arte de hoy en una torre de cristal. Arriba del todo, el despacho del Barón"
 MENU_CHALLENGE,RETOS
 MENU_CHALLENGE_TEXT,Mapas hechos a mano y tu editor
 CHALLENGE_TITLE,RETOS

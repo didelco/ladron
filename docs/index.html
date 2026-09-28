@@ -1041,7 +1041,7 @@ function propuesta() {
   const bt = (bg, bd, fg, glow) => `style="background:${bg};border:${bd};color:${fg}${glow ? ";box-shadow:0 0 16px " + glow : ""}"`;
   const maqueta = (et, v) => `<div class="maqueta" style="background-image:${fondo}"><div class="et">${et}</div>
     <div class="bts"><span class="bt" ${bt(v.glass, "2px solid " + v.edge, v.text)}>HISTORIA</span><span class="bt" ${bt(v.lit, "3px solid " + v.glow, v.glowText, v.glowSoft)}>DESAFÍO</span><span class="bt" ${bt(v.glass, "2px solid " + v.edge, v.l2)}>2 JUGADORES</span></div>
-    <div class="tj" style="background:${v.glass};border:2px solid ${v.edge}"><h4 style="color:${v.title}">La dentadura de Ugg</h4><p style="color:${v.text}">Sala 1 · La Gran Cueva</p>
+    <div class="tj" style="background:${v.glass};border:2px solid ${v.edge}"><h4 style="color:${v.title}">La dentadura de Ugg</h4><p style="color:${v.text}">Sala 1 · El Museo de la Prehistoria</p>
       <p style="color:${v.dim}"><b style="background:${v.key};color:${v.keyInk};padding:1px 5px;border-radius:4px">A</b> Robar la pieza y salir sin que te vean.</p>
       <p style="color:${v.dim}"><b style="background:${v.key};color:${v.keyInk};padding:1px 5px;border-radius:4px">B</b> Si un guardia te ve, suena la <b style="color:${v.alarm}">alarma</b>.</p></div>
     <div class="banda" style="background:${v.band}">${v.who.map(([n, c, extra]) => `<span class="quien"><i class="${n === "Pieza" ? "gema" : ""}" style="background:${c};${extra || ""}"></i>${n}</span>`).join("")}</div></div>`;

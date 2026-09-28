@@ -1206,7 +1206,7 @@ window.TEXTOS = [
  },
  {
   "key": "STORY_PROLOGUE",
-  "es": "Esta es la Banda del Calcetín: ladrones que solo roban lo que ya estaba robado.\n\nEl Barón Von Bostezo enseñó su Diamante Bostezo a los directores de los cinco museos de la ciudad. Bostezaron tanto que le firmaron un papel sin leerlo: «Regalo mi museo al Barón».\n\nLuego se coló en todas las casas del pueblo. Se llevó la dentadura del abuelo Paco, el pato que canta ópera y hasta el bote de ketchup de la nevera de Jake, y lo ha puesto todo en vitrinas con un cartel: «Tesoro antiquísimo».\n\nEsta noche empieza la operación DEVOLVERLO TODO: cinco museos, cinco salas en cada uno. Primera parada: la Gran Cueva. Huele a ketchup rancio.",
+  "es": "Esta es la Banda del Calcetín: ladrones que solo roban lo que ya estaba robado.\n\nEl Barón Von Bostezo enseñó su Diamante Bostezo a los directores de los cinco museos de la ciudad. Bostezaron tanto que le firmaron un papel sin leerlo: «Regalo mi museo al Barón».\n\nLuego se coló en todas las casas del pueblo. Se llevó la dentadura del abuelo Paco, el pato que canta ópera y hasta el bote de ketchup de la nevera de Jake, y lo ha puesto todo en vitrinas con un cartel: «Tesoro antiquísimo».\n\nEsta noche empieza la operación DEVOLVERLO TODO: cinco museos, cinco salas en cada uno. Primera parada: el Museo de la Prehistoria. Huele a ketchup rancio.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -1982,7 +1982,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_01_TALE",
-  "es": "El Barón la expone con un cartel: «Mandíbula de cavernícola». Desde entonces el abuelo Paco solo come sopa y a todo contesta «mmmfff». Y hoy la cueva no tiene guardias.",
+  "es": "El Barón la expone con un cartel: «Mandíbula de cavernícola». Desde entonces el abuelo Paco solo come sopa y a todo contesta «mmmfff». Y hoy el museo no tiene guardias.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2158,7 +2158,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_05_TALE",
-  "es": "Una mamá diplodocus lo olvidó en un aparcamiento y ha vuelto a buscarlo. Espera en la puerta de la cueva, muy seria, pisando coches sin querer. Lo vigila el guardián de la cueva, que ve una miga a cien metros.",
+  "es": "Una mamá diplodocus lo olvidó en un aparcamiento y ha vuelto a buscarlo. Espera en la puerta del museo, muy seria, pisando coches sin querer. Lo vigila el guardián del museo, que ve una miga a cien metros.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -4163,7 +4163,7 @@ window.TEXTOS = [
   "group": "Otros",
   "at": [
    "scenes/main.gd:2197",
-   "scenes/tour.gd:552"
+   "scenes/tour.gd:556"
   ],
   "via": []
  },
@@ -5893,13 +5893,13 @@ window.TEXTOS = [
   "group": "Historia",
   "at": [
    "scenes/tour.gd:220",
-   "scenes/tour.gd:276"
+   "scenes/tour.gd:277"
   ],
   "via": []
  },
  {
   "key": "MUSEUM_1_NAME",
-  "es": "La Gran Cueva",
+  "es": "El Museo de la Prehistoria",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -5910,7 +5910,7 @@ window.TEXTOS = [
  },
  {
   "key": "MUSEUM_1_TEXT",
-  "es": "Dinosaurios, mamuts y cosas tan viejas que ya son fósiles",
+  "es": "Dinosaurios, mamuts y las herramientas de los primeros humanos",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -5921,7 +5921,7 @@ window.TEXTOS = [
  },
  {
   "key": "MUSEUM_2_NAME",
-  "es": "La Casa de los Bichos",
+  "es": "El Museo de Ciencias Naturales",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -5932,7 +5932,7 @@ window.TEXTOS = [
  },
  {
   "key": "MUSEUM_2_TEXT",
-  "es": "Bichos, plantas y un pulpo que no quiere que lo miren",
+  "es": "Insectos, plantas y animales de todo el mundo, de la selva al fondo del mar",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -5943,7 +5943,7 @@ window.TEXTOS = [
  },
  {
   "key": "MUSEUM_3_NAME",
-  "es": "El Templo de las Momias",
+  "es": "La Villa de las Antigüedades",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -5954,7 +5954,7 @@ window.TEXTOS = [
  },
  {
   "key": "MUSEUM_3_TEXT",
-  "es": "Momias, faraones y un huevo duro que nadie se atreve a oler",
+  "es": "Momias, estatuas y tesoros de Egipto, Grecia y Roma",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -5965,7 +5965,7 @@ window.TEXTOS = [
  },
  {
   "key": "MUSEUM_4_NAME",
-  "es": "El Castillo de los Inventos",
+  "es": "El Museo del Castillo",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -5976,7 +5976,7 @@ window.TEXTOS = [
  },
  {
   "key": "MUSEUM_4_TEXT",
-  "es": "Caballeros, dragones que estornudan e inventos que casi funcionan",
+  "es": "Caballeros, armaduras y los grandes inventos del Renacimiento",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -5987,7 +5987,7 @@ window.TEXTOS = [
  },
  {
   "key": "MUSEUM_5_NAME",
-  "es": "La Torre de Cristal",
+  "es": "El Museo de Arte Contemporáneo",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -5998,7 +5998,7 @@ window.TEXTOS = [
  },
  {
   "key": "MUSEUM_5_TEXT",
-  "es": "Arte moderno, o eso dice el Barón. Y arriba del todo, su despacho",
+  "es": "Arte de hoy en una torre de cristal. Arriba del todo, el despacho del Barón",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -11130,7 +11130,7 @@ window.TEXTOS = [
   "group": "Otros",
   "at": [
    "scenes/tour.gd:220",
-   "scenes/tour.gd:276"
+   "scenes/tour.gd:277"
   ],
   "via": []
  },

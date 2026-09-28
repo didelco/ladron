@@ -603,7 +603,7 @@ window.CODIGO = {
     "line": 29
    },
    "LEVELS": {
-    "value": "[ # --- La Gran Cueva: prehistory. Small museums, one guard at most. {\"size\": \"small\", \"shape\": \"rect\", \"guards\": 0, \"view\": 0.45, \"hearing\": 0.2, \"speed\": 0.4, \"calm_after\": 5.0, \"alarms\": 3, \"props\": false, \"lights\": false, \"case_alarm\": false, \"teach\": \"heist\", \"par\": 30, \"loot\": {\"name\": \"NIGHT_01_NAME\", \"blurb\": \"NIGHT_01_BLURB\", \"verb\": \"NIGHT_01_VERB\", \"seconds\": 1.5, \"colour\": \"#f4f1e6\", \"…",
+    "value": "[ # --- El Museo de la Prehistoria: prehistory. Small museums, one guard at most. {\"size\": \"small\", \"shape\": \"rect\", \"guards\": 0, \"view\": 0.45, \"hearing\": 0.2, \"speed\": 0.4, \"calm_after\": 5.0, \"alarms\": 3, \"props\": false, \"lights\": false, \"case_alarm\": false, \"teach\": \"heist\", \"par\": 30, \"loot\": {\"name\": \"NIGHT_01_NAME\", \"blurb\": \"NIGHT_01_BLURB\", \"verb\": \"NIGHT_01_VERB\", \"seconds\": 1.5, \"colour\":…",
     "note": "Each heist: museum size and shape, how many guards, their senses and pace (Sim.tuning keys), what is switched on yet (props, lights, the case's alarm: Sim.feature), a guard's post if the lesson or the big job needs one, the one thing it teaches (LESSONS), and the piece. A big job says so (\"boss\") and has a line of its own for the plan (\"tip\"). Easy to hard, one new thing at a time; each museum's pieces fit its theme. \"reseed\" (optional) builds the night's museum from that many seeds on (seed_for), for a museum that suits it better than the first. \"par\": the time for the fast star (stars), in seconds.",
     "line": 40
    },
@@ -648,7 +648,7 @@ window.CODIGO = {
     "line": 210
    },
    "MUSEUMS": {
-    "value": "[ # La Gran Cueva: rough ochre stone underfoot, clay walls, dark rock below. {\"name\": \"MUSEUM_1_NAME\", \"text\": \"MUSEUM_1_TEXT\", \"theme\": \"prehistoria\", \"colour\": \"#d08a3a\", \"palette\": {\"floor\": 0, \"stone\": Color(\"#4a3624\"), \"stone2\": Color(\"#56402a\"), \"joint\": Color(\"#1e140c\"), \"gloss\": 0.55, \"paper\": Color(\"#6b3f1f\"), \"paper2\": Color(\"#7a4a25\"), \"wallpaper\": 0, \"wainscot\": Color(\"#3a2a1c\"), \"dado…",
+    "value": "[ # El Museo de la Prehistoria: rough ochre stone underfoot, clay walls, dark rock below. {\"name\": \"MUSEUM_1_NAME\", \"text\": \"MUSEUM_1_TEXT\", \"theme\": \"prehistoria\", \"colour\": \"#d08a3a\", \"palette\": {\"floor\": 0, \"stone\": Color(\"#4a3624\"), \"stone2\": Color(\"#56402a\"), \"joint\": Color(\"#1e140c\"), \"gloss\": 0.55, \"paper\": Color(\"#6b3f1f\"), \"paper2\": Color(\"#7a4a25\"), \"wallpaper\": 0, \"wainscot\": Color(\"#3a…",
     "note": "The town's museums, each a stop on the city map with ROOMS heists inside, in order, the last its big job. Each shows one theme (Themes): its galleries, its corridors and its pieces. Each has its own floor and walls (MuseumView.THEMES keys) to match, and a colour for its stop on the map. In the order of time, from the dinosaurs to today: prehistory, nature (the living world, still in the old natural-history style), the ancient world, the middle ages, and the modern age, the Barón's own tower.",
     "line": 221
    },

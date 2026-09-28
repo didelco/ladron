@@ -151,9 +151,9 @@ En el título se elige el modo:
   museo pequeño sin guardias) a difícil (cuatro guardias en uno grande). El Barón Von Bostezo se
   ha quedado con los cinco museos de la ciudad y la Banda del Calcetín rescata sus obras
   (`logic/story.gd`). Cada museo es de un tema (`logic/themes.gd`), con sus colores de pared y
-  suelo, y todo lo que enseña y se roba es de ese tema: la Gran Cueva (prehistoria), la Casa de
-  los Bichos (naturaleza), el Templo de las Momias (mundo antiguo), el Castillo de los Inventos
-  (Edad Media) y la Torre de Cristal (edad moderna). Las cuatro primeras salas son robos normales;
+  suelo, y todo lo que enseña y se roba es de ese tema: el Museo de la Prehistoria (prehistoria),
+  el Museo de Ciencias Naturales (naturaleza), la Villa de las Antigüedades (mundo antiguo), el
+  Museo del Castillo (Edad Media y Renacimiento) y el Museo de Arte Contemporáneo (edad moderna). Las cuatro primeras salas son robos normales;
   la quinta, el **gran golpe** del museo, con algo especial (un guardián que ve lejos, un guardia
   pegado a la pieza, tres guardias, la sala del trono, el gran final); al hacerlo se abre el
   siguiente museo. Primero se elige cuántos ladrones; luego, en el mapa de la ciudad, un museo y

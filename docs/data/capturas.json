@@ -32,35 +32,35 @@
 		"id": "menu_museo_1",
 		"section": "menus",
 		"text": "Su edificio de cerca, cada museo el suyo: cada sala, una ventana de la fachada o del costado que se ve, con su pieza a contraluz, su número y sus estrellas (solo las desbloqueadas; las demás son ventanas como las otras); el gran golpe, en el centro de la fachada: la ventana grande o la misma puerta.",
-		"title": "Museo 1: La Gran Cueva"
+		"title": "Museo 1: El Museo de la Prehistoria"
 	},
 	{
 		"file": "capturas/menu_museo_2.webp",
 		"id": "menu_museo_2",
 		"section": "menus",
 		"text": "Su edificio de cerca, cada museo el suyo: cada sala, una ventana de la fachada o del costado que se ve, con su pieza a contraluz, su número y sus estrellas (solo las desbloqueadas; las demás son ventanas como las otras); el gran golpe, en el centro de la fachada: la ventana grande o la misma puerta.",
-		"title": "Museo 2: La Casa de los Bichos"
+		"title": "Museo 2: El Museo de Ciencias Naturales"
 	},
 	{
 		"file": "capturas/menu_museo_3.webp",
 		"id": "menu_museo_3",
 		"section": "menus",
 		"text": "Su edificio de cerca, cada museo el suyo: cada sala, una ventana de la fachada o del costado que se ve, con su pieza a contraluz, su número y sus estrellas (solo las desbloqueadas; las demás son ventanas como las otras); el gran golpe, en el centro de la fachada: la ventana grande o la misma puerta.",
-		"title": "Museo 3: El Templo de las Momias"
+		"title": "Museo 3: La Villa de las Antigüedades"
 	},
 	{
 		"file": "capturas/menu_museo_4.webp",
 		"id": "menu_museo_4",
 		"section": "menus",
 		"text": "Su edificio de cerca, cada museo el suyo: cada sala, una ventana de la fachada o del costado que se ve, con su pieza a contraluz, su número y sus estrellas (solo las desbloqueadas; las demás son ventanas como las otras); el gran golpe, en el centro de la fachada: la ventana grande o la misma puerta.",
-		"title": "Museo 4: El Castillo de los Inventos"
+		"title": "Museo 4: El Museo del Castillo"
 	},
 	{
 		"file": "capturas/menu_museo_5.webp",
 		"id": "menu_museo_5",
 		"section": "menus",
 		"text": "Su edificio de cerca, cada museo el suyo: cada sala, una ventana de la fachada o del costado que se ve, con su pieza a contraluz, su número y sus estrellas (solo las desbloqueadas; las demás son ventanas como las otras); el gran golpe, en el centro de la fachada: la ventana grande o la misma puerta.",
-		"title": "Museo 5: La Torre de Cristal"
+		"title": "Museo 5: El Museo de Arte Contemporáneo"
 	},
 	{
 		"file": "capturas/menu_generativo.webp",
