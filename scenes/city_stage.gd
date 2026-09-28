@@ -19,6 +19,8 @@ extends SubViewport
 ## The town's colours, new with it: all here, to change in one place.
 const SKY := Color("#110d1f")
 const RING := Color("#ffc94a")
+## seconds the ninja star round the museum picked takes to turn once
+const STAR_TURN_S := 10.0
 const LOCK := Color("#9a8fb0")
 ## The padlock over a shut museum: light, to stand out over the town.
 const PADLOCK := Color("#e4dcf5")
@@ -103,8 +105,9 @@ var _keep := PackedVector2Array()
 var _shells: Array[Node3D] = []
 var _locks: Array[Node3D] = []
 var _open: Array[bool] = []
-var _ring: MeshInstance3D
-var _ring_light: SpotLight3D
+## the ninja star spinning round the museum picked, and its spotlight
+var _star: MeshInstance3D
+var _star_light: SpotLight3D
 var picked := 0
 var _t := 0.0
 ## the museum gone into (-1 in the town), its rooms (their windows)
@@ -253,21 +256,20 @@ func build(open_to: int, pick: int) -> void:
 		lock.visible = m > open_to
 		lot.add_child(lock)
 		_locks.append(lock)
-	_ring = MeshInstance3D.new()
-	var torus := TorusMesh.new()
-	torus.inner_radius = TownBuilder.block_size() * 0.66
-	torus.outer_radius = TownBuilder.block_size() * 0.66 + 0.18
-	torus.rings = 64
-	_ring.mesh = torus
-	_ring.material_override = _glow_material(RING, 1.0)
-	town.add_child(_ring)
-	_ring_light = SpotLight3D.new()
-	_ring_light.light_color = Color("#ffd9a0")
-	_ring_light.light_energy = 4.0
-	_ring_light.spot_range = 20.0
-	_ring_light.spot_angle = 24.0
-	_ring_light.rotation_degrees = Vector3(-90, 0, 0)
-	town.add_child(_ring_light)
+	_star = MeshInstance3D.new()
+	var hole := TownBuilder.block_size() * 0.68
+	_star.mesh = shuriken(hole, hole + 0.45, hole + 2.0)
+	var shine := _glow_material(RING, 0.35)
+	shine.vertex_color_use_as_albedo = true
+	_star.material_override = shine
+	town.add_child(_star)
+	_star_light = SpotLight3D.new()
+	_star_light.light_color = Color("#ffd9a0")
+	_star_light.light_energy = 4.0
+	_star_light.spot_range = 20.0
+	_star_light.spot_angle = 24.0
+	_star_light.rotation_degrees = Vector3(-90, 0, 0)
+	town.add_child(_star_light)
 	picked = clampi(pick, 0, _museums.size() - 1)
 	focus = _look_at(picked)
 	view = CITY_VIEW
@@ -438,7 +440,7 @@ func _process(dt: float) -> void:
 	if _gliding() and not _museums.is_empty():
 		focus = focus.lerp(_look_at(picked), 1.0 - exp(-dt * (40.0 if hurry else FOLLOW_S)))
 		_place_camera()
-	# The picked museum hops a little and its ring breathes round it.
+	# The picked museum hops a little and a ninja star spins round it.
 	for m in _museums.size():
 		var shell := _shells[m]
 		var hop := 0.0
@@ -449,16 +451,18 @@ func _process(dt: float) -> void:
 		if lock.visible:
 			lock.rotation.y = sin(_t * 1.6 + m) * 0.35
 			lock.position.y = _roof_height(m) + 1.6 + sin(_t * 2.0 + m) * 0.08
-	if _ring and not _museums.is_empty():
+	if _star and not _museums.is_empty():
 		var lot := _museums[picked]
-		_ring.visible = inside < 0
-		_ring_light.visible = inside < 0 and _open[picked]
-		_ring.position = _ring.position.lerp(lot.position + Vector3(0, 0.05, 0), 1.0 - exp(-dt * 10.0))
-		_ring.scale = Vector3.ONE * (1.0 + sin(_t * 4.0) * 0.03)
-		var ring := _ring.material_override as StandardMaterial3D
-		ring.albedo_color = RING if _open[picked] else LOCK
-		ring.emission = ring.albedo_color
-		_ring_light.position = _ring.position + Vector3(0, 9, 0)
+		_star.visible = inside < 0
+		_star_light.visible = inside < 0 and _open[picked]
+		_star.position = _star.position.lerp(lot.position + Vector3(0, 0.05, 0), 1.0 - exp(-dt * 10.0))
+		# Up +Y, seen from above: turning positive is anticlockwise on screen.
+		_star.rotation.y = fmod(_t * TAU / STAR_TURN_S, TAU)
+		_star.scale = Vector3.ONE * (1.0 + sin(_t * 4.0) * 0.03)
+		var star := _star.material_override as StandardMaterial3D
+		star.albedo_color = RING if _open[picked] else LOCK
+		star.emission = star.albedo_color
+		_star_light.position = _star.position + Vector3(0, 9, 0)
 	if inside >= 0:
 		_animate_rooms(dt)
 
@@ -554,6 +558,78 @@ static func _part(parent: Node3D, mesh: Mesh, colour: Color, at: Vector3) -> Mes
 	mi.position = at
 	parent.add_child(mi)
 	return mi
+
+
+## A five-pointed ninja star lying flat on the ground (y up): a round hole
+## of radius hole in the middle, straight-edged blades whose notches reach
+## out to valley and whose sharp tips reach out to tip. The blades rise to a
+## ridge along each point and slope down to a bevelled rim, flat-shaded and
+## two-toned in vertex colours: each point's one side lit, the other in shade.
+static func shuriken(hole: float, valley: float, tip: float) -> ArrayMesh:
+	const POINTS := 5
+	const STEPS := 6  # per edge, tip to notch
+	const BEVEL := 0.16
+	const RIDGE := 0.3  # height at the hole and along each point
+	const FLANK := 0.12  # height of the top's rim at the notches
+	const SHADE := 0.62  # the shaded side of each point
+	const EDGE := 0.55  # the bevel and the walls
+	const RIM := 0.03  # height of the bevel's foot
+	# The outline, one tip to the next notch to the next tip...: each
+	# edge a straight line, sampled at even angles along it.
+	var angles := PackedFloat32Array()
+	var outer: Array[Vector2] = []
+	var top: Array[Vector2] = []
+	var lift := PackedFloat32Array()
+	var tone := PackedFloat32Array()
+	for e in POINTS * 2:
+		var a0 := TAU * e / (POINTS * 2)
+		var a1 := TAU * (e + 1) / (POINTS * 2)
+		var p0 := Vector2.from_angle(a0) * (tip if e % 2 == 0 else valley)
+		var p1 := Vector2.from_angle(a1) * (valley if e % 2 == 0 else tip)
+		for k in STEPS:
+			var a := lerpf(a0, a1, float(k) / STEPS)
+			# Where the ray at angle a crosses the edge p0-p1.
+			var d := Vector2.from_angle(a)
+			var hit: Variant = Geometry2D.line_intersects_line(Vector2.ZERO, d, p0, p1 - p0)
+			var p: Vector2 = hit if hit != null else p0
+			angles.append(a)
+			outer.append(p)
+			top.append(p - d * BEVEL)
+			# Highest along a point, lowest at a notch.
+			var f := float(k) / STEPS
+			lift.append(lerpf(RIDGE, FLANK, f) if e % 2 == 0 else lerpf(FLANK, RIDGE, f))
+			tone.append(1.0 if e % 2 == 0 else SHADE)
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var n := angles.size()
+	for i in n:
+		var j := (i + 1) % n
+		var h0 := Vector2.from_angle(angles[i]) * hole
+		var h1 := Vector2.from_angle(angles[j]) * hole
+		var hi0 := Vector3(h0.x, RIDGE, h0.y)
+		var hi1 := Vector3(h1.x, RIDGE, h1.y)
+		var t0 := Vector3(top[i].x, lift[i], top[i].y)
+		var t1 := Vector3(top[j].x, lift[j], top[j].y)
+		var r0 := Vector3(outer[i].x, RIM, outer[i].y)
+		var r1 := Vector3(outer[j].x, RIM, outer[j].y)
+		var f0 := Vector3(outer[i].x, 0, outer[i].y)
+		var f1 := Vector3(outer[j].x, 0, outer[j].y)
+		var b0 := Vector3(h0.x, 0, h0.y)
+		var b1 := Vector3(h1.x, 0, h1.y)
+		_quad(st, hi0, hi1, t1, t0, Color(tone[i], tone[i], tone[i]))  # the top, hole to rim
+		_quad(st, t0, t1, r1, r0, Color(EDGE, EDGE, EDGE))  # the bevel
+		_quad(st, r0, r1, f1, f0, Color(EDGE, EDGE, EDGE))  # the outer side
+		_quad(st, b0, b1, hi1, hi0, Color(EDGE, EDGE, EDGE))  # the hole's wall
+	st.generate_normals()
+	return st.commit()
+
+
+## Quad a-b-c-d, its front the side it winds anticlockwise from, as two
+## triangles wound the other way round (Godot's front faces wind clockwise).
+static func _quad(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3, tint: Color) -> void:
+	st.set_color(tint)
+	for v: Vector3 in [a, c, b, a, d, c]:
+		st.add_vertex(v)
 
 
 ## Museum m's padlock back on, to pop off (unlock) as the town shows it.

@@ -414,6 +414,21 @@
    ]
   },
   {
+   "asunto": "ciudad",
+   "fecha": "2026-09-28T18:28",
+   "commit": "14f32aa",
+   "titulo": "El museo elegido, con un anillo dorado",
+   "porque": "Antes de cambiar el anillo que marca el museo elegido por una estrella ninja",
+   "cambio": "La ciudad con las rocas en montones y las manzanas giradas; el museo elegido rodeado por un anillo dorado que late",
+   "file": "versiones/ciudad/2026-09-28-el-museo-elegido-con-un-anillo-dorado.webp",
+   "from": "docs/capturas/menu_historia_ciudad.webp",
+   "commit_msg": "La ciudad (alternativa C): rocas en montones sin filas y manzanas con giros",
+   "size": [
+    1280,
+    720
+   ]
+  },
+  {
    "asunto": "museo",
    "fecha": "2026-09-27T10:02",
    "commit": "3888cd5",
