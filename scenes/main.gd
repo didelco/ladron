@@ -891,7 +891,8 @@ func _tour_go(_n: int) -> void:
 	var t := tour
 	tour = null
 	t.fade_out()
-	_start_countdown()
+	# The "3" once the plan has gone, not under it.
+	_start_countdown(Hud.FADE_S)
 
 
 ## The generative mode: difficulty and museum size as cards, then play with

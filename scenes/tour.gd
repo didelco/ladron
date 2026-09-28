@@ -326,11 +326,12 @@ func _go() -> void:
 func fade_out() -> void:
 	state = "going"
 	_set_hints([])
-	var secs := 0.0 if stage.hurry else 0.7
+	# Out as every screen goes into the game (Hud.FADE_S, Hud's curve).
+	var secs := 0.0 if stage.hurry else Hud.FADE_S
 	var tw := create_tween().set_parallel()
-	tw.tween_property(_root, "modulate:a", 0.0, secs).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tw.tween_property(_root, "modulate:a", 0.0, secs).set_trans(Hud.TRANS).set_ease(Hud.EASE)
 	if stage.sheet:
-		tw.tween_property(stage.sheet, "scale", stage.sheet.scale * 1.6, secs).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		tw.tween_property(stage.sheet, "scale", stage.sheet.scale * 1.6, secs).set_trans(Hud.TRANS).set_ease(Hud.EASE)
 	tw.chain().tween_callback(queue_free)
 
 
@@ -583,7 +584,8 @@ uniform vec4 low : source_color = vec4(0.15, 0.1, 0.24, 1.0);
 void fragment() {
 	vec3 c = mix(top.rgb, low.rgb, smoothstep(0.0, 1.0, UV.y));
 	c *= 1.0 - distance(UV, vec2(0.5, 0.55)) * 0.5;
-	COLOR = vec4(c, 1.0);
+	// Its own colour, but the node's fade (modulate) as it comes and goes.
+	COLOR = vec4(c, COLOR.a);
 }
 """
 	var m := ShaderMaterial.new()
