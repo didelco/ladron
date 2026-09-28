@@ -2112,6 +2112,127 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#4f4964",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "ROCK",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#7d7590",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "ROCK_LIGHT",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2f6b45",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "PITCH_GRASS",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#b8643a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "COURT",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#3f6e8a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "TENNIS",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#e8e4f0",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "LINE",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#5fe0ff",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "POOL_WATER",
+   "note": "The town's own colours at night: all here, to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffb8616b",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "GLOW_LAMP",
+   "note": "The pools of light: a street lamp's, a lit house's, a floodlight's."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffa85742",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "GLOW_HOUSE",
+   "note": "The pools of light: a street lamp's, a lit house's, a floodlight's."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#d9e6ff4d",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "GLOW_FLOOD",
+   "note": "The pools of light: a street lamp's, a lit house's, a floodlight's."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#59d9ff59",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "GLOW_POOL",
+   "note": "The pools of light: a street lamp's, a lit house's, a floodlight's."
+  },
+  {
+   "colours": [
+    {
      "hex": "#b9b0e0",
      "key": ""
     }
@@ -4509,7 +4630,7 @@ window.JUEGO = {
    "file": "capturas/menu_historia_ciudad.webp",
    "id": "menu_historia_ciudad",
    "section": "menus",
-   "text": "La ciudad en 3D, más grande que la pantalla: un río con meandros la parte en barrios de trama propia, con bosque entre ellos y la orilla de arriba más alta; la cámara mira al museo elegido, con dos o tres a la vista, y se desliza hasta el siguiente por calles y puentes.",
+   "text": "La ciudad en 3D, más grande que la pantalla: un río con meandros la parte en barrios de trama propia, con bosque y casas sueltas entre ellos, una loma de rocas al norte, un paseo y una zona deportiva junto al agua; la cámara mira al museo elegido y se desliza hasta el siguiente por calles y puentes.",
    "title": "Historia: la ciudad"
   },
   {
@@ -7422,8 +7543,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "28-09-2026 10:50",
-  "commit": "bd4785f",
+  "fecha": "28-09-2026 11:28",
+  "commit": "6cde574",
   "rama": "main"
  }
 };

@@ -311,6 +311,38 @@ window.VERSIONES = {
    "bytes": 179022
   },
   {
+   "asunto": "ciudad",
+   "fecha": "2026-09-28T11:28",
+   "commit": "6cde574",
+   "titulo": "Rocas, casas sueltas y luz de noche",
+   "porque": "Variar la ciudad y alumbrarla de noche",
+   "cambio": "Museos algo más separados; una loma de rocas al norte; casas y chalets sueltos entre los barrios; paseo y zona deportiva junto al río; charcos de luz bajo farolas, casas y focos",
+   "file": "versiones/ciudad/2026-09-28-rocas-casas-sueltas-y-luz-de-noche.webp",
+   "from": "docs/capturas/menu_historia_ciudad.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 126138
+  },
+  {
+   "asunto": "ciudad",
+   "fecha": "2026-09-28T11:28",
+   "commit": "6cde574",
+   "titulo": "Rocas, casas sueltas y luz de noche, vista desde arriba",
+   "porque": "El plano completo con las rocas, las casas sueltas y la luz",
+   "cambio": "La loma de rocas al norte, casas sueltas por el bosque, la zona deportiva junto al río",
+   "file": "versiones/ciudad/2026-09-28-rocas-casas-sueltas-y-luz-de-noche-vista.webp",
+   "from": "build/tmp/full.png",
+   "commit_msg": "",
+   "size": [
+    1600,
+    1200
+   ],
+   "bytes": 172930
+  },
+  {
    "asunto": "museo",
    "fecha": "2026-09-27T10:02",
    "commit": "3888cd5",
@@ -375,5 +407,5 @@ window.VERSIONES = {
    "bytes": 68042
   }
  ],
- "bytes": 1304866
+ "bytes": 1603934
 };

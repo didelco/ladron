@@ -37,8 +37,8 @@ const YAW := 20.0
 ## back: the first on the near bank, by the water; over the first bridge,
 ## the next two up in the high town, one above the other; across it to the
 ## fourth; and over the second bridge to the last, by the water again.
-const MUSEUM_SPOTS := [Vector2(-9, -7), Vector2(-6, 12), Vector2(-2, 20), Vector2(13, 12), Vector2(16, -7)]
-const HIDEOUT_SPOT := Vector2(-18, -8)
+const MUSEUM_SPOTS := [Vector2(-12, -7.5), Vector2(-7, 13), Vector2(-2, 23), Vector2(15, 13), Vector2(20, -7.5)]
+const HIDEOUT_SPOT := Vector2(-21, -8)
 ## The river runs across the screen this steeply (up for each one across).
 const RIVER_TILT := 0.45
 ## The districts: two on the near bank, two on the high one, each its grid
@@ -46,7 +46,7 @@ const RIVER_TILT := 0.45
 ## (s, q up from the river: its first museum's), and where the two of each
 ## bank meet (s).
 const DISTRICT_ANGLES := [0.0, 20.0, -16.0, 13.0]
-const DISTRICT_ORIGINS := [Vector2(-9, -7), Vector2(16, -7), Vector2(-6, 12), Vector2(13, 12)]
+const DISTRICT_ORIGINS := [Vector2(-12, -7.5), Vector2(20, -7.5), Vector2(-7, 13), Vector2(15, 13)]
 const SPLIT_LOW := 4.0
 const SPLIT_HIGH := 5.0
 ## How far the camera sees (orthographic height) over the town, and over a museum.

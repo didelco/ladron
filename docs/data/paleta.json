@@ -2111,6 +2111,127 @@
 	{
 		"colours": [
 			{
+				"hex": "#4f4964",
+				"key": ""
+			}
+		],
+		"file": "scenes/town_builder.gd",
+		"name": "ROCK",
+		"note": "The town's own colours at night: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#7d7590",
+				"key": ""
+			}
+		],
+		"file": "scenes/town_builder.gd",
+		"name": "ROCK_LIGHT",
+		"note": "The town's own colours at night: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#2f6b45",
+				"key": ""
+			}
+		],
+		"file": "scenes/town_builder.gd",
+		"name": "PITCH_GRASS",
+		"note": "The town's own colours at night: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#b8643a",
+				"key": ""
+			}
+		],
+		"file": "scenes/town_builder.gd",
+		"name": "COURT",
+		"note": "The town's own colours at night: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#3f6e8a",
+				"key": ""
+			}
+		],
+		"file": "scenes/town_builder.gd",
+		"name": "TENNIS",
+		"note": "The town's own colours at night: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#e8e4f0",
+				"key": ""
+			}
+		],
+		"file": "scenes/town_builder.gd",
+		"name": "LINE",
+		"note": "The town's own colours at night: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#5fe0ff",
+				"key": ""
+			}
+		],
+		"file": "scenes/town_builder.gd",
+		"name": "POOL_WATER",
+		"note": "The town's own colours at night: all here, to change in one place."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ffb8616b",
+				"key": ""
+			}
+		],
+		"file": "scenes/town_builder.gd",
+		"name": "GLOW_LAMP",
+		"note": "The pools of light: a street lamp's, a lit house's, a floodlight's."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#ffa85742",
+				"key": ""
+			}
+		],
+		"file": "scenes/town_builder.gd",
+		"name": "GLOW_HOUSE",
+		"note": "The pools of light: a street lamp's, a lit house's, a floodlight's."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#d9e6ff4d",
+				"key": ""
+			}
+		],
+		"file": "scenes/town_builder.gd",
+		"name": "GLOW_FLOOD",
+		"note": "The pools of light: a street lamp's, a lit house's, a floodlight's."
+	},
+	{
+		"colours": [
+			{
+				"hex": "#59d9ff59",
+				"key": ""
+			}
+		],
+		"file": "scenes/town_builder.gd",
+		"name": "GLOW_POOL",
+		"note": "The pools of light: a street lamp's, a lit house's, a floodlight's."
+	},
+	{
+		"colours": [
+			{
 				"hex": "#b9b0e0",
 				"key": ""
 			}

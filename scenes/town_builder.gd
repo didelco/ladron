@@ -5,8 +5,17 @@ extends RefCounted
 ## river crosses it on the slant, winding in wide bends (river_at), and
 ## splits it into districts (District), each its own grid of streets turned
 ## its own way, two on either bank; between them and along the water, woods
-## and grass. The far bank stands higher (RISE), up a wooded slope from
-## the water; a couple of bridges (bridges) are the only ways across.
+## and grass, and houses and chalets of their own, each its own way (loose
+## houses). The far bank stands higher (RISE), up a wooded slope from the
+## water, and to the north rises a hill of great rocks (ROCK_HILL) the
+## districts go round; a couple of bridges (bridges) are the only ways
+## across. Along the near bank, a riverside walk with its lamps and benches,
+## and a sports ground (pitches and courts under their floodlights).
+##
+## Night light, cheap: no lights at all but the stage's own; every lamp,
+## lit house, pool and floodlight casts a pool of light on the ground drawn
+## as a flat quad added onto whatever is under it (POOL_SHADER), all of
+## them one MultiMesh.
 ##
 ## Inside a district: streets with their pavements and crossings, and
 ## between them blocks of buildings from Kenney's city kits (CC0: City Kit
@@ -47,9 +56,29 @@ const SLOPE := 3.8
 const BANK_CLEAR := 1.0
 const SPLIT_CLEAR := 2.6
 ## The bridges, where they cross (s along the river).
-const BRIDGES := [-8.0, 15.0]
+const BRIDGES := [-6.0, 17.5]
 ## Trees in the woods: one every WOOD_STEP or so, where there is room.
 const WOOD_STEP := 1.25
+## The hill of rocks to the north: where (s along, q up from the river),
+## how wide, how high, and how many great rocks on it.
+const ROCK_AT := Vector2(4.0, 40.0)
+const ROCK_RADIUS := 13.0
+const ROCK_HILL := 3.2
+const ROCKS := 55
+## Loose houses among the trees: one tried every HOUSE_STEP, kept one in
+## HOUSE_SHARE; one in POOL_SHARE with a lit pool.
+const HOUSE_STEP := 3.6
+const HOUSE_SHARE := 0.42
+const POOL_SHARE := 0.25
+## The riverside walk: how far from the water's edge, how wide, a lamp every
+## so often along it.
+const WALK_OFF := 0.9
+const WALK_WIDTH := 0.8
+const WALK_LAMP := 4.0
+## The sports ground on the near bank: from s to s along the river, and how
+## far back from the water it goes.
+const SPORTS := Vector2(6.0, 15.0)
+const SPORTS_DEPTH := 11.0
 
 ## The town's own colours at night: all here, to change in one place.
 const PAVEMENT := Color("#443c58")
@@ -66,6 +95,35 @@ const RIVERBED := Color("#1c2238")
 const RAIL := Color("#8a7a9a")
 const STONE := Color("#6a5f7e")
 const LAMP := Color("#ffd479")
+const ROCK := Color("#4f4964")
+const ROCK_LIGHT := Color("#7d7590")
+const PITCH_GRASS := Color("#2f6b45")
+const COURT := Color("#b8643a")
+const TENNIS := Color("#3f6e8a")
+const LINE := Color("#e8e4f0")
+const POOL_WATER := Color("#5fe0ff")
+## The pools of light: a street lamp's, a lit house's, a floodlight's.
+const GLOW_LAMP := Color(1.0, 0.72, 0.38, 0.42)
+const GLOW_HOUSE := Color(1.0, 0.66, 0.34, 0.26)
+const GLOW_FLOOD := Color(0.85, 0.9, 1.0, 0.3)
+const GLOW_POOL := Color(0.35, 0.85, 1.0, 0.35)
+
+## A pool of light: a round glow, strongest in the middle, fading to
+## nothing at the edge, added to what is under it. Unshaded, no shadows, no
+## depth written: as cheap as light gets.
+const POOL_SHADER := """
+shader_type spatial;
+render_mode unshaded, blend_add, depth_draw_never, cull_disabled, shadows_disabled;
+varying vec4 tint;
+void vertex() {
+	tint = INSTANCE_CUSTOM;
+}
+void fragment() {
+	float r = length(UV - vec2(0.5)) * 2.0;
+	float k = clamp(1.0 - r, 0.0, 1.0);
+	ALBEDO = tint.rgb * k * k * tint.a;
+}
+"""
 ## The kits' faces, lit by the town at night: how much of the day's colour
 ## is left, the windows lit (one in LIT_SHARE), the lamps' glow.
 const NIGHT := Color("#b9b0e0")
@@ -177,6 +235,12 @@ var _links := {}
 ## the roads laid outside the districts (to the bridges, between
 ## districts): [from, to], kept clear of trees
 var _roads: Array = []
+## the pools of light: [where, radius, colour (alpha: strength)]
+var _pools: Array = []
+## the loose houses, the rocks, the sports ground's pitches: where they
+## stand (x, z) and how far round them to keep clear, by cells of TAKEN_CELL
+var _taken := {}
+const TAKEN_CELL := 4.0
 
 
 func _init(parent: Node3D) -> void:
@@ -223,7 +287,25 @@ func ground(p: Vector2) -> float:
 		return lerpf(-0.55, 0.0, smoothstep(half - 0.6, half + 0.3, absf(d)))
 	if d < 0.0:
 		return 0.0
-	return RISE * smoothstep(half + 0.3, half + SLOPE, d)
+	return RISE * smoothstep(half + 0.3, half + SLOPE, d) + ROCK_HILL * _rocky(p)
+
+
+## How far into the hill of rocks a point is: 0 outside, 1 at its top; its
+## edge wavers so it is no circle.
+func _rocky(p: Vector2) -> float:
+	var f := frame(p)
+	var c := Vector2(ROCK_AT.x, river_at(ROCK_AT.x) + ROCK_AT.y)
+	var off := f - c
+	var wobble := 1.0 + 0.22 * sin(atan2(off.y, off.x) * 3.0 + 1.3) + 0.12 * sin(atan2(off.y, off.x) * 7.0)
+	return smoothstep(1.0, 0.35, off.length() / (ROCK_RADIUS * wobble))
+
+
+## On the sports ground: along its stretch of the near bank, back from the
+## water.
+func _in_sports(p: Vector2) -> bool:
+	var s := frame(p).x
+	var d := across(p)
+	return s > SPORTS.x and s < SPORTS.y and d < -RIVER_WIDTH * 0.5 and d > -SPORTS_DEPTH
 
 
 ## The way the river runs at s along it, and the way across it (towards
@@ -242,6 +324,8 @@ func _across_dir(s: float) -> Vector2:
 ## the slope, and clear of the line between the two districts of its bank.
 func district_of(p: Vector2) -> int:
 	if absf(p.x) > REACH or absf(p.y) > REACH:
+		return -1
+	if _rocky(p) > 0.0 or _in_sports(p):
 		return -1
 	var d := across(p)
 	var s := frame(p).x
@@ -323,8 +407,13 @@ func build() -> void:
 		_district(i)
 	_bridges()
 	_join_districts()
+	_walk()
+	_sports()
+	_rocks()
+	_loose_houses()
 	_woods()
 	_flush()
+	_light_pools()
 
 
 # --- The ground and the water --------------------------------------------------------
@@ -516,6 +605,8 @@ func _houses(d: District, b: Vector2i) -> void:
 			var turn := 0.0 if qz > 0 else PI
 			var path := "suburbios/building-type-%s.glb" % letters[_rng.randi() % letters.length()]
 			_add(path, at, d.angle + turn, _fit(path, s * 0.36), _own(1.0))
+			if _rng.randf() < 0.6:
+				_pool(at + d.basis() * Vector3(0, 0, 0.9 if qz > 0 else -0.9), 1.3, GLOW_HOUSE)
 			_tree(at + d.basis() * Vector3(qx * s * 0.2, 0, -qz * s * 0.16))
 			if _rng.randf() < 0.5:
 				_tree(at + d.basis() * Vector3(-qx * s * 0.18, 0, -qz * s * 0.18))
@@ -543,7 +634,7 @@ func _corner_lamps(d: District, b: Vector2i) -> void:
 	for sx in [-1, 1]:
 		for sz in [-1, 1]:
 			var at := c + d.basis() * Vector3(sx * h, 0.09, sz * h)
-			_add("calles/light-square.glb", at, d.angle + atan2(float(sx), float(sz)) + PI, TILE * 1.1, _own(0.0))
+			_lamp(at, d.angle + atan2(float(sx), float(sz)) + PI)
 
 
 func _tree(at: Vector3) -> void:
@@ -575,7 +666,7 @@ func _bridges() -> void:
 		for sgn in [-1, 1]:
 			_beam(root, deck + side * sgn + Vector3(0, 0.2, 0), top + side * sgn + Vector3(0, 0.2, 0), 0.07, 0.1, RAIL)
 			for e in [deck, top]:
-				_add("calles/light-square.glb", e + side * sgn * 1.15 - Vector3(0, 0.1, 0), atan2(dir.x, dir.y), TILE * 1.1, _own(0.0))
+				_lamp(e + side * sgn * 1.15 - Vector3(0, 0.1, 0), atan2(dir.x, dir.y))
 		# Piers in the water.
 		for k in [0.3, 0.55]:
 			var at := deck.lerp(top, k)
@@ -640,7 +731,7 @@ func _road(a: Vector3i, b: Vector3i) -> void:
 	var k := 3.0
 	while k < length - 2.0:
 		var at := from + dir * k
-		_add("calles/light-square.glb", at + side, atan2(side.x, side.z) + PI, TILE * 1.1, _own(0.0))
+		_lamp(at + side, atan2(side.x, side.z) + PI)
 		k += 5.0
 	_link(a, b)
 
@@ -662,20 +753,21 @@ func _woods() -> void:
 			var on_slope := d > 0.0 and d < RIVER_WIDTH * 0.5 + SLOPE
 			if _rng.randf() > (0.85 if on_slope else 0.55):
 				continue
-			if _built(p) or _on_road(p):
+			if _built(p) or _on_road(p) or _near_taken(p) or _rocky(p) > 0.55 or _on_walk(p):
 				continue
 			_tree(Vector3(p.x, ground(p) - 0.02, p.y))
 		y += WOOD_STEP
 
 
-## Something built there: a district's blocks or streets.
-func _built(p: Vector2) -> bool:
+## Something built there: a district's blocks or streets (or within `margin`
+## tiles of them).
+func _built(p: Vector2, margin := 0.8) -> bool:
 	for d in districts:
 		var l := d.local(p)
 		var tx := l.x / TILE
 		var tz := l.z / TILE
-		for ox in [-0.8, 0.8]:
-			for oz in [-0.8, 0.8]:
+		for ox in [-margin, margin]:
+			for oz in [-margin, margin]:
 				var b := Vector2i(floori((tx + ox) / PITCH), floori((tz + oz) / PITCH))
 				if d.blocks.has(b):
 					return true
@@ -692,6 +784,282 @@ func _on_road(p: Vector2) -> bool:
 		if Geometry2D.get_closest_point_to_segment(p, a, c).distance_to(p) < TILE * 1.2:
 			return true
 	return false
+
+
+# --- The hill of rocks ---------------------------------------------------------------
+
+## Great rocks piled on the hill to the north, the biggest at its top, and
+## a few strays down its sides: three rough stones, one MultiMesh each.
+func _rocks() -> void:
+	var meshes: Array[ArrayMesh] = [_rock_mesh(1), _rock_mesh(2), _rock_mesh(3)]
+	var at: Array = [[], [], []]
+	var c := point(ROCK_AT.x, river_at(ROCK_AT.x) + ROCK_AT.y)
+	var tries := 0
+	while (at[0].size() + at[1].size() + at[2].size()) < ROCKS and tries < ROCKS * 20:
+		tries += 1
+		var p := c + Vector2(_rng.randf_range(-1, 1), _rng.randf_range(-1, 1)) * ROCK_RADIUS * 1.2
+		var k := _rocky(p)
+		if k <= 0.05 or _built(p) or _on_road(p):
+			continue
+		var size := lerpf(0.8, 4.6, k * k) * _rng.randf_range(0.5, 1.25)
+		# Mostly squat boulders; now and then a crag standing up.
+		var tall := _rng.randf_range(0.45, 0.85) if _rng.randf() > 0.15 else _rng.randf_range(1.3, 1.9)
+		var basis := Basis(Vector3.UP, _rng.randf() * TAU) * Basis(Vector3.RIGHT, _rng.randf_range(-0.35, 0.35)) * Basis(Vector3.FORWARD, _rng.randf_range(-0.25, 0.25))
+		basis = basis.scaled(Vector3(size * _rng.randf_range(0.7, 1.5), size * tall, size * _rng.randf_range(0.7, 1.2)))
+		(at[_rng.randi() % 3] as Array).append([Transform3D(basis, Vector3(p.x, ground(p) + size * tall * 0.15, p.y)), ROCK.lerp(ROCK_LIGHT, _rng.randf())])
+		_take(p, size * 0.6)
+	var m := StandardMaterial3D.new()
+	m.vertex_color_use_as_albedo = true
+	m.vertex_color_is_srgb = true
+	m.roughness = 0.9
+	m.rim_enabled = true
+	m.rim = 0.3
+	for i in 3:
+		if (at[i] as Array).is_empty():
+			continue
+		var mm := MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.use_colors = true
+		mm.mesh = meshes[i]
+		mm.instance_count = at[i].size()
+		for j in at[i].size():
+			mm.set_instance_transform(j, at[i][j][0])
+			mm.set_instance_color(j, at[i][j][1])
+		var mmi := MultiMeshInstance3D.new()
+		mmi.multimesh = mm
+		mmi.material_override = m
+		root.add_child(mmi)
+
+
+## A rough stone: a ball of few faces, each corner pushed in or out a little,
+## flat-faced, squat.
+func _rock_mesh(seed: int) -> ArrayMesh:
+	var ball := SphereMesh.new()
+	ball.radius = 0.5
+	ball.height = 1.0
+	ball.radial_segments = 6
+	ball.rings = 3
+	var arrays := ball.get_mesh_arrays()
+	var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var index: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	# The same push for the same corner, seams and all.
+	var push := func(v: Vector3) -> Vector3:
+		var h := sin(roundf(v.x * 40.0) * 12.9898 + roundf(v.y * 40.0) * 78.233 + roundf(v.z * 40.0) * 37.719 + seed * 4.1) * 43758.5453
+		return v * (0.62 + 0.7 * (h - floorf(h)))
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for i in index:
+		var v: Vector3 = push.call(verts[i])
+		st.add_vertex(Vector3(v.x, maxf(v.y, -0.3), v.z))
+	st.generate_normals()
+	return st.commit()
+
+
+# --- Loose houses, the walk and the sports ground ------------------------------------
+
+## Houses and chalets out among the trees, each on a garden of its own and
+## turned its own way (a little off the way the river runs): on flat land,
+## clear of the districts, the roads, the rocks and the water; some with a
+## lit pool; windows lit, a pool of light at the door.
+func _loose_houses() -> void:
+	var letters := "abcdefghijklmnopqrstu"
+	var y := -REACH
+	while y < REACH:
+		var x := -REACH
+		while x < REACH:
+			var p := Vector2(x, y) + Vector2(_rng.randf_range(-1, 1), _rng.randf_range(-1, 1)) * HOUSE_STEP * 0.35
+			x += HOUSE_STEP
+			if _rng.randf() > HOUSE_SHARE:
+				continue
+			var d := across(p)
+			if d > -(RIVER_WIDTH * 0.5 + WALK_OFF + WALK_WIDTH + 0.8) and d < RIVER_WIDTH * 0.5 + SLOPE + 0.4:
+				continue
+			if _rocky(p) > 0.0 or _in_sports(p) or _built(p, 1.8) or _on_road(p) or _near_taken(p, 1.2):
+				continue
+			var h := ground(p)
+			var turn := atan2(along.x, along.y) + _rng.randf_range(-0.6, 0.6) + (PI if _rng.randf() < 0.5 else 0.0)
+			var basis := Basis(Vector3.UP, turn)
+			var at := Vector3(p.x, h, p.y)
+			var chalet := _rng.randf() < 0.45
+			var lot := 2.9 if chalet else 2.3
+			_box(root, Vector3(lot, 0.05, lot), GARDEN, at + Vector3(0, 0.02, 0), basis)
+			var path := "suburbios/building-type-%s.glb" % letters[_rng.randi() % letters.length()]
+			_add(path, at + basis * Vector3(0, 0.05, -0.2), turn, _fit(path, lot * (0.62 if chalet else 0.72)), _own(1.0))
+			_pool(at + basis * Vector3(0, 0, 0.9), 1.4, GLOW_HOUSE)
+			if chalet and _rng.randf() < POOL_SHARE / 0.45:
+				var water := basis * Vector3(0.75, 0.06, 0.95) + at
+				var pool := _box(root, Vector3(0.8, 0.04, 0.5), POOL_WATER, water, basis)
+				pool.material_override = _glow(POOL_WATER, 1.4)
+				_pool(water, 1.5, GLOW_POOL)
+			if _rng.randf() < 0.7:
+				_tree(at + basis * Vector3(-lot * 0.4, 0, lot * 0.35))
+			_take(p, lot * 0.75)
+		y += HOUSE_STEP
+
+
+## The riverside walk: a paved path along the near bank, following the
+## bends, with a lamp and a bench every so often; not where something is
+## built on the bank (a museum by the water) nor across a bridge's foot.
+func _walk() -> void:
+	var s := -REACH * 1.4
+	var step := 0.9
+	var next_lamp := 0.0
+	var prev := Vector3.INF
+	while s < REACH * 1.4:
+		var dir := _across_dir(s)
+		var mid := point(s, river_at(s)) - dir * (RIVER_WIDTH * 0.5 + WALK_OFF)
+		s += step
+		if absf(mid.x) > REACH + 4.0 or absf(mid.y) > REACH + 4.0 or _built(mid, 0.2) or _near_bridge(mid, 1.6):
+			prev = Vector3.INF
+			continue
+		var here := Vector3(mid.x, 0.03, mid.y)
+		if prev != Vector3.INF:
+			_beam(root, prev, here, WALK_WIDTH, 0.04, PATH)
+		prev = here
+		next_lamp -= step
+		if next_lamp <= 0.0:
+			next_lamp = WALK_LAMP
+			var side := Vector3(-dir.x, 0, -dir.y) * (WALK_WIDTH * 0.5 + 0.25)
+			_lamp(here + side, atan2(dir.x, dir.y))
+			# A bench facing the water, between two lamps.
+			var bench := here + side - Vector3(_tangent(s).x, 0, _tangent(s).y) * WALK_LAMP * 0.5
+			_box(root, Vector3(0.5, 0.12, 0.16), Color("#6b4a3a"), bench + Vector3(0, 0.08, 0), Basis(Vector3.UP, atan2(dir.x, dir.y)))
+
+
+## The sports ground on the near bank: a football pitch, a basketball court
+## and a tennis court, each on its own ground with its white lines and a
+## fence, under floodlights (pools of cool light).
+func _sports() -> void:
+	var s := (SPORTS.x + SPORTS.y) * 0.5
+	var dir := _tangent(s)
+	var across_dir := _across_dir(s)
+	var turn := atan2(dir.x, dir.y)
+	var basis := Basis(Vector3.UP, turn)
+	var back := -(RIVER_WIDTH * 0.5 + WALK_OFF + WALK_WIDTH + 1.0)
+	var base := point(s, river_at(s)) + across_dir * back
+	# Pitch, court, court: along the bank, the pitch nearest the water.
+	var fields := [
+		[Vector2(0, -2.6), Vector2(7.0, 4.4), PITCH_GRASS, "pitch"],
+		[Vector2(-2.1, -7.4), Vector2(3.2, 2.2), COURT, "basket"],
+		[Vector2(2.0, -7.4), Vector2(3.4, 1.9), TENNIS, "tennis"],
+	]
+	for f in fields:
+		var off: Vector2 = f[0]
+		var size: Vector2 = f[1]
+		var c2: Vector2 = base + dir * off.x + across_dir * off.y
+		var c := Vector3(c2.x, 0.0, c2.y)
+		# The ground and its lines: the edge, the halfway line, a circle.
+		_box(root, Vector3(size.y + 0.4, 0.05, size.x + 0.4), PATH.darkened(0.3), c + Vector3(0, 0.02, 0), basis)
+		_box(root, Vector3(size.y, 0.06, size.x), f[2], c + Vector3(0, 0.03, 0), basis)
+		for sgn in [-1, 1]:
+			_box(root, Vector3(0.05, 0.07, size.x), LINE, c + basis * Vector3(sgn * size.y * 0.5, 0.035, 0), basis)
+			_box(root, Vector3(size.y, 0.07, 0.05), LINE, c + basis * Vector3(0, 0.035, sgn * size.x * 0.5), basis)
+		_box(root, Vector3(size.y, 0.07, 0.05), LINE, c + Vector3(0, 0.035, 0), basis)
+		if f[3] == "pitch":
+			var ring := MeshInstance3D.new()
+			var torus := TorusMesh.new()
+			torus.inner_radius = 0.55
+			torus.outer_radius = 0.6
+			ring.mesh = torus
+			ring.scale = Vector3(1, 0.1, 1)
+			ring.material_override = MenuStage._material(LINE)
+			ring.position = c + Vector3(0, 0.07, 0)
+			root.add_child(ring)
+			for sgn in [-1, 1]:
+				_box(root, Vector3(0.9, 0.35, 0.06), LINE, c + basis * Vector3(0, 0.2, sgn * size.x * 0.5), basis)
+		else:
+			# A low fence round the court.
+			for sgn in [-1, 1]:
+				_box(root, Vector3(0.03, 0.4, size.x + 0.4), RAIL, c + basis * Vector3(sgn * (size.y * 0.5 + 0.2), 0.2, 0), basis)
+				_box(root, Vector3(size.y + 0.4, 0.4, 0.03), RAIL, c + basis * Vector3(0, 0.2, sgn * (size.x * 0.5 + 0.2)), basis)
+		# Floodlights at the corners, and their light.
+		for sx in [-1, 1]:
+			for sz in [-1, 1]:
+				var post := c + basis * Vector3(sx * (size.y * 0.5 + 0.35), 0, sz * (size.x * 0.5 + 0.35))
+				_box(root, Vector3(0.06, 1.6, 0.06), RAIL, post + Vector3(0, 0.8, 0))
+				var head := _box(root, Vector3(0.22, 0.1, 0.1), LINE, post + Vector3(0, 1.62, 0), basis)
+				head.material_override = _glow(Color(0.9, 0.95, 1.0), 2.5)
+		_pool(c, maxf(size.x, size.y) * 0.75, GLOW_FLOOD)
+		var span := maxf(size.x, size.y) * 0.6 + 0.6
+		_take(c2, span)
+
+
+func _near_bridge(p: Vector2, r: float) -> bool:
+	for b in bridges:
+		if Geometry2D.get_closest_point_to_segment(p, Vector2(b[0].x, b[0].z), Vector2(b[1].x, b[1].z)).distance_to(p) < r:
+			return true
+	return false
+
+
+func _on_walk(p: Vector2) -> bool:
+	var d := across(p)
+	var mid := -(RIVER_WIDTH * 0.5 + WALK_OFF)
+	return absf(d - mid) < WALK_WIDTH * 0.5 + 0.35
+
+
+func _take(p: Vector2, r: float) -> void:
+	var cell := Vector2i(floori(p.x / TAKEN_CELL), floori(p.y / TAKEN_CELL))
+	if not _taken.has(cell):
+		_taken[cell] = []
+	_taken[cell].append(Vector3(p.x, p.y, r))
+
+
+## Something (a loose house, a rock, a pitch) within its reach of p, and
+## `extra` more.
+func _near_taken(p: Vector2, extra := 0.0) -> bool:
+	var cell := Vector2i(floori(p.x / TAKEN_CELL), floori(p.y / TAKEN_CELL))
+	for dx in range(-2, 3):
+		for dy in range(-2, 3):
+			for t in _taken.get(cell + Vector2i(dx, dy), []):
+				if Vector2(t.x, t.y).distance_to(p) < t.z + extra:
+					return true
+	return false
+
+
+# --- Night light --------------------------------------------------------------------
+
+## A street lamp, and its pool of light on the ground.
+func _lamp(at: Vector3, turn: float) -> void:
+	_add("calles/light-square.glb", at, turn, TILE * 1.1, _own(0.0))
+	_pool(at + Vector3(sin(turn), 0, cos(turn)) * -0.35, 1.7, GLOW_LAMP)
+
+
+func _pool(at: Vector3, radius: float, colour: Color) -> void:
+	_pools.append([at, radius, colour])
+
+
+## Every pool of light, one MultiMesh of flat quads a hair above the ground.
+func _light_pools() -> void:
+	if _pools.is_empty():
+		return
+	var quad := PlaneMesh.new()
+	quad.size = Vector2.ONE
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.use_custom_data = true
+	mm.mesh = quad
+	mm.instance_count = _pools.size()
+	for i in _pools.size():
+		var at: Vector3 = _pools[i][0]
+		var r: float = _pools[i][1]
+		mm.set_instance_transform(i, Transform3D(Basis.IDENTITY.scaled(Vector3(r * 2.0, 1, r * 2.0)), at + Vector3(0, 0.16, 0)))
+		mm.set_instance_custom_data(i, _pools[i][2])
+	var mmi := MultiMeshInstance3D.new()
+	mmi.multimesh = mm
+	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var m := ShaderMaterial.new()
+	m.shader = Shader.new()
+	m.shader.code = POOL_SHADER
+	mmi.material_override = m
+	root.add_child(mmi)
+
+
+func _glow(colour: Color, energy: float) -> StandardMaterial3D:
+	var m := MenuStage._material(colour).duplicate() as StandardMaterial3D
+	m.emission_enabled = true
+	m.emission = colour
+	m.emission_energy_multiplier = energy
+	return m
 
 
 # --- The way between two places ----------------------------------------------------
