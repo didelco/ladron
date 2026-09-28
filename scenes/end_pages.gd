@@ -252,7 +252,7 @@ static func _polaroid(photo: Texture2D) -> Control:
 
 ## The police file: {"photo": Texture2D (MUGSHOT_PHOTO),
 ## "number", "letterhead", "stamp", "rows": [[label, value], ...], "tick":
-## [question, "YES|NO"], "more": [label, ...], "prints"}: the sheet, only
+## [question, "YES|NO"], "notes": [label, what was written], "prints"}: the sheet, only
 ## its top showing (SHEET_SHOWN), the photos flashing as they come up and
 ## the stamp coming down after.
 static func mugshot(d: Dictionary) -> Control:
@@ -328,8 +328,10 @@ static func mugshot(d: Dictionary) -> Control:
 	blank.add_theme_constant_override("separation", 6)
 	blank.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	rest.add_child(blank)
-	for label in d.get("more", []):
-		_field(blank, label, "")
+	# The notes: what the officer wrote, and a blank line under it.
+	var notes: Array = d.get("notes", [])
+	if notes.size() == 2:
+		_field(blank, notes[0], notes[1])
 		_field(blank, "", "")
 	rest.add_child(_prints(d.get("prints", "")))
 	# The stamp, slammed down on the form.

@@ -1710,19 +1710,32 @@ func _police_file() -> Dictionary:
 	var n := maxi(1, thieves.size())
 	var many := "_MANY" if n > 1 else "_ONE"
 	var name := String(Heist.loot.get("name", ""))
+	# The jokes change file to file (FILE_JOKES of each), the same for the
+	# same file number and night.
+	var rand := RandomNumberGenerator.new()
+	rand.seed = hash([files_opened, level, name])
+	var pick := func(key: String) -> String:
+		return Text.t("%s_%d" % [key, rand.randi_range(1, FILE_JOKES[key])])
 	return {
 		"photo": load(EndPages.MUGSHOT_PHOTO),
 		"number": Text.t("END_FILE_NUMBER") % files_opened,
 		"letterhead": Text.t("END_FILE_LETTERHEAD"),
 		"stamp": Text.t("END_FILE_STAMP_MANY") % n if n > 1 else Text.t("END_FILE_STAMP_ONE"),
 		"rows": [
-			[Text.t("END_FILE_CRIME"), Text.t("END_FILE_CRIME_ALMOST" if Heist.taken else "END_FILE_CRIME_TRY") % name],
-			[Text.t("END_FILE_BY" + many), Text.t("END_FILE_BY_GUARD") % caught_by if caught_by != "" else Text.t("END_FILE_BY_NOBODY")],
+			[Text.t("END_FILE_ALIAS"), Text.t("END_FILE_ALIAS_MANY") % n if n > 1 else pick.call("END_FILE_ALIAS")],
+			[Text.t("END_FILE_CRIME"), pick.call("END_FILE_CRIME_ALMOST" if Heist.taken else "END_FILE_CRIME_TRY") % name],
+			[Text.t("END_FILE_BY" + many), pick.call("END_FILE_BY_GUARD") % caught_by if caught_by != "" else Text.t("END_FILE_BY_NOBODY")],
 		],
-		"tick": [Text.t("END_FILE_AGAIN"), Text.t("END_FILE_YES_NO")],
-		"more": [Text.t("END_FILE_NOTES")],
+		"tick": [Text.t("END_FILE_AGAIN"), pick.call("END_FILE_YES_NO")],
+		"notes": [Text.t("END_FILE_NOTES"), pick.call("END_FILE_NOTE_MANY" if n > 1 else "END_FILE_NOTE")],
 		"prints": Text.t("END_FILE_PRINTS"),
 	}
+
+
+## How many versions of each joke on the police file there are in Text
+## (END_FILE_<KEY>_1 .. _N).
+const FILE_JOKES := {"END_FILE_ALIAS": 6, "END_FILE_CRIME_TRY": 3, "END_FILE_CRIME_ALMOST": 2,
+	"END_FILE_BY_GUARD": 4, "END_FILE_YES_NO": 3, "END_FILE_NOTE": 6, "END_FILE_NOTE_MANY": 3}
 
 
 func _show_ending() -> void:

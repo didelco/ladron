@@ -338,18 +338,43 @@ END_HEAD_MUSEUM,¡NO QUEDA NADA EN %s!
 END_FILE_LETTERHEAD,Comisaría del Pueblo · Ficha de detenido
 END_FILE_NUMBER,Nº %04d
 END_FILE_AGAIN,¿REINCIDENTE?
-END_FILE_YES_NO,SÍ|NO
+END_FILE_YES_NO_1,SÍ|MUCHO
+END_FILE_YES_NO_2,SÍ|MUCHÍSIMO
+END_FILE_YES_NO_3,SÍ|SIEMPRE
 END_FILE_NOTES,OBSERVACIONES
-END_FILE_PRINTS,HUELLAS
+END_FILE_PRINTS,HUELLAS (de chocolate)
 END_FILE_STAMP_ONE,¡PILLADO!
 END_FILE_STAMP_MANY,¡PILLADOS LOS %d!
+END_FILE_ALIAS,ALIAS
+END_FILE_ALIAS_1,El Calcetín Turquesa.
+END_FILE_ALIAS_2,Ninja de Puntillas.
+END_FILE_ALIAS_3,El Rey de la Voltereta.
+END_FILE_ALIAS_4,Manos de Mantequilla.
+END_FILE_ALIAS_5,El Silencioso (a veces).
+END_FILE_ALIAS_6,Don Casi-Lo-Consigo.
+END_FILE_ALIAS_MANY,La Banda del Calcetín (%d sospechosos).
 END_FILE_CRIME,DELITO
-END_FILE_CRIME_TRY,Intentar llevarse %s.
-END_FILE_CRIME_ALMOST,Llevarse %s... casi.
+END_FILE_CRIME_TRY_1,Intentar llevarse %s. Sin pedir permiso.
+END_FILE_CRIME_TRY_2,Mirar muy fijamente %s.
+END_FILE_CRIME_TRY_3,Rondar muy sospechosamente %s.
+END_FILE_CRIME_ALMOST_1,Llevarse %s... casi.
+END_FILE_CRIME_ALMOST_2,Salir corriendo con %s bajo el brazo.
 END_FILE_BY_ONE,PILLADO POR
 END_FILE_BY_MANY,PILLADOS POR
-END_FILE_BY_GUARD,El guardia %s.
+END_FILE_BY_GUARD_1,"El guardia %s, que no estaba tan dormido."
+END_FILE_BY_GUARD_2,"El guardia %s, con un bocadillo en la otra mano."
+END_FILE_BY_GUARD_3,"El guardia %s, en zapatillas de estar por casa."
+END_FILE_BY_GUARD_4,"El guardia %s, que dice que ya lo sabía."
 END_FILE_BY_NOBODY,Un guardia con muy buena vista.
+END_FILE_NOTE_1,Asegura que es una estatua. No cuela.
+END_FILE_NOTE_2,Dice que solo pasaba por aquí. A las tres de la madrugada.
+END_FILE_NOTE_3,Pide llamar a su abogado: un pato de goma.
+END_FILE_NOTE_4,Lleva los calcetines desparejados. Sospechoso.
+END_FILE_NOTE_5,Jura que el museo le pilló de camino a casa.
+END_FILE_NOTE_6,Ha preguntado si en la celda hay galletas.
+END_FILE_NOTE_MANY_1,Cada uno dice que la culpa es del otro.
+END_FILE_NOTE_MANY_2,Piden una celda con literas.
+END_FILE_NOTE_MANY_3,Aseguran que venían a una fiesta de disfraces.
 HUD_HELP,P pausa · M mapa · E acción · F humo · C a gatas · Shift andar lento · Espacio rodar
 HUD_MAP_HIDE,M o View para guardarlo
 HUD_COUNT_GO,GO!
