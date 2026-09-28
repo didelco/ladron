@@ -97,6 +97,7 @@ godot --headless --script tests/test_hideouts.gd # escondites: todo lo que lo pa
 godot --headless --script tests/test_collection.gd # qué hay en cada vitrina: las piezas únicas una vez, cada recreativa un juego distinto, igual siempre
 godot --headless --script tests/test_fronts.gd    # piezas con frente (recreativa, trono, Anubis, la nevera...): nunca contra una pared
 godot --headless --script tests/test_controles.gd # teclas y botones: partida, menús y elegir sitio
+godot --headless --script tests/test_siguiente.gd # sobre el plano, solo SIGUIENTE: el encargo, lo nuevo y las reglas de cada noche, cada cosa desde su sitio
 godot --headless --script tests/test_smoke.gd     # bomba de humo: dos por ladrón, tapa la vista, despista al que persigue
 godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (necesita el cerebro)
 ```

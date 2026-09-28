@@ -181,15 +181,20 @@ func _init() -> void:
 	await create_timer(0.5).timeout
 	check(talk.mode == "story", "... y espera a SIGUIENTE")
 	check(PlanTalk.split_tale("Uno dos tres. " .repeat(40)).size() == 2 and PlanTalk.split_tale("Corta.").size() == 1, "un relato largo va en dos páginas")
-	t.act("accept")
-	check(talk.mode == "news" and talk.page == 0, "SIGUIENTE: lo nuevo, en grande")
-	check(talk._card != null and talk._card_for == talk.news[0], "... señalando en el plano lo que lo lleva")
+	for p in talk.pages.size():
+		t.act("accept")
+	check(talk.mode == "step" and talk.steps[talk.page].kind == "piece", "SIGUIENTE: el encargo, junto a la vitrina")
+	check(talk._card != null and Vector2i(talk._card_at) == Heist.at, "... señalando la vitrina en el plano")
 	t.act("back")
 	check(talk.mode == "story", "B: un paso atrás, a la historia")
 	t.act("accept")
-	for i in talk.news.size():
+	t.act("accept")
+	check(talk.mode == "step" and talk.steps[talk.page].kind == "news", "SIGUIENTE: lo nuevo, en grande")
+	check(talk._card != null and talk._card_for == talk.steps[talk.page].beat, "... señalando en el plano lo que lo lleva")
+	while talk.mode == "step":
 		t.act("accept")
-	check(talk.mode == "explore" and talk._told.size() == talk.beats.size(), "SIGUIENTE tras lo nuevo: el plano para explorar, todo clavado")
+	check(talk.mode == "explore" and talk._told.size() == talk.beats.size(), "SIGUIENTE tras lo último: el plano para explorar, todo clavado")
+	check(talk.cursor == talk.marks.size(), "... con ¡A ROBAR! elegido")
 	check(m._told(8), "... y queda contado")
 	# Looking round: the guards, the case, the way in and out, and the list.
 	var mk: Array = talk.marks.map(func(k): return k.kind)

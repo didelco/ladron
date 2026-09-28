@@ -3,11 +3,15 @@ extends Control
 ## The telling over the plan (Tour, CityStage.raise_plan), a page at a time,
 ## each waiting for SIGUIENTE (A, E or Enter): first the piece's own tale,
 ## big, on the gang's job sheet (EndPages.piece_card) over the dark while
-## the plan comes out of its room behind it, a page or two; then what is new
-## tonight, big, with its little scene (LessonStage), the camera on the
-## plan closing in on what brings it and a line from there to the card;
-## then the plan to look round (explore). Start or Tab skip to it, B goes
-## back a page (from the tale, to the museum).
+## the plan comes out of its room behind it, a page or two; then, one by
+## one, each out of its place on the plan (PlanBeats.steps), the camera on
+## the plan closing in on it and a line from there to its card: the job at
+## the case (what getting it out takes, the stars), what is new tonight,
+## big, with its little scene (LessonStage), and the rules of the night,
+## each by what it is about; then the plan to look round (explore), with
+## ¡A ROBAR! picked. The way in and out, and what is as ever, are not gone
+## through: they are there to pick looking round. Start or Tab skip to it,
+## B goes back a page (from the tale, to the museum).
 ##
 ## Looking round: the plan to the left, pinned with all there is on it
 ## (PlanBeats.marks: the case, what is new, the guards, the alarm, the way
@@ -17,8 +21,8 @@ extends Control
 ## rules about it on the list; A shows what one is about (the case, the
 ## piece's tale again), and ¡A ROBAR! (A on it, or Start) starts the heist.
 ##
-## modes: "story" the tale, "news" what is new, "explore" looking round,
-## "look" a pin's card open.
+## modes: "story" the tale, "step" a step over the plan (the job, what is
+## new, a rule), "explore" looking round, "look" a pin's card open.
 
 ## Start the heist.
 signal go
@@ -85,12 +89,12 @@ var goals: Array = []
 var marks: Array = []
 var takes := ""
 var mode := ""
-## the page of the tale, or which of what is new, on screen
+## the page of the tale, or the step, on screen
 var page := 0
 ## the pages of the tale: its words split where it is long
 var pages: PackedStringArray = []
-## the news beats, in order (indices into beats)
-var news: Array[int] = []
+## what SIGUIENTE goes through over the plan (PlanBeats.steps)
+var steps: Array = []
 ## the mark picked while looking round; marks.size() is the start button
 var cursor := 0
 ## the plan is open (CityStage.raise_plan done): the pages that point at it
@@ -128,9 +132,7 @@ func _init() -> void:
 
 
 func _ready() -> void:
-	for i in beats.size():
-		if beats[i].kind == "news":
-			news.append(i)
+	steps = PlanBeats.steps(beats, marks)
 	pages = split_tale(String(sheet.get("story", "")))
 
 
@@ -156,8 +158,9 @@ func tell() -> void:
 
 
 ## Straight to looking round, every pin on the plan (told before, or
-## skipped): once the plan is open.
-func skip() -> void:
+## skipped): once the plan is open. to_go: with ¡A ROBAR! picked (the
+## telling done), so SIGUIENTE once more is off to the heist.
+func skip(to_go := false) -> void:
 	if not plan_open:
 		_pending = "explore"
 		_drop_card()
@@ -171,7 +174,7 @@ func skip() -> void:
 	_next_button("")
 	_rest()
 	mode = "explore"
-	cursor = 0
+	cursor = marks.size() if to_go else 0
 	_dropped = _t
 	_explore_ui()
 	_light_rules()
@@ -190,7 +193,7 @@ func plan_ready() -> void:
 	_pending = ""
 	match want:
 		"explore": skip()
-		"news": _news(page)
+		"step": _step(page)
 
 
 # --- The pages --------------------------------------------------------------------
@@ -211,41 +214,55 @@ func _story(p: int) -> void:
 	tour._set_hints([["skip", Text.t("TOUR_HINT_SKIP")], ["back", Text.t("TOUR_HINT_MUSEUM") if page == 0 else Text.t("TOUR_HINT_PREV")]])
 
 
-## What is new, card i: beside what brings it on the plan, the camera on it.
-func _news(i: int) -> void:
-	mode = "news"
+## Step i (steps): out of its place on the plan, the camera on it, its
+## card beside it.
+func _step(i: int) -> void:
+	mode = "step"
 	page = i
 	_drop_card()
 	_next_button(Text.t("MENU_NEXT"))
 	tour._set_hints([["skip", Text.t("TOUR_HINT_SKIP")], ["back", Text.t("TOUR_HINT_PREV")]])
 	if not plan_open:
 		# Behind the tale the plan is still opening: in a moment.
-		_pending = "news"
+		_pending = "step"
 		_veil_to(VEIL_STORY)
 		return
 	_veil_to(VEIL_NEWS)
-	_show(news[i])
+	var s: Dictionary = steps[i]
+	match s.kind:
+		"news": _show(s.beat)
+		"piece":
+			var at: Vector2 = marks[s.mark].at if s.mark >= 0 else beats[s.beat].at
+			_told[s.beat] = true
+			_show_card(at, "piece", _job_card(marks[s.mark] if s.mark >= 0 else {}))
+		_:
+			var m: Dictionary = marks[s.mark]
+			var rules: Array = beats.filter(func(b): return b.kind == "rule")
+			for r in m.rules:
+				_told[beats.find(rules[r])] = true
+			_show_card(m.at, "rule", _mark_card(m))
 
 
-## SIGUIENTE: the next page, or looking round after the last.
+## SIGUIENTE: the next page, or looking round after the last, ¡A ROBAR!
+## picked.
 func _forward() -> void:
 	tour._sound("nav")
 	if mode == "story" and page < pages.size() - 1:
 		_story(page + 1)
-	elif mode == "story" and not news.is_empty():
-		_news(0)
-	elif mode == "news" and page < news.size() - 1:
-		_news(page + 1)
+	elif mode == "story" and not steps.is_empty():
+		_step(0)
+	elif mode == "step" and page < steps.size() - 1:
+		_step(page + 1)
 	else:
-		skip()
+		skip(true)
 
 
 ## B: the page before, or out to the museum from the first.
 func _backward() -> void:
-	if mode == "news" and page > 0:
+	if mode == "step" and page > 0:
 		tour._sound("back")
-		_news(page - 1)
-	elif mode == "news":
+		_step(page - 1)
+	elif mode == "step":
 		tour._sound("back")
 		_story(pages.size() - 1)
 	elif mode == "story" and page > 0:
@@ -260,15 +277,19 @@ func _backward() -> void:
 func _show(i: int) -> void:
 	_told[i] = true
 	var b: Dictionary = beats[i]
-	# The card goes on the side away from the point, the point on the other.
-	var right := _side(b.at)
-	stage.plan_look(b.at, ZOOM.get(b.kind, 1.2), Vector2(0.24 if right else 0.76, 0.52), 0.0 if stage.hurry else 0.8)
-	_drop_card()
+	_show_card(b.at, b.kind, _news_card(b) if b.kind == "news" else _line_card(b))
 	_card_for = i
-	_card_at = b.at
-	match b.kind:
-		"news": _card = _news_card(b)
-		_: _card = _line_card(b)
+
+
+## A card beside its point on the plan (at, in tiles), the camera closing
+## in on it as close as a kind of card wants (ZOOM).
+func _show_card(at: Vector2, kind: String, card: Control) -> void:
+	# The card goes on the side away from the point, the point on the other.
+	var right := _side(at)
+	stage.plan_look(at, ZOOM.get(kind, 1.2), Vector2(0.24 if right else 0.76, 0.52), 0.0 if stage.hurry else 0.8)
+	_drop_card()
+	_card_at = at
+	_card = card
 	add_child(_card)
 	_card.set_meta("right", right)
 	_card.modulate.a = 0.0
@@ -701,7 +722,7 @@ func _fan(i: int) -> float:
 func act(what: String) -> void:
 	_next_glyph()
 	match mode:
-		"story", "news":
+		"story", "step":
 			match what:
 				"accept": _forward()
 				"skip":
@@ -762,6 +783,34 @@ func _look(i: int) -> void:
 	tour._set_hints([["accept", Text.t("TOUR_HINT_CLOSE")], ["skip", Text.t("TOUR_START")]])
 
 
+## The job, beside the case: which piece, what getting it out takes, the
+## rules about it (the case's alarm, the minigames) and the stars to win,
+## those won ticked. m: the case's mark, for its rules.
+func _job_card(m: Dictionary) -> Control:
+	var box := _frame()
+	var col: VBoxContainer = box.get_child(0)
+	var tag := _text(col, Text.t("TOUR_TAG_PIECE").to_upper(), 20, CARD_TITLE, true)
+	Tour._arcade(tag)
+	var name := _text(col, String(sheet.get("name", "")), 24, Color(Heist.loot.get("colour", "#ffffff")).lightened(0.15))
+	name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	name.custom_minimum_size.x = 340
+	if takes != "":
+		var t := _text(col, takes, 19, CARD_TEXT)
+		t.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		t.custom_minimum_size.x = 340
+	var rules: Array = beats.filter(func(b): return b.kind == "rule")
+	for r in m.get("rules", []):
+		var l := _text(col, "▶ " + String(rules[r].text), 19, LIST_LIT)
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size.x = 340
+	if not goals.is_empty():
+		_gap(col, 4)
+		_text(col, Text.t("TOUR_GOALS"), 18, CARD_TITLE, true)
+		for g in goals:
+			_text(col, ("%s  %s" % [StarSlots.FULL if g[1] else StarSlots.EMPTY, g[0]]), 18, CARD_TITLE if g[1] else CARD_TEXT)
+	return box
+
+
 ## A mark as a card beside it: its name, what it is, and the rules about it.
 func _mark_card(m: Dictionary) -> Control:
 	var box := _frame()
@@ -791,7 +840,7 @@ func _unlook() -> void:
 
 ## The mouse over the plan: over a pin picks it, a click shows it.
 func mouse(event: InputEvent) -> void:
-	if mode in ["story", "news", ""]:
+	if mode in ["story", "step", ""]:
 		return
 	var at: Vector2 = event.position
 	var best := -1
