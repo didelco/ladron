@@ -86,7 +86,8 @@ void fragment() {
 	float r = sqrt(1.0 - l) * 0.62;
 	float printed = 1.0 - smoothstep(r - 0.12, r + 0.12, d);
 	float tone = mix(1.0 - l, printed, 0.5);
-	COLOR = vec4(mix(paper.rgb, ink.rgb, tone * 0.92), 1.0);
+	// Its alpha from the page's (modulate): it fades with the rest.
+	COLOR = vec4(mix(paper.rgb, ink.rgb, tone * 0.92), COLOR.a);
 }
 """
 
@@ -111,7 +112,7 @@ void fragment() {
 	float cloud = noise(p / 38.0) - 0.5;
 	float fibres = noise(p * vec2(0.9, 0.08)) * noise(p * vec2(0.07, 0.8));
 	float v = 1.0 + grain * 0.035 + cloud * 0.03 - smoothstep(0.35, 0.6, fibres) * 0.035;
-	COLOR = vec4(paper.rgb * v, 1.0);
+	COLOR = vec4(paper.rgb * v, COLOR.a);
 }
 """
 

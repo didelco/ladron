@@ -411,12 +411,12 @@ func _near_hideout(i: int) -> Vector2i:
 # --- Screens -----------------------------------------------------------------------
 
 ## The title screen: the cover, and on any key the menu.
+## The menu is built under it at once, so the cover fades away onto it,
+## never onto the museum behind; the cover keeps the keys while it is up.
 func _show_cover() -> void:
-	phase = "cover"
+	_show_title()
 	var cover := TitleScreen.new()
-	cover.started.connect(func() -> void:
-		sfx.ui("ok")
-		_show_title())
+	cover.started.connect(func() -> void: sfx.ui("ok"))
 	add_child(cover)
 
 
@@ -436,7 +436,7 @@ func _show_title() -> void:
 			{"text": Text.t("MENU_SETTINGS"), "glyph": "settings", "call": _show_settings.bind("title"), "colour": Hud.C.dim},
 			{"text": Text.t("MENU_QUIT"), "glyph": "quit", "call": _quit, "colour": Hud.C.dim},
 		], "row": true, "small": true, "width": 260},
-	])
+	], "title")
 	hud.show_version()
 
 
@@ -573,7 +573,7 @@ func _show_night_map(n: int) -> void:
 		{"picture": MapEditor.picture(m, 8), "height": 300},
 		{"text": Text.t("CHALLENGE_NIGHT_TEXT"), "colour": Hud.C.dim, "size": 14, "wrap": true, "width": 640},
 		{"buttons": row, "row": true, "small": true},
-	])
+	], "night:%d" % n)
 
 
 ## Twice to put a night back as it builds itself: the first press only asks.
@@ -621,7 +621,7 @@ func _show_challenge_map(m: MapFile) -> void:
 		row.append({"text": Text.t("CHALLENGE_DELETE_SURE" if challenge_delete else "CHALLENGE_DELETE"), "call": _delete_challenge.bind(m), "colour": Hud.C.alert})
 	row.append({"text": Text.t("MENU_BACK"), "call": _show_challenge_menu, "colour": Hud.C.dim})
 	items.append({"buttons": row, "row": true, "small": true})
-	hud.show_menu(items)
+	hud.show_menu(items, "map:" + m.path)
 
 
 ## Twice to delete: the first press only asks.
@@ -640,10 +640,14 @@ func _show_editor(m: MapFile) -> void:
 	phase = "editor"
 	challenge_delete = false
 	_drop_preview()
-	hud.hide_panel()
-	hud.visible = false
 	editor = MapEditor.new()
 	add_child(editor)
+	# It fades in over the menus (never over the game behind them), which go
+	# once it covers them.
+	var coming := editor
+	Hud.fade_layer(editor, 1.0).tween_callback(func() -> void:
+		if editor == coming:
+			hud.put_away())
 	editor.ui_sound.connect(func(kind: String) -> void: sfx.ui(kind, 0.6))
 	editor.closed.connect(func() -> void:
 		_drop_editor()
@@ -694,10 +698,19 @@ func _leave_text() -> String:
 	return Text.t("EDITOR_BACK_TO_EDITOR" if testing else "MENU_TO_MENU")
 
 
+## The editor goes: the menus straight back up behind it, whole, and it
+## fades away over them, deaf to every key and click as it does.
 func _drop_editor() -> void:
 	hud.visible = true
-	editor.queue_free()
+	hud.cover_now()
+	var old := editor
 	editor = null
+	old.set_process_input(false)
+	old.set_process_unhandled_input(false)
+	for c in old.get_children():
+		c.propagate_call("set", ["mouse_filter", Control.MOUSE_FILTER_IGNORE])
+		c.propagate_call("set", ["focus_mode", Control.FOCUS_NONE])
+	Hud.fade_layer(old, 0.0).tween_callback(old.queue_free)
 
 
 ## The map being edited, built in the game's world behind the editor, for
@@ -901,7 +914,7 @@ func _show_generative_menu() -> void:
 			{"title": Text.t("MENU_PLAY_4"), "stage": MenuStage.make("players:4"), "call": _start.bind("generative", 4), "colour": COLOURS.thief4, "title_size": 12},
 		], "width": 140},
 		{"buttons": [{"text": Text.t("MENU_BACK"), "call": _show_title, "colour": Hud.C.dim}], "row": true},
-	])
+	], "generative")
 
 
 func _pick_difficulty(k: String) -> void:
@@ -965,7 +978,7 @@ func _draw_join() -> void:
 		{"cards": cards, "width": 200},
 		{"text": Text.t("JOIN_HOW"), "size": 16},
 		{"text": Text.t("JOIN_READY") if joining.size() == join_count else Text.t("JOIN_UNDO"), "size": 16, "colour": Hud.C.gold if joining.size() == join_count else Hud.C.dim},
-	])
+	], "join")
 
 
 func _seat_label(seat: String) -> String:
@@ -1059,12 +1072,12 @@ func _show_prologue(page := 0) -> void:
 			{"text": Text.t("PROLOGUE_GO") if last else Text.t("MENU_NEXT"), "call": _show_city if last else _show_prologue.bind(page + 1)},
 		], "row": true, "focus": 1},
 		{"buttons": [{"text": Text.t("MENU_SKIP"), "call": _show_city, "colour": Hud.C.dim}], "small": true},
-	])
+	], "prologue:%d" % page)
 
 
 ## Straight to the night: past the tale and the briefing, into the countdown.
 func _skip_story() -> void:
-	_start_countdown()
+	_start_countdown(Hud.FADE_S)
 
 
 func _prologue_back() -> void:
@@ -1118,7 +1131,7 @@ func _show_settings(from: String, page := "") -> void:
 			items.append({"text": (Text.t("SETTINGS_PADS_LIST") % " · ".join(names)) if not pads.is_empty() else Text.t("SETTINGS_NO_PADS"), "size": 16, "colour": Hud.C.gold})
 			items.append(_controls_table())
 			items.append({"text": Text.t("CONTROLS_MORE"), "size": 15, "colour": Hud.C.dim})
-	hud.show_menu(items)
+	hud.show_menu(items, "settings:" + page)
 
 
 ## What does what, for the controls page: an action a row, and its key for
@@ -1348,7 +1361,7 @@ func _show_assets(tab: String, index: int) -> void:
 		# On the sounds, Enter plays the one on screen; elsewhere it moves on.
 		], "row": true, "focus": -1 if tab == "sounds" else 1})
 	items.append({"buttons": [{"text": Text.t("MENU_BACK"), "call": _show_settings.bind(settings_from), "colour": Hud.C.dim}], "small": true})
-	hud.show_menu(items)
+	hud.show_menu(items, "assets:" + tab)
 
 
 ## Put any model on the preview's stand, lit in this colour, framed to span.
@@ -1390,7 +1403,7 @@ func _pause() -> void:
 			{"text": Text.t("MENU_SETTINGS"), "call": _show_settings.bind("paused")},
 			{"text": _leave_text(), "call": _quit_to_title},
 		]},
-	])
+	], "paused")
 
 
 func _quit_to_title() -> void:
@@ -1454,12 +1467,12 @@ func _show_brief(page: int) -> void:
 	# one starts it).
 	var row: Array = [
 		{"text": Text.t("MENU_BACK"), "call": _brief_back, "colour": Hud.C.dim},
-		{"text": Text.t("BRIEF_START") if last else Text.t("BRIEF_NEXT_TAB") % names[pages[page + 1]], "call": _start_countdown if last else _show_brief.bind(page + 1)},
+		{"text": Text.t("BRIEF_START") if last else Text.t("BRIEF_NEXT_TAB") % names[pages[page + 1]], "call": _start_countdown.bind(Hud.FADE_S) if last else _show_brief.bind(page + 1)},
 	]
 	if not last:
 		row.append({"text": Text.t("BRIEF_SKIP"), "call": _skip_story, "colour": Hud.C.dim})
 	items.append({"buttons": row, "row": true, "focus": 1})
-	hud.show_menu(items)
+	hud.show_menu(items, "brief:%d" % page)
 
 
 func _brief_back() -> void:
@@ -1601,7 +1614,7 @@ func _drop_preview() -> void:
 	if preview:
 		# Gone once the menu showing it has faded out, not before.
 		var old := preview
-		get_tree().create_timer(Hud.FADE_S * 2.0).timeout.connect(old.queue_free)
+		get_tree().create_timer(Hud.FADE_S + Hud.SWAP_S).timeout.connect(old.queue_free)
 		preview = null
 		preview_pivot = null
 		preview_spot = null
@@ -1765,6 +1778,10 @@ func _again() -> void:
 	_show_brief(0)
 
 
+## Where Escape (B on a pad) goes back or on, and so sounds.
+const BACK_PHASES := ["menu", "story_players", "challenge", "input", "prologue", "ending", "brief", "paused", "settings", "assets", "caught", "escaped"]
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if phase == "tour" and tour:
 		tour.input(event)
@@ -1772,13 +1789,17 @@ func _unhandled_input(event: InputEvent) -> void:
 	if phase == "join":
 		_join_input(event)
 		return
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE and phase not in ["playing", "countdown"]:
-		sfx.ui("back")
+	# The night just over, frozen: nothing counts until its page is up.
+	if phase == "over":
+		return
 	var key := _pad_as_key(event)
 	if key == KEY_NONE:
 		if not (event is InputEventKey and event.pressed and not event.echo):
 			return
 		key = event.keycode
+	# Back, from the keyboard or a pad, sounds wherever it goes back.
+	if key == KEY_ESCAPE and phase in BACK_PHASES:
+		sfx.ui("back")
 	# Menus are buttons (mouse, arrows and Enter); these are the shortcuts.
 	if key == KEY_M and phase == "playing":
 		_toggle_map()
@@ -1836,7 +1857,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				if brief_page < _brief_pages().size() - 1:
 					_show_brief(brief_page + 1)
 				else:
-					_start_countdown()
+					_start_countdown(Hud.FADE_S)
 			elif key == KEY_ESCAPE:
 				_brief_back()
 			elif key == KEY_Q and brief_page > 0:
@@ -1886,12 +1907,14 @@ func _pad_as_key(event: InputEvent) -> Key:
 
 
 ## 3, 2, 1, GO! over the museum, everyone frozen in place until it is over.
-func _start_countdown() -> void:
+## wait: from a menu, the count waits for it to fade away (Hud.FADE_S), the
+## camera already coming in on the gang.
+func _start_countdown(wait := 0.0) -> void:
 	phase = "countdown"
 	_drop_preview()
 	hud.hide_panel()
-	hud.countdown(_count_beep, _start_playing)
-	_intro_camera(Hud.COUNT_S * Hud.COUNT.size())
+	hud.countdown(_count_beep, _start_playing, wait)
+	_intro_camera(wait + Hud.COUNT_S * Hud.COUNT.size())
 
 
 func _count_beep(i: int) -> void:
@@ -2099,6 +2122,14 @@ func _input(event: InputEvent) -> void:
 		last_pad_device = event.device
 		if event is InputEventJoypadButton and not pads_lost.is_empty():
 			_reclaim_pad(event.device)
+	# Tab skips the tale and the briefing: taken here, before the menu's
+	# buttons take it to move the focus along and it never gets that far.
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_TAB and phase in ["prologue", "brief"]:
+		get_viewport().set_input_as_handled()
+		if phase == "prologue":
+			_show_city()
+		else:
+			_skip_story()
 
 
 ## The last thing touched was a pad (for the hints of a thief on "any"),
@@ -2304,7 +2335,7 @@ func _physics_process(dt: float) -> void:
 ## once any is on alert, all of it while one can see you. Softer in menus.
 func _music_mood() -> void:
 	var tension := 0.0
-	var in_game := phase in ["playing", "countdown", "paused"]
+	var in_game := phase in ["playing", "countdown", "paused", "over"]
 	if in_game:
 		for g in guards:
 			if g.sees_player:
@@ -2881,15 +2912,22 @@ func _tick(dt: float) -> void:
 					_log(Text.t("LOG_OUT_WAITING") % ("P%d" % (thieves.find(p) + 1)))
 	# No clock: take as long as you like. The whole gang out of the door
 	# with the piece wins; one of you caught ends the night.
+	# The night stops there (phase "over"), a moment (Hud.HOLD_S) to see it
+	# end before its page comes up; nothing pressed meanwhile counts.
 	if thieves.any(func(p): return p.out and not p.safe):
-		phase = "caught"
-		_close_map()
-		_show_end()
+		_night_over("caught")
 	elif thieves.all(func(p): return p.safe):
-		phase = "escaped"
-		_close_map()
 		sfx.ui("escaped")
-		_show_end()
+		_night_over("escaped")
+
+
+func _night_over(how: String) -> void:
+	phase = "over"
+	_close_map()
+	get_tree().create_timer(Hud.HOLD_S).timeout.connect(func() -> void:
+		if phase == "over":
+			phase = how
+			_show_end())
 
 
 ## The name of the guard nearest thief p: the one that caught it.

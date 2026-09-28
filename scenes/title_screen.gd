@@ -22,6 +22,10 @@ var _canvas: Control
 var _press: Label
 var _t := 0.0
 var _leaving := false
+## when it was sent away (ms), and for how long after a press is taken for
+## the same one arriving twice
+var _left_at := 0
+const TWICE_MS := 120
 
 
 ## Whether there is a picture to show.
@@ -80,8 +84,12 @@ func _draw_picture() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	# On its way out, the menu under it takes the presses: all but the one
+	# that sent it away arriving twice (a pad seen as two devices, or one
+	# that also sends a key), in the first moment of going.
 	if _leaving:
-		get_viewport().set_input_as_handled()
+		if Time.get_ticks_msec() - _left_at < TWICE_MS:
+			get_viewport().set_input_as_handled()
 		return
 	var go := false
 	if event is InputEventKey:
@@ -96,8 +104,11 @@ func _input(event: InputEvent) -> void:
 
 func _leave() -> void:
 	_leaving = true
+	_left_at = Time.get_ticks_msec()
 	_press.modulate.a = 1.0
+	# Clicks through to the menu as it fades.
+	_canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	started.emit()
-	var tw := create_tween()
-	tw.tween_property(_canvas, "modulate:a", 0.0, 0.35)
+	var tw := create_tween().set_trans(Hud.TRANS).set_ease(Hud.EASE)
+	tw.tween_property(_canvas, "modulate:a", 0.0, Hud.FADE_S)
 	tw.tween_callback(queue_free)
