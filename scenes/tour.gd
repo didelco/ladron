@@ -32,8 +32,6 @@ signal sound(kind: String)
 const SIGN := Color("#fff0d6")
 const SIGN_DIM := Color("#b9a9d8")
 const SIGN_SHUT := Color("#8a7fa3")
-## How dark the museum's own picture shows behind the doll's house.
-const PICTURE_SHADE := 0.55
 
 var stage: CityStage
 var state := "city"
@@ -42,7 +40,6 @@ var players := 1
 var reached := 1
 var _root: Control
 var _view: SubViewportContainer
-var _picture: TextureRect
 var _sign: VBoxContainer
 var _sign_title: Label
 var _sign_line: Label
@@ -57,7 +54,6 @@ var _stick := {}
 var _nights: Array[int] = []
 ## under each room reached, its stars
 var _room_stars: Array[Label] = []
-var _fade: Tween
 ## the plan out and what is told over it, and whose it is
 var talk: PlanTalk
 var night := 0
@@ -69,21 +65,12 @@ func _init() -> void:
 	_root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_root.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(_root)
-	# The night sky behind the town, and the museum's picture behind it
-	# once inside.
+	# The night sky behind the town.
 	var sky := ColorRect.new()
 	sky.set_anchors_preset(Control.PRESET_FULL_RECT)
 	sky.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	sky.material = _sky_material()
 	_root.add_child(sky)
-	_picture = TextureRect.new()
-	_picture.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	_picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_picture.material = _blur_material()
-	_picture.modulate.a = 0.0
-	_root.add_child(_picture)
 	_view = SubViewportContainer.new()
 	_view.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_view.stretch = true
@@ -131,7 +118,6 @@ func _show_city() -> void:
 	state = "city"
 	_title.text = Text.t("STORY_MAP_TITLE")
 	_subtitle.text = Text.t("STORY_GANG_%d" % players)
-	_picture.modulate.a = 0.0
 	_pick_museum(stage.picked)
 	_set_hints([["move", Text.t("TOUR_HINT_PICK")], ["accept", Text.t("TOUR_HINT_ENTER")], ["back", Text.t("TOUR_HINT_BACK")]])
 
@@ -186,7 +172,6 @@ func _enter_museum() -> void:
 	_title.text = String(Story.museum(m).name).to_upper()
 	_arcade(_title)
 	_subtitle.text = Story.museum(m).text
-	_show_picture(m)
 	stage.go_in(m, _rooms_of(m), func() -> void:
 		var nights := Story.nights_in(m)
 		_inside(m, mini(nights[-1], reached)))
@@ -209,14 +194,12 @@ func _inside(m: int, pick_n: int) -> void:
 	_title.text = String(Story.museum(m).name).to_upper()
 	_arcade(_title)
 	_subtitle.text = Story.museum(m).text
-	_picture.modulate.a = 1.0
-	_show_picture(m)
 	for l in _room_stars:
 		l.queue_free()
 	_room_stars.clear()
 	for n in _nights:
 		var l := _label(_root, 17, Hud.C.gold)
-		l.text = StarSlots.room_line(n, players)
+		l.text = ("%d  %s" % [Story.room_of(n), StarSlots.room_line(n, players)]).strip_edges()
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_room_stars.append(l)
 	_pick_room(_nights.find(pick_n))
@@ -241,12 +224,19 @@ func _pick_room(i: int) -> void:
 	_sign_stars.visible = false
 
 
+## The next room that way (dir -1 left, 1 right) across the museum's front,
+## as its windows are seen (the big job's in the middle), past any not
+## reached yet.
 func _step_room(dir: int) -> void:
-	var i := stage.room + dir
-	if i < 0 or i >= _nights.size() or _nights[i] > reached:
-		return
-	_nav()
-	_pick_room(i)
+	var order: Array = range(_nights.size())
+	order.sort_custom(func(a: int, b: int) -> bool: return stage.room_x(a) < stage.room_x(b))
+	var at := order.find(stage.room) + dir
+	while at >= 0 and at < order.size():
+		if _nights[order[at]] <= reached:
+			_nav()
+			_pick_room(order[at])
+			return
+		at += dir
 
 
 func _choose_room() -> void:
@@ -266,8 +256,6 @@ func _leave_museum() -> void:
 		l.queue_free()
 	_room_stars.clear()
 	_set_hints([])
-	var tw := create_tween()
-	tw.tween_property(_picture, "modulate:a", 0.0, 0.0 if stage.hurry else 0.5)
 	stage.go_out(_show_city)
 
 
@@ -344,20 +332,6 @@ func fade_out() -> void:
 	if stage.sheet:
 		tw.tween_property(stage.sheet, "scale", stage.sheet.scale * 1.6, secs).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	tw.chain().tween_callback(queue_free)
-
-
-## The museum's own picture (Hud.PICTURES), far behind and out of focus.
-func _show_picture(m: int) -> void:
-	var look: Dictionary = Hud.PICTURES.get("museum_%d" % (m + 1), {})
-	if look.is_empty() or not ResourceLoader.exists(look.path):
-		return
-	_picture.texture = load(look.path)
-	_picture.self_modulate = Color(look.tint) * float(look.shade) * PICTURE_SHADE
-	_picture.self_modulate.a = 1.0
-	if _fade:
-		_fade.kill()
-	_fade = create_tween()
-	_fade.tween_property(_picture, "modulate:a", 1.0, 0.0 if stage.hurry else 0.9).set_delay(0.0 if stage.hurry else CityStage.ZOOM_S * 0.5)
 
 
 # --- Input ------------------------------------------------------------------------
@@ -513,7 +487,7 @@ func _process(_dt: float) -> void:
 	for i in _room_stars.size():
 		var l := _room_stars[i]
 		l.size = l.get_combined_minimum_size()
-		l.position = stage.on_screen(stage.room_centre(i) + Vector3(0, 0, CityStage.LOT_SIZE.y * 0.5)) - Vector2(l.size.x * 0.5, -4)
+		l.position = stage.room_foot_on_screen(i) - Vector2(l.size.x * 0.5, -2)
 		l.visible = state == "museum"
 	if _sign.visible:
 		var at := Vector2.ZERO
@@ -610,36 +584,6 @@ void fragment() {
 	vec3 c = mix(top.rgb, low.rgb, smoothstep(0.0, 1.0, UV.y));
 	c *= 1.0 - distance(UV, vec2(0.5, 0.55)) * 0.5;
 	COLOR = vec4(c, 1.0);
-}
-"""
-	var m := ShaderMaterial.new()
-	m.shader = s
-	return m
-
-
-## A picture far off: blurred, as a camera focused on something near sees it.
-static func _blur_material() -> ShaderMaterial:
-	var s := Shader.new()
-	s.code = """
-shader_type canvas_item;
-uniform float reach = 0.012;
-varying vec4 tint;
-void vertex() {
-	tint = COLOR;
-}
-void fragment() {
-	vec4 sum = vec4(0.0);
-	float n = 0.0;
-	for (int x = -3; x <= 3; x++) {
-		for (int y = -3; y <= 3; y++) {
-			vec2 o = vec2(float(x), float(y)) * reach / 3.0;
-			sum += texture(TEXTURE, UV + o);
-			n += 1.0;
-		}
-	}
-	vec4 c = sum / n;
-	c.rgb *= 1.0 - distance(UV, vec2(0.5)) * 0.6;
-	COLOR = c * tint;
 }
 """
 	var m := ShaderMaterial.new()

@@ -115,6 +115,16 @@ func build(m: int, is_open: bool, rooms: Array = []) -> void:
 		_box(Vector3(0.36, 0.95, 0.03), _colour if open else deep, Vector3(s * 2.6, PLINTH + H - 0.62, D * 0.5 + 0.3))
 		_box(Vector3(0.36, 0.08, 0.035), GOLD.darkened(0.0 if open else SHUT), Vector3(s * 2.6, PLINTH + H - 1.08, D * 0.5 + 0.3))
 		_box(Vector3(0.42, 0.04, 0.05), POLE, Vector3(s * 2.6, PLINTH + H - 0.12, D * 0.5 + 0.3))
+	# Its name over the columns.
+	var sign := Label3D.new()
+	sign.text = String(Story.museum(m).name).to_upper()
+	sign.font_size = 48
+	sign.pixel_size = 0.0028
+	sign.outline_size = 0
+	sign.modulate = WOOD if open else WOOD.lightened(0.2)
+	sign.position = Vector3(0, PLINTH + H - 0.07, D * 0.5 + 0.33)
+	sign.width = W * 300.0
+	add_child(sign)
 	# The door, lit round its edge when open.
 	_box(Vector3(0.62, 0.62, 0.05), WOOD.darkened(0.0 if open else 0.4), Vector3(0, PLINTH + 0.31, D * 0.5 + 0.02))
 	if open:
@@ -157,15 +167,16 @@ func _windows(rooms: Array) -> void:
 		add_child(node)
 		var lit: bool = open and bool(r.get("open", open))
 		# The frame, the niche's lit back, an arch over it.
-		_box_in(node, Vector3(size.x + 0.12, size.y + 0.12, 0.05), STONE if open else STONE.darkened(SHUT), Vector3(0, 0, 0.005))
+		var frame := _box_in(node, Vector3(size.x + 0.12, size.y + 0.12, 0.05), STONE if open else STONE.darkened(SHUT), Vector3(0, 0, 0.005))
 		var back := _box_in(node, Vector3(size.x, size.y, 0.04), GLASS_DARK, Vector3(0, 0, 0.02))
 		if lit:
-			back.material_override = _lit_material(LIT, 1.2)
+			back.material_override = _lit_material(LIT, 0.9)
 		var arch := CylinderMesh.new()
 		arch.top_radius = size.x * 0.5 + 0.06
 		arch.bottom_radius = size.x * 0.5 + 0.06
 		arch.height = 0.05
 		var a := _mesh_in(node, arch, STONE if open else STONE.darkened(SHUT), Vector3(0, size.y * 0.5, 0.005))
+		var stone_look := a.material_override
 		a.rotation_degrees.x = 90
 		var arch_glass := CylinderMesh.new()
 		arch_glass.top_radius = size.x * 0.5
@@ -183,7 +194,7 @@ func _windows(rooms: Array) -> void:
 		var lock: Node3D = null
 		if r.has("shape") and lit:
 			var model := LootModels.build(r.shape, Color(r.colour))
-			model.scale = Vector3.ONE * (0.55 if r.boss else 0.42)
+			model.scale = Vector3.ONE * (0.66 if r.boss else 0.5)
 			piece.add_child(model)
 		elif r.has("shape"):
 			lock = CityStage.padlock()
@@ -196,7 +207,8 @@ func _windows(rooms: Array) -> void:
 			crown.position = Vector3(0, PLINTH + H + 0.6 + DOME_R * 0.8 + 0.1 - slot.y, -0.25 - D * 0.5)
 			node.add_child(crown)
 			CityStage.crown(crown, Vector3.ZERO, MenuStage.GOLD if lit else MenuStage.GOLD.darkened(0.6), 1.6)
-		windows.append({"node": node, "back": back, "glass": ag, "piece": piece, "lock": lock, "boss": r.boss, "open": lit, "size": size})
+		windows.append({"node": node, "back": back, "glass": ag, "piece": piece, "lock": lock, "boss": r.boss, "open": lit, "size": size,
+			"frame": [frame, a], "stone": stone_look})
 
 
 ## Pick room i's window (-1 none): it lights up brighter, its piece turns.
@@ -206,9 +218,12 @@ func pick(i: int) -> void:
 		var w: Dictionary = windows[k]
 		if not w.open:
 			continue
-		var m := _lit_material(LIT_PICKED if k == i else LIT, 2.6 if k == i else 1.2)
+		var m := _lit_material(LIT_PICKED if k == i else LIT, 1.7 if k == i else 0.9)
 		(w.back as MeshInstance3D).material_override = m
 		(w.glass as MeshInstance3D).material_override = m
+		# Its frame in gold, lit.
+		for f in w.frame:
+			(f as MeshInstance3D).material_override = _lit_material(GOLD, 1.4) if k == i else w.stone
 
 
 ## Room i's window: its middle in the world, and how big it is.

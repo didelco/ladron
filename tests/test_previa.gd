@@ -94,12 +94,19 @@ func _init() -> void:
 	t.act("left")
 	check(t._nights[t.stage.room] == 7, "se puede elegir una ya hecha")
 	check(StarSlots.room_line(7, 1) == "☆☆☆" and StarSlots.room_line(10, 1) == "", "estrellas de cada sala; nada en las cerradas")
+	# The museum as a building: each room a window on its front.
+	var body: MuseumBuilding = t.stage._body(1)
+	check(t.stage.room_count() == 5 and body.windows.size() == 5, "el museo, un edificio con una ventana por sala")
+	check(t.stage.room_x(4) == 0.0 and body.windows[4].boss, "el gran golpe, la ventana grande del centro")
+	check(body.windows[2].open and not body.windows[3].open and body.windows[3].lock != null, "las salas cerradas, a oscuras y con candado")
+	check((body.windows[0].piece as Node3D).get_child_count() == 1, "en cada ventana abierta, su pieza")
 	t.act("right")
 
 	# The plan out of the room, and what is told over it.
 	t.act("accept")
 	await frames(8)
 	check(m.level == 8 and t.state == "plan" and t.stage.sheet != null, "el plano de la sala 8 sale y se despliega")
+	check((t.stage._sheet_from.at as Vector3).distance_to(t.stage.room_centre(t.stage.room)) < 0.5, "... de su ventana")
 	var talk: PlanTalk = t.talk
 	check(talk.mode == "story" and talk.beats[0].kind == "piece", "primero, la pieza")
 	check(Vector2i(talk.beats[0].at) == Heist.at, "... señalada en su vitrina")
