@@ -461,7 +461,8 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 ##                                                    piece before a heist
 ##                                                    (EndPages.piece_card)
 ##   {"footer": text}                                 what to press
-## Buttons work with the mouse, and with the arrows and Enter; the first one
+## Buttons work with the mouse, and with the arrows and accept (MenuKeys:
+## E, the full stop, A); the first one
 ## has the focus.
 ## screen: which screen this is. The same one again (a setting changed, a
 ## seat taken, a size picked) changes in place, the focus kept where it was;
@@ -1037,7 +1038,7 @@ func _button(b: Dictionary) -> Button:
 
 
 ## A button that holds a setting: {"text", "step"} instead of "call", where
-## step(dir) changes it and returns the button's new text. Enter or a click
+## step(dir) changes it and returns the button's new text. Accept or a click
 ## is dir 0 (the next value, round the end), ← and → are -1 and +1. The text
 ## changes in place, so the focus stays put for the next press. A button in a
 ## column has no neighbours across, so the arrows are free for this.
@@ -1309,7 +1310,7 @@ const BUBBLE_EDGE := 12.0
 ##   {"title", "icon": Texture2D, "colour", "call"}, or "stage": MenuStage
 ##   for "icon" (a diorama, still, bigger: STAGE_STICKER)
 ## focus: the one to start on. The arrows, the stick or the cross move along
-## it and A, Enter or a click picks; Escape or B (the game's own
+## it and accept (A, E, the full stop) or a click picks; back (the game's own
 ## _unhandled_input, through close_bubble) or a click anywhere else closes
 ## it, back to the card, and closed is called. It comes and goes in SWAP_S.
 func pop_bubble(anchor_id: String, heading: String, choices: Array, focus: int, closed: Callable) -> void:

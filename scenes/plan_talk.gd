@@ -1,7 +1,7 @@
 class_name PlanTalk
 extends Control
 ## The telling over the plan (Tour, CityStage.raise_plan), a page at a time,
-## each waiting for SIGUIENTE (A, E or Enter): first the piece's own tale,
+## each waiting for SIGUIENTE (A, E or the full stop): first the piece's own tale,
 ## big, on the gang's job sheet (EndPages.piece_card) over the dark while
 ## the plan comes out of its room behind it, a page or two; then what is new
 ## tonight, big, with its little scene (LessonStage), the camera on the

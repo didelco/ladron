@@ -43,9 +43,13 @@ func _init() -> void:
 	check(m._seat_input("kb_left", false).count(true) == 0, "sin teclas, nada")
 	# menus
 	var ev := InputEventJoypadButton.new(); ev.pressed = true
-	for c in [["brief", JOY_BUTTON_START, KEY_TAB, "Start en la previa = saltar y jugar"], ["prologue", JOY_BUTTON_START, KEY_TAB, "Start en la historia = saltar"], ["playing", JOY_BUTTON_START, KEY_P, "Start jugando = pausa"], ["brief", JOY_BUTTON_LEFT_SHOULDER, KEY_Q, "LB en la previa = pestaña anterior"], ["assets", JOY_BUTTON_RIGHT_SHOULDER, KEY_E, "RB en recursos = pestaña siguiente"], ["playing", JOY_BUTTON_BACK, KEY_M, "View jugando = mapa"], ["playing", JOY_BUTTON_Y, KEY_NONE, "Y jugando = nada"], ["playing", JOY_BUTTON_B, KEY_NONE, "B jugando no es atrás"], ["paused", JOY_BUTTON_B, KEY_ESCAPE, "B en pausa = volver"]]:
+	for c in [["brief", JOY_BUTTON_START, "skip", "Start en la previa = saltar y jugar"], ["prologue", JOY_BUTTON_START, "skip", "Start en la historia = saltar"], ["playing", JOY_BUTTON_START, "pause", "Start jugando = pausa"], ["brief", JOY_BUTTON_LEFT_SHOULDER, "prev", "LB en la previa = pestaña anterior"], ["assets", JOY_BUTTON_RIGHT_SHOULDER, "next", "RB en recursos = pestaña siguiente"], ["playing", JOY_BUTTON_BACK, "map", "View jugando = mapa"], ["playing", JOY_BUTTON_Y, "", "Y jugando = nada"], ["playing", JOY_BUTTON_B, "", "B jugando no es atrás"], ["playing", JOY_BUTTON_A, "", "A jugando no es aceptar"], ["paused", JOY_BUTTON_B, "back", "B en pausa = volver"], ["paused", JOY_BUTTON_START, "back", "Start en pausa = seguir"], ["settings", JOY_BUTTON_START, "accept", "Start en un menú = aceptar"]]:
 		m.phase = c[0]; ev.button_index = c[1]
-		check(m._pad_as_key(ev) == c[2], c[3])
+		check(m._intent(ev) == c[2], c[3])
+	var kev := InputEventKey.new(); kev.pressed = true
+	for c in [[KEY_SPACE, "", "Espacio jugando = rodar, no atrás"], [KEY_ENTER, "", "Enter jugando = rodar J2, no atrás"], [KEY_E, "", "E jugando = acción, no aceptar"], [KEY_ESCAPE, "pause", "Esc jugando = pausa"], [KEY_P, "pause", "P jugando = pausa"], [KEY_M, "map", "M jugando = mapa"]]:
+		m.phase = "playing"; kev.keycode = c[0]
+		check(m._intent(kev) == c[1], c[2])
 	# join: B of an unseated pad does not take someone's seat
 	m._show_join("generative", 2)
 	m.joining.append_array(["kb_left", "pad:1"])

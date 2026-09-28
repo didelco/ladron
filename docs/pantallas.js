@@ -32,14 +32,14 @@ window.PANTALLAS = [
     children: [
       {
         id: "historia", title: "MENU_HOW_MANY", fn: "_pick_players", phase: "pick",
-        text: "No es una pantalla: un bocadillo que sale de la tarjeta de la historia, sobre el título tal cual (sin apagarlo). De 1 a 4 ladrones: cada opción, una pegatina plana con tantas cabezas de ninja, cada una del color de su ladrón, y debajo solo «1P»…«4P»; la elegida a todo color y brillante, las demás apagadas, casi siluetas. El foco empieza en la banda de la última vez; cada banda guarda su propio progreso. Flechas, cruceta o stick (y A/D) para elegir, A, E o Enter (o 1–4) para seguir; B, Esc o un clic fuera lo cierran, con el foco otra vez en la tarjeta.",
+        text: "No es una pantalla: un bocadillo que sale de la tarjeta de la historia, sobre el título tal cual (sin apagarlo). De 1 a 4 ladrones: cada opción, una pegatina plana con tantas cabezas de ninja, cada una del color de su ladrón, y debajo solo «1P»…«4P»; la elegida a todo color y brillante, las demás apagadas, casi siluetas. El foco empieza en la banda de la última vez; cada banda guarda su propio progreso. Flechas, cruceta o stick (y A/D) para elegir, A, E o el punto (o 1–4) para seguir; B, Esc, Espacio, Enter o un clic fuera lo cierran, con el foco otra vez en la tarjeta.",
         shots: ["menu_titulo_ladrones"],
         options: [
           { label: "1P", text: "Directo a la ciudad.", to: "ciudad" },
           { label: "2P", text: "Primero cada uno elige su mando.", to: "mandos" },
           { label: "3P", to: "mandos" },
           { label: "4P", to: "mandos" },
-          { label: "B, Esc o clic fuera", text: "Cierra el bocadillo.", to: "titulo" },
+          { label: "B, Esc, Espacio, Enter o clic fuera", text: "Cierra el bocadillo.", to: "titulo" },
         ],
         children: [
           {
@@ -48,7 +48,7 @@ window.PANTALLAS = [
             shots: ["menu_elegir_mandos"],
             options: [
               { key: "JOIN_PRESS", text: "En cada tarjeta, hasta que alguien la ocupa." },
-              { key: "JOIN_UNDO", text: "Quita al último que se unió o vuelve atrás." },
+              { key: "JOIN_UNDO", text: "Esc quita al último que se unió; B (Espacio o Enter en cada mitad del teclado) quita al suyo; sin nadie, vuelve atrás." },
               { key: "JOIN_READY", text: "Cuando están todos, sigue solo (en la historia, a la ciudad).", to: "ciudad" },
             ],
           },
@@ -58,8 +58,8 @@ window.PANTALLAS = [
             shots: ["menu_historia_ciudad"],
             options: [
               { label: "Flechas, WASD, stick o cruceta", text: "Cambian de museo; a uno cerrado no se llega." },
-              { key: "TOUR_HINT_ENTER", text: "A o E: zoom de cámara hasta la fachada del museo; la ciudad alrededor se oscurece un poco.", to: "museo" },
-              { key: "TOUR_HINT_BACK", text: "B, Espacio o Esc.", to: "historia" },
+              { key: "TOUR_HINT_ENTER", text: "A, E o el punto: zoom de cámara hasta la fachada del museo; la ciudad alrededor se oscurece un poco.", to: "museo" },
+              { key: "TOUR_HINT_BACK", text: "B, Esc, Espacio o Enter.", to: "historia" },
             ],
             children: [
               {
@@ -77,7 +77,7 @@ window.PANTALLAS = [
                     text: "Una sola tecla, SIGUIENTE, lleva por todo (PlanTalk, PlanBeats); nada pasa solo. Primero, la historia de la pieza en grande, casi a pantalla completa: la hoja del encargo con la pieza girando en su polaroid, mientras el plano sale de la ventana y se despliega detrás (un relato largo, en dos páginas). Luego lo nuevo, grande, con su maqueta animada, junto a lo que lo lleva en el plano. Luego el plano para explorar, que sigue enseñando sus pliegues (valles oscuros, crestas con brillo, cada panel con su luz): a la izquierda, con chinchetas para la vitrina, lo nuevo, cada guardia, la alarma, la entrada y la salida; a la derecha, la lista de la noche: la pieza y lo que cuesta sacarla, las reglas y las estrellas (las ganadas, marcadas). Elegir algo resalta sus reglas; A abre su ficha (la vitrina, la historia otra vez). Un robo ya hecho o ya contado va directo a explorar.",
                     shots: ["previa_robo_01_pieza", "previa_robo_01_nuevo", "previa_robo_01_plano", "previa_robo_06_nuevo", "previa_robo_08_plano", "previa_robo_11_nuevo", "previa_robo_25_plano"],
                     options: [
-                      { key: "MENU_NEXT", text: "A, E o Enter: SIGUIENTE, de la historia a lo nuevo y al plano." },
+                      { key: "MENU_NEXT", text: "A, E o el punto: SIGUIENTE, de la historia a lo nuevo y al plano." },
                       { key: "TOUR_HINT_PREV", text: "B: un paso atrás (de la historia, al museo)." },
                       { key: "TOUR_HINT_SKIP", text: "Start o Tab: a explorar; explorando, a robar." },
                       { key: "TOUR_START", text: "El plano se funde con la partida y empieza la cuenta atrás.", to: "cuenta" },
@@ -109,7 +109,7 @@ window.PANTALLAS = [
           { label: "2P", to: "generativo" },
           { label: "3P", to: "generativo" },
           { label: "4P", to: "generativo" },
-          { label: "B, Esc o clic fuera", text: "Cierra el bocadillo.", to: "titulo" },
+          { label: "B, Esc, Espacio, Enter o clic fuera", text: "Cierra el bocadillo.", to: "titulo" },
         ],
       },
       {
@@ -125,7 +125,7 @@ window.PANTALLAS = [
         children: [
           {
             id: "generativo_ajuste", title: "«Dificultad o tamaño»", fn: "_pick_setting", phase: "pick",
-            text: "No es una pantalla: un bocadillo que sale de la tarjeta pulsada, como el de cuántos ladrones del título. Sus tres opciones, cada una en su diorama quieto (el mismo de la tarjeta, sin animar); la que hay, a todo color y con el foco al abrirse, las demás apagadas. Flechas, cruceta o stick (y A/D) para moverse, A, E o Enter (o 1–3) para elegir: se guarda, se cierra y la tarjeta ya la enseña, con el foco. B, Esc o un clic fuera lo cierran sin cambiar nada.",
+            text: "No es una pantalla: un bocadillo que sale de la tarjeta pulsada, como el de cuántos ladrones del título. Sus tres opciones, cada una en su diorama quieto (el mismo de la tarjeta, sin animar); la que hay, a todo color y con el foco al abrirse, las demás apagadas. Flechas, cruceta o stick (y A/D) para moverse, A, E o el punto (o 1–3) para elegir: se guarda, se cierra y la tarjeta ya la enseña, con el foco. B, Esc, Espacio, Enter o un clic fuera lo cierran sin cambiar nada.",
             shots: ["menu_generativo_dificultad"],
             options: [
               { key: "MENU_DIFFICULTY_EASY", text: "Guardias lentos y medio dormidos." },
@@ -134,7 +134,7 @@ window.PANTALLAS = [
               { key: "MENU_SIZE_SMALL" },
               { key: "MENU_SIZE_MEDIUM" },
               { key: "MENU_SIZE_LARGE" },
-              { label: "B, Esc o clic fuera", text: "Cierra el bocadillo.", to: "generativo" },
+              { label: "B, Esc, Espacio, Enter o clic fuera", text: "Cierra el bocadillo.", to: "generativo" },
             ],
           },
         ],
@@ -190,7 +190,7 @@ window.PANTALLAS = [
       },
       {
         id: "ajustes", title: "SETTINGS_TITLE", fn: "_show_settings", phase: "settings",
-        text: "Desde el título o desde la pausa. Cada línea es un ajuste: Enter o clic lo cambia, ← y → lo bajan y suben. Cada cambio se guarda en user://settings.cfg.",
+        text: "Desde el título o desde la pausa. Cada línea es un ajuste: A, E, el punto o clic lo cambia, ← y → lo bajan y suben. Cada cambio se guarda en user://settings.cfg.",
         shots: ["ajustes_inicio"],
         options: [
           { key: "SETTINGS_IA", text: "Enseña lo que piensa cada guardia (Laya o las reglas de reserva)." },

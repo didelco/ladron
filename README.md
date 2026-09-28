@@ -97,6 +97,7 @@ godot --headless --script tests/test_hideouts.gd # escondites: todo lo que lo pa
 godot --headless --script tests/test_collection.gd # qué hay en cada vitrina: las piezas únicas una vez, cada recreativa un juego distinto, igual siempre
 godot --headless --script tests/test_fronts.gd    # piezas con frente (recreativa, trono, Anubis, la nevera...): nunca contra una pared
 godot --headless --script tests/test_controles.gd # teclas y botones: partida, menús y elegir sitio
+godot --headless --script tests/test_menus.gd     # aceptar (E, ., A) y atrás (Esc, Espacio, Enter, B) iguales en todas las pantallas con menú
 godot --headless --script tests/test_smoke.gd     # bomba de humo: dos por ladrón, tapa la vista, despista al que persigue
 godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (necesita el cerebro)
 ```
@@ -212,7 +213,9 @@ quiera.
 Con mando, como en la mayoría de juegos: stick izquierdo o cruceta para moverse, A (✕) la acción, B (○) para rodar
 y soltar un minijuego, X (□) o clic del stick para ponerse a gatas, View para el mapa y Start para la
 pausa; Y (△) suelta una bomba de humo. En los menús A acepta, B vuelve, LB/RB cambian de pestaña y Start
-salta la historia y la previa. Así A y B significan lo mismo jugando que en los menús: A hace, B se aparta. Solo, vale cualquier mando; con dos, el mando 1 es P1 y el
+salta la historia y la previa. Así A y B significan lo mismo jugando que en los menús: A hace, B se aparta. Con el
+teclado, igual (cada mitad es un mando): `E` y `.` aceptan, como la acción; `Espacio` y `Enter` vuelven, como rodar, y
+`Esc` también; ninguna tecla acepta en una pantalla y vuelve en otra (`logic/menu_keys.gd`). Solo, vale cualquier mando; con dos, el mando 1 es P1 y el
 2 es P2 (el teclado sigue funcionando, así que un mando y teclado también). Vibra cuando te ven y
 cuando tiras algo.
 

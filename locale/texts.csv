@@ -36,7 +36,7 @@ JOIN_PLAYER,JUGADOR %d
 JOIN_PRESS,Pulsa un botón
 JOIN_HOW,"Cada uno pulsa un botón de su mando, o una tecla de su lado del teclado (WASD o flechas: dos como mucho; el resto, con mando)"
 JOIN_READY,¡LISTOS!
-JOIN_UNDO,"Esc: quitar al último · B: quitar tu mando · sin nadie, volver"
+JOIN_UNDO,"Esc: quitar al último · B, Espacio o Enter: quitarte · sin nadie, volver"
 SEAT_KB_LEFT,Teclado · WASD
 SEAT_KB_RIGHT,Teclado · flechas
 SEAT_ANY,Teclado y mandos
@@ -590,7 +590,7 @@ CHALLENGE_EMPTY,Aún no hay mapas: crea uno.
 CHALLENGE_PAGE,Página %d de %d
 CHALLENGE_STORY_HEAD,HISTORIA
 CHALLENGE_MAPS_HEAD,RETOS
-CHALLENGE_HINT,Enter o clic: abrir
+CHALLENGE_HINT,"A, E o clic: abrir"
 CHALLENGE_NIGHT_EDITED,retocado a mano
 CHALLENGE_NIGHT_BUILT,como lo genera el juego
 CHALLENGE_GUARDS,%d guardias

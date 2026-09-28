@@ -452,7 +452,7 @@ func _show_title(pick := "") -> void:
 ## to four, each a sticker of that many ninja heads in their colours
 ## (assets/ui/ninjas_N.png, tools/ninja_stickers.py) and just "1P"… under
 ## it, starting on the gang last played. Picking goes straight on
-## (_players_picked); Escape, B or a click off it closes it, back to the card.
+## (_players_picked); back (MenuKeys) or a click off it closes it, back to the card.
 func _pick_players(which: String) -> void:
 	phase = "pick"
 	var choices: Array = []
@@ -941,7 +941,7 @@ func _show_generative_menu(on := "") -> void:
 
 ## The difficulty or the size, in a bubble out of its card (Hud.pop_bubble):
 ## its three, each on its own diorama (still), starting on the one in force.
-## Picking keeps it (_set_setting); Escape, B or a click off it closes it,
+## Picking keeps it (_set_setting); back (MenuKeys) or a click off it closes it,
 ## back to the card, as it was.
 func _pick_setting(which: String) -> void:
 	phase = "pick"
@@ -986,11 +986,14 @@ func _start(which: String, n: int, picked := false) -> void:
 
 
 ## The keys on each side of a shared keyboard: pressing any of them on the
-## player-select screen takes that side (Shift by which of the two it is). One keyboard seats two at most; a third and fourth thief join with
-## a pad. KEY_SLASH is where the key is, not what it says: the one right of
-## the full stop ("/" on a US keyboard, "-" on a Spanish one).
-const KB_LEFT := [KEY_W, KEY_A, KEY_S, KEY_D, KEY_C, KEY_E, KEY_Q, KEY_SPACE, KEY_TAB]
-const KB_RIGHT := [KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_ENTER, KEY_KP_ENTER, KEY_SLASH, KEY_PERIOD, KEY_COMMA]
+## player-select screen takes that side (Shift by which of the two it is).
+## Not its B (Space, Enter: KB_BACK): as on a pad, that one gives it up.
+## One keyboard seats two at most; a third and fourth thief join with a pad.
+## KEY_SLASH is where the key is, not what it says: the one right of the
+## full stop ("/" on a US keyboard, "-" on a Spanish one).
+const KB_LEFT := [KEY_W, KEY_A, KEY_S, KEY_D, KEY_C, KEY_E, KEY_Q, KEY_F, KEY_TAB]
+const KB_RIGHT := [KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SLASH, KEY_PERIOD, KEY_COMMA]
+const KB_BACK := {KEY_SPACE: "kb_left", KEY_ENTER: "kb_right", KEY_KP_ENTER: "kb_right"}
 
 
 ## Player select, like Mario Kart 64: a seat a thief, each taken by whoever
@@ -1029,13 +1032,17 @@ func _seat_label(seat: String) -> String:
 	return Text.t("SEAT_PAD") % [pad + 1, Input.get_joy_name(pad).left(18)]
 
 
-## A press on the player-select screen: it takes a seat, or (Esc, B) frees
-## the last one — or goes back when none is taken.
+## A press on the player-select screen: it takes a seat; Esc frees the last
+## one, B (Space, Enter on the keyboard) its own — or goes back when none is
+## taken.
 func _join_input(event: InputEvent) -> void:
 	var seat := ""
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_ESCAPE:
 			_unjoin()
+			return
+		if KB_BACK.has(event.keycode):
+			_leave_seat(KB_BACK[event.keycode])
 			return
 		if event.keycode == KEY_SHIFT:
 			seat = "kb_right" if event.location == KEY_LOCATION_RIGHT else "kb_left"
@@ -1046,16 +1053,8 @@ func _join_input(event: InputEvent) -> void:
 	elif event is InputEventJoypadButton and event.pressed:
 		if not Pads.real(event.device):
 			return
-		# B takes this pad's own thief off, or with nobody in, goes back: never
-		# somebody else's seat.
 		if event.button_index == JOY_BUTTON_B:
-			var mine := "pad:%d" % event.device
-			if mine in joining:
-				sfx.ui("back")
-				joining.erase(mine)
-				_draw_join()
-			elif joining.is_empty():
-				_unjoin()
+			_leave_seat("pad:%d" % event.device)
 			return
 		seat = "pad:%d" % event.device
 	if seat == "" or seat in joining or joining.size() >= join_count:
@@ -1078,6 +1077,17 @@ func _join_input(event: InputEvent) -> void:
 					_story_gang(join_count)
 				else:
 					_start(join_for, join_count, true))
+
+
+## B takes its own thief off (a pad's, or a keyboard side's), or with nobody
+## in, goes back: never somebody else's seat.
+func _leave_seat(mine: String) -> void:
+	if mine in joining:
+		sfx.ui("back")
+		joining.erase(mine)
+		_draw_join()
+	elif joining.is_empty():
+		_unjoin()
 
 
 func _unjoin() -> void:
@@ -1135,7 +1145,7 @@ func _dots(at: int, count: int) -> String:
 
 
 ## Sound and music, their volumes, the screen and the IA panel. Opens from
-## the title and from the pause. Each line is a setting (Hud._stepper): Enter
+## the title and from the pause. Each line is a setting (Hud._stepper): accept
 ## or a click moves it on, ← and → move it down and up; each change is saved.
 func _show_settings(from: String, page := "") -> void:
 	if from == "title":
@@ -1221,7 +1231,7 @@ func _volume_bar(percent: int) -> String:
 
 ## One setting changed from its button: a yes/no flips whichever way; a
 ## volume goes down or up a step with ← and → (stopping at the ends), and up
-## with Enter, round from 100 back to 0. Applied, saved, and the button's
+## with accept (E, A), round from 100 back to 0. Applied, saved, and the button's
 ## new text returned.
 func _step_setting(dir: int, key: String) -> String:
 	match key:
@@ -1397,7 +1407,7 @@ func _show_assets(tab: String, index: int) -> void:
 		items.append({"buttons": [
 			{"text": Text.t("MENU_PREVIOUS"), "call": _show_assets.bind(tab, index - 1), "colour": Hud.C.dim},
 			{"text": Text.t("MENU_NEXT"), "call": _show_assets.bind(tab, index + 1)},
-		# On the sounds, Enter plays the one on screen; elsewhere it moves on.
+		# On the sounds, accept plays the one on screen; elsewhere it moves on.
 		], "row": true, "focus": -1 if tab == "sounds" else 1})
 	items.append({"buttons": [{"text": Text.t("MENU_BACK"), "call": _show_settings.bind(settings_from), "colour": Hud.C.dim}], "small": true})
 	hud.show_menu(items, "assets:" + tab)
@@ -1694,13 +1704,18 @@ func _show_end() -> void:
 				return
 	var ways: Array = [
 		{"buttons": [{"text": next, "call": go, "colour": colour}], "big": true},
-		{"buttons": [{"text": Text.t("EDITOR_BACK_TO_EDITOR") if testing else Text.t("END_TO_MENU"), "call": _leave_game.bind({"story": _show_city, "challenge": _show_challenge_menu}.get(mode, _show_title)), "colour": Hud.C.dim}], "small": true},
+		{"buttons": [{"text": Text.t("EDITOR_BACK_TO_EDITOR") if testing else Text.t("END_TO_MENU"), "call": _leave_game.bind(_way_out()), "colour": Hud.C.dim}], "small": true},
 	]
 	if phase == "escaped":
 		hud.show_menu([{"newspaper": _front_page(boss)}] + ways)
 	else:
 		# The file runs off the bottom of the screen: the buttons beside it.
 		hud.show_menu([{"columns": [{"items": [{"mugshot": _police_file()}]}, {"items": ways, "middle": true}], "separation": 48}])
+
+
+## Out of a night's end, its button or back: to the mode's menu.
+func _way_out() -> Callable:
+	return {"story": _show_city, "challenge": _show_challenge_menu}.get(mode, _show_title)
 
 
 ## Which headline the paper picks: the same heist, the same page.
@@ -1817,7 +1832,8 @@ func _again() -> void:
 	_show_brief(0)
 
 
-## Where Escape (B on a pad) goes back or on, and so sounds.
+## Where back (Escape, Space, Enter or B: MenuKeys) goes somewhere, and so
+## sounds.
 const BACK_PHASES := ["menu", "pick", "generative", "challenge", "prologue", "ending", "brief", "paused", "settings", "assets", "caught", "escaped"]
 
 
@@ -1831,125 +1847,106 @@ func _unhandled_input(event: InputEvent) -> void:
 	# The night just over, frozen: nothing counts until its page is up.
 	if phase == "over":
 		return
-	var key := _pad_as_key(event)
-	if key == KEY_NONE:
-		if not (event is InputEventKey and event.pressed and not event.echo):
-			return
-		key = event.keycode
-	# Back, from the keyboard or a pad, sounds wherever it goes back.
-	if key == KEY_ESCAPE and phase in BACK_PHASES:
-		sfx.ui("back")
-	# Menus are buttons (mouse, arrows and Enter); these are the shortcuts.
-	if key == KEY_M and phase == "playing":
-		_toggle_map()
-		return
+	var key: Key = event.keycode if event is InputEventKey and event.pressed and not event.echo else KEY_NONE
 	if key == KEY_N:
 		_set_sound(not sound_on)
 		if phase == "settings":
 			_show_settings(settings_from, settings_page)
 		return
-	# Space (and Start, which stands for it) goes on only where no button is
-	# picked: with one in focus, it presses that one. Space is ui_accept too,
-	# so the button answers it by itself; Start is pressed here.
-	if key == KEY_SPACE:
-		var focus := get_viewport().gui_get_focus_owner()
-		if focus is Button and focus.is_visible_in_tree():
-			if not event.is_action("ui_accept"):
-				(focus as Button).pressed.emit()
-			return
-	match phase:
-		"menu":
-			if key == KEY_ESCAPE:
-				_show_title()
-		"pick":
-			# A bubble (how many thieves, the generative's difficulty or
-			# size): its own keys for the left-hand player (A and D along it,
-			# E to pick) and 1 to 4 straight to one (past its last, nothing);
-			# the arrows, Enter and A move and pick by themselves.
-			if key == KEY_ESCAPE:
-				hud.close_bubble(true)
-			elif key == KEY_A or key == KEY_D:
-				hud.bubble_move(-1 if key == KEY_A else 1)
-			elif key == KEY_E:
+	# A bubble (how many thieves, the generative's difficulty or size): its
+	# own keys for the left-hand player (A and D along it) and 1 to 4
+	# straight to one (past its last, nothing); the arrows move by themselves.
+	if phase == "pick" and key in [KEY_A, KEY_D]:
+		hud.bubble_move(-1 if key == KEY_A else 1)
+		return
+	if phase == "pick" and key >= KEY_1 and key <= KEY_4:
+		hud.bubble_pick(key - KEY_1)
+		return
+	var intent := _intent(event)
+	match intent:
+		"pause":
+			_pause()
+		"map":
+			_toggle_map()
+		"skip":
+			if phase == "prologue":
+				_show_city()
+			else:
+				_skip_story()
+		"back":
+			if phase in BACK_PHASES:
+				sfx.ui("back")
+				_back()
+		"accept":
+			# The focused button takes E, the full stop and A by itself
+			# (ui_accept, as they are let go): pressed here, it would go twice.
+			# This is Start, which stands for them, or no button to take them.
+			var focus := get_viewport().gui_get_focus_owner()
+			if focus is Button and focus.is_visible_in_tree():
+				if hud.menu_open() and not event.is_action("ui_accept"):
+					(focus as Button).pressed.emit()
+			elif phase == "pick":
 				hud.bubble_pick(hud.bubble_focus())
-			elif key >= KEY_1 and key <= KEY_4:
-				hud.bubble_pick(key - KEY_1)
-		"generative":
-			if key == KEY_ESCAPE:
-				_show_title("generative")
-		"challenge":
-			if key == KEY_ESCAPE:
-				_show_challenge_menu()
-		"prologue" when key == KEY_TAB:
-			_show_city()
-		"brief" when key == KEY_TAB:
-			_skip_story()
-		"prologue":
-			if key == KEY_SPACE:
-				var pages := Story.prologue().size()
-				if prologue_page < pages - 1:
-					_show_prologue(prologue_page + 1)
-				else:
-					_show_city()
-			elif key == KEY_ESCAPE:
-				_prologue_back()
-		"ending":
-			if key == KEY_ESCAPE or key == KEY_SPACE:
-				_show_title()
-		"brief":
-			# Space goes on a page (the last one starts), Escape goes back one;
-			# Q and E, or LB and RB on a pad, flick between the tabs.
-			if key == KEY_SPACE:
-				if brief_page < _brief_pages().size() - 1:
-					_show_brief(brief_page + 1)
-				else:
-					_start_countdown(Hud.FADE_S)
-			elif key == KEY_ESCAPE:
-				_brief_back()
-			elif key == KEY_Q and brief_page > 0:
-				_show_brief(brief_page - 1)
-			elif key == KEY_E and brief_page < _brief_pages().size() - 1:
-				_show_brief(brief_page + 1)
+		"prev", "next":
+			var step := -1 if intent == "prev" else 1
+			if phase == "brief":
+				var to := brief_page + step
+				if to >= 0 and to < _brief_pages().size():
+					_show_brief(to)
+			else:
+				_show_assets(assets_tab, assets_index + step)
+
+
+## What a press does on the screen that is up: MenuKeys says what it means
+## (accept, back...), this where it goes. Playing, Escape, P or Start pause
+## and M or View show the map; Space, Enter, B, E, the full stop and A are the
+## thieves' (a roll, the action), never a menu's. On the pause, back, P or
+## Start go back to the game. Start skips the tale and the briefing, and
+## elsewhere stands for accept. LB and RB (and Q, back) flick between the
+## briefing's tabs and the assets. "" is nothing.
+func _intent(event: InputEvent) -> String:
+	var what := MenuKeys.of(event)
+	var key: Key = event.keycode if event is InputEventKey and event.pressed and not event.echo else KEY_NONE
+	var start := what == "skip" and event is InputEventJoypadButton
+	match phase:
 		"playing":
-			if key == KEY_ESCAPE or key == KEY_P:
-				_pause()
+			if key in [KEY_ESCAPE, KEY_P] or start:
+				return "pause"
+			if key == KEY_M or what == "map":
+				return "map"
+			return ""
 		"paused":
-			if key == KEY_ESCAPE or key == KEY_P:
-				_start_playing()
-		"settings":
-			if key == KEY_ESCAPE:
-				_settings_back()
-		"assets":
-			if key == KEY_ESCAPE:
-				_show_settings(settings_from)
-			elif key == KEY_Q or key == KEY_E:
-				_show_assets(assets_tab, assets_index + (1 if key == KEY_E else -1))
-		"caught", "escaped":
-			if key == KEY_SPACE:
-				_again()
-			elif key == KEY_ESCAPE:
-				_leave_game(_show_title)
+			if key == KEY_P or start:
+				return "back"
+		"prologue", "brief":
+			if start:
+				return "skip"
+	if start:
+		return "accept"
+	if phase in ["brief", "assets"]:
+		if key == KEY_Q:
+			return "prev"
+		if what in ["prev", "next"]:
+			return what
+	if what in ["accept", "back"]:
+		return what
+	return ""
 
 
-## A pad button as the key it stands for, so the shortcuts above are written
-## once. Start pauses and resumes (P), skips the tale and the briefing (Tab)
-## and elsewhere moves on (Space); B backs out (Escape), except while
-## playing, where it rolls; LB and RB flick between tabs (Q and E). A is
-## ui_accept and presses the focused button by itself.
-func _pad_as_key(event: InputEvent) -> Key:
-	if not (event is InputEventJoypadButton and event.pressed):
-		return KEY_NONE
-	if event.is_action("pause"):
-		if phase in ["playing", "paused"]:
-			return KEY_P
-		return KEY_TAB if phase in ["prologue", "brief"] else KEY_SPACE
-	if event.button_index in [JOY_BUTTON_LEFT_SHOULDER, JOY_BUTTON_RIGHT_SHOULDER] and phase in ["brief", "assets"]:
-		return KEY_Q if event.button_index == JOY_BUTTON_LEFT_SHOULDER else KEY_E
-	if event.is_action("map"):
-		return KEY_M if phase == "playing" else KEY_NONE
-	if event.is_action("ui_cancel") and phase != "playing":
-		return KEY_ESCAPE
-	return KEY_NONE
+## Back, screen by screen: the same as its VOLVER (or its way out).
+func _back() -> void:
+	match phase:
+		"menu": _show_title()
+		"pick": hud.close_bubble(true)
+		"generative": _show_title("generative")
+		"challenge": _show_challenge_menu()
+		"prologue": _prologue_back()
+		"ending": _show_title()
+		"brief": _brief_back()
+		"paused": _start_playing()
+		"settings": _settings_back()
+		"assets": _show_settings(settings_from)
+		"caught", "escaped": _leave_game(_way_out())
 
 
 ## 3, 2, 1, GO! over the museum, everyone frozen in place until it is over.
@@ -1970,7 +1967,7 @@ func _count_beep(i: int) -> void:
 func _start_playing() -> void:
 	phase = "playing"
 	get_tree().paused = false
-	# Space and Enter also press menu buttons: one still held from there is
+	# Space and Enter go back out of the pause: one still held from there is
 	# not a roll until it is let go (Sim.step_thief rolls on the press).
 	for t in thieves:
 		t.roll_key = true
@@ -2133,7 +2130,7 @@ var seat_now: Array = []
 
 func _pressed_keys() -> Dictionary:
 	var keys := {}
-	# A, B, Space and Enter also press and back out of menus: one still held
+	# A, B, E, Space and Enter also press and back out of menus: one still held
 	# from there when the play starts (or resumes) does nothing until let go.
 	var resumed := Engine.get_physics_frames() != pad_frame + 1
 	pad_frame = Engine.get_physics_frames()
@@ -2221,8 +2218,8 @@ func _mod_held(key: Key, side: KeyLocation) -> bool:
 	return mod_down.get([key, side], false) or mod_down.get([key, KEY_LOCATION_UNSPECIFIED], false)
 
 
-## Is this key or button down, and not still held over from a menu (Space,
-## Enter and A accept there; B backs out)? One held when the play starts or
+## Is this key or button down, and not still held over from a menu (E and
+## A accept there; Space, Enter and B back out)? One held when the play starts or
 ## resumes counts once it has been let go.
 func _fresh(id: String, held: bool, resumed: bool) -> bool:
 	if held and resumed:

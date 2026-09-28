@@ -56,18 +56,18 @@ func _init() -> void:
 			cover = c
 	check(cover != null, "sin argumentos, sale la portada")
 	check(m.phase == "title" and hud.menu_open(), "... con el menú ya debajo, para fundirse sobre él y no sobre el museo")
-	key(KEY_ENTER, true)
+	key(KEY_E, true)
 	await frames()
 	check(cover._leaving and m.phase == "title", "la tecla que quita la portada no elige también la tarjeta")
 	# The same press arriving twice (a pad seen as two devices): still one.
-	key(KEY_ENTER, false)
-	key(KEY_ENTER, true)
+	key(KEY_E, false)
+	key(KEY_E, true)
 	await frames()
-	key(KEY_ENTER, false)
+	key(KEY_E, false)
 	check(m.phase == "title", "... ni repetida al instante")
 	await create_timer(Hud.FADE_S * 0.6).timeout
 	check(is_instance_valid(cover) and cover._leaving, "la portada aún se está yendo")
-	await press(KEY_ENTER)
+	await press(KEY_E)
 	await frames()
 	check(m.phase == "pick", "una pulsación nueva mientras se va llega al menú: no se pierde")
 
@@ -107,7 +107,7 @@ func _init() -> void:
 	await frames(2)
 	check(m.phase == "title", "... y otro atrás en el título no hace nada")
 	# A click off the bubble closes it too.
-	await press(KEY_ENTER)
+	await press(KEY_E)
 	await frames(Hud.SWAP_WAIT_FRAMES + 2)
 	var click := InputEventMouseButton.new()
 	click.button_index = MOUSE_BUTTON_LEFT
@@ -117,7 +117,7 @@ func _init() -> void:
 	await frames(2)
 	check(m.phase == "title" and not hud.bubble_open() and focused() == story_card, "un clic fuera del bocadillo lo cierra")
 	# Picking goes straight on: two thieves, to say whose controls are whose.
-	await press(KEY_ENTER)
+	await press(KEY_E)
 	await frames(Hud.SWAP_WAIT_FRAMES + 2)
 	await press(KEY_2)
 	await frames(2)
@@ -160,7 +160,7 @@ func _init() -> void:
 	check(hard_card.find_children("*", "Label", true, false).any(func(l): return (l as Label).text == Text.t("MENU_DIFFICULTY_MEDIUM")), "... la de dificultad dice la que hay")
 	hard_card.grab_focus()
 	await frames()
-	await press(KEY_ENTER)
+	await press(KEY_E)
 	await frames(Hud.SWAP_WAIT_FRAMES + 2)
 	check(m.phase == "pick" and hud._bubble_anchor == hard_card and hud._bubble_buttons.size() == 3, "pulsar la dificultad abre su bocadillo, con tres")
 	check(hud.bubble_focus() == 1, "... con el foco en la que hay (media)")
@@ -172,7 +172,7 @@ func _init() -> void:
 	await press(KEY_ESCAPE)
 	await frames(Hud.SWAP_WAIT_FRAMES + 2)
 	check(m.phase == "generative" and not hud.bubble_open() and focused() == hard_card and Sim.difficulty == "medium", "Esc lo cierra sin cambiar nada, con el foco en su tarjeta")
-	await press(KEY_ENTER)
+	await press(KEY_E)
 	await frames(Hud.SWAP_WAIT_FRAMES + 2)
 	await press(KEY_D)
 	await frames()
@@ -196,7 +196,7 @@ func _init() -> void:
 	await press(KEY_DOWN)
 	await frames()
 	check(focused() is Button and (focused() as Button).text == Text.t("MENU_START"), "abajo desde la dificultad: EMPEZAR")
-	await press(KEY_ENTER)
+	await press(KEY_E)
 	await frames(3)
 	check(m.phase == "brief" and m.mode == "generative" and m.players == 1, "EMPEZAR: a la previa del golpe, con 1 ladrón")
 
@@ -208,10 +208,11 @@ func _init() -> void:
 	m._show_brief(last)
 	# Straight away, while the page is still swapping in: the press counts.
 	await frames()
-	await press(KEY_ENTER)
+	await press(KEY_E)
 	await frames()
 	check(m.phase == "countdown", "EMPEZAR recién cambiada la página: cuenta atrás")
 	check(not hud._count.visible and hud.counting(), "el 3 espera a que se vaya el menú")
+	await press(KEY_E)
 	await press(KEY_ENTER)
 	await press(KEY_SPACE)
 	await press(KEY_ESCAPE)
@@ -239,6 +240,7 @@ func _init() -> void:
 	# Mashing the roll and the action as it ends: none of it skips the file.
 	await press(KEY_SPACE)
 	await press(KEY_ENTER)
+	await press(KEY_E)
 	await press(KEY_ESCAPE)
 	await frames()
 	check(m.phase == "over", "... y lo que se pulse entonces no cuenta")
@@ -247,11 +249,11 @@ func _init() -> void:
 	await frames(3)
 	check(focused() is Button and (focused() as Button).text == Text.t("END_AGAIN"), "con el foco en OTRA VEZ")
 	var level: int = m.level
-	await press(KEY_ENTER)
+	await press(KEY_E)
 	await frames(3)
 	check(m.phase == "brief" and m.brief_page == 0 and m.level == level, "OTRA VEZ, una vez: la previa, en su primera página")
 	# A second press is on the new page's button: one page on, never two.
-	await press(KEY_ENTER)
+	await press(KEY_E)
 	await frames(3)
 	check(m.phase == "brief" and m.brief_page == mini(1, m._brief_pages().size() - 1), "la siguiente pulsación, una página más")
 

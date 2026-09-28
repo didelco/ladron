@@ -7757,8 +7757,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "28-09-2026 20:25",
-  "commit": "bb1a675",
-  "rama": "museo3-nombre"
+  "fecha": "28-09-2026 23:43",
+  "commit": "77771ba",
+  "rama": "worktree-agent-a508788799b2f7da5"
  }
 };

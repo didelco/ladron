@@ -359,10 +359,12 @@ func fade_out() -> void:
 # --- Input ------------------------------------------------------------------------
 
 ## A press, whatever it came from, as what it means here: "left", "right",
-## "up", "down", "accept", "back", "skip", or "" for nothing. Keys: the
-## arrows and WASD, E or Enter to take, Escape or Space to go back, Tab to
-## skip; a pad: the cross or the left stick, A, B and Start.
+## "up", "down", "accept", "back", "skip", "prev", "next", or "" for nothing.
+## Keys: the arrows and WASD; accept, back and skip as on every menu
+## (MenuKeys: E or the full stop to take, Escape, Space or Enter to go back,
+## Tab to skip); a pad: the cross or the left stick, A, B, Start, LB and RB.
 func intent(event: InputEvent) -> String:
+	var what := MenuKeys.of(event)
 	if event is InputEventKey and event.pressed and not event.echo:
 		_pad = false
 		match event.keycode:
@@ -370,9 +372,7 @@ func intent(event: InputEvent) -> String:
 			KEY_RIGHT, KEY_D: return "right"
 			KEY_UP, KEY_W: return "up"
 			KEY_DOWN, KEY_S: return "down"
-			KEY_E, KEY_ENTER, KEY_KP_ENTER, KEY_PERIOD: return "accept"
-			KEY_ESCAPE, KEY_SPACE, KEY_BACKSPACE: return "back"
-			KEY_TAB: return "skip"
+		return what if what in ["accept", "back", "skip"] else ""
 	elif event is InputEventJoypadButton and event.pressed:
 		if not Pads.real(event.device):
 			return ""
@@ -382,11 +382,7 @@ func intent(event: InputEvent) -> String:
 			JOY_BUTTON_DPAD_RIGHT: return "right"
 			JOY_BUTTON_DPAD_UP: return "up"
 			JOY_BUTTON_DPAD_DOWN: return "down"
-			JOY_BUTTON_A: return "accept"
-			JOY_BUTTON_B: return "back"
-			JOY_BUTTON_START: return "skip"
-			JOY_BUTTON_LEFT_SHOULDER: return "prev"
-			JOY_BUTTON_RIGHT_SHOULDER: return "next"
+		return what if what != "map" else ""
 	elif event is InputEventJoypadMotion and event.axis in [JOY_AXIS_LEFT_X, JOY_AXIS_LEFT_Y]:
 		if not Pads.real(event.device):
 			return ""
