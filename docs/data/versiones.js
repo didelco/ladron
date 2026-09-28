@@ -600,6 +600,22 @@ window.VERSIONES = {
   },
   {
    "asunto": "museo",
+   "fecha": "2026-09-28T19:40",
+   "commit": "c2535ab",
+   "titulo": "La Casa de los Bichos, aún el templo de siempre",
+   "porque": "Antes de darle su propio edificio, un bosque vertical (sacada del juego en c2535ab con las cinco salas desbloqueadas)",
+   "cambio": "El templo genérico de columnas y cúpula en verde: cuatro ventanas iluminadas en la fachada y la grande del centro, todas salas",
+   "file": "versiones/museo/2026-09-28-la-casa-de-los-bichos-aun-el-templo-de-s.webp",
+   "from": "/tmp/bichos_antes/todas.png",
+   "commit_msg": "Docs: las capturas del generativo con dos tarjetas y su bocadillo de dificultad, el árbol de pantallas (el bocadillo de dificultad o tamaño; los de ladrones, con «1P»…«4P» en vez de los textos quitados) y su hito",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 47664
+  },
+  {
+   "asunto": "museo",
    "fecha": "2026-09-28T19:42",
    "commit": "d63f36a",
    "titulo": "El Templo de las Momias: el edificio de siempre",
@@ -727,5 +743,5 @@ window.VERSIONES = {
    "bytes": 68042
   }
  ],
- "bytes": 2761212
+ "bytes": 2808876
 };
