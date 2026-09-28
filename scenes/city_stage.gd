@@ -1,10 +1,12 @@
 class_name CityStage
 extends SubViewport
 ## The story's way in to a heist, as one 3D place seen from above at the
-## menus' axonometric angle: the town at night (a ground, a river, a road,
-## a few trees and the five museums, each a toy building of its theme and
-## colour), and inside the museum picked, its five rooms as a doll's house
-## with the roof off. Tour drives it and draws the words over it.
+## menus' axonometric angle: the town at night filling the screen (streets,
+## blocks of houses and shops, parks, a river, lamps: TownBuilder) and in
+## it the five museums, each a museum building in its own colour
+## (MuseumBuilding), a lit road from the gang's hideout past their doors;
+## and inside the museum picked, its five rooms as a doll's house with the
+## roof off. Tour drives it and draws the words over it.
 ##
 ## Everything is laid out on the town's own plan: x across the screen, z
 ## towards the viewer; the plan is turned a little (YAW) so the buildings
@@ -12,35 +14,25 @@ extends SubViewport
 
 ## The town's colours, new with it: all here, to change in one place.
 const SKY := Color("#110d1f")
-const GROUND := Color("#2a2140")
-const GROUND_SIDE := Color("#191327")
-const GRASS := Color("#2f2a48")
-const RIVER := Color("#27407a")
-const RIVER_EDGE := Color("#1a2a52")
-const ROAD := Color("#4a3f5c")
-const ROAD_LIT := Color("#8a7358")
-const ROAD_DASH := Color("#f0d9a8")
-const BRIDGE := Color("#7d6a8f")
-const LOT := Color("#3a3050")
 const RING := Color("#ffc94a")
 const LOCK := Color("#9a8fb0")
 const WINDOW := Color("#ffd479")
+const ROUTE := Color("#ffc94a")
+const ROUTE_DIM := Color("#6a5a7a")
 const SHUT := 0.62
 
-## The plan's turn under the camera, and how big the town is.
+## The plan's turn under the camera.
 const YAW := 20.0
-const TOWN := Vector2(34.0, 20.0)
 ## Each museum's lot: its rooms in a row across it.
 const LOT_SIZE := Vector2(4.6, 2.2)
-## Where each museum stands on the town's plan, in the order they open.
-const SPOTS := [Vector2(-12.5, 2.6), Vector2(-6.5, -3.6), Vector2(0.0, 2.8), Vector2(6.5, -3.6), Vector2(12.5, 2.6)]
-## The gang's hideout, where the road starts.
-const HIDEOUT := Vector2(-16.0, -2.5)
-## The river: a line of points across the town, back to front.
-const RIVER_LINE := [Vector2(2.9, -10.5), Vector2(3.6, -5.5), Vector2(2.6, -1.0), Vector2(3.8, 3.5), Vector2(3.0, 10.5)]
-const RIVER_WIDTH := 1.5
+## The blocks the museums stand on, in the order they open (TownBuilder's
+## grid), and the gang's hideout's.
+const MUSEUM_BLOCKS := [Vector2i(-2, 1), Vector2i(-2, -1), Vector2i(0, 0), Vector2i(0, -2), Vector2i(2, 0)]
+const HIDEOUT_BLOCK := Vector2i(-3, 0)
+## The river runs down this street (tiles across).
+const RIVER_STREET := -1
 ## How far the camera sees (orthographic height) over the town, and over a museum.
-const CITY_VIEW := 21.0
+const CITY_VIEW := 22.0
 const MUSEUM_VIEW := 3.7
 ## How long the camera takes into a museum and back out (s).
 const ZOOM_S := 1.5
@@ -142,41 +134,45 @@ func _init() -> void:
 ## The town as this gang has it: museums up to `open_to` (0-based) open,
 ## the one `pick` picked.
 func build(open_to: int, pick: int) -> void:
-	_ground()
-	_river()
-	_road(open_to)
-	_trees()
+	var builder := TownBuilder.new(_scenery)
+	for b in MUSEUM_BLOCKS:
+		builder.skip[b] = true
+	builder.river_x = RIVER_STREET * TownBuilder.PITCH
+	builder.museums = MUSEUM_BLOCKS
+	builder.build()
 	_hideout()
+	_route(open_to)
 	for m in Story.MUSEUMS.size():
-		var at := SPOTS[m] as Vector2
 		var lot := Node3D.new()
-		lot.position = Vector3(at.x, 0, at.y)
+		lot.position = TownBuilder.block_centre(MUSEUM_BLOCKS[m]) + Vector3(0, 0.09, 0)
 		town.add_child(lot)
 		_museums.append(lot)
 		_open.append(m <= open_to)
-		_rounded(lot, LOT_SIZE.x + 0.5, LOT_SIZE.y + 0.5, 0.12, 0.2, LOT, Vector3(0, 0.06, 0))
 		var shell := Node3D.new()
 		lot.add_child(shell)
 		_shells.append(shell)
-		_building(shell, m, m <= open_to)
-		var lock := _padlock()
-		lock.position = Vector3(0, 2.6, LOT_SIZE.y * 0.5 + 0.2)
+		var body := MuseumBuilding.new()
+		shell.add_child(body)
+		body.build(m, m <= open_to)
+		var lock := padlock()
+		lock.scale = Vector3.ONE * 1.6
+		lock.position = Vector3(0, _roof_height(m) + 0.9, 0.4)
 		lock.visible = m > open_to
 		lot.add_child(lock)
 		_locks.append(lock)
 	_ring = MeshInstance3D.new()
 	var torus := TorusMesh.new()
-	torus.inner_radius = 3.05
-	torus.outer_radius = 3.2
-	torus.rings = 48
+	torus.inner_radius = TownBuilder.block_size() * 0.66
+	torus.outer_radius = TownBuilder.block_size() * 0.66 + 0.18
+	torus.rings = 64
 	_ring.mesh = torus
 	_ring.material_override = _glow_material(RING, 1.0)
 	town.add_child(_ring)
 	_ring_light = SpotLight3D.new()
 	_ring_light.light_color = Color("#ffd9a0")
-	_ring_light.light_energy = 3.0
-	_ring_light.spot_range = 14.0
-	_ring_light.spot_angle = 22.0
+	_ring_light.light_energy = 4.0
+	_ring_light.spot_range = 20.0
+	_ring_light.spot_angle = 24.0
 	_ring_light.rotation_degrees = Vector3(-90, 0, 0)
 	town.add_child(_ring_light)
 	picked = clampi(pick, 0, _museums.size() - 1)
@@ -234,6 +230,8 @@ func go_in(m: int, rooms: Array, done: Callable) -> void:
 	_tween.tween_property(shell, "position:y", 12.0, secs * 0.45).set_delay(secs * 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 	_house.scale = Vector3(1, 0.05, 1)
 	_tween.tween_property(_house, "scale", Vector3.ONE, secs * 0.4).set_delay(secs * 0.6).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	# Sunk away, the town is not drawn at all (its tall ones would show).
+	_tween.chain().tween_callback(func() -> void: _scenery.visible = false)
 	_tween.chain().tween_callback(done)
 
 
@@ -244,6 +242,7 @@ func go_out(done: Callable) -> void:
 		done.call()
 		return
 	var m := inside
+	_scenery.visible = true
 	var secs := 0.0 if hurry else ZOOM_S * 0.8
 	if _tween:
 		_tween.kill()
@@ -286,8 +285,12 @@ func _place_camera() -> void:
 	_cam.position = focus + _cam.basis.z * 80.0
 
 
+## Where the camera looks over the whole town: the middle of the museums.
 func _town_middle() -> Vector3:
-	return Vector3(0, 0, 0.8)
+	var sum := Vector3.ZERO
+	for b in MUSEUM_BLOCKS:
+		sum += town.transform * TownBuilder.block_centre(b)
+	return sum / MUSEUM_BLOCKS.size() + Vector3(0, 0.6, 0)
 
 
 func _process(dt: float) -> void:
@@ -302,7 +305,7 @@ func _process(dt: float) -> void:
 		var lock := _locks[m]
 		if lock.visible:
 			lock.rotation.y = sin(_t * 1.6 + m) * 0.35
-			lock.position.y = 2.6 + sin(_t * 2.0 + m) * 0.08
+			lock.position.y = _roof_height(m) + 0.9 + sin(_t * 2.0 + m) * 0.08
 	if _ring and not _museums.is_empty():
 		var lot := _museums[picked]
 		_ring.visible = inside < 0
@@ -319,109 +322,13 @@ func _process(dt: float) -> void:
 
 # --- The town ---------------------------------------------------------------------
 
-## A rounded slab of night ground with a grassy top.
-func _ground() -> void:
-	_rounded(_scenery, TOWN.x, TOWN.y, 0.8, 1.2, GROUND_SIDE, Vector3(0, -0.42, 0))
-	_rounded(_scenery, TOWN.x - 0.2, TOWN.y - 0.2, 0.06, 1.1, GRASS, Vector3(0, 0.0, 0))
-
-
-## The river, back to front across the town, a ribbon of flat strips.
-func _river() -> void:
-	var pts := _smooth(RIVER_LINE, 6)
-	for i in pts.size() - 1:
-		_strip(_scenery, pts[i], pts[i + 1], RIVER_WIDTH + 0.3, RIVER_EDGE, 0.035)
-		_strip(_scenery, pts[i], pts[i + 1], RIVER_WIDTH, RIVER, 0.045)
-
-
-## The road from the hideout past every museum's door, lit (with dashes
-## down the middle) as far as the last one open.
-func _road(open_to: int) -> void:
-	var doors: Array = [HIDEOUT + Vector2(1.2, 0.8)]
-	for m in SPOTS.size():
-		doors.append(SPOTS[m] + Vector2(0, LOT_SIZE.y * 0.5 + 1.1))
-	for i in doors.size() - 1:
-		var a: Vector2 = doors[i]
-		var b: Vector2 = doors[i + 1]
-		var mid := Vector2((a.x + b.x) * 0.5, (a.y + b.y) * 0.5 + (1.0 if i % 2 == 0 else -1.0))
-		var pts := _smooth([a, mid, b], 5)
-		var lit := i <= open_to
-		for k in pts.size() - 1:
-			_strip(_scenery, pts[k], pts[k + 1], 1.0, ROAD_LIT if lit else ROAD, 0.06)
-			if lit and k % 2 == 0:
-				_strip(_scenery, pts[k], pts[k].lerp(pts[k + 1], 0.5), 0.12, ROAD_DASH, 0.075)
-		# A bridge where it crosses the river.
-		for k in pts.size() - 1:
-			var hit: Variant = _river_cross(pts[k], pts[k + 1])
-			if hit != null:
-				var dir := (pts[k + 1] - pts[k]).normalized()
-				_strip(_scenery, hit - dir * 1.3, hit + dir * 1.3, 1.4, BRIDGE, 0.16)
-				for s in [-1, 1]:
-					var side := Vector2(-dir.y, dir.x) * 0.7 * float(s)
-					_strip(_scenery, hit - dir * 1.3 + side, hit + dir * 1.3 + side, 0.1, BRIDGE.lightened(0.2), 0.36)
-		# From the road up to the door.
-		if i < SPOTS.size():
-			var spot: Vector2 = SPOTS[i]
-			_strip(_scenery, b, spot + Vector2(0, LOT_SIZE.y * 0.5), 0.6, ROAD_LIT if lit else ROAD, 0.055)
-
-
-## Where segment a–b crosses the river, or null.
-func _river_cross(a: Vector2, b: Vector2) -> Variant:
-	var pts := _smooth(RIVER_LINE, 6)
-	for i in pts.size() - 1:
-		var hit: Variant = Geometry2D.segment_intersects_segment(a, b, pts[i], pts[i + 1])
-		if hit != null:
-			return hit
-	return null
-
-
-## A few round trees, always the same, clear of the road, the river and the
-## museums.
-func _trees() -> void:
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 31
-	var placed := 0
-	for k in 200:
-		if placed >= 22:
-			break
-		var at := Vector2(rng.randf_range(-TOWN.x * 0.46, TOWN.x * 0.46), rng.randf_range(-TOWN.y * 0.44, TOWN.y * 0.44))
-		if not _clear(at, 1.0):
-			continue
-		placed += 1
-		_tree(Vector3(at.x, 0, at.y), rng.randf_range(0.35, 0.55))
-
-
-func _clear(at: Vector2, r: float) -> bool:
-	var river := _smooth(RIVER_LINE, 6)
-	for i in river.size() - 1:
-		if at.distance_to(Geometry2D.get_closest_point_to_segment(at, river[i], river[i + 1])) < RIVER_WIDTH * 0.5 + r:
-			return false
-	for s in SPOTS:
-		if Rect2(s - LOT_SIZE * 0.5, LOT_SIZE).grow(r + 1.3).has_point(at):
-			return false
-		if at.distance_to(s + Vector2(0, LOT_SIZE.y * 0.5 + 1.1)) < r + 1.6:
-			return false
-	if at.distance_to(HIDEOUT) < r + 1.5:
-		return false
-	return true
-
-
-func _tree(at: Vector3, r: float) -> void:
-	var trunk := CylinderMesh.new()
-	trunk.top_radius = 0.07
-	trunk.bottom_radius = 0.1
-	trunk.height = 0.6
-	_mesh(_scenery, trunk, MenuStage.SOIL, at + Vector3(0, 0.3, 0))
-	for k in 3:
-		var ball := SphereMesh.new()
-		ball.radius = r * (1.0 - k * 0.25)
-		ball.height = ball.radius * 2.0
-		_mesh(_scenery, ball, MenuStage.GRASS.darkened(0.1 * k), at + Vector3(0, 0.6 + r * 0.7 + k * r * 0.55, 0))
-
-
-## The gang's hideout: a little house with a sock hung out as a flag.
+## The gang's hideout: a little house with a sock hung out as a flag, on
+## its block's corner nearest the museums.
 func _hideout() -> void:
 	var g := Node3D.new()
-	g.position = Vector3(HIDEOUT.x, 0, HIDEOUT.y)
+	var h := TownBuilder.block_size() * 0.5 - 0.9
+	g.position = TownBuilder.block_centre(HIDEOUT_BLOCK) + Vector3(h, 0.09, h)
+	g.scale = Vector3.ONE * 1.2
 	_scenery.add_child(g)
 	_rounded(g, 1.4, 1.1, 0.8, 0.08, Color("#4a3a2a"), Vector3(0, 0.4, 0))
 	var roof := PrismMesh.new()
@@ -437,158 +344,79 @@ func _hideout() -> void:
 	_box(g, Vector3(0.14, 0.3, 0.03), Color("#e2262f"), Vector3(0.86, 1.7, 0))
 
 
+## The way from the hideout past every museum's door, along the streets:
+## a glowing line as far as the last museum open, dim after.
+func _route(open_to: int) -> void:
+	var t := TownBuilder.TILE
+	var p := TownBuilder.PITCH
+	# In front of each block: the street on its near side, at its middle.
+	var door := func(b: Vector2i) -> Vector2:
+		return Vector2((b.x * p + p * 0.5) * t, (b.y + 1) * p * t)
+	var stops: Array = [door.call(HIDEOUT_BLOCK)]
+	for b in MUSEUM_BLOCKS:
+		stops.append(door.call(b))
+	for i in stops.size() - 1:
+		var a: Vector2 = stops[i]
+		var b: Vector2 = stops[i + 1]
+		# Along a's street to a cross street half way, down it to b's
+		# street, and along that to b.
+		var cross := b.x
+		if not is_equal_approx(a.y, b.y):
+			cross = roundf((a.x + b.x) * 0.5 / (p * t)) * p * t
+		var pts: Array[Vector2] = [a, Vector2(cross, a.y), Vector2(cross, b.y), b]
+		var lit := i <= open_to
+		for k in pts.size() - 1:
+			_dashes(pts[k], pts[k + 1], ROUTE if lit else ROUTE_DIM, lit)
+
+
+## A dashed line down the middle of the street from a to b.
+func _dashes(a: Vector2, b: Vector2, colour: Color, lit: bool) -> void:
+	var length := a.distance_to(b)
+	if length < 0.01:
+		return
+	var steps := int(length / 0.5)
+	for k in steps:
+		if k % 2 == 1:
+			continue
+		var p0 := a.lerp(b, float(k) / steps)
+		var p1 := a.lerp(b, float(k + 1) / steps)
+		var mi := _box(_scenery, Vector3(maxf(absf(p1.x - p0.x), 0.12), 0.03, maxf(absf(p1.y - p0.y), 0.12)), colour, Vector3((p0.x + p1.x) * 0.5, 0.035, (p0.y + p1.y) * 0.5))
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		if lit:
+			mi.material_override = _glow_material(colour, 1.6)
+
+
+## How tall a museum is, for its sign and its padlock.
+func _roof_height(_m: int) -> float:
+	return MuseumBuilding.PLINTH + MuseumBuilding.H + 0.6 + MuseumBuilding.DOME_R * 0.8 + 0.9
+
+
 # --- The museums ------------------------------------------------------------------
 
-## Museum m's building, its look telling its theme and its colour: the
-## cave a rocky mound, the bugs' house a greenhouse with a ladybird on it,
-## the mummies' temple a step pyramid, the castle its towers, the Barón's
-## tower of glass. Shut ones are dark, their windows out.
-func _building(shell: Node3D, m: int, open: bool) -> void:
-	# What hops: all of it but the lot.
-	var body := Node3D.new()
-	shell.add_child(body)
-	var colour := Color(Story.MUSEUMS[m].colour)
-	var look: Dictionary = Story.MUSEUMS[m].palette
-	var wall: Color = look.paper
-	var trim: Color = look.trim
-	var stone: Color = look.cap
-	if not open:
-		colour = colour.darkened(SHUT)
-		wall = wall.darkened(SHUT)
-		trim = trim.darkened(SHUT)
-		stone = stone.darkened(SHUT)
-	var w := LOT_SIZE.x
-	var d := LOT_SIZE.y
-	var lit := WINDOW if open else Color("#2a2433")
-	match Story.MUSEUMS[m].theme:
-		"prehistoria":
-			# Boulders piled into a hill, a dark mouth in front, a bone over it.
-			for b in [[-1.2, 0.0, 1.3, 1.1], [0.2, -0.1, 1.6, 1.5], [1.4, 0.1, 1.2, 1.0], [-0.4, 0.3, 1.0, 0.8]]:
-				var s := SphereMesh.new()
-				s.radius = b[2]
-				s.height = b[3] * 2.0
-				_mesh(body, s, colour.lerp(stone, 0.3) if int(b[0] * 10) % 2 == 0 else colour, Vector3(b[0], 0.1, b[1]))
-			var mouth := CylinderMesh.new()
-			mouth.top_radius = 0.45
-			mouth.bottom_radius = 0.45
-			mouth.height = 0.2
-			var hole := _mesh(body, mouth, Color("#120c08"), Vector3(0.2, 0.35, d * 0.5 + 0.2))
-			hole.rotation_degrees.x = 90
-			_bone(body, Vector3(0.2, 1.3, d * 0.5 + 0.15), Color("#f4ecd8").darkened(0.0 if open else SHUT))
-			_glow_box(body, Vector3(0.5, 0.18, 0.02), lit, Vector3(0.2, 0.3, d * 0.5 + 0.32), 1.2 if open else 0.0)
-		"naturaleza":
-			# A greenhouse: a low hall with a glass dome, a ladybird on top.
-			_rounded(body, w * 0.9, d * 0.9, 0.9, 0.12, wall, Vector3(0, 0.55, 0))
-			_box(body, Vector3(w * 0.92, 0.1, d * 0.92), trim, Vector3(0, 1.05, 0))
-			var dome := SphereMesh.new()
-			dome.radius = 0.95
-			dome.height = 1.5
-			dome.is_hemisphere = true
-			var glass := _mesh(body, dome, Color(colour.lightened(0.2), 0.55), Vector3(0, 1.1, 0))
-			glass.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-			_ladybird(body, Vector3(0, 2.1, 0), open)
-			for k in 4:
-				_glow_box(body, Vector3(0.34, 0.4, 0.02), lit, Vector3(-1.5 + k, 0.55, d * 0.45 + 0.01), 1.0 if open else 0.0)
-		"antiguo":
-			# A step pyramid, a door with columns at its foot.
-			for k in 4:
-				_box(body, Vector3(w * (0.95 - k * 0.2), 0.5, d * (1.0 - k * 0.2)), colour.darkened(k * 0.06), Vector3(0, 0.25 + k * 0.5, -k * 0.05))
-			_box(body, Vector3(0.5, 0.4, 0.4), trim, Vector3(0, 2.2, -0.15))
-			for s in [-1, 1]:
-				var col := CylinderMesh.new()
-				col.top_radius = 0.08
-				col.bottom_radius = 0.1
-				col.height = 0.7
-				_mesh(body, col, Color("#e8d6b4").darkened(0.0 if open else SHUT), Vector3(s * 0.35, 0.35, d * 0.5 + 0.08))
-			_glow_box(body, Vector3(0.45, 0.55, 0.02), lit, Vector3(0, 0.3, d * 0.5 + 0.02), 1.3 if open else 0.0)
-		"edad_media":
-			# A keep with a tower at each corner, red cone roofs and a flag.
-			_box(body, Vector3(w * 0.8, 1.2, d * 0.8), stone, Vector3(0, 0.6, 0))
-			for k in 6:
-				_box(body, Vector3(0.28, 0.25, 0.28), stone, Vector3(-1.5 + k * 0.6, 1.3, d * 0.4 - 0.1))
-			for sx in [-1, 1]:
-				for sz in [-1, 1]:
-					var t := CylinderMesh.new()
-					t.top_radius = 0.38
-					t.bottom_radius = 0.42
-					t.height = 1.8
-					var at := Vector3(sx * w * 0.42, 0.9, sz * d * 0.4)
-					_mesh(body, t, stone.lightened(0.08), at)
-					var cone := CylinderMesh.new()
-					cone.top_radius = 0.0
-					cone.bottom_radius = 0.5
-					cone.height = 0.8
-					_mesh(body, cone, colour, at + Vector3(0, 1.3, 0))
-			_box(body, Vector3(0.03, 0.8, 0.03), Color("#8a7a6a"), Vector3(-w * 0.42, 2.9, -d * 0.4))
-			_box(body, Vector3(0.45, 0.28, 0.03), colour.lightened(0.2), Vector3(-w * 0.42 + 0.24, 3.15, -d * 0.4))
-			_glow_box(body, Vector3(0.5, 0.7, 0.02), lit, Vector3(0, 0.35, d * 0.4 + 0.01), 1.3 if open else 0.0)
-		_:
-			# A tower of glass, stripes of lit floors, the Barón's diamond on top.
-			_box(body, Vector3(w * 0.9, 0.5, d * 0.9), wall, Vector3(0, 0.25, 0))
-			var tower := _box(body, Vector3(1.8, 4.0, 1.4), Color(colour.darkened(0.45), 0.9), Vector3(0.6, 2.4, -0.2))
-			tower.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
-			for k in 7:
-				_glow_box(body, Vector3(1.82, 0.08, 1.42), colour if open else colour.darkened(0.3), Vector3(0.6, 0.8 + k * 0.55, -0.2), 1.4 if open else 0.0)
-			var gem := LootModels.build("gem", Color("#74c0fc"))
-			gem.scale = Vector3.ONE * 1.6
-			gem.position = Vector3(0.6, 4.5, -0.2)
-			gem.name = "Gem"
-			body.add_child(gem)
-			_glow_box(body, Vector3(0.6, 0.35, 0.02), lit, Vector3(-1.0, 0.25, d * 0.45 + 0.01), 1.3 if open else 0.0)
-
-
-## How tall museum m's building is, for its sign.
-func _roof_height(m: int) -> float:
-	return [2.0, 2.4, 2.5, 3.4, 5.0][clampi(m, 0, 4)]
-
-
-func _bone(parent: Node3D, at: Vector3, colour: Color) -> void:
-	var shaft := CylinderMesh.new()
-	shaft.top_radius = 0.06
-	shaft.bottom_radius = 0.06
-	shaft.height = 0.8
-	var s := _mesh(parent, shaft, colour, at)
-	s.rotation_degrees.z = 90
-	for x in [-0.42, 0.42]:
-		for y in [-0.07, 0.07]:
-			var knob := SphereMesh.new()
-			knob.radius = 0.1
-			knob.height = 0.2
-			_mesh(parent, knob, colour, at + Vector3(x, y, 0))
-
-
-## A ladybird: a red shell in two halves, black spots, a black head.
-func _ladybird(parent: Node3D, at: Vector3, open: bool) -> void:
-	var red := Color("#e03131") if open else Color("#e03131").darkened(SHUT)
-	var ink := Color("#1c1210")
-	var shell := SphereMesh.new()
-	shell.radius = 0.5
-	shell.height = 0.6
-	shell.is_hemisphere = true
-	_mesh(parent, shell, red, at)
-	var head := SphereMesh.new()
-	head.radius = 0.2
-	head.height = 0.3
-	_mesh(parent, head, ink, at + Vector3(0, 0.05, 0.45))
-	for p in [Vector3(-0.2, 0.25, 0.1), Vector3(0.22, 0.24, -0.1), Vector3(-0.1, 0.28, -0.22), Vector3(0.15, 0.22, 0.25)]:
-		var dot := SphereMesh.new()
-		dot.radius = 0.08
-		dot.height = 0.08
-		_mesh(parent, dot, ink, at + p)
-	_box(parent, Vector3(0.02, 0.3, 0.9), ink, at + Vector3(0, 0.28, 0))
-
-
 ## A padlock floating over a shut museum.
-func _padlock() -> Node3D:
+static func padlock() -> Node3D:
 	var g := Node3D.new()
-	_rounded(g, 0.8, 0.3, 0.65, 0.1, LOCK, Vector3.ZERO)
+	var body := BoxMesh.new()
+	body.size = Vector3(0.8, 0.65, 0.3)
+	_part(g, body, LOCK, Vector3.ZERO)
 	var shackle := TorusMesh.new()
 	shackle.inner_radius = 0.2
 	shackle.outer_radius = 0.3
-	var s := _mesh(g, shackle, LOCK.lightened(0.2), Vector3(0, 0.4, 0))
+	var s := _part(g, shackle, LOCK.lightened(0.2), Vector3(0, 0.4, 0))
 	s.rotation_degrees.x = 90
-	_box(g, Vector3(0.1, 0.2, 0.02), Color("#1c1210"), Vector3(0, -0.03, 0.16))
+	var hole := BoxMesh.new()
+	hole.size = Vector3(0.1, 0.2, 0.02)
+	_part(g, hole, Color("#1c1210"), Vector3(0, -0.03, 0.16))
 	return g
+
+
+static func _part(parent: Node3D, mesh: Mesh, colour: Color, at: Vector3) -> MeshInstance3D:
+	var mi := MeshInstance3D.new()
+	mi.mesh = mesh
+	mi.material_override = MenuStage._material(colour)
+	mi.position = at
+	parent.add_child(mi)
+	return mi
 
 
 ## Museum m's padlock back on, to pop off (unlock) as the town shows it.
@@ -623,6 +451,7 @@ func _build_house(m: int, rooms: Array) -> void:
 	room = -1
 	_house = Node3D.new()
 	_museums[m].add_child(_house)
+	_rounded(_house, LOT_SIZE.x + 0.5, LOT_SIZE.y + 0.5, 0.12, 0.2, Color("#3a3050"), Vector3(0, 0.06, 0))
 	var look: Dictionary = Story.MUSEUMS[m].palette
 	var total := 0.0
 	for r in rooms:
@@ -652,7 +481,7 @@ func _build_house(m: int, rooms: Array) -> void:
 		_box(node, Vector3(w, 0.03, WALL_T + 0.02), look.trim, Vector3(0, WALL_H, -d * 0.5))
 		# A painting on it, or over the big job a crown.
 		if r.boss:
-			_crown(node, Vector3(0, WALL_H + 0.25, -d * 0.5), MenuStage.GOLD if r.open else MenuStage.GOLD.darkened(0.6))
+			crown(node, Vector3(0, WALL_H + 0.25, -d * 0.5), MenuStage.GOLD if r.open else MenuStage.GOLD.darkened(0.6))
 		else:
 			_box(node, Vector3(w * 0.4, WALL_H * 0.45, 0.02), look.trim, Vector3(0, WALL_H * 0.55, -d * 0.5 + 0.045))
 			_box(node, Vector3(w * 0.32, WALL_H * 0.33, 0.02), Color("#274b6e") if r.open else Color("#101018"), Vector3(0, WALL_H * 0.55, -d * 0.5 + 0.055))
@@ -674,7 +503,7 @@ func _build_house(m: int, rooms: Array) -> void:
 			sheet.radius = 0.16
 			sheet.height = 0.22
 			_mesh(piece, sheet, Color("#6a6078"), Vector3(0, 0.04, 0))
-			var lock := _padlock()
+			var lock := padlock()
 			lock.scale = Vector3.ONE * 0.28
 			lock.position = Vector3(0, 0.45, 0.2)
 			node.add_child(lock)
@@ -768,13 +597,15 @@ func _animate_house(dt: float) -> void:
 	_room_light.visible = room >= 0 and _rooms[room].open
 
 
-## A little crown: a gold band with three points.
-func _crown(parent: Node3D, at: Vector3, colour: Color) -> void:
-	_box(parent, Vector3(0.36, 0.1, 0.04), colour, at)
-	for k in 3:
+## A little crown: a gold band with three points; k times as big.
+static func crown(parent: Node3D, at: Vector3, colour: Color, k := 1.0) -> void:
+	var band := BoxMesh.new()
+	band.size = Vector3(0.36, 0.1, 0.04) * k
+	_part(parent, band, colour, at)
+	for i in 3:
 		var p := PrismMesh.new()
-		p.size = Vector3(0.1, 0.14, 0.04)
-		_mesh(parent, p, colour, at + Vector3(-0.13 + k * 0.13, 0.12, 0))
+		p.size = Vector3(0.1, 0.14, 0.04) * k
+		_part(parent, p, colour, at + Vector3(-0.13 + i * 0.13, 0.12, 0) * k)
 
 
 # --- The plan ---------------------------------------------------------------------
@@ -933,33 +764,6 @@ func _cam_to(at: Vector3, tall: float, secs: float) -> void:
 
 
 # --- Shapes -----------------------------------------------------------------------
-
-## A flat strip from a to b on the town's plan, at height y.
-func _strip(parent: Node3D, a: Vector2, b: Vector2, width: float, colour: Color, y: float) -> void:
-	var length := a.distance_to(b)
-	if length < 0.001:
-		return
-	var mi := _box(parent, Vector3(length + width * 0.5, 0.04, width), colour, Vector3((a.x + b.x) * 0.5, y, (a.y + b.y) * 0.5))
-	mi.rotation.y = -atan2(b.y - a.y, b.x - a.x)
-	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-
-
-## A line through the points, rounded off (Chaikin), steps times.
-static func _smooth(points: Array, steps: int) -> Array[Vector2]:
-	var out: Array[Vector2] = []
-	for p in points:
-		out.append(p)
-	for s in steps:
-		if out.size() < 3:
-			break
-		var next: Array[Vector2] = [out[0]]
-		for i in out.size() - 1:
-			next.append(out[i].lerp(out[i + 1], 0.25))
-			next.append(out[i].lerp(out[i + 1], 0.75))
-		next.append(out[-1])
-		out = next
-	return out
-
 
 func _rounded(parent: Node3D, w: float, d: float, h: float, r: float, colour: Color, at: Vector3) -> Node3D:
 	var g := Node3D.new()
