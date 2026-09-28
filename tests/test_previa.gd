@@ -322,7 +322,9 @@ func _init() -> void:
 	tour.queue_free()
 
 	# The ancient museum, a Palladian villa: on arriving, only room 1 is a
-	# room, the rest just serlianas and the big job's a shut door.
+	# room, the rest just serlianas and the big job's a shut door. From a
+	# fresh start: the tower's cases above have reached the last museum.
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
 	var nights := Story.nights_in(2)
 	Story.unlock(nights[0], 1)
 	tour = Tour.new()
