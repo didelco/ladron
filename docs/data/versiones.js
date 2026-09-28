@@ -551,6 +551,22 @@ window.VERSIONES = {
    "bytes": 49970
   },
   {
+   "asunto": "museo",
+   "fecha": "2026-09-28T19:15",
+   "commit": "952f776",
+   "titulo": "La Gran Cueva: salas en la fachada y el costado",
+   "porque": "Las salas repartidas por el edificio y solo a la vista las desbloqueadas",
+   "cambio": "Ventanas también en los costados, con pilastras en las esquinas; salas 1 y 2 en la fachada (plantas primera y última), 3 y 4 en el costado derecho, el gran golpe sobre la puerta. Una sala sin desbloquear es una ventana más del edificio (sin candado ni estrellas) y no se elige; las flechas siguen el orden en pantalla",
+   "file": "versiones/museo/2026-09-28-la-gran-cueva-salas-en-la-fachada-y-el-c.webp",
+   "from": "docs/capturas/menu_museo_1.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 50688
+  },
+  {
    "asunto": "recreativa",
    "fecha": "2026-09-27T14:55",
    "commit": "59b9a18",
@@ -583,5 +599,5 @@ window.VERSIONES = {
    "bytes": 68042
   }
  ],
- "bytes": 2322246
+ "bytes": 2372934
 };
