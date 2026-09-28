@@ -1056,7 +1056,7 @@ func _show_prologue(page := 0) -> void:
 		{"text": _dots(page, pages.size()), "colour": Hud.C.dim, "size": 14},
 		{"buttons": [
 			{"text": Text.t("MENU_BACK") if page == 0 else Text.t("MENU_PREV"), "call": _prologue_back, "colour": Hud.C.dim},
-			{"text": Text.t("PROLOGUE_GO") if last else Text.t("MENU_NEXT"), "call": _show_city if last else _show_prologue.bind(page + 1)},
+			{"text": Text.t("MENU_NEXT"), "call": _show_city if last else _show_prologue.bind(page + 1)},
 		], "row": true, "focus": 1},
 		{"buttons": [{"text": Text.t("MENU_SKIP"), "call": _show_city, "colour": Hud.C.dim}], "small": true},
 	])

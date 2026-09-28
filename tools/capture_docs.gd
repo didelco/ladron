@@ -226,8 +226,8 @@ func _shots() -> void:
 		main._show_prologue(p)
 		await _wait(1.5)
 		await _shot("previa_prologo_%d" % (p + 1), "previas", "Prólogo, página %d de %d" % [p + 1, pages.size()])
-	# The story's way in (Tour): the plan out of its room, what is told over
-	# it (the piece, the news, a rule) and then looked round.
+	# The story's way in (Tour): the plan out of its room, the piece's tale
+	# and what is new told big over it, and then looked round.
 	for n in [1, 2, 5, 6, 8, 11, 16, 25]:
 		_reset()
 		main.players = 1
@@ -238,14 +238,10 @@ func _shots() -> void:
 		var talk: PlanTalk = main.tour.talk
 		var what := "Robo %d%s" % [n, " (gran golpe)" if Story.is_boss(n) else ""]
 		await _shot("previa_robo_%02d_pieza" % n, "previas", what + ": la pieza", Text.t(Story.level(n).loot.name))
-		for kind in ["news", "rule"]:
-			var at: int = talk.beats.map(func(b): return b.kind).find(kind)
-			if at < 0:
-				continue
-			while talk.step < at:
-				talk._next()
+		if not talk.news.is_empty():
+			talk.act("accept")
 			await _wait(1.6)
-			await _shot("previa_robo_%02d_%s" % [n, {"news": "nuevo", "rule": "regla"}[kind]], "previas", what + (": lo nuevo" if kind == "news" else ": una regla"))
+			await _shot("previa_robo_%02d_nuevo" % n, "previas", what + ": lo nuevo")
 		talk.skip()
 		await _wait(1.2)
 		await _shot("previa_robo_%02d_plano" % n, "previas", what + ": el plano para explorar", "Cada cosa contada, clavada en el plano; las estrellas arriba; ¡A ROBAR!")

@@ -9,8 +9,9 @@ extends CanvasLayer
 ##   "city"     the town: the arrows pick a museum, A goes in, B back out
 ##   "zoom"     gliding in or out; nothing to press
 ##   "museum"   inside one: the arrows pick a room reached, A plans it, B out
-##   "unfold"   the room's plan coming out of it and opening
-##   "plan"     the plan open: told over it, then looked round (PlanTalk)
+##   "plan"     the room's plan coming out of it and opening, the piece's
+##              tale and what is new told big over it, a page at a time,
+##              then the plan looked round (PlanTalk)
 ##   "going"    off to the heist: the plan fades into the game
 ## Main listens for what it asks for (left, room_chosen, go) and forwards
 ## the input while it is up (input).
@@ -275,9 +276,10 @@ func _leave_museum() -> void:
 ## Heist n laid out, its plan out of its room (Main._plan_data): image and
 ## tile_px, the plan's picture; heading, over it; beats (PlanBeats), sheet
 ## (the job sheet), goals (StarSlots.goals); told, whether to go straight to
-## looking round.
+## looking round. The piece's tale comes up big straight away, the plan
+## coming out of its room and opening behind it.
 func show_plan(data: Dictionary) -> void:
-	state = "unfold"
+	state = "plan"
 	night = data.n
 	_sign.visible = false
 	for l in _room_stars:
@@ -286,11 +288,8 @@ func show_plan(data: Dictionary) -> void:
 	_arcade(_title)
 	_subtitle.text = data.heading
 	_set_hints([])
-	stage.raise_plan(data.image, data.tile_px, _plan_open.bind(data))
-
-
-func _plan_open(data: Dictionary) -> void:
-	state = "plan"
+	if talk:
+		talk.queue_free()
 	talk = PlanTalk.new()
 	talk.tour = self
 	talk.stage = stage
@@ -302,6 +301,10 @@ func _plan_open(data: Dictionary) -> void:
 	talk.go.connect(_go)
 	talk.back.connect(_back_to_museum)
 	talk.told.connect(func() -> void: told.emit(night))
+	var t := talk
+	stage.raise_plan(data.image, data.tile_px, func() -> void:
+		if is_instance_valid(t):
+			t.plan_ready())
 	if data.get("told", false):
 		talk.skip()
 	else:
