@@ -5793,17 +5793,6 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "STORY_REACHED",
-  "es": "Museo %d · sala %d",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "scenes/main.gd:462"
-  ],
-  "via": []
- },
- {
   "key": "STORY_MAP_TITLE",
   "es": "LA CIUDAD",
   "broken": false,
