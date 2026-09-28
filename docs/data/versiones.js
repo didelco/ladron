@@ -167,6 +167,22 @@ window.VERSIONES = {
    "bytes": 34080
   },
   {
+   "asunto": "menus",
+   "fecha": "2026-09-28T19:17",
+   "commit": "d63f36a",
+   "titulo": "Modo generativo con filas de tarjetas y ¡A ROBAR!",
+   "porque": "Antes de rehacer los ajustes del generativo con dos tarjetas y bocadillos",
+   "cambio": "Tres tarjetas de dificultad y tres de tamaño con bordes de color de la elegida, y la tarjeta ¡A ROBAR! con los ninjas saltando",
+   "file": "versiones/menus/2026-09-28-modo-generativo-con-filas-de-tarjetas-y-.webp",
+   "from": "docs/capturas/menu_generativo.webp",
+   "commit_msg": "Docs: la captura de La Gran Cueva con salas en la fachada y el costado, y su hito",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 31136
+  },
+  {
    "asunto": "fondo-menus",
    "fecha": "2026-09-27T10:02",
    "commit": "3888cd5",
@@ -599,5 +615,5 @@ window.VERSIONES = {
    "bytes": 68042
   }
  ],
- "bytes": 2372934
+ "bytes": 2404070
 };
