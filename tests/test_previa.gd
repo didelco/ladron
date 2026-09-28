@@ -112,14 +112,17 @@ func _init() -> void:
 	t.act("left")
 	check(t._nights[t.stage.room] == 7, "se puede elegir una ya hecha")
 	check(StarSlots.room_line(7, 1) == "☆☆☆" and StarSlots.room_line(10, 1) == "", "estrellas de cada sala; nada en las cerradas")
-	# The museum as a building: each room a window on its front.
+	# The museum of the bugs as a building: each room a hole among the
+	# green, only those reached; the rest, balconies like any other.
 	var body: MuseumBuilding = t.stage._body(1)
-	check(t.stage.room_count() == 5 and body.windows.size() == 5, "el museo, un edificio con una ventana por sala")
-	check((body.windows[4].node as Node3D).position.x == 0.0 and body.windows[4].boss, "el gran golpe, la ventana grande del centro")
-	check(body.windows[2].open and not body.windows[3].open and body.windows[3].lock != null, "en el edificio de siempre, las salas cerradas a oscuras y con candado")
+	check(t.stage.room_count() == 5 and body.windows.size() == 5, "el museo, un edificio con un hueco por sala")
+	check((body.windows[4].node as Node3D).position.x == 0.0 and body.windows[4].boss, "el gran golpe, el hueco del centro")
+	check(body.windows[2].open and not body.windows[3].open and body.windows[3].lock == null, "en la casa de los bichos, las salas sin desbloquear son balcones normales: sin candado")
+	check((body.windows[3].piece as Node3D).get_child_count() == 0 and (body.windows[4].node as Node3D).get_child_count() == 1, "... sin pieza, y el gran golpe sin pieza ni corona")
 	await frames()
-	check(not t.stage.room_open(3) and t._room_stars[2].visible and not t._room_stars[3].visible, "... pero no son salas: ni estrellas ni se eligen")
-	check((body.windows[0].piece as Node3D).get_child_count() == 1, "en cada ventana abierta, su pieza")
+	check(not t.stage.room_open(3) and t._room_stars[2].visible and not t._room_stars[3].visible, "... ni son salas: ni estrellas ni se eligen")
+	check((body.windows[0].piece as Node3D).get_child_count() == 1, "en cada hueco de una sala, su pieza")
+	check(body.windows.all(func(w: Dictionary) -> bool: return not w.open or (w.back as MeshInstance3D).material_override in [w.rest, w.glow]), "... sin ventana iluminada: su fondo de madera")
 	t.act("right")
 
 	# The plan out of the room, and what is told over it.
@@ -267,6 +270,38 @@ func _init() -> void:
 	check(tour.stage._room_ring.global_basis.y.normalized().dot(face.z) > 0.99, "el aro de una sala del costado, sobre su pared")
 	check(((tour.stage.room_window(side_room).basis as Basis).z).dot(face.z) > 0.99, "... y el plano saldría de ella")
 	check(not tour.stage.rooms_stacked(), "... y las salas de la cueva, a lo ancho")
+	# The museum of the bugs with all its rooms reached: holes on its front
+	# and down its side, the big job's at the top, the arrows in order.
+	tour.queue_free()
+	tour = Tour.new()
+	root.add_child(tour)
+	tour.stage.hurry = true
+	tour.open_museum(1, Story.nights_in(1)[0])
+	await frames()
+	var bugs: MuseumBuilding = tour.stage._body(1)
+	check(range(5).all(func(i: int) -> bool: return tour.stage.room_open(i)) and bugs.windows.all(func(w: Dictionary) -> bool: return w.open), "los bichos, con todo desbloqueado: cinco huecos, cinco salas")
+	sides = bugs.windows.filter(func(w: Dictionary) -> bool: return (w.face as Basis).z.x > 0.9).size()
+	fronts = bugs.windows.filter(func(w: Dictionary) -> bool: return (w.face as Basis).z.z > 0.9).size()
+	check(sides >= 1 and fronts >= 2 and sides + fronts == 5, "... en la fachada y en el costado que se ve (%d y %d)" % [fronts, sides])
+	var highest := bugs.windows.all(func(w: Dictionary) -> bool: return (w.node as Node3D).position.y <= (bugs.windows[4].node as Node3D).position.y)
+	check(bugs.windows[4].boss and (bugs.windows[4].node as Node3D).position.x == 0.0 and highest, "... el gran golpe, el hueco de arriba del todo en el centro")
+	check((bugs.windows[4].node as Node3D).get_child_count() > 3, "... con su corona")
+	var screen := Rect2(Vector2.ZERO, Vector2(tour.stage.size))
+	check(range(5).all(func(i: int) -> bool: return screen.has_point(tour.stage.room_on_screen(i)) and screen.has_point(tour.stage.room_foot_on_screen(i))), "... todos a la vista, con su cartel y sus estrellas")
+	seen = [tour.stage.room]
+	for k in 5:
+		tour.act("right")
+		if tour.stage.room != seen[-1]:
+			seen.append(tour.stage.room)
+	left_to_right = true
+	for k in seen.size() - 1:
+		left_to_right = left_to_right and tour.stage.room_x(seen[k]) < tour.stage.room_x(seen[k + 1])
+	check(seen.size() == 5 and left_to_right, "... las flechas, de hueco en hueco de izquierda a derecha " + str(seen))
+	tour._pick_room(2)
+	await frames()
+	face = tour.stage.room_face(2)
+	check((bugs.windows[2].face as Basis).z.x > 0.9 and tour.stage._room_ring.global_basis.y.normalized().dot(face.z) > 0.99, "... el aro de la sala del costado, sobre su pared")
+	check((bugs.windows[2].back as MeshInstance3D).material_override == bugs.windows[2].glow and (bugs.windows[0].back as MeshInstance3D).material_override == bugs.windows[0].rest, "... la elegida, con su luz suave; las demás, no")
 	tour.queue_free()
 
 	# The contemporary museum, a tower: each room a floor, in order up it,

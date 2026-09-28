@@ -187,7 +187,9 @@ var open := true
 ## "lock", "boss", "open" (shown as a room: reached, lit, its piece in it),
 ## "size", "frame", "stone", "arch", "face" (which way it looks, in the
 ## building: its +z out of the wall), and maybe "near" (how much nearer the
-## camera its ring goes, over a porch before it)}, in the rooms' own order
+## camera its ring goes, over a porch before it); optionally "rest" and
+## "glow", its back's look when not picked and picked, where it is not lit
+## up like a window}, in the rooms' own order
 var windows: Array[Dictionary] = []
 var _colour: Color
 var _t := 0.0
@@ -217,6 +219,8 @@ func build(m: int, is_open: bool, rooms: Array = []) -> void:
 		"moderna":
 			_contemporary(rooms)
 		"edad_media": _middle_ages(rooms)
+		"naturaleza":
+			_nature(rooms)
 		_:
 			_hall(rooms)
 
@@ -2090,7 +2094,10 @@ func pick(i: int) -> void:
 		var w: Dictionary = windows[k]
 		if not w.open:
 			continue
-		var m := _lit_material(LIT_PICKED if k == i else LIT, 1.7 if k == i else 0.9)
+		var m: Material = _lit_material(LIT_PICKED if k == i else LIT, 1.7 if k == i else 0.9)
+		# A room of its own look ("rest", and "glow" when picked): not lit up.
+		if w.has("rest"):
+			m = w.glow if k == i else w.rest
 		(w.back as MeshInstance3D).material_override = m
 		(w.glass as MeshInstance3D).material_override = m
 		# Its frame in gold, lit.
@@ -2158,3 +2165,562 @@ static func _lit_material(colour: Color, energy: float) -> StandardMaterial3D:
 		m.emission_energy_multiplier = energy
 		_lits[key] = m
 	return _lits[key]
+
+
+# --- The nature museum -------------------------------------------------------------
+
+## The nature museum, a vertical forest: a dark tower whose floors are
+## white balconies standing out from it, some far and some less, by turns
+## floor to floor and bay to bay (a zigzag up it), each with a planter
+## brimming with trees, bushes and flowers, vines hanging over some; a glass
+## lobby at its foot; on its roof a meadow, solar panels, a little wind
+## turbine, a giant snail and its name on a timber board; before it a lawn
+## with a giant ladybird. Its rooms are holes among the green: wood-lined
+## niches in the balconies, lit only softly (N_ROOMS, on its front and down
+## the side the camera sees; the big job's the wide one at the top of its
+## front, the crown over it on the name board). Only a room reached is a
+## hole, its piece on a mossy stump in it; one not reached yet is a balcony
+## like the rest.
+## The tower is baked into one mesh, the plants one MultiMesh a kind.
+
+## Its tower: across, deep (behind its front, at z 0); its lobby's height, a
+## floor's and how many over it; a balcony's slab, how far one stands out
+## (far or near, by turns); a planter's height and depth.
+const N_W := 2.4
+const N_D := 2.0
+const N_LOBBY := 0.5
+const N_FLOOR := 0.5
+const N_FLOORS := 6
+const N_SLAB := 0.07
+const N_OUT := [0.5, 0.26]
+const N_PLANTER := Vector2(0.17, 0.12)
+## A room's hole and the big job's (across, tall).
+const N_HOLE := Vector2(0.52, 0.42)
+const N_BIG_HOLE := Vector2(0.7, 0.42)
+## Where the rooms but the big job's are, in the rooms' order: on the front
+## (face 0) or on the side the camera sees (face 1, +x), in which of its
+## three bays (0 to 2, left to right as the camera sees them), on which
+## floor (0 the first over the lobby). Spread over both and up the tower;
+## any room past these, in the last. The big job's: the top floor's middle.
+const N_ROOMS := [
+	{"face": 0, "bay": 0, "floor": 0},
+	{"face": 0, "bay": 2, "floor": 2},
+	{"face": 1, "bay": 0, "floor": 1},
+	{"face": 1, "bay": 2, "floor": 3},
+]
+const N_BOSS := {"face": 0, "bay": 1, "floor": N_FLOORS - 1}
+## How far the lawn goes before it (its front at z 0), and the lot's half.
+const N_LAWN := 2.8
+## The name board on the roof: how high its middle, how far back.
+const N_SIGN_Y := 0.38
+const N_SIGN_Z := -0.12
+const N_LOT := 2.8
+## Its colours.
+const N_CORE := Color("#34313e")
+const N_GLASS := Color("#1b1c2c")
+const N_MULLION := Color("#4b4858")
+const N_WHITE := Color("#ece8f0")
+const N_PLANTER_COLOUR := Color("#d2ccdb")
+const N_WOOD := Color("#c89160")
+const N_WOOD_DARK := Color("#7c5234")
+const N_WOOD_GLOW := Color("#ffd9a0")
+const N_MOSS := Color("#5f8f3e")
+const N_GRASS := Color("#3b6a40")
+const N_GRAVEL := Color("#9b8f8a")
+const N_SOLAR := Color("#2e4288")
+const N_LADYBIRD := Color("#dc3328")
+const N_BLACK := Color("#241f2b")
+const N_SHELL := Color("#dba35a")
+const N_SHELL_DARK := Color("#9c6a36")
+const N_SNAIL := Color("#bfc47e")
+## How much lighter its leaves than the town's: the green has to stand out
+## on the dark tower.
+const N_LEAF_LIGHT := 0.14
+const N_FLOWERS := [Color("#e27cb2"), Color("#f2d34a"), Color("#f4f0f6"), Color("#a07cf0")]
+
+## The tower as it is gathered, baked into one mesh at the end.
+var _n_body: NMesh
+## The plants, [transform, tint] a kind: one MultiMesh each.
+var _n_plants := {}
+static var _n_prims := {}
+static var _n_plant_meshes := {}
+static var _n_look: StandardMaterial3D
+
+
+## Triangles in one mesh, each corner its own colour (flat faces).
+class NMesh:
+	var verts := PackedVector3Array()
+	var colours := PackedColorArray()
+
+	## A primitive's triangles (MuseumBuilding._n_prim), moved by xf, in a colour.
+	func add(tris: PackedVector3Array, xf: Transform3D, colour: Color) -> void:
+		for v in tris:
+			verts.append(xf * v)
+			colours.append(colour)
+
+	func commit() -> ArrayMesh:
+		var normals := PackedVector3Array()
+		normals.resize(verts.size())
+		for i in range(0, verts.size(), 3):
+			var n := (verts[i] - verts[i + 2]).cross(verts[i] - verts[i + 1]).normalized()
+			normals[i] = n
+			normals[i + 1] = n
+			normals[i + 2] = n
+		var arrays := []
+		arrays.resize(Mesh.ARRAY_MAX)
+		arrays[Mesh.ARRAY_VERTEX] = verts
+		arrays[Mesh.ARRAY_NORMAL] = normals
+		arrays[Mesh.ARRAY_COLOR] = colours
+		var mesh := ArrayMesh.new()
+		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+		return mesh
+
+
+## A wind turbine's rotor, always turning.
+class NRotor:
+	extends Node3D
+	var speed := 1.6
+
+	func _process(dt: float) -> void:
+		rotation.z += dt * speed
+
+
+func _nature(rooms: Array) -> void:
+	_n_body = NMesh.new()
+	_n_plants = {}
+	var roof_y := N_LOBBY + N_FLOOR * N_FLOORS
+	front_z = -N_D * 0.5
+	look_y = roof_y * 0.68
+	top = roof_y + 1.5
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 7127 + museum
+	# Which room goes where, and which are holes (the rooms reached).
+	var count := rooms.size() if not rooms.is_empty() else Story.ROOMS
+	var slots: Array[Dictionary] = []
+	var holes := {}
+	var normal := 0
+	for i in count:
+		var r: Dictionary = rooms[i] if not rooms.is_empty() else {"boss": i == count - 1, "open": false}
+		var s: Dictionary = N_BOSS
+		if not r.boss:
+			s = N_ROOMS[mini(normal, N_ROOMS.size() - 1)]
+			normal += 1
+		var shown: bool = open and r.has("shape") and bool(r.get("open", false))
+		slots.append({"room": r, "slot": s, "shown": shown})
+		if shown:
+			holes[_n_key(s.face, s.bay, s.floor)] = N_BIG_HOLE if r.boss else N_HOLE
+	# The lawn, the gravel path up to the door, the core of the tower.
+	_n_part(Vector3(N_LOT * 2.0, 0.04, N_LOT * 2.0), N_GRASS, Vector3(0, 0.02, 0))
+	_n_part(Vector3(0.8, 0.05, N_LAWN), N_GRAVEL, Vector3(0, 0.025, N_LAWN * 0.5))
+	for k in 6:
+		_n_part(Vector3(0.3, 0.06, 0.2), N_GRAVEL.lightened(0.15), Vector3(-0.18 + 0.36 * (k % 2), 0.03, 0.35 + k * 0.42))
+	_n_part(Vector3(N_W, roof_y, N_D), N_CORE, Vector3(0, roof_y * 0.5, -N_D * 0.5))
+	for k in 4:
+		var face := _n_face(k)
+		var wide := _n_width(k)
+		var bay := wide / 3.0
+		# The lobby: glass between timber posts.
+		_n_part(Vector3(wide, N_LOBBY, 0.02), N_GLASS, Vector3(0, N_LOBBY * 0.5, 0.01), face)
+		for p in 7:
+			_n_part(Vector3(0.05, N_LOBBY, 0.05), N_WOOD, Vector3(-wide * 0.5 + 0.025 + p * (wide - 0.05) / 6.0, N_LOBBY * 0.5, 0.025), face)
+		# Each floor's slab, bay by bay, far or near by turns; the storey's
+		# dark glass behind it; on it, a planter full of plants or a hole.
+		for f in N_FLOORS + 1:
+			var y := N_LOBBY + f * N_FLOOR
+			for b in 3:
+				var u := (b - 1) * bay
+				var hole: Vector2 = holes.get(_n_key(k, b, f), Vector2.ZERO)
+				var far := hole != Vector2.ZERO or (f < N_FLOORS and (b + f + k) % 2 == 0)
+				var out: float = N_OUT[0] if far else N_OUT[1]
+				_n_part(Vector3(bay + 0.012, N_SLAB, out), N_WHITE, Vector3(u, y - N_SLAB * 0.5, out * 0.5), face)
+				# Each bay's plants its own, whichever rooms are holes.
+				rng.seed = 7127 + museum + k * 1000 + f * 10 + b
+				if f < N_FLOORS:
+					var storey := N_FLOOR - N_SLAB
+					_n_part(Vector3(bay, storey, 0.02), N_GLASS, Vector3(u, y + storey * 0.5, 0.01), face)
+					for m in 2:
+						_n_part(Vector3(0.025, storey, 0.03), N_MULLION, Vector3(u - bay * 0.5 + (m + 1) * bay / 3.0, y + storey * 0.5, 0.02), face)
+				if hole != Vector2.ZERO:
+					_n_niche(face, u, y, bay, out, hole, rng)
+				else:
+					# Under a hole, no trees: nothing in front of a room.
+					var trees := not holes.has(_n_key(k, b, f + 1))
+					_n_planter(face, u, y, bay, out, rng, trees, f == N_FLOORS and k == 0)
+	# The roof: a meadow with bushes, solar panels, a little wind turbine.
+	rng.seed = 7127 + museum + 5000
+	_n_roof(roof_y, rng)
+	# The door, lit round its edge when open, under a timber lintel.
+	_n_part(Vector3(0.42, 0.38, 0.04), WOOD, Vector3(0, 0.19 + 0.04, 0.04))
+	if open:
+		_glow(Vector3(0.48, 0.035, 0.03), LIT, Vector3(0, 0.44, 0.06), 1.5)
+	_n_part(Vector3(0.6, 0.06, 0.06), N_WOOD_DARK, Vector3(0, 0.46, 0.05))
+	# Its name on a timber board standing on the roof's front edge.
+	for sx: int in [-1, 1]:
+		_n_part(Vector3(0.05, 0.5, 0.05), N_WOOD_DARK, Vector3(sx * 0.85, roof_y + 0.25, N_SIGN_Z))
+	_n_part(Vector3(2.0, 0.22, 0.05), N_WOOD_DARK, Vector3(0, roof_y + N_SIGN_Y, N_SIGN_Z))
+	var board := Label3D.new()
+	board.text = String(Story.museum(museum).name).to_upper()
+	board.font_size = 48
+	board.pixel_size = 0.0024
+	board.outline_size = 0
+	board.modulate = _shade(Color("#f4e6c8"))
+	board.position = Vector3(0, roof_y + N_SIGN_Y, N_SIGN_Z + 0.03)
+	add_child(board)
+	# The lawn: bushes and flowers along the path, lamps, the giant bugs.
+	for sx: int in [-1, 1]:
+		for j in 4:
+			var at := Vector3(sx * rng.randf_range(0.6, 0.75), 0.04, 0.5 + j * 0.62)
+			_n_plant("bloom" if j % 2 == 0 else "bush", at, rng.randf_range(0.28, 0.38), rng)
+		for j in 5:
+			_n_plant("tree" if j % 2 == 0 else "birch", Vector3(sx * rng.randf_range(2.35, 2.6), 0.04, -2.2 + j * 1.1), rng.randf_range(0.9, 1.3), rng)
+		var post := CylinderMesh.new()
+		post.top_radius = 0.025
+		post.bottom_radius = 0.035
+		post.height = 0.7
+		_mesh(post, Color("#2a2433"), Vector3(sx * 0.62, 0.35, 1.5))
+		var head := SphereMesh.new()
+		head.radius = 0.075
+		head.height = 0.15
+		var lamp := _mesh(head, LIT, Vector3(sx * 0.62, 0.74, 1.5))
+		if open:
+			lamp.material_override = _lit_material(LIT, 3.0)
+	_n_ladybird(Transform3D(Basis(Vector3.UP, 0.7), Vector3(-1.85, 0.04, 1.2)))
+	# The whole tower as one mesh, the plants as a MultiMesh a kind.
+	var body := MeshInstance3D.new()
+	body.mesh = _n_body.commit()
+	body.material_override = _n_material()
+	add_child(body)
+	_n_body = null
+	_n_flush_plants()
+	# The rooms: a hole each where it is reached, its piece in it on a stump.
+	var tall := N_FLOOR - N_SLAB
+	for e in slots:
+		var r: Dictionary = e.room
+		var s: Dictionary = e.slot
+		var shown: bool = e.shown
+		var face := _n_face(s.face)
+		var u: float = (int(s.bay) - 1) * _n_width(s.face) / 3.0
+		var y: float = N_LOBBY + int(s.floor) * N_FLOOR
+		var out: float = N_OUT[0]
+		var size: Vector2 = N_BIG_HOLE if r.boss else N_HOLE
+		var node := Node3D.new()
+		node.transform = face * Transform3D(Basis.IDENTITY, Vector3(u, y + tall * 0.5, out + 0.01))
+		add_child(node)
+		var piece := Node3D.new()
+		piece.position = Vector3(0, -size.y * 0.18, -out * 0.45)
+		node.add_child(piece)
+		var entry := {"node": node, "back": null, "glass": null, "piece": piece, "lock": null, "boss": r.boss, "open": shown,
+			"size": size, "frame": [], "stone": null, "arch": false, "face": node.basis}
+		if shown:
+			# Its back, warm wood softly lit (more when picked), and a timber
+			# frame round its mouth (gold when picked).
+			var back := _box_in(node, Vector3(size.x + 0.04, tall - 0.02, 0.02), _shade(N_WOOD), Vector3(0, 0, -out + 0.035))
+			var rim := NMesh.new()
+			for sx: int in [-1, 1]:
+				rim.add(_n_prim("box"), _n_xf(Vector3(sx * (size.x * 0.5 + 0.03), 0, 0), Vector3(0.05, tall, 0.05)), _shade(N_WOOD_DARK))
+			rim.add(_n_prim("box"), _n_xf(Vector3(0, tall * 0.5 - 0.025, 0), Vector3(size.x + 0.11, 0.05, 0.05)), _shade(N_WOOD_DARK))
+			rim.add(_n_prim("box"), _n_xf(Vector3(0, -tall * 0.5 + 0.02, 0.01), Vector3(size.x + 0.11, 0.04, 0.07)), _shade(N_WOOD_DARK))
+			var frame := MeshInstance3D.new()
+			frame.mesh = rim.commit()
+			frame.material_override = _n_material()
+			node.add_child(frame)
+			var model := LootModels.build(r.shape, Color(r.colour))
+			model.scale = Vector3.ONE * (0.46 if r.boss else 0.38)
+			piece.add_child(model)
+			entry.back = back
+			entry.glass = back
+			entry.frame = [frame]
+			entry.stone = frame.material_override
+			entry.rest = _lit_material(_shade(N_WOOD), 0.18)
+			back.material_override = entry.rest
+			entry.glow = _lit_material(N_WOOD_GLOW, 0.5)
+			if r.boss:
+				# The big job's crown, on the name board over its hole.
+				var crown := Node3D.new()
+				crown.position = Vector3(0, roof_y + N_SIGN_Y + 0.24 - (y + tall * 0.5), N_SIGN_Z - out - 0.01)
+				node.add_child(crown)
+				CityStage.crown(crown, Vector3.ZERO, MenuStage.GOLD, 1.3)
+		windows.append(entry)
+
+
+func _n_key(face: int, bay: int, f: int) -> String:
+	return "%d:%d:%d" % [face, bay, f]
+
+
+## Face k of the tower (0 the front, 1 the right, 2 the back, 3 the left):
+## its middle at the foot, turned so it looks out along its +z, x across it.
+func _n_face(k: int) -> Transform3D:
+	var origins: Array[Vector3] = [Vector3(0, 0, 0), Vector3(N_W * 0.5, 0, -N_D * 0.5), Vector3(0, 0, -N_D), Vector3(-N_W * 0.5, 0, -N_D * 0.5)]
+	return Transform3D(Basis(Vector3.UP, k * PI * 0.5), origins[k])
+
+
+func _n_width(k: int) -> float:
+	return N_W if k % 2 == 0 else N_D
+
+
+## A box of the tower: its size, colour (as open or shut) and middle, in a
+## face's frame (or the building's).
+func _n_part(s: Vector3, colour: Color, at: Vector3, frame := Transform3D.IDENTITY) -> void:
+	_n_body.add(_n_prim("box"), frame * _n_xf(at, s), _shade(colour))
+
+
+## A primitive of the tower (_n_prim): where, how big, turned how.
+func _n_shape(kind: String, colour: Color, at: Vector3, s: Vector3, frame := Transform3D.IDENTITY, turn := Basis.IDENTITY) -> void:
+	_n_body.add(_n_prim(kind), frame * _n_xf(at, s, turn), _shade(colour))
+
+
+static func _n_xf(at: Vector3, s: Vector3, turn := Basis.IDENTITY) -> Transform3D:
+	return Transform3D(turn * Basis.from_scale(s), at)
+
+
+## A balcony's planter along its edge, full: trees where it stands far out
+## (they reach up past the floor over it, which stands in; not with
+## `trees` off), bushes and flowers where it is near; a vine over its edge
+## here and there. `low`: only flowers (under the crown).
+func _n_planter(face: Transform3D, u: float, y: float, bay: float, out: float, rng: RandomNumberGenerator, trees: bool, low: bool) -> void:
+	var h := N_PLANTER.x
+	var mid := out - N_PLANTER.y * 0.5
+	_n_part(Vector3(bay - 0.03, h, N_PLANTER.y), N_PLANTER_COLOUR, Vector3(u, y + h * 0.5, mid), face)
+	var far: bool = trees and out >= N_OUT[0]
+	var n := maxi(2, roundi(bay / 0.28))
+	for j in n:
+		var at := Vector3(u - bay * 0.5 + (j + 0.5) * bay / n + rng.randf_range(-0.04, 0.04), y + h, mid)
+		var kind := "bloom"
+		var size := rng.randf_range(0.22, 0.3)
+		if not low:
+			var roll := rng.randf()
+			if far and roll < 0.62:
+				kind = ["tree", "tree", "pine", "birch", "autumn"][rng.randi() % 5]
+				size = rng.randf_range(0.65, 0.95)
+			else:
+				kind = "bush" if roll < 0.8 else "bloom"
+				size = rng.randf_range(0.26, 0.4)
+		_n_plant(kind, face * at, size, rng)
+	if not low and rng.randf() < 0.6:
+		_n_plant("vine", face * Vector3(u + rng.randf_range(-bay * 0.35, bay * 0.35), y + h, out + 0.02), rng.randf_range(0.4, 0.7), rng)
+
+
+## A room's hole in a balcony: lined with wood (the sides, its ceiling), a
+## mossy floor, a stump for its piece; a bit of planter each side of it
+## with a bush on it.
+func _n_niche(face: Transform3D, u: float, y: float, bay: float, out: float, hole: Vector2, rng: RandomNumberGenerator) -> void:
+	var tall := N_FLOOR - N_SLAB
+	for sx: int in [-1, 1]:
+		_n_part(Vector3(0.04, tall, out), N_WOOD, Vector3(u + sx * (hole.x * 0.5 + 0.02), y + tall * 0.5, out * 0.5), face)
+	_n_part(Vector3(hole.x + 0.08, 0.02, out), N_WOOD, Vector3(u, y + tall - 0.01, out * 0.5), face)
+	_n_part(Vector3(hole.x, 0.02, out - 0.02), N_MOSS, Vector3(u, y + 0.01, out * 0.5), face)
+	var stump := tall * 0.5 - hole.y * 0.18
+	_n_shape("trunk", N_WOOD_DARK, Vector3(u, y + stump * 0.5, out * 0.55), Vector3(0.2, stump, 0.2), face)
+	_n_shape("cyl", N_MOSS, Vector3(u, y + stump + 0.005, out * 0.55), Vector3(0.15, 0.015, 0.15), face)
+	var side := (bay - hole.x) * 0.5 - 0.06
+	if side < 0.05:
+		return
+	var h := N_PLANTER.x
+	for sx: int in [-1, 1]:
+		var cu := u + sx * (bay * 0.5 - side * 0.5 - 0.015)
+		_n_part(Vector3(side, h, N_PLANTER.y), N_PLANTER_COLOUR, Vector3(cu, y + h * 0.5, out - N_PLANTER.y * 0.5), face)
+		_n_plant("bloom" if sx > 0 else "bush", face * Vector3(cu, y + h, out - N_PLANTER.y * 0.5), rng.randf_range(0.24, 0.3), rng)
+
+
+## The roof: a meadow with bushes and a little tree or two, solar panels
+## tilted to the sky, a giant snail, a little wind turbine at the back.
+func _n_roof(roof_y: float, rng: RandomNumberGenerator) -> void:
+	_n_part(Vector3(N_W - 0.1, 0.05, N_D - 0.1), N_GRASS, Vector3(0, roof_y + 0.025, -N_D * 0.5))
+	for j in 3:
+		for i in 2:
+			var at := Vector3(-0.95 + i * 0.6, roof_y + 0.2, -1.1 - j * 0.3)
+			_n_shape("box", N_SOLAR, at, Vector3(0.56, 0.03, 0.3), Transform3D.IDENTITY, Basis(Vector3.RIGHT, -0.5))
+			_n_part(Vector3(0.03, 0.18, 0.03), N_MULLION, at - Vector3(0, 0.1, 0))
+	for j in 5:
+		_n_plant("bush" if j % 2 == 0 else "bloom", Vector3(rng.randf_range(0.1, 0.9), roof_y + 0.05, rng.randf_range(-1.8, -1.2)), rng.randf_range(0.3, 0.42), rng)
+	_n_plant("tree", Vector3(-0.6, roof_y + 0.05, -0.5), 0.8, rng)
+	# A giant snail on its way along the front edge.
+	_n_snail(Transform3D(Basis(Vector3.UP, PI * 0.5).scaled(Vector3.ONE * 0.8), Vector3(0.5, roof_y + 0.05, -0.7)))
+	# The wind turbine: a mast, its head, and the rotor facing the camera.
+	var base := Vector3(0.85, roof_y + 0.05, -1.65)
+	var mast := 1.0
+	_n_shape("trunk", N_WHITE, base + Vector3(0, mast * 0.5, 0), Vector3(0.08, mast, 0.08))
+	var turn := Basis(Vector3.UP, PI * 0.25)
+	_n_shape("box", N_WHITE, base + Vector3(0, mast, 0), Vector3(0.1, 0.1, 0.26), Transform3D.IDENTITY, turn)
+	var rotor := NRotor.new()
+	rotor.transform = Transform3D(turn, base + Vector3(0, mast, 0) + turn * Vector3(0, 0, 0.16))
+	rotor.speed = 1.6 if open else 0.0
+	add_child(rotor)
+	var blades := NMesh.new()
+	blades.add(_n_prim("ball"), _n_xf(Vector3.ZERO, Vector3(0.08, 0.08, 0.1)), _shade(_colour))
+	for k in 3:
+		var a := Basis(Vector3.BACK, k * TAU / 3.0)
+		blades.add(_n_prim("box"), Transform3D(a, Vector3.ZERO) * _n_xf(Vector3(0, 0.32, 0), Vector3(0.06, 0.6, 0.015)), _shade(N_WHITE))
+	var bm := MeshInstance3D.new()
+	bm.mesh = blades.commit()
+	bm.material_override = _n_material()
+	rotor.add_child(bm)
+
+
+## A giant ladybird on the lawn, at `at` (its head along +z): a red shell
+## with black spots and a black line down it, a black head with two
+## antennae and six little legs.
+func _n_ladybird(at: Transform3D) -> void:
+	_n_shape("half", N_LADYBIRD, Vector3(0, 0.12, 0), Vector3(0.8, 0.62, 1.0), at)
+	_n_part(Vector3(0.025, 0.02, 1.0), N_BLACK, Vector3(0, 0.44, -0.02), at)
+	_n_shape("ball", N_BLACK, Vector3(0, 0.22, 0.5), Vector3(0.42, 0.34, 0.34), at)
+	for sx: int in [-1, 1]:
+		_n_shape("ball", Color.WHITE, Vector3(sx * 0.1, 0.3, 0.64), Vector3(0.1, 0.1, 0.06), at)
+		_n_shape("ball", N_BLACK, Vector3(sx * 0.1, 0.3, 0.67), Vector3(0.05, 0.05, 0.03), at)
+		_n_shape("cyl", N_BLACK, Vector3(sx * 0.14, 0.5, 0.6), Vector3(0.02, 0.36, 0.02), at, Basis(Vector3.BACK, -sx * 0.45) * Basis(Vector3.RIGHT, 0.4))
+		_n_shape("ball", N_BLACK, Vector3(sx * 0.22, 0.66, 0.66), Vector3(0.07, 0.07, 0.07), at)
+		for j in 3:
+			_n_shape("cyl", N_BLACK, Vector3(sx * 0.4, 0.07, -0.25 + j * 0.25), Vector3(0.03, 0.2, 0.03), at, Basis(Vector3.BACK, sx * 1.1))
+	# The spots: on the shell's curve, three a side.
+	var spots: Array[Vector2] = [Vector2(0.17, 0.25), Vector2(0.24, -0.08), Vector2(0.14, -0.33)]
+	for sx: int in [-1, 1]:
+		for p in spots:
+			var x := sx * p.x
+			var z := p.y
+			var r := Vector2(x / 0.4, z / 0.5)
+			var h := sqrt(maxf(0.0, 1.0 - r.length_squared()))
+			var n := Vector3(x / 0.16, h / 0.31, z / 0.25).normalized()
+			var spot := Basis.looking_at(n) * Basis(Vector3.RIGHT, PI * 0.5)
+			_n_shape("cyl", N_BLACK, Vector3(x, 0.12 + h * 0.31, z) + n * 0.005, Vector3(0.12, 0.02, 0.12), at, spot)
+
+
+## A giant snail, at `at` (its head along +z): a long soft body,
+## a big spiral shell on its back, two stalks with its eyes on top.
+func _n_snail(at: Transform3D) -> void:
+	_n_shape("ball", N_SNAIL, Vector3(0, 0.1, 0.05), Vector3(0.32, 0.2, 1.1), at)
+	_n_shape("ball", N_SNAIL, Vector3(0, 0.22, 0.48), Vector3(0.24, 0.26, 0.26), at)
+	_n_shape("ball", N_SHELL, Vector3(0, 0.44, -0.12), Vector3(0.36, 0.62, 0.62), at)
+	_n_shape("ring", N_SHELL_DARK, Vector3(0, 0.44, -0.12), Vector3(0.62, 0.5, 0.62), at, Basis(Vector3.BACK, PI * 0.5))
+	_n_shape("ring", N_SHELL_DARK, Vector3(0.02, 0.46, -0.1), Vector3(0.36, 0.5, 0.36), at, Basis(Vector3.BACK, PI * 0.5))
+	_n_shape("ball", N_SHELL_DARK, Vector3(0.05, 0.47, -0.08), Vector3(0.12, 0.14, 0.14), at)
+	for sx: int in [-1, 1]:
+		_n_shape("cyl", N_SNAIL, Vector3(sx * 0.06, 0.42, 0.56), Vector3(0.03, 0.3, 0.03), at, Basis(Vector3.BACK, -sx * 0.3))
+		_n_shape("ball", Color.WHITE, Vector3(sx * 0.1, 0.57, 0.57), Vector3(0.09, 0.09, 0.09), at)
+		_n_shape("ball", N_BLACK, Vector3(sx * 0.1, 0.57, 0.61), Vector3(0.045, 0.045, 0.03), at)
+
+
+## A plant of a kind (_n_plant_mesh) standing at `at`, `size` tall: its own
+## width, turn and tint (shut, darker).
+func _n_plant(kind: String, at: Vector3, size: float, rng: RandomNumberGenerator) -> void:
+	var wide := size * rng.randf_range(0.85, 1.2)
+	var turn := Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(wide, size, wide))
+	var v := rng.randf_range(0.85, 1.12)
+	var tint := _shade(Color(v * rng.randf_range(0.95, 1.05), v, v * rng.randf_range(0.95, 1.05)))
+	if not _n_plants.has(kind):
+		_n_plants[kind] = []
+	(_n_plants[kind] as Array).append([Transform3D(turn, at), tint])
+
+
+func _n_flush_plants() -> void:
+	for kind: String in _n_plants:
+		var list: Array = _n_plants[kind]
+		var mm := MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.use_colors = true
+		mm.mesh = _n_plant_mesh(kind)
+		mm.instance_count = list.size()
+		for i in list.size():
+			mm.set_instance_transform(i, list[i][0])
+			mm.set_instance_color(i, list[i][1])
+		var mmi := MultiMeshInstance3D.new()
+		mmi.multimesh = mm
+		mmi.material_override = _n_material()
+		if kind in ["bush", "bloom", "vine"]:
+			mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(mmi)
+	_n_plants = {}
+
+
+## A kind of plant, about a unit tall, low-poly with flat faces like the
+## town's (TownBuilder's colours): a tree, a pine, a birch, an autumn tree,
+## a bush, a bush in flower, or a vine hanging down from its top.
+static func _n_plant_mesh(kind: String) -> ArrayMesh:
+	if _n_plant_meshes.has(kind):
+		return _n_plant_meshes[kind]
+	var st := NMesh.new()
+	var leaf := _n_prim("leaf")
+	match kind:
+		"tree", "autumn":
+			var leaves := (TownBuilder.OAK_GREEN if kind == "tree" else TownBuilder.AUTUMN_LEAVES).lightened(N_LEAF_LIGHT)
+			st.add(_n_prim("trunk"), _n_xf(Vector3(0, 0.22, 0), Vector3(0.12, 0.45, 0.12)), TownBuilder.TRUNK)
+			st.add(leaf, _n_xf(Vector3(0, 0.62, 0), Vector3.ONE * 0.66), leaves)
+			st.add(leaf, _n_xf(Vector3(0.18, 0.8, 0.06), Vector3.ONE * 0.46), leaves.lightened(0.08))
+			st.add(leaf, _n_xf(Vector3(-0.15, 0.76, -0.1), Vector3.ONE * 0.42), leaves.darkened(0.08))
+		"pine":
+			st.add(_n_prim("trunk"), _n_xf(Vector3(0, 0.15, 0), Vector3(0.14, 0.3, 0.14)), TownBuilder.TRUNK)
+			for k in 3:
+				st.add(_n_prim("cone"), _n_xf(Vector3(0, 0.42 + k * 0.2, 0), Vector3(0.66 - k * 0.17, 0.42, 0.66 - k * 0.17)), TownBuilder.PINE_GREEN.lightened(N_LEAF_LIGHT + k * 0.06))
+		"birch":
+			st.add(_n_prim("trunk"), _n_xf(Vector3(0, 0.4, 0), Vector3(0.07, 0.8, 0.07)), TownBuilder.BIRCH_BARK)
+			st.add(leaf, _n_xf(Vector3(0, 0.74, 0), Vector3(0.44, 0.66, 0.44)), TownBuilder.BIRCH_GREEN.lightened(N_LEAF_LIGHT))
+		"bush", "bloom":
+			st.add(leaf, _n_xf(Vector3(0, 0.3, 0), Vector3(1.0, 0.7, 1.0)), TownBuilder.BUSH_GREEN.lightened(N_LEAF_LIGHT + 0.08))
+			st.add(leaf, _n_xf(Vector3(0.3, 0.26, 0.1), Vector3(0.64, 0.5, 0.64)), TownBuilder.BUSH_GREEN.lightened(N_LEAF_LIGHT + 0.16))
+			if kind == "bloom":
+				for k in 7:
+					var a := k * TAU / 7.0 + 0.4
+					st.add(leaf, _n_xf(Vector3(cos(a) * 0.36, 0.42 + 0.1 * sin(a * 3.0), sin(a) * 0.36), Vector3.ONE * 0.2), N_FLOWERS[k % N_FLOWERS.size()])
+		"vine":
+			for k in 4:
+				st.add(leaf, _n_xf(Vector3(0.06 * sin(k * 2.1), -0.12 - k * 0.22, 0.03 * k), Vector3(0.36, 0.34, 0.26) * (1.0 - k * 0.15)), TownBuilder.POPLAR_GREEN.lightened(N_LEAF_LIGHT + 0.05 + k * 0.03))
+	var mesh := st.commit()
+	_n_plant_meshes[kind] = mesh
+	return mesh
+
+
+## A primitive's triangles, a unit across (and tall): a box, a ball (and a
+## rougher one for leaves), a half ball, a cylinder, a cone, a tapered
+## trunk, a ring.
+static func _n_prim(kind: String) -> PackedVector3Array:
+	if _n_prims.has(kind):
+		return _n_prims[kind]
+	var mesh: PrimitiveMesh
+	match kind:
+		"box":
+			mesh = BoxMesh.new()
+		"ball", "leaf", "half":
+			var b := SphereMesh.new()
+			b.radius = 0.5
+			b.height = 1.0
+			b.radial_segments = 6 if kind == "leaf" else 12
+			b.rings = 3 if kind == "leaf" else 6
+			if kind == "half":
+				b.height = 0.5
+				b.is_hemisphere = true
+			mesh = b
+		"ring":
+			var t := TorusMesh.new()
+			t.inner_radius = 0.38
+			t.outer_radius = 0.5
+			t.rings = 16
+			t.ring_segments = 6
+			mesh = t
+		_:
+			var c := CylinderMesh.new()
+			c.bottom_radius = 0.5
+			c.top_radius = 0.0 if kind == "cone" else (0.35 if kind == "trunk" else 0.5)
+			c.height = 1.0
+			c.radial_segments = 6 if kind == "cone" else 8
+			c.rings = 0
+			mesh = c
+	var arrays := mesh.get_mesh_arrays()
+	var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var index: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	var tris := PackedVector3Array()
+	for i in index:
+		tris.append(verts[i])
+	_n_prims[kind] = tris
+	return tris
+
+
+## The look of all that is baked: its own colours, lit like the rest.
+static func _n_material() -> StandardMaterial3D:
+	if _n_look == null:
+		_n_look = StandardMaterial3D.new()
+		_n_look.vertex_color_use_as_albedo = true
+		_n_look.vertex_color_is_srgb = true
+		_n_look.roughness = 0.6
+		_n_look.rim_enabled = true
+		_n_look.rim = 0.3
+		_n_look.rim_tint = 0.6
+	return _n_look
