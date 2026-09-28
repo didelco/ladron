@@ -2245,13 +2245,15 @@ static func _lit_material(colour: Color, energy: float) -> StandardMaterial3D:
 ## floor to floor and bay to bay (a zigzag up it), each with a planter
 ## brimming with trees, bushes and flowers, vines hanging over some; a glass
 ## lobby at its foot; on its roof a meadow, solar panels, a little wind
-## turbine, a giant snail and its name on a timber board; before it a lawn
-## with a giant ladybird. Its rooms are holes among the green: wood-lined
-## niches in the balconies, lit only softly (N_ROOMS, on its front and down
-## the side the camera sees; the big job's the wide one at the top of its
-## front, the crown over it on the name board). Only a room reached is a
-## hole, its piece on a mossy stump in it; one not reached yet is a balcony
-## like the rest.
+## turbine, a giant snail and its name on a timber board; all round it a
+## square of white stone slabs with a kerb (so the green tower stands out
+## from the town's green), beds along the path, trees in planters and a
+## giant ladybird. Its rooms are holes among the green: wood-lined niches
+## in the balconies, warmly lit, back and floor (N_ROOMS, on its front
+## and down the side the camera sees; the big job's the wide one at the top
+## of its front, the crown over it on the name board). Only a room reached
+## is a hole, empty (no piece: the light tells it); one not reached yet is
+## a balcony like the rest.
 ## The tower is baked into one mesh, the plants one MultiMesh a kind.
 
 ## Its tower: across, deep (behind its front, at z 0); its lobby's height, a
@@ -2280,12 +2282,20 @@ const N_ROOMS := [
 	{"face": 1, "bay": 2, "floor": 3},
 ]
 const N_BOSS := {"face": 0, "bay": 1, "floor": N_FLOORS - 1}
-## How far the lawn goes before it (its front at z 0), and the lot's half.
-const N_LAWN := 2.8
 ## The name board on the roof: how high its middle, how far back.
 const N_SIGN_Y := 0.38
 const N_SIGN_Z := -0.12
+## The lot's half (the tower's front at z 0, its middle at x 0).
 const N_LOT := 2.8
+## The square: its slabs (across, the joint between them), how high it
+## stands (its top), its kerb (wide, high over it).
+const N_SLAB_SIZE := 0.56
+const N_JOINT := 0.035
+const N_PAVE := 0.05
+const N_KERB := Vector2(0.14, 0.07)
+## The beds along the path: how far out their middles, how long, where
+## along it.
+const N_BED := Vector3(0.8, 2.0, 1.4)
 ## Its colours.
 const N_CORE := Color("#34313e")
 const N_GLASS := Color("#1b1c2c")
@@ -2297,7 +2307,13 @@ const N_WOOD_DARK := Color("#7c5234")
 const N_WOOD_GLOW := Color("#ffd9a0")
 const N_MOSS := Color("#5f8f3e")
 const N_GRASS := Color("#3b6a40")
-const N_GRAVEL := Color("#9b8f8a")
+const N_PAVING := Color("#f3f0f6")
+const N_JOINTS := Color("#c8c1d2")
+const N_KERB_COLOUR := Color("#cfc9d9")
+## A room's hole lit (its back and the lamp under its ceiling), more when
+## picked.
+const N_HOLE_LIGHT := 0.55
+const N_HOLE_PICKED := 1.3
 const N_SOLAR := Color("#2e4288")
 const N_LADYBIRD := Color("#dc3328")
 const N_BLACK := Color("#241f2b")
@@ -2380,11 +2396,8 @@ func _nature(rooms: Array) -> void:
 		slots.append({"room": r, "slot": s, "shown": shown})
 		if shown:
 			holes[_n_key(s.face, s.bay, s.floor)] = N_BIG_HOLE if r.boss else N_HOLE
-	# The lawn, the gravel path up to the door, the core of the tower.
-	_n_part(Vector3(N_LOT * 2.0, 0.04, N_LOT * 2.0), N_GRASS, Vector3(0, 0.02, 0))
-	_n_part(Vector3(0.8, 0.05, N_LAWN), N_GRAVEL, Vector3(0, 0.025, N_LAWN * 0.5))
-	for k in 6:
-		_n_part(Vector3(0.3, 0.06, 0.2), N_GRAVEL.lightened(0.15), Vector3(-0.18 + 0.36 * (k % 2), 0.03, 0.35 + k * 0.42))
+	# The white square all round it, the core of the tower.
+	_n_square(rng)
 	_n_part(Vector3(N_W, roof_y, N_D), N_CORE, Vector3(0, roof_y * 0.5, -N_D * 0.5))
 	for k in 4:
 		var face := _n_face(k)
@@ -2437,25 +2450,29 @@ func _nature(rooms: Array) -> void:
 	board.modulate = _shade(Color("#f4e6c8"))
 	board.position = Vector3(0, roof_y + N_SIGN_Y, N_SIGN_Z + 0.03)
 	add_child(board)
-	# The lawn: bushes and flowers along the path, lamps, the giant bugs.
+	# On the square: a bed of bushes and flowers each side of the path, trees
+	# in planters down its sides, lamps, the giant ladybird.
 	for sx: int in [-1, 1]:
+		_n_bed(Vector3(sx * N_BED.x, N_PAVE, N_BED.z), Vector2(0.3, N_BED.y))
 		for j in 4:
-			var at := Vector3(sx * rng.randf_range(0.6, 0.75), 0.04, 0.5 + j * 0.62)
+			var at := Vector3(sx * N_BED.x, N_PAVE + 0.14, N_BED.z - N_BED.y * 0.5 + 0.2 + j * (N_BED.y - 0.4) / 3.0)
 			_n_plant("bloom" if j % 2 == 0 else "bush", at, rng.randf_range(0.28, 0.38), rng)
-		for j in 5:
-			_n_plant("tree" if j % 2 == 0 else "birch", Vector3(sx * rng.randf_range(2.35, 2.6), 0.04, -2.2 + j * 1.1), rng.randf_range(0.9, 1.3), rng)
+		for j in 3:
+			var at := Vector3(sx * 2.3, N_PAVE, -2.1 + j * 1.3)
+			_n_bed(at, Vector2(0.46, 0.46))
+			_n_plant("tree" if j % 2 == 0 else "birch", at + Vector3(0, 0.14, 0), rng.randf_range(0.9, 1.2), rng)
 		var post := CylinderMesh.new()
 		post.top_radius = 0.025
 		post.bottom_radius = 0.035
 		post.height = 0.7
-		_mesh(post, Color("#2a2433"), Vector3(sx * 0.62, 0.35, 1.5))
+		_mesh(post, Color("#2a2433"), Vector3(sx * 0.5, N_PAVE + 0.35, 1.5))
 		var head := SphereMesh.new()
 		head.radius = 0.075
 		head.height = 0.15
-		var lamp := _mesh(head, LIT, Vector3(sx * 0.62, 0.74, 1.5))
+		var lamp := _mesh(head, LIT, Vector3(sx * 0.5, N_PAVE + 0.74, 1.5))
 		if open:
 			lamp.material_override = _lit_material(LIT, 3.0)
-	_n_ladybird(Transform3D(Basis(Vector3.UP, 0.7), Vector3(-1.85, 0.04, 1.2)))
+	_n_ladybird(Transform3D(Basis(Vector3.UP, 0.7), Vector3(-1.85, N_PAVE, 1.3)))
 	# The whole tower as one mesh, the plants as a MultiMesh a kind.
 	var body := MeshInstance3D.new()
 	body.mesh = _n_body.commit()
@@ -2463,7 +2480,7 @@ func _nature(rooms: Array) -> void:
 	add_child(body)
 	_n_body = null
 	_n_flush_plants()
-	# The rooms: a hole each where it is reached, its piece in it on a stump.
+	# The rooms: a hole each where it is reached, empty, warmly lit.
 	var tall := N_FLOOR - N_SLAB
 	for e in slots:
 		var r: Dictionary = e.room
@@ -2483,9 +2500,11 @@ func _nature(rooms: Array) -> void:
 		var entry := {"node": node, "back": null, "glass": null, "piece": piece, "lock": null, "boss": r.boss, "open": shown,
 			"size": size, "frame": [], "stone": null, "arch": false, "face": node.basis}
 		if shown:
-			# Its back, warm wood softly lit (more when picked), and a timber
-			# frame round its mouth (gold when picked).
+			# Its back and its floor (what the camera sees from over it) a
+			# warm light (more when picked), and a timber frame round its
+			# mouth (gold when picked). No piece: the light tells the room.
 			var back := _box_in(node, Vector3(size.x + 0.04, tall - 0.02, 0.02), _shade(N_WOOD), Vector3(0, 0, -out + 0.035))
+			var floor := _box_in(node, Vector3(size.x - 0.02, 0.012, out - 0.05), _shade(N_WOOD_GLOW), Vector3(0, -tall * 0.5 + 0.026, -out * 0.5))
 			var rim := NMesh.new()
 			for sx: int in [-1, 1]:
 				rim.add(_n_prim("box"), _n_xf(Vector3(sx * (size.x * 0.5 + 0.03), 0, 0), Vector3(0.05, tall, 0.05)), _shade(N_WOOD_DARK))
@@ -2495,16 +2514,14 @@ func _nature(rooms: Array) -> void:
 			frame.mesh = rim.commit()
 			frame.material_override = _n_material()
 			node.add_child(frame)
-			var model := LootModels.build(r.shape, Color(r.colour))
-			model.scale = Vector3.ONE * (0.46 if r.boss else 0.38)
-			piece.add_child(model)
 			entry.back = back
-			entry.glass = back
+			entry.glass = floor
 			entry.frame = [frame]
 			entry.stone = frame.material_override
-			entry.rest = _lit_material(_shade(N_WOOD), 0.18)
+			entry.rest = _lit_material(N_WOOD_GLOW, N_HOLE_LIGHT)
 			back.material_override = entry.rest
-			entry.glow = _lit_material(N_WOOD_GLOW, 0.5)
+			floor.material_override = entry.rest
+			entry.glow = _lit_material(LIT_PICKED, N_HOLE_PICKED)
 			if r.boss:
 				# The big job's crown, on the name board over its hole.
 				var crown := Node3D.new()
@@ -2572,17 +2589,14 @@ func _n_planter(face: Transform3D, u: float, y: float, bay: float, out: float, r
 
 
 ## A room's hole in a balcony: lined with wood (the sides, its ceiling), a
-## mossy floor, a stump for its piece; a bit of planter each side of it
-## with a bush on it.
+## mossy floor, empty (its lit back and floor are the room's own); a bit
+## of planter each side of it with a bush on it.
 func _n_niche(face: Transform3D, u: float, y: float, bay: float, out: float, hole: Vector2, rng: RandomNumberGenerator) -> void:
 	var tall := N_FLOOR - N_SLAB
 	for sx: int in [-1, 1]:
 		_n_part(Vector3(0.04, tall, out), N_WOOD, Vector3(u + sx * (hole.x * 0.5 + 0.02), y + tall * 0.5, out * 0.5), face)
 	_n_part(Vector3(hole.x + 0.08, 0.02, out), N_WOOD, Vector3(u, y + tall - 0.01, out * 0.5), face)
 	_n_part(Vector3(hole.x, 0.02, out - 0.02), N_MOSS, Vector3(u, y + 0.01, out * 0.5), face)
-	var stump := tall * 0.5 - hole.y * 0.18
-	_n_shape("trunk", N_WOOD_DARK, Vector3(u, y + stump * 0.5, out * 0.55), Vector3(0.2, stump, 0.2), face)
-	_n_shape("cyl", N_MOSS, Vector3(u, y + stump + 0.005, out * 0.55), Vector3(0.15, 0.015, 0.15), face)
 	var side := (bay - hole.x) * 0.5 - 0.06
 	if side < 0.05:
 		return
@@ -2591,6 +2605,34 @@ func _n_niche(face: Transform3D, u: float, y: float, bay: float, out: float, hol
 		var cu := u + sx * (bay * 0.5 - side * 0.5 - 0.015)
 		_n_part(Vector3(side, h, N_PLANTER.y), N_PLANTER_COLOUR, Vector3(cu, y + h * 0.5, out - N_PLANTER.y * 0.5), face)
 		_n_plant("bloom" if sx > 0 else "bush", face * Vector3(cu, y + h, out - N_PLANTER.y * 0.5), rng.randf_range(0.24, 0.3), rng)
+
+
+## The square round the tower: white stone slabs (a little lighter or darker
+## each, with grey joints between them) out to a kerb all round, none
+## under the tower.
+func _n_square(rng: RandomNumberGenerator) -> void:
+	var lot := N_LOT * 2.0
+	_n_part(Vector3(lot, N_PAVE - 0.01, lot), N_JOINTS, Vector3(0, (N_PAVE - 0.01) * 0.5, 0))
+	var n := roundi(lot / N_SLAB_SIZE)
+	var step := lot / n
+	for i in n:
+		for j in n:
+			var at := Vector3(-N_LOT + (i + 0.5) * step, N_PAVE - 0.01, -N_LOT + (j + 0.5) * step)
+			if absf(at.x) < N_W * 0.5 - step * 0.5 and at.z < -step * 0.5 and at.z > -N_D + step * 0.5:
+				continue
+			var tint := N_PAVING.darkened(rng.randf_range(0.0, 0.05))
+			_n_part(Vector3(step - N_JOINT, 0.02, step - N_JOINT), tint, at)
+	for k in 4:
+		var turn := Transform3D(Basis(Vector3.UP, k * PI * 0.5), Vector3.ZERO)
+		var h := N_PAVE + N_KERB.y
+		_n_part(Vector3(lot, h, N_KERB.x), N_KERB_COLOUR, Vector3(0, h * 0.5, N_LOT - N_KERB.x * 0.5), turn)
+
+
+## A raised bed on the square, its foot's middle at `at`: a pale stone box
+## (across, along) with grass on top.
+func _n_bed(at: Vector3, s: Vector2) -> void:
+	_n_part(Vector3(s.x, 0.13, s.y), N_PLANTER_COLOUR, at + Vector3(0, 0.065, 0))
+	_n_part(Vector3(s.x - 0.06, 0.02, s.y - 0.06), N_GRASS, at + Vector3(0, 0.135, 0))
 
 
 ## The roof: a meadow with bushes and a little tree or two, solar panels

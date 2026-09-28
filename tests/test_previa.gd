@@ -139,8 +139,11 @@ func _init() -> void:
 	check((body.windows[3].piece as Node3D).get_child_count() == 0 and (body.windows[4].node as Node3D).get_child_count() == 1, "... sin pieza, y el gran golpe sin pieza ni corona")
 	await frames()
 	check(not t.stage.room_open(3) and t._room_stars[2].visible and not t._room_stars[3].visible, "... ni son salas: ni estrellas ni se eligen")
-	check((body.windows[0].piece as Node3D).get_child_count() == 1, "en cada hueco de una sala, su pieza")
-	check(body.windows.all(func(w: Dictionary) -> bool: return not w.open or (w.back as MeshInstance3D).material_override in [w.rest, w.glow]), "... sin ventana iluminada: su fondo de madera")
+	check(body.windows.all(func(w: Dictionary) -> bool: return (w.piece as Node3D).get_child_count() == 0), "en ningún hueco, ninguna pieza: la sala la dice la luz")
+	var hole_lit := func(w: Dictionary) -> bool:
+		var look := (w.back as MeshInstance3D).material_override as StandardMaterial3D
+		return look in [w.rest, w.glow] and look.emission_enabled and (w.glass as MeshInstance3D).material_override == look
+	check(body.windows.all(func(w: Dictionary) -> bool: return not w.open or hole_lit.call(w)), "... el hueco de cada sala, iluminado: su fondo y su suelo")
 	t.act("right")
 
 	# The plan out of the room, and what is told over it.
