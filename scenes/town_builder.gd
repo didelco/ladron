@@ -172,6 +172,7 @@ uniform float windows = 1.0;
 uniform float lamps = 0.0;
 uniform vec3 walls[5];
 uniform vec3 roofs[5];
+uniform vec3 asphalt : source_color = vec3(0.4, 0.42, 0.5);
 varying vec3 world;
 varying vec4 own;
 float hash(vec3 p) {
@@ -184,6 +185,9 @@ void vertex() {
 void fragment() {
 	vec3 c = texture(colormap, UV).rgb;
 	int k = int(own.r * 4.99);
+	// A street's white lines gone into its tarmac, but where it is marked
+	// to keep them (own.a: a zebra crossing, a lamp).
+	c = mix(c, asphalt, lamps * (1.0 - own.a) * step(0.45, min(c.r, min(c.g, c.b))));
 	// Glass: the kits' blues. Lit or not, window by window.
 	float glass = windows * step(0.28, c.b - c.r) * step(c.r, c.g);
 	float on = step(hash(floor(world * 2.2) + own.g * 17.0), lit_share);
@@ -607,13 +611,28 @@ func _streets(d: District) -> void:
 		var along_z := posmod(t, PITCH) == 0
 		var at := d.tile(t, u) + Vector3(0, 0.005, 0)
 		if along_x and along_z:
-			_add("calles/road-crossroad.glb", at, d.angle)
+			_add("calles/road-crossroad.glb", at, d.angle, TILE, PLAIN)
 		elif along_x:
-			var near := posmod(t, PITCH) in [1, PITCH - 1]
-			_add("calles/road-crossing.glb" if near else "calles/road-straight.glb", at, d.angle + PI / 2)
+			var k := posmod(t, PITCH)
+			var near := (k == 1 and _zebra(d, Vector2i(t - 1, u))) or (k == PITCH - 1 and _zebra(d, Vector2i(t + 1, u)))
+			_add("calles/road-crossing.glb" if near else "calles/road-straight.glb", at, d.angle + PI / 2, TILE, Color(0, 0, 0, 1) if near else PLAIN)
 		else:
-			var near := posmod(u, PITCH) in [1, PITCH - 1]
-			_add("calles/road-crossing.glb" if near else "calles/road-straight.glb", at, d.angle)
+			var k := posmod(u, PITCH)
+			var near := (k == 1 and _zebra(d, Vector2i(t, u - 1))) or (k == PITCH - 1 and _zebra(d, Vector2i(t, u + 1)))
+			_add("calles/road-crossing.glb" if near else "calles/road-straight.glb", at, d.angle, TILE, Color(0, 0, 0, 1) if near else PLAIN)
+
+
+## A street tile without its white lines (NIGHT_SHADER: own.a).
+const PLAIN := Color(0, 0, 0, 0)
+
+
+## Whether the crossing at street tile c has zebra crossings round it: the
+## ones by a museum's door, and one crossing in nine or so elsewhere.
+func _zebra(d: District, c: Vector2i) -> bool:
+	var at := d.tile(c.x, c.y)
+	if museums.any(func(m: Vector2) -> bool: return m.distance_to(Vector2(at.x, at.z)) < 4.5):
+		return true
+	return posmod(c.x * 7 + c.y * 13 + int(d.angle * 10.0), 9) == 0
 
 
 ## A block's pavement: a slab a step up from the street.
