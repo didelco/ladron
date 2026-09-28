@@ -83,6 +83,14 @@ static func make(what: String) -> MenuStage:
 	return s
 
 
+## No backdrop: only the scene itself over whatever is behind it.
+func see_through() -> void:
+	transparent_bg = true
+	for c in get_children():
+		if c is WorldEnvironment:
+			(c as WorldEnvironment).environment.background_mode = Environment.BG_CLEAR_COLOR
+
+
 func _setup() -> void:
 	size = SIZE
 	own_world_3d = true

@@ -1371,17 +1371,20 @@ func _bubble_open(root: Control, first: Button) -> void:
 	tw.tween_property(_bubble_box, "scale", Vector2.ONE, SWAP_S)
 
 
-## One choice in the bubble: a small card with its 3D stage, its title in
-## its colour and maybe a line under it.
+## One choice in the bubble: no frame of its own, just its 3D stage with no
+## backdrop, its title in its colour and maybe a line under it. The one with
+## the focus grows, its stage plays and its title lights up; the rest dim.
 func _bubble_choice(c: Dictionary) -> Button:
 	const WIDTH := 124.0
+	const DIM := 0.62
 	var b := Button.new()
 	b.focus_mode = Control.FOCUS_ALL
 	var colour: Color = c.get("colour", C.safe)
 	for state in ["normal", "hover", "pressed", "focus"]:
-		var st := _frame(colour, state != "normal", false, 16)
-		st.set_content_margin_all(8)
-		b.add_theme_stylebox_override(state, st)
+		b.add_theme_stylebox_override(state, StyleBoxEmpty.new())
+	b.modulate = Color(DIM, DIM, DIM)
+	b.focus_entered.connect(func() -> void: b.modulate = Color.WHITE)
+	b.focus_exited.connect(func() -> void: b.modulate = Color(DIM, DIM, DIM))
 	var box := VBoxContainer.new()
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_theme_constant_override("separation", 6)
@@ -1395,6 +1398,7 @@ func _bubble_choice(c: Dictionary) -> Button:
 	var height := 16.0 + picture.y
 	if c.has("stage"):
 		var stage: MenuStage = c.stage
+		stage.see_through()
 		b.add_child(stage)
 		var r := TextureRect.new()
 		r.texture = stage.get_texture()
@@ -1403,7 +1407,6 @@ func _bubble_choice(c: Dictionary) -> Button:
 		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		r.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 		r.custom_minimum_size = picture
-		_round_corners(r, picture, 12.0)
 		box.add_child(r)
 		b.focus_entered.connect(func() -> void: stage.active = true)
 		b.focus_exited.connect(func() -> void: stage.active = false)
