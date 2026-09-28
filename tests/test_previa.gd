@@ -94,12 +94,19 @@ func _init() -> void:
 	t.act("left")
 	check(t._nights[t.stage.room] == 7, "se puede elegir una ya hecha")
 	check(StarSlots.room_line(7, 1) == "☆☆☆" and StarSlots.room_line(10, 1) == "", "estrellas de cada sala; nada en las cerradas")
+	# The museum as a building: each room a window on its front.
+	var body: MuseumBuilding = t.stage._body(1)
+	check(t.stage.room_count() == 5 and body.windows.size() == 5, "el museo, un edificio con una ventana por sala")
+	check(t.stage.room_x(4) == 0.0 and body.windows[4].boss, "el gran golpe, la ventana grande del centro")
+	check(body.windows[2].open and not body.windows[3].open and body.windows[3].lock != null, "las salas cerradas, a oscuras y con candado")
+	check((body.windows[0].piece as Node3D).get_child_count() == 1, "en cada ventana abierta, su pieza")
 	t.act("right")
 
 	# The plan out of the room, and what is told over it.
 	t.act("accept")
 	await frames(8)
 	check(m.level == 8 and t.state == "plan" and t.stage.sheet != null, "el plano de la sala 8 sale y se despliega")
+	check((t.stage._sheet_from.at as Vector3).distance_to(t.stage.room_centre(t.stage.room)) < 0.5, "... de su ventana")
 	var talk: PlanTalk = t.talk
 	check(talk.mode == "story" and talk.beats[0].kind == "piece", "primero, la pieza")
 	check(Vector2i(talk.beats[0].at) == Heist.at, "... señalada en su vitrina")
@@ -110,14 +117,42 @@ func _init() -> void:
 	var inside := talk.beats.all(func(b): return b.at.x >= 0 and b.at.y >= 0 and b.at.x <= Museum.w and b.at.y <= Museum.h)
 	check(inside, "todo señalado dentro del plano")
 	check(talk.goals.size() == 3, "los tres objetivos de las estrellas")
+	# The tale first, big, and nothing goes on by itself: only SIGUIENTE.
+	check(talk._card != null and talk._card_for < 0 and talk.pages.size() >= 1, "la historia de la pieza, en grande, en su página")
+	await create_timer(0.5).timeout
+	check(talk.mode == "story", "... y espera a SIGUIENTE")
+	check(PlanTalk.split_tale("Uno dos tres. " .repeat(40)).size() == 2 and PlanTalk.split_tale("Corta.").size() == 1, "un relato largo va en dos páginas")
 	t.act("accept")
-	check(talk.step == 1, "A pasa a lo siguiente")
-	t.act("skip")
-	check(talk.mode == "explore" and talk._told.size() == talk.beats.size(), "Start salta a explorar, todo clavado en el plano")
+	check(talk.mode == "news" and talk.page == 0, "SIGUIENTE: lo nuevo, en grande")
+	check(talk._card != null and talk._card_for == talk.news[0], "... señalando en el plano lo que lo lleva")
+	t.act("back")
+	check(talk.mode == "story", "B: un paso atrás, a la historia")
+	t.act("accept")
+	for i in talk.news.size():
+		t.act("accept")
+	check(talk.mode == "explore" and talk._told.size() == talk.beats.size(), "SIGUIENTE tras lo nuevo: el plano para explorar, todo clavado")
 	check(m._told(8), "... y queda contado")
+	# Looking round: the guards, the case, the way in and out, and the list.
+	var mk: Array = talk.marks.map(func(k): return k.kind)
+	check(mk.count("guard") == m.guards.size() and "piece" in mk and "start" in mk and "exit" in mk, "al explorar, los guardias, la vitrina, la entrada y la salida " + str(mk))
+	check(talk._list != null and talk._list.visible and talk._rule_lines.size() == kinds.count("rule"), "a la derecha, la lista de la noche con sus reglas")
+	var ruled := 0
+	for k in talk.marks:
+		ruled += k.rules.size()
+	check(ruled == kinds.count("rule"), "cada regla, con lo que la lleva en el plano")
+	var guard_at: int = mk.find("guard")
+	talk._pick(guard_at)
+	var lit := talk._rule_lines.filter(func(l): return l.text.begins_with("▶")).size()
+	check(lit == talk.marks[guard_at].rules.size(), "elegir un guardia resalta sus reglas en la lista")
+	t.act("accept")
+	check(talk.mode == "look" and talk._card != null and talk._card_at == talk.marks[guard_at].at, "A sobre el guardia: su ficha junto a él")
+	t.act("back")
+	check(talk.mode == "explore" and talk._list.visible, "B la cierra, la lista sigue")
+	var sheet: PlanSheet = t.stage.sheet
+	check(sheet.fold > 0.0 and sheet.fold < 0.2, "el plano abierto sigue con sus pliegues")
 	talk.cursor = 0
 	t.act("accept")
-	check(talk.mode == "look" and talk._card_for == 0, "A sobre una chincheta la vuelve a contar")
+	check(talk.mode == "look" and talk._card != null and talk._card_for < 0, "A sobre la chincheta de la pieza: su historia otra vez, en grande")
 	t.act("back")
 	check(talk.mode == "explore", "y B la cierra")
 	t.act("back")
@@ -197,7 +232,9 @@ func _init() -> void:
 	var news: Array = t.talk.beats.filter(func(b): return b.kind == "news")
 	check(news.size() == 1 and news[0].stage == "lesson:heist2", "lo nuevo, el de la banda")
 	check(t.talk.beats[-2].text == Text.t("TOUR_MARK_START_MANY"), "«Entráis por aquí»")
+	check(t.talk.mode == "story", "la historia primero, también para la banda")
 	t.act("skip")
+	check(t.talk.mode == "explore", "Start salta de la historia al plano")
 	t.act("skip")
 	await frames()
 	check(m.phase == "countdown" and m.thieves.size() == 2, "y al robo, los dos")

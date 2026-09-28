@@ -126,3 +126,60 @@ static func _icon(what: String) -> String:
 
 static func _mid(t: Vector2i) -> Vector2:
 	return Vector2(t.x + 0.5, t.y + 0.5)
+
+
+## What can be picked on the plan while looking round, each pinned where it
+## is: the piece's case, what is new, every guard, the alarm panels, the way
+## in and the way out, and any rule about somewhere else (a switch, a thing
+## to knock over). Each rule of the night (the "rule" beats, in order) goes
+## with the mark it is about, to light it up in the list beside the plan.
+## A mark is {"kind", "at", "tag", "text", "rules": [rule index], "beat"}:
+##   kind   "piece", "news", "guard", "panel", "start", "exit" or "rule"
+##   tag    its name over its pin; text, what it is about
+##   beat   the beat it tells again (piece, news), or -1
+static func marks(beats: Array, guards: Array[Guard]) -> Array:
+	var out: Array = []
+	var many := false
+	for b in beats:
+		if b.kind == "start" and b.text == Text.t("TOUR_MARK_START_MANY"):
+			many = true
+	for i in beats.size():
+		var b: Dictionary = beats[i]
+		if b.kind == "piece":
+			out.append(_mark("piece", b.at, Text.t("TOUR_TAG_PIECE"), Text.t("TOUR_MARK_PIECE"), i))
+		elif b.kind == "news":
+			out.append(_mark("news", b.at, Text.t("TOUR_TAG_NEWS"), b.title, i))
+	for g in guards:
+		var still := g.post.x >= 0
+		out.append(_mark("guard", Vector2(g.x, g.y), Text.t("TOUR_TAG_GUARD"), Text.t("TOUR_MARK_GUARD_POST" if still else "TOUR_MARK_GUARD_ROUND")))
+	if Heist.team:
+		for p in [Heist.panel, Heist.panel2]:
+			if p.x >= 0:
+				out.append(_mark("panel", _mid(p), Text.t("TOUR_TAG_PANEL"), Text.t("TOUR_MARK_PANEL" + ("_MANY" if many else "_ONE"))))
+	for b in beats:
+		if b.kind in ["start", "exit"]:
+			out.append(_mark(b.kind, b.at, Text.t("TOUR_TAG_" + String(b.kind).to_upper()), b.text))
+	# Each rule with what it is about; on its own where nothing else is.
+	var r := 0
+	for b in beats:
+		if b.kind != "rule":
+			continue
+		var best := -1
+		var near := 0.9
+		for k in out.size():
+			if out[k].kind == "news":
+				continue
+			var d: float = (out[k].at as Vector2).distance_to(b.at)
+			if d < near:
+				near = d
+				best = k
+		if best < 0:
+			out.append(_mark("rule", b.at, Text.t("TOUR_TAG_RULE"), b.text))
+			best = out.size() - 1
+		out[best].rules.append(r)
+		r += 1
+	return out
+
+
+static func _mark(kind: String, at: Vector2, tag: String, text: String, beat := -1) -> Dictionary:
+	return {"kind": kind, "at": at, "tag": tag, "text": text, "rules": [], "beat": beat}

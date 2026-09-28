@@ -65,6 +65,8 @@ const CARD_W := 860
 const CARD_TEXT_W := 470
 const CARD_PHOTO := Vector2(260, 220)
 const CARD_TILT := -0.8
+## The job sheet as the story's own page before a heist: this much bigger.
+const CARD_BIG := 1.3
 ## How far the sheet is turned (degrees).
 const SHEET_TILT := 1.2
 
@@ -161,8 +163,9 @@ static func newspaper(d: Dictionary) -> Control:
 
 ## The job sheet before a heist: {"heading", "name", "blurb", "story",
 ## "photo": Texture2D (the piece turning, live)}: the polaroid on the left,
-## the words on the right, the sheet a hair askew, dropping in.
-static func piece_card(d: Dictionary) -> Control:
+## the words on the right, the sheet a hair askew, dropping in. k: how big,
+## everything in it (the story's own page before a heist is CARD_BIG).
+static func piece_card(d: Dictionary, k := 1.0) -> Control:
 	var sheet := PanelContainer.new()
 	var st := _sheet(PAPER, 0, 0)
 	st.set_corner_radius_all(4)
@@ -174,51 +177,54 @@ static func piece_card(d: Dictionary) -> Control:
 	paper.shader = Shader.new()
 	paper.shader.code = SHEET_SHADER
 	paper.set_shader_parameter("paper", PAPER)
-	paper.set_shader_parameter("box", Vector2(CARD_W, 400))
+	paper.set_shader_parameter("box", Vector2(CARD_W, 400) * k)
 	grain.material = paper
 	sheet.add_child(grain)
 	var margin := MarginContainer.new()
 	for side in ["left", "right"]:
-		margin.add_theme_constant_override("margin_" + side, 34)
+		margin.add_theme_constant_override("margin_" + side, int(34 * k))
 	for side in ["top", "bottom"]:
-		margin.add_theme_constant_override("margin_" + side, 28)
+		margin.add_theme_constant_override("margin_" + side, int(28 * k))
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	sheet.add_child(margin)
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 30)
+	row.add_theme_constant_override("separation", int(30 * k))
 	margin.add_child(row)
 	if d.get("photo") is Texture2D:
-		row.add_child(_polaroid(d.photo))
+		row.add_child(_polaroid(d.photo, k))
+	var text_w := int(CARD_TEXT_W * k)
 	var words := VBoxContainer.new()
-	words.add_theme_constant_override("separation", 6)
+	words.add_theme_constant_override("separation", int(6 * k))
 	words.alignment = BoxContainer.ALIGNMENT_CENTER
-	words.custom_minimum_size.x = CARD_TEXT_W
+	words.custom_minimum_size.x = text_w
 	row.add_child(words)
-	_line(d.get("heading", ""), 15, PAPER_INK_SOFT, words)
-	var name := _line(d.get("name", ""), 38, PAPER_INK, words, HEADLINE)
+	_line(d.get("heading", ""), int(15 * k), PAPER_INK_SOFT, words)
+	var name := _line(d.get("name", ""), int(38 * k), PAPER_INK, words, HEADLINE)
 	name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	name.custom_minimum_size.x = CARD_TEXT_W
-	name.add_theme_constant_override("line_spacing", -6)
-	var blurb := _line(d.get("blurb", ""), 18, PAPER_INK_SOFT, words)
+	name.custom_minimum_size.x = text_w
+	name.add_theme_constant_override("line_spacing", int(-6 * k))
+	var blurb := _line(d.get("blurb", ""), int(18 * k), PAPER_INK_SOFT, words)
 	blurb.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	blurb.custom_minimum_size.x = CARD_TEXT_W
-	_rule(words, 1, PAPER_INK_SOFT)
-	var tale := _line(d.get("story", ""), 18, PAPER_INK, words)
+	blurb.custom_minimum_size.x = text_w
+	_rule(words, maxi(1, int(k)), PAPER_INK_SOFT)
+	var tale := _line(d.get("story", ""), int(18 * k), PAPER_INK, words)
 	tale.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	tale.custom_minimum_size.x = CARD_TEXT_W
+	tale.custom_minimum_size.x = text_w
+	if k > 1.0:
+		tale.add_theme_constant_override("line_spacing", int(4 * k))
 	_drop_in(sheet, CARD_TILT)
 	return _loose(sheet)
 
 
 ## A polaroid: the photo on white, with the wide strip under it, a little
 ## askew, and a strip of tape across its top.
-static func _polaroid(photo: Texture2D) -> Control:
+static func _polaroid(photo: Texture2D, k := 1.0) -> Control:
 	var frame := PanelContainer.new()
 	var st := _box(Color("#fbfaf6"), Color(0, 0, 0, 0), 0)
-	st.content_margin_left = 12
-	st.content_margin_right = 12
-	st.content_margin_top = 12
-	st.content_margin_bottom = 40
+	st.content_margin_left = 12 * k
+	st.content_margin_right = 12 * k
+	st.content_margin_top = 12 * k
+	st.content_margin_bottom = 40 * k
 	st.shadow_color = Color(0, 0, 0, 0.25)
 	st.shadow_size = 6
 	st.shadow_offset = Vector2(0, 3)
@@ -228,7 +234,7 @@ static func _polaroid(photo: Texture2D) -> Control:
 	pic.texture = photo
 	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	pic.custom_minimum_size = CARD_PHOTO
+	pic.custom_minimum_size = CARD_PHOTO * k
 	pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	# The photo's own dark back, so the piece stands out as in a flash photo.
 	var back := ColorRect.new()
@@ -241,12 +247,12 @@ static func _polaroid(photo: Texture2D) -> Control:
 	holder.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var tape := ColorRect.new()
 	tape.color = CARD_TAPE
-	tape.size = Vector2(90, 26)
+	tape.size = Vector2(90, 26) * k
 	tape.rotation = deg_to_rad(4.0)
 	tape.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	holder.add_child(tape)
 	holder.resized.connect(func() -> void:
-		tape.position = Vector2(holder.size.x / 2 - 45, -12))
+		tape.position = Vector2(holder.size.x / 2 - 45 * k, -12 * k))
 	return holder
 
 
@@ -523,7 +529,9 @@ static func _loose(c: Control) -> Control:
 		c.size = m
 		c.pivot_offset = m / 2
 	c.minimum_size_changed.connect(fit)
-	holder.tree_entered.connect(fit.call_deferred)
+	# Once in, and laid out: through c's own method, so that nothing is
+	# called should it go before then.
+	holder.tree_entered.connect(func() -> void: c.update_minimum_size.call_deferred())
 	return holder
 
 

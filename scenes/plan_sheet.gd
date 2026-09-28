@@ -5,6 +5,11 @@ extends Node3D
 ## in an accordion) at a width of one unit, to be flown about and opened.
 ## It lies in its own XY plane, facing +Z; fold is how shut it is, 0 flat
 ## to 1 folded up (each panel turned FOLD_MOST from flat).
+##
+## Open, it still shows how it was folded, as a paper map does on a table:
+## each panel a little tilted, lit on one side and in shade on the other,
+## the creases between them a dark valley or a bright ridge in turn, and
+## the softer crease across the middle (PAPER_SHADER).
 
 const COLUMNS := MapStage.COLUMNS
 const ROWS := MapStage.ROWS
@@ -13,6 +18,60 @@ const ROWS := MapStage.ROWS
 const SHUT := 1.0
 const OPEN := 0.04
 const FOLD_MOST := 80.0
+## How much the open plan still shows its folds: the light across a panel,
+## from its lit edge to its shaded one, and how dark a valley crease and
+## how bright a ridge.
+const PANEL_LIGHT := Vector2(1.08, 0.76)
+const VALLEY := 0.7
+const RIDGE := 0.3
+
+const PAPER_SHADER := """
+shader_type spatial;
+render_mode unshaded, cull_disabled;
+uniform sampler2D paper : source_color, filter_linear_mipmap;
+uniform vec3 glow = vec3(1.0);
+uniform float columns = 4.0;
+uniform float rows = 2.0;
+uniform vec2 panel_light = vec2(1.05, 0.86);
+uniform float valley = 0.55;
+uniform float ridge = 0.22;
+void fragment() {
+	vec3 c = texture(paper, UV).rgb * COLOR.rgb * glow;
+	// Across: the accordion's panels, each tilted, lit from one edge to the
+	// other and every other one the other way.
+	float u = UV.x * columns;
+	float i = floor(u);
+	float f = fract(u);
+	float slope = mod(i, 2.0) < 0.5 ? f : 1.0 - f;
+	float light = mix(panel_light.x, panel_light.y, smoothstep(0.0, 1.0, slope));
+	// The creases: where two shaded edges meet, a valley, dark; where two lit
+	// ones do, a ridge, bright with a hair of shade beside it.
+	float w = fwidth(u);
+	float k = floor(u + 0.5);
+	float d = abs(u - k);
+	float line = 1.0 - smoothstep(w * 0.6, w * 2.2, d);
+	float near = 1.0 - smoothstep(w * 2.0, w * 9.0, d);
+	if (k > 0.5 && k < columns - 0.5) {
+		if (mod(k, 2.0) > 0.5) {
+			light *= 1.0 - line * valley - near * 0.12;
+		} else {
+			light *= 1.0 + line * ridge;
+			light *= 1.0 - (1.0 - smoothstep(w * 2.0, w * 4.0, d)) * (1.0 - line) * 0.1;
+		}
+	}
+	// Down: the crease across the middle, softer, the lower half a touch in shade.
+	float v = UV.y * rows;
+	float wv = fwidth(v);
+	float kv = floor(v + 0.5);
+	float dv = abs(v - kv);
+	if (kv > 0.5 && kv < rows - 0.5) {
+		light *= 1.0 - (1.0 - smoothstep(wv * 0.6, wv * 2.0, dv)) * valley * 0.7;
+		light *= 1.0 - (1.0 - smoothstep(wv * 1.5, wv * 14.0, dv)) * 0.06;
+	}
+	light *= 1.0 - smoothstep(0.0, 1.0, fract(v)) * 0.05;
+	ALBEDO = c * light;
+}
+"""
 
 var fold := SHUT:
 	set(v):
@@ -21,7 +80,7 @@ var fold := SHUT:
 ## width is 1; this is its height
 var tall := 0.66
 var _paper: MeshInstance3D
-var _material: StandardMaterial3D
+var _material: ShaderMaterial
 var _dirty := true
 ## the plan's size in pixels, and a tile's
 var _sheet_px := Vector2.ONE
@@ -31,12 +90,15 @@ var _tile_px := 1.0
 func _init() -> void:
 	_paper = MeshInstance3D.new()
 	# Unlit, so the plan keeps the colours it was printed in whatever the
-	# town's lamps; the folds are shaded by hand (_mesh).
-	_material = StandardMaterial3D.new()
-	_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	_material.vertex_color_use_as_albedo = true
-	_material.cull_mode = BaseMaterial3D.CULL_DISABLED
-	_material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	# town's lamps; the folds are shaded by hand (_mesh, PAPER_SHADER).
+	_material = ShaderMaterial.new()
+	_material.shader = Shader.new()
+	_material.shader.code = PAPER_SHADER
+	_material.set_shader_parameter("columns", float(COLUMNS))
+	_material.set_shader_parameter("rows", float(ROWS))
+	_material.set_shader_parameter("panel_light", PANEL_LIGHT)
+	_material.set_shader_parameter("valley", VALLEY)
+	_material.set_shader_parameter("ridge", RIDGE)
 	_paper.material_override = _material
 	_paper.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(_paper)
@@ -49,7 +111,7 @@ func print_plan(plan: Image, tile_px: float) -> void:
 	var sheet := (MapStage._parchment(w, h) as Image).duplicate() as Image
 	sheet.blend_rect(plan, Rect2i(Vector2i.ZERO, plan.get_size()), Vector2i(MapStage.MARGIN, MapStage.MARGIN))
 	sheet.generate_mipmaps()
-	_material.albedo_texture = ImageTexture.create_from_image(sheet)
+	_material.set_shader_parameter("paper", ImageTexture.create_from_image(sheet))
 	_sheet_px = Vector2(w, h)
 	_tile_px = tile_px
 	tall = float(h) / w
@@ -58,7 +120,7 @@ func print_plan(plan: Image, tile_px: float) -> void:
 
 ## A glow on the paper as it comes out, 0 none.
 func shine(k: float) -> void:
-	_material.albedo_color = Color(1.0 + k * 0.7, 1.0 + k * 0.55, 1.0 + k * 0.3)
+	_material.set_shader_parameter("glow", Vector3(1.0 + k * 0.7, 1.0 + k * 0.55, 1.0 + k * 0.3))
 
 
 func _process(_dt: float) -> void:

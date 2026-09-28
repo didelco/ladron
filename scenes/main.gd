@@ -824,16 +824,20 @@ func _tour_room(n: int) -> void:
 
 
 ## What the tour needs to tell the plan of the heist laid out: its picture,
-## the beats told over it (PlanBeats), the job sheet, the goals for its
-## stars, and whether it has been told before.
+## the beats told over it and the marks to look round (PlanBeats), the job
+## sheet, what getting the piece out takes, the goals for its stars, and
+## whether it has been told before.
 func _plan_data() -> Dictionary:
 	_build_preview()
+	var beats := PlanBeats.build(level, players, guards)
 	return {
 		"n": level,
 		"image": Hud.plan_map(guards, _thief_colours().slice(0, thieves.size())),
 		"tile_px": float(clampi(int(Hud.MAP_WIDTH / Museum.w), 8, 32)),
 		"heading": Story.heading(level, players),
-		"beats": PlanBeats.build(level, players, guards),
+		"beats": beats,
+		"marks": PlanBeats.marks(beats, guards),
+		"takes": Briefing.takes(),
 		"sheet": {"heading": Story.heading(level, players), "name": Heist.first_upper(Heist.loot.name), "blurb": Heist.loot.blurb,
 			"story": Heist.loot.get("story", ""), "photo": preview.get_texture()},
 		"goals": StarSlots.goals(level, players),
@@ -1056,7 +1060,7 @@ func _show_prologue(page := 0) -> void:
 		{"text": _dots(page, pages.size()), "colour": Hud.C.dim, "size": 14},
 		{"buttons": [
 			{"text": Text.t("MENU_BACK") if page == 0 else Text.t("MENU_PREV"), "call": _prologue_back, "colour": Hud.C.dim},
-			{"text": Text.t("PROLOGUE_GO") if last else Text.t("MENU_NEXT"), "call": _show_city if last else _show_prologue.bind(page + 1)},
+			{"text": Text.t("MENU_NEXT"), "call": _show_city if last else _show_prologue.bind(page + 1)},
 		], "row": true, "focus": 1},
 		{"buttons": [{"text": Text.t("MENU_SKIP"), "call": _show_city, "colour": Hud.C.dim}], "small": true},
 	])
