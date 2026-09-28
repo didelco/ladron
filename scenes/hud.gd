@@ -1271,18 +1271,30 @@ var _bubble_closed: Callable
 ## title of one without the focus.
 const CHOICE_W := 124.0
 const STICKER := Vector2(120, 80)
+## A choice on a diorama instead (a MenuStage, 3:2 like the sticker): bigger,
+## to make out what is on it, and its corners rounded like a card's picture.
+const STAGE_STICKER := Vector2(168, 112)
+const STAGE_RADIUS := 12.0
 const DIM := 0.35
 ## A choice's sticker: in full colour and a touch brighter with the focus
 ## (lit 1), nearly a dark silhouette without it (lit 0), grey with a hint of
-## the bubble's purple.
+## the bubble's purple. radius: its corners rounded (box: its size), for a
+## diorama; 0 for a sticker, cut out already.
 const STICKER_SHADER := """
 shader_type canvas_item;
 uniform float lit = 0.0;
+uniform vec2 box = vec2(120.0, 80.0);
+uniform float radius = 0.0;
 void fragment() {
 	float grey = dot(COLOR.rgb, vec3(0.299, 0.587, 0.114));
 	vec3 off = vec3(grey) * vec3(0.2, 0.18, 0.26);
 	vec3 on = min(COLOR.rgb * 1.12, vec3(1.0));
-	COLOR = vec4(mix(off, on, lit), COLOR.a);
+	float a = COLOR.a;
+	vec2 q = min(UV * box, box - UV * box);
+	if (radius > 0.0 && q.x < radius && q.y < radius) {
+		a *= 1.0 - smoothstep(radius - 1.5, radius, length(vec2(radius) - q));
+	}
+	COLOR = vec4(mix(off, on, lit), a);
 }
 """
 ## the tail's size, and the least room kept between the bubble and the edge
@@ -1294,7 +1306,8 @@ const BUBBLE_EDGE := 12.0
 ## (the card with that id, see "cards"), like a speech bubble: the menu stays
 ## as it is, neither dimmed nor covered beyond the bubble, and the card stays
 ## lit while it is up. choices are small cards, left to right:
-##   {"title", "icon": Texture2D, "colour", "call"}
+##   {"title", "icon": Texture2D, "colour", "call"}, or "stage": MenuStage
+##   for "icon" (a diorama, still, bigger: STAGE_STICKER)
 ## focus: the one to start on. The arrows, the stick or the cross move along
 ## it and A, Enter or a click picks; Escape or B (the game's own
 ## _unhandled_input, through close_bubble) or a click anywhere else closes
@@ -1393,7 +1406,7 @@ func _bubble_open(root: Control, first: Button) -> void:
 
 
 ## One choice in the bubble: no frame of its own, just its sticker (a 2D
-## picture, see tools/ninja_stickers.py) and its short title under it, in
+## picture, see tools/ninja_stickers.py, or a still diorama) and its short title under it, in
 ## its colour. The one with the focus lights up, in colour, and pops a little
 ## bigger (_lift); the rest stand dark, nearly silhouettes. Either way it
 ## eases there in SWAP_S (_light_choice).
@@ -1413,16 +1426,27 @@ func _bubble_choice(c: Dictionary) -> Button:
 	box.offset_bottom = -6
 	b.add_child(box)
 	var icon := TextureRect.new()
-	icon.texture = c.icon
-	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
-	icon.custom_minimum_size = STICKER
+	var sticker := STICKER
 	var shader := Shader.new()
 	shader.code = STICKER_SHADER
 	var m := ShaderMaterial.new()
 	m.shader = shader
+	# A diorama: drawn through its texture, still (never set going: a
+	# bubble is a quick pick, and three stirring at once would be a fuss).
+	if c.has("stage"):
+		var stage: MenuStage = c.stage
+		b.add_child(stage)
+		icon.texture = stage.get_texture()
+		sticker = STAGE_STICKER
+		m.set_shader_parameter("box", sticker)
+		m.set_shader_parameter("radius", STAGE_RADIUS)
+	else:
+		icon.texture = c.icon
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	icon.custom_minimum_size = sticker
 	m.set_shader_parameter("lit", 0.0)
 	icon.material = m
 	box.add_child(icon)
@@ -1431,7 +1455,7 @@ func _bubble_choice(c: Dictionary) -> Button:
 	t.text = c.title
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	t.modulate = Color(DIM, DIM, DIM)
-	b.custom_minimum_size = Vector2(CHOICE_W, STICKER.y + 34)
+	b.custom_minimum_size = Vector2(maxf(CHOICE_W, sticker.x + 4), sticker.y + 34)
 	b.focus_entered.connect(_light_choice.bind(b, icon, t, true))
 	b.focus_exited.connect(_light_choice.bind(b, icon, t, false))
 	_lift(b, 1.08)

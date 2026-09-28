@@ -912,42 +912,60 @@ func _tour_go(_n: int) -> void:
 	_start_countdown(Hud.FADE_S)
 
 
-## The generative mode: difficulty and museum size as cards, then play with
-## the thieves picked in the title's bubble (_pick_players), the one to
-## start on. Back goes to that bubble, to change how many.
-func _show_generative_menu() -> void:
+## The generative mode's settings: two big cards, the difficulty and the
+## museum's size, each showing the one in force (its diorama and its name),
+## framed like every other menu's; pressing one pops a bubble of its three
+## out of it (_pick_setting), like the title's how many thieves. Under them,
+## EMPEZAR, with the focus, plays with the thieves picked in the title's
+## bubble (_pick_players); back goes to that bubble, to change how many.
+## on: the card to come back to ("difficulty" or "size"), just set in its
+## bubble; "" starts on EMPEZAR.
+func _show_generative_menu(on := "") -> void:
 	hud.backdrop(Hud.SPOTS.generative)
 	phase = "generative"
-	var levels: Array = []
-	for k in ["easy", "medium", "hard"]:
-		levels.append({"title": Text.t(DIFFICULTY_NAMES[k]), "stage": MenuStage.make("guards:" + k), "call": _pick_difficulty.bind(k),
-			"colour": {"easy": Hud.C.green, "medium": Hud.C.gold, "hard": Hud.C.alert}[k], "selected": Sim.difficulty == k, "title_size": 12})
-	var sizes: Array = []
-	for k in ["small", "medium", "large"]:
-		sizes.append({"title": Text.t(SIZE_NAMES[k]), "stage": MenuStage.make("museum:" + k), "call": _pick_size.bind(k),
-			"colour": Hud.C.safe, "selected": size == k, "title_size": 12})
 	hud.show_menu([
 		{"title": Text.t("MENU_GENERATIVE_TITLE"), "size": 40},
-		{"cards": levels, "width": 140},
-		{"cards": sizes, "width": 140},
 		{"cards": [
-			{"title": Text.t("MENU_GO"), "text": Text.t("MENU_PLAYERS_%d" % players), "stage": MenuStage.make("players:%d" % players),
-				"call": _start.bind("generative", players), "colour": _thief_colours()[players - 1], "title_size": 12, "focus": true},
-		], "width": 140},
-		{"buttons": [{"text": Text.t("MENU_BACK"), "call": _show_title.bind("generative"), "colour": Hud.C.dim}], "row": true},
+			{"title": Text.t("MENU_DIFFICULTY"), "text": Text.t(DIFFICULTY_NAMES[Sim.difficulty]), "stage": MenuStage.make("guards:" + Sim.difficulty),
+				"call": _pick_setting.bind("difficulty"), "id": "difficulty", "focus": on == "difficulty"},
+			{"title": Text.t("MENU_SIZE"), "text": Text.t(SIZE_NAMES[size]), "stage": MenuStage.make("museum:" + size),
+				"call": _pick_setting.bind("size"), "id": "size", "focus": on == "size"},
+		], "width": 270},
+		{"gap": 24},
+		{"buttons": [
+			{"text": Text.t("MENU_START"), "call": _start.bind("generative", players)},
+			{"text": Text.t("MENU_BACK"), "call": _show_title.bind("generative"), "colour": Hud.C.dim},
+		], "row": true, "focus": 0 if on == "" else -1},
 	], "generative")
 
 
-func _pick_difficulty(k: String) -> void:
-	Sim.difficulty = k
-	_save_settings()
-	_show_generative_menu()
+## The difficulty or the size, in a bubble out of its card (Hud.pop_bubble):
+## its three, each on its own diorama (still), starting on the one in force.
+## Picking keeps it (_set_setting); Escape, B or a click off it closes it,
+## back to the card, as it was.
+func _pick_setting(which: String) -> void:
+	phase = "pick"
+	var hard := which == "difficulty"
+	var names: Dictionary = DIFFICULTY_NAMES if hard else SIZE_NAMES
+	var colours := {"easy": Hud.C.green, "medium": Hud.C.gold, "hard": Hud.C.alert}
+	var choices: Array = []
+	for k: String in names:
+		choices.append({"title": Text.t(names[k]), "stage": MenuStage.make(("guards:" if hard else "museum:") + k),
+			"colour": colours[k] if hard else Hud.C.safe, "call": _set_setting.bind(which, k)})
+	var now := names.keys().find(Sim.difficulty if hard else size)
+	hud.pop_bubble(which, Text.t("MENU_HOW_HARD" if hard else "MENU_HOW_BIG"), choices, now,
+		func() -> void: phase = "generative")
 
 
-func _pick_size(k: String) -> void:
-	size = k
+## A difficulty or a size picked in its bubble: kept in the settings, and
+## the menu again, its card showing it and with the focus.
+func _set_setting(which: String, k: String) -> void:
+	if which == "difficulty":
+		Sim.difficulty = k
+	else:
+		size = k
 	_save_settings()
-	_show_generative_menu()
+	_show_generative_menu(which)
 
 
 func _start(which: String, n: int, picked := false) -> void:
@@ -1844,8 +1862,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			if key == KEY_ESCAPE:
 				_show_title()
 		"pick":
-			# The bubble of how many thieves: its own keys for the left-hand
-			# player (A and D along it, E to pick) and 1 to 4 straight to one;
+			# A bubble (how many thieves, the generative's difficulty or
+			# size): its own keys for the left-hand player (A and D along it,
+			# E to pick) and 1 to 4 straight to one (past its last, nothing);
 			# the arrows, Enter and A move and pick by themselves.
 			if key == KEY_ESCAPE:
 				hud.close_bubble(true)
