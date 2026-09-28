@@ -116,6 +116,14 @@ const A_PORCH := 0.9
 const A_DOOR := Vector2(0.4, 0.8)
 const A_STEPS := 7
 const A_STEP := 0.15
+## Its dome, as La Rotonda's but a whole half sphere: its radius; how high
+## its drum rises over the roof's top.
+const A_DOME := 1.05
+const A_DRUM := 0.4
+## With the dome it stands taller than the rest: the camera, from close,
+## looks this much higher at it and sees this much (as MuseumBuilding.view).
+const A_LOOK := 0.8
+const A_VIEW := 9.0
 const MARBLE := Color("#f7f2ea")
 const MARBLE_DARK := Color("#c8bca8")
 const STUCCO := Color("#ecdfc8")
@@ -664,10 +672,11 @@ func _long_neck(at: Node3D) -> void:
 
 ## The ancient museum, a Palladian villa after La Rotonda: a compact block
 ## of cream stucco on a basement, its main floor and a low one over it, a
-## cornice all round (triglyphs on its frieze), a low roof with a low dome
-## in steps on it, a lantern and a flag. Before its middle, a temple front
-## standing well out: six tall Doric columns in a row the height of both
-## floors (and one more each side), smooth, no base; the frieze over them,
+## cornice all round (triglyphs on its frieze), a low roof and out of it
+## a drum with a whole dome on it, a lantern and a flag (_a_dome). Before
+## its middle, a temple front standing well out: six tall Doric columns
+## in a row the height of both floors (and one more each side), smooth, no
+## base; the frieze over them,
 ## the museum's name on a tablet in its middle, triglyphs and metopes in
 ## the museum's colour either side; a pediment, its tympanum plain in the
 ## colour, a bust on its top and one at each end. A flight of steps as wide
@@ -675,10 +684,11 @@ func _long_neck(at: Node3D) -> void:
 ## it, a pedestal at the foot of each with a statue on it: a rearing horse
 ## with a traffic cone on its head and a fox in a party hat. Either side of
 ## the portico and down both sides, serlianas with a little pediment over
-## them on the main floor, small square windows over those, little ones in
-## the basement; some lit. The rooms' are some of the serlianas (A_ROOMS);
+## them on the main floor, dark, small square windows over those (some
+## lit), little ones in the basement. The rooms' are some of the serlianas
+## (A_ROOMS), lit once reached (no piece on show: the light is the room);
 ## the big job's is behind the door, under the portico: shut until reached,
-## then open, lit, the piece in the doorway and the crown over the pediment.
+## then open and lit, the crown over the pediment.
 ## An amphora each side of the door (a mop stuck in one), hedges and
 ## cypresses round the gravel, a lamp at each front corner.
 func _antiquity(rooms: Array) -> void:
@@ -694,7 +704,8 @@ func _antiquity(rooms: Array) -> void:
 	var back_z := -A_D * 0.5
 	var foot_z := A_PORCH + A_STEPS * A_STEP
 	front_z = A_PORCH
-	look_y = A_BASE + A_MAIN * 0.8
+	look_y = A_BASE + A_MAIN * 0.8 + A_LOOK
+	view = A_VIEW
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 5077 + museum
 	# The gravel before it; the basement with its grooves, the walls, a band
@@ -719,7 +730,7 @@ func _antiquity(rooms: Array) -> void:
 		var z := -0.1 - k * (A_D - 0.2) / 12.0
 		for sx in [-1, 1]:
 			_box(Vector3(0.02, 0.11, 0.07), glyph, Vector3(sx * (A_W * 0.5 + 0.06), roof_y + 0.16, z))
-	# The roof, low, and the dome on it in steps, a lantern and a flag.
+	# The roof, low, and on it the drum, the dome, the lantern and a flag.
 	var roof := Node3D.new()
 	roof.position = Vector3(0, ent_top + 0.14, back_z)
 	roof.scale = Vector3(A_W + 0.1, 0.28, A_D + 0.1)
@@ -732,27 +743,7 @@ func _antiquity(rooms: Array) -> void:
 	hip.height = 1.0
 	var slopes := _mesh_in(roof, hip, _shade(ROOF), Vector3.ZERO)
 	slopes.rotation.y = PI / 4
-	var step_y := ent_top + 0.2
-	for k in 3:
-		var ring := _cone(0.88 - k * 0.09, 0.88 - k * 0.09, 0.07)
-		ring.radial_segments = 20
-		_mesh(ring, stone if k != 1 else trim, Vector3(0, step_y + 0.035 + k * 0.07, back_z))
-	var dome_y := step_y + 0.21
-	_mesh(_cone(0.72, 0.72, 0.03), accent, Vector3(0, dome_y - 0.015, back_z))
-	var dome := SphereMesh.new()
-	dome.radius = 0.68
-	dome.height = 0.68
-	dome.is_hemisphere = true
-	dome.radial_segments = 20
-	var cap := _mesh(dome, trim, dome_y * Vector3.UP + Vector3(0, 0, back_z))
-	cap.scale = Vector3(1, 0.45, 1)
-	var dome_top := dome_y + 0.68 * 0.45
-	_mesh(_cone(0.1, 0.1, 0.14), stone, Vector3(0, dome_top + 0.05, back_z))
-	_mesh(_cone(0.13, 0.0, 0.1), accent, Vector3(0, dome_top + 0.17, back_z))
-	_box(Vector3(0.03, 0.75, 0.03), POLE, Vector3(0, dome_top + 0.46, back_z))
-	var flag := _box(Vector3(0.42, 0.24, 0.02), _colour if open else accent, Vector3(0.22, dome_top + 0.7, back_z))
-	flag.name = "Flag"
-	top = dome_top + 1.0
+	top = _a_dome(ent_top + 0.28, back_z) + 0.15
 	# The portico's floor on the basement; the steps down to the gravel, as
 	# wide as it, between its walls: level along the portico, sloping down
 	# with the steps, a pedestal at the foot of each with a statue on it.
@@ -837,8 +828,9 @@ func _antiquity(rooms: Array) -> void:
 		_box(Vector3(0.16, 0.06, 0.16), stone, at + Vector3(0, 0.03, 0))
 		_statue(b, 0.34, at + Vector3(0, 0.06, 0), 0.0, false, false)
 	# The windows: either side of the portico and down both sides, a
-	# serliana on the main floor (but where a room is: it has its own), a
-	# small window over it, a little one in the basement under it.
+	# serliana on the main floor, dark, so that the rooms' stand out (but
+	# where a room is: it has its own), a small window over it, a little one
+	# in the basement under it.
 	var taken := {}
 	for s in A_ROOMS:
 		taken[_slot_key(s.side, s.across, 0)] = true
@@ -852,7 +844,7 @@ func _antiquity(rooms: Array) -> void:
 		var side := int(s.x)
 		var turn := _slot_turn(side)
 		if not taken.has(_slot_key(side, s.y, 0)):
-			_serliana(_a_slot_at(side, s.y, main_y), open and rng.randf() < 0.4, false, turn)
+			_serliana(_a_slot_at(side, s.y, main_y), false, false, turn)
 		_plain(_a_slot_at(side, s.y, upper_y), A_SMALL, open and rng.randf() < 0.3, true, turn)
 		var low := Node3D.new()
 		low.position = _a_slot_at(side, s.y, A_BASE * 0.5)
@@ -875,9 +867,9 @@ func _antiquity(rooms: Array) -> void:
 		if open:
 			lamp.material_override = _lit_material(LIT, 3.0)
 	# The rooms: some of the serlianas (A_ROOMS), the big job's behind the
-	# door. Only one reached shows as a room: lit, its piece in it (the door
-	# open, and the crown over the pediment, for the big job's); the rest
-	# are windows like any other, or a shut door, and nothing to pick.
+	# door. Only one reached shows as a room: lit (the door open, and the
+	# crown over the pediment, for the big job's); the rest are dark
+	# windows like any other, or a shut door, and nothing to pick.
 	var normal := 0
 	var count := rooms.size() if not rooms.is_empty() else Story.ROOMS
 	for i in count:
@@ -891,26 +883,93 @@ func _antiquity(rooms: Array) -> void:
 		else:
 			var s: Dictionary = A_ROOMS[mini(normal, A_ROOMS.size() - 1)]
 			normal += 1
-			w = _serliana(_a_slot_at(s.side, s.across, main_y), shown or (open and rng.randf() < 0.4), shown, _slot_turn(s.side))
+			w = _serliana(_a_slot_at(s.side, s.across, main_y), shown, shown, _slot_turn(s.side))
 		var node: Node3D = w.node
+		# No piece on show (its "piece" empty): the room is its light.
 		var piece := Node3D.new()
 		piece.position = Vector3(0, -size.y * 0.18, 0.1)
 		node.add_child(piece)
-		if shown:
-			var model := LootModels.build(r.shape, Color(r.colour))
-			model.scale = Vector3.ONE * (0.42 if r.boss else 0.3)
-			piece.add_child(model)
-			if r.boss:
-				# The big job's crown, over the bust on the pediment's top; a
-				# warm glow out of the door over the portico's floor.
-				var crown := Node3D.new()
-				crown.name = "Crown"
-				crown.position = Vector3(0, ent_top + 0.98 - node.position.y, porch_z - 0.02 - node.position.z)
-				node.add_child(crown)
-				CityStage.crown(crown, Vector3.ZERO, MenuStage.GOLD, 1.3)
-				_glow(Vector3(A_DOOR.x, 0.004, 0.6), LIT, Vector3(0, A_BASE + 0.003, 0.32), 0.6)
+		if shown and r.boss:
+			# The big job's crown, over the bust on the pediment's top; a
+			# warm glow out of the door over the portico's floor.
+			var crown := Node3D.new()
+			crown.name = "Crown"
+			crown.position = Vector3(0, ent_top + 0.98 - node.position.y, porch_z - 0.02 - node.position.z)
+			node.add_child(crown)
+			CityStage.crown(crown, Vector3.ZERO, MenuStage.GOLD, 1.3)
+			_glow(Vector3(A_DOOR.x, 0.004, 0.6), LIT, Vector3(0, A_BASE + 0.003, 0.32), 0.6)
 		windows.append({"node": node, "back": w.back, "glass": w.glass, "piece": piece, "lock": null, "boss": r.boss, "open": shown,
 			"size": size, "frame": w.frame, "stone": w.stone, "arch": false, "face": node.basis, "near": A_PORCH * 2.0 if r.boss else 0.0})
+
+
+## The ancient museum's dome, as La Rotonda's, its axis at z on the roof
+## (roof_top, the hip's top): a round drum in the stucco rising out of the
+## roof, little dark windows round it, a cornice on it; a whole half sphere
+## of tiles on that, stone steps round its foot and stone ribs up it to a
+## lantern of little columns round dark glass, its own little dome, a
+## ball in the museum's colour, the pole and the flag. Returns how high
+## the pole goes.
+func _a_dome(roof_top: float, z: float) -> float:
+	var wall := _shade(STUCCO)
+	var stone := _shade(MARBLE)
+	var tiles := _shade(ROOF.lightened(0.12))
+	var r := A_DOME
+	var drum_r := r + 0.1
+	var foot := roof_top - 0.18
+	var dome_y := roof_top + A_DRUM
+	var drum := _cone(drum_r, drum_r, dome_y - foot)
+	drum.radial_segments = 32
+	_mesh(drum, wall, Vector3(0, (foot + dome_y) * 0.5, z))
+	for k in 8:
+		var a := (k + 0.5) * TAU / 8.0
+		var slit := _box(Vector3(0.14, 0.18, 0.04), GLASS_DARK, Vector3(sin(a) * drum_r, dome_y - 0.2, z + cos(a) * drum_r))
+		slit.rotation.y = a
+	var cornice := _cone(drum_r + 0.05, drum_r + 0.05, 0.07)
+	cornice.radial_segments = 32
+	_mesh(cornice, stone, Vector3(0, dome_y - 0.035, z))
+	# The dome: a whole half sphere; stone steps round its foot, each
+	# hugging it a little higher up; ribs up it, each a ring standing on
+	# end through its axis (their lower halves lost in the drum and the
+	# roof).
+	var dome := SphereMesh.new()
+	dome.radius = r
+	dome.height = r
+	dome.is_hemisphere = true
+	dome.radial_segments = 32
+	dome.rings = 12
+	_mesh(dome, tiles, Vector3(0, dome_y, z))
+	for k in 3:
+		var h := k * 0.08
+		var step := _cone(sqrt(r * r - (h + 0.08) * (h + 0.08)) + 0.035, sqrt(r * r - (h + 0.08) * (h + 0.08)) + 0.035, 0.08)
+		step.radial_segments = 32
+		_mesh(step, stone, Vector3(0, dome_y + h + 0.04, z))
+	for k in 4:
+		var rib := TorusMesh.new()
+		rib.inner_radius = r - 0.01
+		rib.outer_radius = r + 0.03
+		rib.rings = 40
+		rib.ring_segments = 6
+		var mi := _mesh(rib, stone, Vector3(0, dome_y, z))
+		mi.basis = Basis(Vector3.UP, k * PI / 4.0) * Basis(Vector3.RIGHT, PI / 2.0)
+	# The lantern on its top.
+	var at := dome_y + r - 0.03
+	_mesh(_cone(0.2, 0.2, 0.05), stone, Vector3(0, at + 0.025, z))
+	_mesh(_cone(0.12, 0.12, 0.22), GLASS_DARK, Vector3(0, at + 0.16, z))
+	for k in 6:
+		var a := k * TAU / 6.0
+		_box(Vector3(0.035, 0.22, 0.035), stone, Vector3(sin(a) * 0.15, at + 0.16, z + cos(a) * 0.15))
+	_mesh(_cone(0.19, 0.19, 0.04), stone, Vector3(0, at + 0.29, z))
+	var cap := SphereMesh.new()
+	cap.radius = 0.15
+	cap.height = 0.15
+	cap.is_hemisphere = true
+	cap.radial_segments = 16
+	_mesh(cap, tiles, Vector3(0, at + 0.31, z))
+	_mesh(_ball(0.05), _shade(_colour), Vector3(0, at + 0.49, z))
+	_box(Vector3(0.03, 0.7, 0.03), POLE, Vector3(0, at + 0.85, z))
+	var flag := _box(Vector3(0.42, 0.24, 0.02), _colour if open else _shade(_colour), Vector3(0.22, at + 1.07, z))
+	flag.name = "Flag"
+	return at + 1.2
 
 
 ## Where a window of the ancient museum is: on its front (side 0, across
@@ -926,7 +985,7 @@ func _a_slot_at(side: int, across: float, y: float) -> Vector3:
 ## arch over it (a keystone in the museum's colour) between two lower,
 ## narrow square lights, little columns between them, a short entablature
 ## over the side lights, a sill under it all, a little pediment over it. Lit or dark; glazing bars,
-## but none down the middle light of a room showing its piece (room).
+## but none down the middle light of a room's (room), brighter lit.
 ## Returns {"node", "back" (the middle light), "glass" (its arch), "frame"
 ## (the stone round it), "stone" (its look)}.
 func _serliana(at: Vector3, lit: bool, room: bool, turn := 0.0) -> Dictionary:

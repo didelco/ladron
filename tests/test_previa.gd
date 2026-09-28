@@ -387,6 +387,13 @@ func _init() -> void:
 	var door: Dictionary = villa.windows[4]
 	check(door.boss and door.size == MuseumBuilding.A_DOOR and (door.node as Node3D).position.x == 0.0 and (door.node as Node3D).position.y < MuseumBuilding.A_BASE + MuseumBuilding.A_DOOR.y, "... el gran golpe, por la puerta")
 	check(not door.open and (door.piece as Node3D).get_child_count() == 0 and not (door.node as Node3D).has_node("Crown"), "... cerrada: sin pieza ni corona")
+	var a_lit := func(w: Dictionary) -> bool:
+		var look := (w.back as MeshInstance3D).material_override as StandardMaterial3D
+		return look != null and look.emission_enabled
+	check((villa.windows[0].piece as Node3D).get_child_count() == 0 and a_lit.call(villa.windows[0]) and not a_lit.call(villa.windows[1]),
+		"... la sala 1, iluminada y sin pieza; la 2, a oscuras")
+	check(villa.top > MuseumBuilding.A_BASE + MuseumBuilding.A_MAIN + MuseumBuilding.A_UPPER + MuseumBuilding.A_DOME * 2.0 and villa.view > CityStage.MUSEUM_VIEW,
+		"... con su cúpula entera, más alta, y la cámara la ve entera")
 	check(villa.windows.all(func(w: Dictionary) -> bool: return w.lock == null), "... y nada con candado")
 	tour.stage.pick_room(4)
 	check(tour.stage.room == 0, "... ni se elige")
@@ -405,7 +412,8 @@ func _init() -> void:
 	var a_fronts := villa.windows.filter(func(w: Dictionary) -> bool: return (w.face as Basis).z.z > 0.9 and not w.boss).size()
 	check(a_sides == 3 and a_fronts == 1, "... una en la fachada y tres en el costado que se ve (%d y %d)" % [a_fronts, a_sides])
 	door = villa.windows[4]
-	check(door.open and (door.piece as Node3D).get_child_count() == 1 and (door.node as Node3D).has_node("Crown"), "... la puerta abierta, con su pieza y su corona")
+	check(door.open and a_lit.call(door) and (door.node as Node3D).has_node("Crown"), "... la puerta abierta e iluminada, con su corona")
+	check(villa.windows.all(func(w: Dictionary) -> bool: return (w.piece as Node3D).get_child_count() == 0 and a_lit.call(w)), "... todas iluminadas, ninguna con su pieza a la vista")
 	tour._pick_room(4)
 	await frames()
 	check(tour.stage.room == 4 and tour.stage._room_ring.visible, "... se elige, con su aro")
