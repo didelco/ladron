@@ -38,9 +38,13 @@ const KITS := "res://assets/models/ciudad/"
 const TILE := 1.4
 const PITCH := 5
 const BLOCK := 4
-## How far the town goes from its middle each way (the camera never sees
-## past it).
-const REACH := 52.0
+## How far the town goes from its middle each way: the camera never sees
+## past it, up to 21:9 and the safe margin (tools/city_view.gd checks it);
+## of all this only what can be seen is built (seen).
+const REACH := 76.0
+## The ground is kept or left out (seen) in square patches this many of its
+## squares a side.
+const TERRAIN_PATCH := 4
 
 ## The river: how wide the water, how wide and how long its bends (their
 ## sideways reach, and the length of one full bend along it).
@@ -241,6 +245,13 @@ var _pools: Array = []
 ## stand (x, z) and how far round them to keep clear, by cells of TAKEN_CELL
 var _taken := {}
 const TAKEN_CELL := 4.0
+## Whether something at a point of the plan, r round it, can ever be seen
+## (CityStage.sight): what cannot is never built. Unset, everything is.
+var seen := Callable()
+## What was built and what was left out as never seen, by kind (the models'
+## kits, "box", "pool", "rock", "ground"): for the tools to count.
+var made := {}
+var unseen := {}
 
 
 func _init(parent: Node3D) -> void:
@@ -401,6 +412,7 @@ func claim(i: int, p: Vector2) -> Vector2i:
 ## The whole town: the ground and the river, the districts, the bridges and
 ## the roads to them, and the woods in between.
 func build() -> void:
+	_prune()
 	_terrain()
 	_water()
 	for i in districts.size():
@@ -416,6 +428,25 @@ func build() -> void:
 	_light_pools()
 
 
+## The blocks never seen (seen), gone before anything is built on them,
+## and their streets with them: not the museums' and the hideout's (skip).
+func _prune() -> void:
+	if not seen.is_valid():
+		return
+	for i in districts.size():
+		var d := districts[i]
+		var gone := d.blocks.keys().filter(func(b: Vector2i) -> bool:
+			return not skip.has(Vector3i(i, b.x, b.y)) and not seen.call(d.centre(b), PITCH * TILE * 0.71))
+		if gone.is_empty():
+			continue
+		for b in gone:
+			d.blocks.erase(b)
+		unseen["block"] = unseen.get("block", 0) + gone.size()
+		d.tiles.clear()
+		for b in d.blocks:
+			_ring_of(d, b)
+
+
 # --- The ground and the water --------------------------------------------------------
 
 ## The ground as one mesh, following ground(): grass everywhere, darker
@@ -428,11 +459,29 @@ func _terrain() -> void:
 	var colours := PackedColorArray()
 	heights.resize((n + 1) * (n + 1))
 	colours.resize((n + 1) * (n + 1))
+	# Only the squares ever seen, looked at in patches of TERRAIN_PATCH a side;
+	# the ground worked out only at their corners.
+	var patches := ceili(float(n) / TERRAIN_PATCH)
+	var kept := PackedByteArray()
+	kept.resize(patches * patches)
+	var needed := PackedByteArray()
+	needed.resize((n + 1) * (n + 1))
+	for pj in patches:
+		for pi in patches:
+			var mid := Vector3(lo + (pi + 0.5) * TERRAIN_PATCH * step, 0.0, lo + (pj + 0.5) * TERRAIN_PATCH * step)
+			if not _shown(mid, TERRAIN_PATCH * step * 0.71 + RISE, "ground"):
+				continue
+			kept[pj * patches + pi] = 1
+			for j in range(pj * TERRAIN_PATCH, mini((pj + 1) * TERRAIN_PATCH, n) + 1):
+				for i in range(pi * TERRAIN_PATCH, mini((pi + 1) * TERRAIN_PATCH, n) + 1):
+					needed[j * (n + 1) + i] = 1
 	var half := RIVER_WIDTH * 0.5
 	for j in n + 1:
 		for i in n + 1:
-			var p := Vector2(lo + i * step, lo + j * step)
 			var k := j * (n + 1) + i
+			if not needed[k]:
+				continue
+			var p := Vector2(lo + i * step, lo + j * step)
 			heights[k] = ground(p)
 			var d := absf(across(p))
 			var c := PARK.lerp(MEADOW, 0.5 + 0.5 * sin(p.x * 0.31 + sin(p.y * 0.23) * 2.0))
@@ -443,6 +492,8 @@ func _terrain() -> void:
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for j in n:
 		for i in n:
+			if not kept[(j / TERRAIN_PATCH) * patches + i / TERRAIN_PATCH]:
+				continue
 			var quad := [Vector2i(i, j), Vector2i(i + 1, j), Vector2i(i + 1, j + 1), Vector2i(i, j), Vector2i(i + 1, j + 1), Vector2i(i, j + 1)]
 			for v in quad:
 				var k: int = v.y * (n + 1) + v.x
@@ -473,7 +524,8 @@ func _water() -> void:
 			continue
 		var dir := _tangent(s)
 		var glint := _box(root, Vector3(0.05, 0.02, _rng.randf_range(0.3, 0.9)), WATER_GLINT, Vector3(at.x, -0.2, at.y), Basis.looking_at(Vector3(dir.x, 0, dir.y), Vector3.UP))
-		glint.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		if glint:
+			glint.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 
 # --- The districts ------------------------------------------------------------------
@@ -747,6 +799,8 @@ func _woods() -> void:
 		while x < REACH + 6.0:
 			var p := Vector2(x + _rng.randf_range(-0.5, 0.5) * WOOD_STEP, y + _rng.randf_range(-0.5, 0.5) * WOOD_STEP)
 			x += WOOD_STEP
+			if seen.is_valid() and not seen.call(Vector3(p.x, 0, p.y), TILE * 2.0):
+				continue
 			var d := across(p)
 			if absf(d) < RIVER_WIDTH * 0.5 + 0.5:
 				continue
@@ -806,8 +860,11 @@ func _rocks() -> void:
 		var tall := _rng.randf_range(0.45, 0.85) if _rng.randf() > 0.15 else _rng.randf_range(1.3, 1.9)
 		var basis := Basis(Vector3.UP, _rng.randf() * TAU) * Basis(Vector3.RIGHT, _rng.randf_range(-0.35, 0.35)) * Basis(Vector3.FORWARD, _rng.randf_range(-0.25, 0.25))
 		basis = basis.scaled(Vector3(size * _rng.randf_range(0.7, 1.5), size * tall, size * _rng.randf_range(0.7, 1.2)))
-		(at[_rng.randi() % 3] as Array).append([Transform3D(basis, Vector3(p.x, ground(p) + size * tall * 0.15, p.y)), ROCK.lerp(ROCK_LIGHT, _rng.randf())])
+		var pile: Array = at[_rng.randi() % 3]
+		var rock := [Transform3D(basis, Vector3(p.x, ground(p) + size * tall * 0.15, p.y)), ROCK.lerp(ROCK_LIGHT, _rng.randf())]
 		_take(p, size * 0.6)
+		if _shown(rock[0].origin, size * 1.5, "rock"):
+			pile.append(rock)
 	var m := StandardMaterial3D.new()
 	m.vertex_color_use_as_albedo = true
 	m.vertex_color_is_srgb = true
@@ -871,6 +928,8 @@ func _loose_houses() -> void:
 			x += HOUSE_STEP
 			if _rng.randf() > HOUSE_SHARE:
 				continue
+			if seen.is_valid() and not seen.call(Vector3(p.x, 0, p.y), TILE * 3.0):
+				continue
 			var d := across(p)
 			if d > -(RIVER_WIDTH * 0.5 + WALK_OFF + WALK_WIDTH + 0.8) and d < RIVER_WIDTH * 0.5 + SLOPE + 0.4:
 				continue
@@ -889,7 +948,8 @@ func _loose_houses() -> void:
 			if chalet and _rng.randf() < POOL_SHARE / 0.45:
 				var water := basis * Vector3(0.75, 0.06, 0.95) + at
 				var pool := _box(root, Vector3(0.8, 0.04, 0.5), POOL_WATER, water, basis)
-				pool.material_override = _glow(POOL_WATER, 1.4)
+				if pool:
+					pool.material_override = _glow(POOL_WATER, 1.4)
 				_pool(water, 1.5, GLOW_POOL)
 			if _rng.randf() < 0.7:
 				_tree(at + basis * Vector3(-lot * 0.4, 0, lot * 0.35))
@@ -978,7 +1038,8 @@ func _sports() -> void:
 				var post := c + basis * Vector3(sx * (size.y * 0.5 + 0.35), 0, sz * (size.x * 0.5 + 0.35))
 				_box(root, Vector3(0.06, 1.6, 0.06), RAIL, post + Vector3(0, 0.8, 0))
 				var head := _box(root, Vector3(0.22, 0.1, 0.1), LINE, post + Vector3(0, 1.62, 0), basis)
-				head.material_override = _glow(Color(0.9, 0.95, 1.0), 2.5)
+				if head:
+					head.material_override = _glow(Color(0.9, 0.95, 1.0), 2.5)
 		_pool(c, maxf(size.x, size.y) * 0.75, GLOW_FLOOD)
 		var span := maxf(size.x, size.y) * 0.6 + 0.6
 		_take(c2, span)
@@ -1025,7 +1086,8 @@ func _lamp(at: Vector3, turn: float) -> void:
 
 
 func _pool(at: Vector3, radius: float, colour: Color) -> void:
-	_pools.append([at, radius, colour])
+	if _shown(at, radius, "pool"):
+		_pools.append([at, radius, colour])
 
 
 ## Every pool of light, one MultiMesh of flat quads a hair above the ground.
@@ -1052,6 +1114,14 @@ func _light_pools() -> void:
 	m.shader.code = POOL_SHADER
 	mmi.material_override = m
 	root.add_child(mmi)
+
+
+## Whether something at `at`, r round it, is built (seen), counted by kind.
+func _shown(at: Vector3, r: float, kind: String) -> bool:
+	var ok: bool = not seen.is_valid() or seen.call(at, r)
+	var tally := made if ok else unseen
+	tally[kind] = tally.get(kind, 0) + 1
+	return ok
 
 
 func _glow(colour: Color, energy: float) -> StandardMaterial3D:
@@ -1153,6 +1223,8 @@ func _fit(path: String, wide: float) -> float:
 ## One more of model `path`: at, turned (about y) and scaled.
 func _add(path: String, at: Vector3, turn: float, k := TILE, own := Color(0, 0, 0, 1)) -> void:
 	var batch := _batch(path)
+	if not _shown(at, (batch.size as Vector3).length() * k * 0.5, path.get_slice("/", 0)):
+		return
 	var xf := Transform3D(Basis(Vector3.UP, turn).scaled(Vector3.ONE * k), at)
 	(batch.at as Array).append(xf * (batch.inner as Transform3D))
 	(batch.own as Array).append(own)
@@ -1216,6 +1288,9 @@ func _night(kit: String) -> ShaderMaterial:
 
 
 func _box(parent: Node3D, s: Vector3, colour: Color, at: Vector3, turn := Basis.IDENTITY) -> MeshInstance3D:
+	# Never seen: not made at all (null).
+	if not _shown(at, s.length() * 0.5, "box"):
+		return null
 	var b := BoxMesh.new()
 	b.size = s
 	var mi := MeshInstance3D.new()

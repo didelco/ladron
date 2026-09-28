@@ -75,6 +75,7 @@ func _init() -> void:
 	_view.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_view.stretch = true
 	_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_view.material = _edge_material()
 	_root.add_child(_view)
 	stage = CityStage.new()
 	_view.add_child(stage)
@@ -482,6 +483,12 @@ func _on_mouse(event: InputEvent) -> void:
 
 func _process(_dt: float) -> void:
 	var view := _root.get_viewport_rect().size
+	# Wider than the town is built for (CityStage.WIDEST), its sides fade
+	# into the sky, over the safe margin; close in on a museum, nothing fades.
+	var edges := _view.material as ShaderMaterial
+	edges.set_shader_parameter("aspect", view.x / maxf(view.y, 1.0))
+	edges.set_shader_parameter("edge", CityStage.CITY_VIEW * CityStage.WIDEST * 0.5 / stage.view)
+	edges.set_shader_parameter("soft", CityStage.SAFE * 0.9 / stage.view)
 	_title.position = Vector2(view.x * 0.5 - _title.size.x * 0.5, 22)
 	_subtitle.position = Vector2(view.x * 0.5 - _subtitle.size.x * 0.5, 22 + _title.size.y + 6)
 	_hints.position = Vector2(view.x * 0.5 - _hints.get_combined_minimum_size().x * 0.5, view.y - 58)
@@ -575,6 +582,25 @@ func _sound(kind: String) -> void:
 
 
 ## The night sky: a deep violet, lighter towards the horizon.
+## The town's picture with its sides faded out past `edge` (in screen
+## heights from the middle), over `soft` more.
+static func _edge_material() -> ShaderMaterial:
+	var s := Shader.new()
+	s.code = """
+shader_type canvas_item;
+uniform float aspect = 1.7778;
+uniform float edge = 1.0;
+uniform float soft = 0.12;
+void fragment() {
+	float x = abs(UV.x - 0.5) * aspect;
+	COLOR = texture(TEXTURE, UV) * COLOR * (1.0 - smoothstep(edge, edge + soft, x));
+}
+"""
+	var m := ShaderMaterial.new()
+	m.shader = s
+	return m
+
+
 static func _sky_material() -> ShaderMaterial:
 	var s := Shader.new()
 	s.code = """

@@ -7543,8 +7543,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "28-09-2026 11:28",
-  "commit": "6cde574",
-  "rama": "main"
+  "fecha": "28-09-2026 11:52",
+  "commit": "d6daef1",
+  "rama": "ciudad-amarillo-seguridad"
  }
 };

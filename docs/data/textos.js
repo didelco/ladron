@@ -4199,7 +4199,7 @@ window.TEXTOS = [
   "group": "Otros",
   "at": [
    "scenes/main.gd:2156",
-   "scenes/tour.gd:542"
+   "scenes/tour.gd:549"
   ],
   "via": []
  },
@@ -5869,7 +5869,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/tour.gd:119"
+   "scenes/tour.gd:120"
   ],
   "via": []
  },
@@ -5960,9 +5960,9 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/tour.gd:216",
-   "scenes/tour.gd:220",
-   "scenes/tour.gd:276"
+   "scenes/tour.gd:217",
+   "scenes/tour.gd:221",
+   "scenes/tour.gd:277"
   ],
   "via": []
  },
@@ -11110,7 +11110,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:122"
+   "scenes/tour.gd:123"
   ],
   "via": []
  },
@@ -11121,7 +11121,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:122"
+   "scenes/tour.gd:123"
   ],
   "via": []
  },
@@ -11132,7 +11132,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:122"
+   "scenes/tour.gd:123"
   ],
   "via": []
  },
@@ -11143,7 +11143,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:206"
+   "scenes/tour.gd:207"
   ],
   "via": []
  },
@@ -11154,7 +11154,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:206"
+   "scenes/tour.gd:207"
   ],
   "via": []
  },
@@ -11165,7 +11165,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:206"
+   "scenes/tour.gd:207"
   ],
   "via": []
  },
@@ -11176,7 +11176,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:145"
+   "scenes/tour.gd:146"
   ],
   "via": []
  },
@@ -11187,7 +11187,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:148"
+   "scenes/tour.gd:149"
   ],
   "via": []
  },
@@ -11198,9 +11198,9 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:216",
-   "scenes/tour.gd:220",
-   "scenes/tour.gd:276"
+   "scenes/tour.gd:217",
+   "scenes/tour.gd:221",
+   "scenes/tour.gd:277"
   ],
   "via": []
  },
@@ -11211,7 +11211,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:221"
+   "scenes/tour.gd:222"
   ],
   "via": []
  },

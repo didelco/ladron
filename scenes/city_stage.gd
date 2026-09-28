@@ -37,7 +37,7 @@ const YAW := 20.0
 ## back: the first on the near bank, by the water; over the first bridge,
 ## the next two up in the high town, one above the other; across it to the
 ## fourth; and over the second bridge to the last, by the water again.
-const MUSEUM_SPOTS := [Vector2(-12, -7.5), Vector2(-7, 13), Vector2(-2, 23), Vector2(15, 13), Vector2(20, -7.5)]
+const MUSEUM_SPOTS := [Vector2(-12, -7.5), Vector2(-7, 13), Vector2(-20, 32), Vector2(15, 13), Vector2(20, -7.5)]
 const HIDEOUT_SPOT := Vector2(-21, -8)
 ## The river runs across the screen this steeply (up for each one across).
 const RIVER_TILT := 0.45
@@ -51,6 +51,14 @@ const SPLIT_LOW := 4.0
 const SPLIT_HIGH := 5.0
 ## How far the camera sees (orthographic height) over the town, and over a museum.
 const CITY_VIEW := 30.0
+## The widest screen the town is made for (2:1: 16:9, 16:10, 4:3 and the
+## laptops' 18:9 fit in it); the camera keeps its height (CITY_VIEW), so the
+## wider the screen the more it sees across. Wider still (21:9, 32:9), the
+## sides fade into the sky (Tour): only this much is ever built (sight).
+const WIDEST := 2.0
+## Round all the camera can ever see, this much more kept (in the town's
+## units, on the screen's plane): a safe margin. Past it nothing is built.
+const SAFE := 4.0
 ## How quickly the camera glides to the museum picked (the larger, the
 ## quicker: it closes this share of the way in a second, as an exponential).
 const FOLLOW_S := 2.6
@@ -87,6 +95,11 @@ var _museums: Array[Node3D] = []
 var _builder: TownBuilder
 var _lots: Array = []
 var _hideout_lot: Array = []
+## where each museum stands, on the town's plan (known before it is built)
+var _spots: Array[Vector3] = []
+## all the camera can ever see and the safe margin round it (sight), on the
+## screen's plane: what the town builds
+var _keep := PackedVector2Array()
 var _shells: Array[Node3D] = []
 var _locks: Array[Node3D] = []
 var _open: Array[bool] = []
@@ -103,6 +116,8 @@ var _room_light: SpotLight3D
 var _tween: Tween
 ## everything moves at once (the tests)
 var hurry := false
+## only what can be seen is built (sight); the tools turn it off to compare
+var cut := true
 ## the plan out of its room (PlanSheet), and the veil behind it
 var sheet: PlanSheet
 var _veil: MeshInstance3D
@@ -203,19 +218,25 @@ func build(open_to: int, pick: int) -> void:
 		var i := builder.bank_of(p)
 		return [i, builder.claim(i, p)]
 	_lots.clear()
+	_spots.clear()
 	for sq in MUSEUM_SPOTS:
 		var lot: Array = spot.call(sq)
 		_lots.append(lot)
 		var c := builder.districts[lot[0]].centre(lot[1])
 		builder.museums.append(Vector2(c.x, c.z))
+		_spots.append(c + Vector3(0, 0.09, 0))
 	_hideout_lot = spot.call(HIDEOUT_SPOT)
+	# Only what the camera can ever see, and a safe margin round it.
+	_keep = sight(WIDEST, SAFE)
+	if cut:
+		builder.seen = _in_sight
 	builder.build()
 	_hideout()
 	_route(open_to)
 	for m in Story.MUSEUMS.size():
 		var lot := Node3D.new()
 		var district: TownBuilder.District = builder.districts[_lots[m][0]]
-		lot.position = district.centre(_lots[m][1]) + Vector3(0, 0.09, 0)
+		lot.position = _spots[m]
 		lot.rotation.y = district.angle
 		town.add_child(lot)
 		_museums.append(lot)
@@ -362,7 +383,46 @@ func _place_camera() -> void:
 ## Where the camera looks over the town with museum m picked: at it, a
 ## little up the screen to leave room over it for its sign.
 func _look_at(m: int) -> Vector3:
-	return town.transform * _museums[m].position + Vector3(0, 0.5, 0) + _cam.basis.y * 2.4
+	return town.transform * _spots[m] + Vector3(0, 0.5, 0) + _cam.basis.y * 2.4
+
+
+## A point (in the stage's own space) on the screen's plane: across and up,
+## as the camera sees it, in the town's units.
+func on_plane(p: Vector3) -> Vector2:
+	return Vector2(p.dot(_cam.basis.x), p.dot(_cam.basis.y))
+
+
+## All the camera can ever see of the town on a screen `aspect` wide for
+## its height, on the screen's plane (on_plane): its look at each museum
+## and every way between them (the camera glides straight from one to the
+## next, and may turn mid-way, so anywhere between them all), and `margin`
+## more all round. Wider screens see more: WIDEST sees it all.
+func sight(aspect: float, margin := 0.0) -> PackedVector2Array:
+	var half := Vector2(CITY_VIEW * aspect, CITY_VIEW) * 0.5
+	var points := PackedVector2Array()
+	for m in _spots.size():
+		var f := on_plane(_look_at(m))
+		for c in [Vector2(-1, -1), Vector2(1, -1), Vector2(1, 1), Vector2(-1, 1)]:
+			points.append(f + half * c)
+	var hull := Geometry2D.convex_hull(points)
+	hull.remove_at(hull.size() - 1)
+	if margin > 0.0:
+		hull = Geometry2D.offset_polygon(hull, margin, Geometry2D.JOIN_MITER)[0]
+	return hull
+
+
+## Whether something at a point of the town's plan, `r` round it, falls in
+## what the town builds (_keep).
+func _in_sight(at: Vector3, r: float) -> bool:
+	var p := on_plane(town.transform * at)
+	if Geometry2D.is_point_in_polygon(p, _keep):
+		return true
+	for i in _keep.size():
+		var a := _keep[i]
+		var b := _keep[(i + 1) % _keep.size()]
+		if Geometry2D.get_closest_point_to_segment(p, a, b).distance_to(p) < r:
+			return true
+	return false
 
 
 ## Gliding (not going in or out): nothing between the camera and the

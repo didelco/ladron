@@ -343,6 +343,38 @@ window.VERSIONES = {
    "bytes": 172930
   },
   {
+   "asunto": "ciudad",
+   "fecha": "2026-09-28T11:54",
+   "commit": "d6daef1",
+   "titulo": "El templo aparte y solo lo que se ve",
+   "porque": "Separar el museo amarillo y construir solo lo que la cámara puede ver",
+   "cambio": "El Templo de las Momias se aparta del museo verde, al barrio de los rascacielos; la ciudad llega más lejos pero solo se construye lo visible hasta 2:1 y un margen; en pantallas más anchas los lados se funden con el cielo",
+   "file": "versiones/ciudad/2026-09-28-el-templo-aparte-y-solo-lo-que-se-ve.webp",
+   "from": "docs/capturas/menu_historia_ciudad.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 108248
+  },
+  {
+   "asunto": "ciudad",
+   "fecha": "2026-09-28T11:54",
+   "commit": "d6daef1",
+   "titulo": "Lo que se ve en cada pantalla, vista desde arriba",
+   "porque": "Qué parte de la ciudad ve la cámara en cada forma de pantalla",
+   "cambio": "Líneas: 4:3 rojo, 16:10 naranja, 16:9 amarillo, 2:1 verde, 21:9 azul, 32:9 morado; en blanco, el margen de seguridad: fuera de él no se construye nada",
+   "file": "versiones/ciudad/2026-09-28-lo-que-se-ve-en-cada-pantalla-vista-desd.webp",
+   "from": "build/tmp/plan_zonas.png",
+   "commit_msg": "",
+   "size": [
+    1280,
+    960
+   ],
+   "bytes": 137206
+  },
+  {
    "asunto": "museo",
    "fecha": "2026-09-27T10:02",
    "commit": "3888cd5",
@@ -407,5 +439,5 @@ window.VERSIONES = {
    "bytes": 68042
   }
  ],
- "bytes": 1603934
+ "bytes": 1849388
 };
