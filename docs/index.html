@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ninja Karma · Documentación</title>
+<link rel="icon" href="logo.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -39,7 +40,8 @@ p { margin: 8px 0; }
 .layout { display: grid; grid-template-columns: 272px minmax(0, 1fr); min-height: 100vh; }
 nav { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 20px 14px 40px 20px; border-right: 1px solid var(--suave); font-size: 14px; }
 nav .marca { font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
-nav .marca small { display: block; font-weight: 400; font-size: 13px; color: var(--tenue); }
+nav .marca img { display: block; width: 100%; max-width: 200px; height: auto; margin: 0 auto 6px; }
+nav .marca small { display: block; text-align: center; font-weight: 400; font-size: 13px; color: var(--tenue); }
 nav .grupo { margin-top: 16px; }
 nav .flecha.ab { transform: rotate(90deg); }
 nav .cab { display: flex; align-items: baseline; gap: 4px; width: 100%; background: none; border: 0; padding: 0; margin-bottom: 4px; cursor: pointer; font: inherit; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--claro); text-align: left; }
@@ -451,7 +453,7 @@ function nav(pag, sel) {
     const ab = PLIEGUES["g:" + id] ?? true;
     return `<div class="grupo ${ab ? "" : "cerrado"}"><button class="cab" data-plegar="g:${id}"><span class="flecha ${ab ? "ab" : ""}">›</span>${titulo}${ab ? "" : `<span class="cuenta">${n}</span>`}</button><div class="dentro">${html}</div></div>`;
   };
-  $("#nav").innerHTML = `<div class="marca">Ninja Karma<small>Documentación del juego</small></div>
+  $("#nav").innerHTML = `<div class="marca"><a href="#inicio"><img src="logo.webp" alt="Ninja Karma" width="640" height="428"></a><small>Documentación del juego</small></div>
     ${grupo("pantallas", "Pantallas", ORDEN.length, `${enlace("inicio", "Resumen")}${enlace("capturas", "Capturas")}<div class="arbol">${arbol(P, sel)}</div>`)}
     ${grupo("juego", "El juego", ENTIDADES.length + 5, enlace("historia", "Historia") + enlace("previa", "Antes de un robo") + enlace("minijuegos", "Minijuegos") + enlace("escondites", "Escondites") + enlace("coleccion", "Colección") + ENTIDADES.map(([k, txt]) => enlace(k, txt)).join(""))}
     ${grupo("referencia", "Referencia", 5, enlace("estilo", "Estilo") + enlace("paleta", "Paleta") + enlace("propuesta", "Paleta propuesta") + enlace("versiones", "Versiones") + enlace("textos", "Textos"))}
