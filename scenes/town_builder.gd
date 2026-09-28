@@ -7,9 +7,10 @@ extends RefCounted
 ## its own way, two on either bank; between them and along the water, woods
 ## and grass, and houses and chalets of their own, each its own way (loose
 ## houses). The far bank stands higher (RISE), up a wooded slope from the
-## water, and to the north rises a hill of great rocks (ROCK_HILL) the
-## districts go round; a couple of bridges (bridges) are the only ways
-## across. Along the near bank, a riverside walk with its lamps and benches,
+## water, and rolls on up in low hills, its blocks on terraces; to the north
+## rises a hill of great rocks the districts go round, and there are more
+## rocky outcrops about (OUTCROPS); a couple of bridges (bridges) are the
+## only ways across. Along the near bank, a riverside walk with its lamps and benches,
 ## and a sports ground (pitches and courts under their floodlights).
 ##
 ## Night light, cheap: no lights at all but the stage's own; every lamp,
@@ -53,8 +54,20 @@ const MEANDER := 5.0
 const MEANDER_LENGTH := 50.0
 ## The far bank (the north): how much higher the town stands there, and how wide the
 ## wooded slope up to it from the water.
-const RISE := 6.0
-const SLOPE := 5.0
+const RISE := 8.5
+const SLOPE := 7.0
+## Up on the far bank the land is no table: it keeps rising towards the back
+## (UPLAND_RISE more, UPLAND_DEPTH in from the top of the slope) and rolls
+## in low hills (HILLS high, their size HILLS_FREQ), rising in from the top
+## of the slope over UPLAND_FADE. The high districts follow it: each block a
+## terrace at its own height on a stone plinth, the streets tilted with it.
+const UPLAND_RISE := 4.0
+const UPLAND_DEPTH := 45.0
+const UPLAND_FADE := 6.0
+const HILLS := 2.0
+const HILLS_FREQ := 0.022
+## The plinth under a terrace: the colour of its retaining wall.
+const TERRACE_WALL := Color("#4a4260")
 ## Land kept clear of blocks: along the near bank, and either side of the
 ## line between two districts of one bank.
 const BANK_CLEAR := 1.0
@@ -63,12 +76,20 @@ const SPLIT_CLEAR := 2.6
 const BRIDGES := [-6.0, 17.5]
 ## Trees in the woods: one every WOOD_STEP or so, where there is room.
 const WOOD_STEP := 1.25
-## The hill of rocks to the north: where (s along, q up from the river),
-## how wide, how high, and how many great rocks on it.
-const ROCK_AT := Vector2(4.0, 40.0)
-const ROCK_RADIUS := 13.0
-const ROCK_HILL := 3.2
-const ROCKS := 55
+## The rocky outcrops: where (s along, q up from the river), how wide, how
+## high the ground rises under them, how many rocks on them and how big the
+## biggest, and one in how many a crag standing up. The great hill of rocks
+## to the north between the high districts and a spur of it down towards
+## the road between them; three on the wooded slope over the water, and a
+## small one out on the near bank: all on land no district builds on.
+const OUTCROPS := [
+	[Vector2(4.0, 40.0), 14.5, 5.0, 150, 5.6, 0.3],
+	[Vector2(-1.0, 26.0), 5.5, 3.0, 36, 3.4, 0.35],
+	[Vector2(30.0, 6.0), 4.5, 2.4, 40, 3.4, 0.3],
+	[Vector2(-30.0, 6.0), 4.5, 2.2, 40, 3.2, 0.35],
+	[Vector2(-50.0, 6.5), 4.0, 1.8, 28, 2.8, 0.3],
+	[Vector2(-44.0, -7.5), 3.0, 1.2, 16, 2.0, 0.2],
+]
 ## Loose houses among the trees: one tried every HOUSE_STEP, kept one in
 ## HOUSE_SHARE; one in POOL_SHARE with a lit pool.
 const HOUSE_STEP := 3.6
@@ -218,6 +239,9 @@ class District:
 	var blocks := {}
 	## the street tiles round them: tile -> true
 	var tiles := {}
+	## on the high bank, each block's terrace: block -> Vector2(its level,
+	## the lowest ground under it)
+	var levels := {}
 
 	func basis() -> Basis:
 		return Basis(Vector3.UP, angle)
@@ -282,6 +306,8 @@ var _plants := {}
 var _conifers := FastNoiseLite.new()
 var _groves := FastNoiseLite.new()
 var _fields := FastNoiseLite.new()
+## the high bank's rolling hills
+var _hills := FastNoiseLite.new()
 ## Whether something at a point of the plan, r round it, can ever be seen
 ## (CityStage.sight): what cannot is never built. Unset, everything is.
 var seen := Callable()
@@ -300,11 +326,75 @@ func _init(parent: Node3D) -> void:
 	_groves.frequency = 0.07
 	_fields.seed = 5
 	_fields.frequency = 0.045
+	_hills.seed = 31
+	_hills.frequency = HILLS_FREQ
 
 
 ## A block's size inside its streets, in the town's units.
 static func block_size() -> float:
 	return BLOCK * TILE
+
+
+# --- The districts on the land -------------------------------------------------------
+
+## How high the streets of district d are at p: on the high bank, the
+## ground's own height.
+func street_y(d: District, p: Vector2) -> float:
+	return ground(p) if d.high else 0.0
+
+
+## Street tile (t, u) of district d, at its street's height.
+func _tile_at(d: District, t: int, u: int) -> Vector3:
+	var at := d.tile(t, u)
+	at.y = street_y(d, Vector2(at.x, at.z))
+	return at
+
+
+## Which way and how steeply the ground runs under a street of district d
+## at `at`: the rise for each unit across x and across z (flat off the high
+## bank).
+func _slope(d: District, at: Vector3) -> Vector2:
+	if not d.high:
+		return Vector2.ZERO
+	var h := TILE * 0.5
+	var p := Vector2(at.x, at.z)
+	return Vector2(ground(p + Vector2(h, 0)) - ground(p - Vector2(h, 0)), ground(p + Vector2(0, h)) - ground(p - Vector2(0, h))) / (2.0 * h)
+
+
+## Block b of district d's terrace: its level (just over the highest ground
+## under it and the near halves of its streets, so no street ever runs
+## above it) and the lowest ground under it (where its plinth goes down to).
+## Level on the near bank.
+func _terrace(d: District, b: Vector2i) -> Vector2:
+	if not d.high:
+		return Vector2.ZERO
+	if d.levels.has(b):
+		return d.levels[b]
+	var c := d.centre(b)
+	var h := block_size() * 0.5 + TILE * 0.5
+	var top := -INF
+	var low := INF
+	for sx in [-1.0, -0.5, 0.0, 0.5, 1.0]:
+		for sz in [-1.0, -0.5, 0.0, 0.5, 1.0]:
+			var w := c + d.basis() * Vector3(sx * h, 0, sz * h)
+			var g := ground(Vector2(w.x, w.z))
+			top = maxf(top, g)
+			low = minf(low, g)
+	d.levels[b] = Vector2(top + 0.03, low)
+	return d.levels[b]
+
+
+## The middle of block b of district d, at its terrace's level.
+func _centre(d: District, b: Vector2i) -> Vector3:
+	var c := d.centre(b)
+	c.y = _terrace(d, b).x
+	return c
+
+
+## The middle of block b of district i, at its level: where a museum or the
+## hideout stands on it.
+func block_top(i: int, b: Vector2i) -> Vector3:
+	return _centre(districts[i], b)
 
 
 # --- The lie of the land ------------------------------------------------------------
@@ -333,25 +423,68 @@ func across(p: Vector2) -> float:
 
 
 ## How high the ground is at a point: the river's bed below it all, level
-## on the near bank, up the slope to RISE on the far one.
+## on the near bank, up the slope to RISE on the far one and rolling on up
+## from there (_upland); the rocky outcrops' own rise on top (_crags).
 func ground(p: Vector2) -> float:
 	var d := across(p)
 	var half := RIVER_WIDTH * 0.5
 	if absf(d) < half + 0.3:
 		return lerpf(-0.55, 0.0, smoothstep(half - 0.6, half + 0.3, absf(d)))
 	if d < 0.0:
+		return _crags(p)
+	return RISE * smoothstep(half + 0.3, half + SLOPE, d) + _upland(p, d) + _crags(p)
+
+
+## How much higher than RISE the high bank is at p, d across from the
+## river: rising towards the back, in low hills, nothing at the top of the
+## slope.
+func _upland(p: Vector2, d: float) -> float:
+	var top := RIVER_WIDTH * 0.5 + SLOPE
+	var fade := smoothstep(top, top + UPLAND_FADE, d)
+	if fade <= 0.0:
 		return 0.0
-	return RISE * smoothstep(half + 0.3, half + SLOPE, d) + ROCK_HILL * _rocky(p)
+	var back := UPLAND_RISE * clampf((d - top) / UPLAND_DEPTH, 0.0, 1.0)
+	return fade * (back + HILLS * (_hills.get_noise_2dv(p) + 0.35))
 
 
-## How far into the hill of rocks a point is: 0 outside, 1 at its top; its
-## edge wavers so it is no circle.
+## How far into a rocky outcrop a point is (the one it is furthest into):
+## 0 outside, 1 at its top.
 func _rocky(p: Vector2) -> float:
 	var f := frame(p)
-	var c := Vector2(ROCK_AT.x, river_at(ROCK_AT.x) + ROCK_AT.y)
-	var off := f - c
-	var wobble := 1.0 + 0.22 * sin(atan2(off.y, off.x) * 3.0 + 1.3) + 0.12 * sin(atan2(off.y, off.x) * 7.0)
-	return smoothstep(1.0, 0.35, off.length() / (ROCK_RADIUS * wobble))
+	var k := 0.0
+	for o in OUTCROPS.size():
+		k = maxf(k, _outcrop(o, f))
+	return k
+
+
+## The ground's rise under the outcrops.
+func _crags(p: Vector2) -> float:
+	var f := frame(p)
+	var h := 0.0
+	for o in OUTCROPS.size():
+		var k := _outcrop(o, f)
+		if k > 0.0:
+			h += float(OUTCROPS[o][2]) * k
+	return h
+
+
+## Where outcrop o's middle is on the plan.
+func _outcrop_at(o: int) -> Vector2:
+	var at: Vector2 = OUTCROPS[o][0]
+	return point(at.x, river_at(at.x) + at.y)
+
+
+## How far into outcrop o a point (s along, q up: f) is: 0 outside, 1 at
+## its top; its edge wavers so it is no circle.
+func _outcrop(o: int, f: Vector2) -> float:
+	var at: Vector2 = OUTCROPS[o][0]
+	var off := f - Vector2(at.x, river_at(at.x) + at.y)
+	var r: float = OUTCROPS[o][1]
+	if off.length() > r * 1.4:
+		return 0.0
+	var a := atan2(off.y, off.x)
+	var wobble := 1.0 + 0.22 * sin(a * 3.0 + 1.3 + o * 2.1) + 0.12 * sin(a * 7.0 + o)
+	return smoothstep(1.0, 0.35, off.length() / (r * wobble))
 
 
 ## On the sports ground: along its stretch of the near bank, back from the
@@ -483,7 +616,7 @@ func _prune() -> void:
 	for i in districts.size():
 		var d := districts[i]
 		var gone := d.blocks.keys().filter(func(b: Vector2i) -> bool:
-			return not skip.has(Vector3i(i, b.x, b.y)) and not seen.call(d.centre(b), PITCH * TILE * 0.71))
+			return not skip.has(Vector3i(i, b.x, b.y)) and not seen.call(_centre(d, b), PITCH * TILE * 0.71))
 		if gone.is_empty():
 			continue
 		for b in gone:
@@ -516,7 +649,8 @@ func _terrain() -> void:
 	for pj in patches:
 		for pi in patches:
 			var mid := Vector3(lo + (pi + 0.5) * TERRAIN_PATCH * step, 0.0, lo + (pj + 0.5) * TERRAIN_PATCH * step)
-			if not _shown(mid, TERRAIN_PATCH * step * 0.71 + RISE, "ground"):
+			mid.y = ground(Vector2(mid.x, mid.z))
+			if not _shown(mid, TERRAIN_PATCH * step * 0.71 + RISE * 0.5, "ground"):
 				continue
 			kept[pj * patches + pi] = 1
 			for j in range(pj * TERRAIN_PATCH, mini((pj + 1) * TERRAIN_PATCH, n) + 1):
@@ -587,7 +721,7 @@ func _district(i: int) -> void:
 	for tu in d.tiles:
 		if posmod(tu.x, PITCH) != 0 or posmod(tu.y, PITCH) != 0:
 			continue
-		var at := d.tile(tu.x, tu.y)
+		var at := _tile_at(d, tu.x, tu.y)
 		_node(Vector3i(i, tu.x, tu.y), at)
 		for step in [Vector2i(PITCH, 0), Vector2i(0, PITCH)]:
 			var to: Vector2i = tu + step
@@ -597,29 +731,33 @@ func _district(i: int) -> void:
 					ok = false
 					break
 			if ok:
-				_node(Vector3i(i, to.x, to.y), d.tile(to.x, to.y))
+				_node(Vector3i(i, to.x, to.y), _tile_at(d, to.x, to.y))
 				_link(Vector3i(i, tu.x, tu.y), Vector3i(i, to.x, to.y))
 
 
 ## The streets of a district: a road tile on every street tile, crossings
-## where two meet (with a zebra crossing on each side).
+## where two meet (with a zebra crossing on each side). On the high bank
+## each tile at the ground's height and tilted with it, so they run on
+## from one to the next up and down the hills.
 func _streets(d: District) -> void:
+	var lift := Vector3(0, 0.03 if d.high else 0.005, 0)
 	for tu in d.tiles:
 		var t: int = tu.x
 		var u: int = tu.y
 		var along_x := posmod(u, PITCH) == 0
 		var along_z := posmod(t, PITCH) == 0
-		var at := d.tile(t, u) + Vector3(0, 0.005, 0)
+		var at := _tile_at(d, t, u) + lift
+		var tilt := _slope(d, at)
 		if along_x and along_z:
-			_add("calles/road-crossroad.glb", at, d.angle, TILE, PLAIN)
+			_add("calles/road-crossroad.glb", at, d.angle, TILE, PLAIN, tilt)
 		elif along_x:
 			var k := posmod(t, PITCH)
 			var near := (k == 1 and _zebra(d, Vector2i(t - 1, u))) or (k == PITCH - 1 and _zebra(d, Vector2i(t + 1, u)))
-			_add("calles/road-crossing.glb" if near else "calles/road-straight.glb", at, d.angle + PI / 2, TILE, Color(0, 0, 0, 1) if near else PLAIN)
+			_add("calles/road-crossing.glb" if near else "calles/road-straight.glb", at, d.angle + PI / 2, TILE, Color(0, 0, 0, 1) if near else PLAIN, tilt)
 		else:
 			var k := posmod(u, PITCH)
 			var near := (k == 1 and _zebra(d, Vector2i(t, u - 1))) or (k == PITCH - 1 and _zebra(d, Vector2i(t, u + 1)))
-			_add("calles/road-crossing.glb" if near else "calles/road-straight.glb", at, d.angle, TILE, Color(0, 0, 0, 1) if near else PLAIN)
+			_add("calles/road-crossing.glb" if near else "calles/road-straight.glb", at, d.angle, TILE, Color(0, 0, 0, 1) if near else PLAIN, tilt)
 
 
 ## A street tile without its white lines (NIGHT_SHADER: own.a).
@@ -635,10 +773,14 @@ func _zebra(d: District, c: Vector2i) -> bool:
 	return posmod(c.x * 7 + c.y * 13 + int(d.angle * 10.0), 9) == 0
 
 
-## A block's pavement: a slab a step up from the street.
+## A block's pavement: a slab a step up from the street; on the high bank,
+## on its terrace's plinth, a stone wall down to the lowest ground round it.
 func _pavement(d: District, b: Vector2i, colour: Color) -> void:
-	var c := d.centre(b)
+	var c := _centre(d, b)
 	var s := block_size()
+	if d.high:
+		var drop := c.y - _terrace(d, b).y + 0.3
+		_box(Vector3(s + 0.02, drop, s + 0.02), TERRACE_WALL, c + Vector3(0, 0.02 - drop * 0.5, 0), d.basis())
 	_box(Vector3(s + 0.02, 0.08, s + 0.02), PAVEMENT_EDGE, c + Vector3(0, 0.03, 0), d.basis())
 	_box(Vector3(s - 0.1, 0.08, s - 0.1), colour, c + Vector3(0, 0.05, 0), d.basis())
 
@@ -647,7 +789,7 @@ func _pavement(d: District, b: Vector2i, colour: Color) -> void:
 ## their lights on the skyline; round the museums, shops; further out,
 ## houses; now and then a park. Lamps at its corners.
 func _block(d: District, b: Vector2i) -> void:
-	var c := d.centre(b)
+	var c := _centre(d, b)
 	var near := museums.any(func(m: Vector2) -> bool: return m.distance_to(Vector2(c.x, c.z)) < 12.0)
 	var kind := "houses"
 	if d.high and frame(Vector2(c.x, c.z)).y - river_at(frame(Vector2(c.x, c.z)).x) > 26.0 and posmod(b.x + b.y * 3, 3) != 0:
@@ -668,7 +810,7 @@ func _block(d: District, b: Vector2i) -> void:
 ## each facing its street, a yard with trees in the middle.
 func _shops(d: District, b: Vector2i, tall: bool) -> void:
 	_pavement(d, b, PAVEMENT)
-	var c := d.centre(b)
+	var c := _centre(d, b)
 	var names := ["a", "b", "c", "d", "f", "g", "h"]
 	var big := ["i", "l", "m", "skyscraper-a", "skyscraper-b", "skyscraper-c", "skyscraper-d", "skyscraper-e"]
 	for i in BLOCK:
@@ -706,7 +848,7 @@ func _shops(d: District, b: Vector2i, tall: bool) -> void:
 ## street, with a tree or two and a hedge.
 func _houses(d: District, b: Vector2i) -> void:
 	_pavement(d, b, PAVEMENT)
-	var c := d.centre(b)
+	var c := _centre(d, b)
 	var s := block_size()
 	_box(Vector3(s - 0.5, 0.06, s - 0.5), GARDEN, c + Vector3(0, 0.1, 0), d.basis())
 	# Hedges between the gardens, open in the middle: both ways, or one.
@@ -734,7 +876,7 @@ func _houses(d: District, b: Vector2i) -> void:
 ## A park: grass, a path across it, trees all round.
 func _park(d: District, b: Vector2i) -> void:
 	_pavement(d, b, PAVEMENT)
-	var c := d.centre(b)
+	var c := _centre(d, b)
 	var s := block_size()
 	_box(Vector3(s - 0.4, 0.06, s - 0.4), PARK, c + Vector3(0, 0.1, 0), d.basis())
 	_box(Vector3(s - 0.4, 0.07, 0.35), PATH, c + Vector3(0, 0.105, 0), d.basis())
@@ -754,7 +896,7 @@ func _park(d: District, b: Vector2i) -> void:
 
 ## A street lamp at each corner of block b, turned over the street.
 func _corner_lamps(d: District, b: Vector2i) -> void:
-	var c := d.centre(b)
+	var c := _centre(d, b)
 	var h := block_size() * 0.5 - 0.12
 	for sx in [-1, 1]:
 		for sz in [-1, 1]:
@@ -944,7 +1086,9 @@ func _ball(r: float) -> SphereMesh:
 
 ## The bridges: from the near bank, over the water and up the slope to the
 ## high town, a stone deck on piers with a rail each side, lamps at the
-## ends; a road on to the nearest crossing of each bank.
+## ends; a road on to the nearest crossing of each bank. Straight up from
+## the water, but never into the slope: where the slope rises over the
+## straight way, the deck runs on up over the ground.
 func _bridges() -> void:
 	bridges.clear()
 	for s in BRIDGES:
@@ -954,15 +1098,26 @@ func _bridges() -> void:
 		var low2 := mid - dir * (half + 0.9)
 		var high2 := mid + dir * (half + SLOPE + 0.4)
 		var low := Vector3(low2.x, 0.0, low2.y)
-		var high := Vector3(high2.x, RISE, high2.y)
-		bridges.append([low, high])
+		var high := Vector3(high2.x, ground(high2), high2.y)
 		var deck := low + Vector3(0, 0.12, 0)
 		var top := high + Vector3(0, 0.12, 0)
-		_beam(deck, top, TILE * 1.05, 0.14, STONE)
-		_beam(deck + Vector3(0, 0.02, 0), top + Vector3(0, 0.02, 0), TILE * 0.8, 0.14, ROAD)
+		# The deck, a piece a tile or so long: over the straight way up or
+		# the ground, whichever is higher.
+		var way: Array[Vector3] = [deck]
+		var n := ceili(low2.distance_to(high2) / TILE)
+		for j in range(1, n):
+			var at := deck.lerp(top, float(j) / n)
+			at.y = maxf(at.y, ground(Vector2(at.x, at.z)) + 0.12)
+			way.append(at)
+		way.append(top)
+		bridges.append([low, high, way])
 		var side := Vector3(-dir.y, 0, dir.x) * TILE * 0.5
+		for j in way.size() - 1:
+			_beam(way[j], way[j + 1], TILE * 1.05, 0.14, STONE)
+			_beam(way[j] + Vector3(0, 0.02, 0), way[j + 1] + Vector3(0, 0.02, 0), TILE * 0.8, 0.14, ROAD)
+			for sgn in [-1, 1]:
+				_beam(way[j] + side * sgn + Vector3(0, 0.2, 0), way[j + 1] + side * sgn + Vector3(0, 0.2, 0), 0.07, 0.1, RAIL)
 		for sgn in [-1, 1]:
-			_beam(deck + side * sgn + Vector3(0, 0.2, 0), top + side * sgn + Vector3(0, 0.2, 0), 0.07, 0.1, RAIL)
 			for e in [deck, top]:
 				_lamp(e + side * sgn * 1.15 - Vector3(0, 0.1, 0), atan2(dir.x, dir.y))
 		# Piers in the water.
@@ -1020,18 +1175,42 @@ func _road(a: Vector3i, b: Vector3i) -> void:
 	var from: Vector3 = _nodes[a]
 	var to: Vector3 = _nodes[b]
 	_roads.append([Vector2(from.x, from.z), Vector2(to.x, to.z)])
-	var lift := Vector3(0, 0.01, 0)
-	_beam(from + lift, to + lift, TILE * 1.0, 0.05, PAVEMENT_EDGE)
-	_beam(from + lift + Vector3(0, 0.01, 0), to + lift + Vector3(0, 0.01, 0), TILE * 0.8, 0.05, ROAD)
-	var length := from.distance_to(to)
-	var dir := (to - from).normalized()
+	# Over the ground, up and down with it, a piece at a time.
+	var pts: Array[Vector3] = [from]
+	_over_ground(pts, from, to)
+	var lift := Vector3(0, 0.02, 0)
+	for i in pts.size() - 1:
+		_beam(pts[i] + lift, pts[i + 1] + lift, TILE * 1.0, 0.05, PAVEMENT_EDGE)
+		_beam(pts[i] + lift + Vector3(0, 0.01, 0), pts[i + 1] + lift + Vector3(0, 0.01, 0), TILE * 0.8, 0.05, ROAD)
+	var length := Vector2(from.x, from.z).distance_to(Vector2(to.x, to.z))
+	var dir := (to - from)
+	dir.y = 0.0
+	dir = dir.normalized()
 	var side := Vector3(-dir.z, 0, dir.x) * TILE * 0.62
 	var k := 3.0
 	while k < length - 2.0:
-		var at := from + dir * k
-		_lamp(at + side, atan2(side.x, side.z) + PI)
+		var at := from + dir * k + side
+		at.y = ground(Vector2(at.x, at.z))
+		_lamp(at, atan2(side.x, side.z) + PI)
 		k += 5.0
 	_link(a, b)
+
+
+## The points from `from` (not added) to `to` (added), a tile or so apart,
+## each at the ground's height under it and as far over it as the two ends
+## are (a bridge's deck, a street's kerb), the one's share fading into the
+## other's.
+func _over_ground(pts: Array[Vector3], from: Vector3, to: Vector3) -> void:
+	var a := Vector2(from.x, from.z)
+	var b := Vector2(to.x, to.z)
+	var over_a := from.y - ground(a)
+	var over_b := to.y - ground(b)
+	var n := maxi(1, ceili(a.distance_to(b) / TILE))
+	for j in range(1, n):
+		var t := float(j) / n
+		var p := a.lerp(b, t)
+		pts.append(Vector3(p.x, ground(p) + lerpf(over_a, over_b, t), p.y))
+	pts.append(to)
 
 
 # --- The woods ----------------------------------------------------------------------
@@ -1047,7 +1226,7 @@ func _woods() -> void:
 		while x < REACH + 6.0:
 			var p := Vector2(x + _rng.randf_range(-0.5, 0.5) * WOOD_STEP, y + _rng.randf_range(-0.5, 0.5) * WOOD_STEP)
 			x += WOOD_STEP
-			if seen.is_valid() and not seen.call(Vector3(p.x, 0, p.y), TILE * 2.0):
+			if seen.is_valid() and not seen.call(Vector3(p.x, ground(p), p.y), TILE * 2.0):
 				continue
 			var d := across(p)
 			if absf(d) < RIVER_WIDTH * 0.5 + 0.5:
@@ -1134,38 +1313,53 @@ func _on_road(p: Vector2) -> bool:
 	return false
 
 
-# --- The hill of rocks ---------------------------------------------------------------
+# --- The rocky outcrops --------------------------------------------------------------
 
-## Great rocks piled on the hill to the north, the biggest at its top, and
-## a few strays down its sides: three rough stones, one MultiMesh each.
+## Great rocks piled on each outcrop (OUTCROPS), the biggest at its top,
+## crags standing up among them, and a few strays down its sides: four
+## rough stones, one MultiMesh each, for all the outcrops.
 func _rocks() -> void:
-	var meshes: Array[ArrayMesh] = [_rock_mesh(1), _rock_mesh(2), _rock_mesh(3)]
-	var at: Array = [[], [], []]
-	var c := point(ROCK_AT.x, river_at(ROCK_AT.x) + ROCK_AT.y)
-	var tries := 0
-	while (at[0].size() + at[1].size() + at[2].size()) < ROCKS and tries < ROCKS * 20:
-		tries += 1
-		var p := c + Vector2(_rng.randf_range(-1, 1), _rng.randf_range(-1, 1)) * ROCK_RADIUS * 1.2
-		var k := _rocky(p)
-		if k <= 0.05 or _built(p) or _on_road(p):
-			continue
-		var size := lerpf(0.8, 4.6, k * k) * _rng.randf_range(0.5, 1.25)
-		# Mostly squat boulders; now and then a crag standing up.
-		var tall := _rng.randf_range(0.45, 0.85) if _rng.randf() > 0.15 else _rng.randf_range(1.3, 1.9)
-		var basis := Basis(Vector3.UP, _rng.randf() * TAU) * Basis(Vector3.RIGHT, _rng.randf_range(-0.35, 0.35)) * Basis(Vector3.FORWARD, _rng.randf_range(-0.25, 0.25))
-		basis = basis.scaled(Vector3(size * _rng.randf_range(0.7, 1.5), size * tall, size * _rng.randf_range(0.7, 1.2)))
-		var pile: Array = at[_rng.randi() % 3]
-		var rock := [Transform3D(basis, Vector3(p.x, ground(p) + size * tall * 0.15, p.y)), ROCK.lerp(ROCK_LIGHT, _rng.randf())]
-		_take(p, size * 0.6)
-		if _shown(rock[0].origin, size * 1.5, "rock"):
-			pile.append(rock)
+	var meshes: Array[ArrayMesh] = [_rock_mesh(1), _rock_mesh(2), _rock_mesh(3), _rock_mesh(4)]
+	var at: Array = [[], [], [], []]
+	for o in OUTCROPS.size():
+		var c := _outcrop_at(o)
+		var r: float = OUTCROPS[o][1]
+		var count: int = OUTCROPS[o][3]
+		var big: float = OUTCROPS[o][4]
+		var crag: float = OUTCROPS[o][5]
+		var placed := 0
+		var tries := 0
+		while placed < count and tries < count * 20:
+			tries += 1
+			var p := c + Vector2(_rng.randf_range(-1, 1), _rng.randf_range(-1, 1)) * r * 1.2
+			var k := _rocky(p)
+			if k <= 0.05 or _built(p) or _on_road(p) or _near_bridge(p, TILE * 2.0) or absf(across(p)) < RIVER_WIDTH * 0.5 + 0.6:
+				continue
+			placed += 1
+			var size := lerpf(0.6, big, k * k) * _rng.randf_range(0.5, 1.25)
+			# Mostly squat boulders; now and then a crag standing up, the
+			# tallest near the top.
+			var tall := _rng.randf_range(0.45, 0.85)
+			if _rng.randf() < crag:
+				tall = _rng.randf_range(1.3, 1.9 + 0.8 * k)
+				size *= 0.8
+			var basis := Basis(Vector3.UP, _rng.randf() * TAU) * Basis(Vector3.RIGHT, _rng.randf_range(-0.35, 0.35)) * Basis(Vector3.FORWARD, _rng.randf_range(-0.25, 0.25))
+			basis = basis.scaled(Vector3(size * _rng.randf_range(0.7, 1.5), size * tall, size * _rng.randf_range(0.7, 1.2)))
+			# Sat down on the lowest ground under it, so no side floats.
+			var low := ground(p)
+			for e in 4:
+				low = minf(low, ground(p + Vector2.from_angle(e * TAU / 4.0) * size * 0.4))
+			var rock := [Transform3D(basis, Vector3(p.x, low + size * tall * 0.12, p.y)), ROCK.lerp(ROCK_LIGHT, _rng.randf())]
+			_take(p, size * 0.6)
+			if _shown(rock[0].origin, size * 1.5, "rock"):
+				(at[_rng.randi() % at.size()] as Array).append(rock)
 	var m := StandardMaterial3D.new()
 	m.vertex_color_use_as_albedo = true
 	m.vertex_color_is_srgb = true
 	m.roughness = 0.9
 	m.rim_enabled = true
 	m.rim = 0.3
-	for i in 3:
+	for i in at.size():
 		if (at[i] as Array).is_empty():
 			continue
 		var mm := MultiMesh.new()
@@ -1222,19 +1416,30 @@ func _loose_houses() -> void:
 			x += HOUSE_STEP
 			if _rng.randf() > HOUSE_SHARE:
 				continue
-			if seen.is_valid() and not seen.call(Vector3(p.x, 0, p.y), TILE * 3.0):
+			if seen.is_valid() and not seen.call(Vector3(p.x, ground(p), p.y), TILE * 3.0):
 				continue
 			var d := across(p)
 			if d > -(RIVER_WIDTH * 0.5 + WALK_OFF + WALK_WIDTH + 0.8) and d < RIVER_WIDTH * 0.5 + SLOPE + 0.4:
 				continue
 			if _rocky(p) > 0.0 or _in_sports(p) or _built(p, 1.8) or _on_road(p) or _near_taken(p, 1.2):
 				continue
-			var h := ground(p)
 			var turn := atan2(along.x, along.y) + _rng.randf_range(-0.6, 0.6) + (PI if _rng.randf() < 0.5 else 0.0)
 			var basis := Basis(Vector3.UP, turn)
-			var at := Vector3(p.x, h, p.y)
 			var chalet := _rng.randf() < 0.45
 			var lot := 2.9 if chalet else 2.3
+			# Its garden level, at the highest ground under it, on a plinth
+			# down to the lowest.
+			var h := -INF
+			var low := INF
+			for c in [Vector2(-1, -1), Vector2(1, -1), Vector2(1, 1), Vector2(-1, 1), Vector2.ZERO]:
+				var w := basis * Vector3(c.x * lot * 0.5, 0, c.y * lot * 0.5)
+				var g := ground(p + Vector2(w.x, w.z))
+				h = maxf(h, g)
+				low = minf(low, g)
+			var at := Vector3(p.x, h, p.y)
+			if h - low > 0.04:
+				var drop := h - low + 0.2
+				_box(Vector3(lot, drop, lot), TERRACE_WALL, at + Vector3(0, -drop * 0.5, 0), basis)
 			_box(Vector3(lot, 0.05, lot), GARDEN, at + Vector3(0, 0.02, 0), basis)
 			var path := "suburbios/building-type-%s.glb" % letters[_rng.randi() % letters.length()]
 			_add(path, at + basis * Vector3(0, 0.05, -0.2), turn, _fit(path, lot * (0.62 if chalet else 0.72)), _own(1.0))
@@ -1375,6 +1580,7 @@ func _clear(p: Vector2, r: float) -> bool:
 	if seen.is_valid() and not seen.call(Vector3(p.x, ground(p), p.y), r):
 		return false
 	var bank := signf(across(p))
+	var g0 := ground(p)
 	for k in 9:
 		var q := p if k == 8 else p + Vector2.from_angle(k * TAU / 8.0) * r
 		var d := across(q)
@@ -1382,6 +1588,8 @@ func _clear(p: Vector2, r: float) -> bool:
 		if not flat or signf(d) != bank or absf(q.x) > REACH or absf(q.y) > REACH:
 			return false
 		if _rocky(q) > 0.0 or _in_sports(q) or _built(q, 0.6) or _on_road(q) or _near_taken(q):
+			return false
+		if absf(ground(q) - g0) > 0.25:
 			return false
 	return true
 
@@ -1665,6 +1873,7 @@ func _link(a: Vector3i, b: Vector3i) -> void:
 func door(i: int, b: Vector2i) -> Array:
 	var d := districts[i]
 	var front := d.world(Vector3((b.x * PITCH + PITCH * 0.5) * TILE, 0, (b.y + 1) * PITCH * TILE))
+	front.y = street_y(d, Vector2(front.x, front.z))
 	var best := Vector3i(i, b.x * PITCH, (b.y + 1) * PITCH)
 	var other := Vector3i(i, (b.x + 1) * PITCH, (b.y + 1) * PITCH)
 	return [front, best, other]
@@ -1709,13 +1918,28 @@ func route(from: Array, to: Array) -> Array[Vector3]:
 	if reached == null:
 		out.append(b[0])
 		return out
-	var path: Array[Vector3] = []
+	var keys := []
 	var k = reached
 	while k != null:
-		path.push_front(_nodes[k])
+		keys.push_front(k)
 		k = prev.get(k, null)
-	out.append_array(path)
-	out.append(b[0])
+	# Along the streets and roads, over the ground as it rises and falls;
+	# straight over a bridge.
+	_over_ground(out, a[0], _nodes[keys[0]])
+	for j in range(1, keys.size()):
+		var ka: Vector3i = keys[j - 1]
+		var kb: Vector3i = keys[j]
+		if ka.x == -1 and kb.x == -1:
+			# Over a bridge: along its deck, over the road on it.
+			var way: Array = bridges[ka.y - 1][2].duplicate()
+			if ka.z == 1:
+				way.reverse()
+			out[out.size() - 1] = way[0] + Vector3(0, 0.18, 0)
+			for w in range(1, way.size()):
+				out.append((way[w] as Vector3) + Vector3(0, 0.18, 0))
+		else:
+			_over_ground(out, _nodes[ka], _nodes[kb])
+	_over_ground(out, _nodes[keys[keys.size() - 1]], b[0])
 	return out
 
 
@@ -1734,12 +1958,15 @@ func _fit(path: String, wide: float) -> float:
 	return wide / maxf(size.x, size.z)
 
 
-## One more of model `path`: at, turned (about y) and scaled.
-func _add(path: String, at: Vector3, turn: float, k := TILE, own := Color(0, 0, 0, 1)) -> void:
+## One more of model `path`: at, turned (about y) and scaled; sheared up
+## `tilt` (the rise for each unit across x and z) to lie on a slope.
+func _add(path: String, at: Vector3, turn: float, k := TILE, own := Color(0, 0, 0, 1), tilt := Vector2.ZERO) -> void:
 	var batch := _batch(path)
 	if not _shown(at, (batch.size as Vector3).length() * k * 0.5, path.get_slice("/", 0)):
 		return
 	var xf := Transform3D(Basis(Vector3.UP, turn).scaled(Vector3.ONE * k), at)
+	if tilt != Vector2.ZERO:
+		xf.basis = Basis(Vector3(1, tilt.x, 0), Vector3.UP, Vector3(0, tilt.y, 1)) * xf.basis
 	(batch.at as Array).append(xf * (batch.inner as Transform3D))
 	(batch.own as Array).append(own)
 

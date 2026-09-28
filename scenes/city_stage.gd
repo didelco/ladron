@@ -222,7 +222,7 @@ func build(open_to: int, pick: int) -> void:
 	for sq in MUSEUM_SPOTS:
 		var lot: Array = spot.call(sq)
 		_lots.append(lot)
-		var c := builder.districts[lot[0]].centre(lot[1])
+		var c := builder.block_top(lot[0], lot[1])
 		builder.museums.append(Vector2(c.x, c.z))
 		_spots.append(c + Vector3(0, 0.09, 0))
 	_hideout_lot = spot.call(HIDEOUT_SPOT)
@@ -471,7 +471,7 @@ func _hideout() -> void:
 	var g := Node3D.new()
 	var h := TownBuilder.block_size() * 0.5 - 0.9
 	var district: TownBuilder.District = _builder.districts[_hideout_lot[0]]
-	g.position = district.centre(_hideout_lot[1]) + district.basis() * Vector3(h, 0.09, h)
+	g.position = _builder.block_top(_hideout_lot[0], _hideout_lot[1]) + district.basis() * Vector3(h, 0.09, h)
 	g.rotation.y = district.angle
 	g.scale = Vector3.ONE * 1.2
 	_scenery.add_child(g)
@@ -503,13 +503,13 @@ func _route(open_to: int) -> void:
 
 
 ## A dashed line down the middle of the street from a to b, up a bridge's
-## slope too.
+## slope too (the way's points are at the height of what it runs on:
+## TownBuilder.route).
 func _dashes(a: Vector3, b: Vector3, colour: Color, lit: bool) -> void:
 	var length := a.distance_to(b)
 	if length < 0.01:
 		return
-	# Over a bridge's deck, higher.
-	var lift := Vector3(0, 0.24 if absf(a.y - b.y) > 0.5 else 0.06, 0)
+	var lift := Vector3(0, 0.06, 0)
 	var steps := maxi(1, int(length / 0.5))
 	var turn := Basis.looking_at((b - a).normalized(), Vector3.UP)
 	for k in steps:
