@@ -564,6 +564,21 @@
    ]
   },
   {
+   "asunto": "museo",
+   "fecha": "2026-09-28T19:42",
+   "commit": "d63f36a",
+   "titulo": "El Templo de las Momias: el edificio de siempre",
+   "porque": "Antes de rehacer el museo de la Antigüedad como una villa palladiana a la manera de La Rotonda (sacada del juego en d63f36a, con todas sus salas desbloqueadas)",
+   "cambio": "La sala con cúpula de siempre en su color: seis columnas delante, cada sala una ventana alta en fila y el gran golpe la del centro",
+   "file": "versiones/museo/2026-09-28-el-templo-de-las-momias-el-edificio-de-s.webp",
+   "from": "/tmp/antiq/before/todas.png",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ]
+  },
+  {
    "asunto": "recreativa",
    "fecha": "2026-09-27T14:55",
    "commit": "59b9a18",
