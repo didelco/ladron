@@ -711,6 +711,22 @@ window.VERSIONES = {
    "bytes": 61764
   },
   {
+   "asunto": "museo",
+   "fecha": "2026-09-28T20:24",
+   "commit": "8fcc708",
+   "titulo": "La Casa de los Bichos, un bosque vertical",
+   "porque": "El segundo museo con su propio edificio, inspirado en la arquitectura bioclimática del Bosque Vertical",
+   "cambio": "Una torre oscura de seis plantas con balcones blancos en zigzag y jardineras llenas de árboles, arbustos, flores y enredaderas; en la cubierta pradera, placas solares, un aerogenerador, un caracol gigante y el cartel de madera; delante, césped con una mariquita gigante. Las salas, huecos forrados de madera entre la vegetación (1 y 2 en la fachada, 3 y 4 en el costado, el gran golpe arriba en el centro con la corona sobre el cartel), sin ventanas iluminadas; lo no desbloqueado, un balcón más",
+   "file": "versiones/museo/2026-09-28-la-casa-de-los-bichos-un-bosque-vertical.webp",
+   "from": "docs/capturas/menu_museo_2.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 53044
+  },
+  {
    "asunto": "recreativa",
    "fecha": "2026-09-27T14:55",
    "commit": "59b9a18",
@@ -743,5 +759,5 @@ window.VERSIONES = {
    "bytes": 68042
   }
  ],
- "bytes": 2808876
+ "bytes": 2861920
 };
