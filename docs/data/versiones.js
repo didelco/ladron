@@ -679,6 +679,22 @@ window.VERSIONES = {
    "bytes": 49800
   },
   {
+   "asunto": "museo",
+   "fecha": "2026-09-28T20:14",
+   "commit": "827b1b9",
+   "titulo": "El Castillo de los Inventos, palacio con torres",
+   "porque": "El museo 4 rehecho como castillo convertido en museo: un palacio renacentista (Palazzo Rucellai) con torres",
+   "cambio": "Sillería color arena, pilastras, cornisa con almenas y dos torres con matacanes y estandartes rojos; bíforas con vidrieras (salas en la fachada y en las torres, el gran golpe en la del balcón con la corona sobre el escudo); patio con puente levadizo, foso con patito, pozo y caballero con desatascador",
+   "file": "versiones/museo/2026-09-28-el-castillo-de-los-inventos-palacio-con-.webp",
+   "from": "docs/capturas/menu_museo_4.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 61764
+  },
+  {
    "asunto": "recreativa",
    "fecha": "2026-09-27T14:55",
    "commit": "59b9a18",
@@ -711,5 +727,5 @@ window.VERSIONES = {
    "bytes": 68042
   }
  ],
- "bytes": 2699448
+ "bytes": 2761212
 };
