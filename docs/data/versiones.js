@@ -647,6 +647,22 @@ window.VERSIONES = {
    "bytes": 37550
   },
   {
+   "asunto": "museo",
+   "fecha": "2026-09-28T20:05",
+   "commit": "0af77af",
+   "titulo": "La Torre de Cristal: cada robo, una planta",
+   "porque": "El museo contemporáneo, rehecho a partir del New Museum de Nueva York",
+   "cambio": "Una torre de cajas blancas apiladas y desplazadas sobre una planta baja de cristal; cada sala es una planta (la 1 abajo, el gran golpe arriba con la corona), con su ranura de vidrio encendida y su pieza si está desbloqueada; un marco de luz rodea la planta elegida; pato de goma gigante en una terraza y un plátano en la plaza",
+   "file": "versiones/museo/2026-09-28-la-torre-de-cristal-cada-robo-una-planta.webp",
+   "from": "docs/capturas/menu_museo_5.webp",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ],
+   "bytes": 49800
+  },
+  {
    "asunto": "recreativa",
    "fecha": "2026-09-27T14:55",
    "commit": "59b9a18",
@@ -679,5 +695,5 @@ window.VERSIONES = {
    "bytes": 68042
   }
  ],
- "bytes": 2605248
+ "bytes": 2655048
 };
