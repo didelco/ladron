@@ -504,6 +504,21 @@
    ]
   },
   {
+   "asunto": "museo",
+   "fecha": "2026-09-28T19:02",
+   "commit": "14f32aa",
+   "titulo": "La Gran Cueva: las salas solo en la fachada",
+   "porque": "Antes de repartir las salas por la fachada y el costado y de enseñar solo las desbloqueadas (sacada del juego en 14f32aa: la captura del repo era aún del edificio viejo)",
+   "cambio": "Las cuatro salas en la primera planta de las alas, el gran golpe sobre la puerta; las cinco a la vista desde el principio, las cerradas con candado; los costados, lisos",
+   "file": "versiones/museo/2026-09-28-la-gran-cueva-las-salas-solo-en-la-facha.webp",
+   "from": "/tmp/dino/before_all.png",
+   "commit_msg": "",
+   "size": [
+    1280,
+    720
+   ]
+  },
+  {
    "asunto": "recreativa",
    "fecha": "2026-09-27T14:55",
    "commit": "59b9a18",
