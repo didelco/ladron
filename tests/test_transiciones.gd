@@ -29,6 +29,14 @@ func frames(n := 1) -> void:
 		await process_frame
 
 
+## n physics ticks. The night is played in _physics_process (main.gd
+## _tick, which ends it into "over"): idle frames come faster than the
+## 60 Hz physics, so two of them can pass without a single tick.
+func ticks(n := 1) -> void:
+	for i in n:
+		await physics_frame
+
+
 func focused() -> Control:
 	return root.gui_get_focus_owner()
 
@@ -184,7 +192,7 @@ func _init() -> void:
 
 	# --- Out of a night: caught ----------------------------------------------------
 	m.thieves[0].out = true
-	await frames(2)
+	await ticks(2)
 	check(m.phase == "over" and not hud.menu_open(), "pillado: la partida se queda quieta un momento")
 	# Mashing the roll and the action as it ends: none of it skips the file.
 	await press(KEY_SPACE)
@@ -211,7 +219,7 @@ func _init() -> void:
 	for t in m.thieves:
 		t.out = true
 		t.safe = true
-	await frames(2)
+	await ticks(2)
 	check(m.phase == "over", "escapado: un momento quieto")
 	await create_timer(Hud.HOLD_S + 0.05).timeout
 	check(m.phase == "escaped", "luego, el periódico")
