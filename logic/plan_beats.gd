@@ -183,3 +183,32 @@ static func marks(beats: Array, guards: Array[Guard]) -> Array:
 
 static func _mark(kind: String, at: Vector2, tag: String, text: String, beat := -1) -> Dictionary:
 	return {"kind": kind, "at": at, "tag": tag, "text": text, "rules": [], "beat": beat}
+
+
+## What SIGUIENTE goes through on the plan after the piece's tale, each
+## told from its place on it, with nothing to go and pick: the job (the
+## case: what to take, what getting it out takes, its rules and the stars),
+## what is new tonight, and then the rules of the night, each with what it
+## is about (a guard, the alarm, a switch...), those about one same thing
+## together, in the rules' order. What is as ever (the way in and out, a
+## guard no rule is about) is not gone through: it is there to pick while
+## looking round. A step is {"kind", "mark", "beat"}:
+##   kind   "piece", "news" or "mark" (a mark with rules about it)
+##   mark   its mark (marks), or -1; beat, its beat (piece, news), or -1
+static func steps(beats: Array, marks: Array) -> Array:
+	var out: Array = []
+	for i in beats.size():
+		if beats[i].kind in ["piece", "news"]:
+			out.append({"kind": beats[i].kind, "mark": -1, "beat": i})
+	for s in out:
+		for k in marks.size():
+			if marks[k].beat == s.beat:
+				s.mark = k
+	var ruled: Array = []
+	for k in marks.size():
+		if marks[k].kind not in ["piece", "news"] and not (marks[k].rules as Array).is_empty():
+			ruled.append(k)
+	ruled.sort_custom(func(a: int, b: int) -> bool: return (marks[a].rules as Array).min() < (marks[b].rules as Array).min())
+	for k in ruled:
+		out.append({"kind": "mark", "mark": k, "beat": -1})
+	return out

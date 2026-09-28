@@ -245,8 +245,10 @@ func _shots() -> void:
 		var talk: PlanTalk = main.tour.talk
 		var what := "Robo %d%s" % [n, " (gran golpe)" if Story.is_boss(n) else ""]
 		await _shot("previa_robo_%02d_pieza" % n, "previas", what + ": la pieza", Text.t(Story.level(n).loot.name))
-		if not talk.news.is_empty():
-			talk.act("accept")
+		var at_news := talk.steps.map(func(s): return s.kind).find("news")
+		if at_news >= 0:
+			for k in talk.pages.size() + at_news:
+				talk.act("accept")
 			await _wait(1.6)
 			await _shot("previa_robo_%02d_nuevo" % n, "previas", what + ": lo nuevo")
 		talk.skip()

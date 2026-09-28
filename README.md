@@ -98,6 +98,7 @@ godot --headless --script tests/test_collection.gd # qué hay en cada vitrina: l
 godot --headless --script tests/test_fronts.gd    # piezas con frente (recreativa, trono, Anubis, la nevera...): nunca contra una pared
 godot --headless --script tests/test_controles.gd # teclas y botones: partida, menús y elegir sitio
 godot --headless --script tests/test_menus.gd     # aceptar (E, ., A) y atrás (Esc, Espacio, Enter, B) iguales en todas las pantallas con menú
+godot --headless --script tests/test_siguiente.gd # sobre el plano, solo SIGUIENTE: el encargo, lo nuevo y las reglas de cada noche, cada cosa desde su sitio
 godot --headless --script tests/test_smoke.gd     # bomba de humo: dos por ladrón, tapa la vista, despista al que persigue
 godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (necesita el cerebro)
 ```
