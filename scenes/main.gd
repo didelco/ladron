@@ -278,7 +278,18 @@ func _leave_text() -> String:
 ## Out of the game, from the title.
 func _quit() -> void:
 	options.save()
-	get_tree().quit()
+	mega_voice.stop(true)
+	house.dojo_end()
+	if quit_hook.is_valid():
+		quit_hook.call()
+	else:
+		get_tree().quit()
+
+
+## What closes the application; a test puts its own here, so as not to quit.
+var quit_hook := Callable()
+## The pause is asking "¿SALIR DEL JUEGO?" (SÍ / NO) instead of showing its buttons.
+var quit_asking := false
 
 
 ## The story with n thieves (picked in the title's bubble): a gang first
@@ -510,6 +521,7 @@ func _start(which: String, n: int, picked := false) -> void:
 func _pause() -> void:
 	house.dojo_end()
 	_close_map()
+	quit_asking = false
 	phase = "paused"
 	get_tree().paused = true
 	var lost: Array = []
@@ -518,14 +530,32 @@ func _pause() -> void:
 	if not lost.is_empty():
 		lost.append({"text": Text.t("PAD_LOST_HOW"), "size": 15, "colour": Hud.C.dim})
 	hud.cctv(true, _camera_caption(), _cctv_museum(), HeistStats.time)
+	var buttons: Array = [
+		{"text": Text.t("MENU_RESUME"), "call": _start_playing},
+		{"text": Text.t("MENU_SETTINGS"), "call": options.show.bind("paused")},
+		{"text": _leave_text(), "call": _quit_to_title},
+	]
+	# The den has its own way out (the pause's way to the city, or its door).
+	if mode != Practice.MODE:
+		buttons.append({"text": Text.t("MENU_QUIT_GAME"), "call": _ask_quit, "colour": Hud.C.dim})
 	hud.show_menu([
 		{"title": Text.t("MENU_PAUSE"), "size": 56}] + lost + [
-		{"buttons": [
-			{"text": Text.t("MENU_RESUME"), "call": _start_playing},
-			{"text": Text.t("MENU_SETTINGS"), "call": options.show.bind("paused")},
-			{"text": _leave_text(), "call": _quit_to_title},
-		]},
+		{"buttons": buttons},
 	], "paused")
+
+
+## SALIR DEL JUEGO, from the pause: it leaves the night unsaved, so a second
+## step first, with NO under the focus; back (Esc, B, P, Start) is NO.
+func _ask_quit() -> void:
+	quit_asking = true
+	hud.show_menu([
+		{"title": Text.t("MENU_QUIT_ASK"), "size": 44},
+		{"text": Text.t("MENU_QUIT_ASK_TEXT"), "size": 18, "colour": Hud.C.dim},
+		{"buttons": [
+			{"text": Text.t("SETTINGS_YES"), "call": _quit, "colour": Hud.C.alert},
+			{"text": Text.t("SETTINGS_NO"), "call": _pause},
+		], "row": true, "focus": 1},
+	], "paused_quit")
 
 
 func _quit_to_title() -> void:
@@ -836,7 +866,11 @@ func _back() -> void:
 		"prologue": briefing.prologue_back()
 		"ending": _show_title()
 		"brief": briefing.back()
-		"paused": _start_playing()
+		"paused":
+			if quit_asking:
+				_pause()
+			else:
+				_start_playing()
 		"settings": options.back()
 		"assets": options.show(options.settings_from)
 		"caught", "escaped": _leave_game(_way_out())
