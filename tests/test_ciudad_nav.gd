@@ -1,9 +1,9 @@
 extends SceneTree
-## Moverse por la ciudad de la historia (Tour): elegir la parada (los museos
-## abiertos y la casita) por la dirección que se pulsa en la pantalla, con
-## una tecla o con dos a la vez (diagonal), agrupando pulsaciones casi
-## simultáneas; siguiente y anterior por la ruta; y los dos botones de los
-## lados, que hacen lo mismo con el ratón.
+## Moverse por la ciudad de la historia (Tour): una sola regla, la dirección
+## que se pulsa (flechas, WASD, cruceta, stick en cualquier ángulo) lleva a la
+## parada (los museos abiertos y la casita) que está en esa dirección en la
+## pantalla; el ratón, por encima y clic; LB/RB, sin efecto en la ciudad; y las
+## flechas que dicen a dónde lleva cada dirección.
 ##   godot --headless --script tests/test_ciudad_nav.gd
 var fails := 0
 var sounds: Array[String] = []
@@ -83,27 +83,12 @@ func _run() -> void:
 	await frames()
 	var H := CityStage.HIDEOUT
 	# The route: the hideout, then the museums 1 to 5.
-	check(t._route_order() == [H, 0, 1, 2, 3, 4], "la ruta: la casita y los cinco museos")
-	t._pick_museum(H)
-	var chain: Array[int] = [H]
-	for k in 7:
-		t.act("next")
-		if t.stage.picked != chain[-1]:
-			chain.append(t.stage.picked)
-	check(chain == [H, 0, 1, 2, 3, 4], "siguiente sigue la ruta, de la casita al último museo: " + str(chain))
-	t.act("next")
-	check(t.stage.picked == 4, "... y al final se queda")
-	chain = [4]
-	for k in 7:
-		t.act("prev")
-		if t.stage.picked != chain[-1]:
-			chain.append(t.stage.picked)
-	check(chain == [4, 3, 2, 1, 0, H], "anterior la sigue al revés")
-	t.act("prev")
-	check(t.stage.picked == H, "... y en la casita se queda")
-	# The pad's shoulders are the same.
-	t.act("next")
-	check(t.stage.picked == 0, "LB y RB: la ruta (siguiente)")
+	# No route buttons in the town: LB and RB do nothing there.
+	t._pick_museum(0)
+	t.input(pad(JOY_BUTTON_LEFT_SHOULDER))
+	t.input(pad(JOY_BUTTON_RIGHT_SHOULDER))
+	check(t.stage.picked == 0, "LB y RB no mueven nada en la ciudad")
+	check(not t.has_method("_step_route") and t.find_children("*", "Button", true, false).is_empty(), "sin botones de ruta en la ciudad")
 
 	# The hideout lies to the right of the first museum, apart from it, and out of the river.
 	var at_h: Vector2 = t.stage.stop_on_screen(H)
@@ -131,74 +116,54 @@ func _run() -> void:
 			reach[t.stage.picked] = true
 	check(reach.size() == 6, "con las flechas se llega a todas las paradas (%d de 6)" % reach.size())
 
-	# Two keys at once: the diagonal.
+	# The stick points any angle: the stop most in line with it.
+	for e in [[0, Vector2(1, -1), 3], [0, Vector2(-1, -1), 2], [0, Vector2(1, 1), H], [0, Vector2(0.9, -0.3), 4], [0, Vector2(0.05, -1), 1]]:
+		t._pick_museum(e[0])
+		t.step(e[1])
+		check(t.stage.picked == e[2], "el stick hacia %s desde %s: %s (salió %s)" % [e[1], _name(e[0]), _name(e[2]), _name(t.stage.picked)])
 	t._pick_museum(0)
-	t.step_dirs(["up", "right"])
-	check(t.stage.picked == 3, "arriba y derecha desde el primer museo: el que está arriba a la derecha (el cuarto)")
-	t._pick_museum(0)
-	t.step_dirs(["right", "up"])
-	check(t.stage.picked == 3, "... da igual el orden")
-	t._pick_museum(0)
-	t.step_dirs(["down", "right"])
-	check(t.stage.picked == H, "abajo y derecha desde el primer museo: la casita")
-	t._pick_museum(0)
-	t.step_dirs(["left", "right"])
-	check(t.stage.picked == 0, "izquierda y derecha a la vez se anulan: nada")
-	t._pick_museum(0)
-	t.step_dirs(["up", "down", "right"])
-	check(t.stage.picked == 4, "arriba, abajo y derecha: arriba y abajo se anulan, queda la derecha")
+	t.step(Vector2.ZERO)
+	check(t.stage.picked == 0, "el stick quieto no mueve")
 	t._pick_museum(3)
-	t.step_dirs(["up", "right"])
-	check(t.stage.picked == 3, "diagonal sin nadie por ese lado: se queda")
+	t.step(Vector2(1, -1))
+	check(t.stage.picked == 3, "hacia donde no hay nadie: se queda")
 
-	# --- Pushes close together are one move -------------------------------------------
+	# --- Each device moves once per push, straight away ---------------------------------
 	t._pick_museum(0)
 	sounds.clear()
-	t.dir_window = 0.1
 	t.input(key(KEY_UP))
-	check(t.stage.picked == 0, "una tecla espera a la ventana antes de mover")
-	t.input(key(KEY_RIGHT))
-	await create_timer(0.25).timeout
-	check(t.stage.picked == 3 and sounds == ["nav"], "arriba y derecha con unos milisegundos de diferencia: un solo salto en diagonal (%s, %s)" % [_name(t.stage.picked), sounds])
+	check(t.stage.picked == 1 and sounds == ["nav"], "una flecha mueve al momento, una vez")
+	t.input(key(KEY_S))
+	check(t.stage.picked == 0, "S baja: la misma regla que las flechas")
 	t._pick_museum(0)
-	sounds.clear()
 	t.input(key(KEY_D))
-	await create_timer(0.02).timeout
-	t.input(key(KEY_W))
-	await create_timer(0.25).timeout
-	check(t.stage.picked == 3 and sounds.size() == 1, "... también con W y D, y sea cual sea la primera")
+	check(t.stage.picked == 4, "D va a la derecha (el museo 5, a la derecha en la pantalla)")
 	t._pick_museum(0)
-	sounds.clear()
-	t.input(key(KEY_UP))
-	await create_timer(0.25).timeout
-	check(t.stage.picked == 1 and sounds.size() == 1, "una sola tecla, pasada la ventana: se mueve, una vez")
-	t.input(key(KEY_DOWN))
-	await create_timer(0.02).timeout
-	t.input(key(KEY_LEFT))
-	await create_timer(0.25).timeout
-	check(t.stage.picked == 0 and sounds.size() == 2, "abajo y luego izquierda casi a la vez, desde el segundo: la diagonal de abajo y a la izquierda; el primero (el más alineado)")
-	t._pick_museum(0)
-	sounds.clear()
-	t.input(key(KEY_UP))
-	await create_timer(0.3).timeout
-	t.input(key(KEY_RIGHT))
-	await create_timer(0.25).timeout
-	check(sounds.size() == 2, "dos pulsaciones separadas por más que la ventana son dos movimientos, no una diagonal")
-	# The pad's cross and the stick.
-	t._pick_museum(0)
-	sounds.clear()
 	t.input(pad(JOY_BUTTON_DPAD_UP))
-	t.input(pad(JOY_BUTTON_DPAD_RIGHT))
-	await create_timer(0.25).timeout
-	check(t.stage.picked == 3 and sounds.size() == 1, "la cruceta en diagonal (arriba y derecha)")
+	check(t.stage.picked == 1, "la cruceta arriba: lo mismo que la flecha arriba")
+	# The stick: both axes of a diagonal come as two events and make one move.
 	t._pick_museum(0)
 	sounds.clear()
 	t.input(stick(JOY_AXIS_LEFT_X, 0.9))
 	t.input(stick(JOY_AXIS_LEFT_Y, -0.9))
-	await create_timer(0.25).timeout
-	check(t.stage.picked == 3 and sounds.size() == 1, "el stick en diagonal")
+	await frames(2)
+	check(t.stage.picked == 3 and sounds == ["nav"], "el stick en diagonal (arriba y derecha): un solo salto al de esa diagonal (%s, %s)" % [_name(t.stage.picked), sounds])
+	await frames(2)
+	check(sounds.size() == 1, "mantenido, no repite")
 	t.input(stick(JOY_AXIS_LEFT_X, 0.0))
 	t.input(stick(JOY_AXIS_LEFT_Y, 0.0))
+	await frames(2)
+	t._pick_museum(0)
+	t.input(stick(JOY_AXIS_LEFT_X, 0.9))
+	await frames(2)
+	check(t.stage.picked == 4, "el stick a la derecha: a la derecha")
+	t.input(stick(JOY_AXIS_LEFT_X, 0.0))
+	await frames(2)
+	t.input(stick(JOY_AXIS_LEFT_Y, -0.9))
+	await frames(2)
+	check(t.stage.picked == 3, "... soltado y pulsado arriba, otra vez (desde el museo 5, arriba está el 4)")
+	t.input(stick(JOY_AXIS_LEFT_Y, 0.0))
+	await frames(2)
 	# Accept takes what was pushed first.
 	t._pick_museum(0)
 	sounds.clear()
@@ -212,28 +177,20 @@ func _run() -> void:
 	# --- Closed museums are not chosen; the hideout always is ------------------------------
 	t = city(1, 0)
 	await frames()
-	check(t._route_order() == [H, 0], "solo el primer museo abierto: la ruta es la casita y él")
 	t.act("up")
 	check(t.stage.picked == 0, "el segundo, cerrado, no se elige (arriba)")
-	t.step_dirs(["up", "right"])
+	t.step(Vector2(1, -1))
 	check(t.stage.picked == H, "... ni en diagonal (arriba y derecha: el cuarto, cerrado): la casita, lo abierto más cerca de esa diagonal")
 	t.act("left")
 	check(t.stage.picked == 0, "a la izquierda de la casita, el primer museo")
 	t.act("right")
 	check(t.stage.picked == H, "a la derecha del primero, la casita aunque el quinto esté cerrado")
-	t.act("next")
-	check(t.stage.picked == 0, "siguiente desde la casita, el primer museo")
-	t.act("next")
-	check(t.stage.picked == 0, "siguiente desde el último abierto se queda")
-	t.act("prev")
-	check(t.stage.picked == H, "anterior, la casita")
 	t.queue_free()
 	await frames()
 
 	# Two museums open: the fifth shut, the hideout reached from the first.
 	t = city(6, 1)
 	await frames()
-	check(t._route_order() == [H, 0, 1], "con dos museos abiertos, la ruta es la casita y los dos")
 	t.act("left")
 	check(t.stage.picked == 1, "a la izquierda del segundo está el tercero, cerrado: se queda")
 	t.act("down")
@@ -243,71 +200,40 @@ func _run() -> void:
 	t.queue_free()
 	await frames()
 
-	# --- The buttons at the sides ------------------------------------------------------
-	for shape in [["4:3", Vector2i(1024, 768)], ["16:9", Vector2i(1600, 900)], ["32:9", Vector2i(1920, 540)]]:
-		root.size = shape[1]
-		root.content_scale_size = Vector2i(1280, 720)
-		root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
-		root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_EXPAND
-		t = city(Story.count(), 2)
-		await frames()
-		var view: Vector2 = t._root.get_viewport_rect().size
-		var prev := t._prev_btn.get_global_rect()
-		var next := t._next_btn.get_global_rect()
-		var whole := Rect2(Vector2.ZERO, view)
-		check(t._prev_btn.visible and t._next_btn.visible, "%s: los dos botones, en la ciudad" % shape[0])
-		check(whole.encloses(prev) and whole.encloses(next), "%s: dentro de la pantalla (%s, %s en %s)" % [shape[0], prev, next, view])
-		check(prev.position.x < view.x * 0.25 and next.end.x > view.x * 0.75, "%s: uno a cada lado" % shape[0])
-		check(absf(prev.get_center().y - view.y * 0.5) < 2.0 and absf(next.get_center().y - view.y * 0.5) < 2.0, "%s: a media altura" % shape[0])
-		check(prev.size.x >= 180 and prev.size.y >= 64 and next.size.x >= 180 and next.size.y >= 64, "%s: grandes (%s)" % [shape[0], prev.size])
-		var where: Vector2 = t.stage.museum_on_screen(t.stage.picked)
-		check(not prev.grow(20).has_point(where) and not next.grow(20).has_point(where), "%s: no tapan el museo elegido" % shape[0])
-		check(t._prev_btn.focus_mode == Control.FOCUS_NONE and t._next_btn.focus_mode == Control.FOCUS_NONE, "%s: no toman el foco" % shape[0])
-		t.queue_free()
-		await frames()
-
+	# --- The arrows over the town and the mouse ------------------------------------------
 	root.size = Vector2i(1280, 720)
-	t = city(Story.count(), 2)
+	t = city(Story.count(), 0)
 	await frames(2)
-	sounds.clear()
-	t._next_btn.pressed.emit()
-	check(t.stage.picked == 3 and sounds == ["nav"], "el botón SIGUIENTE lleva al museo siguiente de la ruta, con su sonido")
-	t._prev_btn.pressed.emit()
-	t._prev_btn.pressed.emit()
-	check(t.stage.picked == 1, "el botón ANTERIOR, al anterior")
-	# A real click through the interface.
-	var press := InputEventMouseButton.new()
-	press.button_index = MOUSE_BUTTON_LEFT
-	press.pressed = true
-	press.position = t._next_btn.get_global_rect().get_center()
-	root.push_input(press)
-	var release := press.duplicate()
-	release.pressed = false
-	root.push_input(release)
-	await frames(2)
-	check(t.stage.picked == 2, "un clic del ratón sobre SIGUIENTE cambia la parada elegida")
-	t._pick_museum(4)
-	await frames(2)
-	check(t._next_btn.disabled and not t._prev_btn.disabled and t._next_btn.modulate.a < 0.6, "en el último museo, SIGUIENTE se atenúa")
-	t._pick_museum(H)
-	await frames(2)
-	check(t._prev_btn.disabled and not t._next_btn.disabled, "en la casita, ANTERIOR se atenúa")
-	sounds.clear()
-	t._prev_btn.pressed.emit()
-	check(t.stage.picked == H, "... y pulsarlo no hace nada")
-	# The click on a museum still works.
-	t._pick_museum(0)
-	await frames(2)
+	check(t._arrows.visible and t._arrows.mouse_filter == Control.MOUSE_FILTER_IGNORE, "las flechas se ven en la ciudad y no tapan el ratón")
+	# Every arrow points where its push leads, on the screen.
+	var from: Vector2 = t.stage.stop_point(0)
+	var here: Vector2 = t.stage.stop_on_screen(0)
+	stops = t._stops_open()
+	for d in Tour.DIR_VECTORS:
+		var to := Tour.toward(here, Tour.DIR_VECTORS[d], stops)
+		if to < 0:
+			continue
+		var dir: Vector2 = (t.stage.stop_point(to) - from).normalized()
+		var want: Vector2 = Tour.DIR_VECTORS[d]
+		check(dir.dot(want) > 0.2, "la flecha de %s apunta hacia donde se ve el destino (%s)" % [d, _name(to)])
+	# The mouse: over a stop picks it (the hideout too), a click on it goes in.
+	var over := InputEventMouseMotion.new()
+	over.position = t.stage.stop_point(H)
+	t._on_mouse(over)
+	check(t.stage.picked == H, "el ratón sobre la casita la elige")
+	over.position = t.stage.stop_point(2)
+	t._on_mouse(over)
+	check(t.stage.picked == 2, "el ratón sobre un museo lo elige")
 	var click := InputEventMouseButton.new()
 	click.button_index = MOUSE_BUTTON_LEFT
 	click.pressed = true
-	click.position = t.stage.on_screen(t.stage._museums[1].global_position + Vector3(0, 1.0, 0))
+	click.position = t.stage.stop_point(1)
 	t._on_mouse(click)
-	check(t.stage.picked == 1, "el clic directo sobre un museo sigue eligiéndolo")
-	# Out of the town they are gone.
+	check(t.stage.picked == 1, "el clic sobre otro museo lo elige")
 	t.act("accept")
 	await frames(2)
-	check(t.state in ["zoom", "museum"] and not t._prev_btn.visible and not t._next_btn.visible, "dentro de un museo, sin botones")
+	check(t.state in ["zoom", "museum"], "aceptar entra en el elegido")
+	check(not t._arrows.visible, "dentro de un museo, sin flechas")
 	t.queue_free()
 	await frames()
 

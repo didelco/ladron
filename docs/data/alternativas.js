@@ -442,5 +442,7 @@ window.ALTERNATIVAS = {
    "categoria": "ui"
   }
  ],
- "elegidas": {}
+ "elegidas": {
+  "globo-mapamundi": "natural-earth-raster"
+ }
 };

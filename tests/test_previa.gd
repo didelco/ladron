@@ -97,7 +97,8 @@ func _init() -> void:
 	stick.device = -1
 	stick.axis = JOY_AXIS_LEFT_X
 	stick.axis_value = 0.9
-	check(t.intent(stick) == "right", "el stick mueve")
+	check(t.intent(stick) == "" and t._stick_vec.x > 0.5, "el stick mueve (lo decide el fotograma siguiente, con sus dos ejes)")
+	t._stick_push = -100
 	check(t.intent(stick) == "", "... una vez por empujón")
 
 	# Into the museum: its first room, the rest shut.
