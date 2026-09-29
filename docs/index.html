@@ -843,7 +843,7 @@ function noche(n, lecciones) {
     <p><span class="etq">Descripción</span>${t(l.blurb)}</p>
     <p><span class="etq">Mientras la coge</span>${t(l.verb)}</p>
     <p><span class="etq">Cuento</span>${t(l.story)}</p>
-    ${hd ? `${hd && hd.game_level != null && n.n >= ((J.historia || {}).lockpick_night || 99) ? `<p><span class="etq">Minijuegos</span><a href="#minijuegos/niveles">en nivel ${["fácil", "medio", "difícil"][hd.game_level]}</a></p>` : ""}
+    ${hd && hd.game_level != null && n.n >= ((J.historia || {}).lockpick_night || 99) ? `<p><span class="etq">Minijuegos</span><a href="#minijuegos/niveles">en nivel ${["fácil", "medio", "difícil"][hd.game_level]}</a></p>` : ""}
     ${les ? `<p><span class="etq">Enseña</span><b>${t(les.title)}</b>: ${t(les.text)}</p>` : ""}
     ${n.boss ? `<p><span class="etq">Gran golpe</span>${t(n.tip)}</p>` : ""}
     <div><span class="tag">museo ${tam}, forma ${n.shape}</span><span class="tag">${g}</span>${n.props ? '<span class="tag">objetos</span>' : ""}${n.lights ? '<span class="tag">luces</span>' : ""}${n.case_alarm ? '<span class="tag">vitrina con alarma</span>' : ""}<span class="tag">${n.alarms} alarma${n.alarms === 1 ? "" : "s"}</span><span class="tag">${n.n >= ((J.historia || {}).lockpick_night || 99) ? `ganzúa de ${Math.min(4, Math.max(1, Math.round(l.seconds - 2.5 + 1e-9)))} perno${Math.round(l.seconds - 2.5 + 1e-9) > 1 ? "s" : ""}` : `${l.seconds} s quieto para cogerla`}</span>${n.par ? `<span class="tag">★ rápido: en menos de ${Math.floor(n.par / 60)}:${String(n.par % 60).padStart(2, "0")}</span>` : ""}</div>
