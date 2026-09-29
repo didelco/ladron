@@ -59,7 +59,6 @@ const VIAS := {
 	"alarm_wires": {"action": true, "reach": 1.5, "solid": false, "stand": Vector2(0.5, 0.5)},
 	"alarm_glass": {"action": true, "reach": 1.5, "solid": false, "stand": Vector2(0.5, 0.5)},
 }
-## How close to a sock on its pedestal, or to the middle of a circle, to take it.
 ## The lantern of AGUANTA ESCONDIDO: the post it stands on (only while the game
 ## is on), and where its swing is centred (radians on the plan, 0 east).
 const LANTERN_AT := Vector2i(54, 23)
@@ -325,8 +324,6 @@ static func map(players := 1) -> MapFile:
 				m.props.append({"kind": "armour", "at": s})
 		for s in t.get("scarecrows", []):
 			cover.append(s.at)
-		for o in t.get("obstacles", []):
-			cover.append(o)
 	for i in items:
 		if i.has("hide"):
 			cover.append(i.hide.tile)
@@ -339,6 +336,9 @@ static func map(players := 1) -> MapFile:
 		for x in Den.W:
 			var c := rows[y][x]
 			m.grid[y * Den.W + x] = Tiles.FLOOR if c == "." else (Tiles.COVER if c == "o" else Tiles.WALL)
+	# The house is not the whole plan: what is beyond its walls is outside (the front door
+	# looks onto it).
+	m.derive_outside()
 	return m
 
 

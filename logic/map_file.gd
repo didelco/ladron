@@ -36,7 +36,8 @@ const OUT := " "
 const OUT_TILE := -1
 const NONE := Vector2i(-1, -1)
 const MIN_SIDE := 9
-const MAX_W := 61
+## (63 wide the band's house, Den.W, with its nine-bay dojo)
+const MAX_W := 64
 const MAX_H := 45
 const MAX_GUARDS := 5
 ## Out of the door you came in by is not a job: the door keeps this far off

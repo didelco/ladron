@@ -31,6 +31,9 @@ extends RefCounted
 ##             "armour", "vitrine", "hideout", "alarm_wires", "alarm_glass"
 ##   starts    the tile of each of the three start points, easy to hard
 ##   wall      (a wall box) the side of its tile the wall is at
+##   goal      (circuit) the tile to get to, `speed` how much faster the scarecrows sweep at each
+##             difficulty, `limit` the seconds, `scarecrows` the guards' coats that sweep
+##             their torch: {at, dir (the middle of the sweep), turn: {amp, speed, phase}}
 ##   minigame  (bench) the Minigame it is, `steps` how many steps at each difficulty
 ##             and `limit` the seconds it may take (over them it is lost)
 ## The difficulties are the same for all: DojoTrials.TIERS.
@@ -73,6 +76,15 @@ static var TABLE: Array = [
 		"hint": "HIDEOUT_TRIAL_HINT_STEADY", "lesson": "two", "zone": "steady", "via": "alarm_glass",
 		"starts": [Vector2i(51, 1), Vector2i(55, 1), Vector2i(59, 1)], "wall": Vector2i(0, -1),
 		"minigame": "steady", "steps": [4, 6, 8], "limit": [30.0, 40.0, 50.0]},
+	{"id": "circuit", "kind": "circuit", "cls": CircuitTrial, "name": "HIDEOUT_TRIAL_NAME_CIRCUIT", "start_text": "HIDEOUT_TRIAL_START_CIRCUIT",
+		"hint": "HIDEOUT_TRIAL_HINT_CIRCUIT", "lesson": "guard", "zone": "circuit", "via": "ring",
+		"starts": [Vector2i(21, 20), Vector2i(23, 20), Vector2i(25, 20)], "goal": Vector2i(33, 27),
+		"speed": [0.7, 1.0, 1.4], "limit": [90.0, 75.0, 60.0],
+		"scarecrows": [
+			{"at": Vector2i(33, 19), "dir": PI, "turn": {"amp": 0.8, "speed": 0.9, "phase": 0.0}},
+			{"at": Vector2i(21, 23), "dir": 0.0, "turn": {"amp": 0.7, "speed": 1.1, "phase": 1.5}},
+			{"at": Vector2i(31, 28), "dir": PI, "turn": {"amp": 0.8, "speed": 1.0, "phase": 0.7}},
+		]},
 ]
 
 

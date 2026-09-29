@@ -1037,10 +1037,37 @@ var _cone_mats: Array[StandardMaterial3D] = []
 ## and a torch taped to the chest that throws a cone in front (Practice's
 ## numbers for what it sees). The figure itself (a guard) is Main's; here go the
 ## cross, the straw, the torch and the light.
+var _sc_list: Array = []
+var _sc_posts: Array[Node3D] = []
+var _sc_cones: Array[MeshInstance3D] = []
+var _sc_facing: Array[float] = []
+
+
 func _scarecrows() -> void:
-	for sc in Practice.scarecrows(players):
-		_scarecrow_post(sc)
-		_scarecrow_cone(sc)
+	_sc_list = Practice.scarecrows(players)
+	for sc in _sc_list:
+		_sc_posts.append(_scarecrow_post(sc))
+		_sc_cones.append(_scarecrow_cone(sc))
+		_sc_facing.append(Practice.scarecrow_facing(sc))
+
+
+## A sweeping scarecrow looks another way: its cross turns and its cone of light is
+## drawn again, cut by the walls (not for every hair of a turn).
+func pose_scarecrow(i: int, facing: float) -> void:
+	if i >= _sc_list.size():
+		return
+	_sc_posts[i].rotation.y = -facing + PI / 2
+	if absf(wrapf(facing - _sc_facing[i], -PI, PI)) < 0.04:
+		return
+	_sc_facing[i] = facing
+	var sc: Dictionary = (_sc_list[i] as Dictionary).duplicate()
+	sc["dir"] = facing
+	sc.erase("turn")
+	var old := _sc_cones[i]
+	var holder := old.get_parent()
+	_cone_mats.erase(old.material_override)
+	old.queue_free()
+	_sc_cones[i] = _scarecrow_cone(sc, holder)
 
 
 ## One scarecrow's cross, straw, torch and light, standing where `sc` (as in
@@ -1090,7 +1117,7 @@ func _scarecrow_post(sc: Dictionary) -> Node3D:
 
 ## The torch's cone on the floor, cut by the walls (the plan as it is built:
 ## the doors of the dojo are far from any of them), faint like a guard's.
-func _scarecrow_cone(sc: Dictionary) -> void:
+func _scarecrow_cone(sc: Dictionary, holder: Node = null) -> MeshInstance3D:
 	var from := Practice.scarecrow_torch(sc)
 	var base := to_world(from.x, from.y)
 	var im := ImmediateMesh.new()
@@ -1125,8 +1152,14 @@ func _scarecrow_cone(sc: Dictionary) -> void:
 	node.material_override = m
 	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	node.position = base
-	add_child(node)
+	if holder != null:
+		holder.add_child(node)
+	else:
+		add_child(node)
+	if _alert > 0.001:
+		m.albedo_color = CONE_RED
 	_cone_mats.append(m)
+	return node
 
 
 # --- The dojo's alarm ---------------------------------------------------------------------

@@ -580,7 +580,7 @@ static func furniture() -> Array:
 	f.append(_w("bookcaseOpen", 22.4, 1.3, "N", [], 1.6))
 	f.append(_w("bookcaseOpen", 23.3, 1.3, "N", [], 1.6))
 	f.append(_cover([22, 1, 2, 1]))
-	f.append(_w("benchCushion", 23.0, 17.65, "S", [22, 17, 2, 1], 2.6))
+	f.append(_f("benchCushion", 23.0, 17.65, "N", [22, 17, 2, 1], 2.6))
 	for i in 3:
 		f.append(_f("bookcaseOpenLow", 22.5 + i, 8.5, "S", [], 1.8))
 	f.append(_cover([22, 8, 3, 1]))
@@ -590,6 +590,10 @@ static func furniture() -> Array:
 	f.append(_f("cardboardBoxClosed", 50.5, 16.5, 15, [50, 16, 1, 1], 1.7))
 	f.append(_f("cardboardBoxOpen", 60.5, 16.5, -15, [60, 16, 1, 1], 1.7))
 	f.append(_f("cardboardBoxClosed", 60.4, 16.5, 40, [], 1.4, 0.45))
+	# The crates of the stealth circuit (to hide behind the torches' light).
+	f.append(_f("cardboardBoxClosed", 27.5, 23.5, 20, [27, 23, 1, 1], 1.7))
+	f.append(_f("cardboardBoxOpen", 25.5, 27.5, -25, [25, 27, 1, 1], 1.7))
+	f.append(_f("cardboardBoxClosed", 30.5, 26.5, 35, [30, 26, 1, 1], 1.7))
 	# --- The bathroom (south of the dojo, BATH_DY tiles below where it began) ------
 	# A small room: the bath along the north wall on the west, the basin and
 	# its mirror, the toilet in the north-east corner, the shower in the

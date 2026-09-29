@@ -85,8 +85,8 @@ func show_view(view: Dictionary) -> void:
 	var at_end: bool = String(view.state) in ["won", "lost"]
 	var stamp := "%s:%d:%s:%s" % [view.id, int(view.tier), view.state, view.result.get("title", "")]
 	if at_end and (_panel == null or stamp != _panel_stamp):
-		_panel_stamp = stamp
 		_open_panel(view.result)
+		_panel_stamp = stamp
 	elif not at_end:
 		_close_panel()
 	if _ui != null:
@@ -324,7 +324,7 @@ func _build(n: Node3D, kind: String) -> void:
 			band.material_override = _flat(RED)
 			band.position.y = 0.62
 			n.add_child(band)
-		"pedestal":
+		"pedestal", "goal":
 			_add_ring(n, GREEN)
 		_:
 			_add_ring(n, GOLD)

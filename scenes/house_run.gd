@@ -43,6 +43,8 @@ var mannequins: Array[Figure] = []
 var scarecrow_list: Array = []
 var scarecrow_alert := Practice.alert_new()
 var scarecrow_time := 0.0
+## how much faster than in the free practice they sweep (the circuit's difficulty)
+var scarecrow_speed := 1.0
 
 ## The lights of the tests' objects (Practice.lamps_new): which are signalling.
 var lamps := Practice.lamps_new()
@@ -79,7 +81,13 @@ func home_sight(snap := false) -> void:
 func scarecrow_tick(dt: float) -> void:
 	if scarecrow_list.is_empty() or host.den_view == null or not is_instance_valid(host.den_view):
 		return
-	scarecrow_time += dt
+	scarecrow_time += dt * scarecrow_speed
+	for i in scarecrow_list.size():
+		var facing := Practice.scarecrow_facing(scarecrow_list[i], scarecrow_time)
+		if i < mannequins.size():
+			var d := mannequins[i]
+			d.set_state(d.position, facing, 0.0, 0.0)
+		host.den_view.pose_scarecrow(i, facing)
 	var seen := false
 	for p in host.thieves:
 		if p.out:
@@ -170,6 +178,9 @@ func _make(id: String, tier: int, by: int, start: Vector2i) -> DojoTrial:
 	# Sight is the scarecrows' own (Practice), not the field's.
 	t.seen = func(sc: Dictionary, pos: Vector2, hidden: bool) -> bool:
 		return Practice.scarecrow_sees({"at": sc.tile, "dir": sc.facing}, pos, hidden)
+	if t is CircuitTrial:
+		(t as CircuitTrial).guards = Practice.scarecrows(host.players)
+		(t as CircuitTrial).clock = func() -> float: return scarecrow_time
 	for i in host.thieves.size():
 		t.names.append(Text.t("JOIN_PLAYER") % (i + 1))
 	if t is HideGame:
@@ -228,6 +239,7 @@ func trial_end() -> void:
 		return
 	trial.abort()
 	trial = null
+	scarecrow_speed = 1.0
 	for p in host.thieves:
 		if p.game != null and p.game.what == "bench":
 			p.game = null
@@ -291,11 +303,12 @@ func trial_tick(dt: float, keys: Dictionary) -> void:
 		var p := host.thieves[i]
 		var input := host._game_input(i, keys)
 		bodies.append({"id": i, "pos": Vector2(p.x, p.y), "rolling": p.rolling, "speed": p.speed, "out": p.out,
-			"hidden": p.hiding or p.posing, "posing": p.posing,
+			"hidden": p.hiding or p.posing, "posing": p.posing, "low": p.posture < Sim.DOWN,
 			"hold": input.action, "fell": trial_fell.get(i, false), "game": p.game,
 			"lean": (p.game as BalanceGame).lean if p.game is BalanceGame else 0.0})
 	trial_fell.clear()
 	var was_finished := trial.finished()
+	scarecrow_speed = (trial as CircuitTrial).speed() if trial is CircuitTrial and not trial.finished() else 1.0
 	var events := trial.step(dt, bodies)
 	if trial_view != null and is_instance_valid(trial_view):
 		trial_view.menu.tick(dt)

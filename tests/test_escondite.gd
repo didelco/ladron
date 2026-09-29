@@ -100,7 +100,7 @@ func _init() -> void:
 	check(Den.visible_rooms(["salon_trofeos"], ["trofeos"]) == ["salon", "trofeos"], "... desde cualquiera de los dos lados")
 	check(Den.visible_rooms(["dojo_aseo"], ["salon"]) == ["salon"], "una puerta abierta lejos de los ladrones no enseña nada")
 	check(Den.visible_rooms(["salon_dojo", "dojo_aseo"], ["salon"]) == ["salon", "dojo", "aseo"], "por dos puertas abiertas seguidas, también")
-	check(Den.visible_rooms(["salon_aseo"], ["dojo"]) == ["dojo"], "una puerta cerrada al lado no enseña: la del baño no une con el dojo")
+	check(Den.visible_rooms(["salon_trofeos"], ["aseo"]) == ["aseo"], "una puerta abierta que no toca la sala no enseña nada")
 	check(Den.visible_rooms([], ["salon", "aseo"]) == ["salon", "aseo"], "dos ladrones en salas distintas: se ven las dos")
 	check(Den.visible_rooms([], ["dojo", "salon", "trofeos", "aseo"]) == Den.ORDER, "cuatro ladrones en cuatro salas: todas")
 	check(Den.visible_rooms(["trofeos_dojo"], ["salon", "salon", "aseo", "salon"]) == ["salon", "aseo"], "cuatro ladrones en dos salas, con una puerta abierta que no toca ninguna")
@@ -109,7 +109,7 @@ func _init() -> void:
 	check(Den.rooms_at(5.5, 15.5) == ["salon"] and Den.rooms_at(9.5, 9.5) == ["salon", "trofeos"] and Den.rooms_at(0.5, 0.5).is_empty(), "un ladrón en el umbral está en las dos salas; en el muro, en ninguna")
 	check(Den.door_near(Vector2i(9, 10)) == "salon_trofeos" and Den.door_near(Vector2i(10, 8)) == "salon_trofeos" and Den.door_near(Vector2i(9, 9)) == "salon_trofeos", "junto a la puerta, esa puerta")
 	check(Den.door_near(Vector2i(8, 10)) == "" and Den.door_near(Vector2i(9, 12)) == "" and Den.door_near(Vector2i(5, 15)) == "", "en la esquina o lejos, ninguna")
-	check(Den.door_near(Vector2i(19, 11)) == "salon_dojo" and Den.door_near(Vector2i(21, 12)) == "salon_dojo" and Den.door_near(Vector2i(28, 13)) == "dojo_aseo", "las puertas de los lados también")
+	check(Den.door_near(Vector2i(19, 11)) == "salon_dojo" and Den.door_near(Vector2i(21, 12)) == "salon_dojo" and Den.door_near(Vector2i(28, 28)) == "dojo_aseo", "las puertas de los lados también")
 	# Shut one with someone in the doorway or touching it: it does not shut.
 	check(Den.in_the_way("salon_trofeos", [Vector2(9.5, 9.5)]) and Den.in_the_way("salon_trofeos", [Vector2(9.5, 10.2)]), "quien está en el umbral o lo toca estorba")
 	check(not Den.in_the_way("salon_trofeos", [Vector2(9.5, 10.5), Vector2(3.0, 3.0)]), "quien está a un paso, no")
@@ -141,7 +141,7 @@ func _init() -> void:
 	Den.reset_doors()
 
 	# The dojo: what is open depends on the job reached.
-	check(Practice.open_items(1).is_empty() and Practice.bench_cases(1).is_empty(), "recién empezada, el dojo está vacío (QUIETO ya no existe)")
+	check(Practice.open_items(1).is_empty() and Practice.open_trials(1).is_empty(), "recién empezada, el dojo está vacío")
 	check(Practice.map(1).props.is_empty() and Practice.scarecrows(1).is_empty(), "... sin cosas que tirar ni espantapájaros")
 	var last := 0
 	for item in Practice.ITEMS:
@@ -149,7 +149,7 @@ func _init() -> void:
 	Story.save = "user://test_escondite_b.cfg"
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
 	Story.unlock(Story.lesson_night("guard"), 1)
-	check(Practice.scarecrows(1).size() == 1 and Practice.map(1).props.is_empty() and Practice.map(1).guards.is_empty(), "con la lección del guardia, el espantapájaros del pasillo")
+	check(Practice.scarecrows(1).size() == 3 and Practice.open_trials(1).map(func(t): return t.id) == ["circuit"] and Practice.map(1).props.is_empty() and Practice.map(1).guards.is_empty(), "con la lección del guardia, el circuito con sus tres espantapájaros")
 	Story.unlock(Story.lesson_night("props"), 1)
 	check(Practice.map(1).props.size() == 6 and Practice.map(1).exhibits.values().has("plinth") and Practice.map(1).exhibits.values().has("box") and Practice.map(1).exhibits.values().has("fridge"), "con los objetos, seis cosas (dos papeleras, el busto y tres armaduras), pedestal, caja y taquilla")
 	check(Practice.map(1).check().is_empty(), "... y el plano sigue jugable")
@@ -258,13 +258,18 @@ func _init() -> void:
 	check(arcade[0].wall == "N" and Den.facing(Arcades.MODEL, arcade[0].yaw) == Vector2(0, 1), "... pegada a la pared norte, con la pantalla hacia el salón")
 	check(map.at(Den.ARCADE_AT + Den.ARCADE_FRONT) == Tiles.FLOOR, "... y suelo libre delante para jugar")
 
-	# --- El dojo grande: zonas, pasillos, anchos --------------------------------------
+	# --- El dojo grande: nueve bahías, una por prueba, con espacio para sus tres puntos de inicio --
 	var dojo := Den.rect("dojo")
-	check(dojo.get_area() >= 2.5 * 182 and dojo.get_area() <= 3.0 * 182, "el dojo es 2,5 a 3 veces el de antes: %d casillas (antes 182)" % dojo.get_area())
+	check(dojo.get_area() >= 2.2 * 481 and dojo.size == Vector2i(41, 28), "el dojo es más de dos veces el de antes (481 casillas): %s = %d" % [dojo.size, dojo.get_area()])
 	var full := Practice.map(25)
 	var far := full.distances(full.spawn)
+	check(Den.DOJO_ZONES.size() == DojoTrials.TABLE.size(), "una zona por prueba: %d" % Den.DOJO_ZONES.size())
+	var area := 0
+	var zone_rects: Array[Rect2i] = []
 	for z in Den.DOJO_ZONES:
-		var zr := Rect2i(Den.DOJO_ZONES[z][0], Den.DOJO_ZONES[z][1], Den.DOJO_ZONES[z][2], Den.DOJO_ZONES[z][3])
+		var zr := Practice.zone_rect(z)
+		zone_rects.append(zr)
+		area += zr.get_area()
 		var floors := 0
 		var reached := 0
 		for y in range(zr.position.y, zr.end.y):
@@ -273,54 +278,76 @@ func _init() -> void:
 					floors += 1
 					if far[y * full.w + x] >= 0:
 						reached += 1
-		check(floors >= 10 and reached == floors, "la zona %s tiene %d casillas de suelo y se llega a todas" % [z, floors])
-	# The corridor is two wide, with a crossing; the maze's passages, two.
-	for x in range(32, 43):
-		check(full.at(Vector2i(x, 5)) == Tiles.FLOOR and full.at(Vector2i(x, 6)) == Tiles.FLOOR and full.at(Vector2i(x, 4)) == Tiles.WALL and full.at(Vector2i(x, 7)) == Tiles.WALL or x == 37 or x == 38, "el pasillo mide dos en x=%d" % x)
-	for y in [2, 9]:
-		check(full.at(Vector2i(37, y)) == Tiles.FLOOR and full.at(Vector2i(38, y)) == Tiles.FLOOR and full.at(Vector2i(36, y)) == Tiles.WALL and full.at(Vector2i(39, y)) == Tiles.WALL, "el brazo del cruce mide dos en y=%d" % y)
-	for x in [43, 44, 46, 47, 49, 50]:
-		for y in range(8, 13):
-			check(full.at(Vector2i(x, y)) == Tiles.FLOOR, "el laberinto pasa de dos: suelo en %d,%d" % [x, y])
-	check(full.at(Vector2i(45, 10)) == Tiles.WALL and full.at(Vector2i(48, 9)) == Tiles.WALL and full.at(Vector2i(45, 8)) == Tiles.FLOOR and full.at(Vector2i(48, 11)) == Tiles.FLOOR, "... con tabiques y sus huecos alternos")
-	# The maze is three switchbacks: the walk from its entrance to the exit is long.
-	var maze_walk := full.distances(Vector2i(43, 11))
-	check(maze_walk[8 * full.w + 52] > 12, "del laberinto al patio hay un buen rodeo: %d pasos" % maze_walk[8 * full.w + 52])
-	# The ring: pasillo - escondites - patio - laberinto - pasillo. Without the
-	# corridor's east end the patio still reaches the maze, and the hideouts.
-	var around := 0
-	for step in [Vector2i(52, 8), Vector2i(44, 4), Vector2i(55, 6), Vector2i(43, 11)]:
-		around += 1 if maze_walk[step.y * full.w + step.x] >= 0 else 0
-	check(around == 4, "escondites, patio y laberinto se alcanzan entre sí")
-	# The escondites are a room, six high.
-	for x in range(44, 58):
-		var open := 0
-		for y in range(1, 7):
-			open += 1 if full.at(Vector2i(x, y)) != Tiles.WALL else 0
-		check(open >= 5, "los escondites son una sala de seis de alto en x=%d" % x)
+		check(floors >= 60 and reached == floors, "la zona %s tiene %d casillas de suelo y se llega a todas" % [z, floors])
+		check(dojo.encloses(zr), "la zona %s cae dentro del dojo" % z)
+	var overlap := 0
+	for i in zone_rects.size():
+		for j in range(i + 1, zone_rects.size()):
+			if zone_rects[i].intersects(zone_rects[j]):
+				overlap += 1
+	check(overlap == 0 and area == dojo.get_area(), "las zonas no se solapan y cubren el dojo entero (%d de %d casillas)" % [area, dojo.get_area()])
+	# Every trial lives in a bay of its own, with its three start points inside it and apart.
+	var used := {}
+	for row in DojoTrials.TABLE:
+		check(Den.DOJO_ZONES.has(row.zone), "%s: su zona %s existe" % [row.id, row.zone])
+		for tile in row.starts:
+			check(Practice.zone_rect(row.zone).has_point(tile) and not used.has(tile), "%s: el punto %s está en su zona y no se repite" % [row.id, tile])
+			used[tile] = true
+		var xs: Array = row.starts.map(func(t): return t.x)
+		var ys: Array = row.starts.map(func(t): return t.y)
+		var spread: bool = (xs.max() - xs.min() >= 4) or (ys.max() - ys.min() >= 4)
+		check(spread, "%s: sus tres puntos van separados (%s)" % [row.id, row.starts])
+	# Walls between bays with doorways three wide; the rest is wall.
+	for x in [34, 48]:
+		for y in [4, 5, 6, 13, 14, 15, 22, 23, 24]:
+			check(full.at(Vector2i(x, y)) == Tiles.FLOOR, "pasillo entre bahías en %d,%d" % [x, y])
+		for y in [1, 2, 3, 7, 8, 9, 10, 11, 12, 16, 17, 18, 19, 20, 21, 25, 28]:
+			check(full.at(Vector2i(x, y)) == Tiles.WALL, "muro entre bahías en %d,%d" % [x, y])
+	for y in [9, 18]:
+		for x in [26, 27, 28, 40, 41, 42, 54, 55, 56]:
+			check(full.at(Vector2i(x, y)) == Tiles.FLOOR, "pasillo entre filas en %d,%d" % [x, y])
+		for x in [21, 25, 29, 34, 39, 43, 48, 53, 57, 61]:
+			check(full.at(Vector2i(x, y)) == Tiles.WALL, "muro entre filas en %d,%d" % [x, y])
+	# The circuit is walled inside: two runs, so the way from the rings to the goal is a snake.
+	var cgoal: Vector2i = DojoTrials.info("circuit").goal
+	var cwalk := full.distances(DojoTrials.info("circuit").starts[0])
+	check(cwalk[cgoal.y * full.w + cgoal.x] >= 30, "del primer anillo del circuito a la meta hay un buen rodeo: %d pasos" % cwalk[cgoal.y * full.w + cgoal.x])
+	# Every bay is reached from the next by its doorways: from the lounge's door to the farthest bay.
+	var reach_far := far[Practice.stand_of("aguanta", 2).y as int * full.w + int(Practice.stand_of("aguanta", 2).x)]
+	check(reach_far > 40, "de la casa al último punto (AGUANTA, difícil) hay un buen paseo por las bahías: %d" % reach_far)
 
-	# --- Los espantapájaros: ven como un guardia, con sus números ------------------------
+	# --- Los espantapájaros: los del circuito, que barren, ven como un guardia con sus números ---
 	var clear_los := func(_from: Vector2, _to: Vector2, _low: bool) -> bool: return true
 	var wall_los := func(_from: Vector2, _to: Vector2, _low: bool) -> bool: return false
-	var sc := {"at": Vector2i(38, 1), "dir": PI / 2}
+	Story.save = "user://test_escondite_full.cfg"
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
+	Story.unlock(25, 1)
+	var guards := Practice.scarecrows(1)
+	check(guards.size() == 3 and guards.all(func(g): return g.has("turn") and Den.tile_room(g.at) == "dojo" and Practice.zone_rect("circuit").has_point(g.at)), "tres espantapájaros, todos en el circuito y todos girando")
+	Story.save = "user://test_escondite.cfg"
+	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://test_escondite_full.cfg"))
+	check(Practice.scarecrows(1).is_empty(), "sin la lección del guardia, ninguno (y ninguno fuera del circuito nunca)")
+	var sc: Dictionary = guards[0]
 	var torch := Practice.scarecrow_torch(sc)
-	check(torch.y > 1.5 and not Vector2i(int(floor(torch.x)), int(floor(torch.y))) == sc.at, "la linterna está delante del palo, fuera de su casilla: %s" % torch)
-	check(Practice.scarecrow_sees(sc, Vector2(38.5, 4.5), false, false, clear_los), "ve a un ladrón dentro del cono")
-	check(not Practice.scarecrow_sees(sc, Vector2(38.5, 4.5), false, false, wall_los), "... no si hay un muro en medio")
-	check(not Practice.scarecrow_sees(sc, Vector2(38.5, 4.5), true, false, clear_los), "... ni si está escondido")
-	check(not Practice.scarecrow_sees(sc, Vector2(38.5, 9.5), false, false, clear_los), "... ni fuera del alcance (%.1f)" % Practice.SCARECROW_RANGE)
-	check(not Practice.scarecrow_sees(sc, Vector2(36.5, 2.2), false, false, clear_los), "... ni fuera del ángulo (a un lado)")
+	check(torch.x < sc.at.x + 0.1 and Vector2i(int(floor(torch.x)), int(floor(torch.y))) != sc.at, "la linterna está delante del palo, fuera de su casilla: %s" % torch)
+	var target := Vector2(29.5, 19.5)
+	check(Practice.scarecrow_sees(sc, target, false, false, clear_los, 0.0), "ve a un ladrón dentro del cono")
+	check(not Practice.scarecrow_sees(sc, target, false, false, wall_los, 0.0), "... no si hay un muro en medio")
+	check(not Practice.scarecrow_sees(sc, target, true, false, clear_los, 0.0), "... ni si está escondido")
+	check(not Practice.scarecrow_sees(sc, Vector2(25.5, 19.5), false, false, clear_los, 0.0), "... ni fuera del alcance (%.1f)" % Practice.SCARECROW_RANGE)
+	check(not Practice.scarecrow_sees(sc, Vector2(31.5, 24.5), false, false, clear_los, 0.0), "... ni fuera del ángulo (a un lado)")
+	# It sweeps: the middle of the swing at 0, a side at a quarter of the period.
+	var quarter: float = PI / 2.0 / float(sc.turn.speed)
+	check(is_equal_approx(Practice.scarecrow_facing(sc, 0.0), PI) and is_equal_approx(Practice.scarecrow_facing(sc, quarter), PI + float(sc.turn.amp)), "gira: mira al medio en 0 y a un lado de su barrido un cuarto de vuelta después")
+	check(not Practice.scarecrow_sees(sc, target, false, false, clear_los, quarter), "... y, mirando a un lado, ya no ve lo que veía")
 	# On the real plan: the walls and the cover cut its sight.
 	Museum.w = full.w
 	Museum.h = full.h
 	Museum.grid = full.grid.duplicate()
 	Den.reset_doors()
 	Den.apply_doors()
-	check(Practice.scarecrow_sees(sc, Vector2(38.5, 4.5), false, false), "en el plano de verdad, ve por el pasillo")
-	var maze_sc := {"at": Vector2i(47, 12), "dir": -PI / 2}
-	check(Practice.scarecrow_sees(maze_sc, Vector2(47.5, 8.5), false, false), "el del laberinto ve subir por el pasillo")
-	check(not Practice.scarecrow_sees(maze_sc, Vector2(47.5, 6.5), false, false), "... pero no a través del muro de la sala de arriba")
-	check(not Practice.scarecrow_sees(maze_sc, Vector2(49.5, 8.5), false, false), "... ni al otro lado del tabique")
+	check(Practice.scarecrow_sees(sc, target, false, false, Callable(), 0.0), "en el plano de verdad, ve por el carril")
+	check(not Practice.scarecrow_sees(sc, Vector2(29.5, 22.5), false, false, Callable(), 0.0), "... pero no por el muro al carril de abajo")
 	# The alarm: 3 s red, 1.5 s before it can go again.
 	var al := Practice.alert_new()
 	al = Practice.alert_step(al, 0.1, false)
@@ -339,99 +366,8 @@ func _init() -> void:
 	al = Practice.alert_step(al, 0.1, true)
 	check(al.active, "pasado el enfriamiento y aún a la vista, otra vez")
 
-	# --- El banco: cuatro pruebas, tres objetos fijos en cada una, por dificultad --
-	Story.save = "user://test_escondite_d.cfg"
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
-	var bn := Practice.bench_new()
-	var c0 := Practice.bench_case(0)
-	check(c0.kind == "lockpick" and c0.level == 0 and c0.at == Practice.BENCH_AT.lockpick[0], "el primer objeto del banco es la vitrina de GANZÚA, fácil")
-	check(not Practice.BENCH_TESTS.has("hold") and Practice.BENCH_TESTS == ["lockpick", "squeeze", "wires", "steady"], "las pruebas: GANZÚA, ESCONDITE, CABLES y PULSO (sin QUIETO)")
-	check(Practice.bench_kinds(1).is_empty() and bn.cases.size() == 12, "al empezar: ningún objeto del banco; 12 en total")
-	Story.unlock(Story.lesson_night("games"), 1)
-	check(Practice.bench_kinds(1) == ["lockpick"] and Practice.bench_cases(1).map(func(c): return c.level) == [0, 1, 2], "con la primera: las tres vitrinas de GANZÚA, fácil, medio y difícil")
-	check(Practice.bench_cases(1).map(func(c): return c.slot) == [0, 1, 2], "... en los huecos 0 a 2")
-	var beside := Vector2(c0.at) + Vector2(0.5, 1.5)
-	var fresh := Practice.bench_action(beside, bn, 1)
-	check(fresh.get("what", "") == "case" and fresh.i == 0, "junto a la primera, hacerla")
-	check(Practice.bench_action(Vector2(25.5, 5.5), bn, 1).is_empty() or Practice.bench_case_at(Vector2(25.5, 5.5), 1) != 0, "lejos de ella, no es la primera")
-	check(Practice.bench_action(Vector2(40.5, 5.5), bn, 1).is_empty(), "lejos de todas, nada")
-	Practice.bench_open(bn, 0)
-	check(bn.opened == 1 and bn.cases[0].state == "open", "hecha, el contador sube")
-	check(Practice.bench_action(beside, bn, 1).is_empty(), "hecha no se puede volver a hacer")
-	Practice.bench_step(bn, Practice.BENCH_OPEN_S - 0.1)
-	check(bn.cases[0].state == "open", "sigue señalando un rato (%.1f s)" % Practice.BENCH_OPEN_S)
-	Practice.bench_step(bn, 0.2)
-	check(bn.cases[0].state == "rearming", "luego vuelve atrás")
-	Practice.bench_step(bn, Practice.BENCH_REARM_S + 0.01)
-	check(bn.cases[0].state == "closed" and bn.opened == 1, "y se rearma sola en unos %.1f s, con la cuenta guardada" % (Practice.BENCH_OPEN_S + Practice.BENCH_REARM_S))
-	check(Practice.bench_action(beside, bn, 1).get("what", "") == "case", "... y se puede repetir")
-	# The tests come with their lessons.
-	var expect := [["games", ["lockpick"]], ["props", ["lockpick", "squeeze"]],
-		["case_alarm", ["lockpick", "squeeze", "wires"]], ["two", ["lockpick", "squeeze", "wires", "steady"]]]
-	for e in expect:
-		Story.unlock(Story.lesson_night(e[0]), 1)
-		check(Practice.bench_kinds(1) == e[1], "con la lección %s: %s" % [e[0], Practice.bench_kinds(1)])
-		check(Practice.bench_cases(1).size() == 3 * e[1].size(), "... y los tres objetos de cada una: %d" % Practice.bench_cases(1).size())
-	# Every one in its place, by test and difficulty; each test its own kind of object.
-	var all_cases := Practice.bench_cases(1)
-	var tiles := {}
-	var placed := true
-	for c in all_cases:
-		tiles[c.at] = true
-		placed = placed and Practice.bench_slot_of(c.at) == c.slot and c.slot == Practice.BENCH_TESTS.find(c.kind) * 3 + c.level \
-			and c.at == Practice.BENCH_AT[c.kind][c.level]
-	check(all_cases.size() == 12 and tiles.size() == 12 and placed, "los doce objetos, cada uno en su casilla (tres por prueba, uno por dificultad)")
-	var objects := Practice.BENCH_TESTS.map(func(k): return Practice.bench_object(k).object)
-	check(objects == ["vitrine", "hideout", "alarm_wires", "alarm_glass"], "cada prueba con su objeto: vitrina, escondite, caja de alarma de cables y de cristal: %s" % [objects])
-	var pmap := Practice.map(1)
-	var preach := pmap.distances(pmap.spawn)
-	var bench_ok := pmap.check().is_empty()
-	var taken := {}
-	for gs in Practice.game_starts(1):
-		taken[gs.at] = true
-	for ht in Practice.hide_tiles(1):
-		taken[ht] = true
-	for scare in Practice.scarecrows(1):
-		taken[scare.at] = true
-	for pr in pmap.props:
-		taken[pr.at] = true
-	taken[Practice.LANTERN_AT] = true
-	taken[Den.CASE_AT] = true
-	for c in all_cases:
-		var what := Practice.bench_object(c.kind)
-		var free := 0
-		for d in MapFile.DIRS:
-			var q: Vector2i = c.at + d
-			if pmap.at(q) == Tiles.FLOOR and preach[q.y * pmap.w + q.x] >= 0:
-				free += 1
-		var wall: Vector2i = what.get("wall", Vector2i.ZERO)
-		if what.solid:
-			bench_ok = bench_ok and pmap.at(c.at) == Tiles.COVER and free >= 2
-		else:
-			# Hung on a wall: its tile is floor to stand on, and the wall is at its side.
-			bench_ok = bench_ok and wall != Vector2i.ZERO and pmap.at(c.at) == Tiles.FLOOR and pmap.at(c.at + wall) == Tiles.WALL and preach[c.at.y * pmap.w + c.at.x] >= 0
-		bench_ok = bench_ok and Den.tile_room(c.at) == "dojo" and not taken.has(c.at)
-	check(bench_ok, "con todo el banco, el plano sigue jugable: las vitrinas y escondites bloquean y se llega a cada uno por dos lados; las cajas de alarma, en la pared, con suelo delante; nada pisa un punto de inicio, un escondite ni un espantapájaros")
-	var furn_clash := 0
-	for f in Den.furniture():
-		var fr: Array = f.get("block", [])
-		if fr.size() == 4:
-			for c in all_cases:
-				if Rect2i(fr[0], fr[1], fr[2], fr[3]).has_point(c.at):
-					furn_clash += 1
-	check(furn_clash == 0, "ningún mueble de la casa pisa un objeto del banco (%d)" % furn_clash)
-	# Their games are the heists' (Minigame), at the level of the row.
-	for k in ["lockpick", "squeeze", "wires", "steady"]:
-		for lv in 3:
-			var g: Minigame = Practice.bench_game(k, lv, {})
-			check(g != null and g.kind == k and g.level == lv and g.what == "bench", "la prueba %s a nivel %d es su minijuego de siempre" % [k, lv])
-	check(Practice.bench_game("squeeze", 0, {}).steps == SqueezeGame.WRIGGLES_LEVEL[0] and Practice.bench_game("squeeze", 1, {}).steps == SqueezeGame.WRIGGLES_LEVEL[1] + 1 \
-		and Practice.bench_game("squeeze", 2, {}).steps == SqueezeGame.WRIGGLES_LEVEL[2] + 1, "ESCONDITE: la nevera es holgada, la caja y el baúl ajustan más (Hideouts.TIGHT)")
-	check(Practice.bench_piece(0) == "fridge" and Practice.bench_piece(1) == "box" and Practice.bench_piece(2) == "chest" and Practice.BENCH_OBJECTS.squeeze.pieces.all(func(k): return Hideouts.PIECES.has(k)), "... con muebles de Hideouts.PIECES (no las armaduras de AGUANTA)")
-	check([0, 1, 2].map(func(lv): return Practice.bench_game("wires", lv, {}).steps) == WiresGame.WIRES_LEVEL, "CABLES: 3, 4 y 6 cables según el nivel")
-	check(Practice.bench_game("steady", 0, {}).level == 0 and Practice.bench_game("steady", 2, {}).level == 2, "PULSO: aro más pequeño y más deriva según el nivel")
-	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://test_escondite_d.cfg"))
 	Story.save = "user://test_escondite.cfg"
+
 
 	m = load("res://scenes/main.tscn").instantiate()
 	root.add_child(m)
@@ -517,7 +453,7 @@ func _init() -> void:
 	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://test_escondite_b.cfg"))
 	m._start_playing()
 	p = m.thieves[0]
-	check(Props.list.size() == 6 and m.house.mannequins.size() == 2, "abierto el dojo: seis cosas y los dos espantapájaros")
+	check(Props.list.size() == 6 and m.house.mannequins.size() == 3, "abierto el dojo: seis cosas y los tres espantapájaros del circuito")
 	check(Hideouts.all().filter(func(s) -> bool: return s.kind == "armour").size() == 3, "tres armaduras donde esconderse")
 	var bin: Props.Prop = Props.list.filter(func(q: Props.Prop) -> bool: return q.kind == "bin")[0]
 	p.x = bin.x + 0.5
@@ -528,6 +464,7 @@ func _init() -> void:
 	Props.push(bin, p, Sim.now_ms(), noises)
 	check(bin.fallen, "la papelera cae")
 
+	m.house.scarecrow_speed = 1.0
 	# The arcade machine in the lounge: pong, with nothing to win.
 	p.x = 2.5
 	p.y = 11.6
@@ -547,11 +484,13 @@ func _init() -> void:
 	# The scarecrows: the corridor's one sees a thief in its cone, and the dojo
 	# (only the dojo) goes red for three seconds.
 	var dv2: DenView = m.den_view
-	p.x = 38.5
-	p.y = 4.5
+	m.house.scarecrow_speed = 0.0
+	m.house.scarecrow_time = 0.0
+	p.x = 29.5
+	p.y = 19.5
 	m.house.scarecrow_alert = Practice.alert_new()
 	m.house.scarecrow_tick(0.1)
-	check(m.house.scarecrow_alert.active, "el espantapájaros del pasillo ve al ladrón en su cono: se dispara la alarma")
+	check(m.house.scarecrow_alert.active, "el primer espantapájaros del circuito ve al ladrón en su cono: se dispara la alarma")
 	dv2._pose_alert(0.4)
 	check(dv2.alert_level() == 1.0 and dv2._alert_slab.visible, "el dojo se pone rojo")
 	check(dv2._alert_slab.get_parent().name == "Room_dojo" and dv2._alert_lights.all(func(l: OmniLight3D) -> bool: return l.get_parent().name == "Room_dojo"), "... y el rojo cuelga del dojo, no de otra sala")
@@ -572,57 +511,18 @@ func _init() -> void:
 	m.house.scarecrow_tick(0.1)
 	check(not m.house.scarecrow_alert.active, "escondido en una caja, no cuenta")
 	p.hiding = false
-	p.x = 30.5
-	p.y = 9.5
+	p.x = 26.5
+	p.y = 5.5
 	m.house.scarecrow_tick(0.1)
-	check(not m.house.scarecrow_alert.active, "en la sala de exposición, no lo ve")
+	check(not m.house.scarecrow_alert.active, "en la bahía de GANZÚA, no lo ve")
 
-	# The bench: done as many times as one likes, with nothing at stake.
+	# The dojo's objects are dressed, and no sock but PILLA EL CALCETÍN's (its pedestals) and the band's flag.
 	Story.save = "user://test_escondite_b.cfg"
 	Story.unlock(Story.lesson_night("props"), 1)
 	m.house.scarecrow_alert = Practice.alert_new()
-	var lc := Practice.bench_case(0)
-	var lbeside := Vector2(lc.at) + Vector2(0.5, 1.5)
-	p.x = lbeside.x
-	p.y = lbeside.y
-	p.moving = false
-	p.speed = 0.0
-	m.house.bench = Practice.bench_new()
-	var bact: Dictionary = m._action_for(p)
-	check(bact.get("do", "") == "bench" and bact.at.what == "case" and bact.at.i == 0, "junto a la vitrina de GANZÚA, hacerla: %s" % [bact])
-	check(m._prompt_rows(0)[0].verb == Text.t("HIDEOUT_BENCH_OPEN"), "... y la ayuda lo dice")
-	var part0: Dictionary = m.den_view._bench_parts[0]
-	check((part0.lamp.material_override as StandardMaterial3D).albedo_color == BenchProps.LAMP_OFF, "la vitrina espera con su luz roja")
-	m.house.bench_act(p, 0, bact.at, {})
-	check(p.game != null and p.game.kind == "lockpick" and p.game.what == "bench" and p.game.level == 0, "con la ganzúa fácil, el minijuego de un robo, a nivel 0")
-	p.game.done = true
-	m.house.bench_tick(0.01)
-	check(p.game == null and m.house.bench.opened == 1 and m.house.bench.cases[0].state == "open", "hecho, se señala y el contador sube: %d" % m.house.bench.opened)
-	m.den_view._process(0.5)
-	check((part0.lamp.material_override as StandardMaterial3D).albedo_color == BenchProps.LAMP_ON and (part0.move as Node3D).position.y > 0.5, "señal: luz verde y el cristal sube, sin nada dentro")
-	check(m.den_view._bench_glows[0].visible, "... y la luz verde en el suelo")
-	for i in 20:
-		m.house.bench_tick(0.25)
-	m.den_view._process(0.5)
-	check(m.house.bench.cases[0].state == "closed" and (part0.lamp.material_override as StandardMaterial3D).albedo_color == BenchProps.LAMP_OFF and (part0.move as Node3D).position.y < 0.01, "y vuelve atrás sola, lista")
-	# The hideout's, the alarm boxes' and the hard lockpick: each its own game, at its level.
-	m.house.bench_act(p, 0, {"what": "case", "i": 4}, {})
-	check(p.game != null and p.game.kind == "squeeze" and p.game.what == "bench" and p.game.level == 1, "el escondite del medio: el minijuego de meterse, a nivel 1")
-	p.game.done = true
-	m.house.bench_tick(0.01)
-	check(p.game == null and m.house.bench.opened == 2 and m.house.bench.cases[4].state == "open", "hecho, se señala y el contador sube: %d" % m.house.bench.opened)
-	m.house.bench_act(p, 0, {"what": "case", "i": 2}, {})
-	check(p.game != null and p.game.kind == "lockpick" and p.game.level == 2, "y en la vitrina difícil, a nivel 2")
-	p.game = null
-	m.house.bench_target.clear()
-	check(not Heist.taken and Heist.progress == 0.0 and Heist.by == "" and m.phase == "playing", "sin robo: nada tomado, sin progreso, la noche sigue")
-	for i in 20:
-		m.house.bench_tick(0.25)
-	check(m.den_view._bench_labels.count.text.contains("2"), "el cartel cuenta las hechas")
-	check(m.den_view._bench_parts.size() == Practice.bench_cases(1).size() and m.den_view._bench_parts.size() >= 6, "la casa armada con las pruebas que hay: un objeto de cada")
-	# No sock but PILLA EL CALCETÍN's (its pedestals) and the band's flag.
+	check(m.den_view._trial_parts.size() == 6 and m.den_view._start_boards.size() == Practice.trial_starts(1).size(), "la casa armada con las pruebas que hay: un objeto por punto de inicio, 6 con partes móviles (las dos pruebas del banco enseñadas) y todos con su rótulo")
 	var socks := _socks_in(m.den_view)
-	var pedestals := Practice.game_starts(1).filter(func(g): return g.via == "sock").size()
+	var pedestals := Practice.trial_starts(1).filter(func(g): return g.via == "sock").size()
 	check(pedestals == 3 and socks == pedestals + 1, "calcetines en el dojo: solo los %d pedestales de PILLA EL CALCETÍN y la bandera de la banda (%d)" % [pedestals, socks])
 	m.scenery.draw_loot()
 	check(not m.scenery.loot_node.visible, "y ninguno flotando sobre el banco (la pieza de la casa no se enseña)")
@@ -722,276 +622,13 @@ func _init() -> void:
 	m.thieves[0].x = 25.5
 	m.thieves[0].y = 5.5
 	m.thieves[1].x = 25.5
-	m.thieves[1].y = 18.5
+	m.thieves[1].y = 33.5
 	m.house.home_sight(true)
 	check(dv.shows("salon") and dv.shows("dojo") and dv.shows("aseo") and not dv.shows("trofeos"), "ladrones repartidos por tres salas: se ven esas tres")
 	m.thieves[2].x = 10.5
 	m.thieves[2].y = 5.0
 	m.house.home_sight(true)
 	check(dv.shows("trofeos"), "... y con otro en los trofeos, las cuatro")
-
-	# The dojo's games: three start points for each, one for each difficulty, that
-	# come with their lesson; nothing of it is kept but the best level (section [dojo]).
-	Story.save = "user://test_escondite_juegos.cfg"
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
-	check(Practice.game_starts(1).is_empty() and Practice.game_at(Vector2(49.5, 2.5), 1).is_empty(), "recién empezada, sin puntos de inicio")
-	Story.unlock(Story.lesson_night("torch"), 1)
-	check(Practice.game_starts(1).map(func(g): return g.game) == ["aguanta", "aguanta", "aguanta"] and Practice.game_starts(1).map(func(g): return g.tier) == [0, 1, 2],
-		"con la lección de la linterna, las tres armaduras de AGUANTA ESCONDIDO: fácil, medio y difícil")
-	Story.unlock(Story.lesson_night("games"), 1)
-	check(Practice.game_starts(1).map(func(g): return g.game).slice(3) == ["pedestal", "pedestal", "pedestal", "atrapa", "atrapa", "atrapa"], "con los juegos, los tres pedestales de EQUILIBRIO y los tres calcetines de PILLA")
-	Story.unlock(Story.lesson_night("props"), 1)
-	check(Practice.game_starts(1).size() == 12, "con las cosas, los tres círculos de BOLOS: doce puntos de inicio")
-	var gmap := Practice.map(1)
-	check(gmap.check().is_empty(), "el plano con los puntos de inicio se puede jugar: %s" % [gmap.check()])
-	var greach := gmap.distances(gmap.spawn)
-	var starts_at := {}
-	for g in Practice.game_starts(1):
-		starts_at[g.at] = true
-		check(Den.tile_room(g.at) == "dojo", "el punto %s de %s (%d) está en el dojo" % [g.at, g.game, g.tier])
-		var zr: Array = Den.DOJO_ZONES[String(Practice._item("game_" + g.game).zone)]
-		check(Rect2i(zr[0], zr[1], zr[2], zr[3]).has_point(g.at), "... y en su zona")
-		var free := 0
-		for d in MapFile.DIRS:
-			if gmap.at(g.at + d) == Tiles.FLOOR and greach[(g.at.y + d.y) * gmap.w + g.at.x + d.x] >= 0:
-				free += 1
-		match g.via:
-			"ring":
-				check(gmap.at(g.at) == Tiles.FLOOR and greach[g.at.y * gmap.w + g.at.x] >= 0, "... un círculo en el suelo, al que se llega")
-			"armour":
-				check(gmap.props.any(func(q): return q.kind == "armour" and q.at == g.at) and free >= 2, "... una armadura, a la que se llega por dos lados")
-			_:
-				check(gmap.at(g.at) == Tiles.COVER and free >= 2, "... un pedestal que bloquea su casilla, al que se llega por dos lados")
-	check(starts_at.size() == 12, "los doce puntos, en casillas distintas")
-	var sock1: Vector2i = Practice.start_of("atrapa", 1, 1)
-	var ring2: Vector2i = Practice.start_of("bolos", 2, 1)
-	check(Practice.game_at(Vector2(sock1) + Vector2(0.5, 1.5), 1) == {"id": "atrapa", "tier": 1} and Practice.game_at(Vector2(sock1) + Vector2(0.5, 3.0), 1).is_empty(),
-		"a menos de 1,3 casillas del calcetín, su juego y su dificultad; más lejos, ninguno")
-	check(Practice.game_at(Vector2(ring2) + Vector2(0.5, 0.5), 1) == {"id": "bolos", "tier": 2} and Practice.game_at(Vector2(ring2) + Vector2(1.5, 0.5), 1).is_empty(),
-		"sobre el círculo de BOLOS, su juego y su dificultad; al lado, ninguno")
-	check(Practice.game_at(Vector2(Practice.start_of("pedestal", 0, 1)) + Vector2(0.5, 1.0), 1).is_empty(), "un pedestal o una armadura no se empiezan con la acción, sino subiendo o escondiéndose")
-	check(Practice.start_tier("pedestal", Practice.start_of("pedestal", 2, 1), 1) == 2 and Practice.start_tier("pedestal", Vector2i(1, 1), 1) == -1, "de una casilla, la dificultad de su punto")
-	check(Practice.hide_tiles(1).size() == 5 and Practice.hide_tiles(1).has(Practice.start_of("aguanta", 0, 1)), "los escondites de AGUANTA: la caja, la taquilla y las tres armaduras")
-
-	m.mode = Practice.MODE
-	m.players = 1
-	var one_seat: Array[String] = ["any"]
-	m.seats = one_seat
-	m._new_round(1)
-	m._start_playing()
-	var before_cfg := FileAccess.get_file_as_string(Story.save)
-	var gt: Thief = m.thieves[0]
-	gt.x = sock1.x + 0.5
-	gt.y = sock1.y + 1.5
-	gt.moving = false
-	gt.speed = 0.0
-	var gact: Dictionary = m._action_for(gt)
-	check(gact.get("do", "") == "game" and gact.id == "atrapa" and gact.tier == 1, "junto al calcetín del medio, la acción es cogerlo: %s" % [gact])
-	check(m._prompt_rows(0).size() == 1 and String(m._prompt_rows(0)[0].verb) == DojoGames.start_label("atrapa", 1), "... y la ayuda dice COGER EL CALCETÍN (MEDIO)")
-	m.house.dojo_start("atrapa", 1)
-	var started: DojoGame = m.house.dojo_game
-	check(started != null and started.state == "ready" and started.tier == 1 and started.level == 4 and started.start_tile == sock1 and m._action_for(gt).get("do", "") != "game", "empezado en el medio (nivel 4), no se ofrece otro")
-	check(String(m._prompt_rows(0)[0].verb) == Text.t("HIDEOUT_GAME_LEAVE_KEY"), "... y la ayuda dice cómo dejarlo")
-	await frames(3)
-	m.house.dojo_view.show_view(m.house.dojo_game.view())
-	check(m.house.dojo_view.visible, "la vista del juego se ve")
-	m.house.dojo_end()
-	check(m.house.dojo_game == null and not m.house.dojo_view.visible, "abortar deja la casa como estaba")
-	check(FileAccess.get_file_as_string(Story.save) == before_cfg, "empezar y abortar no escribe nada en el progreso")
-	check(m._action_for(gt).get("do", "") != "game", "recién dejado, el calcetín no vuelve a empezar solo (la tecla aún pulsada)")
-	m.house.dojo_lock = 0.0
-
-	# EQUILIBRIO and AGUANTA start by getting onto the pedestal or into the armour,
-	# and only once for each time (leaving the game with the thief still up does not restart it).
-	var plinth_hard: Vector2i = Practice.start_of("pedestal", 2, 1)
-	Plinths.climb(gt, plinth_hard, [])
-	gt.game = Minigame.make("balance", "plinth", 1, {})
-	m.house.dojo_poll()
-	var ped: DojoGame = m.house.dojo_game
-	check(ped is PedestalGame and ped.tier == 2 and ped.starter == 0 and ped.start_tile == plinth_hard and ped.level == 7, "subido al pedestal difícil, empieza EQUILIBRIO en el nivel 7, con quien subió")
-	check(gt.game.level == 2, "... y el minijuego del equilibrio, a nivel difícil")
-	m.house.dojo_end()
-	m.house.dojo_lock = 0.0
-	m.house.dojo_poll()
-	check(m.house.dojo_game == null, "dejado el juego con el ladrón aún arriba, no vuelve a empezar")
-	gt.posing = false
-	m.house.dojo_poll()
-	Plinths.climb(gt, plinth_hard, [])
-	m.house.dojo_poll()
-	check(m.house.dojo_game is PedestalGame, "bajado y vuelto a subir, empieza otra vez")
-	m.house.dojo_end()
-	m.house.dojo_lock = 0.0
-	gt.posing = false
-	gt.game = null
-	m.house.dojo_poll()
-	var armour_easy: Vector2i = Practice.start_of("aguanta", 0, 1)
-	var suit: Hideouts.Spot = Hideouts.all().filter(func(q: Hideouts.Spot) -> bool: return q.kind == "armour" and q.tiles[0] == armour_easy)[0]
-	Hideouts.get_in(gt, suit, [])
-	m.house.dojo_poll()
-	var hid: DojoGame = m.house.dojo_game
-	check(hid is HideGame and hid.tier == 0 and hid.start_tile == armour_easy and hid.level == 1, "escondido en la armadura fácil, empieza AGUANTA ESCONDIDO en el nivel 1")
-	m.house.dojo_end()
-	m.house.dojo_lock = 0.0
-	gt.hiding = false
-	gt.hideout = null
-	m.house.dojo_poll()
-	var crate: Hideouts.Spot = Hideouts.all().filter(func(q: Hideouts.Spot) -> bool: return q.kind == "box")[0]
-	Hideouts.get_in(gt, crate, [])
-	m.house.dojo_poll()
-	check(m.house.dojo_game == null, "escondido en la caja, que no es de las armaduras del juego, no empieza nada")
-	gt.hiding = false
-	gt.hideout = null
-	m.house.dojo_poll()
-
-	# La pausa aborta el juego; Tab también.
-	m.house.dojo_start("atrapa", 0)
-	m._pause()
-	check(m.house.dojo_game == null, "la pausa aborta el juego")
-	m._start_playing()
-	m.house.dojo_lock = 0.0
-	m.house.dojo_start("atrapa", 0)
-	var tab := InputEventKey.new()
-	tab.keycode = KEY_TAB
-	tab.pressed = true
-	m._unhandled_input(tab)
-	check(m.house.dojo_game == null, "Tab deja el juego")
-
-	# Un PILLA EL CALCETÍN con un bot hasta perder: el mejor nivel queda por banda y dificultad.
-	m.house.dojo_lock = 0.0
-	m.house.dojo_start("atrapa", 0)
-	var caught := 0
-	for f in 3000:
-		var view: Dictionary = m.house.dojo_game.view()
-		if view.state == "playing" and not view.objects.is_empty() and caught < 2:
-			gt.x = view.objects[0].pos.x
-			gt.y = view.objects[0].pos.y
-		elif view.state == "playing":
-			gt.x = 22.5
-			gt.y = 12.5
-		run(1)
-		if m.house.dojo_game.finished():
-			break
-		if m.house.dojo_game.got > caught:
-			caught = m.house.dojo_game.got
-	check(m.house.dojo_game.state == "lost", "sin pillarlo más, se pierde: %s" % m.house.dojo_game.state)
-	check(DojoGames.best("atrapa", 1) == m.house.dojo_game.level and DojoGames.best("atrapa", 1) >= 2, "el mejor nivel del fácil queda guardado: %d" % DojoGames.best("atrapa", 1))
-	check(DojoGames.best("atrapa", 2) == 0 and DojoGames.best("atrapa", 1, 1) == 0 and DojoGames.best("atrapa", 1, 2) == 0, "... solo para la banda de uno y solo en el fácil")
-	var cfg := ConfigFile.new()
-	cfg.load(Story.save)
-	check(Array(cfg.get_sections()).all(func(sec): return sec in ["story", "dojo"]) and Story.stars_in(0, 1) == 0, "solo la sección [dojo] es nueva: sin estrellas ni museo")
-	m.house.dojo_input(_accept_key())
-	check(m.house.dojo_game != null and m.house.dojo_game.state == "ready" and m.house.dojo_game.level == 1, "en el panel de fin, aceptar es OTRA VEZ, desde el principio del tramo")
-	m.house.dojo_end()
-	check(m.house.dojo_game == null and m.house.dojo_view.accept() == "", "salir cierra el juego y la vista")
-	m.mode = Practice.MODE
-	m._new_round(1)
-	check(m.house.dojo_game == null and is_instance_valid(m.house.dojo_view), "una casa nueva empieza sin juego")
-
-	# Con una prueba en marcha, lo demás de la casa no responde ni ofrece su aviso.
-	m._start_playing()
-	m.house.dojo_lock = 0.0
-	var tt: Thief = m.thieves[0]
-	var other_start: Vector2i = Practice.start_of("atrapa", 0, 1)
-	var bin2: Props.Prop = Props.list.filter(func(q: Props.Prop) -> bool: return q.kind == "bin")[0]
-	var crate2: Hideouts.Spot = Hideouts.all().filter(func(q: Hideouts.Spot) -> bool: return q.kind == "box")[0]
-	var nearby := {
-		"game": Vector2(other_start) + Vector2(0.5, 1.5),
-		"push": Vector2(bin2.x + 0.5, bin2.y + 0.5),
-		"hide": crate2.middle(),
-		"bench": Vector2(Practice.bench_case(0).at) + Vector2(0.5, 1.5),
-	}
-	var act_at := func(kind: String) -> Dictionary:
-		tt.x = nearby[kind].x
-		tt.y = nearby[kind].y
-		tt.moving = false
-		tt.speed = 0.0
-		return m._action_for(tt)
-	var all_free := func() -> bool:
-		m.house.dojo_lock = 0.0
-		return nearby.keys().all(func(k: String) -> bool: return act_at.call(k).get("do", "") == k)
-	var all_blocked := func(except := "") -> bool:
-		return nearby.keys().all(func(k: String) -> bool: return k == except or act_at.call(k).is_empty())
-	check(not m.house.trial_active() and all_free.call(), "sin prueba, todo responde: otro calcetín, la papelera, la caja y la vitrina")
-	for pair in [["atrapa", 1], ["bolos", 2], ["pedestal", 0], ["aguanta", 0]]:
-		m.house.dojo_lock = 0.0
-		m.house.dojo_start(pair[0], pair[1])
-		check(m.house.dojo_game != null and m.house.trial_active(), "%s en marcha: hay prueba" % pair[0])
-		# AGUANTA is the one that asks for hideouts: the open ones of the round.
-		var open_crate: bool = m.house.dojo_game is HideGame and (m.house.dojo_game as HideGame).open_hides.any(func(k: Vector2i) -> bool: return crate2.tiles.has(k))
-		check(all_blocked.call("hide" if open_crate else ""), "%s: otro punto de inicio, la papelera, la vitrina y los escondites que no son suyos, no hacen nada" % pair[0])
-		if open_crate:
-			check(act_at.call("hide").get("do", "") == "hide", "... y el escondite que abre la prueba, sí")
-		tt.x = nearby.push.x
-		tt.y = nearby.push.y
-		var rows: Array = m._prompt_rows(0)
-		check(rows.size() <= 1 and rows.all(func(r: Dictionary) -> bool: return String(r.verb) == Text.t("HIDEOUT_GAME_LEAVE_KEY")), "... ni aviso de acción, solo el de dejar la prueba")
-		var before_start: DojoGame = m.house.dojo_game
-		m.house.dojo_poll()
-		m.house.dojo_start("bolos", 0)
-		check(m.house.dojo_game == before_start, "... ni se empieza otra prueba encima")
-		# Panel de fin: sigue bloqueado hasta aceptar OTRA VEZ o salir.
-		m.house.dojo_game.state = "lost"
-		check(m.house.dojo_game.finished() and m.house.trial_active() and all_blocked.call(), "%s: en el panel de fin, sigue todo bloqueado" % pair[0])
-		m.house.dojo_view.show_view(m.house.dojo_game.view())
-		m.house.dojo_input(_accept_key())
-		check(m.house.dojo_game != null and m.house.dojo_game.state == "ready" and m.house.trial_active(), "... y OTRA VEZ es una prueba de nuevo")
-		m.house.dojo_end()
-		check(not m.house.trial_active() and all_free.call(), "%s: salir del panel lo devuelve todo" % pair[0])
-	# Tab, la pausa (también lo que hace perder un mando) y la puerta.
-	m.house.dojo_lock = 0.0
-	m.house.dojo_start("atrapa", 0)
-	m._unhandled_input(tab)
-	check(not m.house.trial_active() and all_free.call(), "Tab deja la prueba y todo vuelve")
-	m.house.dojo_lock = 0.0
-	m.house.dojo_start("bolos", 0)
-	m._pause()
-	check(not m.house.trial_active(), "la pausa deja la prueba")
-	m._start_playing()
-	check(all_free.call(), "... y al seguir, todo responde")
-	m.house.dojo_lock = 0.0
-	m.house.dojo_start("aguanta", 0)
-	m._new_round(1)
-	m._start_playing()
-	check(not m.house.trial_active(), "una casa nueva con una prueba a medias no arrastra el bloqueo")
-	tt = m.thieves[0]
-	m.house.dojo_lock = 0.0
-	m.house.dojo_start("atrapa", 0)
-	tt.x = 10.0
-	tt.y = 22.5
-	run(2)
-	await frames(6)
-	check(m.phase == "tour" and not m.house.trial_active(), "salir por la puerta durante la prueba la abandona, como Tab: %s" % m.phase)
-	m.mode = Practice.MODE
-	m.players = 1
-	m._new_round(1)
-	m._start_playing()
-	tt = m.thieves[0]
-	check(not m.house.trial_active() and all_free.call(), "... y de vuelta en la casa, todo responde")
-	# Los objetos del banco: cada uno con su minijuego, y mientras dura lo demás no responde.
-	Story.unlock(Story.lesson_night("two"), 1)
-	var cases: Array = Practice.bench_cases(1)
-	check(cases.size() == 12, "con todo enseñado, los doce objetos del banco")
-	var stand_at := func(c: Dictionary) -> Vector2:
-		return Vector2(c.at) + (Vector2(0.5, 1.5) if Practice.bench_object(c.kind).solid else Vector2(0.5, 0.5))
-	for c in cases:
-		if c.level != 1:
-			continue
-		nearby["bench"] = stand_at.call(c)
-		check(all_free.call(), "%s: sin prueba, su objeto responde con los demás" % c.kind)
-		m.house.bench_act(tt, 0, {"what": "case", "i": c.slot}, {})
-		check(tt.game != null and tt.game.what == "bench" and m.house.trial_active() and all_blocked.call(), "%s: con su minijuego en marcha, ni los demás objetos del banco ni nada responden" % c.kind)
-		check(m._action_for(tt).is_empty() and m._prompt_rows(0).is_empty(), "... ni el suyo, ni aviso de acción")
-		for other in cases:
-			if other.slot != c.slot and other.level != 1:
-				tt.x = stand_at.call(other).x
-				tt.y = stand_at.call(other).y
-				check(m._action_for(tt).is_empty(), "... ni el %s de otra dificultad" % other.kind)
-				break
-		tt.game = null
-		check(not m.house.trial_active() and all_free.call(), "%s: dejar el minijuego lo devuelve todo" % c.kind)
-		m.house.bench_target.clear()
-	nearby["bench"] = Vector2(Practice.bench_case(0).at) + Vector2(0.5, 1.5)
-	m.house.bench_target.clear()
 
 	# Los trofeos no llevan calcetín: donde el botín es un calcetín, una estrella.
 	Story.keep_stars(24, 1, Story.STAR_TAKEN)
@@ -1001,7 +638,7 @@ func _init() -> void:
 	var gold_stars: Array = m.den_view.find_children("*", "Label3D", true, false).filter(func(l: Label3D) -> bool: return l.text == "★" and l.font_size == 96)
 	check(Story.LEVELS[23].loot.shape == "sock", "el robo 24 roba un calcetín")
 	check(Den.is_filled(24, 1) and gold_stars.size() == 1, "lleno, su puesto enseña una estrella (%d), no un calcetín" % gold_stars.size())
-	var pedestals2 := Practice.game_starts(1).filter(func(g): return g.via == "sock").size()
+	var pedestals2 := Practice.trial_starts(1).filter(func(g): return g.via == "sock").size()
 	check(_socks_in(m.den_view) == pedestals2 + 1, "y en toda la casa solo quedan los pedestales de PILLA EL CALCETÍN y la bandera: %d" % _socks_in(m.den_view))
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
