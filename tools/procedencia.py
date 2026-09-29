@@ -238,8 +238,8 @@ def alternativas_errors(data=None):
                 if isinstance(a.get("url"), str) and a["url"] and not a["url"].startswith(("http://", "https://")):
                     errors.append(f"{aw}: 'url' debe empezar por http(s)://")
                 pv = a.get("preview_url")
-                if pv is not None and not (isinstance(pv, str) and pv.startswith(("http://", "https://"))):
-                    errors.append(f"{aw}: 'preview_url' debe ser una URL http(s) o faltar")
+                if pv not in (None, "") and not (isinstance(pv, str) and pv.startswith(("http://", "https://"))):
+                    errors.append(f"{aw}: 'preview_url' debe ser una URL http(s), vacío o faltar")
                 if not isinstance(a.get("atribucion"), bool):
                     errors.append(f"{aw}: 'atribucion' debe ser true o false")
                 e = a.get("encaje")
