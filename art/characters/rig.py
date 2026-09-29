@@ -441,13 +441,16 @@ def preview(arm, prefix, names, frames=8):
 
 ## Para el juego basta con una fracción de los triángulos del render.
 GAME_DETAIL = 0.22
+## Las piezas con menos caras que esto no se aligeran.
+MIN_DECIMATE_FACES = 400
 
 
 def export(path):
     """A glTF con el esqueleto, la malla con pesos (aligerada para el juego)
     y todas las acciones."""
     for o in bpy.data.objects:
-        if o.type == "MESH" and any(m.type == "ARMATURE" for m in o.modifiers):
+        # Las piezas pequeñas (ojos, pupilas, hebillas) se dejan como están: aligerarlas las deforma.
+        if o.type == "MESH" and any(m.type == "ARMATURE" for m in o.modifiers) and len(o.data.polygons) > MIN_DECIMATE_FACES:
             d = o.modifiers.new("aligerar", "DECIMATE")
             d.ratio = GAME_DETAIL
             d.use_collapse_triangulate = True
