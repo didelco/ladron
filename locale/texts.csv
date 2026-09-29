@@ -1071,3 +1071,4 @@ TOUR_MARK_GUARD_POST,Vigila quieto desde aquí.
 TOUR_MARK_PANEL_ONE,"La alarma naranja: sujétala para abrir la vitrina."
 TOUR_MARK_PANEL_MANY,"La alarma naranja: uno la sujeta, otro abre la vitrina."
 TOUR_PIECE_HEAD,LA PIEZA
+HUD_VERSION,v%s
