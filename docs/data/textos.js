@@ -422,7 +422,7 @@ window.TEXTOS = [
   "group": "Menús",
   "at": [
    "scenes/hands.gd:78",
-   "scenes/house_run.gd:183"
+   "scenes/house_run.gd:185"
   ],
   "via": []
  },
@@ -886,7 +886,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:1979"
+   "scenes/hud.gd:2012"
   ],
   "via": []
  },
@@ -908,7 +908,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:1919"
+   "scenes/hud.gd:1952"
   ],
   "via": []
  },
@@ -3586,7 +3586,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2030"
+   "scenes/hud.gd:2063"
   ],
   "via": []
  },
@@ -3597,7 +3597,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2622"
+   "scenes/hud.gd:2655"
   ],
   "via": []
  },
@@ -3608,7 +3608,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1256"
+   "scenes/main.gd:1254"
   ],
   "via": []
  },
@@ -3619,7 +3619,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1258"
+   "scenes/main.gd:1256"
   ],
   "via": []
  },
@@ -3630,7 +3630,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1261"
+   "scenes/main.gd:1259"
   ],
   "via": []
  },
@@ -3641,7 +3641,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2391"
+   "scenes/hud.gd:2424"
   ],
   "via": []
  },
@@ -3652,7 +3652,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2393"
+   "scenes/hud.gd:2426"
   ],
   "via": []
  },
@@ -3663,7 +3663,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1277"
+   "scenes/main.gd:1275"
   ],
   "via": []
  },
@@ -3674,7 +3674,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1276"
+   "scenes/main.gd:1274"
   ],
   "via": []
  },
@@ -3696,7 +3696,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1273"
+   "scenes/main.gd:1271"
   ],
   "via": []
  },
@@ -3707,7 +3707,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1275"
+   "scenes/main.gd:1273"
   ],
   "via": []
  },
@@ -3718,7 +3718,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1263"
+   "scenes/main.gd:1261"
   ],
   "via": []
  },
@@ -3729,7 +3729,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1274"
+   "scenes/main.gd:1272"
   ],
   "via": []
  },
@@ -3740,7 +3740,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1265"
+   "scenes/main.gd:1263"
   ],
   "via": []
  },
@@ -3751,7 +3751,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1272"
+   "scenes/main.gd:1270"
   ],
   "via": []
  },
@@ -3762,7 +3762,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1272"
+   "scenes/main.gd:1270"
   ],
   "via": []
  },
@@ -3773,7 +3773,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1272"
+   "scenes/main.gd:1270"
   ],
   "via": []
  },
@@ -3924,7 +3924,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:276"
+   "scenes/night_loop.gd:279"
   ],
   "via": []
  },
@@ -3935,7 +3935,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1255"
+   "scenes/main.gd:1253"
   ],
   "via": []
  },
@@ -3946,7 +3946,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1255"
+   "scenes/main.gd:1253"
   ],
   "via": []
  },
@@ -3990,7 +3990,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:397"
+   "scenes/night_loop.gd:399"
   ],
   "via": []
  },
@@ -4034,7 +4034,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:447"
+   "scenes/night_loop.gd:449"
   ],
   "via": []
  },
@@ -4045,7 +4045,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:447"
+   "scenes/night_loop.gd:449"
   ],
   "via": []
  },
@@ -4056,7 +4056,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/scenery.gd:384"
+   "scenes/scenery.gd:386"
   ],
   "via": []
  },
@@ -4067,7 +4067,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/scenery.gd:444"
+   "scenes/scenery.gd:446"
   ],
   "via": []
  },
@@ -4078,7 +4078,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2252"
+   "scenes/hud.gd:2285"
   ],
   "via": []
  },
@@ -4089,7 +4089,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2252"
+   "scenes/hud.gd:2285"
   ],
   "via": []
  },
@@ -4100,7 +4100,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2252"
+   "scenes/hud.gd:2285"
   ],
   "via": []
  },
@@ -4111,7 +4111,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2252"
+   "scenes/hud.gd:2285"
   ],
   "via": []
  },
@@ -4122,7 +4122,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2253"
+   "scenes/hud.gd:2286"
   ],
   "via": []
  },
@@ -4133,7 +4133,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2253"
+   "scenes/hud.gd:2286"
   ],
   "via": []
  },
@@ -4144,7 +4144,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2253"
+   "scenes/hud.gd:2286"
   ],
   "via": []
  },
@@ -4155,7 +4155,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2254"
+   "scenes/hud.gd:2287"
   ],
   "via": []
  },
@@ -4166,7 +4166,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2254"
+   "scenes/hud.gd:2287"
   ],
   "via": []
  },
@@ -4199,7 +4199,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:241"
+   "scenes/night_loop.gd:244"
   ],
   "via": []
  },
@@ -4210,7 +4210,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:332"
+   "scenes/night_loop.gd:336"
   ],
   "via": []
  },
@@ -4221,7 +4221,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:349"
+   "scenes/night_loop.gd:353"
   ],
   "via": []
  },
@@ -4243,7 +4243,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:332"
+   "scenes/night_loop.gd:336"
   ],
   "via": []
  },
@@ -4276,7 +4276,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:314"
+   "scenes/night_loop.gd:318"
   ],
   "via": []
  },
@@ -4287,7 +4287,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:241"
+   "scenes/night_loop.gd:244"
   ],
   "via": []
  },
@@ -4298,7 +4298,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:402"
+   "scenes/night_loop.gd:404"
   ],
   "via": []
  },
@@ -4309,7 +4309,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:410"
+   "scenes/night_loop.gd:412"
   ],
   "via": []
  },
@@ -4320,7 +4320,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:410"
+   "scenes/night_loop.gd:412"
   ],
   "via": []
  },
@@ -4331,7 +4331,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:413"
+   "scenes/night_loop.gd:415"
   ],
   "via": []
  },
@@ -4342,7 +4342,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:443"
+   "scenes/night_loop.gd:445"
   ],
   "via": []
  },
@@ -4353,7 +4353,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:443"
+   "scenes/night_loop.gd:445"
   ],
   "via": []
  },
@@ -4364,7 +4364,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:443"
+   "scenes/night_loop.gd:445"
   ],
   "via": []
  },
@@ -4375,7 +4375,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:448"
+   "scenes/night_loop.gd:450"
   ],
   "via": []
  },
@@ -4386,7 +4386,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:433"
+   "scenes/night_loop.gd:435"
   ],
   "via": []
  },
@@ -4397,7 +4397,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:468"
+   "scenes/night_loop.gd:470"
   ],
   "via": []
  },
@@ -4408,7 +4408,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:465"
+   "scenes/night_loop.gd:467"
   ],
   "via": []
  },
@@ -4419,7 +4419,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:465"
+   "scenes/night_loop.gd:467"
   ],
   "via": []
  },
@@ -4430,7 +4430,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:456"
+   "scenes/night_loop.gd:458"
   ],
   "via": []
  },
@@ -4441,7 +4441,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:519"
+   "scenes/night_loop.gd:521"
   ],
   "via": []
  },
@@ -4470,7 +4470,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1327"
+   "scenes/main.gd:1325"
   ],
   "via": []
  },
@@ -4536,7 +4536,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1395"
+   "scenes/main.gd:1393"
   ],
   "via": []
  },
@@ -4547,7 +4547,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1395"
+   "scenes/main.gd:1393"
   ],
   "via": []
  },
@@ -4558,7 +4558,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1402"
+   "scenes/main.gd:1400"
   ],
   "via": []
  },
@@ -4569,7 +4569,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1402"
+   "scenes/main.gd:1400"
   ],
   "via": []
  },
@@ -5549,7 +5549,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1256"
+   "scenes/main.gd:1254"
   ],
   "via": []
  },
@@ -6441,7 +6441,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:430"
+   "logic/map_file.gd:431"
   ],
   "via": []
  },
@@ -6452,7 +6452,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:440"
+   "logic/map_file.gd:441"
   ],
   "via": []
  },
@@ -6463,7 +6463,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:442"
+   "logic/map_file.gd:443"
   ],
   "via": []
  },
@@ -6474,7 +6474,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:448"
+   "logic/map_file.gd:449"
   ],
   "via": []
  },
@@ -6485,7 +6485,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:452"
+   "logic/map_file.gd:453"
   ],
   "via": []
  },
@@ -6496,8 +6496,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:455",
-   "logic/map_file.gd:457"
+   "logic/map_file.gd:456",
+   "logic/map_file.gd:458"
   ],
   "via": []
  },
@@ -6508,7 +6508,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:460"
+   "logic/map_file.gd:461"
   ],
   "via": []
  },
@@ -6519,7 +6519,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:463"
+   "logic/map_file.gd:464"
   ],
   "via": []
  },
@@ -6530,8 +6530,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:468",
-   "logic/map_file.gd:469"
+   "logic/map_file.gd:469",
+   "logic/map_file.gd:470"
   ],
   "via": []
  },
@@ -7486,7 +7486,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:526"
+   "logic/map_file.gd:527"
   ],
   "via": []
  },
@@ -10822,7 +10822,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:383"
+   "scenes/night_loop.gd:385"
   ],
   "via": []
  },
@@ -14900,7 +14900,7 @@ window.TEXTOS = [
   "at": [
    "scenes/main.gd:583",
    "scenes/tour.gd:179",
-   "logic/practice.gd:404"
+   "logic/practice.gd:307"
   ],
   "via": []
  },
@@ -14955,7 +14955,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/den_view.gd:501"
+   "scenes/den_view.gd:500"
   ],
   "via": []
  },
@@ -14966,7 +14966,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/den_view.gd:700"
+   "scenes/den_view.gd:696"
   ],
   "via": []
  },
@@ -14988,7 +14988,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/den_view.gd:436"
+   "scenes/den_view.gd:435"
   ],
   "via": []
  },
@@ -14999,7 +14999,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1278"
+   "scenes/main.gd:1276"
   ],
   "via": []
  },
@@ -15010,7 +15010,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1278"
+   "scenes/main.gd:1276"
   ],
   "via": []
  },
@@ -15021,7 +15021,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1390"
+   "scenes/main.gd:1388"
   ],
   "via": []
  },
@@ -15032,7 +15032,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:407"
+   "logic/practice.gd:310"
   ],
   "via": []
  },
@@ -15043,7 +15043,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:407"
+   "logic/practice.gd:310"
   ],
   "via": []
  },
@@ -15054,7 +15054,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/den_view.gd:358"
+   "scenes/den_view.gd:357"
   ],
   "via": []
  },
@@ -15065,7 +15065,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/den_view.gd:359"
+   "scenes/den_view.gd:358"
   ],
   "via": []
  },
@@ -15076,29 +15076,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/den_view.gd:360"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_ITEM_DUMMY",
-  "es": "el espantapájaros del pasillo",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "logic/practice.gd:44"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_ITEM_DUMMY_BACK",
-  "es": "el espantapájaros de los escondites",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "logic/practice.gd:46"
+   "scenes/den_view.gd:359"
   ],
   "via": []
  },
@@ -15109,7 +15087,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:55"
+   "logic/practice.gd:40"
   ],
   "via": []
  },
@@ -15120,7 +15098,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:57"
+   "logic/practice.gd:42"
   ],
   "via": []
  },
@@ -15131,7 +15109,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:58"
+   "logic/practice.gd:43"
   ],
   "via": []
  },
@@ -15142,29 +15120,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:59"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_ITEM_MAZE_A",
-  "es": "el primer espantapájaros del laberinto",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "logic/practice.gd:63"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_ITEM_MAZE_B",
-  "es": "el segundo espantapájaros del laberinto",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "logic/practice.gd:66"
+   "logic/practice.gd:44"
   ],
   "via": []
  },
@@ -15175,62 +15131,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1275"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_BENCH_COUNT",
-  "es": "ABIERTAS",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "scenes/den_view.gd:968"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_BENCH_KIND_LOCKPICK",
-  "es": "GANZÚA",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "logic/practice.gd:54"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_BENCH_KIND_SQUEEZE",
-  "es": "ESCONDITE",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "logic/practice.gd:62"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_BENCH_KIND_WIRES",
-  "es": "CABLES",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "logic/practice.gd:65"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_BENCH_KIND_STEADY",
-  "es": "PULSO",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "logic/practice.gd:68"
+   "scenes/main.gd:1273"
   ],
   "via": []
  },
@@ -15241,7 +15142,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/dojo_games.gd:24"
+   "logic/dojo_trials.gd:46"
   ],
   "via": []
  },
@@ -15252,7 +15153,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/dojo_games.gd:25"
+   "logic/dojo_trials.gd:47"
   ],
   "via": []
  },
@@ -15263,91 +15164,528 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/dojo_games.gd:26"
+   "logic/dojo_trials.gd:48"
   ],
   "via": []
  },
  {
-  "key": "HIDEOUT_BENCH_OPEN",
-  "es": "PROBAR",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "scenes/main.gd:1271"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_GAME_ATRAPA",
+  "key": "HIDEOUT_TRIAL_NAME_ATRAPA",
   "es": "PILLA EL CALCETÍN",
   "broken": false,
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:309",
-   "logic/dojo_games.gd:29",
-   "logic/practice.gd:52"
+   "logic/dojo_trials.gd:51"
   ],
   "via": []
  },
  {
-  "key": "HIDEOUT_GAME_BOLOS",
-  "es": "BOLOS",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "logic/dojo_games.gd:30",
-   "logic/practice.gd:60"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_GAME_PEDESTAL",
+  "key": "HIDEOUT_TRIAL_NAME_PEDESTAL",
   "es": "EQUILIBRIO",
   "broken": false,
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/dojo_games.gd:31",
-   "logic/practice.gd:50"
+   "logic/dojo_trials.gd:54"
   ],
   "via": []
  },
  {
-  "key": "HIDEOUT_GAME_AGUANTA",
+  "key": "HIDEOUT_TRIAL_NAME_BOLOS",
+  "es": "BOLOS",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:57"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_NAME_AGUANTA",
   "es": "AGUANTA ESCONDIDO",
   "broken": false,
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/dojo_games.gd:32",
-   "logic/practice.gd:48"
+   "logic/dojo_trials.gd:60"
   ],
   "via": []
  },
  {
-  "key": "HIDEOUT_GAME_START_ATRAPA",
+  "key": "HIDEOUT_TRIAL_NAME_LOCKPICK",
+  "es": "GANZÚA",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:63"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_NAME_SQUEEZE",
+  "es": "ESCONDITE",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:67"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_NAME_WIRES",
+  "es": "CABLES",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:71"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_NAME_STEADY",
+  "es": "PULSO",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:75"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_NAME_CIRCUIT",
+  "es": "CIRCUITO",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:79"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_START_ATRAPA",
   "es": "COGER EL CALCETÍN",
   "broken": false,
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/dojo_games.gd:29"
+   "logic/dojo_trials.gd:51"
   ],
   "via": []
  },
  {
-  "key": "HIDEOUT_GAME_START_BOLOS",
+  "key": "HIDEOUT_TRIAL_START_BOLOS",
   "es": "EMPEZAR BOLOS",
   "broken": false,
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/dojo_games.gd:30"
+   "logic/dojo_trials.gd:57"
   ],
   "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_START_LOCKPICK",
+  "es": "FORZAR LA VITRINA",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:63"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_START_SQUEEZE",
+  "es": "COLARSE",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:67"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_START_WIRES",
+  "es": "CORTAR LOS CABLES",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:71"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_START_STEADY",
+  "es": "PEGAR LA VENTOSA",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:75"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_START_CIRCUIT",
+  "es": "EMPEZAR EL CIRCUITO",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:79"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_HINT_ATRAPA",
+  "es": "¡PILLA EL CALCETÍN!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:52"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_HINT_PEDESTAL",
+  "es": "¡AGUANTA!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:55"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_HINT_BOLOS",
+  "es": "¡RUEDA!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:58"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_HINT_AGUANTA",
+  "es": "¡ESCÓNDETE!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:61"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_HINT_LOCKPICK",
+  "es": "¡ABRE LA VITRINA!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:64"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_HINT_SQUEEZE",
+  "es": "¡MÉTETE EN EL MUEBLE!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:68"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_HINT_WIRES",
+  "es": "¡CORTA LOS CABLES!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:72"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_HINT_STEADY",
+  "es": "¡MANTÉN LA VENTOSA EN EL ARO!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:76"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_HINT_CIRCUIT",
+  "es": "¡A LA META SIN QUE TE VEAN!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trials.gd:80"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_LEVEL",
+  "es": "NIVEL %d",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/den_view.gd:1004",
+   "logic/dojo_trial.gd:205"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_METERS",
+  "es": "META A %d",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/circuit_trial.gd:52"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_LEVEL_COUNT",
+  "es": "NIVEL %d  %d/%d",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_game.gd:90"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_BEST",
+  "es": "MEJOR %s",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/den_view.gd:1004",
+   "logic/dojo_trial.gd:167"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_BEST_NONE",
+  "es": "MEJOR --",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trial.gd:166"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_BEST_TIER",
+  "es": "%s · %s · %s",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trial.gd:179"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_BAND_ONE",
+  "es": "%d LADRÓN",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trial.gd:186"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_BAND_MANY",
+  "es": "%d LADRONES",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trial.gd:186"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_SCORE",
+  "es": "Tu marca: %s",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trial.gd:178"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_WON",
+  "es": "¡PRUEBA SUPERADA!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trial.gd:176"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_WON_LINE",
+  "es": "Con todas las de la ley.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trial.gd:177"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_LOST",
+  "es": "¡PRUEBA FALLADA!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_trial.gd:215"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_NEXT",
+  "es": "SEGUIR",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/trial_view.gd:122"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_HELP_KEYS",
+  "es": "◀ ▶ ELEGIR  ·  E ACEPTAR  ·  ESC SALIR",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/trial_view.gd:230"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_HELP_PAD",
+  "es": "◀ ▶ ELEGIR  ·  A ACEPTAR  ·  B SALIR",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/trial_view.gd:230"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_TRIAL_WHY_TIME",
+  "es": "Se acabó el tiempo.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_TRIAL_WHY_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_TRIAL_WHY_FALL",
+  "es": "Te caíste del pedestal.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_TRIAL_WHY_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_TRIAL_WHY_DOWN",
+  "es": "Bajaste antes de tiempo.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_TRIAL_WHY_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_TRIAL_WHY_LATE",
+  "es": "Llegaste tarde.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_TRIAL_WHY_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_TRIAL_WHY_SEEN",
+  "es": "La linterna te vio.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_TRIAL_WHY_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_TRIAL_WHY_LEFT",
+  "es": "Saliste del escondite.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_TRIAL_WHY_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_TRIAL_WHY_SNEEZE",
+  "es": "¡ACHÚS!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_TRIAL_WHY_…"
+  ]
  },
  {
   "key": "HIDEOUT_GAME_LEAVE_KEY",
@@ -15356,7 +15694,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1267"
+   "scenes/trial_view.gd:510"
   ],
   "via": []
  },
@@ -15367,51 +15705,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:298"
+   "scenes/trial_view.gd:403"
   ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_GAME_LEVEL",
-  "es": "NIVEL %d",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "scenes/dojo_games_view.gd:392"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_GAME_COUNT",
-  "es": "%d/%d",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "scenes/dojo_games_view.gd:394"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_GAME_BEST",
-  "es": "MEJOR %d",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "scenes/den_view.gd:1125",
-   "scenes/dojo_games_view.gd:397"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_GAME_BEST_NONE",
-  "es": "MEJOR --",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
   "via": []
  },
  {
@@ -15459,46 +15754,13 @@ window.TEXTOS = [
   ]
  },
  {
-  "key": "HIDEOUT_GAME_WON",
-  "es": "¡GANASTE!",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "scenes/dojo_games_view.gd:435"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_GAME_WON_LINE",
-  "es": "Tramo completo y ni un calcetín roto.",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "scenes/dojo_games_view.gd:437"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_GAME_REACHED",
-  "es": "Llegaste al nivel %d",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "scenes/dojo_games_view.gd:439"
-  ],
-  "via": []
- },
- {
   "key": "HIDEOUT_GAME_NEW_RECORD",
   "es": "¡NUEVO RÉCORD!",
   "broken": false,
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:441"
+   "scenes/trial_view.gd:168"
   ],
   "via": []
  },
@@ -15509,7 +15771,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:444"
+   "scenes/trial_view.gd:122"
   ],
   "via": []
  },
@@ -15520,7 +15782,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:444"
+   "scenes/trial_view.gd:122"
   ],
   "via": []
  },
@@ -15531,7 +15793,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:443"
+   "logic/dojo_trial.gd:180"
   ],
   "via": []
  },
@@ -15542,7 +15804,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:97"
+   "scenes/trial_view.gd:114"
   ],
   "via": []
  },
@@ -15553,18 +15815,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:95"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_GAME_ROLL",
-  "es": "¡RUEDA!",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "scenes/dojo_games_view.gd:306"
+   "scenes/trial_view.gd:112"
   ],
   "via": []
  },
@@ -15575,19 +15826,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:308",
-   "scenes/dojo_games_view.gd:411"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_GAME_HOLD",
-  "es": "¡AGUANTA!",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "scenes/dojo_games_view.gd:307"
+   "scenes/trial_view.gd:508"
   ],
   "via": []
  },
@@ -15598,86 +15837,9 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:376"
+   "scenes/trial_view.gd:476"
   ],
   "via": []
- },
- {
-  "key": "HIDEOUT_GAME_WHY_TIME",
-  "es": "Se acabó el tiempo.",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "HIDEOUT_GAME_WHY_…"
-  ]
- },
- {
-  "key": "HIDEOUT_GAME_WHY_FALL",
-  "es": "Te caíste del pedestal.",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "HIDEOUT_GAME_WHY_…"
-  ]
- },
- {
-  "key": "HIDEOUT_GAME_WHY_DOWN",
-  "es": "Bajaste antes de tiempo.",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "HIDEOUT_GAME_WHY_…"
-  ]
- },
- {
-  "key": "HIDEOUT_GAME_WHY_LATE",
-  "es": "Llegaste tarde.",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "HIDEOUT_GAME_WHY_…"
-  ]
- },
- {
-  "key": "HIDEOUT_GAME_WHY_SEEN",
-  "es": "La linterna te vio.",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "HIDEOUT_GAME_WHY_…"
-  ]
- },
- {
-  "key": "HIDEOUT_GAME_WHY_LEFT",
-  "es": "Saliste del escondite.",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "HIDEOUT_GAME_WHY_…"
-  ]
- },
- {
-  "key": "HIDEOUT_GAME_WHY_SNEEZE",
-  "es": "¡ACHÚS!",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "HIDEOUT_GAME_WHY_…"
-  ]
  },
  {
   "key": "TOUR_NEXT_STOP",
