@@ -3018,17 +3018,6 @@ window.JUEGO = {
   {
    "colours": [
     {
-     "hex": "#fff0d6",
-     "key": ""
-    }
-   ],
-   "file": "scenes/tour.gd",
-   "name": "ARROW",
-   "note": "Picking a stop of the town by the way you push (the arrows, WASD, the cross or the stick): the stops within this many degrees of that way are the candidates, the nearest wins; none there, the most in line (no more than MAX_OFF off), or nothing. The arrows over the town: cream, this far (px) from the stop picked."
-  },
-  {
-   "colours": [
-    {
      "hex": "#4a4260",
      "key": ""
     }
@@ -8936,8 +8925,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "29-09-2026 22:55",
-  "commit": "235abeb",
+  "fecha": "29-09-2026 23:11",
+  "commit": "528196c",
   "rama": "worktree-agent-a26cbee3d62deb32b"
  }
 };

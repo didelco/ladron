@@ -121,7 +121,7 @@ godot --headless --script tests/test_collection.gd # qué hay en cada vitrina: l
 godot --headless --script tests/test_fronts.gd    # piezas con frente (recreativa, trono, Anubis, la nevera...): nunca contra una pared
 godot --headless --script tests/test_controles.gd # teclas y botones: partida, menús y elegir sitio
 godot --headless --script tests/test_menus.gd     # aceptar (E, ., A) y atrás (Esc, Espacio, Enter, B) iguales en todas las pantallas con menú; SALIR DEL JUEGO en la pausa (última, pide confirmar, cancelar vuelve a la pausa, no está en el dojo)
-godot --headless --script tests/test_ciudad_nav.gd # moverse por la ciudad: una sola regla, la dirección pulsada (teclas, cruceta, stick en cualquier ángulo) lleva a la parada que está ahí en la pantalla; ratón por encima y clic; flechas y aros hacia los vecinos
+godot --headless --script tests/test_ciudad_nav.gd # moverse por la ciudad: la barra de sitios (izquierda/derecha por la barra en cualquier dispositivo, cerrados saltados), selección inicial en el siguiente pendiente, aceptar entra, ratón sobre tarjeta y clic
 godot --headless --script tests/test_calidad.gd   # calidad Alta/Baja y escala 3D: valores por defecto, validación, Baja apaga SSR, SSIL, SSAO, niebla y humo, Alta lo deja como estaba
 godot --headless --script tests/test_siguiente.gd # sobre el plano, solo SIGUIENTE: el encargo, lo nuevo y las reglas de cada noche, cada cosa desde su sitio
 godot --headless --script tests/test_megafonia.gd # megafonía del museo (Megaphone): avisos de una frase por suceso y por lo que hace el ladrón (voltereta y pared, papelera, escondite...), muy escasos (calla los primeros 20-60 s, 40 s entre avisos y 15 s los de peligro, tope de 2 a 5 por robo), comentarios pronto pero solo a veces (probabilidad por acción), escalado por repetición y rachas, ninguna frase repetida ni en el robo siguiente, sin guardias en el robo 1, claves del CSV y ajuste
@@ -204,10 +204,13 @@ En el título se elige el modo:
   la quinta, el **gran golpe** del museo, con algo especial (un guardián que ve lejos, un guardia
   pegado a la pieza, tres guardias, la sala del trono, el gran final); al hacerlo se abre el
   siguiente museo. Primero se elige cuántos ladrones; luego, en el mapa de la ciudad, un museo y
-  dentro una de sus salas. En la ciudad hay una sola regla: la flecha, WASD, la cruceta o el stick (en cualquier ángulo) llevan a la parada abierta
-  (museos y casita) que queda en esa dirección **de la pantalla** (`Tour.toward`), igual con teclado y mando; con el ratón,
-  pasar por encima la elige y el clic entra. Sobre la parada elegida, un aro en cada parada a la que se puede ir y una flecha
-  hacia ella. Sin botones de ruta: LB/RB solo cambian de sala dentro del museo. El progreso se guarda aparte para cada número de jugadores y se puede
+  dentro una de sus salas. En la ciudad, delante del mapa, hay una barra con la casita y los cinco museos en el orden de la
+  historia (tarjetas con su número, sus estrellas y un candado los cerrados). Al abrirla, la selección cae sola en el
+  **siguiente pendiente** (marcado SIGUIENTE; la casita si ya está todo hecho), y aceptar entra: el flujo normal
+  es un solo botón. Para cambiar de sitio, izquierda/derecha (flechas, A/D, cruceta, stick, LB/RB) van por la barra,
+  sea cual sea la posición del sitio en el mapa (`Tour.step_bar`); los cerrados se saltan. Con el ratón, pasar por
+  una tarjeta (o por el sitio en el mapa) la elige, y el clic en un sitio abierto lo elige y entra. Una línea y un aro
+  unen la tarjeta elegida con su sitio en el mapa. El progreso se guarda aparte para cada número de jugadores y se puede
   rejugar cualquier robo ya alcanzado; una partida de la historia de 20 noches se conserva
   (museo hecho, museo hecho; las noches del museo a medias, salas hechas).
 - **Generativo**: un museo nuevo cada vez, con dificultad (fácil, media, difícil) y tamaño a elegir.

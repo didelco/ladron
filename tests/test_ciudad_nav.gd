@@ -1,9 +1,10 @@
 extends SceneTree
-## Moverse por la ciudad de la historia (Tour): una sola regla, la dirección
-## que se pulsa (flechas, WASD, cruceta, stick en cualquier ángulo) lleva a la
-## parada (los museos abiertos y la casita) que está en esa dirección en la
-## pantalla; el ratón, por encima y clic; LB/RB, sin efecto en la ciudad; y las
-## flechas que dicen a dónde lleva cada dirección.
+## Moverse por la ciudad de la historia (Tour): delante del mapa, una barra con
+## la casita y los cinco museos en el orden de la historia. Izquierda y derecha
+## (flechas, A y D, cruceta, stick, LB y RB) van por la barra, sea cual sea la
+## posición del sitio en el mapa; los cerrados se saltan; al abrir, la selección
+## cae sola en el siguiente pendiente; aceptar entra; el ratón, por encima de
+## una tarjeta la elige y el clic entra.
 ##   godot --headless --script tests/test_ciudad_nav.gd
 var fails := 0
 var sounds: Array[String] = []
@@ -43,15 +44,32 @@ func stick(axis: JoyAxis, value: float) -> InputEventJoypadMotion:
 	return e
 
 
-## A town with the first `night` heists reached (a fresh save each time),
-## the museum `pick` picked.
-func city(night: int, pick := 0) -> Tour:
+func motion(at: Vector2, rel := Vector2(20, 0)) -> InputEventMouseMotion:
+	var e := InputEventMouseMotion.new()
+	e.position = at
+	e.global_position = at
+	e.relative = rel
+	return e
+
+
+func click(at: Vector2, button := MOUSE_BUTTON_LEFT) -> InputEventMouseButton:
+	var e := InputEventMouseButton.new()
+	e.position = at
+	e.global_position = at
+	e.button_index = button
+	e.pressed = true
+	return e
+
+
+## A town with the first `night` heists reached (a fresh save each time), as
+## the story opens it: on the stop it asks for next unless `pick` says other.
+func city(night: int, pick := -2) -> Tour:
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
 	Story.unlock(night, 1)
 	var t := Tour.new()
 	root.add_child(t)
 	t.stage.hurry = true
-	t.open_city(1, pick)
+	t.open_city(1, Tour.next_stop(1) if pick == -2 else pick)
 	t.sound.connect(func(kind: String) -> void: sounds.append(kind))
 	return t
 
@@ -62,185 +80,256 @@ func _init() -> void:
 
 
 func _run() -> void:
-	# --- Choosing by direction, on made-up ground -------------------------------------
-	var stops := {1: Vector2(10, 0), 2: Vector2(0, -10), 3: Vector2(8, -8), 4: Vector2(30, -1)}
-	var o := Vector2.ZERO
-	check(Tour.toward(o, Vector2(1, 0), stops) == 1, "a la derecha, el más cercano dentro del cono (no el lejano)")
-	check(Tour.toward(o, Vector2(0, -1), stops) == 2, "arriba, el de arriba")
-	check(Tour.toward(o, Vector2(1, -1), stops) == 3, "en diagonal, el más alineado con ella (el de 45º, no el más cercano)")
-	check(Tour.toward(o, Vector2(-1, 0), stops) == -1 and Tour.toward(o, Vector2(0, 1), stops) == -1, "sin nadie por ese lado, nada")
-	check(Tour.toward(o, Vector2.ZERO, stops) == -1, "sin dirección, nada")
-	var edge := {7: Vector2(10, -40)}
-	check(Tour.toward(o, Vector2(1, 0), edge) == -1, "a 76º de la derecha: pasado de MAX_OFF, nada")
-	edge = {7: Vector2(10, -20)}
-	check(Tour.toward(o, Vector2(1, 0), edge) == 7, "fuera del cono pero casi: si no hay otro, el más alineado")
-	check(Tour.toward(o, Vector2(1, 0), {7: Vector2(10, -20), 8: Vector2(30, 5)}) == 8, "dentro del cono gana aunque haya otro más alineado más cerca fuera")
-	check(Tour.toward(o, Vector2(1, 0), {7: Vector2(-10, 0)}) == -1, "nunca hacia atrás")
-	check(Tour.toward(o, Vector2(1, -1), {7: Vector2(-10, -1)}) == -1, "una diagonal no salta a lo que queda al otro lado")
-
-	# --- The real town, everything open -----------------------------------------------
-	var t := city(Story.count(), 0)
-	await frames()
 	var H := CityStage.HIDEOUT
-	# The route: the hideout, then the museums 1 to 5.
-	# No route buttons in the town: LB and RB do nothing there.
-	t._pick_museum(0)
-	t.input(pad(JOY_BUTTON_LEFT_SHOULDER))
-	t.input(pad(JOY_BUTTON_RIGHT_SHOULDER))
-	check(t.stage.picked == 0, "LB y RB no mueven nada en la ciudad")
-	check(not t.has_method("_step_route") and t.find_children("*", "Button", true, false).is_empty(), "sin botones de ruta en la ciudad")
+	# --- Where the town opens: on what is next -----------------------------------------
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
+	check(Tour.next_stop(1) == 0, "sin nada hecho, el primer museo")
+	Story.unlock(6, 1)
+	check(Tour.next_stop(1) == 1, "con seis robos alcanzados, el museo de su sala (el segundo)")
+	Story.unlock(Story.count(), 1)
+	check(Tour.next_stop(1) == 4, "en el último robo sin hacer, el último museo")
+	Story.keep_stars(Story.count(), 1, Story.STAR_TAKEN)
+	check(Tour.next_stop(1) == H, "con todo hecho, la casita")
+	check(Tour.bar_items() == [H, 0, 1, 2, 3, 4], "la barra: la casita y los museos 1 a 5")
 
-	# The hideout lies to the right of the first museum, apart from it, and out of the river.
-	var at_h: Vector2 = t.stage.stop_on_screen(H)
-	var at_1: Vector2 = t.stage.stop_on_screen(0)
-	check(at_h.x > at_1.x + 20.0, "la casita queda a la derecha del primer museo en la pantalla (%.0f unidades)" % (at_h.x - at_1.x))
-	check(at_h.distance_to(at_1) > 30.0, "... y bien lejos de él (%.0f unidades)" % at_h.distance_to(at_1))
+	var t := city(6)
+	await frames()
+	check(t.stage.picked == 1 and t._next == 1, "al abrir la ciudad cae sola en el siguiente pendiente (%d)" % t.stage.picked)
+	t.queue_free()
+	await frames()
+	t = city(Story.count())
+	await frames()
+	check(t.stage.picked == 4, "con la historia entera por hacer el último, y a la derecha no hay nada")
+	Story.keep_stars(Story.count(), 1, Story.STAR_TAKEN)
+	t.queue_free()
+	await frames()
+	t = city(Story.count())
+	Story.keep_stars(Story.count(), 1, Story.STAR_TAKEN)
+	t.open_city(1, Tour.next_stop(1))
+	await frames()
+	check(t.stage.picked == H and t._next == H, "con todo hecho, cae en la casita")
+	t.queue_free()
+	await frames()
 
-	# One key: the stop that way. The town's own geometry.
-	var expect := [
-		[0, "right", 4], [0, "up", 1], [0, "left", 2], [0, "down", -1],
-		[4, "right", H], [H, "left", 4], [4, "up", 3], [3, "left", 1], [1, "down", 0],
-		[1, "left", 2], [2, "right", 1],
-	]
-	for e in expect:
-		t._pick_museum(e[0])
-		t.act(e[1])
-		var want: int = e[0] if e[2] == -1 else e[2]
-		check(t.stage.picked == want, "desde %s, %s: %s (salió %s)" % [_name(e[0]), e[1], _name(want), _name(t.stage.picked)])
-	# Every stop can be reached from another one by some arrow.
-	var reach := {}
-	for from in [H, 0, 1, 2, 3, 4]:
-		for dir in ["left", "right", "up", "down"]:
-			t._pick_museum(from)
-			t.act(dir)
-			reach[t.stage.picked] = true
-	check(reach.size() == 6, "con las flechas se llega a todas las paradas (%d de 6)" % reach.size())
-
-	# The stick points any angle: the stop most in line with it.
-	for e in [[0, Vector2(1, -1), 3], [0, Vector2(-1, -1), 2], [0, Vector2(1, 1), H], [0, Vector2(0.9, -0.3), 4], [0, Vector2(0.05, -1), 1]]:
-		t._pick_museum(e[0])
-		t.step(e[1])
-		check(t.stage.picked == e[2], "el stick hacia %s desde %s: %s (salió %s)" % [e[1], _name(e[0]), _name(e[2]), _name(t.stage.picked)])
-	t._pick_museum(0)
-	t.step(Vector2.ZERO)
-	check(t.stage.picked == 0, "el stick quieto no mueve")
+	# --- Along the bar: the same on every device, whatever the map looks like ---------------
+	t = city(Story.count(), H)
+	await frames()
+	var order: Array[int] = [H]
+	for k in 8:
+		t.act("right")
+		if t.stage.picked != order[-1]:
+			order.append(t.stage.picked)
+	check(order == [H, 0, 1, 2, 3, 4], "derecha va de la casita al último museo en orden: " + str(order))
+	t.act("right")
+	check(t.stage.picked == 4, "... y al final se queda")
+	order = [4]
+	for k in 8:
+		t.act("left")
+		if t.stage.picked != order[-1]:
+			order.append(t.stage.picked)
+	check(order == [4, 3, 2, 1, 0, H], "izquierda la recorre al revés")
+	t.act("left")
+	check(t.stage.picked == H, "... y en la casita se queda")
+	# Every device says the same.
+	var devices := {
+		"flecha": [key(KEY_RIGHT), key(KEY_LEFT)], "D y A": [key(KEY_D), key(KEY_A)],
+		"cruceta": [pad(JOY_BUTTON_DPAD_RIGHT), pad(JOY_BUTTON_DPAD_LEFT)],
+		"LB y RB": [pad(JOY_BUTTON_RIGHT_SHOULDER), pad(JOY_BUTTON_LEFT_SHOULDER)],
+		"stick": [stick(JOY_AXIS_LEFT_X, 0.9), stick(JOY_AXIS_LEFT_X, -0.9)],
+	}
+	for d in devices:
+		t._pick_museum(1)
+		sounds.clear()
+		t.input(devices[d][0])
+		t.input(stick(JOY_AXIS_LEFT_X, 0.0))
+		check(t.stage.picked == 2 and sounds == ["nav"], "%s: derecha va al siguiente de la barra, con su sonido" % d)
+		t.input(devices[d][1])
+		t.input(stick(JOY_AXIS_LEFT_X, 0.0))
+		check(t.stage.picked == 1, "%s: izquierda, al anterior" % d)
+	# The map behind does not matter: 3 lies far up and left of 2, and right still goes to it.
+	t._pick_museum(1)
+	t.act("right")
+	check(t.stage.picked == 2, "derecha del museo 2 es el 3, esté donde esté en el mapa")
 	t._pick_museum(3)
-	t.step(Vector2(1, -1))
-	check(t.stage.picked == 3, "hacia donde no hay nadie: se queda")
+	t.act("right")
+	check(t.stage.picked == 4, "... y del 4 el 5")
+	t._pick_museum(1)
+	t.act("up")
+	t.act("down")
+	check(t.stage.picked == 1, "arriba y abajo no hacen nada en la ciudad")
+	t.queue_free()
+	await frames()
 
-	# --- Each device moves once per push, straight away ---------------------------------
-	t._pick_museum(0)
-	sounds.clear()
-	t.input(key(KEY_UP))
-	check(t.stage.picked == 1 and sounds == ["nav"], "una flecha mueve al momento, una vez")
-	t.input(key(KEY_S))
-	check(t.stage.picked == 0, "S baja: la misma regla que las flechas")
-	t._pick_museum(0)
-	t.input(key(KEY_D))
-	check(t.stage.picked == 4, "D va a la derecha (el museo 5, a la derecha en la pantalla)")
-	t._pick_museum(0)
-	t.input(pad(JOY_BUTTON_DPAD_UP))
-	check(t.stage.picked == 1, "la cruceta arriba: lo mismo que la flecha arriba")
-	# The stick: both axes of a diagonal come as two events and make one move.
-	t._pick_museum(0)
-	sounds.clear()
-	t.input(stick(JOY_AXIS_LEFT_X, 0.9))
-	t.input(stick(JOY_AXIS_LEFT_Y, -0.9))
-	await frames(2)
-	check(t.stage.picked == 3 and sounds == ["nav"], "el stick en diagonal (arriba y derecha): un solo salto al de esa diagonal (%s, %s)" % [_name(t.stage.picked), sounds])
-	await frames(2)
-	check(sounds.size() == 1, "mantenido, no repite")
-	t.input(stick(JOY_AXIS_LEFT_X, 0.0))
-	t.input(stick(JOY_AXIS_LEFT_Y, 0.0))
-	await frames(2)
-	t._pick_museum(0)
-	t.input(stick(JOY_AXIS_LEFT_X, 0.9))
-	await frames(2)
-	check(t.stage.picked == 4, "el stick a la derecha: a la derecha")
-	t.input(stick(JOY_AXIS_LEFT_X, 0.0))
-	await frames(2)
-	t.input(stick(JOY_AXIS_LEFT_Y, -0.9))
-	await frames(2)
-	check(t.stage.picked == 3, "... soltado y pulsado arriba, otra vez (desde el museo 5, arriba está el 4)")
-	t.input(stick(JOY_AXIS_LEFT_Y, 0.0))
-	await frames(2)
-	# Accept takes what was pushed first.
-	t._pick_museum(0)
-	sounds.clear()
-	t.input(key(KEY_UP))
+	# --- Shut museums are seen, not chosen ---------------------------------------------------
+	t = city(1)
+	await frames()
+	check(t.stage.picked == 0, "solo el primero abierto: cae en él")
+	t.act("right")
+	check(t.stage.picked == 0, "el segundo, cerrado, no se elige")
+	t.act("left")
+	check(t.stage.picked == H, "a la izquierda del primero, la casita")
+	t.act("right")
+	check(t.stage.picked == 0, "y de vuelta")
+	t.queue_free()
+	await frames()
+	t = city(11)
+	await frames()
+	check(t.stage.picked == 2, "con tres abiertos cae en el tercero")
+	t.act("right")
+	check(t.stage.picked == 2, "el cuarto, cerrado, se salta y no hay más: se queda")
+	t.queue_free()
+	await frames()
+
+	# --- Accept goes in the one picked; back leaves ------------------------------------------
+	t = city(6)
+	await frames()
 	t.input(key(KEY_E))
 	await frames(2)
-	check(t.state in ["zoom", "museum"] and t.stage.picked == 1, "aceptar tras una pulsación: primero se mueve y luego entra en el elegido (%s)" % t.state)
+	check(t.state in ["zoom", "museum"], "aceptar entra en el siguiente pendiente, sin navegar (%s)" % t.state)
+	check(not t._bar.visible, "dentro de un museo, sin barra")
+	t.queue_free()
+	await frames()
+	t = city(6)
+	await frames()
+	t.input(pad(JOY_BUTTON_A))
+	check(t.state in ["zoom", "museum"], "A del mando, igual")
+	t.queue_free()
+	await frames()
+	t = city(6, H)
+	await frames()
+	var practised := [false]
+	t.practice.connect(func() -> void: practised[0] = true)
+	t.input(key(KEY_PERIOD))
+	check(practised[0], "aceptar en la casita entra a la casita")
+	t.queue_free()
+	await frames()
+	t = city(6)
+	await frames()
+	var left := [false]
+	t.left.connect(func() -> void: left[0] = true)
+	t.input(key(KEY_SPACE))
+	check(left[0], "atrás sale de la ciudad")
 	t.queue_free()
 	await frames()
 
-	# --- Closed museums are not chosen; the hideout always is ------------------------------
-	t = city(1, 0)
-	await frames()
-	t.act("up")
-	check(t.stage.picked == 0, "el segundo, cerrado, no se elige (arriba)")
-	t.step(Vector2(1, -1))
-	check(t.stage.picked == H, "... ni en diagonal (arriba y derecha: el cuarto, cerrado): la casita, lo abierto más cerca de esa diagonal")
-	t.act("left")
-	check(t.stage.picked == 0, "a la izquierda de la casita, el primer museo")
-	t.act("right")
-	check(t.stage.picked == H, "a la derecha del primero, la casita aunque el quinto esté cerrado")
-	t.queue_free()
-	await frames()
+	# --- The bar on every screen ---------------------------------------------------------------
+	for shape in [["16:9", Vector2i(1280, 720)], ["16:9 pequeña", Vector2i(960, 540)], ["4:3", Vector2i(1024, 768)], ["32:9", Vector2i(1920, 540)]]:
+		root.size = shape[1]
+		root.content_scale_size = Vector2i(1280, 720)
+		root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
+		root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_EXPAND
+		t = city(Story.count(), 2)
+		await frames()
+		var view: Vector2 = t._root.get_viewport_rect().size
+		var whole := Rect2(Vector2.ZERO, view)
+		var last_x := -1.0
+		var ordered := true
+		var inside := true
+		var clear := true
+		for m in Tour.bar_items():
+			var r: Rect2 = t._cards[m]
+			ordered = ordered and r.position.x > last_x
+			last_x = r.position.x
+			inside = inside and whole.encloses(r.grow(8.0))
+			# Over the keys at the bottom.
+			clear = clear and r.end.y + 10.0 < t._hints.position.y
+		check(t._bar.visible and t._cards.size() == 6, "%s: la barra, con sus seis tarjetas" % shape[0])
+		check(ordered, "%s: la casita a la izquierda y los museos en orden hacia la derecha" % shape[0])
+		check(inside, "%s: cada tarjeta entera dentro de la pantalla (%s)" % [shape[0], view])
+		check(clear, "%s: sin tapar las teclas de abajo" % shape[0])
+		var one: Rect2 = t._cards[0]
+		check(one.size.x >= 84.0 and one.size.y >= 90.0, "%s: grandes (%s)" % [shape[0], one.size])
+		t.queue_free()
+		await frames()
 
-	# Two museums open: the fifth shut, the hideout reached from the first.
-	t = city(6, 1)
-	await frames()
-	t.act("left")
-	check(t.stage.picked == 1, "a la izquierda del segundo está el tercero, cerrado: se queda")
-	t.act("down")
-	check(t.stage.picked == 0, "abajo, el primero")
-	t.act("right")
-	check(t.stage.picked == H, "a la derecha del primero, la casita")
-	t.queue_free()
-	await frames()
-
-	# --- The arrows over the town and the mouse ------------------------------------------
+	# --- The mouse ----------------------------------------------------------------------------
 	root.size = Vector2i(1280, 720)
-	t = city(Story.count(), 0)
+	t = city(Story.count(), 1)
 	await frames(2)
-	check(t._arrows.visible and t._arrows.mouse_filter == Control.MOUSE_FILTER_IGNORE, "las flechas se ven en la ciudad y no tapan el ratón")
-	# Every arrow points where its push leads, on the screen.
-	var from: Vector2 = t.stage.stop_point(0)
-	var here: Vector2 = t.stage.stop_on_screen(0)
-	stops = t._stops_open()
-	for d in Tour.DIR_VECTORS:
-		var to := Tour.toward(here, Tour.DIR_VECTORS[d], stops)
-		if to < 0:
-			continue
-		var dir: Vector2 = (t.stage.stop_point(to) - from).normalized()
-		var want: Vector2 = Tour.DIR_VECTORS[d]
-		check(dir.dot(want) > 0.2, "la flecha de %s apunta hacia donde se ve el destino (%s)" % [d, _name(to)])
-	# The mouse: over a stop picks it (the hideout too), a click on it goes in.
-	var over := InputEventMouseMotion.new()
-	over.position = t.stage.stop_point(H)
-	t._on_mouse(over)
-	check(t.stage.picked == H, "el ratón sobre la casita la elige")
-	over.position = t.stage.stop_point(2)
-	t._on_mouse(over)
-	check(t.stage.picked == 2, "el ratón sobre un museo lo elige")
-	var click := InputEventMouseButton.new()
-	click.button_index = MOUSE_BUTTON_LEFT
-	click.pressed = true
-	click.position = t.stage.stop_point(1)
-	t._on_mouse(click)
-	check(t.stage.picked == 1, "el clic sobre otro museo lo elige")
-	t.act("accept")
+	var card: Rect2 = t._cards[3]
+	# A hover that does not move (a mouse at rest) never picks.
+	t._on_mouse(motion(card.get_center(), Vector2.ZERO))
+	check(t.stage.picked == 1, "el ratón quieto encima no quita la selección")
+	t._on_mouse(motion(card.get_center(), Vector2(3, 0)))
+	check(t.stage.picked == 1, "... ni un temblor de unos píxeles")
+	t._on_mouse(motion(card.get_center(), Vector2(30, 0)))
+	check(t.stage.picked == 3, "pasar el ratón de verdad por una tarjeta la elige")
+	# The pad speaks: the mouse at rest over another card does not take it back.
+	t.input(pad(JOY_BUTTON_DPAD_LEFT))
+	check(t.stage.picked == 2, "el mando manda cuando se toca")
+	t._on_mouse(motion(card.get_center(), Vector2(2, 0)))
+	check(t.stage.picked == 2, "... y un ratón casi quieto no se lo quita")
+	t._on_mouse(motion(card.get_center(), Vector2(40, 0)))
+	check(t.stage.picked == 3, "... pero si se mueve de verdad, manda el ratón")
+	# Hovering a shut card, or nothing, does nothing.
+	t = city(6)
 	await frames(2)
-	check(t.state in ["zoom", "museum"], "aceptar entra en el elegido")
-	check(not t._arrows.visible, "dentro de un museo, sin flechas")
+	t._on_mouse(motion(t._cards[4].get_center(), Vector2(40, 0)))
+	check(t.stage.picked == 1, "sobre una tarjeta cerrada no elige")
+	t._on_mouse(click(t._cards[4].get_center()))
+	check(t.state == "city" and t.stage.picked == 1, "... ni el clic la abre")
+	t._on_mouse(motion(Vector2(640, 100), Vector2(40, 0)))
+	check(t.stage.picked == 1, "sobre el vacío, nada")
+	# A click on the one picked goes in.
+	t._on_mouse(click(t._cards[1].get_center()))
+	await frames(2)
+	check(t.state in ["zoom", "museum"], "el clic en la tarjeta elegida entra")
 	t.queue_free()
 	await frames()
+	# A click on another open card picks it and goes in at once.
+	t = city(11)
+	await frames(2)
+	sounds.clear()
+	t._on_mouse(click(t._cards[0].get_center()))
+	await frames(2)
+	check(t.stage.picked == 0 and t.state in ["zoom", "museum"], "el clic en otra tarjeta abierta la elige y entra a la vez")
+	t.queue_free()
+	await frames()
+	# The hideout card.
+	t = city(6)
+	await frames(2)
+	var went := [false]
+	t.practice.connect(func() -> void: went[0] = true)
+	t._on_mouse(click(t._cards[H].get_center()))
+	check(went[0], "el clic en la casita entra en ella")
+	t.queue_free()
+	await frames()
+	# The map behind still answers: over a stop or a click on it.
+	t = city(11)
+	await frames(2)
+	t._on_mouse(motion(t.stage.stop_point(0), Vector2(30, 0)))
+	check(t.stage.picked == 0, "el ratón sobre el sitio en el mapa lo elige")
+	t._on_mouse(click(t.stage.stop_point(1)))
+	await frames(2)
+	check(t.stage.picked == 1 and t.state in ["zoom", "museum"], "el clic sobre el sitio del mapa lo elige y entra")
+	t.queue_free()
+	await frames()
+	# The right button goes back.
+	t = city(6)
+	await frames(2)
+	left[0] = false
+	t.left.connect(func() -> void: left[0] = true)
+	t._on_mouse(click(Vector2(600, 300), MOUSE_BUTTON_RIGHT))
+	check(left[0], "el botón derecho vuelve")
+	t.queue_free()
+	await frames()
+
+	# A real event through the window, at a size that is not the game's: nothing above blocks it.
+	root.size = Vector2i(1600, 900)
+	t = city(11)
+	await frames(3)
+	var scale := root.get_final_transform().get_scale()
+	var target: Rect2 = t._cards[0]
+	root.push_input(motion(target.get_center() * scale, Vector2(30, 0)))
+	await frames(2)
+	check(t.stage.picked == 0, "un movimiento de ratón de verdad, con la ventana a 1600x900, elige la tarjeta")
+	root.push_input(click(t._cards[2].get_center() * scale))
+	await frames(2)
+	check(t.stage.picked == 2 and t.state in ["zoom", "museum"], "... y un clic de verdad la elige y entra")
+	t.queue_free()
+	await frames()
+	root.size = Vector2i(1280, 720)
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
 	print("FALLOS: %d" % fails if fails else "OK: moverse por la ciudad")
 	quit(1 if fails else 0)
-
-
-func _name(m: int) -> String:
-	return "la casita" if m == CityStage.HIDEOUT else "el museo %d" % (m + 1)

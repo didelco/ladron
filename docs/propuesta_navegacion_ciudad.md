@@ -58,6 +58,26 @@ Lo verificado en búsqueda (ver fuentes) y lo conocido de memoria (marcado):
 - Pros: cubre al que quiere «solo avanzar».
 - Contras: el botón del lado izquierdo/derecho ya no puede coincidir con la dirección real (siempre hay pasos que van al lado contrario), así que hay que colocarlo cerca del destino o quitar el lado; más piezas para explicar. Es la mezcla que confunde.
 
-## Recomendación: A
+## Lo que falló de la opción A (primera prueba del dueño)
 
-Una sola semántica: la dirección pulsada lleva a lo que está en esa dirección en pantalla, con cualquier dispositivo. Se eliminan los botones laterales, LB/RB en la ciudad (siguen para cambiar de sala dentro del museo) y la ventana de 0,1 s (las diagonales las da el stick de forma natural; con teclas basta una flecha por salto). Las flechas sobre la parada elegida dicen a dónde lleva cada dirección.
+- Con el ratón no se podía cambiar de sitio: la cámara sigue al museo elegido y solo deja a la vista uno o dos vecinos; los demás quedan fuera de la pantalla y el ratón no llega a ellos (medido: desde el museo 5, los museos 2 y 4 caen a -157 y 298 px, fuera de la ventana).
+- Había que pensar a dónde ir cada vez: nada decía cuál era «el siguiente».
+
+## Decisión del dueño: opción D, barra de progreso delante del mapa
+
+La ciudad queda como fondo y, en primer plano, una barra horizontal con la casita y los cinco museos en el orden de la historia (tarjetas grandes con número, color del museo, estrellas y candado en los cerrados).
+
+- **Una sola semántica:** izquierda/derecha (flechas, A/D, cruceta, stick, LB/RB) = anterior/siguiente **de la barra**, sea cual sea la posición del sitio en el mapa de fondo. Los cerrados se ven pero se saltan. Arriba/abajo no hacen nada.
+- **Sin pensar:** al abrir la ciudad, y al volver de un robo, la selección cae sola en el siguiente pendiente (`Tour.next_stop`: el museo del siguiente robo; la casita si la historia entera está hecha), con la etiqueta SIGUIENTE que late. Aceptar (E/A/punto) entra: el flujo normal es un solo botón.
+- **Ratón:** las tarjetas caben siempre en pantalla, así que se llega a todo. Pasar por una tarjeta (o por el sitio en el mapa) la elige, pero solo si el ratón se ha movido más de 12 px desde la última tecla o botón de mando: un ratón quieto no le quita la selección al mando (el último dispositivo tocado manda). Un clic en un sitio abierto lo elige y entra a la vez (lo habitual en mapas de campaña con puntero y en pantalla táctil; como al pasar ya se elige, en la práctica es «clic para entrar»). Zona de acierto generosa: la tarjeta con 6 px más, y 120 px alrededor de un sitio en el mapa. Cursor de mano y borde más grueso en la tarjeta bajo el ratón.
+- **Relación con el mapa:** una línea y un aro que late unen la tarjeta elegida con su sitio en el mapa; la cámara ya se centra en él y el rótulo con su nombre y estrellas sigue sobre el edificio.
+
+Por qué es lo mejor para este juego: son pocos sitios en una línea de progreso (lo que el jugador entiende como «niveles»), el mapa es demasiado grande para verlo entero (la geografía no sirve de mando) y cualquier mecanismo por dirección de pantalla se contradice con alguna ruta del zigzag.
+
+### Cómo lo hacen los juegos de campaña
+
+Salvo lo marcado, de memoria (no verificado en línea):
+- Super Mario World / SMB3 / 3D World: el cursor ya está sobre el siguiente nivel al volver al mapa; un botón lo entra. Se mueve por caminos dibujados.
+- Slay the Spire: solo se resaltan los nodos alcanzables desde el actual y con mando se elige entre ellos; arriba avanza por el camino ([Say the Spire](https://bradjrenshaw.github.io/say-the-spire/mod/map.html), verificado).
+- Into the Breach y Hades: ofrecen «continuar» y tras cada nivel colocan al jugador ante la siguiente elección, sin buscarla.
+- Selectores de niveles con barra o rejilla (móviles, Cuphead, Kirby): el foco arranca en el siguiente sin completar y izquierda/derecha lo mueve por la lista.

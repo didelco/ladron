@@ -356,14 +356,6 @@ func museum_on_screen(m: int) -> Vector2:
 	return _cam.unproject_position(lot.global_position + Vector3(0, _roof_height(m) + 3.0, 0))
 
 
-## Where stop m (a museum, or the hideout) stands on the screen's plane,
-## as a screen point would (x across, y down), whichever way the camera
-## looks now: for choosing the stop that lies in a direction (Tour.toward).
-func stop_on_screen(m: int) -> Vector2:
-	var p := on_plane(town.transform * _museums[m].position)
-	return Vector2(p.x, -p.y)
-
-
 ## Where stop m is on the screen, a little over its ground: what the mouse
 ## points at and the arrows go from and to.
 func stop_point(m: int) -> Vector2:
