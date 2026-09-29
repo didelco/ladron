@@ -75,7 +75,8 @@ func city(night: int, pick := -2) -> Tour:
 
 
 func _init() -> void:
-	Story.save = "user://test_ciudad_nav.cfg"
+	# Its own file: other worktrees' tests share user:// and would trample it.
+	Story.save = "user://test_ciudad_nav_%d.cfg" % OS.get_process_id()
 	_run.call_deferred()
 
 
@@ -160,6 +161,72 @@ func _run() -> void:
 	t.queue_free()
 	await frames()
 
+	# --- The order, for every progress and every size of gang --------------------------------
+	var bad := 0
+	var cases := 0
+	for gang in [1, 2, 3, 4]:
+		for reached in [1, 4, 5, 6, 9, 10, 11, 15, 16, 20, 21, Story.count()]:
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
+			Story.unlock(reached, gang)
+			t = Tour.new()
+			root.add_child(t)
+			t.stage.hurry = true
+			t.open_city(gang, Tour.next_stop(gang))
+			await frames(2)
+			var open_stops: Array[int] = []
+			for m in [H, 0, 1, 2, 3, 4]:
+				if m == H or m <= Story.museum_of(reached):
+					open_stops.append(m)
+			cases += 1
+			var why := ""
+			var ok := t.stage.picked == Tour.next_stop(gang) and Tour.next_stop(gang) == Story.museum_of(reached)
+			if not ok:
+				why += " inicial(%d, %d)" % [t.stage.picked, Tour.next_stop(gang)]
+			for m in [H, 0, 1, 2, 3, 4]:
+				if t.stage.is_open(m) != (m in open_stops):
+					ok = false
+					why += " abierto(%d)" % m
+			for start in open_stops:
+				t._pick_museum(start)
+				var seen: Array[int] = [start]
+				for k in 8:
+					t.act("right")
+					if t.stage.picked != seen[-1]:
+						seen.append(t.stage.picked)
+				if seen != open_stops.slice(open_stops.find(start)):
+					ok = false
+					why += " derecha desde %d: %s" % [start, seen]
+				t._pick_museum(start)
+				seen = [start]
+				for k in 8:
+					t.act("left")
+					if t.stage.picked != seen[-1]:
+						seen.append(t.stage.picked)
+				var back := open_stops.slice(0, open_stops.find(start) + 1)
+				back.reverse()
+				if seen != back:
+					ok = false
+					why += " izquierda desde %d: %s" % [start, seen]
+			# The cards are drawn in the same order, left to right.
+			var xs: Array[float] = []
+			for m in open_stops:
+				xs.append((t._cards[m] as Rect2).position.x)
+			for k in range(1, xs.size()):
+				if not xs[k] > xs[k - 1]:
+					ok = false
+					why += " tarjetas %s" % [xs]
+			# The heist numbers agree with the museum: museum n is index n-1 and holds nights 5n-4 to 5n.
+			if not ok:
+				bad += 1
+				print("  mal: banda %d, robo %d:%s" % [gang, reached, why])
+			t.queue_free()
+			await process_frame
+	check(bad == 0, "el orden casita,1,2,3,4,5 (saltando cerrados) al derecho y al revés, desde cada sitio, en %d progresos de 1 a 4 ladrones" % cases)
+	for n in range(1, Story.count() + 1):
+		if Story.museum_of(n) != (n - 1) / 5:
+			bad += 1
+	check(bad == 0, "el museo de cada robo es el (n-1)/5, sin desfase")
+
 	# --- Shut museums are seen, not chosen ---------------------------------------------------
 	t = city(1)
 	await frames()
@@ -238,7 +305,13 @@ func _run() -> void:
 		check(inside, "%s: cada tarjeta entera dentro de la pantalla (%s)" % [shape[0], view])
 		check(clear, "%s: sin tapar las teclas de abajo" % shape[0])
 		var one: Rect2 = t._cards[0]
-		check(one.size.x >= 84.0 and one.size.y >= 90.0, "%s: grandes (%s)" % [shape[0], one.size])
+		check(one.size.x >= 72.0 and one.size.y >= 44.0, "%s: legibles con el mando (%s)" % [shape[0], one.size])
+		# The whole strip (cards, the tag and the name over them) is low.
+		var strip_top: float = one.position.y - 40.0
+		var strip_h := (one.end.y - strip_top) / view.y
+		check((one.size.y / view.y) <= 0.10 and strip_h <= 0.15, "%s: la tira ocupa poco de la altura (tarjetas %.1f %%, con el rótulo %.1f %%)" % [shape[0], one.size.y / view.y * 100.0, strip_h * 100.0])
+		var widest := (t._cards[4] as Rect2).end.x - (t._cards[H] as Rect2).position.x
+		check(widest <= view.x - 100.0, "%s: deja aire a los lados (%.0f de %.0f)" % [shape[0], widest, view.x])
 		t.queue_free()
 		await frames()
 
@@ -252,15 +325,21 @@ func _run() -> void:
 	check(t.stage.picked == 1, "el ratón quieto encima no quita la selección")
 	t._on_mouse(motion(card.get_center(), Vector2(3, 0)))
 	check(t.stage.picked == 1, "... ni un temblor de unos píxeles")
-	t._on_mouse(motion(card.get_center(), Vector2(30, 0)))
+	t._on_mouse(motion(Vector2(640, 100), Vector2(40, 0)))
+	await create_timer(0.3).timeout
+	t._on_mouse(motion(card.get_center(), Vector2(40, 0)))
 	check(t.stage.picked == 3, "pasar el ratón de verdad por una tarjeta la elige")
 	# The pad speaks: the mouse at rest over another card does not take it back.
 	t.input(pad(JOY_BUTTON_DPAD_LEFT))
 	check(t.stage.picked == 2, "el mando manda cuando se toca")
 	t._on_mouse(motion(card.get_center(), Vector2(2, 0)))
 	check(t.stage.picked == 2, "... y un ratón casi quieto no se lo quita")
+	for i in 60:
+		t._on_mouse(motion(card.get_center() + Vector2(i % 3, 0), Vector2(1, 0)))
+	check(t.stage.picked == 2, "... ni el temblor de una mano en reposo encima de otra tarjeta (60 microsacudidas)")
+	t._on_mouse(motion(Vector2(640, 100), Vector2(40, 0)))
 	t._on_mouse(motion(card.get_center(), Vector2(40, 0)))
-	check(t.stage.picked == 3, "... pero si se mueve de verdad, manda el ratón")
+	check(t.stage.picked == 3, "... pero si el ratón sale y entra de verdad, manda el ratón")
 	# Hovering a shut card, or nothing, does nothing.
 	t = city(6)
 	await frames(2)
@@ -297,8 +376,8 @@ func _run() -> void:
 	# The map behind still answers: over a stop or a click on it.
 	t = city(11)
 	await frames(2)
-	t._on_mouse(motion(t.stage.stop_point(0), Vector2(30, 0)))
-	check(t.stage.picked == 0, "el ratón sobre el sitio en el mapa lo elige")
+	t._on_mouse(motion(t.stage.stop_point(0), Vector2(40, 0)))
+	check(t.stage.picked == 2, "pasar por encima del sitio en el mapa no cambia nada (la cámara se desliza bajo un ratón quieto): solo el clic")
 	t._on_mouse(click(t.stage.stop_point(1)))
 	await frames(2)
 	check(t.stage.picked == 1 and t.state in ["zoom", "museum"], "el clic sobre el sitio del mapa lo elige y entra")
@@ -320,7 +399,7 @@ func _run() -> void:
 	await frames(3)
 	var scale := root.get_final_transform().get_scale()
 	var target: Rect2 = t._cards[0]
-	root.push_input(motion(target.get_center() * scale, Vector2(30, 0)))
+	root.push_input(motion(target.get_center() * scale, Vector2(40, 0)))
 	await frames(2)
 	check(t.stage.picked == 0, "un movimiento de ratón de verdad, con la ventana a 1600x900, elige la tarjeta")
 	root.push_input(click(t._cards[2].get_center() * scale))

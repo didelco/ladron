@@ -219,13 +219,13 @@ En el título se elige el modo:
   la quinta, el **gran golpe** del museo, con algo especial (un guardián que ve lejos, un guardia
   pegado a la pieza, tres guardias, la sala del trono, el gran final); al hacerlo se abre el
   siguiente museo. Primero se elige cuántos ladrones; luego, en el mapa de la ciudad, un museo y
-  dentro una de sus salas. En la ciudad, delante del mapa, hay una barra con la casita y los cinco museos en el orden de la
-  historia (tarjetas con su número, sus estrellas y un candado los cerrados). Al abrirla, la selección cae sola en el
+  dentro una de sus salas. En la ciudad, delante del mapa, hay una tira baja de tarjetas de cristal con la casita y los cinco museos en el orden de la
+  historia (un punto con su número, sus estrellas y un candado los cerrados; el nombre del elegido sobre la tira). Al abrirla, la selección cae sola en el
   **siguiente pendiente** (marcado SIGUIENTE; la casita si ya está todo hecho), y aceptar entra: el flujo normal
   es un solo botón. Para cambiar de sitio, izquierda/derecha (flechas, A/D, cruceta, stick, LB/RB) van por la barra,
-  sea cual sea la posición del sitio en el mapa (`Tour.step_bar`); los cerrados se saltan. Con el ratón, pasar por
-  una tarjeta (o por el sitio en el mapa) la elige, y el clic en un sitio abierto lo elige y entra. Una línea y un aro
-  unen la tarjeta elegida con su sitio en el mapa. El progreso se guarda aparte para cada número de jugadores y se puede
+  sea cual sea la posición del sitio en el mapa (`Tour.step_bar`); los cerrados se saltan. Con el ratón, pasar
+  de verdad por una tarjeta la elige (el temblor de una mano quieta no), y el clic en una tarjeta o en un sitio del mapa, si
+  está abierto, lo elige y entra. El progreso se guarda aparte para cada número de jugadores y se puede
   rejugar cualquier robo ya alcanzado; una partida de la historia de 20 noches se conserva
   (museo hecho, museo hecho; las noches del museo a medias, salas hechas).
 - **Generativo**: un museo nuevo cada vez, con dificultad (fácil, media, difícil) y tamaño a elegir.
