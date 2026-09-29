@@ -226,71 +226,26 @@ a.tag:hover { border-color: var(--texto); }
 .lic { display: inline-block; font-size: 12px; font-weight: 600; border: 1px solid var(--borde); background: var(--fondo2); border-radius: 2px; padding: 0 6px; margin: 2px 4px 2px 0; white-space: nowrap; }
 .lic.sin { border-color: var(--aviso); color: var(--aviso); background: var(--blanco); }
 .lic.atr { border-style: dashed; }
-/* Alternativas de terceros: distintivo llamativo (tinta negra invertida), «elegida» en el rojo de aviso */
-.lic.alt { background: var(--texto); color: var(--blanco); border-color: var(--texto); text-transform: uppercase; letter-spacing: 0.03em; }
-.lic.eleg { background: var(--aviso); color: var(--blanco); border-color: var(--aviso); text-transform: uppercase; letter-spacing: 0.03em; }
-.pr-resumen { border: 2px solid var(--texto); background: var(--fondo2); padding: 10px 14px; margin: 12px 0; max-width: 900px; }
-.pr-resumen ul { margin: 6px 0 0; padding-left: 20px; }
-.pr-col.con-alt { border-left: 4px solid var(--texto); padding-left: 12px; }
-.alt-grupo { border: 1px solid var(--borde); background: var(--blanco); padding: 8px 12px; margin: 8px 0; }
-.alt-grupo h4 { margin: 0 0 4px; font-size: 14px; }
-.alt-op { display: block; border-top: 1px solid var(--suave); padding: 8px 0 8px 4px; cursor: pointer; }
-.alt-op:first-of-type { border-top: 0; }
-.alt-op.on { background: var(--fondo2); outline: 2px solid var(--texto); outline-offset: -2px; padding-left: 8px; }
-.alt-op input { margin-right: 6px; }
-.alt-op .prev { display: block; margin: 6px 0 2px 22px; }
-.alt-op .prev img { max-width: 260px; max-height: 160px; border: 1px solid var(--linea); background: var(--blanco); }
-.alt-op .prev audio { width: 300px; max-width: 100%; }
-.alt-op .cuerpo { margin-left: 22px; }
-/* Comparación con alternativas: la nuestra a la izquierda, las de terceros en tarjetas iguales en fila */
-.cmp { container-type: inline-size; border: 2px solid var(--texto); background: var(--blanco); margin: 12px 0; padding: 8px 10px 10px; max-width: 100%; }
-.cmp-cab { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-bottom: 8px; }
-.cmp-cab b { font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; }
-.cmp-cab .estado { flex: 1 1 100%; order: 3; }
-.cmp-cab .btn { margin-left: auto; }
-.cmp-fila { display: flex; gap: 10px; align-items: stretch; }
-.cmp-nuestra { flex: 0 0 180px; }
-.cmp-alts { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; flex: 1; min-width: 0; }
-.cmp-card { flex: 0 0 210px; width: 210px; scroll-snap-align: start; border: 1px solid var(--borde); background: var(--blanco); padding: 8px; display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; line-height: 1.35; }
-.cmp-card.nuestra { flex: 1 1 auto; width: auto; border: 2px solid var(--texto); background: var(--fondo2); }
-.cmp-card.on { outline: 3px solid var(--aviso); outline-offset: -3px; }
-.cmp-card.no { opacity: 0.5; }
-.cmp-card.no:hover { opacity: 1; }
-.cmp-etq { font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tenue); }
-.cmp-prev { height: 130px; background: var(--fondo2); border: 1px solid var(--suave); display: grid; place-items: center; overflow: hidden; }
-.cmp-prev img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
-.cmp-prev audio { width: 96%; height: 32px; }
-.cmp-prev .cmp-fondo { background: #202122; padding: 4px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; justify-content: center; width: 100%; height: 100%; }
-.cmp-prev .cmp-fondo img { max-height: 46%; max-width: 46%; }
-.cmp-prev.una img { max-height: 100%; }
-.cmp-sin { font-size: 12px; color: var(--claro); text-align: center; padding: 6px; }
-.cmp-nom { font-weight: 600; font-size: 13.5px; }
-.cmp-encaje { letter-spacing: 2px; font-size: 13px; }
-.cmp-encaje small { letter-spacing: 0; color: var(--claro); font-size: 11px; margin-left: 4px; }
-.cmp-cubre { border-left: 3px solid var(--borde); padding-left: 6px; }
-.cmp-cubre.todo { border-color: var(--texto); }
-.cmp-no { color: var(--aviso); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; }
-.cmp-atr { color: var(--aviso); }
-.cmp-card .btn { margin-top: auto; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
-.cmp-card .btn.el { background: var(--aviso); border-color: var(--aviso); color: var(--blanco); }
-.cmp-card .btn[disabled] { opacity: 0.55; cursor: not-allowed; }
-.cmp-notas { color: var(--tenue); font-size: 11.5px; max-height: 5.4em; overflow: auto; }
-.cmp-pantalla { position: fixed; inset: 0; z-index: 1000; background: var(--blanco); overflow: auto; padding: 0 clamp(12px, 3vw, 36px) 40px; }
-.cmp-top { position: sticky; top: 0; z-index: 2; background: var(--blanco); border-bottom: 2px solid var(--texto); display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 0; margin-bottom: 14px; }
-.cmp-top h2 { margin: 0; border: 0; padding: 0; font-size: 18px; flex: 1; min-width: 200px; }
-.cmp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; align-items: stretch; }
-.cmp-grid .cmp-card { width: auto; flex: none; font-size: 13.5px; padding: 10px; }
-.cmp-grid .cmp-prev { height: 220px; }
-.cmp-grid .cmp-card.nuestra { grid-column: span 1; }
-.cmp-grupo { grid-column: 1 / -1; margin: 10px 0 0; font-size: 14px; font-weight: 600; border-bottom: 1px solid var(--borde); }
-@container (max-width: 640px) { .cmp-fila { flex-direction: column; } .cmp-nuestra { flex: none; width: 210px; } }
-@media (max-width: 700px) { .cmp-grid { grid-template-columns: 1fr; } }
-.pr-col { border-top: 1px solid var(--suave); padding: 12px 0; max-width: 900px; }
-.pr-col h3 { margin: 0 0 4px; font-size: 16px; }
-.pr-col p { margin: 4px 0; }
-.pr-col .archivos { max-height: 260px; overflow: auto; font-size: 12px; columns: 2; }
-.pr-col .archivos div { break-inside: avoid; }
-.pr-resumen { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+/* Assets a incorporar: una tarjeta por asset, con vista previa grande */
+.prop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin: 12px 0; max-width: 1100px; }
+.prop { border: 1px solid var(--borde); background: var(--blanco); padding: 10px; display: flex; flex-direction: column; gap: 6px; min-width: 0; font-size: 14px; }
+.prop.est-descartado { opacity: 0.6; }
+.prop.est-incorporado { border-color: var(--texto); }
+.prop-prev { height: 200px; background: var(--fondo2); border: 1px solid var(--suave); display: grid; place-items: center; overflow: hidden; }
+.prop-prev img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+.prop-prev audio { width: 94%; }
+.prop-sin { font-size: 13px; color: var(--claro); text-align: center; padding: 8px; }
+.prop h3 { margin: 0; font-size: 16px; overflow-wrap: anywhere; }
+.prop p { margin: 0; overflow-wrap: anywhere; }
+.prop .para b { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--tenue); margin-right: 4px; }
+.prop-est { display: flex; flex-wrap: wrap; gap: 4px; margin-top: auto; padding-top: 4px; }
+.prop-est .btn { font-size: 12.5px; padding: 3px 8px; }
+.lic.est-aceptado { border-style: dashed; border-color: var(--texto); }
+.lic.est-incorporado { background: var(--texto); color: var(--blanco); border-color: var(--texto); }
+.lic.est-descartado { color: var(--claro); border-style: dashed; text-decoration: line-through; }
+.prop-usamos summary { cursor: pointer; }
+.prop-usamos table { border-collapse: collapse; font-size: 13px; margin-top: 8px; max-width: 900px; width: 100%; }
+.prop-usamos td { border-top: 1px solid var(--suave); padding: 3px 8px 3px 0; vertical-align: top; overflow-wrap: anywhere; }
 .pr-buscar { font: inherit; font-size: 13px; border: 1px solid var(--borde); padding: 3px 8px; border-radius: 2px; min-width: 240px; }
 .rf { border-top: 1px solid var(--suave); padding: 12px 0; max-width: 900px; }
 .rf h3 { margin: 0 0 4px; font-size: 16px; overflow-wrap: anywhere; }
@@ -466,7 +421,7 @@ details.fam .dentro { padding: 0 10px 10px; }
     <section class="pagina" id="p-versiones"></section>
     <section class="pagina" id="p-textos"></section>
     <section class="pagina" id="p-megafonia"></section>
-    <section class="pagina" id="p-procedencia"></section>
+    <section class="pagina" id="p-propuestas"></section>
     <section class="pagina" id="p-referencias"></section>
   </main>
 </div>
@@ -480,7 +435,7 @@ details.fam .dentro { padding: 0 10px 10px; }
 <script src="data/paleta_propuesta.js"></script>
 <script src="data/versiones.js"></script>
 <script src="data/procedencia.js"></script>
-<script src="data/alternativas.js" onerror="void 0"></script>
+<script src="data/propuestas.js" onerror="void 0"></script>
 <script src="data/referencias.js" onerror="void 0"></script>
 <script src="pantallas.js"></script>
 <script src="mecanicas.js"></script>
@@ -560,6 +515,11 @@ function irBase() {
   // El trozo tras la primera «/» es todo el resto (hay ids de objeto con «/»: objeto-exhibit:temas/antiguo/…).
   const partes = decodeURIComponent(location.hash.slice(1) || "inicio").split("/");
   let pag = partes[0], sub = partes.slice(1).join("/");
+  // Procedencia y Alternativas ya no son páginas: todo vive en «Assets a incorporar» (y «Lo que ya usamos» al pie).
+  if (pag === "procedencia" || pag === "alternativas") {
+    pag = "propuestas"; sub = sub ? "ya-usamos" : "";
+    history.replaceState(null, "", "#propuestas" + (sub ? "/" + sub : ""));
+  }
   // La antigua página de assets, repartida por entidades.
   if (pag === "assets") { pag = { modelos: "objetos" }[sub] || (ENTIDADES.some(([k]) => k === sub) ? sub : "piezas"); sub = null; }
   // Las piezas a robar viven ahora en objetos, como una categoría.
@@ -807,7 +767,6 @@ function elementos() {
         const sonidos = prop ? campo("Al caer", t(METAL.includes(o.kind) ? "ASSETS_FALL_METAL" : "ASSETS_FALL_DRY") + " " + oir(o.kind) + oir(golpe)) : "";
         const col = o.themes.length ? o.themes.map(x => `<a href="#objetos/${x}">${t("THEME_" + x.toUpperCase())}</a>`).join(", ") : "cualquiera (también en los pasillos)";
         return `<div class="imgs"><figure>${img(foto, tx(o.name))}<figcaption>Detalle</figcaption></figure><figure>${img(o.mapa, tx(o.name) + " — en el mapa")}<figcaption>En el mapa, 3 × 3 casillas</figcaption></figure></div>
-          ${o.model ? alBanda(`assets/models/${o.model}.glb`, { titulo: tx(o.name), nuestra: cmpImg(foto, tx(o.name), !prop && !m), ctx: `${tx(o.name)} ${o.kind} ${o.themes.map(x => tx("THEME_" + x.toUpperCase())).join(" ")}` }) : ""}
           <div class="nom">${t(o.name)}${prop ? ` <span class="estado">· en el editor ${t("EDITOR_TOOL_PROP_" + K)}</span>` : ""}</div>
           ${campo("Descripción", descripcion(o.desc))}
           ${campo("Tipo", `${t(TIPOS.find(x => x[0] === o.type)[1])} <span class="estado">${DONDE[o.type]}</span>`)}
@@ -875,11 +834,11 @@ function personajes() {
     <div class="sub">Ladrones y guardias (<code>scenes/figure.gd</code>, modelados en <code>art/characters/</code>)</div>
     ${ficha(img(m("ninja") && m("ninja").file, "ninja.glb"), `<div class="nom">Ladrón</div>${campo("Modelo", "<code>ninja.glb</code>")}
       ${campo("En la página de assets", `${t("ASSETS_PEOPLE_THIEF")} · ${t("ASSETS_PEOPLE_TWO")}`)}
-      ${campo("Procedencia", prLinea("assets/models/ninja.glb"))}`) + alBanda("assets/models/ninja.glb", { titulo: "Ladrón", nuestra: cmpImg(m("ninja") && m("ninja").file, "Ladrón"), ctx: "ladron ninja" })}
+      ${campo("Procedencia", prLinea("assets/models/ninja.glb"))}`)}
     ${ficha(img(m("guardia") && m("guardia").file, "guardia.glb"), `<div class="nom">Guardia</div>${campo("Modelo", "<code>guardia.glb</code>")}
       ${campo("En la página de assets", `${t("ASSETS_PEOPLE_SLEEPY")} · ${t("ASSETS_PEOPLE_THREE")}`)}
       ${campo("Lo que piensa y dice", `<a href="#textos">textos <code>GUARD_</code> y <code>MIND_</code></a>`)}
-      ${campo("Procedencia", prLinea("assets/models/guardia.glb"))}`) + alBanda("assets/models/guardia.glb", { titulo: "Guardia", nuestra: cmpImg(m("guardia") && m("guardia").file, "Guardia"), ctx: "guardia" })}
+      ${campo("Procedencia", prLinea("assets/models/guardia.glb"))}`)}
     ${shot ? `<h2>En la página de assets del juego</h2><div class="grandes una">${fig(shot)}</div>` : ""}`;
 }
 
@@ -888,8 +847,7 @@ function sonidos() {
   $("#p-sonidos").innerHTML = `<h1>Sonidos</h1>
     <div class="sub">Generados en código (<code>scenes/sfx.gd</code>) y exportados a <code>.wav</code></div>
     <p class="estado">Procedencia: ${prLinea("scenes/sfx.gd")}</p>
-    <div id="banda-sonidos">${s.length ? alBanda("scenes/sfx.gd", { titulo: s[0].name, nuestra: cmpAudio(s[0].file) }) : ""}</div>
-    <div style="max-width:760px">${s.map((x, i) => `<div class="sonido" id="sonidos-${esc(x.name)}"><b>${esc(x.name)}</b><audio controls preload="none" src="${x.file}"></audio><button class="btn" data-sonido-cmp="${i}" title="Compararlo con las alternativas">Comparar</button><span class="estado">${x.seconds} s${SONIDO_DE[x.name] ? ` · <a href="#${SONIDO_DE[x.name]}">${esc(ENTIDADES.find(e => e[0] === SONIDO_DE[x.name])[1].toLowerCase())}</a>` : ""}</span></div>`).join("")}</div>`;
+    <div style="max-width:760px">${s.map(x => `<div class="sonido" id="sonidos-${esc(x.name)}"><b>${esc(x.name)}</b><audio controls preload="none" src="${x.file}"></audio><span class="estado">${x.seconds} s${SONIDO_DE[x.name] ? ` · <a href="#${SONIDO_DE[x.name]}">${esc(ENTIDADES.find(e => e[0] === SONIDO_DE[x.name])[1].toLowerCase())}</a>` : ""}</span></div>`).join("")}</div>`;
 }
 
 // --- Procedencia: de dónde sale cada asset y con qué licencia (assets/PROCEDENCIA.json) -----------
@@ -908,318 +866,133 @@ const prEtiquetas = r => {
   return `<span class="lic ${r.documentado === false ? "sin" : ""}" title="${esc(l.nombre)}">${esc(l.corta)}</span>`
     + `<span class="lic">${r.tipo === "externo" ? "de terceros" : "propio"}</span>`
     + (r.documentado === false ? `<span class="lic sin">origen sin documentar</span>` : "")
-    + (r.atribucion ? `<span class="lic atr" title="Hay que citar al autor">atribución obligatoria</span>` : "")
-    + alEtiquetas(r.id);
+    + (r.atribucion ? `<span class="lic atr" title="Hay que citar al autor">atribución obligatoria</span>` : "");
 };
-// --- Alternativas de terceros (docs/data/alternativas/*.json, docs/data/alternativas_elegidas.json) ---
-const AL = window.ALTERNATIVAS || { categorias: [], grupos: [], elegidas: {} };
-const alDe = id => AL.grupos.filter(g => g.coleccion === id);
-const alN = id => alDe(id).reduce((n, g) => n + g.alternativas.length, 0);
-const alElegida = g => g.alternativas.find(a => a.id === AL.elegidas[g.key]) || null;
-const alEtiquetas = id => {
-  const n = alN(id);
-  if (!n) return "";
-  const el = alDe(id).filter(alElegida).length;
-  return `<span class="lic alt" title="Hay alternativas de terceros con licencia libre para sustituir esto">Tiene alternativa (${n})</span>`
-    + (el ? `<span class="lic eleg" title="Ya has elegido sustituirlo">Elegida${el > 1 ? ` (${el})` : ""}</span>` : "");
-};
-const alEsAudio = a => /\.(mp3|ogg|oga|wav|m4a|flac|opus)(\?|#|$)/i.test(a.preview_url || "");
-const alPreview = a => !a.preview_url ? ""
-  : `<span class="prev">${alEsAudio(a) ? `<audio controls preload="none" src="${esc(a.preview_url)}"></audio>` : `<img loading="lazy" src="${esc(a.preview_url)}" alt="${esc(a.nombre)}" onerror="this.replaceWith(document.createTextNode('(la vista previa no carga)'))">`}</span>`;
-function alGrupo(r, g) {
-  const sel = AL.elegidas[g.key] || "nuestra", l = prLic(r), ed = EDITABLE;
-  const radio = (v, on) => `<input type="radio" name="al-${esc(g.key)}" data-al-grupo="${esc(g.key)}" data-al-elige="${esc(v)}" ${on ? "checked" : ""} ${ed ? "" : "disabled"}>`;
-  const ops = g.alternativas.map(a => {
-    const lic = (PR.licencias[a.licencia] || {}).corta || a.licencia;
-    return `<label class="alt-op ${sel === a.id ? "on" : ""}">${radio(a.id, sel === a.id)}<b>${esc(a.nombre)}</b> ${sel === a.id ? `<span class="lic eleg">Elegida</span>` : ""}
-      <div class="cuerpo">
-        <span class="lic">${esc(lic)}</span>${a.atribucion ? `<span class="lic atr" title="Hay que citar al autor">atribución obligatoria</span>` : `<span class="lic">sin atribución</span>`}
-        <span class="lic" title="Cuánto encaja con lo que tenemos">encaje ${a.encaje}/5</span> <span class="lic">cubre: ${esc(a.cubre)}</span>
-        <div>${esc(a.autor)} · <a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.url)}</a></div>
-        ${a.notas ? `<div class="estado">${esc(a.notas)}</div>` : ""}
-      </div>${alPreview(a)}</label>`;
-  }).join("");
-  return `<div class="alt-grupo"><h4>${esc(g.que_es)} <span class="estado">· ${esc(g.categoria)}</span></h4>
-    <label class="alt-op ${sel === "nuestra" ? "on" : ""}">${radio("nuestra", sel === "nuestra")}<b>La nuestra</b>
-      <div class="cuerpo"><span class="lic ${r.documentado === false ? "sin" : ""}" title="${esc(l.nombre)}">${esc(l.corta)}</span>${r.atribucion ? `<span class="lic atr">atribución obligatoria</span>` : ""}
-      <span class="estado">${esc(r.nombre)}</span></div></label>
-    ${ops}</div>`;
-}
-const alDetalle = (r, clave) => {
-  const gs = alDe(r.id);
-  if (!gs.length) return "";
-  return `<details class="alt" data-k="${esc(clave)}"><summary><b>Ver las alternativas (${alN(r.id)})</b>${EDITABLE ? "" : ` <span class="estado">· para elegir, abre la documentación con <code>python3 tools/docs.py serve</code></span>`}</summary>${gs.map(g => alGrupo(r, g)).join("")}</details>`;
-};
-// Lo elegido que no es «la nuestra»: lo que queda por sustituir.
-function alResumen() {
-  const pend = AL.grupos.filter(alElegida);
-  const conAlt = new Set(AL.grupos.map(g => g.coleccion)).size;
-  if (!AL.grupos.length) return "";
-  return `<div class="pr-resumen"><b>${conAlt}</b> colecci${conAlt === 1 ? "ón tiene" : "ones tienen"} alternativa de terceros · <b>${pend.length}</b> pendiente${pend.length === 1 ? "" : "s"} de sustituir
-    ${pend.length ? `<ul>${pend.map(g => { const a = alElegida(g), c = PR.colecciones[g.coleccion] || {}; return `<li><a href="#procedencia/${encodeURIComponent(g.coleccion)}">${esc(c.nombre || g.coleccion)}</a> (${esc(g.que_es)}) → <b>${esc(a.nombre)}</b> · ${esc(a.autor)} · <a href="${esc(a.url)}" target="_blank" rel="noopener">fuente</a></li>`; }).join("")}</ul>` : `<div class="estado">Nada elegido todavía: todo se queda como está.</div>`}</div>`;
-}
-// --- Comparación: la nuestra al lado de las alternativas, en la ficha de cada asset y a pantalla completa ---
-const CMP = {};          // id de banda -> lo que hace falta para repintarla
-const CMP_MUESTRAS = {   // lo nuestro de las colecciones sin página propia (copiado por tools/docs.py a docs/assets/muestras/)
-  "ui-pegatinas-ninja": { fondo: false, files: [1, 2, 3, 4].map(n => `ninjas_${n}.png`) },
-  "ui-iconos-editor": { fondo: true, files: ["play", "exit_door", "guard", "options", "rooms", "piece"].map(n => `${n}.svg`) },
-  "ui-iconos-objetos": { fondo: false, files: ["big_bear", "big_car", "exhibit_amphora", "exhibit_chest", "loot_crown", "loot_gem"].map(n => `${n}.png`) },
-  "globo-mapamundi": { fondo: false, files: ["globo_world.png"] },
-};
-const cmpDir = "assets/muestras/";
-const cmpNorm = s => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[_\/]+/g, " ");
-const CMP_STOP = new Set(["tema", "temas", "todo", "algunos", "alguno", "personajes", "animados", "animadas", "paquete", "pack", "estilo", "para", "como", "cada", "este", "esta", "valdrian", "hechos", "gratuitos", "props", "objetos", "piezas", "versiones", "variantes"]);
-const CMP_TEMAS = ["antiguo", "edad", "media", "moderna", "prehistoria", "naturaleza"];
-const cmpEncaje = n => `<span class="cmp-encaje" title="Cuánto encaja con lo nuestro: ${n} de 5" aria-label="encaje ${n} de 5">${"●".repeat(n)}${"○".repeat(Math.max(0, 5 - n))}<small>${n}/5</small></span>`;
-// «cubre» = «todo|algunos|uno: qué». Devuelve el alcance y el texto.
-function alAlcance(a) {
-  const m = /^\s*(todo|algunos?|uno)\b\s*:?\s*(.*)$/i.exec(a.cubre || "");
-  if (!m) return { tipo: "", texto: a.cubre || "" };
-  const tipo = m[1].toLowerCase().replace(/^alguno$/, "algunos");
-  return { tipo, texto: m[2] };
-}
-// ¿Cubre esta alternativa el objeto? true/false, o null si no se puede saber (sin contexto fiable).
-function alCubreA(a, ctx) {
-  const { tipo, texto } = alAlcance(a);
-  if (tipo === "todo") return true;
-  if (!ctx) return null;
-  let ws = [...new Set(cmpNorm(texto).replace(/[^a-z ]/g, " ").split(/\s+/).filter(w => w.length >= 4 && !CMP_STOP.has(w)))];
-  if (tipo === "uno") { const sin = ws.filter(w => !CMP_TEMAS.includes(w)); if (sin.length) ws = sin; }
-  if (!ws.length) return null;
-  const c = cmpNorm(ctx);
-  return ws.some(w => c.includes(w.length >= 6 ? w.slice(0, w.length - 2) : w.length === 5 ? w.slice(0, 4) : w));
-}
-const alAudioSrc = u => /\.(mp3|ogg|oga|wav|m4a|flac|opus)(\?|#|$)/i.test(u || "");
-function cmpPreview(a) {
-  const enlace = `<a href="${esc(a.url)}" target="_blank" rel="noopener">abrir la página</a>`;
-  if (!a.preview_url) return `<div class="cmp-prev"><div class="cmp-sin">sin vista previa<br>${enlace}</div></div>`;
-  if (alAudioSrc(a.preview_url)) return `<div class="cmp-prev"><audio controls preload="none" referrerpolicy="no-referrer" src="${esc(a.preview_url)}"></audio></div>`;
-  return `<div class="cmp-prev"><img loading="lazy" referrerpolicy="no-referrer" src="${esc(a.preview_url)}" alt="${esc(a.nombre)}" onerror="this.parentNode.innerHTML='&lt;div class=&quot;cmp-sin&quot;&gt;la vista previa no carga&lt;/div&gt;'"></div>`;
-}
-// Tarjeta de una alternativa; ctx = texto del asset para saber si la cubre («» = no se sabe).
-function cmpTarjeta(g, a, ctx) {
-  const el = AL.elegidas[g.key] === a.id, cu = alCubreA(a, ctx), al = alAlcance(a);
-  const lic = (PR.licencias[a.licencia] || {}).corta || a.licencia;
-  const quien = { todo: "Cubre todo el grupo", algunos: "Cubre solo algunos", uno: "Cubre solo uno" }[al.tipo] || "Cubre";
-  return `<article class="cmp-card ${el ? "on" : ""} ${cu === false ? "no" : ""}">
-    ${cmpPreview(a)}
-    <div class="cmp-nom">${esc(a.nombre)}${el ? ` <span class="lic eleg">Elegida</span>` : ""}</div>
-    <div>${esc(a.autor)}</div>
-    <div><span class="lic">${esc(lic)}</span>${a.atribucion ? "" : `<span class="lic">sin atribución</span>`}</div>
-    ${a.atribucion ? `<div class="cmp-atr">Atribución obligatoria: hay que citar a ${esc(a.autor)} (${esc(lic)}).</div>` : ""}
-    <div>${cmpEncaje(a.encaje)}</div>
-    <div class="cmp-cubre ${al.tipo}"><b>${quien}</b>${al.texto ? `: ${esc(al.texto)}` : ""}</div>
-    ${cu === false ? `<div class="cmp-no" title="Según el texto de «cubre»; es una coincidencia por nombre, aproximada">No cubre este objeto</div>` : ""}
-    ${a.notas ? `<div class="cmp-notas">${esc(a.notas)}</div>` : ""}
-    <a href="${esc(a.url)}" target="_blank" rel="noopener">Ver la página ↗</a>
-    <button class="btn ${el ? "el" : ""}" data-al-boton data-al-grupo="${esc(g.key)}" data-al-elige="${el ? "nuestra" : esc(a.id)}" ${EDITABLE ? "" : `disabled title="Para elegir, abre la documentación con python3 tools/docs.py serve"`}>${el ? "Elegida · quitar" : "Elegir"}</button>
-  </article>`;
-}
-// Tarjeta de la nuestra: su imagen o reproductor, licencia y procedencia.
-function cmpNuestra(r, g, nuestra) {
-  const l = prLic(r), ninguna = !AL.elegidas[g.key];
-  return `<article class="cmp-card nuestra ${ninguna ? "on-nuestra" : ""}">
-    <div class="cmp-etq">La nuestra</div>
-    ${nuestra || `<div class="cmp-prev"><div class="cmp-sin">sin muestra</div></div>`}
-    <div class="cmp-nom">${esc(r.nombre)}</div>
-    <div><span class="lic ${r.documentado === false ? "sin" : ""}" title="${esc(l.nombre)}">${esc(l.corta)}</span><span class="lic">${r.tipo === "externo" ? "de terceros" : "propio"}</span>${r.atribucion ? `<span class="lic atr">atribución obligatoria</span>` : ""}</div>
-    <div class="estado">${esc(r.autor)} · <a href="#procedencia/${encodeURIComponent(r.clave)}">procedencia</a></div>
-    ${ninguna ? `<div class="estado"><b>Es la que se usa.</b></div>` : `<button class="btn" data-al-boton data-al-grupo="${esc(g.key)}" data-al-elige="nuestra" ${EDITABLE ? "" : "disabled"}>Quedarse con la nuestra</button>`}
-  </article>`;
-}
-function cmpMuestra(col, r) {
-  const m = CMP_MUESTRAS[col];
-  if (!m) return "";
-  if (m.files.length === 1) return `<div class="cmp-prev una"><img loading="lazy" src="${cmpDir}${m.files[0]}" alt="${esc(r.nombre)}"></div>`;
-  return `<div class="cmp-prev"><div class="cmp-fondo" ${m.fondo ? "" : `style="background:var(--fondo2)"`}>${m.files.map(f => `<img loading="lazy" src="${cmpDir}${f}" alt="">`).join("")}</div></div>`;
-}
-const cmpImg = (file, cap, cerca) => `<div class="cmp-prev">${file ? `<img loading="lazy" src="${file}" alt="${esc(cap)}" ${cerca ? `style="transform:scale(1.6)"` : ""}>` : `<div class="cmp-sin">sin imagen</div>`}</div>`;
-const cmpAudio = file => `<div class="cmp-prev"><audio controls preload="none" src="${file}"></audio></div>`;
-// Los elementos de una colección, para pasar de uno a otro a pantalla completa.
-function cmpItems(col) {
-  const r = PR.colecciones[col] || { nombre: col };
-  if (col === "modelos-blender") return elementos().filter(e => e.modelo && (prDe(`assets/models/${e.modelo}.glb`) || {}).id === col)
-    .map(e => ({ titulo: e.nombre, nuestra: cmpImg(e.img, e.nombre, e.cerca), ctx: e.ctx }));
-  if (col === "personajes-blender") return [["ninja", "Ladrón", "ladron ninja"], ["guardia", "Guardia", "guardia"]]
-    .map(([k, n, ctx]) => ({ titulo: n, nuestra: cmpImg((MODELOS[k] || {}).file, n), ctx }));
-  if (col === "sonidos-procedurales") return (J.sonidos || []).map(x => ({ titulo: x.name, nuestra: cmpAudio(x.file), ctx: "" }));
-  if (col === "megafonia-tts") return [{ titulo: "Una frase de ejemplo (mega_act_arcade_01)", nuestra: cmpAudio(cmpDir + "mega_act_arcade_01.ogg"), ctx: "" }];
-  return [{ titulo: r.nombre, nuestra: cmpMuestra(col, r), ctx: "" }];
-}
-function cmpBandaHtml(id) {
-  const d = CMP[id], r = prDe(d.ruta);
-  if (!r) return "";
-  return alDe(r.id).map(g => `<div class="cmp" data-cmp="${esc(id)}" data-cmp-g="${esc(g.key)}">
-    <div class="cmp-cab"><b>Comparar con alternativas</b><span class="estado">${esc(g.que_es)} · ${g.alternativas.length} alternativa${g.alternativas.length === 1 ? "" : "s"}</span>
-      <button class="btn si" data-cmp-abrir="${esc(id)}" title="Ver la nuestra y las alternativas a pantalla completa">Comparar ⤢</button></div>
-    <div class="cmp-fila"><div class="cmp-nuestra">${cmpNuestra(r, g, d.nuestra)}</div>
-      <div class="cmp-alts">${g.alternativas.map(a => cmpTarjeta(g, a, d.ctx)).join("")}</div></div></div>`).join("");
-}
-// La banda de un asset: ruta = un fichero suyo (para saber su colección), nuestra = su imagen o reproductor (html),
-// titulo = cómo se llama, ctx = texto con el que decidir qué alternativas lo cubren.
-function alBanda(ruta, { titulo, nuestra, ctx = "" }) {
-  const r = prDe(ruta);
-  if (!r || !alN(r.id)) return "";
-  const id = "c" + [...(r.id + "|" + titulo)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
-  CMP[id] = { ruta, titulo, nuestra, ctx, col: r.id };
-  return cmpBandaHtml(id);
-}
-// --- Pantalla completa (←/→ entre los assets de la colección, Esc para salir)
-let CMPV = null;
-function cmpPantalla() {
-  const v = CMPV, r = PR.colecciones[v.col] || { nombre: v.col }, it = v.items[v.i];
-  const rr = { ...r, id: v.col, clave: v.col };
-  const grupos = alDe(v.col);
-  $("#cmp-pantalla").innerHTML = `<div class="cmp-top"><h2>${esc(r.nombre)} <span class="estado">· ${esc(it.titulo)}</span></h2>
-      <button class="btn" data-cmp-paso="-1" ${v.items.length < 2 ? "disabled" : ""} title="Anterior (←)">← Anterior</button>
-      <span class="estado">${v.i + 1} / ${v.items.length}</span>
-      <button class="btn" data-cmp-paso="1" ${v.items.length < 2 ? "disabled" : ""} title="Siguiente (→)">Siguiente →</button>
-      <button class="btn si" data-cmp-cerrar title="Cerrar (Esc)">Cerrar ✕</button></div>
-    ${grupos.map(g => `<div class="cmp-grid">${grupos.length > 1 ? `<div class="cmp-grupo">${esc(g.que_es)}</div>` : ""}${cmpNuestra(rr, g, it.nuestra)}${g.alternativas.map(a => cmpTarjeta(g, a, it.ctx)).join("")}</div>`).join("")}`;
-}
-function cmpAbrir(id) {
-  const d = CMP[id];
-  if (!d) return;
-  const items = cmpItems(d.col);
-  const i = Math.max(0, items.findIndex(x => x.titulo === d.titulo));
-  CMPV = { col: d.col, items, i };
-  let el = $("#cmp-pantalla");
-  if (!el) { el = document.createElement("div"); el.id = "cmp-pantalla"; el.className = "cmp-pantalla"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Comparar con alternativas"); document.body.appendChild(el); }
-  el.style.display = "block";
-  document.body.style.overflow = "hidden";
-  cmpPantalla();
-  el.scrollTop = 0;
-}
-function cmpCerrar() {
-  const el = $("#cmp-pantalla");
-  if (el) { el.querySelectorAll("audio").forEach(a => a.pause()); el.style.display = "none"; el.innerHTML = ""; }
-  document.body.style.overflow = "";
-  CMPV = null;
-}
-const cmpAbierta = () => CMPV && $("#cmp-pantalla") && $("#cmp-pantalla").style.display !== "none";
-function cmpPaso(d) {
-  const n = CMPV.items.length;
-  if (n < 2) return;
-  $("#cmp-pantalla").querySelectorAll("audio").forEach(a => a.pause());
-  CMPV.i = (CMPV.i + d + n) % n;
-  cmpPantalla();
-  $("#cmp-pantalla").scrollTop = 0;
-}
-document.addEventListener("keydown", e => {
-  if (!cmpAbierta()) return;
-  if (e.key === "Escape") { cmpCerrar(); e.preventDefault(); }
-  else if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && !/^(INPUT|TEXTAREA|SELECT)$/.test((e.target || {}).tagName || "")) {
-    cmpPaso(e.key === "ArrowLeft" ? -1 : 1); e.preventDefault();
-  }
-});
-document.addEventListener("click", e => {
-  const so = e.target.closest("[data-sonido-cmp]");
-  if (so) {
-    const x = (J.sonidos || [])[+so.dataset.sonidoCmp], cont = $("#banda-sonidos");
-    if (x && cont) { cont.innerHTML = alBanda("scenes/sfx.gd", { titulo: x.name, nuestra: cmpAudio(x.file) }); cont.scrollIntoView({ block: "nearest" }); }
-    return;
-  }
-  const ab = e.target.closest("[data-cmp-abrir]");
-  if (ab) { cmpAbrir(ab.dataset.cmpAbrir); return; }
-  if (e.target.closest("[data-cmp-cerrar]")) { cmpCerrar(); return; }
-  const p = e.target.closest("[data-cmp-paso]");
-  if (p) { cmpPaso(+p.dataset.cmpPaso); return; }
-  const b = e.target.closest("[data-al-boton]");
-  if (b && !b.disabled) alElegir(b.dataset.alGrupo, b.dataset.alElige);
-});
-// Repinta las bandas visibles (y la pantalla completa) tras elegir, sin mover nada más.
-function alRepintar() {
-  document.querySelectorAll(".cmp[data-cmp]").forEach(b => {
-    if (!CMP[b.dataset.cmp]) return;
-    const t = document.createElement("div");
-    t.innerHTML = cmpBandaHtml(b.dataset.cmp);
-    const nuevo = [...t.children].find(x => x.dataset.cmpG === b.dataset.cmpG);
-    if (!nuevo) return;
-    const sc = b.querySelector(".cmp-alts"), x = sc ? sc.scrollLeft : 0;
-    b.replaceWith(nuevo);
-    const n2 = nuevo.querySelector(".cmp-alts");
-    if (n2) n2.scrollLeft = x;
-  });
-  if (cmpAbierta()) { const y = $("#cmp-pantalla").scrollTop; cmpPantalla(); $("#cmp-pantalla").scrollTop = y; }
-}
-async function alElegir(grupo, eleccion) {
-  if (!EDITABLE) return;
-  try {
-    const res = await fetch("api/alternativa", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ grupo, eleccion }) });
-    const j = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(j.error || "No se pudo guardar");
-    AL.elegidas = j.elegidas || {};
-  } catch (err) { alert("No se pudo guardar la elección: " + err.message); }
-  alRepintar();
-  if ($("#pr-lista")) prRefrescar();
-}
-// Una línea para las fichas: etiquetas, colección y cómo se hizo.
+// Una línea para las fichas: etiquetas de licencia y de qué colección sale.
 const prLinea = ruta => {
   const r = prDe(ruta);
   if (!r) return `<span class="lic sin">sin regla de procedencia</span>`;
-  return `${prEtiquetas(r)} <a href="#procedencia/${encodeURIComponent(r.clave)}">${esc(r.nombre)}</a>`;
+  return `${prEtiquetas(r)} ${esc(r.nombre)}`;
 };
-let prFiltro = { lic: "", tipo: "", q: "", alt: false };
-function prGrupos() {
-  const g = {};
-  for (const [ruta, k] of Object.entries(PR.archivos)) (g[k] = g[k] || []).push(ruta);
-  return Object.entries(g).map(([k, rutas]) => ({ r: prDe(rutas[0]), rutas: rutas.sort() }));
+// --- Assets a incorporar: propuestas de assets concretos (docs/data/propuestas.json) --------------------
+let PP = window.PROPUESTAS || [];
+const PP_TIPOS = [["modelo", "Modelos"], ["sonido", "Sonidos"], ["imagen", "Imágenes"], ["otro", "Otros"]];
+const PP_ESTADOS = ["propuesto", "aceptado", "incorporado", "descartado"];
+const ppFiltro = { tipo: "", estado: "", q: "" };
+const ppEsAudio = u => /\.(mp3|ogg|oga|wav|m4a|flac|opus)(\?|#|$)/i.test(u || "");
+function ppPreview(x) {
+  const enlace = `<a href="${esc(x.url)}" target="_blank" rel="noopener">abrir la página</a>`;
+  if (!x.preview_url) return `<div class="prop-prev"><div class="prop-sin">sin vista previa<br>${enlace}</div></div>`;
+  if (ppEsAudio(x.preview_url)) return `<div class="prop-prev"><audio controls preload="none" referrerpolicy="no-referrer" src="${esc(x.preview_url)}" aria-label="Oír ${esc(x.nombre)}"></audio></div>`;
+  return `<div class="prop-prev"><img loading="lazy" referrerpolicy="no-referrer" src="${esc(x.preview_url)}" alt="${esc(x.nombre)}" onerror="this.parentNode.innerHTML='&lt;div class=&quot;pp-sin&quot;&gt;la vista previa no carga&lt;/div&gt;'"></div>`;
 }
-function prLista() {
-  const q = prFiltro.q.trim().toLowerCase();
-  const gs = prGrupos().filter(({ r, rutas }) =>
-    (!prFiltro.lic || r.licencia === prFiltro.lic)
-    && (!prFiltro.alt || alN(r.id) > 0)
-    && (!prFiltro.tipo || (prFiltro.tipo === "sin" ? r.documentado === false : r.tipo === prFiltro.tipo))
-    && (!q || `${r.nombre} ${r.metodo} ${r.autor} ${r.notas || ""}`.toLowerCase().includes(q) || rutas.some(x => x.toLowerCase().includes(q))));
-  gs.sort((a, b) => (a.r.tipo === b.r.tipo ? 0 : a.r.tipo === "externo" ? -1 : 1) || a.r.nombre.localeCompare(b.r.nombre));
-  if (!gs.length) return `<p class="vacio">Nada con ese filtro.</p>`;
-  return gs.map(({ r, rutas }) => {
-    const l = prLic(r);
-    return `<div class="pr-col ${alN(r.id) ? "con-alt" : ""}" id="procedencia-${esc(r.clave)}">
-      <h3>${esc(r.nombre)} <span class="estado">· ${rutas.length} fichero${rutas.length === 1 ? "" : "s"}</span></h3>
-      <div>${prEtiquetas(r)}</div>
-      <p><span class="etq">Cómo se hizo</span>${esc(r.metodo)}</p>
-      <p><span class="etq">Autor</span>${esc(r.autor)}</p>
-      <p><span class="etq">Licencia</span>${l.url ? `<a href="${esc(l.url)}">${esc(l.nombre)}</a>` : esc(l.nombre)} <span class="estado">(<code>${esc(r.licencia)}</code>)</span></p>
-      ${r.url ? `<p><span class="etq">Fuente</span><a href="${esc(r.url)}">${esc(r.url)}</a></p>` : ""}
-      ${(r.componentes || []).length ? `<p><span class="etq">Lleva de terceros</span></p><ul>${r.componentes.map(c => `<li>${esc(c.nombre)} · ${esc(c.autor)} · ${esc((PR.licencias[c.licencia] || { corta: c.licencia }).corta)}${c.url ? ` · <a href="${esc(c.url)}">fuente</a>` : ""}${c.nota ? `<br><span class="estado">${esc(c.nota)}</span>` : ""}</li>`).join("")}</ul>` : ""}
-      ${r.notas ? `<p class="estado">${esc(r.notas)}</p>` : ""}
-      ${CMP_MUESTRAS[r.id] ? alBanda(rutas[0], { titulo: r.nombre, nuestra: cmpMuestra(r.id, r) }) : ""}
-      ${alDetalle(r, r.clave)}
-      ${rfDe(r.id).length ? `<p><span class="etq">Referencias</span>${rfDe(r.id).map(x => `<a href="#referencias/${encodeURIComponent(x.id)}">${esc(x.titulo)}</a>`).join(" · ")}</p>` : ""}
-      <details><summary class="estado">Ver los ${rutas.length} fichero${rutas.length === 1 ? "" : "s"}</summary><div class="archivos">${rutas.map(x => `<div><code>${esc(x)}</code></div>`).join("")}</div></details>
-    </div>`;
-  }).join("");
+function ppTarjeta(x) {
+  const pack = x.pack_url ? `<a href="${esc(x.pack_url)}" target="_blank" rel="noopener">${esc(x.pack)}</a>` : esc(x.pack);
+  const item = x.url && x.url !== x.pack_url ? ` · <a href="${esc(x.url)}" target="_blank" rel="noopener">ver el asset ↗</a>` : "";
+  const estados = EDITABLE
+    ? `<div class="prop-est" role="group" aria-label="Estado de ${esc(x.nombre)}">${PP_ESTADOS.map(e => `<button type="button" class="btn ${e === x.estado ? "si" : ""}" data-pp-estado="${e}" data-pp-id="${esc(x.id)}" aria-pressed="${e === x.estado}">${e}</button>`).join("")}</div>`
+    : "";
+  return `<article class="prop est-${esc(x.estado)}" id="propuestas-${esc(x.id)}">
+    ${ppPreview(x)}
+    <h3>${x.url && x.url === x.pack_url ? `<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.nombre)}</a>` : esc(x.nombre)}</h3>
+    <div><span class="lic est-${esc(x.estado)}">${esc(x.estado)}</span><span class="lic">${esc(x.tipo)}</span><span class="lic">${esc(x.licencia)}</span>${x.atribucion ? `<span class="lic atr" title="Hay que citar al autor">atribución obligatoria</span>` : `<span class="lic">sin atribución</span>`}</div>
+    <p class="para"><b>Para</b>${esc(x.para)}</p>
+    <p class="estado">Pack: ${pack}${item}</p>
+    ${x.nota ? `<p class="estado">${esc(x.nota)}</p>` : ""}
+    ${estados}
+  </article>`;
 }
-function procedencia() {
-  const gs = prGrupos();
-  const porLic = {}, porTipo = { externo: 0, propio: 0, sin: 0 };
-  for (const { r, rutas } of gs) {
-    porLic[r.licencia] = (porLic[r.licencia] || 0) + rutas.length;
-    porTipo[r.tipo] += rutas.length;
-    if (r.documentado === false) porTipo.sin += rutas.length;
+function ppLista() {
+  const q = ppFiltro.q.trim().toLowerCase();
+  const xs = PP.filter(x => (!ppFiltro.tipo || x.tipo === ppFiltro.tipo) && (!ppFiltro.estado || x.estado === ppFiltro.estado)
+    && (!q || `${x.nombre} ${x.pack} ${x.para} ${x.nota} ${x.licencia} ${x.tipo}`.toLowerCase().includes(q)))
+    .sort((a, b) => PP_ESTADOS.indexOf(a.estado) - PP_ESTADOS.indexOf(b.estado) || PP_TIPOS.findIndex(t => t[0] === a.tipo) - PP_TIPOS.findIndex(t => t[0] === b.tipo) || a.nombre.localeCompare(b.nombre));
+  if (!xs.length) return `<p class="vacio">${PP.length ? "Nada con ese filtro." : "Todavía no hay propuestas: usa «Proponer un asset»."}</p>`;
+  return `<div class="prop-grid">${xs.map(ppTarjeta).join("")}</div>`;
+}
+function propuestas() {
+  const btn = (attr, val, txt, n, on) => `<button class="btn ${on ? "si" : ""}" data-pp-${attr}="${esc(val)}">${txt} <span>${n}</span></button>`;
+  const cuenta = (k, v) => PP.filter(x => x[k] === v).length;
+  const usamos = Object.entries(PR.colecciones || {}).filter(([, c]) => c.n).sort((a, b) => a[1].nombre.localeCompare(b[1].nombre));
+  $("#p-propuestas").innerHTML = `<h1>Assets a incorporar</h1>
+    <div class="sub">Assets concretos (un modelo, un sonido, un icono, un pack pequeño) que se proponen para el juego · ${PP.length} propuesta${PP.length === 1 ? "" : "s"}</div>
+    <p class="lead">Cada tarjeta es un asset, con el pack de donde sale, su licencia y <b>para qué</b> lo pondríamos. El estado va de <i>propuesto</i> a <i>aceptado</i>, <i>incorporado</i> o <i>descartado</i>. Los datos están en <code>docs/data/propuestas.json</code>.</p>
+    ${EDITABLE ? `<details class="prop-form-det"><summary class="btn si">Proponer un asset</summary><form class="rf-form" id="pp-form">
+      <label class="ancho">Enlace al asset<input name="url" type="url" required placeholder="https://…"></label>
+      <label>Nombre<input name="nombre" required></label>
+      <label>Pack<input name="pack" placeholder="Pack de donde sale"></label>
+      <label class="ancho">Para qué (dónde lo pondríamos en el juego)<input name="para" required placeholder="vitrina del museo Castillo, sonido de puerta…"></label>
+      <label>Tipo<select name="tipo">${PP_TIPOS.map(([k, n]) => `<option value="${k}">${n}</option>`).join("")}</select></label>
+      <label>Licencia<input name="licencia" placeholder="CC0, CC BY 4.0…"></label>
+      <label>Enlace a la vista previa (imagen o audio)<input name="preview_url" type="url"></label>
+      <label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" name="atribucion"> exige atribución</label>
+      <label class="ancho">Nota<textarea name="nota" rows="2"></textarea></label>
+      <div class="rf-acc ancho"><button class="btn si" type="submit">Guardar</button><span class="estado" id="pp-msg" role="status"></span></div></form></details>`
+      : `<div class="aviso">Solo lectura: para proponer o cambiar el estado abre la documentación con <code>python3 tools/docs.py serve</code> (o edita <code>docs/data/propuestas.json</code> a mano).</div>`}
+    <div class="filtros" id="pp-tipos">${btn("tipo", "", "Todos", PP.length, !ppFiltro.tipo)}${PP_TIPOS.filter(([k]) => cuenta("tipo", k)).map(([k, n]) => btn("tipo", k, n, cuenta("tipo", k), ppFiltro.tipo === k)).join("")}</div>
+    <div class="filtros" id="pp-estados">${btn("estado", "", "Cualquier estado", PP.length, !ppFiltro.estado)}${PP_ESTADOS.map(e => btn("estado", e, e, cuenta("estado", e), ppFiltro.estado === e)).join("")}</div>
+    <div class="filtros"><input class="pr-buscar" id="pp-q" type="search" placeholder="Buscar asset, pack o para qué" aria-label="Buscar propuestas" value="${esc(ppFiltro.q)}"></div>
+    <div id="pp-lista">${ppLista()}</div>
+    <details class="prop-usamos" id="propuestas-ya-usamos"><summary class="estado">Lo que ya usamos: ${usamos.length} colecciones y su licencia</summary>
+      <p class="estado">Sale de <code>assets/PROCEDENCIA.json</code>; el detalle, con autores, en <code>CREDITS.md</code>.</p>
+      <table><tbody>${usamos.map(([, c]) => `<tr><td>${esc(c.nombre)}</td><td>${esc((PR.licencias[c.licencia] || { corta: c.licencia }).corta)}${c.atribucion ? " · atribución" : ""}</td><td>${c.n} fichero${c.n === 1 ? "" : "s"}</td></tr>`).join("")}</tbody></table>
+      ${(PR.sin_regla || []).length ? `<div class="aviso"><b>Sin regla de procedencia:</b> ${PR.sin_regla.map(x => `<code>${esc(x)}</code>`).join(", ")}</div>` : ""}
+    </details>`;
+}
+async function ppPost(cuerpo) {
+  const res = await fetch("api/propuesta", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cuerpo) });
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(j.error || "No se pudo guardar");
+  PP = j.propuestas || PP;
+  RF = j.referencias || RF;
+}
+// Repinta la página conservando el scroll, si el formulario y «Lo que ya usamos» estaban abiertos y el foco.
+function ppRepintar(foco) {
+  const y = window.scrollY;
+  const form = (document.querySelector(".prop-form-det") || {}).open, usa = (document.getElementById("propuestas-ya-usamos") || {}).open;
+  propuestas();
+  const d = document.querySelector(".prop-form-det"); if (d && form) d.open = true;
+  const u = document.getElementById("propuestas-ya-usamos"); if (u && usa) u.open = true;
+  window.scrollTo(0, y);
+  const t = foco && document.querySelector(foco); if (t) t.focus({ preventScroll: true });
+}
+document.addEventListener("click", async e => {
+  const f = e.target.closest("[data-pp-tipo], [data-pp-estado]:not([data-pp-id])");
+  if (f) {
+    const esTipo = "ppTipo" in f.dataset, v = esTipo ? f.dataset.ppTipo : f.dataset.ppEstado;
+    ppFiltro[esTipo ? "tipo" : "estado"] = v;
+    ppRepintar(`[data-pp-${esTipo ? "tipo" : "estado"}="${CSS.escape(v)}"]:not([data-pp-id])`);
+    return;
   }
-  const total = Object.values(porLic).reduce((a, b) => a + b, 0);
-  const lics = Object.entries(porLic).sort((a, b) => b[1] - a[1]);
-  const btn = (attr, val, txt, n, on) => `<button class="btn ${on ? "si" : ""}" data-pr-${attr}="${esc(val)}">${txt} <span>${n}</span></button>`;
-  $("#p-procedencia").innerHTML = `<h1>Procedencia</h1>
-    <div class="sub">De dónde sale cada asset y con qué licencia · ${total} ficheros de <code>assets/</code>, <code>audio/</code> y <code>art/</code></div>
-    <p class="lead">La fuente es una sola, <code>assets/PROCEDENCIA.json</code>, y se edita a mano: colecciones (un pack externo o un método propio) y reglas por carpeta que las asignan a los ficheros. <code>python3 tools/procedencia.py</code> (o <code>tests/test_procedencia.gd</code>) falla si aparece un asset sin regla o con una licencia no permitida, y <code>python3 tools/procedencia.py credits</code> reescribe <code>CREDITS.md</code> de ahí.</p>
-    ${(PR.sin_regla || []).length ? `<div class="aviso"><b>Sin regla de procedencia:</b> ${PR.sin_regla.map(x => `<code>${esc(x)}</code>`).join(", ")}</div>` : ""}
-    <div id="pr-resumen">${alResumen()}</div>
-    ${AL.grupos.length ? `<div class="filtros" id="pr-alt"><button class="btn ${prFiltro.alt ? "si" : ""}" data-pr-alt="1">Solo con alternativa <span>${gs.filter(({ r }) => alN(r.id)).length}</span></button></div>` : ""}
-    <div class="filtros" id="pr-lic">${btn("lic", "", "Todas las licencias", total, !prFiltro.lic)}${lics.map(([k, n]) => btn("lic", k, esc((PR.licencias[k] || { corta: k }).corta), n, prFiltro.lic === k)).join("")}</div>
-    <div class="filtros" id="pr-tipo">${btn("tipo", "", "Todo", total, !prFiltro.tipo)}${btn("tipo", "propio", "Propio", porTipo.propio, prFiltro.tipo === "propio")}${btn("tipo", "externo", "De terceros", porTipo.externo, prFiltro.tipo === "externo")}${btn("tipo", "sin", "Origen sin documentar", porTipo.sin, prFiltro.tipo === "sin")}
-      <input class="pr-buscar" id="pr-q" type="search" placeholder="Buscar colección o fichero" value="${esc(prFiltro.q)}"></div>
-    <div id="pr-lista">${prLista()}</div>`;
-}
+  const b = e.target.closest("[data-pp-id]");
+  if (b && EDITABLE) {
+    const id = b.dataset.ppId, estado = b.dataset.ppEstado;
+    try { await ppPost({ accion: "estado", id, estado }); } catch (err) { alert("No se pudo guardar: " + err.message); return; }
+    ppRepintar(`[data-pp-id="${CSS.escape(id)}"][data-pp-estado="${estado}"]`);
+  }
+});
+document.addEventListener("input", e => {
+  if (e.target.id !== "pp-q") return;
+  ppFiltro.q = e.target.value;
+  $("#pp-lista").innerHTML = ppLista();
+});
+document.addEventListener("submit", async e => {
+  if (e.target.id !== "pp-form") return;
+  e.preventDefault();
+  const d = Object.fromEntries(new FormData(e.target));
+  d.atribucion = "atribucion" in d;
+  try {
+    await ppPost({ accion: "añadir", ...d });
+    ppFiltro.tipo = ""; ppFiltro.estado = ""; ppFiltro.q = "";
+    propuestas();
+    const m = $("#pp-msg"); if (m) m.textContent = "Propuesta guardada.";
+  } catch (err) { const m = $("#pp-msg"); if (m) m.textContent = "No se pudo guardar: " + err.message; }
+});
 // --- Referencias: enlaces de inspiración y recursos (docs/data/referencias.json) ------------------
 let RF = window.REFERENCIAS || [];
 const RF_TIPOS = ["icons", "modelos", "audio", "arte", "codigo", "articulo", "otro"];
 const RF_ESTADOS = ["guardada", "evaluada", "usada", "descartada"];
 const rfFiltro = { q: "", tipo: "", etq: "", estado: "" };
-const rfDe = id => RF.filter(x => (x.relacionadas || []).some(y => y.coleccion === id));
 function rfLista() {
   const q = rfFiltro.q.trim().toLowerCase();
   const xs = RF.filter(x => (!rfFiltro.tipo || x.tipo === rfFiltro.tipo) && (!rfFiltro.estado || x.estado === rfFiltro.estado)
@@ -1232,7 +1005,7 @@ function rfLista() {
     <div><span class="lic est-${esc(x.estado)}">${esc(x.estado)}</span><span class="lic">${esc(x.tipo)}</span>${(x.etiquetas || []).map(t => `<span class="lic">${esc(t)}</span>`).join("")}</div>
     ${x.licencia ? `<p><span class="etq">Licencia</span>${esc(x.licencia)}</p>` : ""}
     ${x.nota ? `<p>${esc(x.nota)}</p>` : ""}
-    ${(x.relacionadas || []).length ? `<p class="estado">En Procedencia: ${x.relacionadas.map(y => `<a href="#procedencia/${encodeURIComponent(y.coleccion)}">${esc(y.nombre)}</a>${y.alternativa ? ` (alternativa «${esc(y.alternativa)}»)` : ""}`).join(" · ")}</p>` : ""}
+    ${(x.relacionadas || []).length ? `<p class="estado">En «Assets a incorporar»: ${x.relacionadas.map(y => `<a href="#propuestas/${encodeURIComponent(y.propuesta)}">${esc(y.nombre)}</a>`).join(" · ")}</p>` : ""}
     ${EDITABLE ? `<div class="rf-acc"><select data-rf-estado="${esc(x.id)}" aria-label="Estado">${RF_ESTADOS.map(e => `<option ${e === x.estado ? "selected" : ""}>${e}</option>`).join("")}</select><button class="btn" data-rf-borrar="${esc(x.id)}">Borrar</button></div>` : ""}
   </div>`).join("");
 }
@@ -1242,7 +1015,7 @@ function referencias() {
   const etqs = [...new Set(RF.flatMap(x => x.etiquetas || []))].sort();
   $("#p-referencias").innerHTML = `<h1>Referencias</h1>
     <div class="sub">Enlaces de inspiración y recursos que se van encontrando · ${RF.length} guardada${RF.length === 1 ? "" : "s"}</div>
-    <p class="lead">Se guardan en <code>docs/data/referencias.json</code> (a mano, o desde aquí con <code>python3 tools/docs.py serve</code>); <code>python3 tools/procedencia.py</code> comprueba el fichero. Si una comparte dominio con una colección de Procedencia o con una de sus alternativas, se enlazan entre sí.</p>
+    <p class="lead">Se guardan en <code>docs/data/referencias.json</code> (a mano, o desde aquí con <code>python3 tools/docs.py serve</code>); <code>python3 tools/procedencia.py</code> comprueba el fichero. Si una comparte dominio con una propuesta de «Assets a incorporar», se enlazan entre sí.</p>
     ${EDITABLE ? `<form class="rf-form" id="rf-form"><b class="ancho">Añadir referencia</b>
       <label class="ancho">Enlace<input name="url" type="url" required placeholder="https://…"></label>
       <label>Título (opcional)<input name="titulo"></label>
@@ -1290,29 +1063,6 @@ document.addEventListener("submit", async e => {
   d.etiquetas = (d.etiquetas || "").split(",").map(t => t.trim()).filter(Boolean);
   try { await rfPost({ accion: "añadir", ...d }); }
   catch (err) { const m = $("#rf-msg"); if (m) m.textContent = "No se pudo guardar: " + err.message; }
-});
-// Repinta la lista y el resumen sin perder qué alternativas estaban desplegadas.
-function prRefrescar() {
-  const abiertas = new Set([...document.querySelectorAll("#pr-lista details.alt[open]")].map(d => d.dataset.k));
-  $("#pr-resumen").innerHTML = alResumen();
-  $("#pr-lista").innerHTML = prLista();
-  document.querySelectorAll("#pr-lista details.alt").forEach(d => { d.open = abiertas.has(d.dataset.k); });
-}
-document.addEventListener("change", e => {
-  const r = e.target.closest("[data-al-elige]");
-  if (r && EDITABLE && r.type === "radio") alElegir(r.dataset.alGrupo, r.dataset.alElige);
-});
-document.addEventListener("click", e => {
-  const b = e.target.closest("[data-pr-lic], [data-pr-tipo], [data-pr-alt]");
-  if (!b) return;
-  if ("prAlt" in b.dataset) prFiltro.alt = !prFiltro.alt;
-  else if ("prLic" in b.dataset) prFiltro.lic = b.dataset.prLic; else prFiltro.tipo = b.dataset.prTipo;
-  procedencia();
-});
-document.addEventListener("input", e => {
-  if (e.target.id !== "pr-q") return;
-  prFiltro.q = e.target.value;
-  $("#pr-lista").innerHTML = prLista();
 });
 
 // --- Historia -------------------------------------------------------------------------
@@ -1438,7 +1188,6 @@ function megafonia() {
     <div class="sub">Las ${M.length} frases <code>MEGA_*</code> de <code>locale/texts.csv</code>, por tipo de aviso (los <code>POOLS</code> de <code>logic/megaphone.gd</code>) · ${M.length - sinVoz} con voz, ${sinVoz} sin ella</div>
     <p class="lead">${EDITABLE ? "<b>Edición activa</b>: pulsa una frase para cambiarla; se guarda en <code>locale/texts.csv</code>." : "Solo lectura: para editar, <code>python3 tools/docs.py serve</code> y abre <code>http://localhost:8765</code>."}</p>
     <p class="estado">Procedencia de las voces: ${prLinea("audio/megafonia/megafonia_index.json")}</p>
-    ${alBanda("audio/megafonia/megafonia_index.json", { titulo: "Una frase de ejemplo (mega_act_arcade_01)", nuestra: cmpAudio(cmpDir + "mega_act_arcade_01.ogg") })}
     <div class="aviso"><b>La voz sale de este texto.</b> Cada frase suena con <code>audio/megafonia/&lt;clave en minúsculas&gt;.ogg</code>, que genera la herramienta <code>megafonia-tool</code> (carpeta hermana <code>../megafonia-tool</code>, fuera de este repositorio). Tras cambiar una frase, el audio antiguo sigue diciendo la frase vieja: hay que regenerar la voz con <code>./regenerar_juego.sh</code> desde esa carpeta. La columna «Voz» solo dice si el fichero existe, no si está al día con el texto.</div>
     ${bloque("Sucesos del robo", p => !/^(act_|hint_)/.test(p))}
     ${bloque("Pistas de los museos", p => /^hint_/.test(p))}
@@ -1852,7 +1601,7 @@ document.addEventListener("keydown", e => {
 });
 
 function pintar() {
-  NAV.portada(); inicio(); capturas(); estilo(); paleta(); objetos(); personajes(); sonidos(); historia(); ciudad(); textos(); megafonia(); procedencia(); referencias();
+  NAV.portada(); inicio(); capturas(); estilo(); paleta(); objetos(); personajes(); sonidos(); historia(); ciudad(); textos(); megafonia(); propuestas(); referencias();
   previa(); minijuegos(); escondites(); coleccion(); propuesta(); versiones();
   document.body.classList.toggle("editable", EDITABLE);
 }
@@ -1860,7 +1609,7 @@ pintar();
 ir();
 // Con el servidor de tools/docs.py, los textos se pueden cambiar.
 if (location.protocol.startsWith("http")) {
-  fetch("api/ping").then(r => r.ok && r.json()).then(j => { if (j && j.editable) { EDITABLE = true; pintar(); ir(); return fetch("api/alternativas").then(r => r.ok && r.json()).then(el => { if (el) { AL.elegidas = el; pintar(); ir(); } }).then(() => fetch("api/referencias")).then(r => r.ok && r.json()).then(rs => { if (rs) { RF = rs; pintar(); ir(); } }); } }).catch(() => {});
+  fetch("api/ping").then(r => r.ok && r.json()).then(j => { if (j && j.editable) { EDITABLE = true; pintar(); ir(); return fetch("api/propuestas").then(r => r.ok && r.json()).then(ps => { if (ps) { PP = ps; pintar(); ir(); } }).then(() => fetch("api/referencias")).then(r => r.ok && r.json()).then(rs => { if (rs) { RF = rs; pintar(); ir(); } }); } }).catch(() => {});
 }
 </script>
 </body>

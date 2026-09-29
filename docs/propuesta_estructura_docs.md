@@ -47,7 +47,7 @@ Arte y sonido
   Paleta propuesta
   Sonidos
 Origen y licencias
-  Procedencia y alternativas
+  Assets a incorporar
   Referencias
 Técnico
   Versiones
@@ -71,7 +71,7 @@ Cambios de nombre solo en la etiqueta (las direcciones no cambian): «Ciudad» �
 | Pieza | Qué hace |
 |---|---|
 | Barra lateral en 6 grupos colapsables | Recuerda el estado (`localStorage`); el grupo de la página actual se abre al entrar; el árbol de pantallas cuelga de «Pantallas». |
-| Buscador global | `/` o `Ctrl`/`Cmd`+`K` (o el botón «Buscar»). Índice construido al cargar desde los datos existentes: páginas, apartados, pantallas (con sus opciones), objetos y piezas, personajes, historia (25 robos con su cuento), ciudad, sonidos, ~1100 textos, 329 frases de megafonía, referencias, colecciones de procedencia (con autor, licencia y rutas), alternativas y constantes de paleta (por nombre o `#hex`). Sin tildes, varias palabras a la vez, resaltado, filtro por tipo, teclado completo. Cada resultado lleva **directo** al sitio: fila del texto, ficha del objeto, colección (quitando los filtros que la esconderían), etc. |
+| Buscador global | `/` o `Ctrl`/`Cmd`+`K` (o el botón «Buscar»). Índice construido al cargar desde los datos existentes: páginas, apartados, pantallas (con sus opciones), objetos y piezas, personajes, historia (25 robos con su cuento), ciudad, sonidos, ~1100 textos, 329 frases de megafonía, referencias, propuestas de assets a incorporar y constantes de paleta (por nombre o `#hex`). Sin tildes, varias palabras a la vez, resaltado, filtro por tipo, teclado completo. Cada resultado lleva **directo** al sitio: fila del texto, ficha del objeto, colección (quitando los filtros que la esconderían), etc. |
 | Migas y título fijos | Barra pegada arriba: Ninja Karma › Grupo › Página (› subpantallas) › **sección en la que estás** (cambia al hacer scroll). También el `<title>` de la pestaña. |
 | «En esta página» | Índice lateral a partir de 1360 px, plegable arriba en pantallas menores; resalta el apartado actual y hace scroll suave. |
 | Enlaces profundos | `#pagina/seccion` estable; el `#` junto a cada título copia su enlace; atrás y adelante recuperan el apartado; los apartados se marcan con un destello al llegar. |
@@ -84,7 +84,7 @@ Cambios de nombre solo en la etiqueta (las direcciones no cambian): «Ciudad» �
 ## 4. Cómo mantenerlo
 
 - Página nueva: `<section class="pagina" id="p-<id>">`, su función de pintado en `pintar()` y **una entrada en `GRUPOS`** (`navegacion.js`); el buscador, la barra, la portada y el pie la recogen solos.
-- Apartados: cualquier `<h2>` (o `<h3>` en Megafonía y Procedencia) de la página sale en el índice; si no tiene `id`, se le pone uno. Para que un enlace `#pagina/algo` llegue, el `id` del elemento ha de ser `pagina-algo`.
+- Apartados: cualquier `<h2>` (o `<h3>` en Megafonía) de la página sale en el índice; si no tiene `id`, se le pone uno. Para que un enlace `#pagina/algo` llegue, el `id` del elemento ha de ser `pagina-algo`.
 - Datos nuevos que deban ser buscables: añadirlos en `construirIndice()`.
 
 ## 5. Pendiente / ideas no hechas
@@ -92,3 +92,7 @@ Cambios de nombre solo en la etiqueta (las direcciones no cambian): «Ciudad» �
 - Una página «Técnico» real (funciones, código, tests) si se quiere que sea navegable como el resto: hoy esos datos (`funciones.js`, `codigo.js`) solo se ven dentro de otras páginas.
 - Enlaces cruzados más ricos entre Sonidos, Megafonía y las fichas de objetos que los usan.
 - Textos: agrupar por pantalla o por museo además de por prefijo, y paginar (hoy corta a 600 filas).
+
+## Actualización: Procedencia y Alternativas ya no son páginas
+
+«Procedencia y alternativas» (colecciones, filtros por licencia, comparaciones, elección) se ha sustituido por una sola página, **Assets a incorporar** (`#propuestas`), un tablero de propuestas de assets concretos con estado (propuesto, aceptado, incorporado, descartado). Sigue en el grupo «Origen y licencias», junto a Referencias. `#procedencia` y `#alternativas` redirigen a ella (con `#procedencia/<algo>` se abre «Lo que ya usamos», la tabla plegada del pie). El buscador global indexa las propuestas y ya no las colecciones ni las alternativas.

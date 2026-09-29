@@ -3,7 +3,7 @@
 // que otros cambios en ese fichero (páginas nuevas, datos) no choquen con esto.
 //
 // Se carga ANTES del script principal de index.html y solo usa sus globales (P, NODOS, ORDEN,
-// J, TX, RF, AL, PR, elementos(), prGrupos()…) cuando se le llama, así que no depende del
+// J, TX, RF, PP, PR, elementos()…) cuando se le llama, así que no depende del
 // orden. Todo cuelga de window.NAV; index.html solo llama a:
 //   NAV.nav(pag, sel)   pinta la barra lateral            (en lugar de la antigua nav())
 //   NAV.portada()       pinta la portada (#p-inicio)      (desde pintar())
@@ -43,8 +43,8 @@ const GRUPOS = [
     { id: "sonidos", titulo: "Sonidos", desc: "Los efectos de sonido generados en código, para oírlos.", n: () => num((J.sonidos || []).length, "sonido", "sonidos"), kw: "sfx audio wav efectos" },
   ] },
   { id: "origen", titulo: "Origen y licencias", paginas: [
-    { id: "procedencia", titulo: "Procedencia y alternativas", desc: "De dónde sale cada asset, con qué licencia y con qué se podría sustituir.", n: () => num(prGrupos().length, "colección", "colecciones"), kw: "licencia autor cc0 atribucion creditos alternativas terceros" },
-    { id: "referencias", titulo: "Referencias", desc: "Enlaces de inspiración y recursos guardados, ligados a Procedencia.", n: () => num(RF.length, "enlace", "enlaces"), kw: "enlaces inspiracion recursos" },
+    { id: "propuestas", titulo: "Assets a incorporar", desc: "Assets concretos de terceros que se proponen para el juego: de qué pack salen, su licencia, para qué y en qué estado están.", n: () => num(PP.length, "propuesta", "propuestas"), kw: "proponer propuesta pack licencia cc0 atribucion creditos kenney modelo sonido icono descargar" },
+    { id: "referencias", titulo: "Referencias", desc: "Enlaces de inspiración y recursos guardados, ligados a las propuestas.", n: () => num(RF.length, "enlace", "enlaces"), kw: "enlaces inspiracion recursos" },
   ] },
   { id: "tecnico", titulo: "Técnico", paginas: [
     { id: "versiones", titulo: "Versiones", desc: "Los hitos de las imágenes importantes, para compararlos antes y después.", n: () => num((window.VERSIONES || {}).asuntos ? window.VERSIONES.asuntos.length : 0, "asunto", "asuntos"), kw: "hitos historial comparar cambios" },
@@ -53,9 +53,9 @@ const GRUPOS = [
 const PAG = {}, LINEAL = [];
 for (const g of GRUPOS) for (const p of g.paginas) { p.grupo = g; PAG[p.id] = p; LINEAL.push(p); }
 // Las páginas que solo tienen un índice si se pide con un selector distinto de «h2».
-const TOC_SEL = { procedencia: ".pr-col > h3", megafonia: "h2, h3" };
+const TOC_SEL = { megafonia: "h2, h3" };
 // Sin índice lateral (ya tienen su propia rejilla o son cortas).
-const SIN_TOC = new Set(["inicio", "objetos", "referencias", "sonidos", "personajes", "textos"]);
+const SIN_TOC = new Set(["inicio", "objetos", "propuestas", "referencias", "sonidos", "personajes", "textos"]);
 
 // --- Utilidades ---------------------------------------------------------------------------
 const norm = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -139,7 +139,7 @@ const INTENCIONES = [
   ["Encontrar un objeto, una pieza o un personaje", ["objetos", "personajes"]],
   ["Cambiar un texto del juego o una frase de la megafonía", ["textos", "megafonia"]],
   ["Consultar colores, estilo y sonidos", ["estilo", "paleta", "propuesta", "sonidos"]],
-  ["Saber de dónde sale un asset y con qué licencia", ["procedencia", "referencias"]],
+  ["Proponer un asset de terceros para el juego, o ver qué se ha propuesto", ["propuestas", "referencias"]],
   ["Ver cómo ha cambiado el juego", ["versiones"]],
 ];
 function portada() {
@@ -271,7 +271,7 @@ function pie(pag, sub) {
 }
 
 // --- Llegar a un sitio concreto (desde un enlace, el buscador o la barra) -----------------------
-let venimosDeBuscar = null;  // { textos: bool, alt: bool }
+let venimosDeBuscar = null;  // { textos: bool }
 function despues() {
   montar();
   const [pag, sub] = hashActual();
@@ -282,11 +282,13 @@ function despues() {
   if (pag === "textos") {
     if (sub && sub in TEXT) { filtro.q = sub; filtro.grupo = "Todos"; textos(); venimosDeBuscar = { textos: true }; destino = document.querySelector(`#filas [data-key="${CSS.escape(sub)}"]`); }
     else if (venimosDeBuscar && venimosDeBuscar.textos) { filtro.q = ""; textos(); venimosDeBuscar = null; }
-  } else if (pag === "procedencia" && sub) {
-    if (!document.getElementById("procedencia-" + sub)) { prFiltro.lic = ""; prFiltro.tipo = ""; prFiltro.q = ""; prFiltro.alt = false; procedencia(); }
-    destino = document.getElementById("procedencia-" + sub);
-    if (destino && venimosDeBuscar && venimosDeBuscar.alt) { const d = destino.querySelector("details.alt"); if (d) d.open = true; }
-    venimosDeBuscar = null;
+  } else if (pag === "propuestas" && sub) {
+    // «ya-usamos» abre la tabla de licencias del pie; lo demás es el id de una propuesta.
+    if (sub === "ya-usamos") { destino = document.getElementById("propuestas-ya-usamos"); if (destino) destino.open = true; }
+    else {
+      if (!document.getElementById("propuestas-" + sub)) { ppFiltro.tipo = ""; ppFiltro.estado = ""; ppFiltro.q = ""; propuestas(); }
+      destino = document.getElementById("propuestas-" + sub);
+    }
   } else if (pag === "referencias" && sub) {
     if (!document.getElementById("referencias-" + sub)) { rfFiltro.q = ""; rfFiltro.tipo = ""; rfFiltro.etq = ""; rfFiltro.estado = ""; referencias(); }
     destino = document.getElementById("referencias-" + sub);
@@ -317,7 +319,7 @@ function destello(el) {
 
 // --- Accesibilidad básica: lo que las páginas pintan sin ello -----------------------------------
 function accesibilidad() {
-  for (const b of document.querySelectorAll(".filtros .btn[data-pr-lic], .filtros .btn[data-pr-tipo], .filtros .btn[data-pr-alt], .filtros .btn[data-rf-tipo], .filtros .btn[data-rf-estado], .filtros .btn[data-rf-etq], .filtros .btn[data-tipo]")) b.setAttribute("aria-pressed", b.classList.contains("si") ? "true" : "false");
+  for (const b of document.querySelectorAll(".filtros .btn[data-pp-tipo], .filtros .btn[data-pp-estado], .prop-est .btn, .filtros .btn[data-rf-tipo], .filtros .btn[data-rf-estado], .filtros .btn[data-rf-etq], .filtros .btn[data-tipo]")) b.setAttribute("aria-pressed", b.classList.contains("si") ? "true" : "false");
   for (const i of document.querySelectorAll("input:not([aria-label]):not([type=radio]):not([type=hidden]), textarea:not([aria-label])")) {
     if (!i.closest("label") && !i.id.startsWith("bus-")) i.setAttribute("aria-label", i.placeholder || i.name || "Campo");
   }
@@ -327,11 +329,11 @@ function accesibilidad() {
 }
 
 // --- Buscador global ---------------------------------------------------------------------------
-const CATS = ["Páginas", "Apartados", "Pantallas", "Objetos y piezas", "Personajes", "Historia", "Ciudad", "Sonidos", "Textos del juego", "Megafonía", "Referencias", "Procedencia", "Alternativas", "Paleta"];
+const CATS = ["Páginas", "Apartados", "Pantallas", "Objetos y piezas", "Personajes", "Historia", "Ciudad", "Sonidos", "Textos del juego", "Megafonía", "Referencias", "Assets a incorporar", "Paleta"];
 let IDX = null, IDX_KEY = null;
 const corta = (s, n = 120) => { s = String(s ?? "").replace(/\s+/g, " ").trim(); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
 function construirIndice() {
-  const clave = [TX, RF, AL.grupos.length, Object.keys(PR.archivos || {}).length];
+  const clave = [TX, RF, PP];
   if (IDX && IDX_KEY && clave.every((c, i) => c === IDX_KEY[i])) return IDX;
   const it = [];
   const add = (cat, titulo, sub, href, extra = "", peso = 0, flags = null) => it.push({ cat, titulo, sub, href, extra, peso, flags, t: norm(titulo), h: norm(titulo + " " + sub + " " + extra) });
@@ -340,7 +342,7 @@ function construirIndice() {
   for (const p of LINEAL) add("Páginas", p.titulo, p.desc, h + p.id, p.grupo.titulo + " " + (p.kw || ""), 30);
   // Apartados de las páginas de texto largo (los títulos que ya tienen)
   for (const p of LINEAL) {
-    if (["textos", "megafonia", "procedencia", "referencias", "pantallas", "paleta", "objetos", "sonidos", "inicio"].includes(p.id)) continue;
+    if (["textos", "megafonia", "propuestas", "referencias", "pantallas", "paleta", "objetos", "sonidos", "inicio"].includes(p.id)) continue;
     const cont = q1("#p-" + p.id);
     if (!cont) continue;
     for (const hd of cont.querySelectorAll("h2, h3")) {
@@ -378,16 +380,8 @@ function construirIndice() {
   }
   // Referencias
   for (const r of RF) add("Referencias", r.titulo, `${r.dominio} · ${r.estado}`, h + "referencias/" + encodeURIComponent(r.id), `${r.url} ${r.nota || ""} ${r.licencia || ""} ${(r.etiquetas || []).join(" ")} ${r.tipo}`, 6);
-  // Procedencia y alternativas
-  const claveDe = {};
-  for (const { r, rutas } of prGrupos()) {
-    claveDe[r.id] = claveDe[r.id] || r.clave;
-    add("Procedencia", r.nombre, `${(PR.licencias[r.licencia] || { corta: r.licencia }).corta} · ${r.tipo === "externo" ? "de terceros" : "propio"} · ${rutas.length} fichero${rutas.length === 1 ? "" : "s"}`, h + "procedencia/" + encodeURIComponent(r.clave), `${r.metodo || ""} ${r.autor || ""} ${r.notas || ""} ${r.licencia} ${rutas.join(" ")}`, 6);
-  }
-  for (const g of AL.grupos) for (const a of g.alternativas) {
-    const c = claveDe[g.coleccion];
-    if (c) add("Alternativas", a.nombre, `alternativa para ${((PR.colecciones || {})[g.coleccion] || {}).nombre || g.coleccion} · ${g.que_es}`, h + "procedencia/" + encodeURIComponent(c), `${a.autor || ""} ${a.notas || ""} ${a.licencia} ${a.cubre || ""} ${a.url}`, 6, { alt: true });
-  }
+  // Assets a incorporar
+  for (const x of PP) add("Assets a incorporar", x.nombre, `${x.tipo} · ${x.estado} · ${x.pack}`, h + "propuestas/" + encodeURIComponent(x.id), `${x.para} ${x.nota || ""} ${x.licencia} ${x.atribucion ? "atribucion" : ""} ${x.url}`, 8);
   // Paleta
   const idf = f => f.replace(/\W/g, "_");
   for (const e of J.paleta || []) add("Paleta", e.name, e.file, h + "paleta/" + idf(e.file), `${e.note || ""} ${e.colours.map(c => c.hex + " " + (c.key || "")).join(" ")}`, 0);
@@ -477,7 +471,7 @@ function pintarBusqueda() {
 }
 let itemN = 0;
 function item(it, toks) {
-  return `<a class="bus-item" role="option" id="bus-i${itemN++}" href="${html(it.href)}" ${it.flags && it.flags.alt ? 'data-alt="1"' : ""} aria-selected="false"><span class="bus-t">${resaltar(it.titulo, toks)}</span><span class="bus-s">${resaltar(it.sub || "", toks)}</span></a>`;
+  return `<a class="bus-item" role="option" id="bus-i${itemN++}" href="${html(it.href)}" aria-selected="false"><span class="bus-t">${resaltar(it.titulo, toks)}</span><span class="bus-s">${resaltar(it.sub || "", toks)}</span></a>`;
 }
 function marcarActivo(n) {
   const items = [...document.querySelectorAll("#bus-res .bus-item")];
@@ -491,7 +485,7 @@ function marcarActivo(n) {
 function irA(a) {
   if (!a) return;
   const href = a.getAttribute("href");
-  if (a.dataset.alt) venimosDeBuscar = { alt: true };
+
   cerrarBuscar();
   const igual = decodeURIComponent(location.hash) === decodeURIComponent(href);
   location.hash = href;

@@ -168,8 +168,8 @@ van encontrando, con buscador y filtros por tipo, etiqueta y estado. Se añaden 
   se toca `docs/data/referencias.json`. Sin servidor, la página es de solo lectura.
 
 `python3 tools/procedencia.py` (y `tests/test_procedencia.gd`) comprueba el fichero: campos obligatorios,
-URL http(s), ids únicos, tipos y estados válidos. Si una referencia comparte dominio con una colección de
-Procedencia o con una de sus alternativas, las dos páginas se enlazan.
+URL http(s), ids únicos, tipos y estados válidos. Si una referencia comparte dominio con una propuesta de
+«Assets a incorporar», las dos páginas se enlazan.
 
 Además de pantallas, objetos, sonidos y textos, la web explica la historia (con el paso del progreso
 guardado de 20 noches), la ciudad (el mapa entero, que en el juego nunca cabe en la pantalla, con un
@@ -192,15 +192,18 @@ python3 tools/docs.py version icono "Pixel art" --from assets/icon.png --commit 
 python3 tools/docs.py version --list
 ```
 
-**Alternativas de terceros**: para sustituir lo hecho con IA (modelos, sonidos, voz, ilustraciones…)
-por algo de terceros con licencia libre, se apuntan en `docs/data/alternativas/<categoria>.json`
-(plantilla en `_ejemplo.json`: `categoria` y `grupos` con `coleccion` de `assets/PROCEDENCIA.json`,
-`que_es` y `alternativas` con `id`, `nombre`, `url`, `autor`, `licencia`, `atribucion`, `cubre`,
-`encaje` 1-5 y, si quieres, `preview_url` y `notas`; un grupo con `id` propio permite varios por
-colección). `python3 tools/procedencia.py` y `tests/test_procedencia.gd` los validan. En la página
-«Procedencia» las colecciones con alternativa llevan el distintivo «Tiene alternativa», y con
-`python3 tools/docs.py serve` se elige una (o «la nuestra») por grupo; la elección queda en
-`docs/data/alternativas_elegidas.json` y arriba se ve lo pendiente de sustituir.
+**Assets a incorporar**: un tablero de propuestas, una tarjeta por asset concreto de terceros (un modelo, un
+sonido, un icono, un pack pequeño) con vista previa (audio con reproductor), pack de origen con enlace, licencia,
+si exige atribución, **para qué** lo pondríamos («vitrina del museo Castillo», «sonido de puerta») y estado:
+propuesto, aceptado, incorporado o descartado. Solo hay filtros por tipo y estado, un buscador y el orden por
+estado. Los datos son `docs/data/propuestas.json`, una lista de `{id, nombre, pack, pack_url, url, tipo, licencia,
+atribucion, preview_url, para, estado, nota}` (`tipo`: modelo, sonido, imagen u otro); `python3 tools/docs.py texts`
+la vuelca a `docs/data/propuestas.js`, y `python3 tools/procedencia.py` y `tests/test_procedencia.gd` la validan
+(campos, URL http(s), estados, ids únicos). Con `python3 tools/docs.py serve` cada tarjeta cambia de estado con un
+clic y el botón «Proponer un asset» añade una (enlace, nombre, pack, para qué…): POST `/api/propuesta`, validado y
+con escritura atómica. Sin servidor, la página es de solo lectura. Al pie, plegada, «Lo que ya usamos» lista las
+colecciones que ya están en el juego con su licencia (sale de `assets/PROCEDENCIA.json`). Los antiguos `#procedencia`
+y `#alternativas` llevan a esta página.
 
 Las capturas lanzan Godot sin el dispositivo HID de Apple que algunos Mac enseñan como mando
 (`SDL_JOYSTICK_IGNORE_DEVICES=0x05ac/0x0004`, lo pone `docs.py`).
@@ -404,4 +407,4 @@ Recursos de terceros y sus licencias: `CREDITS.md`, que **se genera** (`python3 
 licencia (con su SPDX), URL y si exige atribución. Se edita a mano: colecciones y reglas por carpeta o patrón (gana la
 primera; una regla por fichero es la excepción). Un asset nuevo necesita una regla o `python3 tools/procedencia.py` y
 `tests/test_procedencia.gd` fallan; lo que no se sabe se marca «origen sin documentar» (`documentado: false`), no se inventa.
-La documentación lo enseña en su página «Procedencia» (con filtro por licencia) y en las fichas de objetos y sonidos.
+La documentación lo enseña en las etiquetas de licencia de las fichas de objetos y sonidos y en la tabla plegada «Lo que ya usamos» de «Assets a incorporar».
