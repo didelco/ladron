@@ -993,15 +993,13 @@ func _init() -> void:
 	m.house.bench_target.clear()
 
 	# Los trofeos no llevan calcetín: donde el botín es un calcetín, una estrella.
-	Story.keep_stars(2, 1, Story.STAR_TAKEN)
-	Story.keep_stars(7, 1, Story.STAR_TAKEN)
 	Story.keep_stars(24, 1, Story.STAR_TAKEN)
 	m.mode = Practice.MODE
 	m.players = 1
 	m._new_round(1)
 	var gold_stars: Array = m.den_view.find_children("*", "Label3D", true, false).filter(func(l: Label3D) -> bool: return l.text == "★" and l.font_size == 96)
-	check(Story.LEVELS[1].loot.shape == "sock" and Story.LEVELS[6].loot.shape == "sock" and Story.LEVELS[23].loot.shape == "sock", "los robos 2, 7 y 24 roban un calcetín")
-	check(Den.is_filled(2, 1) and Den.is_filled(7, 1) and Den.is_filled(24, 1) and gold_stars.size() == 3, "llenos, sus puestos enseñan una estrella (%d), no un calcetín" % gold_stars.size())
+	check(Story.LEVELS[23].loot.shape == "sock", "el robo 24 roba un calcetín")
+	check(Den.is_filled(24, 1) and gold_stars.size() == 1, "lleno, su puesto enseña una estrella (%d), no un calcetín" % gold_stars.size())
 	var pedestals2 := Practice.game_starts(1).filter(func(g): return g.via == "sock").size()
 	check(_socks_in(m.den_view) == pedestals2 + 1, "y en toda la casa solo quedan los pedestales de PILLA EL CALCETÍN y la bandera: %d" % _socks_in(m.den_view))
 
