@@ -28,7 +28,7 @@ ALT_DIR = os.path.join(ROOT, "docs", "data", "alternativas")
 ELEGIDAS = os.path.join(ROOT, "docs", "data", "alternativas_elegidas.json")
 NUESTRA = "nuestra"
 REFERENCIAS = os.path.join(ROOT, "docs", "data", "referencias.json")
-REF_TIPOS = ("icons", "modelos", "audio", "arte", "codigo", "articulo", "otro")
+REF_TIPOS = ("icons", "modelos", "audio", "arte", "codigo", "articulo", "texturas", "fuentes", "voz", "otro")
 REF_ESTADOS = ("guardada", "evaluada", "usada", "descartada")
 NO_DOC = "LicenseRef-Sin-Documentar"
 
@@ -284,7 +284,8 @@ def alt_web_data():
 
 
 # --- Referencias guardadas (docs/data/referencias.json) ---------------------------------
-# Enlaces de inspiración y recursos: [{id, titulo, url, tipo, etiquetas[], licencia, nota, fecha, estado}].
+# Enlaces de inspiración y recursos: [{id, titulo, url, tipo, etiquetas[], licencia, nota, fecha, estado,
+# items[] opcional: {nombre, url?, para, ya_lo_usamos?}}].
 
 REF_REQUIRED = ("id", "titulo", "url", "tipo", "fecha", "estado")
 
@@ -343,6 +344,24 @@ def ref_item_errors(r, w="referencia"):
     for k in ("licencia", "nota"):
         if k in r and not isinstance(r[k], str):
             errs.append(f"{w}: '{k}' debe ser un texto")
+    its = r.get("items", [])
+    if not isinstance(its, list):
+        errs.append(f"{w}: 'items' debe ser una lista")
+        its = []
+    for j, it in enumerate(its):
+        iw = f"{w}, item {j + 1}"
+        if not isinstance(it, dict):
+            errs.append(f"{iw}: no es un objeto")
+            continue
+        for k in ("nombre", "para"):
+            if not isinstance(it.get(k), str) or not it[k].strip():
+                errs.append(f"{iw}: falta '{k}'")
+        if "url" in it:
+            p = urlparse(it["url"]) if isinstance(it["url"], str) else None
+            if p is None or p.scheme not in ("http", "https") or not p.netloc:
+                errs.append(f"{iw}: 'url' debe ser http(s)://…")
+        if "ya_lo_usamos" in it and not isinstance(it["ya_lo_usamos"], bool):
+            errs.append(f"{iw}: 'ya_lo_usamos' debe ser verdadero o falso")
     return errs
 
 

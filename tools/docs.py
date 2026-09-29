@@ -30,7 +30,7 @@ nuestra»); con `serve`, la elección se guarda en docs/data/alternativas_elegid
 {grupo, eleccion}; GET /api/alternativas la lee).
 
 Referencias: docs/data/referencias.json (a mano, o desde la página «Referencias» con `serve`) guarda enlaces de
-inspiración y recursos; se validan con `python3 tools/procedencia.py` y se vuelcan a docs/data/referencias.js.
+inspiración y recursos (con «items» opcionales: {nombre, url?, para, ya_lo_usamos?}); se validan con `python3 tools/procedencia.py` y se vuelcan a docs/data/referencias.js.
 Con `serve`: POST /api/referencia {accion: "añadir"|"estado"|"borrar", …}; GET /api/referencias las lee.
 
 El visor (docs/index.html) lleva la navegación aparte, en docs/navegacion.js y docs/navegacion.css: los
