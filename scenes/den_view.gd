@@ -479,7 +479,7 @@ static func _radial(colour: Color) -> ImageTexture:
 ## case on the floor for the last two. All of them are there from the start,
 ## empty, with a plaque (the heist's number); the piece stands in its stand,
 ## lit, once it has been stolen (Den.is_filled), and the plaque shows the
-## stars won. A museum done, whole, has its sock over the board.
+## stars won. A museum done, whole, has a star over the board.
 func _trophies() -> void:
 	var most := Story.MUSEUMS.size() * Story.ROOMS * Story.STARS_EACH
 	var total := 0
@@ -531,12 +531,25 @@ func _section_board(m: int, colour: Color, stars: int, done: int) -> void:
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	label.position = Vector3(0, 2.15, 0.1)
 	pivot.add_child(label)
-	# A museum done, whole: its sock, in its colour, on the band.
+	# A museum done, whole: a star, in its colour, on the band.
 	if done == Story.ROOMS:
-		var sock := LootModels.build("sock", colour)
-		_fit(sock, 0.5)
-		sock.position = Vector3(Den.SECTION_WIDTH / 2.0 - 0.1, 1.72, 0.15)
-		pivot.add_child(sock)
+		pivot.add_child(_trophy_star(Vector3(Den.SECTION_WIDTH / 2.0 - 0.1, 1.72, 0.15), 0.5, colour.lightened(0.3)))
+
+
+## A star for a stand or a board where a sock would be: the stands hold what a
+## heist stole, and a sock is only ever PILLA EL CALCETÍN's.
+func _trophy_star(at: Vector3, size: float, colour := Color("#ffd23f")) -> Label3D:
+	var l := Label3D.new()
+	l.text = "★"
+	l.font = Hud.ARCADE
+	l.font_size = 96
+	l.pixel_size = size / 96.0
+	l.modulate = colour
+	l.outline_size = 10
+	l.outline_modulate = Color("#2a1810")
+	l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	l.position = at
+	return l
 
 
 ## One stand: a niche (a cabinet under a frame against the wall) or a glass
@@ -576,11 +589,15 @@ func _museum_stand(st: Dictionary, colour: Color) -> void:
 		_plaque_text(pivot, "★", Vector3(i * 0.14, plaque_y, front + 0.05), Color("#ffd23f") if i < won else Color("#6a6258"), 22)
 	# The piece, in its stand, and a soft spot of light over it.
 	var loot: Dictionary = Story.LEVELS[st.n - 1].loot
-	var piece := LootModels.build(loot.shape, Color(loot.colour))
-	var box := _fit(piece, 0.46)
 	var depth := 0.38 if niche else 0.0
-	piece.position = Vector3(0, top - box.position.y * piece.scale.x, depth)
-	pivot.add_child(piece)
+	if loot.shape == "sock":
+		# No socks in the stands (they are PILLA EL CALCETÍN's): a golden star.
+		pivot.add_child(_trophy_star(Vector3(0, top + 0.26, depth), 0.5))
+	else:
+		var piece := LootModels.build(loot.shape, Color(loot.colour))
+		var box := _fit(piece, 0.46)
+		piece.position = Vector3(0, top - box.position.y * piece.scale.x, depth)
+		pivot.add_child(piece)
 	var glow := MeshInstance3D.new()
 	var q := QuadMesh.new()
 	q.size = Vector2(1.1, 1.1)
@@ -629,21 +646,18 @@ func _short_name(m: int) -> String:
 
 # --- The dojo ---------------------------------------------------------------------
 
-## The dojo's walls and what is open in it: the bench's cases, the pedestals,
+## The dojo's walls and what is open in it: the pedestals,
 ## the boxes to hide in (whatever Practice.open_items says), a ring on the wall,
 ## lanterns, a weapon rack and the board that counts what is open.
 func _dojo() -> void:
 	for t in Museum.cover_tiles:
+		# The bench's things are dressed by _bench (each test its own).
+		if Practice.bench_slot_of(t) >= 0:
+			continue
 		var piece := Node3D.new()
 		piece.position = to_world(t.x + 0.5, t.y + 0.5)
 		add_child(piece)
-		var slot := Practice.bench_slot_of(t)
-		if slot >= 0:
-			_base(piece)
-			_vitrine(piece, null)
-			_bench_glass[slot] = piece.get_child(piece.get_child_count() - 1)
-			_bench_spots[slot] = piece
-		elif Plinths.is_plinth(t):
+		if Plinths.is_plinth(t):
 			_empty_plinth(piece)
 		else:
 			var hide: String = Hideouts.pieces.get(t, exhibits.get(t, ""))
@@ -887,20 +901,17 @@ func _dojo_wall_things() -> void:
 
 # --- The bench of cases -----------------------------------------------------------------------
 
-## The glass of each bench case (by slot; hidden while it is open) and the node
-## each stands on, the glows under them, the socks in them and the boards: the
-## count, and on each case its test and difficulty.
-var _bench_glass := {}
-var _bench_spots := {}
+## The thing of each bench case (BenchProps, by slot) and how far it has gone
+## (0 waiting .. 1 done), the glows under them and the boards: the count, and on
+## each case its test and difficulty.
+var _bench_parts := {}
 var _bench_glows := {}
-var _bench_socks := {}
 var _bench_labels := {}
-var _bench_clock := 0.0
 var _bench_open_now := {}
 
 
-## The boards and the socks of the bench cases; what shows depends on the
-## lessons (Practice.ITEMS). The cases themselves are dressed with the dojo's.
+## The things and the boards of the bench; what shows depends on the lessons
+## (Practice.ITEMS).
 func _bench() -> void:
 	# The count, over the cases.
 	_bench_labels.count = _board(to_world(28.0, 5.0, 1.4), 26, Color("#ffe28a"))
@@ -908,15 +919,14 @@ func _bench() -> void:
 		var t: Vector2i = c.at
 		var label := _board(to_world(t.x + 0.5, t.y + 0.5, 1.55), 15, Color("#e8f0c0"))
 		label.text = "%s\n%s" % [Text.t(Practice.bench_kind_text(c.kind)), Text.t(DojoGames.TIERS[c.level].text)]
-		# Each case holds a sock; the first has main's, the one of the loot.
-		if t != Heist.at:
-			var sock := LootModels.build("sock", Color("#e2262f"))
-			_fit(sock, 0.5)
-			sock.position = to_world(t.x + 0.5, t.y + 0.5, 0.62)
-			add_child(sock)
-			_bench_socks[c.slot] = sock
-	# A green glow under each case for while it is open.
-	for i in _bench_spots:
+		# On the tile, or hung on the wall at its side (BENCH_OBJECTS).
+		var what := Practice.bench_object(c.kind)
+		var wall: Vector2i = what.get("wall", Vector2i.ZERO)
+		var spot := _pivot(self, to_world(t.x + 0.5 + wall.x * 0.5, t.y + 0.5 + wall.y * 0.5), atan2(-wall.x, -wall.y) if wall != Vector2i.ZERO else 0.0)
+		var part := BenchProps.build(self, what.object, spot, c.level)
+		part.t = 0.0
+		_bench_parts[c.slot] = part
+		# A green glow under each one for while it is done.
 		var glow := MeshInstance3D.new()
 		var q := QuadMesh.new()
 		q.size = Vector2(1.9, 1.9)
@@ -929,10 +939,10 @@ func _bench() -> void:
 		gm.albedo_texture = _radial(Color(0.5, 1.0, 0.6))
 		glow.material_override = gm
 		glow.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		glow.position = (_bench_spots[i] as Node3D).position + Vector3(0, 0.05, 0)
+		glow.position = to_world(t.x + 0.5, t.y + 0.5) + Vector3(0, 0.05, 0)
 		glow.visible = false
 		add_child(glow)
-		_bench_glows[i] = glow
+		_bench_glows[c.slot] = glow
 	set_bench(Practice.bench_new())
 
 
@@ -951,17 +961,16 @@ func _board(at: Vector3, size: int, colour: Color) -> Label3D:
 	return l
 
 
-## The bench as it is now (Practice.bench_new): the count's board, the glass
-## up or off, the glows.
+## The bench as it is now (Practice.bench_new): the count's board, the lamps
+## and the glows (the lids, levers and cups follow in _process).
 func set_bench(state: Dictionary) -> void:
 	if _bench_labels.has("count"):
 		(_bench_labels.count as Label3D).text = "%s\n%d" % [Text.t("HIDEOUT_BENCH_COUNT"), state.opened]
-	for i in _bench_glass:
-		var open: bool = state.cases[i].state != "closed"
-		(_bench_glass[i] as Node3D).visible = not open or state.cases[i].state == "rearming"
-		if _bench_glows.has(i):
-			(_bench_glows[i] as Node3D).visible = state.cases[i].state == "open"
-		_bench_open_now[i] = state.cases[i].state == "open"
+	for i in _bench_parts:
+		var done: bool = state.cases[i].state == "open"
+		(_bench_glows[i] as Node3D).visible = done
+		BenchProps.light(_bench_parts[i], done)
+		_bench_open_now[i] = done
 
 
 # --- The scarecrows -----------------------------------------------------------------------
@@ -1319,12 +1328,16 @@ func _show_room(id: String) -> void:
 
 func _process(dt: float) -> void:
 	_pose_alert(dt)
-	_bench_clock += dt
-	for i in _bench_socks:
-		# Under the glass it lies still; open, it floats up and turns.
-		var open: bool = _bench_open_now.get(i, false)
-		_bench_socks[i].position.y = 1.1 + sin(_bench_clock * 3.0) * 0.06 if open else 0.62
-		_bench_socks[i].rotation.y = _bench_clock * 1.6 if open else 0.4
+	for i in _bench_parts:
+		# Done, the lid goes up, the plunger down, the cup off; waiting, back.
+		var part: Dictionary = _bench_parts[i]
+		part.t = move_toward(float(part.t), 1.0 if _bench_open_now.get(i, false) else 0.0, dt * 6.0)
+		if part.move != null:
+			var v: Vector3 = (part.shut as Vector3).lerp(part.done, float(part.t))
+			if part.rot:
+				(part.move as Node3D).rotation = v
+			else:
+				(part.move as Node3D).position = v
 	_arcade_clock += dt
 	for m in _arcade_pictures:
 		# A screen that flickers: bright most of the time, dimmer in steps.

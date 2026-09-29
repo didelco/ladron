@@ -1263,8 +1263,6 @@ func _prompt_rows(i: int) -> Array:
 		return [row.call("move", Text.t("HUD_PLINTH_DOWN"))]
 	if p.hiding:
 		return [row.call("move", Text.t("HUD_HIDE_OUT"))]
-	if house.bench_hold.has(p.id):
-		return [{"verb": Text.t("HIDEOUT_BENCH_HOLD"), "progress": float(house.bench_hold[p.id].t) / Practice.bench_hold_s(int(house.bench_hold[p.id].i))}]
 	if house.dojo_game != null:
 		return [] if house.dojo_game.finished() else [{"verb": Text.t("HIDEOUT_GAME_LEAVE_KEY")}]
 	var act := _action_for(p)

@@ -422,7 +422,7 @@ window.TEXTOS = [
   "group": "Menús",
   "at": [
    "scenes/hands.gd:78",
-   "scenes/house_run.gd:199"
+   "scenes/house_run.gd:183"
   ],
   "via": []
  },
@@ -3663,7 +3663,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1279"
+   "scenes/main.gd:1277"
   ],
   "via": []
  },
@@ -3674,7 +3674,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1278"
+   "scenes/main.gd:1276"
   ],
   "via": []
  },
@@ -3696,7 +3696,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1275"
+   "scenes/main.gd:1273"
   ],
   "via": []
  },
@@ -3707,7 +3707,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1277"
+   "scenes/main.gd:1275"
   ],
   "via": []
  },
@@ -3729,7 +3729,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1276"
+   "scenes/main.gd:1274"
   ],
   "via": []
  },
@@ -3751,7 +3751,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1274"
+   "scenes/main.gd:1272"
   ],
   "via": []
  },
@@ -3762,7 +3762,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1274"
+   "scenes/main.gd:1272"
   ],
   "via": []
  },
@@ -3773,7 +3773,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1274"
+   "scenes/main.gd:1272"
   ],
   "via": []
  },
@@ -4056,7 +4056,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/scenery.gd:385"
+   "scenes/scenery.gd:384"
   ],
   "via": []
  },
@@ -4067,7 +4067,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/scenery.gd:445"
+   "scenes/scenery.gd:444"
   ],
   "via": []
  },
@@ -4470,7 +4470,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1329"
+   "scenes/main.gd:1327"
   ],
   "via": []
  },
@@ -4536,7 +4536,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1397"
+   "scenes/main.gd:1395"
   ],
   "via": []
  },
@@ -4547,7 +4547,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1397"
+   "scenes/main.gd:1395"
   ],
   "via": []
  },
@@ -4558,7 +4558,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1404"
+   "scenes/main.gd:1402"
   ],
   "via": []
  },
@@ -4569,7 +4569,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1404"
+   "scenes/main.gd:1402"
   ],
   "via": []
  },
@@ -14757,7 +14757,7 @@ window.TEXTOS = [
   "at": [
    "scenes/main.gd:583",
    "scenes/tour.gd:165",
-   "logic/practice.gd:378"
+   "logic/practice.gd:404"
   ],
   "via": []
  },
@@ -14823,7 +14823,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/den_view.gd:686"
+   "scenes/den_view.gd:700"
   ],
   "via": []
  },
@@ -14856,7 +14856,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1280"
+   "scenes/main.gd:1278"
   ],
   "via": []
  },
@@ -14867,7 +14867,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1280"
+   "scenes/main.gd:1278"
   ],
   "via": []
  },
@@ -14878,29 +14878,29 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1392"
+   "scenes/main.gd:1390"
   ],
   "via": []
  },
  {
-  "key": "HIDEOUT_SOCK",
-  "es": "el calcetín de práctica",
+  "key": "HIDEOUT_PIECE",
+  "es": "la pieza de práctica",
   "broken": false,
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:381"
+   "logic/practice.gd:407"
   ],
   "via": []
  },
  {
-  "key": "HIDEOUT_SOCK_BLURB",
+  "key": "HIDEOUT_PIECE_BLURB",
   "es": "No se abre: es para practicar.",
   "broken": false,
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:381"
+   "logic/practice.gd:407"
   ],
   "via": []
  },
@@ -14944,7 +14944,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:46"
+   "logic/practice.gd:44"
   ],
   "via": []
  },
@@ -14955,7 +14955,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:48"
+   "logic/practice.gd:46"
   ],
   "via": []
  },
@@ -14966,7 +14966,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:57"
+   "logic/practice.gd:55"
   ],
   "via": []
  },
@@ -14977,7 +14977,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:59"
+   "logic/practice.gd:57"
   ],
   "via": []
  },
@@ -14988,7 +14988,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:60"
+   "logic/practice.gd:58"
   ],
   "via": []
  },
@@ -14999,7 +14999,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:61"
+   "logic/practice.gd:59"
   ],
   "via": []
  },
@@ -15010,7 +15010,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:65"
+   "logic/practice.gd:63"
   ],
   "via": []
  },
@@ -15021,7 +15021,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:68"
+   "logic/practice.gd:66"
   ],
   "via": []
  },
@@ -15032,7 +15032,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1277"
+   "scenes/main.gd:1275"
   ],
   "via": []
  },
@@ -15043,18 +15043,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/den_view.gd:958"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_BENCH_KIND_HOLD",
-  "es": "QUIETO",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "logic/practice.gd:45"
+   "scenes/den_view.gd:968"
   ],
   "via": []
  },
@@ -15065,18 +15054,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:56"
+   "logic/practice.gd:54"
   ],
   "via": []
  },
  {
   "key": "HIDEOUT_BENCH_KIND_SQUEEZE",
-  "es": "APRETAR",
+  "es": "ESCONDITE",
   "broken": false,
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:64"
+   "logic/practice.gd:62"
   ],
   "via": []
  },
@@ -15087,7 +15076,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:67"
+   "logic/practice.gd:65"
   ],
   "via": []
  },
@@ -15098,7 +15087,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "logic/practice.gd:70"
+   "logic/practice.gd:68"
   ],
   "via": []
  },
@@ -15137,23 +15126,12 @@ window.TEXTOS = [
  },
  {
   "key": "HIDEOUT_BENCH_OPEN",
-  "es": "ABRIR VITRINA",
+  "es": "PROBAR",
   "broken": false,
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1273"
-  ],
-  "via": []
- },
- {
-  "key": "HIDEOUT_BENCH_HOLD",
-  "es": "QUIETO…",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "scenes/main.gd:1267"
+   "scenes/main.gd:1271"
   ],
   "via": []
  },
@@ -15166,7 +15144,7 @@ window.TEXTOS = [
   "at": [
    "scenes/dojo_games_view.gd:309",
    "logic/dojo_games.gd:29",
-   "logic/practice.gd:54"
+   "logic/practice.gd:52"
   ],
   "via": []
  },
@@ -15178,7 +15156,7 @@ window.TEXTOS = [
   "group": "Otros",
   "at": [
    "logic/dojo_games.gd:30",
-   "logic/practice.gd:62"
+   "logic/practice.gd:60"
   ],
   "via": []
  },
@@ -15190,7 +15168,7 @@ window.TEXTOS = [
   "group": "Otros",
   "at": [
    "logic/dojo_games.gd:31",
-   "logic/practice.gd:52"
+   "logic/practice.gd:50"
   ],
   "via": []
  },
@@ -15202,7 +15180,7 @@ window.TEXTOS = [
   "group": "Otros",
   "at": [
    "logic/dojo_games.gd:32",
-   "logic/practice.gd:50"
+   "logic/practice.gd:48"
   ],
   "via": []
  },
@@ -15235,7 +15213,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1269"
+   "scenes/main.gd:1267"
   ],
   "via": []
  },
@@ -15279,7 +15257,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/den_view.gd:1116",
+   "scenes/den_view.gd:1125",
    "scenes/dojo_games_view.gd:397"
   ],
   "via": []

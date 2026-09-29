@@ -33,6 +33,11 @@ func run(n: int) -> void:
 		m.loop.tick(DT)
 
 
+## How many sock models a node has under it (LootModels' calcetin.glb).
+func _socks_in(root: Node) -> int:
+	return root.find_children("*", "Node3D", true, false).filter(func(n: Node) -> bool: return n.scene_file_path.ends_with("botin/calcetin.glb")).size()
+
+
 func _init() -> void:
 	Story.save = "user://test_escondite.cfg"
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
@@ -136,7 +141,7 @@ func _init() -> void:
 	Den.reset_doors()
 
 	# The dojo: what is open depends on the job reached.
-	check(Practice.open_items(1).map(func(i): return i.id) == ["bench_hold"], "recién empezada, el dojo solo tiene las vitrinas de QUIETO")
+	check(Practice.open_items(1).is_empty() and Practice.bench_cases(1).is_empty(), "recién empezada, el dojo está vacío (QUIETO ya no existe)")
 	check(Practice.map(1).props.is_empty() and Practice.scarecrows(1).is_empty(), "... sin cosas que tirar ni espantapájaros")
 	var last := 0
 	for item in Practice.ITEMS:
@@ -334,62 +339,97 @@ func _init() -> void:
 	al = Practice.alert_step(al, 0.1, true)
 	check(al.active, "pasado el enfriamiento y aún a la vista, otra vez")
 
-	# --- El banco de vitrinas: cinco pruebas, tres vitrinas fijas en cada una, por dificultad --
+	# --- El banco: cuatro pruebas, tres objetos fijos en cada una, por dificultad --
 	Story.save = "user://test_escondite_d.cfg"
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
 	var bn := Practice.bench_new()
 	var c0 := Practice.bench_case(0)
-	var beside := Vector2(c0.at) + Vector2(0.5, 1.0)
-	check(c0.at == Den.CASE_AT and c0.kind == "hold" and c0.level == 0, "la primera vitrina es la de siempre (Den.CASE_AT): QUIETO, fácil")
-	check(Practice.bench_kinds(1) == ["hold"] and Practice.bench_cases(1).size() == 3 and bn.cases.size() == 15, "al empezar: las tres vitrinas de QUIETO y nada más (sin atriles)")
-	check(Practice.bench_cases(1).map(func(c): return c.level) == [0, 1, 2] and Practice.bench_cases(1).map(func(c): return c.slot) == [0, 1, 2], "... una por dificultad: fácil, medio y difícil")
+	check(c0.kind == "lockpick" and c0.level == 0 and c0.at == Practice.BENCH_AT.lockpick[0], "el primer objeto del banco es la vitrina de GANZÚA, fácil")
+	check(not Practice.BENCH_TESTS.has("hold") and Practice.BENCH_TESTS == ["lockpick", "squeeze", "wires", "steady"], "las pruebas: GANZÚA, ESCONDITE, CABLES y PULSO (sin QUIETO)")
+	check(Practice.bench_kinds(1).is_empty() and bn.cases.size() == 12, "al empezar: ningún objeto del banco; 12 en total")
+	Story.unlock(Story.lesson_night("games"), 1)
+	check(Practice.bench_kinds(1) == ["lockpick"] and Practice.bench_cases(1).map(func(c): return c.level) == [0, 1, 2], "con la primera: las tres vitrinas de GANZÚA, fácil, medio y difícil")
+	check(Practice.bench_cases(1).map(func(c): return c.slot) == [0, 1, 2], "... en los huecos 0 a 2")
+	var beside := Vector2(c0.at) + Vector2(0.5, 1.5)
 	var fresh := Practice.bench_action(beside, bn, 1)
-	check(fresh.get("what", "") == "case" and fresh.i == 0, "junto a la primera, abrirla")
-	check(Practice.bench_action(Vector2(25.5, 5.5), bn, 1).is_empty(), "lejos de ellas, nada")
-	check(Practice.bench_game("hold", 0, {}) == null, "quedarse quieto no es un minijuego")
-	check(Practice.bench_hold_step(1.0, true, 0.5) == 1.5 and Practice.bench_hold_step(2.5, false, 0.1) == 0.0, "quieto suma; moverse lo deshace")
-	check(Practice.bench_hold_s(0) == 3.0 and Practice.bench_hold_s(1) == 5.0 and Practice.bench_hold_s(2) == 8.0, "quedarse quieto: 3 s, 5 s y 8 s según la dificultad")
+	check(fresh.get("what", "") == "case" and fresh.i == 0, "junto a la primera, hacerla")
+	check(Practice.bench_action(Vector2(25.5, 5.5), bn, 1).is_empty() or Practice.bench_case_at(Vector2(25.5, 5.5), 1) != 0, "lejos de ella, no es la primera")
+	check(Practice.bench_action(Vector2(40.5, 5.5), bn, 1).is_empty(), "lejos de todas, nada")
 	Practice.bench_open(bn, 0)
-	check(bn.opened == 1 and bn.cases[0].state == "open", "abierta, el contador sube")
-	check(Practice.bench_action(beside, bn, 1).is_empty(), "abierta no se puede volver a abrir")
+	check(bn.opened == 1 and bn.cases[0].state == "open", "hecha, el contador sube")
+	check(Practice.bench_action(beside, bn, 1).is_empty(), "hecha no se puede volver a hacer")
 	Practice.bench_step(bn, Practice.BENCH_OPEN_S - 0.1)
-	check(bn.cases[0].state == "open", "sigue abierta un rato (%.1f s)" % Practice.BENCH_OPEN_S)
+	check(bn.cases[0].state == "open", "sigue señalando un rato (%.1f s)" % Practice.BENCH_OPEN_S)
 	Practice.bench_step(bn, 0.2)
-	check(bn.cases[0].state == "rearming", "luego se cierra")
+	check(bn.cases[0].state == "rearming", "luego vuelve atrás")
 	Practice.bench_step(bn, Practice.BENCH_REARM_S + 0.01)
 	check(bn.cases[0].state == "closed" and bn.opened == 1, "y se rearma sola en unos %.1f s, con la cuenta guardada" % (Practice.BENCH_OPEN_S + Practice.BENCH_REARM_S))
 	check(Practice.bench_action(beside, bn, 1).get("what", "") == "case", "... y se puede repetir")
 	# The tests come with their lessons.
-	var expect := [["heist", ["hold"]], ["games", ["hold", "lockpick"]], ["props", ["hold", "lockpick", "squeeze"]],
-		["case_alarm", ["hold", "lockpick", "squeeze", "wires"]], ["two", ["hold", "lockpick", "squeeze", "wires", "steady"]]]
+	var expect := [["games", ["lockpick"]], ["props", ["lockpick", "squeeze"]],
+		["case_alarm", ["lockpick", "squeeze", "wires"]], ["two", ["lockpick", "squeeze", "wires", "steady"]]]
 	for e in expect:
 		Story.unlock(Story.lesson_night(e[0]), 1)
 		check(Practice.bench_kinds(1) == e[1], "con la lección %s: %s" % [e[0], Practice.bench_kinds(1)])
-		check(Practice.bench_cases(1).size() == 3 * e[1].size(), "... y las tres vitrinas de cada una: %d" % Practice.bench_cases(1).size())
-	# Every case in its place: a column for each test, a row for each difficulty.
+		check(Practice.bench_cases(1).size() == 3 * e[1].size(), "... y los tres objetos de cada una: %d" % Practice.bench_cases(1).size())
+	# Every one in its place, by test and difficulty; each test its own kind of object.
 	var all_cases := Practice.bench_cases(1)
 	var tiles := {}
 	var placed := true
 	for c in all_cases:
 		tiles[c.at] = true
 		placed = placed and Practice.bench_slot_of(c.at) == c.slot and c.slot == Practice.BENCH_TESTS.find(c.kind) * 3 + c.level \
-			and c.at == Vector2i(Practice.BENCH_X[c.slot / 3], Practice.BENCH_Y[c.slot % 3])
-	check(all_cases.size() == 15 and tiles.size() == 15 and placed, "las quince vitrinas, cada una en su casilla (columna por prueba, fila por dificultad)")
+			and c.at == Practice.BENCH_AT[c.kind][c.level]
+	check(all_cases.size() == 12 and tiles.size() == 12 and placed, "los doce objetos, cada uno en su casilla (tres por prueba, uno por dificultad)")
+	var objects := Practice.BENCH_TESTS.map(func(k): return Practice.bench_object(k).object)
+	check(objects == ["vitrine", "hideout", "alarm_wires", "alarm_glass"], "cada prueba con su objeto: vitrina, escondite, caja de alarma de cables y de cristal: %s" % [objects])
 	var pmap := Practice.map(1)
 	var preach := pmap.distances(pmap.spawn)
 	var bench_ok := pmap.check().is_empty()
+	var taken := {}
+	for gs in Practice.game_starts(1):
+		taken[gs.at] = true
+	for ht in Practice.hide_tiles(1):
+		taken[ht] = true
+	for scare in Practice.scarecrows(1):
+		taken[scare.at] = true
+	for pr in pmap.props:
+		taken[pr.at] = true
+	taken[Practice.LANTERN_AT] = true
+	taken[Den.CASE_AT] = true
 	for c in all_cases:
+		var what := Practice.bench_object(c.kind)
 		var free := 0
 		for d in MapFile.DIRS:
 			var q: Vector2i = c.at + d
 			if pmap.at(q) == Tiles.FLOOR and preach[q.y * pmap.w + q.x] >= 0:
 				free += 1
-		bench_ok = bench_ok and pmap.at(c.at) == Tiles.COVER and Den.tile_room(c.at) == "dojo" and free >= 2
-	check(bench_ok, "con todo el banco, el plano sigue jugable, las vitrinas bloquean y se llega a cada una por dos lados")
+		var wall: Vector2i = what.get("wall", Vector2i.ZERO)
+		if what.solid:
+			bench_ok = bench_ok and pmap.at(c.at) == Tiles.COVER and free >= 2
+		else:
+			# Hung on a wall: its tile is floor to stand on, and the wall is at its side.
+			bench_ok = bench_ok and wall != Vector2i.ZERO and pmap.at(c.at) == Tiles.FLOOR and pmap.at(c.at + wall) == Tiles.WALL and preach[c.at.y * pmap.w + c.at.x] >= 0
+		bench_ok = bench_ok and Den.tile_room(c.at) == "dojo" and not taken.has(c.at)
+	check(bench_ok, "con todo el banco, el plano sigue jugable: las vitrinas y escondites bloquean y se llega a cada uno por dos lados; las cajas de alarma, en la pared, con suelo delante; nada pisa un punto de inicio, un escondite ni un espantapájaros")
+	var furn_clash := 0
+	for f in Den.furniture():
+		var fr: Array = f.get("block", [])
+		if fr.size() == 4:
+			for c in all_cases:
+				if Rect2i(fr[0], fr[1], fr[2], fr[3]).has_point(c.at):
+					furn_clash += 1
+	check(furn_clash == 0, "ningún mueble de la casa pisa un objeto del banco (%d)" % furn_clash)
+	# Their games are the heists' (Minigame), at the level of the row.
 	for k in ["lockpick", "squeeze", "wires", "steady"]:
 		for lv in 3:
 			var g: Minigame = Practice.bench_game(k, lv, {})
 			check(g != null and g.kind == k and g.level == lv and g.what == "bench", "la prueba %s a nivel %d es su minijuego de siempre" % [k, lv])
+	check(Practice.bench_game("squeeze", 0, {}).steps == SqueezeGame.WRIGGLES_LEVEL[0] and Practice.bench_game("squeeze", 1, {}).steps == SqueezeGame.WRIGGLES_LEVEL[1] + 1 \
+		and Practice.bench_game("squeeze", 2, {}).steps == SqueezeGame.WRIGGLES_LEVEL[2] + 1, "ESCONDITE: la nevera es holgada, la caja y el baúl ajustan más (Hideouts.TIGHT)")
+	check(Practice.bench_piece(0) == "fridge" and Practice.bench_piece(1) == "box" and Practice.bench_piece(2) == "chest" and Practice.BENCH_OBJECTS.squeeze.pieces.all(func(k): return Hideouts.PIECES.has(k)), "... con muebles de Hideouts.PIECES (no las armaduras de AGUANTA)")
+	check([0, 1, 2].map(func(lv): return Practice.bench_game("wires", lv, {}).steps) == WiresGame.WIRES_LEVEL, "CABLES: 3, 4 y 6 cables según el nivel")
+	check(Practice.bench_game("steady", 0, {}).level == 0 and Practice.bench_game("steady", 2, {}).level == 2, "PULSO: aro más pequeño y más deriva según el nivel")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://test_escondite_d.cfg"))
 	Story.save = "user://test_escondite.cfg"
 
@@ -432,7 +472,7 @@ func _init() -> void:
 	check(Props.list.is_empty() and m.house.mannequins.is_empty(), "sin nada que tirar ni espantapájaros: aún no se han desbloqueado")
 	check(m.world.get_child_count() > 0 and m.hud.home, "el HUD sabe que es la casa")
 	check(Sim.feature("case") == false, "la vitrina, sellada")
-	check(not Sim.feature("case") and Heist.loot.name == "el calcetín de práctica", "la vitrina, sellada, con el calcetín")
+	check(not Sim.feature("case") and Heist.loot.name == "la pieza de práctica" and Heist.loot.shape != "sock", "la vitrina, sellada, con una pieza que no es un calcetín")
 	run(3)
 	check(m.phase == "playing" and not m.hud.counting(), "sigue sin cuenta atrás")
 
@@ -536,47 +576,57 @@ func _init() -> void:
 	m.house.scarecrow_tick(0.1)
 	check(not m.house.scarecrow_alert.active, "en la sala de exposición, no lo ve")
 
-	# The bench of cases: opens as many times as one likes, with nothing at stake.
+	# The bench: done as many times as one likes, with nothing at stake.
+	Story.save = "user://test_escondite_b.cfg"
+	Story.unlock(Story.lesson_night("props"), 1)
 	m.house.scarecrow_alert = Practice.alert_new()
-	p.x = beside.x
-	p.y = beside.y
+	var lc := Practice.bench_case(0)
+	var lbeside := Vector2(lc.at) + Vector2(0.5, 1.5)
+	p.x = lbeside.x
+	p.y = lbeside.y
 	p.moving = false
 	p.speed = 0.0
 	m.house.bench = Practice.bench_new()
 	var bact: Dictionary = m._action_for(p)
-	check(bact.get("do", "") == "bench" and bact.at.what == "case" and bact.at.i == 0, "junto a la vitrina de práctica, abrirla: %s" % [bact])
+	check(bact.get("do", "") == "bench" and bact.at.what == "case" and bact.at.i == 0, "junto a la vitrina de GANZÚA, hacerla: %s" % [bact])
 	check(m._prompt_rows(0)[0].verb == Text.t("HIDEOUT_BENCH_OPEN"), "... y la ayuda lo dice")
+	var part0: Dictionary = m.den_view._bench_parts[0]
+	check((part0.lamp.material_override as StandardMaterial3D).albedo_color == BenchProps.LAMP_OFF, "la vitrina espera con su luz roja")
 	m.house.bench_act(p, 0, bact.at, {})
-	check(m.house.bench_hold.has(p.id), "la prueba de la primera es quedarse quieto")
-	var held := 0.0
-	while m.house.bench.opened == 0 and held < 5.0:
-		m.house.bench_tick(0.25)
-		held += 0.25
-	check(m.house.bench.opened == 1 and m.house.bench.cases[0].state == "open" and absf(held - Practice.bench_hold_s(0)) < 0.3, "tras %.1f s quieto, se abre y la cuenta sube" % held)
-	check(not m.den_view._bench_glass[0].visible, "el cristal de la vitrina se quita al abrirla")
-	for i in 20:
-		m.house.bench_tick(0.25)
-	check(m.house.bench.cases[0].state == "closed" and m.den_view._bench_glass[0].visible, "y vuelve a cerrarse sola")
-	m.house.bench_act(p, 0, {"what": "case", "i": 0}, {})
-	p.moving = true
-	m.house.bench_tick(0.25)
-	check(not m.house.bench_hold.has(p.id) and m.house.bench.opened == 1, "moverse deshace la espera")
-	p.moving = false
-	# The ganzúa case of the easy row, and the hard one: the same minigame, at its level.
-	m.house.bench_act(p, 0, {"what": "case", "i": 3}, {})
 	check(p.game != null and p.game.kind == "lockpick" and p.game.what == "bench" and p.game.level == 0, "con la ganzúa fácil, el minijuego de un robo, a nivel 0")
 	p.game.done = true
 	m.house.bench_tick(0.01)
-	check(p.game == null and m.house.bench.opened == 2 and m.house.bench.cases[3].state == "open", "hecho, esa vitrina se abre y el contador sube: %d" % m.house.bench.opened)
-	m.house.bench_act(p, 0, {"what": "case", "i": 5}, {})
-	check(p.game != null and p.game.kind == "lockpick" and p.game.level == 2, "y en la difícil, a nivel 2")
+	check(p.game == null and m.house.bench.opened == 1 and m.house.bench.cases[0].state == "open", "hecho, se señala y el contador sube: %d" % m.house.bench.opened)
+	m.den_view._process(0.5)
+	check((part0.lamp.material_override as StandardMaterial3D).albedo_color == BenchProps.LAMP_ON and (part0.move as Node3D).position.y > 0.5, "señal: luz verde y el cristal sube, sin nada dentro")
+	check(m.den_view._bench_glows[0].visible, "... y la luz verde en el suelo")
+	for i in 20:
+		m.house.bench_tick(0.25)
+	m.den_view._process(0.5)
+	check(m.house.bench.cases[0].state == "closed" and (part0.lamp.material_override as StandardMaterial3D).albedo_color == BenchProps.LAMP_OFF and (part0.move as Node3D).position.y < 0.01, "y vuelve atrás sola, lista")
+	# The hideout's, the alarm boxes' and the hard lockpick: each its own game, at its level.
+	m.house.bench_act(p, 0, {"what": "case", "i": 4}, {})
+	check(p.game != null and p.game.kind == "squeeze" and p.game.what == "bench" and p.game.level == 1, "el escondite del medio: el minijuego de meterse, a nivel 1")
+	p.game.done = true
+	m.house.bench_tick(0.01)
+	check(p.game == null and m.house.bench.opened == 2 and m.house.bench.cases[4].state == "open", "hecho, se señala y el contador sube: %d" % m.house.bench.opened)
+	m.house.bench_act(p, 0, {"what": "case", "i": 2}, {})
+	check(p.game != null and p.game.kind == "lockpick" and p.game.level == 2, "y en la vitrina difícil, a nivel 2")
 	p.game = null
 	m.house.bench_target.clear()
 	check(not Heist.taken and Heist.progress == 0.0 and Heist.by == "" and m.phase == "playing", "sin robo: nada tomado, sin progreso, la noche sigue")
 	for i in 20:
 		m.house.bench_tick(0.25)
-	check(m.den_view._bench_labels.count.text.contains("2"), "el cartel cuenta las abiertas")
-	check(m.den_view._bench_glass.size() == 9 and m.den_view._bench_socks.size() == 8, "la casa armada con las tres primeras pruebas: nueve vitrinas y un calcetín en cada una (menos la del botín)")
+	check(m.den_view._bench_labels.count.text.contains("2"), "el cartel cuenta las hechas")
+	check(m.den_view._bench_parts.size() == Practice.bench_cases(1).size() and m.den_view._bench_parts.size() >= 6, "la casa armada con las pruebas que hay: un objeto de cada")
+	# No sock but PILLA EL CALCETÍN's (its pedestals) and the band's flag.
+	var socks := _socks_in(m.den_view)
+	var pedestals := Practice.game_starts(1).filter(func(g): return g.via == "sock").size()
+	check(pedestals == 3 and socks == pedestals + 1, "calcetines en el dojo: solo los %d pedestales de PILLA EL CALCETÍN y la bandera de la banda (%d)" % [pedestals, socks])
+	m.scenery.draw_loot()
+	check(not m.scenery.loot_node.visible, "y ninguno flotando sobre el banco (la pieza de la casa no se enseña)")
+	Story.save = "user://test_escondite.cfg"
+	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://test_escondite_b.cfg"))
 	p.x = 10.5
 	p.y = 15.5
 
@@ -847,7 +897,7 @@ func _init() -> void:
 		"game": Vector2(other_start) + Vector2(0.5, 1.5),
 		"push": Vector2(bin2.x + 0.5, bin2.y + 0.5),
 		"hide": crate2.middle(),
-		"bench": beside,
+		"bench": Vector2(Practice.bench_case(0).at) + Vector2(0.5, 1.5),
 	}
 	var act_at := func(kind: String) -> Dictionary:
 		tt.x = nearby[kind].x
@@ -916,28 +966,44 @@ func _init() -> void:
 	m._start_playing()
 	tt = m.thieves[0]
 	check(not m.house.trial_active() and all_free.call(), "... y de vuelta en la casa, todo responde")
-	# Las vitrinas del banco: quieto (sin minijuego) y con minijuego.
+	# Los objetos del banco: cada uno con su minijuego, y mientras dura lo demás no responde.
+	Story.unlock(Story.lesson_night("two"), 1)
 	var cases: Array = Practice.bench_cases(1)
-	m.house.bench_act(tt, 0, {"what": "case", "i": 0}, {})
-	check(m.house.bench_hold.has(tt.id) and m.house.trial_active() and all_blocked.call("bench"), "esperando quieto en QUIETO, lo demás no responde")
-	check(m._prompt_rows(0).size() == 1 and m._prompt_rows(0)[0].has("progress"), "... y solo se ve la cuenta de la espera")
-	tt.moving = true
-	m.house.bench_tick(0.25)
-	tt.moving = false
-	check(not m.house.trial_active() and all_free.call(), "moverse deshace la espera y todo vuelve")
-	var lock_slot := -1
+	check(cases.size() == 12, "con todo enseñado, los doce objetos del banco")
+	var stand_at := func(c: Dictionary) -> Vector2:
+		return Vector2(c.at) + (Vector2(0.5, 1.5) if Practice.bench_object(c.kind).solid else Vector2(0.5, 0.5))
 	for c in cases:
-		if c.kind != "hold":
-			lock_slot = c.slot
-			break
-	if lock_slot >= 0:
-		m.house.bench_act(tt, 0, {"what": "case", "i": lock_slot}, {})
-		check(tt.game != null and tt.game.what == "bench" and m.house.trial_active() and all_blocked.call(), "con el minijuego de una vitrina, lo demás no responde")
+		if c.level != 1:
+			continue
+		nearby["bench"] = stand_at.call(c)
+		check(all_free.call(), "%s: sin prueba, su objeto responde con los demás" % c.kind)
+		m.house.bench_act(tt, 0, {"what": "case", "i": c.slot}, {})
+		check(tt.game != null and tt.game.what == "bench" and m.house.trial_active() and all_blocked.call(), "%s: con su minijuego en marcha, ni los demás objetos del banco ni nada responden" % c.kind)
+		check(m._action_for(tt).is_empty() and m._prompt_rows(0).is_empty(), "... ni el suyo, ni aviso de acción")
+		for other in cases:
+			if other.slot != c.slot and other.level != 1:
+				tt.x = stand_at.call(other).x
+				tt.y = stand_at.call(other).y
+				check(m._action_for(tt).is_empty(), "... ni el %s de otra dificultad" % other.kind)
+				break
 		tt.game = null
-		check(not m.house.trial_active() and all_free.call(), "dejar el minijuego (sin esperar al siguiente cuadro) lo devuelve todo")
-	else:
-		print("(no hay vitrina con minijuego desbloqueada: se salta)")
+		check(not m.house.trial_active() and all_free.call(), "%s: dejar el minijuego lo devuelve todo" % c.kind)
+		m.house.bench_target.clear()
+	nearby["bench"] = Vector2(Practice.bench_case(0).at) + Vector2(0.5, 1.5)
 	m.house.bench_target.clear()
+
+	# Los trofeos no llevan calcetín: donde el botín es un calcetín, una estrella.
+	Story.keep_stars(2, 1, Story.STAR_TAKEN)
+	Story.keep_stars(7, 1, Story.STAR_TAKEN)
+	Story.keep_stars(24, 1, Story.STAR_TAKEN)
+	m.mode = Practice.MODE
+	m.players = 1
+	m._new_round(1)
+	var gold_stars: Array = m.den_view.find_children("*", "Label3D", true, false).filter(func(l: Label3D) -> bool: return l.text == "★" and l.font_size == 96)
+	check(Story.LEVELS[1].loot.shape == "sock" and Story.LEVELS[6].loot.shape == "sock" and Story.LEVELS[23].loot.shape == "sock", "los robos 2, 7 y 24 roban un calcetín")
+	check(Den.is_filled(2, 1) and Den.is_filled(7, 1) and Den.is_filled(24, 1) and gold_stars.size() == 3, "llenos, sus puestos enseñan una estrella (%d), no un calcetín" % gold_stars.size())
+	var pedestals2 := Practice.game_starts(1).filter(func(g): return g.via == "sock").size()
+	check(_socks_in(m.den_view) == pedestals2 + 1, "y en toda la casa solo quedan los pedestales de PILLA EL CALCETÍN y la bandera: %d" % _socks_in(m.den_view))
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
 	print("\n%d fallos" % fails)

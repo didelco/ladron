@@ -62,9 +62,10 @@ const SPAWN := Vector2i(9, 19)
 ## it. Nothing here is played; when it is, this is where it goes.
 const BATH_GAG := ""
 
-## The dojo's first case, always (the first lesson: QUIETO, easy), the sock's
-## tile of the practice map: see Practice.ITEMS for the rest.
-const CASE_AT := Vector2i(22, 3)
+## The tile of the practice map's piece: a heist needs a case to be reached (the
+## map's rules), and this is one of the dojo's low cabinets, sealed and empty
+## (nothing is shown in it). The bench's things are in Practice.BENCH_AT.
+const CASE_AT := Vector2i(28, 9)
 
 ## The lounge's arcade machine (the same one as the modern gallery's, Arcades):
 ## against the north wall, its screen looking south. Standing in front of it,

@@ -41,11 +41,9 @@ var mannequins: Array[Figure] = []
 var scarecrow_list: Array = []
 var scarecrow_alert := Practice.alert_new()
 
-## The bench of practice cases (Practice.bench_new), who is standing still at
-## one (thief id -> {i, t}) and what each game running on the bench is for
-## (thief id -> the action it began from).
+## The bench of practice cases (Practice.bench_new) and what each game running
+## on the bench is for (thief id -> the action it began from).
 var bench := Practice.bench_new()
-var bench_hold := {}
 var bench_target := {}
 
 
@@ -96,22 +94,17 @@ func scarecrow_tick(dt: float) -> void:
 			host.sfx.at("siren", host._to_world(r.position.x + r.size.x / 2.0, r.position.y + r.size.y / 2.0, 1.0), 0.5, 14.0)
 
 
-## The bench of practice cases (Practice.bench_*): a case is opened by its own
-## test, standing still or with the same minigame as in a heist, at its own
-## difficulty. All of it a game and nothing else: no stars, no progress, no
-## noise, no megaphone.
+## The bench of practice cases (Practice.bench_*): a case is done with its own
+## test, the same minigame as in a heist, at its own difficulty. All of it a
+## game and nothing else: no stars, no progress, no noise, no megaphone.
 func bench_act(t: Thief, i: int, what: Dictionary, keys: Dictionary) -> void:
 	var c := Practice.bench_case(int(what.i))
-	var game := Practice.bench_game(c.kind, c.level, host._game_input(i, keys))
 	t.dir = atan2(c.at.y + 0.5 - t.y, c.at.x + 0.5 - t.x)
-	if game == null:
-		bench_hold[t.id] = {"i": what.i, "t": 0.0}
-	else:
-		t.game = game
-		bench_target[t.id] = what
-		t.moving = false
-		t.speed = 0.0
-		t.sprinting = false
+	t.game = Practice.bench_game(c.kind, c.level, host._game_input(i, keys))
+	bench_target[t.id] = what
+	t.moving = false
+	t.speed = 0.0
+	t.sprinting = false
 	if host.den_view != null and is_instance_valid(host.den_view):
 		host.den_view.set_bench(bench)
 
@@ -120,22 +113,13 @@ func bench_open(c: int) -> void:
 	Practice.bench_open(bench, c)
 	host.sfx.ui("stolen")
 	var at: Vector2i = Practice.bench_case(c).at
-	Fx.sparkle(host.world, host._to_world(at.x + 0.5, at.y + 0.5, 1.05), Color("#e2262f"))
+	Fx.sparkle(host.world, host._to_world(at.x + 0.5, at.y + 0.5, 1.05), BenchProps.LAMP_ON)
 
 
 func bench_tick(dt: float) -> void:
 	var before := bench.duplicate(true)
 	Practice.bench_step(bench, dt)
 	for p in host.thieves:
-		if bench_hold.has(p.id):
-			var h: Dictionary = bench_hold[p.id]
-			var still: bool = not p.out and not p.moving and p.speed < 0.2 and Practice.bench_case_at(Vector2(p.x, p.y), host.players) == int(h.i) and bench.cases[h.i].state == "closed"
-			h.t = Practice.bench_hold_step(float(h.t), still, dt)
-			if not still:
-				bench_hold.erase(p.id)
-			elif h.t >= Practice.bench_hold_s(int(h.i)):
-				bench_hold.erase(p.id)
-				bench_open(int(h.i))
 		if bench_target.has(p.id):
 			if p.game == null:
 				bench_target.erase(p.id)
@@ -149,11 +133,11 @@ func bench_tick(dt: float) -> void:
 
 
 ## Whether a test is on: a game of the dojo (until its panel is accepted or left)
-## or a case of the bench being worked (standing still, or its minigame). While
-## it is, nothing else in the house answers the action key (trial_action), the
-## start points of the other games included, and nothing tips over.
+## or a case of the bench being worked (its minigame). While it is, nothing
+## else in the house answers the action key (trial_action), the start points of
+## the other games and the rest of the bench included, and nothing tips over.
 func trial_active() -> bool:
-	if dojo_game != null or not bench_hold.is_empty():
+	if dojo_game != null:
 		return true
 	return host.thieves.any(func(p: Thief) -> bool: return p.game != null and p.game.what == "bench")
 
