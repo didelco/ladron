@@ -220,14 +220,14 @@ def credits_text():
             "", "## Obra propia y material que la acompaña", "",
             "| colección | cómo se hizo | licencia |", "|---|---|---|"]
     for cid, c in own:
-        parts = "; ".join(f"{k['nombre']} ({k['autor']}, {data['licencias'][k['licencia']]['corta']})" for k in c.get("componentes", []))
+        parts = "; ".join(f"{k['nombre']} — {k['autor']}, {data['licencias'][k['licencia']]['corta']}" for k in c.get("componentes", []))
         how = _first_sentence(c["metodo"]) + (f" Lleva: {parts}." if parts else "")
         out.append(f"| {c['nombre']} | {how} | {data['licencias'][c['licencia']]['corta']} |")
     out += ["", "## Origen sin documentar", "",
             "Estos assets están en el juego pero no se anotó de dónde salen ni con qué licencia. "
             "Cuando se sepa, se completa en `assets/PROCEDENCIA.json`.", ""]
     for cid, c in nodoc:
-        out.append(f"- **{c['nombre']}**: {c['notas'] or c['metodo']}")
+        out.append(f"- **{c['nombre']}**: {c['metodo']} {c.get('notas', '')}".rstrip())
     out += ["", "El detalle de cada fichero (colección, método, autor y licencia) está en la página «Procedencia» de la "
             "documentación (`python3 tools/docs.py serve`) y se comprueba con `python3 tools/procedencia.py`.", ""]
     return "\n".join(out)
