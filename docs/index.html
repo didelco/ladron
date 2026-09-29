@@ -873,17 +873,13 @@ document.addEventListener("click", e => {
 
 function personajes() {
   const m = k => MODELOS[k];
-  const shot = SHOTS["assets_people"];
   $("#p-personajes").innerHTML = `<h1>Personajes</h1>
     <div class="sub">Ladrones y guardias (<code>scenes/figure.gd</code>, modelados en <code>art/characters/</code>)</div>
     ${ficha(img(m("ninja") && m("ninja").file, "ninja.glb"), `<div class="nom">Ladrón</div>${campo("Modelo", "<code>ninja.glb</code>")}
-      ${campo("En la página de assets", `${t("ASSETS_PEOPLE_THIEF")} · ${t("ASSETS_PEOPLE_TWO")}`)}
       ${campo("Procedencia", prLinea("assets/models/ninja.glb"))}`) + alBanda("assets/models/ninja.glb", { titulo: "Ladrón", nuestra: cmpImg(m("ninja") && m("ninja").file, "Ladrón"), ctx: "ladron ninja" })}
     ${ficha(img(m("guardia") && m("guardia").file, "guardia.glb"), `<div class="nom">Guardia</div>${campo("Modelo", "<code>guardia.glb</code>")}
-      ${campo("En la página de assets", `${t("ASSETS_PEOPLE_SLEEPY")} · ${t("ASSETS_PEOPLE_THREE")}`)}
       ${campo("Lo que piensa y dice", `<a href="#textos">textos <code>GUARD_</code> y <code>MIND_</code></a>`)}
-      ${campo("Procedencia", prLinea("assets/models/guardia.glb"))}`) + alBanda("assets/models/guardia.glb", { titulo: "Guardia", nuestra: cmpImg(m("guardia") && m("guardia").file, "Guardia"), ctx: "guardia" })}
-    ${shot ? `<h2>En la página de assets del juego</h2><div class="grandes una">${fig(shot)}</div>` : ""}`;
+      ${campo("Procedencia", prLinea("assets/models/guardia.glb"))}`) + alBanda("assets/models/guardia.glb", { titulo: "Guardia", nuestra: cmpImg(m("guardia") && m("guardia").file, "Guardia"), ctx: "guardia" })}`;
 }
 
 function sonidos() {

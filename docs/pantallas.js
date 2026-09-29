@@ -207,7 +207,6 @@ window.PANTALLAS = [
           { key: "SETTINGS_SOUND_PAGE", to: "ajustes_sonido" },
           { key: "SETTINGS_SCREEN_PAGE", to: "ajustes_pantalla" },
           { key: "SETTINGS_PADS_PAGE", to: "ajustes_controles" },
-          { key: "SETTINGS_ASSETS_PAGE", to: "assets_juego" },
           { key: "MENU_BACK", text: "Al título o a la pausa, según de dónde se vino." },
         ],
         children: [
@@ -243,20 +242,6 @@ window.PANTALLAS = [
               { key: "SETTINGS_RUMBLE" },
               { key: "SETTINGS_RUMBLE_STRENGTH" },
               { key: "SETTINGS_DEADZONE", text: "Entre 20 % y 80 % del recorrido del stick." },
-              { key: "MENU_BACK", to: "ajustes" },
-            ],
-          },
-          {
-            id: "assets_juego", title: "ASSETS_TITLE", fn: "_show_assets", phase: "assets",
-            text: "Todo lo que forma el juego, para mirarlo dentro de él. Esta documentación tiene la misma página fuera del juego: ver Assets.",
-            shots: ["assets_piezas", "assets_people", "assets_props", "assets_sounds", "assets_map"],
-            options: [
-              { key: "ASSETS_TAB_LOOT", text: "Cada pieza a robar en su peana.", doc: "piezas" },
-              { key: "ASSETS_TAB_PEOPLE", text: "Ladrones y guardias en sus dioramas.", doc: "personajes" },
-              { key: "ASSETS_TAB_PROPS", text: "Los objetos que se caen.", doc: "objetos/sin" },
-              { key: "ASSETS_TAB_SOUNDS", text: "Cada sonido, con un botón para oírlo.", doc: "sonidos" },
-              { key: "ASSETS_TAB_MAP", text: "La leyenda del mapa y las marcas de los guardias." },
-              { key: "MENU_PREVIOUS" }, { key: "MENU_NEXT" },
               { key: "MENU_BACK", to: "ajustes" },
             ],
           },
