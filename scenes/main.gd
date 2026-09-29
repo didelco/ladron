@@ -1,3 +1,4 @@
+class_name Game
 extends Node3D
 ## The game: screens, the loop, and drawing the world each frame.
 ##
@@ -86,6 +87,10 @@ const AMBIENT_ENERGY := 0.6
 const MOON_COLOUR := Color("#8ea2ff")
 const MOON_ENERGY := 0.4
 const BACKGROUND := Color("#0a0918")
+
+## The parts of the game that have a controller of their own, each with a narrow
+## way in (see the README, scenes/).
+var launch := LaunchArgs.new(self)
 
 ## "story", "generative" or "challenge"
 var mode := "story"
@@ -249,181 +254,7 @@ func _ready() -> void:
 		_show_cover()
 	else:
 		_show_title()
-	# For recording and testing: `godot -- --autostart` skips the title, shows
-	# the mission for two seconds and starts the round; add --two for two thieves.
-	# --menu=story|generative|settings: open a menu straight away, to look at it.
-	# --pick=N first: the story's heist N picked (map and museum open on its).
-	# --save=PATH: the progress kept there instead (Story.save), for
-	# looking at the screens without touching the player's own; and with it
-	# --reached=N: as far as heist N there.
-	for arg in OS.get_cmdline_user_args():
-		if arg.begins_with("--save="):
-			Story.save = arg.substr(7)
-		if arg.begins_with("--gang="):
-			players = clampi(int(arg.substr(7)), 1, 4)
-		elif arg == "--two":
-			players = 2
-	for arg in OS.get_cmdline_user_args():
-		# Never in the player's own progress.
-		if arg.begins_with("--reached=") and Story.save != Story.SAVE:
-			Story.unlock(clampi(int(arg.substr(10)), 1, Story.count()), players)
-	story_pick = Story.unlocked(players)
-	for arg in OS.get_cmdline_user_args():
-		if arg.begins_with("--pick="):
-			story_pick = clampi(int(arg.substr(7)), 1, Story.count())
-	for arg in OS.get_cmdline_user_args():
-		if arg.begins_with("--menu="):
-			match arg.substr(7):
-				"story": _show_title("story")
-				# The way in (Tour): the town, or inside the museum of --pick=N
-				# with that room picked.
-				# (--opened=M: as just after the big job before museum M).
-				"map", "city":
-					var fresh := -1
-					for a in OS.get_cmdline_user_args():
-						if a.begins_with("--opened="):
-							fresh = clampi(int(a.substr(9)) - 1, 0, Story.MUSEUMS.size() - 1)
-					_show_city(fresh, fresh)
-				"museum": _show_museum_tour(story_pick)
-				# The hideout's practice room, straight in (--gang=N, --two).
-				"practica":
-					mode = Practice.MODE
-					pads_lost.clear()
-					_new_round(1)
-					_start_countdown(0.0)
-				"generative": _show_generative_menu()
-				"challenges": _show_challenge_menu()
-				"editor": _show_editor(MapFile.generated(4242, "small"))
-				"settings": _show_settings("title")
-				"pads": _show_settings("title", "pads")
-				"input": _show_join("generative")
-				# The ends of a night and the pause, to look at them: --pick=N
-				# for the story's heist, --gen for the generative, --two or
-				# --gang=N for more thieves.
-				"end", "caught", "escaped":
-					_look_at_end("escaped" if arg == "--menu=escaped" else "caught")
-				"paused":
-					_look_at_pause()
-	# --plan=N: heist N's plan out of its room, told from the start (with
-	# --explore, as if told before: straight to looking round it).
-	for arg in OS.get_cmdline_user_args():
-		if arg.begins_with("--plan="):
-			var n := clampi(int(arg.substr(7)), 1, Story.count())
-			if Story.save != Story.SAVE:
-				Story.unlock(n, players)
-			n = mini(n, Story.unlocked(players))
-			if "--explore" in OS.get_cmdline_user_args():
-				told_now[[n, players]] = true
-			_show_museum_tour(n)
-			_tour_room(n)
-	# --acts=right,accept,...: presses for the way in, one every 1.2 s, to
-	# record it going (Tour.act: left, right, up, down, accept, back, skip).
-	for arg in OS.get_cmdline_user_args():
-		if arg.begins_with("--acts="):
-			var acts := arg.substr(7).split(",")
-			for i in acts.size():
-				get_tree().create_timer(1.2 * (i + 1)).timeout.connect(func() -> void:
-					if tour:
-						tour.act(acts[i]))
-	# --brief=N:P: the story's night N, briefing page P (0-based), to look at it
-	# (--gen: the generative's level N instead).
-	for arg in OS.get_cmdline_user_args():
-		if arg.begins_with("--brief="):
-			var bits := arg.substr(8).split(":")
-			mode = "generative" if "--gen" in OS.get_cmdline_user_args() else "story"
-			_new_round(int(bits[0]))
-			_show_brief(int(bits[1]) if bits.size() > 1 else 0)
-	# --intro: the piece, then the countdown, for checking the way in.
-	# --challenge: the first of the saved maps instead.
-	if "--intro" in OS.get_cmdline_user_args():
-		var which := "generative" if "--gen" in OS.get_cmdline_user_args() else "story"
-		if "--challenge" in OS.get_cmdline_user_args() and not MapFile.list().is_empty():
-			challenge_map = MapFile.list()[0]
-			which = "challenge"
-		_start(which, 2 if "--two" in OS.get_cmdline_user_args() else 1)
-		get_tree().create_timer(1.5).timeout.connect(_start_countdown)
-	if "--autostart" in OS.get_cmdline_user_args():
-		if "--two" in OS.get_cmdline_user_args():
-			players = 2
-			_new_round(1)
-		_show_brief(_brief_pages().size() - 1)
-		get_tree().create_timer(2.0).timeout.connect(_start_playing)
-		# --smoke: and a smoke bomb goes off at P1's feet a moment in.
-		if "--smoke" in OS.get_cmdline_user_args():
-			get_tree().create_timer(3.5).timeout.connect(func() -> void:
-				Smoke.drop(thieves[0], Sim.now_ms(), prop_noises))
-		# --map: and take the map out a moment later.
-		if "--map" in OS.get_cmdline_user_args():
-			get_tree().create_timer(3.0).timeout.connect(_toggle_map)
-		# --hide: and P1 starts a few steps from a place to hide in.
-		if "--hide" in OS.get_cmdline_user_args():
-			get_tree().create_timer(2.1).timeout.connect(_near_hideout.bind(0))
-
-
-## A night's end straight away (--menu=caught, --menu=escaped), for looking
-## at it: the heist --pick=N (the story), or --gen's first; saves nothing.
-func _look_at_end(how: String) -> void:
-	just_looking = true
-	var args := OS.get_cmdline_user_args()
-	if "--gen" in args:
-		mode = "generative"
-	players = 2 if "--two" in args else 1
-	for arg in args:
-		if arg.begins_with("--gang="):
-			players = clampi(int(arg.substr(7)), 1, 4)
-	_new_round(story_pick if mode == "story" else 1)
-	# Over the museum, as after a night: the wall, not the title's picture;
-	# and some figures for the paper, as after a night.
-	hud.backdrop(null)
-	HeistStats.time = 102.0
-	HeistStats.add("hides", 2)
-	HeistStats.add("smoke")
-	if how == "caught":
-		caught_thief = 0
-		caught_by = guards[0].name if not guards.is_empty() else ""
-	phase = how
-	_show_end()
-
-
-## The pause a moment into the night (--menu=paused), for looking at it;
-## --lost: as if the first thief's pad had dropped out.
-func _look_at_pause() -> void:
-	var args := OS.get_cmdline_user_args()
-	if "--gen" in args:
-		mode = "generative"
-	if "--two" in args:
-		players = 2
-	_new_round(story_pick if mode == "story" else 1)
-	_show_brief(_brief_pages().size() - 1)
-	get_tree().create_timer(1.0).timeout.connect(_start_playing)
-	get_tree().create_timer(2.5).timeout.connect(func() -> void:
-		if "--lost" in args:
-			pads_lost[0] = ""
-		_pause())
-
-
-## For trying hiding out (--hide): thief i a few steps from a hideout,
-## facing it, on the free floor it is got into from. Returns the way from
-## the hideout to where it stands, or (0, 0) if there is none.
-func _near_hideout(i: int) -> Vector2i:
-	var p := thieves[i]
-	for s in Hideouts.all():
-		for t in s.tiles:
-			for d in Museum.DIRS:
-				var n: Vector2i = t + d
-				if n in s.tiles or Museum.tile_at(n.x + 0.5, n.y + 0.5) != Tiles.FLOOR:
-					continue
-				var far := n
-				for k in 3:
-					var m: Vector2i = far + d
-					if Museum.tile_at(m.x + 0.5, m.y + 0.5) != Tiles.FLOOR:
-						break
-					far = m
-				p.x = far.x + 0.5
-				p.y = far.y + 0.5
-				p.dir = atan2(-d.y, -d.x)
-				return d
-	return Vector2i.ZERO
+	launch.apply()
 
 
 # --- Screens -----------------------------------------------------------------------
