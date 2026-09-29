@@ -655,11 +655,11 @@ func _objects() -> void:
 		# about: no thieves, no guards, nor their torches and cones.
 		Engine.time_scale = 0.001
 		main.hud.visible = false
-		for f in main.thief_nodes + main.guard_nodes:
+		for f in main.scenery.thief_nodes + main.scenery.guard_nodes:
 			f.visible = false
-		for t in main.torches:
+		for t in main.scenery.torches:
 			t.visible = false
-		for c in main.cones:
+		for c in main.scenery.cones:
 			c.visible = false
 		var files := {}
 		for view in [["mapa", OBJECT_FAR], ["cerca", OBJECT_NEAR]]:
