@@ -212,6 +212,10 @@ func _init() -> void:
 		clock += 1000.0 / 60
 		Sim.step_guard(a, none, [] as Array[SoundEvent], clock, 1.0 / 60)
 		Sim.step_guard(b, none, [] as Array[SoundEvent], clock, 1.0 / 60)
+		# Something it knows: a clue that stays fresh through the walk.
+		a.memory = Guard.Memory.new()
+		a.memory.kind = "seen"
+		a.memory.at = clock - 2000.0
 		if not Sim.warn_partners(gs, clock).is_empty():
 			told = true
 			break

@@ -111,6 +111,7 @@ El criterio es el código de salida más la línea de resumen (`FALLOS: 0`, `0 f
 ```bash
 godot --headless --script tests/test_mapgen.gd   # museos bien formados (306 de todos los tamaños y formas)
 godot --headless --script tests/test_sim.gd      # escenarios de la simulación
+godot --headless --script tests/test_alerta.gd   # la alerta baja sola tras perder al ladrón (!!! → !! → ! → calma en ~95 s) y los guardias no se la pasan en bucle
 godot --headless --script tests/test_heist.gd    # el golpe, el cuadro de alarma y los 25 robos de la historia (salas y grandes golpes)
 godot --headless --script tests/test_mapfile.gd  # mapas guardados: ida y vuelta, validación y que se juegan
 godot --headless --script tests/test_story.gd    # la historia: cinco museos de un tema, cinco robos cada uno, progreso por jugadores (y el de 20 noches)
@@ -357,6 +358,8 @@ uv pip install --python brain/.venv/bin/python -r brain/requirements.txt
 ```
 
 Sin el cerebro, los guardias deciden con reglas fijas: el juego siempre se puede jugar.
+
+**Niveles de alerta de un guardia** (`Sim.step_guard`, constantes en `logic/sim.gd`): calma → «!» (sospecha, se va a los `calm_after` × 0,35 s de la última señal: ~3,5 s en media) → «!!» (alerta, aguanta `ALERT_HOLD_MS` = 30 s desde lo último que la alimentó) → «!!!» (te ve; si te pierde, baja a «!!» a los `CHASE_LOST_MS` = 60 s, antes 90). Perdido el ladrón, todos vuelven a calma en ~95 s. Nada dura para siempre: antes, quien te había visto (o el que llegaba al número de `alarms`) se quedaba en «!!» eternamente; ahora `alarms` solo decide cuánto se «convence» (`calm_in`), y también baja. Un guardia solo avisa a un compañero (`warn_partners`) si conserva una pista fresca: estar en alerta ya no basta, así que dos guardias no se despiertan el uno al otro en bucle.
 
 ## Versión
 
