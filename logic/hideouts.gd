@@ -243,13 +243,16 @@ static func all() -> Array[Spot]:
 
 
 ## The hideout within reach of this thief, nearest first, or null: never
-## one another thief is already in, or wriggling into.
-static func within_reach(p: Thief, thieves: Array[Thief]) -> Spot:
+## one another thief is already in, or wriggling into. `allow` (optional, takes
+## the Spot, answers a bool) narrows down which ones count.
+static func within_reach(p: Thief, thieves: Array[Thief], allow := Callable()) -> Spot:
 	if p.out or p.posing or p.hiding or p.rolling or p.dizzy > 0.0:
 		return null
 	var best: Spot = null
 	var best_d := REACH
 	for s in all():
+		if allow.is_valid() and not allow.call(s):
+			continue
 		if thieves.any(func(o): return o != p and ((o.hiding and s.same(o.hideout)) or s.same(o.hide_target))):
 			continue
 		var d := s.dist_to(p.x, p.y)
