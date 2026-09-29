@@ -4402,7 +4402,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/brain_client.gd:50"
+   "scenes/brain_client.gd:50"
   ],
   "via": []
  },
@@ -4413,7 +4413,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/brain_client.gd:60"
+   "scenes/brain_client.gd:60"
   ],
   "via": []
  },
@@ -4424,7 +4424,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/brain_client.gd:60"
+   "scenes/brain_client.gd:60"
   ],
   "via": []
  },
@@ -4435,7 +4435,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/brain_client.gd:63"
+   "scenes/brain_client.gd:63"
   ],
   "via": []
  },
@@ -4446,7 +4446,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/brain_client.gd:67"
+   "scenes/brain_client.gd:67"
   ],
   "via": []
  },

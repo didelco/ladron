@@ -63,12 +63,14 @@ static func start(p: Thief) -> bool:
 ## One frame of rolling or of being down after it. Returns "crash" when the ball hits a
 ## wall or a case (stopped dead there), "done" when it runs out of roll,
 ## "up" when the dizziness is over and it starts getting up, "" otherwise.
-static func step(p: Thief, dt: float) -> String:
+## move is Sim.move_with_collision and crouch_seconds Sim.CROUCH_SECONDS, given
+## by the caller (Sim.step_thief), so that Roll does not need Sim.
+static func step(p: Thief, dt: float, move: Callable, crouch_seconds: float) -> String:
 	if p.rolling:
 		var want := minf(SPEED * dt, p.roll_left)
 		var dx := cos(p.dir)
 		var dy := sin(p.dir)
-		var moved := Sim.move_with_collision(p.x, p.y, dx * want, dy * want)
+		var moved: Array = move.call(p.x, p.y, dx * want, dy * want)
 		var nx: float = moved[0]
 		var ny: float = moved[1]
 		# Slid along a door jamb it goes on; blocked head-on it stops dead.
@@ -91,7 +93,7 @@ static func step(p: Thief, dt: float) -> String:
 			# Up it gets, the ordinary way (Sim eases the posture back),
 			# from far enough down to take RISE_SECONDS.
 			p.crouched = false
-			p.posture = minf(1.0, RISE_SECONDS / Sim.CROUCH_SECONDS)
+			p.posture = minf(1.0, RISE_SECONDS / crouch_seconds)
 			return "up"
 	return ""
 

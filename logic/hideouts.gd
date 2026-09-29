@@ -64,7 +64,7 @@ const APART := 9.0
 const TIGHT := {"box": 1, "egg": 1, "chest": 1, "shell": 1, "armour": 1, "legionary": 1}
 
 ## The pieces of furniture standing tonight: tile -> kind (PIECES).
-static var pieces := {}
+static var pieces := Placed.furniture
 
 
 class Spot:

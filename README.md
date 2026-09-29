@@ -9,7 +9,8 @@ Regla general: **simplificar**. Se porta la lógica tal cual; las mejoras, despu
 
 ```
 logic/   lógica pura, sin nodos (GDScript con tipos): se prueba sola
-scenes/  lo visual: main (bucle y HUD), museum_view (museo), figure (personajes)
+scenes/  lo visual: main (bucle y HUD), museum_view (museo), figure (personajes), y lo que
+         habla con fuera (brain_client, el cliente HTTP del cerebro)
 brain/   el cerebro: FastAPI sobre Laya, igual que en la web
 tests/   pruebas sin ventana
 art/     el catálogo en Blender (.blend por grupos) y su exportador a assets/models
@@ -109,6 +110,7 @@ godot --headless --script tests/test_dojo_juegos.gd # los cuatro juegos del dojo
 godot --headless --script tests/test_escondite.gd # El Escondite del Calcetín: la casa de la banda (orientación de cada mueble auditada, recreativa jugable, dojo grande con zonas, pasillos de dos, espantapájaros y alarma roja solo en el dojo, banco de vitrinas con rearme, cuatro salas alcanzables, puertas que bloquean o dejan pasar y que no se cierran con alguien en el umbral, salas a oscuras según lo visible por puertas abiertas con 1 a 4 ladrones, dojo según lo desbloqueado, 25 puestos de trofeos que se llenan con el botín por tamaño de banda, sin cuenta atrás al entrar, salir por pausa y por la puerta, música; carteles de los juegos del dojo que bloquean, empiezan y abortan (pausa, Tab) sin tocar más que `[dojo]`; sin guardias ni guardado)
 godot --headless --script tests/test_smoke.gd     # bomba de humo: dos por ladrón, tapa la vista, despista al que persigue
 godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (necesita el cerebro)
+python3 tools/ciclos.py -v --estricto            # ciclos de dependencia entre los scripts de logic/ (sale con 1 si hay uno sin permitir)
 ```
 
 `tests/visual/figures.tscn` enseña de cerca al ladrón y al guardia con sus animaciones, y

@@ -581,7 +581,7 @@ static func step_thief(p: Thief, keys: Dictionary, dt: float, scheme: String = "
 		rolled = "start"
 	p.roll_key = roll_key
 	if p.rolling or p.dizzy > 0.0:
-		var what := Roll.step(p, dt)
+		var what := Roll.step(p, dt, move_with_collision, CROUCH_SECONDS)
 		if rolled == "":
 			rolled = what
 		p.crouch_key = not p.out and _pressed(keys, pad.crouch)
@@ -940,7 +940,7 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 			var spot_d := INF
 			var crash := false
 			for n in noises:
-				var at = Hearing.heard_at(g, n)
+				var at = Hearing.heard_at(g, n, tuning("hearing"))
 				var d := Museum.dist(g.x, g.y, n.x, n.y)
 				if at != null and d < spot_d:
 					spot = at
@@ -1295,7 +1295,7 @@ static func call_for_backup(saw_before: Dictionary, guards: Array[Guard], now: f
 		for g in guards:
 			if g == spotter or g.sees_player:
 				continue
-			var spot = Hearing.heard_at(g, yell)
+			var spot = Hearing.heard_at(g, yell, tuning("hearing"))
 			if spot == null:
 				continue
 			heard_by.append(g.name)
