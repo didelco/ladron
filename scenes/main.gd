@@ -64,6 +64,7 @@ var nightenv := NightEnv.new(self)
 var scenery := Scenery.new(self)
 var rig := CameraRig.new(self)
 var hands := Hands.new(self)
+var loudspeaker := MegaphoneRun.new(self)
 
 ## "story", "generative" or "challenge"
 var mode := "story"
@@ -78,12 +79,8 @@ var show_ia := false
 ## the museum's loudspeaker (Megaphone) and how it is switched on: one of
 ## Settings.MEGAPHONE_MODES ("both", "text", "sound", "off")
 var megaphone_mode := "both"
-var mega: Megaphone
 ## the loudspeaker's voice (MegaVoice)
 var mega_voice: MegaVoice
-var mega_still := 0.0
-var mega_suspicion := 0
-var mega_exit_said := false
 var fullscreen := false
 var vsync := true
 ## percent, 0..100 in steps of ten
@@ -1455,7 +1452,7 @@ func _new_round(n: int) -> void:
 	Sim.light_events.clear()
 	scenery.build()
 	rig.snap()
-	_start_megaphone(n)
+	loudspeaker.start(n)
 	hud.set_gang(_thief_colours().slice(0, thieves.size()), _thief_darks().slice(0, thieves.size()), Heist.loot)
 	hud.set_home(mode == Practice.MODE)
 	house.home_room = ""
@@ -1554,9 +1551,9 @@ func _prop_fell(p: Props.Prop, strength := 0.6) -> void:
 	hands.rumble(0.3 + 0.5 * strength, 0.4 * strength, 0.15 + 0.2 * strength, Vector2(p.x, p.y))
 	rig.shake((0.45 if p.kind in ["bust", "armour"] else 0.25) * (0.6 + 0.8 * strength))
 	_log((Text.t("LOG_CRASH_EVERYWHERE") % Heist.first_upper(Props.name_of(p.kind))) if Props.heard_everywhere(loud) else Text.t("LOG_KNOCKED") % Props.name_of(p.kind))
-	_mega("knocked")
+	loudspeaker.say("knocked")
 	if phase == "playing":
-		_act("knock_" + p.kind)
+		loudspeaker.act("knock_" + p.kind)
 
 
 ## Something already down, sent rolling or rustling by a thief's feet: a
@@ -1626,8 +1623,8 @@ func _sneeze(p: Thief, noises: Array[SoundEvent]) -> void:
 	hands.rumble(0.5, 0.7, 0.25, Vector2(p.x, p.y))
 	rig.shake(0.25)
 	_log(Text.t("LOG_SNEEZE"))
-	_mega("sneeze")
-	_act("sneeze", thieves.find(p))
+	loudspeaker.say("sneeze")
+	loudspeaker.act("sneeze", thieves.find(p))
 
 
 ## A frame of a thief wriggling into a hideout (Hideouts.squeeze): in once
@@ -1647,8 +1644,8 @@ func _hid(p: Thief, spot: Hideouts.Spot) -> void:
 	HeistStats.add("hides")
 	sfx.at("roll", _to_world(p.x, p.y), 0.3, 2.0)
 	_log(Text.t("LOG_HIDE_BLOWN") if p.hide_blown else Text.t("LOG_HIDE_IN") % Hideouts.name_of(spot.kind))
-	_mega("hide")
-	_act("hide_seen" if p.hide_blown else ("hide_armour" if spot.kind == "armour" else "hide_other"), thieves.find(p))
+	loudspeaker.say("hide")
+	loudspeaker.act("hide_seen" if p.hide_blown else ("hide_armour" if spot.kind == "armour" else "hide_other"), thieves.find(p))
 
 
 ## Each thief's minigame box, beside it on screen.
@@ -1906,8 +1903,8 @@ func _tick(dt: float) -> void:
 					hands.rumble(0.5, 0.7, 0.25, Vector2(p.x, p.y))
 					rig.shake(0.3)
 					_log(Text.t("LOG_PLINTH_FELL"))
-					_mega("dizzy")
-					_act("plinth_fall", i)
+					loudspeaker.say("dizzy")
+					loudspeaker.act("plinth_fall", i)
 				_:
 					_game_sounds(p)
 					if p.game.kind == "squeeze":
@@ -1925,7 +1922,7 @@ func _tick(dt: float) -> void:
 		# Off in a ball: a rush over the floor (the guards hear nothing of it).
 		if step.roll == "start":
 			HeistStats.add("rolls")
-			_act("roll", i)
+			loudspeaker.act("roll", i)
 			sfx.at("roll", _to_world(p.x, p.y), 0.7, 3.0)
 		# Rolled into a wall: the thump, a puff of plaster, and it hurts.
 		if step.bumped == "roll":
@@ -1934,7 +1931,7 @@ func _tick(dt: float) -> void:
 			hands.rumble(0.6, 0.9, 0.3, Vector2(p.x, p.y))
 			var case := Museum.is_cover(p.x + cos(p.dir) * (Sim.BODY + 0.1), p.y + sin(p.dir) * (Sim.BODY + 0.1))
 			_log(Text.t("LOG_ROLL_CASE" if case else "LOG_ROLL_WALL"))
-			_act("roll_case" if case else "roll_wall", i)
+			loudspeaker.act("roll_case" if case else "roll_wall", i)
 		if noise and not p.out:
 			noises.append(noise)
 			var what := "step" if noise.kind in ["walk", "sprint", "rustle"] else (noise.kind if noise.kind in ["shelf", "roll_bump"] else "bump")
@@ -1960,11 +1957,11 @@ func _tick(dt: float) -> void:
 			"job":
 				Heist.start_game(t, act.at, _game_input(i, keys))
 				if act.at.what == "case":
-					_act("case", i)
+					loudspeaker.act("case", i)
 				sfx.at("pick", _to_world(t.x, t.y), 0.5, 2.0)
 			"plinth":
 				Plinths.climb(t, act.at, guards)
-				_act("plinth", i)
+				loudspeaker.act("plinth", i)
 				# With minigames the pose is held on one foot (Minigame "balance").
 				if Heist.minigames():
 					t.game = Minigame.make("balance", "plinth", 1, _game_input(i, keys))
@@ -1983,7 +1980,7 @@ func _tick(dt: float) -> void:
 				var arcade: Vector2i = act.at
 				t.game = Minigame.make("arcade", "arcade", 1, _game_input(i, keys))
 				t.arcade = arcade
-				_act("arcade", i)
+				loudspeaker.act("arcade", i)
 				t.dir = atan2(arcade.y + 0.5 - t.y, arcade.x + 0.5 - t.x)
 				sfx.at("pong_score", _to_world(t.x, t.y, 1.0), 0.4, 2.0)
 				_log(Text.t("LOG_ARCADE"))
@@ -2020,7 +2017,7 @@ func _tick(dt: float) -> void:
 		if pressed and not smoke_held[i]:
 			if Smoke.drop(thieves[i], now, noises) == null and not thieves[i].out:
 				sfx.ui("back", 0.5)
-				_act("smoke_empty", i)
+				loudspeaker.act("smoke_empty", i)
 		smoke_held[i] = pressed
 	Smoke.step(now)
 	for c in Smoke.fresh:
@@ -2029,9 +2026,9 @@ func _tick(dt: float) -> void:
 		sfx.at("smoke", _to_world(c.x, c.y, 0.5), 0.9, 6.0)
 		hands.rumble(0.3, 0.5, 0.3, Vector2(c.x, c.y))
 		_log(Text.t("LOG_SMOKE"))
-		_mega("smoke")
+		loudspeaker.say("smoke")
 		var by := thieves.find_custom(func(t): return t.id == c.by)
-		_act("smoke_last" if by >= 0 and Smoke.count(thieves[by]) == 0 else "smoke", by)
+		loudspeaker.act("smoke_last" if by >= 0 and Smoke.count(thieves[by]) == 0 else "smoke", by)
 	Smoke.clear_fresh()
 	if house.dojo_game != null:
 		house.dojo_tick(dt, keys)
@@ -2043,12 +2040,12 @@ func _tick(dt: float) -> void:
 	if [Heist.panel_off, Heist.panel2_off] != cut_before:
 		sfx.ui("ok")
 		_log(Text.t("LOG_PANEL_CUT"))
-		_mega("panel")
-		_act("panel")
+		loudspeaker.say("panel")
+		loudspeaker.act("panel")
 	if noises.size() > before_alarms:
 		if Heist.progress < 0.1:
 			_log(Text.t("LOG_CASE_ALARM"))
-			_mega("alarm")
+			loudspeaker.say("alarm")
 		sfx.at("alarm", _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5), 0.8)
 	match took:
 		"stolen":
@@ -2056,7 +2053,7 @@ func _tick(dt: float) -> void:
 			Fx.sparkle(world, _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5, 1.05), Color(Heist.loot.colour))
 			rig.punch_in()
 			_log(Text.t("LOG_GOT_IT_TEAM" if thieves.size() > 1 else "LOG_GOT_IT") % Heist.loot.name)
-			_mega("stolen")
+			loudspeaker.say("stolen")
 		"dropped":
 			_log(Text.t("LOG_DROPPED") % Heist.first_upper(Heist.loot.name))
 		"picked":
@@ -2083,7 +2080,7 @@ func _tick(dt: float) -> void:
 			var d := Museum.dist(ear.x, ear.y, s.x, s.y)
 			hud.shout(Text.t(SHOUTS[randi() % SHOUTS.size()]), Text.t("HUD_SHOUT_FAR" if d > 9 else "HUD_SHOUT_NEAR") % [s.from, heard], angle)
 			_log(Text.t("LOG_SHOUT") % [s.from, heard])
-			_mega("seen")
+			loudspeaker.say("seen")
 	for w in Sim.warn_partners(guards, now):
 		sfx.at("whisper", _to_world(w.x, w.y), 0.6)
 		_log(Text.t("LOG_WARN") % [w.from, w.to])
@@ -2098,12 +2095,12 @@ func _tick(dt: float) -> void:
 		sfx.at("lights", _to_world(r.switch_at.x + 0.5, r.switch_at.y + 0.5), 0.8)
 		if e.thief:
 			HeistStats.add("lights")
-			_act("switch")
+			loudspeaker.act("switch")
 			_log(Text.t("LOG_YOU_LIGHTS_ON" if e.on else "LOG_YOU_LIGHTS_OFF") % label)
-			_mega("lights_on" if e.on else "lights_off")
+			loudspeaker.say("lights_on" if e.on else "lights_off")
 		else:
 			_log(Text.t("LOG_LIGHTS") % [e.by, label])
-			_mega("lights_on" if e.on else "lights_off")
+			loudspeaker.say("lights_on" if e.on else "lights_off")
 	Sim.light_events.clear()
 
 	if now - last_spread > 500:
@@ -2146,8 +2143,8 @@ func _tick(dt: float) -> void:
 				p.speed = 0
 				if thieves.size() > 1 and not thieves.all(func(o): return o.safe):
 					_log(Text.t("LOG_OUT_WAITING") % ("P%d" % (thieves.find(p) + 1)))
-					_mega("waiting")
-	_megaphone_tick(dt)
+					loudspeaker.say("waiting")
+	loudspeaker.tick(dt)
 	# No clock: take as long as you like. The whole gang out of the door
 	# with the piece wins; one of you caught ends the night.
 	# The night stops there (phase "over"), a moment (Hud.HOLD_S) to see it
@@ -2157,67 +2154,6 @@ func _tick(dt: float) -> void:
 	elif thieves.all(func(p): return p.safe):
 		sfx.ui("escaped")
 		_night_over("escaped")
-
-
-## A new round: the loudspeaker starts from nothing, and welcomes the gang.
-func _start_megaphone(n: int) -> void:
-	mega = Megaphone.new(n if mode == "story" else 0, guards.size(), thieves.size(), Heist.loot.name, randi())
-	mega_still = 0.0
-	mega_suspicion = 0
-	mega_exit_said = false
-	hud.megaphone("")
-	mega_voice.stop(true)
-	_mega("start")
-
-
-## A thief (who, or -1) did something the loudspeaker may remark on, some
-## of the time (Megaphone.act): a roll, a crash, a bin over...
-func _act(what: String, who := -1) -> void:
-	if megaphone_mode != "off" and mega and mode != "practica" and phase == "playing":
-		mega.act(what, HeistStats.time, who)
-
-
-## Something happened the loudspeaker may have a word about.
-func _mega(kind: String) -> void:
-	if megaphone_mode != "off" and mega and mode != "practica":
-		mega.say(kind, HeistStats.time)
-
-
-## Every tick: what the guards' suspicion and the door say, how long the
-## gang has stood still, and the notice that comes of it, if any.
-func _megaphone_tick(dt: float) -> void:
-	if megaphone_mode == "off" or mega == null or mode == "practica":
-		return
-	var suspicion := 0
-	for g in guards:
-		suspicion = maxi(suspicion, g.suspicion)
-	if suspicion > mega_suspicion and suspicion < 3:
-		mega.say("suspect", HeistStats.time)
-	if mega_suspicion >= 2 and suspicion == 0:
-		_act("phew")
-	mega_suspicion = suspicion
-	for i in thieves.size():
-		var p := thieves[i]
-		var going := p.speed > 0.05 and not p.out and not p.rolling and p.dizzy <= 0.0 and not p.hiding
-		mega.hold("crawl", going and p.crouched and p.posture > 0.5, dt, HeistStats.time, i)
-		mega.hold("run", going and p.sprinting, dt, HeistStats.time, i)
-		mega.hold("sneak", going and p.slow, dt, HeistStats.time, i)
-	var moving := false
-	for p in thieves:
-		if not p.out and (p.speed > 0.05 or p.game != null or p.hiding or p.posing):
-			moving = true
-	mega_still = 0.0 if moving else mega_still + dt
-	if Heist.taken and not mega_exit_said:
-		for p in thieves:
-			if not p.out and Museum.dist(p.x, p.y, Heist.exit.x + 0.5, Heist.exit.y + 0.5) < 6.0:
-				mega_exit_said = true
-				mega.say("near_exit", HeistStats.time)
-	var tense := suspicion > 0 or guards.any(func(g): return g.alert or g.sees_player)
-	var told := mega.tick(HeistStats.time, mega_still, tense)
-	if not told.is_empty():
-		var secs := mega_voice.speak(told.key, megaphone_mode, mode)
-		if Settings.megaphone_text(megaphone_mode):
-			hud.megaphone(told.text, MegaVoice.hold_for(secs))
 
 
 func _night_over(how: String) -> void:

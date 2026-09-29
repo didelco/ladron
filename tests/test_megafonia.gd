@@ -507,10 +507,10 @@ func _init() -> void:
 	main.seats.assign(["kb_left"])
 	main._new_round(7)
 	await process_frame
-	check(main.mega != null and main.mega.guards == main.guards.size(), "cada robo estrena su megafonía")
+	check(main.loudspeaker.mega != null and main.loudspeaker.mega.guards == main.guards.size(), "cada robo estrena su megafonía")
 	HeistStats.time = 3.0
-	main._mega("alarm")
-	main._megaphone_tick(0.0)
+	main.loudspeaker.say("alarm")
+	main.loudspeaker.tick(0.0)
 	var hud: Hud = main.hud
 	check(hud._mega_text.text != "" and hud._mega_left > 0.0, "el rótulo sale en el HUD: «%s»" % hud._mega_text.text)
 	# Los cuatro modos: qué se ve y qué suena en cada uno.
@@ -521,29 +521,29 @@ func _init() -> void:
 		hud.megaphone("")
 		main.mega_voice.stop(true)
 		Megaphone.forget()
-		main._start_megaphone(7)
+		main.loudspeaker.start(7)
 		HeistStats.time = 3.0
 		main.options.set_megaphone_mode(md)
-		main._mega("alarm")
+		main.loudspeaker.say("alarm")
 		# Sin saltar en el tiempo: el aviso en cola caduca si se espera demasiado.
-		main._megaphone_tick(0.0)
+		main.loudspeaker.tick(0.0)
 		n_mode += 1
 		var shown: bool = hud._mega_text.text != "" and hud._mega_left > 0.0
 		if md == "off":
-			check(not shown and main.mega.said.is_empty(), "modo «no»: la lógica no corre y no hay cartel")
+			check(not shown and main.loudspeaker.mega.said.is_empty(), "modo «no»: la lógica no corre y no hay cartel")
 		else:
 			check(shown == modes[md][0], "modo «%s»: el cartel %s" % [md, "sale" if modes[md][0] else "no sale"])
-			check(not main.mega.said.is_empty(), "modo «%s»: la lógica sigue (dice una frase)" % md)
+			check(not main.loudspeaker.mega.said.is_empty(), "modo «%s»: la lógica sigue (dice una frase)" % md)
 	# Con el modo «solo sonido» la frase cuenta para el enfriamiento aunque no salga nada.
 	main.options.set_megaphone_mode("sound")
 	hud.megaphone("")
 	Megaphone.forget()
-	main._start_megaphone(7)
+	main.loudspeaker.start(7)
 	HeistStats.time = 3.0
-	main._mega("alarm")
-	main._megaphone_tick(0.0)
-	var said_sound: int = main.mega.said.size()
-	check(hud._mega_text.text == "" and said_sound >= 1 and main.mega._last_at >= 0.0, "«solo sonido»: sin cartel, y la frase cuenta para el enfriamiento")
+	main.loudspeaker.say("alarm")
+	main.loudspeaker.tick(0.0)
+	var said_sound: int = main.loudspeaker.mega.said.size()
+	check(hud._mega_text.text == "" and said_sound >= 1 and main.loudspeaker.mega._last_at >= 0.0, "«solo sonido»: sin cartel, y la frase cuenta para el enfriamiento")
 	# Cambiar de modo en marcha: sin cartel lo quita, sin sonido corta la voz.
 	main.options.set_megaphone_mode("both")
 	hud.megaphone("hola")
@@ -576,7 +576,7 @@ func _init() -> void:
 	Megaphone.forget()
 	main._new_round(7)
 	await process_frame
-	main.mega.always = true
+	main.loudspeaker.mega.always = true
 	main.phase = "playing"
 	var th: Thief = main.thieves[0]
 	var crashed := false
@@ -590,7 +590,7 @@ func _init() -> void:
 			continue
 		HeistStats.time = 40.0 + ang * 100.0
 		for f in 100:
-			main.mega._last_at = HeistStats.time - 45.0
+			main.loudspeaker.mega._last_at = HeistStats.time - 45.0
 			main.hands.pad_frame = Engine.get_physics_frames() - 1
 			main._tick(1.0 / 60.0)
 			if th.stars:
@@ -598,21 +598,21 @@ func _init() -> void:
 				break
 		if crashed:
 			break
-	var walls: int = main.mega.counts.get("roll_wall", 0) + main.mega.counts.get("roll_case", 0)
-	check(crashed and walls == 1 and String(main.mega._pending_kind).begins_with("act_roll_"), "rodar contra una pared en el juego lo cuenta la megafonía (%s)" % main.mega._pending_kind)
+	var walls: int = main.loudspeaker.mega.counts.get("roll_wall", 0) + main.loudspeaker.mega.counts.get("roll_case", 0)
+	check(crashed and walls == 1 and String(main.loudspeaker.mega._pending_kind).begins_with("act_roll_"), "rodar contra una pared en el juego lo cuenta la megafonía (%s)" % main.loudspeaker.mega._pending_kind)
 	for f in 120:
 		main.hands.pad_frame = Engine.get_physics_frames() - 1
 		main._tick(1.0 / 60.0)
-	var last: Array = main.mega.said.back() if not main.mega.said.is_empty() else ["", ""]
+	var last: Array = main.loudspeaker.mega.said.back() if not main.loudspeaker.mega.said.is_empty() else ["", ""]
 	check(String(last[1]).begins_with("MEGA_ACT_ROLL_") and hud._mega_text.text == Text.t(last[1]) and hud._mega_left > 0.0, "…y en pantalla sale su frase: «%s»" % hud._mega_text.text)
 	main.mode = "practica"
-	var before: int = main.mega.counts.get("roll_wall", 0)
-	main._act("roll_wall", 0)
-	check(main.mega.counts.get("roll_wall", 0) == before, "en la práctica y la guarida, la megafonía de robo calla")
+	var before: int = main.loudspeaker.mega.counts.get("roll_wall", 0)
+	main.loudspeaker.act("roll_wall", 0)
+	check(main.loudspeaker.mega.counts.get("roll_wall", 0) == before, "en la práctica y la guarida, la megafonía de robo calla")
 	main.mode = "story"
 	main.megaphone_mode = "off"
-	main._act("roll_wall", 0)
-	check(main.mega.counts.get("roll_wall", 0) == before, "apagada en los ajustes, no comenta ni cuenta")
+	main.loudspeaker.act("roll_wall", 0)
+	check(main.loudspeaker.mega.counts.get("roll_wall", 0) == before, "apagada en los ajustes, no comenta ni cuenta")
 	main.megaphone_mode = "both"
 	var longest := ""
 	for k in keys:
