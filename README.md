@@ -81,7 +81,7 @@ caparazón, caballo de Troya, mamut y tronco) salieron de `art/temas/escondites.
    modelos con esqueleto más adelante), luces, conos de visión, suelo y muros.
 5. ✅ **Juego completo**: atraco por niveles (pieza, alarma, puerta de salida), pantallas de título,
    misión, pausa y final, HUD con flecha al objetivo y el grito en grande, sonido sintetizado.
-   La megafonía del museo (Megaphone) también habla: cada frase MEGA_* suena desde `audio/megafonia/<clave en minúsculas>.ogg` (`MegaVoice`, ajuste «Megafonía»: cartel y sonido, solo cartel, solo sonido o no; guardado como `megaphone_mode`, y los ajustes viejos `megaphone` y `megaphone_voice` se migran); los audios se generan con `tools/megafonia-tool` (ver su README) y, tras copiarlos, `godot --headless --import` los importa. Sin ficheros, el juego calla y sigue.
+   La megafonía del museo (Megaphone) también habla: cada frase MEGA_* suena desde `audio/megafonia/<clave en minúsculas>.ogg` (`MegaVoice`, ajuste «Megafonía»: cartel y sonido, solo cartel, solo sonido o no; guardado como `megaphone_mode`, y los ajustes viejos `megaphone` y `megaphone_voice` se migran); los audios se generan con `megafonia-tool` (herramienta aparte del juego, en la carpeta hermana `../megafonia-tool`; ver su README) y, tras copiarlos, `godot --headless --import` los importa. Sin ficheros, el juego calla y sigue.
 6. **Exportar** a Windows, macOS y Linux, y decidir cómo va Laya para jugadores.
 
 ## Pruebas

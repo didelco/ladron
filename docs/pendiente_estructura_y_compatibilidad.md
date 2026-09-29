@@ -18,10 +18,8 @@ Prioridad: **A** alta, **M** media, **B** baja. Tamaño: **S** menos de una hora
 - Fijar un límite blando (p. ej. 1.500 líneas por fichero, 80 por función) y vigilarlo con un script o test que avise.
 **Hecho cuando.** `main.gd` baja de 2.500 líneas, `_tick()` de 100, y los 29 tests siguen en verde.
 
-### [EST-2] Red de seguridad en el `.gitignore` de la raíz para `tools/megafonia-tool` — A · S
-**Contexto.** La carpeta pesa 1,8 GB en disco (`models` 179 MB, `cache` 127 MB, `samples` 53 MB, `out` 36 MB, `.venv`). Hoy solo la protege su `.gitignore` propio; el de la raíz no la menciona, y un `git add -f` accidental subiría modelos de 60 y 73 MB.
-**Qué hacer.** Añadir a la raíz `/tools/megafonia-tool/{models,cache,out,samples,.venv}`. En su README, documentar cómo descargar los modelos (script y hash).
-**Hecho cuando.** `git status` no muestra nada de esa carpeta aunque se regeneren los modelos.
+### [EST-2] `megafonia-tool` fuera del repo del juego — HECHO
+Se movió a `../megafonia-tool` (repo propio, con sus modelos, cachés y `.venv` fuera de git). `regenerar_juego.sh` usa `GODOT_DIR` (por defecto `../nosy-horesradish`). Si el `.venv` falla tras el traslado, recrearlo con `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`.
 
 ### [EST-3] Lanzador común de tests y CI — A · M
 **Contexto.** Hay 29 tests `extends SceneTree` (unas 8.400 líneas) que se lanzan a mano uno a uno (README, líneas 90-102). No hay lista única, así que un test nuevo puede quedar sin ejecutarse, y no hay CI (`.github` no existe).

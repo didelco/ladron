@@ -2,7 +2,7 @@ class_name MegaVoice
 extends Node
 ## La voz de la megafonía: cada frase MEGA_X suena desde
 ## res://audio/megafonia/<clave en minúsculas>.ogg (mono, con reverb y efectos
-## ya puestos, a -16 LUFS; los genera tools/megafonia-tool), a la vez que sale
+## ya puestos, a -16 LUFS; los genera megafonia-tool, aparte del juego), a la vez que sale
 ## su rótulo. Es opcional: si el fichero no está, no pasa nada (silencio, y no
 ## se vuelve a buscar).
 ##
