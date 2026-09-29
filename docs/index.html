@@ -249,6 +249,18 @@ a.tag:hover { border-color: var(--texto); }
 .pr-col .archivos div { break-inside: avoid; }
 .pr-resumen { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
 .pr-buscar { font: inherit; font-size: 13px; border: 1px solid var(--borde); padding: 3px 8px; border-radius: 2px; min-width: 240px; }
+.rf { border-top: 1px solid var(--suave); padding: 12px 0; max-width: 900px; }
+.rf h3 { margin: 0 0 4px; font-size: 16px; overflow-wrap: anywhere; }
+.rf p { margin: 4px 0; }
+.rf .lic.est-usada { background: var(--texto); color: var(--blanco); border-color: var(--texto); }
+.rf .lic.est-descartada { color: var(--claro); border-style: dashed; text-decoration: line-through; }
+.rf-form { border: 2px solid var(--texto); background: var(--fondo2); padding: 10px 14px; margin: 12px 0; max-width: 900px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.rf-form label { display: flex; flex-direction: column; font-size: 13px; color: var(--tenue); gap: 2px; }
+.rf-form .ancho { grid-column: 1 / -1; }
+.rf-form input, .rf-form select, .rf-form textarea { font: inherit; font-size: 14px; border: 1px solid var(--borde); border-radius: 2px; padding: 5px 8px; background: var(--blanco); color: var(--texto); min-width: 0; }
+.rf-acc { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
+.rf-acc select { font: inherit; font-size: 13px; }
+@media (max-width: 600px) { .rf-form { grid-template-columns: 1fr; } .pr-buscar { min-width: 0; width: 100%; } }
 .aviso { border: 1px solid var(--aviso); color: var(--aviso); padding: 8px 12px; margin: 12px 0; font-size: 14px; }
 .estado { font-size: 13px; color: var(--tenue); }
 textarea.editor { width: 100%; min-height: 64px; font: inherit; border: 1px solid var(--texto); padding: 6px 8px; resize: vertical; }
@@ -410,6 +422,7 @@ details.fam .dentro { padding: 0 10px 10px; }
     <section class="pagina" id="p-textos"></section>
     <section class="pagina" id="p-megafonia"></section>
     <section class="pagina" id="p-procedencia"></section>
+    <section class="pagina" id="p-referencias"></section>
   </main>
 </div>
 <div class="caja" id="caja"><button class="ir izq" data-ir="-1" aria-label="Anterior">‹</button><img alt=""><p></p><button class="ir der" data-ir="1" aria-label="Siguiente">›</button></div>
@@ -423,6 +436,7 @@ details.fam .dentro { padding: 0 10px 10px; }
 <script src="data/versiones.js"></script>
 <script src="data/procedencia.js"></script>
 <script src="data/alternativas.js" onerror="void 0"></script>
+<script src="data/referencias.js" onerror="void 0"></script>
 <script src="pantallas.js"></script>
 <script src="mecanicas.js"></script>
 <script>
@@ -493,7 +507,7 @@ function nav(pag, sel) {
   $("#nav").innerHTML = `<div class="marca"><a href="#inicio"><img src="logo.webp" alt="Ninja Karma" width="640" height="428"></a><small>Documentación del juego</small></div>
     ${grupo("pantallas", "Pantallas", ORDEN.length, `${enlace("inicio", "Resumen")}${enlace("capturas", "Capturas")}<div class="arbol">${arbol(P, sel)}</div>`)}
     ${grupo("juego", "El juego", ENTIDADES.length + 6, enlace("historia", "Historia") + enlace("ciudad", "Ciudad") + enlace("previa", "Antes de un robo") + enlace("minijuegos", "Minijuegos") + enlace("escondites", "Escondites") + enlace("coleccion", "Colección") + ENTIDADES.map(([k, txt]) => enlace(k, txt)).join(""))}
-    ${grupo("referencia", "Referencia", 7, enlace("estilo", "Estilo") + enlace("paleta", "Paleta") + enlace("propuesta", "Paleta propuesta") + enlace("versiones", "Versiones") + enlace("textos", "Textos") + enlace("megafonia", "Megafonía") + enlace("procedencia", "Procedencia"))}
+    ${grupo("referencia", "Referencia", 8, enlace("estilo", "Estilo") + enlace("paleta", "Paleta") + enlace("propuesta", "Paleta propuesta") + enlace("versiones", "Versiones") + enlace("textos", "Textos") + enlace("megafonia", "Megafonía") + enlace("procedencia", "Procedencia") + enlace("referencias", "Referencias"))}
     <div class="meta">${esc(g.fecha || "—")} · ${esc(g.commit || "—")}${EDITABLE ? " · edición activa" : ""}</div>`;
 }
 let ACTUAL = [null, null];
@@ -940,6 +954,7 @@ function prLista() {
       ${(r.componentes || []).length ? `<p><span class="etq">Lleva de terceros</span></p><ul>${r.componentes.map(c => `<li>${esc(c.nombre)} · ${esc(c.autor)} · ${esc((PR.licencias[c.licencia] || { corta: c.licencia }).corta)}${c.url ? ` · <a href="${esc(c.url)}">fuente</a>` : ""}${c.nota ? `<br><span class="estado">${esc(c.nota)}</span>` : ""}</li>`).join("")}</ul>` : ""}
       ${r.notas ? `<p class="estado">${esc(r.notas)}</p>` : ""}
       ${alDetalle(r, r.clave)}
+      ${rfDe(r.id).length ? `<p><span class="etq">Referencias</span>${rfDe(r.id).map(x => `<a href="#referencias/${encodeURIComponent(x.id)}">${esc(x.titulo)}</a>`).join(" · ")}</p>` : ""}
       <details><summary class="estado">Ver los ${rutas.length} fichero${rutas.length === 1 ? "" : "s"}</summary><div class="archivos">${rutas.map(x => `<div><code>${esc(x)}</code></div>`).join("")}</div></details>
     </div>`;
   }).join("");
@@ -966,6 +981,83 @@ function procedencia() {
       <input class="pr-buscar" id="pr-q" type="search" placeholder="Buscar colección o fichero" value="${esc(prFiltro.q)}"></div>
     <div id="pr-lista">${prLista()}</div>`;
 }
+// --- Referencias: enlaces de inspiración y recursos (docs/data/referencias.json) ------------------
+let RF = window.REFERENCIAS || [];
+const RF_TIPOS = ["icons", "modelos", "audio", "arte", "codigo", "articulo", "otro"];
+const RF_ESTADOS = ["guardada", "evaluada", "usada", "descartada"];
+const rfFiltro = { q: "", tipo: "", etq: "", estado: "" };
+const rfDe = id => RF.filter(x => (x.relacionadas || []).some(y => y.coleccion === id));
+function rfLista() {
+  const q = rfFiltro.q.trim().toLowerCase();
+  const xs = RF.filter(x => (!rfFiltro.tipo || x.tipo === rfFiltro.tipo) && (!rfFiltro.estado || x.estado === rfFiltro.estado)
+    && (!rfFiltro.etq || (x.etiquetas || []).includes(rfFiltro.etq))
+    && (!q || `${x.titulo} ${x.url} ${x.nota || ""} ${x.licencia || ""} ${(x.etiquetas || []).join(" ")}`.toLowerCase().includes(q)))
+    .sort((a, b) => b.fecha.localeCompare(a.fecha) || a.titulo.localeCompare(b.titulo));
+  if (!xs.length) return `<p class="vacio">${RF.length ? "Nada con ese filtro." : "Todavía no hay referencias guardadas."}</p>`;
+  return xs.map(x => `<div class="rf" id="referencias-${esc(x.id)}">
+    <h3><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.titulo)}</a> <span class="estado">· ${esc(x.dominio)} · ${esc(x.fecha)}</span></h3>
+    <div><span class="lic est-${esc(x.estado)}">${esc(x.estado)}</span><span class="lic">${esc(x.tipo)}</span>${(x.etiquetas || []).map(t => `<span class="lic">${esc(t)}</span>`).join("")}</div>
+    ${x.licencia ? `<p><span class="etq">Licencia</span>${esc(x.licencia)}</p>` : ""}
+    ${x.nota ? `<p>${esc(x.nota)}</p>` : ""}
+    ${(x.relacionadas || []).length ? `<p class="estado">En Procedencia: ${x.relacionadas.map(y => `<a href="#procedencia/${encodeURIComponent(y.coleccion)}">${esc(y.nombre)}</a>${y.alternativa ? ` (alternativa «${esc(y.alternativa)}»)` : ""}`).join(" · ")}</p>` : ""}
+    ${EDITABLE ? `<div class="rf-acc"><select data-rf-estado="${esc(x.id)}" aria-label="Estado">${RF_ESTADOS.map(e => `<option ${e === x.estado ? "selected" : ""}>${e}</option>`).join("")}</select><button class="btn" data-rf-borrar="${esc(x.id)}">Borrar</button></div>` : ""}
+  </div>`).join("");
+}
+function referencias() {
+  const btn = (attr, val, txt, n, on) => `<button class="btn ${on ? "si" : ""}" data-rf-${attr}="${esc(val)}">${txt} <span>${n}</span></button>`;
+  const cuenta = (k, v) => RF.filter(x => k === "etq" ? (x.etiquetas || []).includes(v) : x[k] === v).length;
+  const etqs = [...new Set(RF.flatMap(x => x.etiquetas || []))].sort();
+  $("#p-referencias").innerHTML = `<h1>Referencias</h1>
+    <div class="sub">Enlaces de inspiración y recursos que se van encontrando · ${RF.length} guardada${RF.length === 1 ? "" : "s"}</div>
+    <p class="lead">Se guardan en <code>docs/data/referencias.json</code> (a mano, o desde aquí con <code>python3 tools/docs.py serve</code>); <code>python3 tools/procedencia.py</code> comprueba el fichero. Si una comparte dominio con una colección de Procedencia o con una de sus alternativas, se enlazan entre sí.</p>
+    ${EDITABLE ? `<form class="rf-form" id="rf-form"><b class="ancho">Añadir referencia</b>
+      <label class="ancho">Enlace<input name="url" type="url" required placeholder="https://…"></label>
+      <label>Título (opcional)<input name="titulo"></label>
+      <label>Tipo<select name="tipo">${RF_TIPOS.map(t => `<option>${t}</option>`).join("")}</select></label>
+      <label>Etiquetas (separadas por comas)<input name="etiquetas"></label>
+      <label>Licencia (si se conoce)<input name="licencia"></label>
+      <label class="ancho">Nota<textarea name="nota" rows="2"></textarea></label>
+      <div class="rf-acc ancho"><button class="btn si" type="submit">Guardar</button><span class="estado" id="rf-msg"></span></div></form>`
+      : `<div class="aviso">Solo lectura: para añadir, cambiar el estado o borrar referencias abre la documentación con <code>python3 tools/docs.py serve</code> (o edita <code>docs/data/referencias.json</code> a mano).</div>`}
+    <div class="filtros">${btn("tipo", "", "Todos los tipos", RF.length, !rfFiltro.tipo)}${RF_TIPOS.filter(t => cuenta("tipo", t)).map(t => btn("tipo", t, esc(t), cuenta("tipo", t), rfFiltro.tipo === t)).join("")}</div>
+    <div class="filtros">${btn("estado", "", "Todos los estados", RF.length, !rfFiltro.estado)}${RF_ESTADOS.map(e => btn("estado", e, e, cuenta("estado", e), rfFiltro.estado === e)).join("")}</div>
+    ${etqs.length ? `<div class="filtros">${btn("etq", "", "Todas las etiquetas", etqs.length, !rfFiltro.etq)}${etqs.map(t => btn("etq", t, esc(t), cuenta("etq", t), rfFiltro.etq === t)).join("")}</div>` : ""}
+    <div class="filtros"><input class="pr-buscar" id="rf-q" type="search" placeholder="Buscar en título, nota, etiquetas…" value="${esc(rfFiltro.q)}"></div>
+    <div id="rf-lista">${rfLista()}</div>`;
+}
+async function rfPost(cuerpo) {
+  const res = await fetch("api/referencia", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cuerpo) });
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(j.error || "No se pudo guardar");
+  RF = j.referencias || RF;
+  pintar();
+}
+document.addEventListener("click", async e => {
+  const f = e.target.closest("[data-rf-tipo], [data-rf-estado].btn, [data-rf-etq]");
+  if (f) { for (const k of ["tipo", "estado", "etq"]) if ("rf" + k[0].toUpperCase() + k.slice(1) in f.dataset) rfFiltro[k] = f.dataset["rf" + k[0].toUpperCase() + k.slice(1)]; return referencias(); }
+  const b = e.target.closest("[data-rf-borrar]");
+  if (b && EDITABLE && confirm("¿Borrar esta referencia?")) {
+    try { await rfPost({ accion: "borrar", id: b.dataset.rfBorrar }); } catch (err) { alert("No se pudo borrar: " + err.message); }
+  }
+});
+document.addEventListener("change", async e => {
+  const s = e.target.closest("select[data-rf-estado]");
+  if (!s || !EDITABLE) return;
+  try { await rfPost({ accion: "estado", id: s.dataset.rfEstado, estado: s.value }); } catch (err) { alert("No se pudo guardar: " + err.message); }
+});
+document.addEventListener("input", e => {
+  if (e.target.id !== "rf-q") return;
+  rfFiltro.q = e.target.value;
+  $("#rf-lista").innerHTML = rfLista();
+});
+document.addEventListener("submit", async e => {
+  if (e.target.id !== "rf-form") return;
+  e.preventDefault();
+  const d = Object.fromEntries(new FormData(e.target));
+  d.etiquetas = (d.etiquetas || "").split(",").map(t => t.trim()).filter(Boolean);
+  try { await rfPost({ accion: "añadir", ...d }); }
+  catch (err) { const m = $("#rf-msg"); if (m) m.textContent = "No se pudo guardar: " + err.message; }
+});
 // Repinta la lista y el resumen sin perder qué alternativas estaban desplegadas.
 function prRefrescar() {
   const abiertas = new Set([...document.querySelectorAll("#pr-lista details.alt[open]")].map(d => d.dataset.k));
@@ -1539,7 +1631,7 @@ document.addEventListener("keydown", e => {
 });
 
 function pintar() {
-  inicio(); capturas(); estilo(); paleta(); objetos(); personajes(); sonidos(); historia(); ciudad(); textos(); megafonia(); procedencia();
+  inicio(); capturas(); estilo(); paleta(); objetos(); personajes(); sonidos(); historia(); ciudad(); textos(); megafonia(); procedencia(); referencias();
   previa(); minijuegos(); escondites(); coleccion(); propuesta(); versiones();
   document.body.classList.toggle("editable", EDITABLE);
 }
@@ -1547,7 +1639,7 @@ pintar();
 ir();
 // Con el servidor de tools/docs.py, los textos se pueden cambiar.
 if (location.protocol.startsWith("http")) {
-  fetch("api/ping").then(r => r.ok && r.json()).then(j => { if (j && j.editable) { EDITABLE = true; pintar(); ir(); return fetch("api/alternativas").then(r => r.ok && r.json()).then(el => { if (el) { AL.elegidas = el; pintar(); ir(); } }); } }).catch(() => {});
+  fetch("api/ping").then(r => r.ok && r.json()).then(j => { if (j && j.editable) { EDITABLE = true; pintar(); ir(); return fetch("api/alternativas").then(r => r.ok && r.json()).then(el => { if (el) { AL.elegidas = el; pintar(); ir(); } }).then(() => fetch("api/referencias")).then(r => r.ok && r.json()).then(rs => { if (rs) { RF = rs; pintar(); ir(); } }); } }).catch(() => {});
 }
 </script>
 </body>

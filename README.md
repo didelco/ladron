@@ -156,6 +156,21 @@ python3 tools/docs.py serve          # http://localhost:8765: además, los texto
 
 Editar un texto en el visor lo cambia en `locale/texts.csv` (solo esa fila) y Godot lo reimporta.
 
+**Referencias**: la página «Referencias» (grupo Referencia) guarda enlaces de inspiración y recursos que se
+van encontrando, con buscador y filtros por tipo, etiqueta y estado. Se añaden de dos maneras:
+
+- A mano, en `docs/data/referencias.json`: una lista de `{id, titulo, url, tipo, etiquetas, licencia, nota,
+  fecha, estado}`. El `tipo` es `icons`, `modelos`, `audio`, `arte`, `codigo`, `articulo` u `otro`; el
+  `estado`, `guardada`, `evaluada`, `usada` o `descartada`; la `fecha`, `AAAA-MM-DD`. Luego
+  `python3 tools/docs.py texts` regenera `docs/data/referencias.js`, que es lo que lee el visor.
+- Desde el visor con `python3 tools/docs.py serve`: el formulario «Añadir referencia» (enlace, título
+  opcional, tipo, etiquetas, licencia y nota) y, en cada referencia, un selector de estado y «Borrar». Solo
+  se toca `docs/data/referencias.json`. Sin servidor, la página es de solo lectura.
+
+`python3 tools/procedencia.py` (y `tests/test_procedencia.gd`) comprueba el fichero: campos obligatorios,
+URL http(s), ids únicos, tipos y estados válidos. Si una referencia comparte dominio con una colección de
+Procedencia o con una de sus alternativas, las dos páginas se enlazan.
+
 Además de pantallas, objetos, sonidos y textos, la web explica la historia (con el paso del progreso
 guardado de 20 noches), la ciudad (el mapa entero, que en el juego nunca cabe en la pantalla, con un
 marcador por museo, y cada museo en su manzana), lo que sale antes de un robo, los minijuegos, los escondites y la colección:
