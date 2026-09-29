@@ -3,7 +3,7 @@
 ## Hecho y verificado (tests en verde)
 - Carteles: `Practice.ITEMS` (`game_atrapa` (22,12), `game_pedestal` (24,2), `game_bolos` (52,13), `game_aguanta` (44,5) con su caja (47,5)); `Practice.map` los añade a `cover`; `Practice.game_signs/game_at/hide_tiles/plinth_tiles`, `SIGN_REACH`, `LANTERN_AT/DIR`.
 - Vista de carteles y linterna: `DenView._game_signs`, `refresh_signs`, `set_lantern`, `_scarecrow_post` (refactor de `_scarecrows`).
-- Enganche en `scenes/main.gd`: sección «The dojo's games» (`_dojo_start`, `_dojo_end`, `_dojo_input`, `_dojo_tick`, `_dojo_lantern_show`), `_action_for` (`do:"game"`), `_prompt_rows`, llamada en `_tick`, `_sneeze_coming` (salta con juego), `_pause` y `_leave_game` (abortan), `_build_world` (crea `DojoGamesView`), `_unhandled_input`.
+- Enganche: `scenes/house_run.gd` (`HouseRun`: `dojo_start`, `dojo_end`, `dojo_input`, `dojo_tick`, `lantern_show`), y en `scenes/main.gd` `_action_for` (`do:"game"`), `_prompt_rows`, `_pause` y `_leave_game` (abortan), `_unhandled_input`; en `scenes/night_loop.gd` la llamada en `tick` y `sneeze_coming` (salta con juego); en `scenes/scenery.gd` `build` (crea `DojoGamesView`).
 - Textos: `HIDEOUT_GAME_LEAVE_KEY` (tras tocar el CSV hay que reimportar: `Godot --headless --import`, si no sale la clave cruda).
 - Tests: `tests/test_escondite.gd` ampliado (carteles por lección, bloquean, acción a <1,3, empezar/abortar no escribe, pausa y Tab abortan, bot de `atrapa` hasta perder guarda el mejor por banda, aceptar = OTRA VEZ).
 - README y `docs/pantallas.js` al día (sin capturas ni hitos).
