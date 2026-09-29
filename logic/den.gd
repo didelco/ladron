@@ -9,10 +9,10 @@ extends RefCounted
 ##   the trophy room (TROFEOS), a little museum of the band's own: 25 empty
 ##     stands, one for each heist of the story, five to a museum, which fill
 ##     with the piece as it is stolen (STANDS, filled; DenView draws it);
-##   the dojo (DOJO), the practice ground (Practice): a whole little museum to
-##     sneak through (37 x 13 tiles, DOJO_PLAN), with what has been unlocked
-##     to try in each of its zones;
-##   the bathroom (ASEO), for looks only, for now (BATH_GAG).
+##   the dojo (DOJO), the practice ground (Practice): nine bays in three rows
+##     (41 x 28 tiles, DOJO_PLAN), one for each trial of the dojo (DojoTrials) with
+##     room for its three start points, with what has been unlocked to try in each;
+##   the bathroom (ASEO), for looks only, for now (BATH_GAG), south of the dojo.
 ##
 ## This is the plan as data: the walls, the doors between rooms, the way
 ## out and the furniture with the tiles it blocks. Pure logic, like Sim:
@@ -20,8 +20,8 @@ extends RefCounted
 ## (assets/models/casa, CC0); the plan is in tiles, a model's size is scaled
 ## (SCALE) to the ninjas' (a thief is 1.1 tall, a tile is 1).
 
-const W := 59
-const H := 24
+const W := 63
+const H := 38
 ## Kenney's furniture is a little under life size for our chibi ninjas: this
 ## much bigger, unless an entry says otherwise.
 const SCALE := 1.8
@@ -31,8 +31,8 @@ const SCALE := 1.8
 const ROOMS := {
 	"salon": [1, 10, 19, 13],
 	"trofeos": [1, 1, 19, 8],
-	"dojo": [21, 1, 37, 13],
-	"aseo": [21, 15, 9, 7],
+	"dojo": [21, 1, 41, 28],
+	"aseo": [21, 30, 9, 7],
 }
 const ORDER := ["salon", "trofeos", "dojo", "aseo"]
 ## The doors between rooms: gaps in the walls (rect: x, y, width, height, in
@@ -43,8 +43,7 @@ const DOORS := [
 	{"id": "salon_trofeos", "rect": [9, 9, 2, 1], "a": "salon", "b": "trofeos"},
 	{"id": "salon_dojo", "rect": [20, 11, 1, 2], "a": "salon", "b": "dojo"},
 	{"id": "trofeos_dojo", "rect": [20, 3, 1, 2], "a": "trofeos", "b": "dojo"},
-	{"id": "salon_aseo", "rect": [20, 18, 1, 2], "a": "salon", "b": "aseo"},
-	{"id": "dojo_aseo", "rect": [27, 14, 2, 1], "a": "dojo", "b": "aseo"},
+	{"id": "dojo_aseo", "rect": [27, 29, 2, 1], "a": "dojo", "b": "aseo"},
 ]
 ## How long a door takes to swing (DenView), in seconds.
 const DOOR_SECONDS := 0.3
@@ -61,11 +60,14 @@ const SPAWN := Vector2i(9, 19)
 ## squeak, a tap to run, a shower to sing in... For now DenView only dresses
 ## it. Nothing here is played; when it is, this is where it goes.
 const BATH_GAG := ""
+## How far south of where the plan was first drawn the bathroom's furniture stands
+## (the bathroom moved below the dojo, when the dojo grew).
+const BATH_DY := 15
 
 ## The tile of the practice map's piece: a heist needs a case to be reached (the
 ## map's rules), and this is one of the dojo's low cabinets, sealed and empty
-## (nothing is shown in it). The bench's things are in Practice.BENCH_AT.
-const CASE_AT := Vector2i(28, 9)
+## (nothing is shown in it). The trials' things are in DojoTrials.TABLE.
+const CASE_AT := Vector2i(23, 8)
 
 ## The lounge's arcade machine (the same one as the modern gallery's, Arcades):
 ## against the north wall, its screen looking south. Standing in front of it,
@@ -89,39 +91,62 @@ const NICHES := 3
 const BENCH := [9, 6, 2, 1]
 
 ## The dojo's inside walls, row by row (x from DOJO_X, y from DOJO_Y; "#" is
-## wall, "." floor). Zones, west to east, easy to hard:
-##   EXPOSICION  x 21-30: pillars, low cabinets, the sealed case, a pedestal;
-##   PASILLO     x 32-42: a corridor two tiles wide with a crossing (the
-##               north arm ends at a scarecrow, the south one leads on);
-##   ESCONDITES  x 43-57, y 1-6: armour, a crate and a locker to hide in;
-##   LABERINTO   x 43-50, y 8-12: three switchbacks, passages of two;
-##   PATIO       x 52-57, y 8-13: bins and boxes to knock over.
-## The zones are joined in a ring: pasillo - escondites - patio - laberinto -
-## pasillo, and the exposicion opens onto the pasillo.
+## wall, "." floor). Nine bays in three rows and three columns, each with the
+## trial of its own (DOJO_ZONES; DojoTrials.TABLE) and its three start points, joined
+## by doorways three wide in the walls between them:
+##
+##            x 21-34             x 35-48             x 49-61
+##   y 1-9    GANZÚA  (vitrines)  CABLES  (alarm)     PULSO   (alarm)     alarm and cases
+##   y 10-18  CALCETÍN (pedestals) EQUILIBRIO (plinths) BOLOS  (circles)   games of skill
+##   y 19-28  CIRCUITO (guards)   ESCONDITE (furniture) AGUANTA (armours)  stealth
+##
+## The trophy room's door lands in GANZÚA, the lounge's in CALCETÍN, and the bathroom's
+## (south of the dojo, x 27-28) in CIRCUITO, whose two lanes are walled inside.
 const DOJO_X := 21
 const DOJO_Y := 1
 const DOJO_PLAN := [
-	"..........######..####...............",
-	"..........######..####...............",
-	"..........######..####...............",
-	"....#......#####..####...............",
-	"....#................................",
-	".....................................",
-	"..........######..###############...#",
-	"..........######..####.....#.........",
-	"....#.....######..####.....#.........",
-	"....#.....######..####..#..#..#......",
-	"..........######........#.....#......",
-	"..........######........#.....#......",
-	"..........#####################......",
+	".............#.............#.............",
+	".............#.............#.............",
+	".............#.............#.............",
+	".........................................",
+	".........................................",
+	".........................................",
+	".............#.............#.............",
+	".............#.............#.............",
+	"#####...###########...###########...#####",
+	".............#.............#.............",
+	".............#.............#.............",
+	".............#.............#.............",
+	".........................................",
+	".........................................",
+	".........................................",
+	".............#.............#.............",
+	".............#.............#.............",
+	"#####...###########...###########...#####",
+	".............#.............#.............",
+	".............#.............#.............",
+	"##########...#.............#.............",
+	".........................................",
+	".........................................",
+	".........................................",
+	"...###########.............#.............",
+	".............#.............#.............",
+	".............#.............#.............",
+	".............#.............#.............",
 ]
-## The zones' names (rects x, y, w, h in tiles), for the tests and the docs.
+## The zones' names (rects x, y, w, h in tiles; together they cover the dojo, walls
+## between bays included), for the tests and the docs: the bay of each trial, named
+## by its id (DojoTrials.TABLE).
 const DOJO_ZONES := {
-	"exposicion": [21, 1, 10, 13],
-	"pasillo": [32, 1, 11, 12],
-	"escondites": [43, 1, 15, 6],
-	"laberinto": [43, 8, 8, 5],
-	"patio": [52, 8, 6, 6],
+	"lockpick": [21, 1, 14, 9],
+	"wires": [35, 1, 14, 9],
+	"steady": [49, 1, 13, 9],
+	"atrapa": [21, 10, 14, 9],
+	"pedestal": [35, 10, 14, 9],
+	"bolos": [49, 10, 13, 9],
+	"circuit": [21, 19, 14, 10],
+	"squeeze": [35, 19, 14, 10],
+	"aguanta": [49, 19, 13, 10],
 }
 
 static var _stands: Array = []
@@ -550,40 +575,41 @@ static func furniture() -> Array:
 	f.append(_f("pottedPlant", 14.6, 22.5))
 	# --- The dojo -------------------------------------------------------------------
 	# A home dojo: a shelf of practice kit, a bench, low cabinets to go round, a
-	# punchbag, hooks. (The rest of what is in it, Practice.ITEMS, comes with the
-	# lessons; the walls, DenView._dojo_walls.)
+	# punchbag and a few boxes. (The rest of what is in it, DojoTrials.TABLE and
+	# Practice.ITEMS, comes with the lessons; the walls, DenView._dojo_walls.)
 	f.append(_w("bookcaseOpen", 22.4, 1.3, "N", [], 1.6))
 	f.append(_w("bookcaseOpen", 23.3, 1.3, "N", [], 1.6))
 	f.append(_cover([22, 1, 2, 1]))
-	f.append(_w("benchCushion", 23.0, 13.65, "S", [22, 13, 2, 1], 2.6))
+	f.append(_w("benchCushion", 23.0, 17.65, "S", [22, 17, 2, 1], 2.6))
 	for i in 3:
-		f.append(_f("bookcaseOpenLow", 27.5 + i, 9.5, "N", [], 1.8))
-	f.append(_cover([27, 9, 3, 1]))
-	f.append({"m": "", "at": Vector2(23.5, 10.5), "yaw": 0.0, "s": 1, "block": [23, 10, 1, 1], "lift": 0.0,
+		f.append(_f("bookcaseOpenLow", 22.5 + i, 8.5, "S", [], 1.8))
+	f.append(_cover([22, 8, 3, 1]))
+	f.append({"m": "", "at": Vector2(22.5, 10.5), "yaw": 0.0, "s": 1, "block": [22, 10, 1, 1], "lift": 0.0,
 		"wall": "", "corner": "", "to": Vector2.ZERO, "kind": "sandbag"})
-	f.append(_f("cardboardBoxClosed", 44.5, 1.6, -30, [44, 1, 1, 1], 1.6))
-	f.append(_f("cardboardBoxClosed", 55.5, 9.5, 15, [55, 9, 1, 1], 1.7))
-	f.append(_f("cardboardBoxOpen", 53.5, 11.5, -15, [53, 11, 1, 1], 1.7))
-	f.append(_f("cardboardBoxClosed", 57.4, 8.6, 5, [57, 8, 1, 1], 1.7))
-	f.append(_f("cardboardBoxClosed", 57.4, 8.6, 40, [], 1.4, 0.45))
-	# --- The bathroom -----------------------------------------------------------
+	f.append(_f("cardboardBoxClosed", 60.5, 11.6, -30, [60, 11, 1, 1], 1.6))
+	f.append(_f("cardboardBoxClosed", 50.5, 16.5, 15, [50, 16, 1, 1], 1.7))
+	f.append(_f("cardboardBoxOpen", 60.5, 16.5, -15, [60, 16, 1, 1], 1.7))
+	f.append(_f("cardboardBoxClosed", 60.4, 16.5, 40, [], 1.4, 0.45))
+	# --- The bathroom (south of the dojo, BATH_DY tiles below where it began) ------
 	# A small room: the bath along the north wall on the west, the basin and
 	# its mirror, the toilet in the north-east corner, the shower in the
 	# south-east one with its glass arc to the room and its two walls to the
-	# corner. The doors (west, x 20; north, x 27-28) stay clear.
-	f.append(_w("bathtub", 22.5, 15.7, "N", [21, 15, 3, 2], 1.8))
-	f.append(_w("bathroomSink", 25.7, 15.45, "N", [25, 15, 1, 1], 1.9))
-	f.append(_w("bathroomMirror", 25.7, 15.2, "N", [], 2.0, 0.6))
-	f.append(_w("toilet", 29.5, 15.8, "N", [29, 15, 1, 1], 1.8))
-	f.append(_f("showerRound", 28.8, 20.8, "NW", [28, 20, 2, 2], 1.8, 0.0, {"corner": "SE"}))
-	f.append(_f("rugRectangle", 24.5, 18.6, 0, [], 2.4))
-	f.append(_f("rugDoormat", 22.3, 19.0, 0, [], 2.2))
-	f.append(_f("trashcan", 26.7, 15.65, 0, [], 1.6))
-	f.append(_w("coatRack", 21.12, 17.4, "W", [], 2.0, 0.55))
-	f.append(_f("cardboardBoxOpen", 29.3, 18.0, 10, [], 1.5))
-	f.append(_f("plantSmall1", 21.9, 21.5, 0, [], 3.0))
-	f.append(_f("plantSmall2", 26.4, 21.5, 0, [], 3.0))
-	f.append(_w("bathroomCabinet", 24.0, 21.68, "S", [], 2.0))
+	# corner. The door (north, x 27-28) stays clear.
+	var dy := float(BATH_DY)
+	var iy := BATH_DY
+	f.append(_w("bathtub", 22.5, 15.7 + dy, "N", [21, 15 + iy, 3, 2], 1.8))
+	f.append(_w("bathroomSink", 25.7, 15.45 + dy, "N", [25, 15 + iy, 1, 1], 1.9))
+	f.append(_w("bathroomMirror", 25.7, 15.2 + dy, "N", [], 2.0, 0.6))
+	f.append(_w("toilet", 29.5, 15.8 + dy, "N", [29, 15 + iy, 1, 1], 1.8))
+	f.append(_f("showerRound", 28.8, 20.8 + dy, "NW", [28, 20 + iy, 2, 2], 1.8, 0.0, {"corner": "SE"}))
+	f.append(_f("rugRectangle", 24.5, 18.6 + dy, 0, [], 2.4))
+	f.append(_f("rugDoormat", 22.3, 19.0 + dy, 0, [], 2.2))
+	f.append(_f("trashcan", 26.7, 15.65 + dy, 0, [], 1.6))
+	f.append(_w("coatRack", 21.12, 17.4 + dy, "W", [], 2.0, 0.55))
+	f.append(_f("cardboardBoxOpen", 29.3, 18.0 + dy, 10, [], 1.5))
+	f.append(_f("plantSmall1", 21.9, 21.5 + dy, 0, [], 3.0))
+	f.append(_f("plantSmall2", 26.4, 21.5 + dy, 0, [], 3.0))
+	f.append(_w("bathroomCabinet", 24.0, 21.68 + dy, "S", [], 2.0))
 	# --- The trophy room: the stands (DenView draws them) and a little more ------
 	for st in stands():
 		f.append({"m": "", "at": Vector2(st.tile.x + 0.5, st.tile.y + 0.5), "yaw": 0.0, "s": 1, "lift": 0.0,

@@ -105,8 +105,7 @@ func build() -> void:
 	_dojo()
 	_dojo_walls()
 	_dojo_wall_things()
-	_bench()
-	_game_starts()
+	_trial_starts()
 	_scarecrows()
 	_alarm_lights()
 	_bath()
@@ -651,9 +650,6 @@ func _short_name(m: int) -> String:
 ## lanterns, a weapon rack and the board that counts what is open.
 func _dojo() -> void:
 	for t in Museum.cover_tiles:
-		# The bench's things are dressed by _bench (each test its own).
-		if Practice.bench_slot_of(t) >= 0:
-			continue
 		var piece := Node3D.new()
 		piece.position = to_world(t.x + 0.5, t.y + 0.5)
 		add_child(piece)
@@ -695,9 +691,9 @@ func _dojo() -> void:
 		pole.position = Vector3(-0.6 + i * 0.3, 0.6, 0.1)
 		rack.add_child(pole)
 	# What is open, on a board on the wall, in words.
-	var open := Practice.open_items(players).size()
+	var open := Practice.open_trials(players).size()
 	var board := Label3D.new()
-	board.text = "%s\n%d/%d" % [Text.t("HIDEOUT_ROOM_DOJO"), open, Practice.ITEMS.size()]
+	board.text = "%s\n%d/%d" % [Text.t("HIDEOUT_ROOM_DOJO"), open, DojoTrials.TABLE.size()]
 	board.font = Hud.ARCADE
 	board.font_size = 26
 	board.pixel_size = 0.0075
@@ -872,12 +868,12 @@ func _sandbag(at: Vector2) -> void:
 ## boxing gloves on a peg, and the band's sock flag. On the west wall.
 func _dojo_wall_things() -> void:
 	var wall_x: float = Den.rect("dojo").position.x + PANEL + 0.01
-	var swords := _pivot(self, to_world(wall_x, 6.6), PI / 2)
+	var swords := _pivot(self, to_world(wall_x, 6.9), PI / 2)
 	for a in [0.55, -0.55]:
 		var sword := _mesh(swords, _box(Vector3(0.07, 0.95, 0.03)), Color("#d2a76a"), Vector3(0, 0.68, 0.03), true)
 		sword.rotation.z = a
 		_mesh(sword, _box(Vector3(0.05, 0.16, 0.05)), Color("#3b2614"), Vector3(0, -0.5, 0), true)
-	var gloves := _pivot(self, to_world(wall_x, 9.6), PI / 2)
+	var gloves := _pivot(self, to_world(wall_x, 7.9), PI / 2)
 	_mesh(gloves, _box(Vector3(0.6, 0.04, 0.06)), DOJO_RAIL, Vector3(0, 0.98, 0.04), true)
 	for gx in [-0.16, 0.16]:
 		var glove := MeshInstance3D.new()
@@ -889,7 +885,7 @@ func _dojo_wall_things() -> void:
 		glove.position = Vector3(gx, 0.78, 0.1)
 		gloves.add_child(glove)
 		_mesh(gloves, _box(Vector3(0.1, 0.05, 0.11)), Color("#e8e0d0"), Vector3(gx, 0.63, 0.1), true)
-	var flag := _pivot(self, to_world(wall_x, 5.0), PI / 2)
+	var flag := _pivot(self, to_world(wall_x, 5.8), PI / 2)
 	_mesh(flag, _box(Vector3(0.6, 0.03, 0.04)), DOJO_RAIL, Vector3(0, 1.02, 0.03), true)
 	_mesh(flag, _box(Vector3(0.52, 0.7, 0.015)), Color("#a3262e"), Vector3(0, 0.66, 0.03), true)
 	var sock := LootModels.build("sock", Color("#f3ece0"))
@@ -899,51 +895,85 @@ func _dojo_wall_things() -> void:
 
 
 
-# --- The bench of cases -----------------------------------------------------------------------
+# --- The trials' start points -----------------------------------------------------------------
 
-## The thing of each bench case (BenchProps, by slot) and how far it has gone
-## (0 waiting .. 1 done), the glows under them and the boards: the count, and on
-## each case its test and difficulty.
-var _bench_parts := {}
-var _bench_glows := {}
-var _bench_labels := {}
-var _bench_open_now := {}
+## The moving parts of the object of each start point (BenchProps, by "<trial>:<tier>") and
+## how far it has gone (0 waiting .. 1 done), the glows under them, the board over each
+## start point and the sign of each bay.
+var _trial_parts := {}
+var _trial_glows := {}
+var _trial_open_now := {}
+var _start_boards := {}
+## the lantern's scarecrow of AGUANTA ESCONDIDO, built the first time it is asked for
+var _lantern: Node3D
 
 
-## The things and the boards of the bench; what shows depends on the lessons
-## (Practice.ITEMS).
-func _bench() -> void:
-	# The count, over the cases.
-	_bench_labels.count = _board(to_world(28.0, 5.0, 1.4), 26, Color("#ffe28a"))
-	for c in Practice.bench_cases(players):
-		var t: Vector2i = c.at
-		var label := _board(to_world(t.x + 0.5, t.y + 0.5, 1.55), 15, Color("#e8f0c0"))
-		label.text = "%s\n%s" % [Text.t(Practice.bench_kind_text(c.kind)), Text.t(DojoGames.TIERS[c.level].text)]
-		# On the tile, or hung on the wall at its side (BENCH_OBJECTS).
-		var what := Practice.bench_object(c.kind)
-		var wall: Vector2i = what.get("wall", Vector2i.ZERO)
-		var spot := _pivot(self, to_world(t.x + 0.5 + wall.x * 0.5, t.y + 0.5 + wall.y * 0.5), atan2(-wall.x, -wall.y) if wall != Vector2i.ZERO else 0.0)
-		var part := BenchProps.build(self, what.object, spot, c.level)
-		part.t = 0.0
-		_bench_parts[c.slot] = part
-		# A green glow under each one for while it is done.
-		var glow := MeshInstance3D.new()
-		var q := QuadMesh.new()
-		q.size = Vector2(1.9, 1.9)
-		q.orientation = PlaneMesh.FACE_Y
-		glow.mesh = q
-		var gm := StandardMaterial3D.new()
-		gm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		gm.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
-		gm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		gm.albedo_texture = _radial(Color(0.5, 1.0, 0.6))
-		glow.material_override = gm
-		glow.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		glow.position = to_world(t.x + 0.5, t.y + 0.5) + Vector3(0, 0.05, 0)
-		glow.visible = false
-		add_child(glow)
-		_bench_glows[c.slot] = glow
-	set_bench(Practice.bench_new())
+## The start points of the trials the band has got to (Practice.trial_starts), all set up the
+## same way: the object each is (a pedestal with a golden sock on it, a painted circle, a glass
+## case, a piece of furniture, an alarm box on the wall; the pedestals of EQUILIBRIO and the
+## armours of AGUANTA ESCONDIDO are dressed with the dojo's and the house's), a green glow to
+## signal it is done, and over it a board with the trial's name, its difficulty and the band's
+## best; and over each bay, the name of its trial.
+func _trial_starts() -> void:
+	_start_boards.clear()
+	_trial_parts.clear()
+	_trial_glows.clear()
+	for st in Practice.trial_starts(players):
+		var t: Vector2i = st.at
+		var key := Practice.lamp_key(st.id, st.tier)
+		var row := DojoTrials.info(st.id)
+		match st.via:
+			"sock":
+				var p := _pivot(self, to_world(t.x + 0.5, t.y + 0.5), 0.0)
+				_empty_plinth(p)
+				var sock := LootModels.build("sock", Color("#ffcf3a"))
+				_fit(sock, 0.5)
+				sock.position = Vector3(0, Plinths.HEIGHT + 0.3, 0)
+				p.add_child(sock)
+			"ring":
+				var p := _pivot(self, to_world(t.x + 0.5, t.y + 0.5), 0.0)
+				var disc := MeshInstance3D.new()
+				var ring := TorusMesh.new()
+				ring.inner_radius = 0.38
+				ring.outer_radius = 0.5
+				disc.mesh = ring
+				disc.material_override = toon(Color("#c1272d") if st.tier == 2 else (Color("#e0a030") if st.tier == 1 else Color("#3f8f4f")))
+				disc.position = Vector3(0, 0.03, 0)
+				p.add_child(disc)
+			"plinth", "armour":
+				pass
+			_:
+				# On the tile, or hung on the wall at its side (the row's `wall`).
+				var wall: Vector2i = row.get("wall", Vector2i.ZERO)
+				var spot := _pivot(self, to_world(t.x + 0.5 + wall.x * 0.5, t.y + 0.5 + wall.y * 0.5), atan2(-wall.x, -wall.y) if wall != Vector2i.ZERO else 0.0)
+				var piece: String = (row.pieces as Array)[st.tier] if row.has("pieces") else ""
+				var part := BenchProps.build(self, st.via, spot, st.tier, piece)
+				part.t = 0.0
+				_trial_parts[key] = part
+				# A green glow under each one for while it is done.
+				var glow := MeshInstance3D.new()
+				var q := QuadMesh.new()
+				q.size = Vector2(1.9, 1.9)
+				q.orientation = PlaneMesh.FACE_Y
+				glow.mesh = q
+				var gm := StandardMaterial3D.new()
+				gm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+				gm.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+				gm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+				gm.albedo_texture = _radial(Color(0.5, 1.0, 0.6))
+				glow.material_override = gm
+				glow.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				glow.position = to_world(t.x + 0.5, t.y + 0.5) + Vector3(0, 0.05, 0)
+				glow.visible = false
+				add_child(glow)
+				_trial_glows[key] = glow
+		_start_boards[key] = _board(to_world(t.x + 0.5, t.y + 0.5, 1.95), 16, Color("#ffe28a"))
+	for row in Practice.open_trials(players):
+		var r := Practice.zone_rect(String(row.zone))
+		var sign := _board(to_world(r.position.x + r.size.x / 2.0 - 0.5, r.position.y + 1.0, 2.5), 30, Color("#e8f0c0"))
+		sign.text = Text.t(String(row.name))
+	set_lamps(Practice.lamps_new())
+	refresh_signs()
 
 
 func _board(at: Vector3, size: int, colour: Color) -> Label3D:
@@ -961,16 +991,39 @@ func _board(at: Vector3, size: int, colour: Color) -> Label3D:
 	return l
 
 
-## The bench as it is now (Practice.bench_new): the count's board, the lamps
-## and the glows (the lids, levers and cups follow in _process).
-func set_bench(state: Dictionary) -> void:
-	if _bench_labels.has("count"):
-		(_bench_labels.count as Label3D).text = "%s\n%d" % [Text.t("HIDEOUT_BENCH_COUNT"), state.opened]
-	for i in _bench_parts:
-		var done: bool = state.cases[i].state == "open"
-		(_bench_glows[i] as Node3D).visible = done
-		BenchProps.light(_bench_parts[i], done)
-		_bench_open_now[i] = done
+## The boards' words: the trial, its difficulty and the band's best mark in it.
+func refresh_signs() -> void:
+	for st in Practice.trial_starts(players):
+		var key := Practice.lamp_key(st.id, st.tier)
+		if not _start_boards.has(key):
+			continue
+		var best := DojoTrials.best(st.id, players, st.tier)
+		var words := "%s\n%s" % [Text.t(st.text), Text.t(DojoTrials.TIERS[st.tier].text)]
+		if best > 0.0:
+			var kind := DojoTrials.record_kind(st.id)
+			words += "\n" + (Text.t("HIDEOUT_TRIAL_BEST") % (Text.t("HIDEOUT_TRIAL_LEVEL") % int(best) if kind == "level" else "%.1f s" % best))
+		(_start_boards[key] as Label3D).text = words
+
+
+## The lights of the tests' objects as they are now (Practice.lamps_new): the lamps and
+## the glows (the lids, levers and cups follow in _process).
+func set_lamps(state: Dictionary) -> void:
+	for key in _trial_parts:
+		var done: bool = state.get(key, {}).get("state", "") == "open"
+		(_trial_glows[key] as Node3D).visible = done
+		BenchProps.light(_trial_parts[key], done)
+		_trial_open_now[key] = done
+
+
+## The lantern's scarecrow (AGUANTA ESCONDIDO): standing on its post while the
+## game is on, looking where `angle` (radians on the plan) says.
+func set_lantern(on: bool, angle := Practice.LANTERN_DIR) -> void:
+	if _lantern == null:
+		if not on:
+			return
+		_lantern = _scarecrow_post({"at": Practice.LANTERN_AT, "dir": Practice.LANTERN_DIR})
+	_lantern.visible = on
+	_lantern.rotation.y = -angle + PI / 2
 
 
 # --- The scarecrows -----------------------------------------------------------------------
@@ -1076,66 +1129,6 @@ func _scarecrow_cone(sc: Dictionary) -> void:
 	_cone_mats.append(m)
 
 
-# --- The games' start points and lantern ------------------------------------------------
-
-## the board of each start point, by "<game>:<tier>"
-var _start_boards := {}
-## the lantern's scarecrow of AGUANTA ESCONDIDO, built the first time it is asked for
-var _lantern: Node3D
-
-
-## The start points of the games the band has got to (Practice.game_starts): a
-## pedestal with a golden sock on it (PILLA EL CALCETÍN), a painted circle
-## (BOLOS); the pedestals of EQUILIBRIO and the armours of AGUANTA ESCONDIDO are
-## dressed with the dojo's and the house's. Over each, a board with the game's
-## name, its difficulty and the band's best.
-func _game_starts() -> void:
-	_start_boards.clear()
-	for st in Practice.game_starts(players):
-		var t: Vector2i = st.at
-		var p := _pivot(self, to_world(t.x + 0.5, t.y + 0.5), 0.0)
-		match st.via:
-			"sock":
-				_empty_plinth(p)
-				var sock := LootModels.build("sock", Color("#ffcf3a"))
-				_fit(sock, 0.5)
-				sock.position = Vector3(0, Plinths.HEIGHT + 0.3, 0)
-				p.add_child(sock)
-			"ring":
-				var disc := MeshInstance3D.new()
-				var ring := TorusMesh.new()
-				ring.inner_radius = 0.38
-				ring.outer_radius = 0.5
-				disc.mesh = ring
-				disc.material_override = toon(Color("#c1272d") if st.tier == 2 else (Color("#e0a030") if st.tier == 1 else Color("#3f8f4f")))
-				disc.position = Vector3(0, 0.03, 0)
-				p.add_child(disc)
-		_start_boards["%s:%d" % [st.game, st.tier]] = _board(to_world(t.x + 0.5, t.y + 0.5, 1.95), 16, Color("#ffe28a"))
-	refresh_signs()
-
-
-## The boards' words: the game, its difficulty and the band's best level in it.
-func refresh_signs() -> void:
-	for st in Practice.game_starts(players):
-		var key := "%s:%d" % [st.game, st.tier]
-		if not _start_boards.has(key):
-			continue
-		var best := DojoGames.best(st.game, players, st.tier)
-		var words := "%s\n%s" % [Text.t(st.text), Text.t(DojoGames.TIERS[st.tier].text)]
-		(_start_boards[key] as Label3D).text = words if best <= 0 else "%s · %s" % [words, Text.t("HIDEOUT_GAME_BEST") % best]
-
-
-## The lantern's scarecrow (AGUANTA ESCONDIDO): standing on its post while the
-## game is on, looking where `angle` (radians on the plan) says.
-func set_lantern(on: bool, angle := Practice.LANTERN_DIR) -> void:
-	if _lantern == null:
-		if not on:
-			return
-		_lantern = _scarecrow_post({"at": Practice.LANTERN_AT, "dir": Practice.LANTERN_DIR})
-	_lantern.visible = on
-	_lantern.rotation.y = -angle + PI / 2
-
-
 # --- The dojo's alarm ---------------------------------------------------------------------
 
 ## How red the dojo is now (0..1) and where it is going, and the red things.
@@ -1162,12 +1155,12 @@ func _alarm_lights() -> void:
 	_alert_slab.position = to_world(r.position.x + r.size.x / 2.0, r.position.y + r.size.y / 2.0, WALL_HEIGHT + 0.12)
 	_alert_slab.visible = false
 	add_child(_alert_slab)
-	for spot in [Vector2(26, 6), Vector2(26, 11), Vector2(37.5, 5.5), Vector2(37.5, 10), Vector2(46, 3.5), Vector2(54, 3.5), Vector2(46, 10), Vector2(54.5, 10.5)]:
+	for spot in _bay_centres():
 		var l := OmniLight3D.new()
 		l.position = to_world(spot.x, spot.y, 1.6)
 		l.light_color = Color(1.0, 0.1, 0.06)
 		l.light_energy = 0.0
-		l.omni_range = 7.5
+		l.omni_range = 9.0
 		l.light_specular = 0.0
 		l.visible = false
 		add_child(l)
@@ -1218,17 +1211,17 @@ func _bath() -> void:
 	m.albedo_color = Color("#8fd3e8")
 	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	water.material_override = m
-	water.position = to_world(22.5, 15.7, 0.6)
+	water.position = to_world(22.5, 15.7 + Den.BATH_DY, 0.6)
 	add_child(water)
 	var duck := LootModels.build("duck", Color("#ffd23f"))
 	var b := _bounds(duck, Transform3D.IDENTITY)
 	var k := 0.5 / maxf(0.01, maxf(b.size.x, maxf(b.size.y, b.size.z)))
 	duck.scale = Vector3.ONE * k
-	duck.position = to_world(21.8, 15.7, 0.6 - b.position.y * k)
+	duck.position = to_world(21.8, 15.7 + Den.BATH_DY, 0.6 - b.position.y * k)
 	duck.rotation.y = 0.4
 	add_child(duck)
 	# The bath's curtain, drawn back to either end on its rail.
-	var rail := _pivot(self, to_world(22.5, 16.45), 0.0)
+	var rail := _pivot(self, to_world(22.5, 16.45 + Den.BATH_DY), 0.0)
 	_mesh(rail, _box(Vector3(3.0, 0.03, 0.03)), Color("#b8b8b0"), Vector3(0, 1.05, 0), true)
 	for cx in [-1.3, 1.3]:
 		_mesh(rail, _box(Vector3(0.38, 0.85, 0.06)), Color("#86c5d8"), Vector3(cx, 0.6, 0), true)
@@ -1328,10 +1321,10 @@ func _show_room(id: String) -> void:
 
 func _process(dt: float) -> void:
 	_pose_alert(dt)
-	for i in _bench_parts:
+	for i in _trial_parts:
 		# Done, the lid goes up, the plunger down, the cup off; waiting, back.
-		var part: Dictionary = _bench_parts[i]
-		part.t = move_toward(float(part.t), 1.0 if _bench_open_now.get(i, false) else 0.0, dt * 6.0)
+		var part: Dictionary = _trial_parts[i]
+		part.t = move_toward(float(part.t), 1.0 if _trial_open_now.get(i, false) else 0.0, dt * 6.0)
 		if part.move != null:
 			var v: Vector3 = (part.shut as Vector3).lerp(part.done, float(part.t))
 			if part.rot:
@@ -1410,6 +1403,15 @@ func _pose_door(d: Dictionary) -> void:
 
 # --- Lights --------------------------------------------------------------------------
 
+## The middle of each bay of the dojo (Den.DOJO_ZONES), in tiles: where its lantern hangs.
+func _bay_centres() -> Array[Vector2]:
+	var out: Array[Vector2] = []
+	for id in Den.DOJO_ZONES:
+		var r: Array = Den.DOJO_ZONES[id]
+		out.append(Vector2(r[0] + (r[2] - 1) / 2.0, r[1] + (r[3] - 1) / 2.0))
+	return out
+
+
 func _lamps() -> void:
 	# Lamps, warm and shadowless: a few to a room, no more.
 	for spot in [
@@ -1418,13 +1420,7 @@ func _lamps() -> void:
 		[10.0, 6.0, 2.6, LAMP, 0.9, 9.0],
 		[2.5, 3.0, 2.4, LAMP, 1.0, 5.5], [6.5, 3.0, 2.4, LAMP, 1.0, 5.5], [10.5, 3.0, 2.4, LAMP, 1.0, 5.5],
 		[14.5, 3.0, 2.4, LAMP, 1.0, 5.5], [18.5, 3.0, 2.4, LAMP, 1.0, 5.5],
-		[24.0, 4.0, 2.2, LANTERN, LIGHT_LANTERN / LIGHT_LAMP_GAIN, 6.5], [27.5, 11.0, 2.2, LANTERN, LIGHT_LANTERN / LIGHT_LAMP_GAIN, 6.5],
-		[34.5, 5.5, 2.0, LANTERN, LIGHT_LANTERN / LIGHT_LAMP_GAIN, 5.5], [40.5, 5.5, 2.0, LANTERN, LIGHT_LANTERN / LIGHT_LAMP_GAIN, 5.5],
-		[38.0, 2.5, 2.0, LANTERN, LIGHT_LANTERN / LIGHT_LAMP_GAIN, 5.0], [38.0, 9.5, 2.0, LANTERN, LIGHT_LANTERN / LIGHT_LAMP_GAIN, 5.0],
-		[46.5, 3.5, 2.2, LANTERN, LIGHT_LANTERN / LIGHT_LAMP_GAIN, 6.5], [54.0, 3.5, 2.2, LANTERN, LIGHT_LANTERN / LIGHT_LAMP_GAIN, 6.5],
-		[45.5, 10.0, 2.0, LANTERN, LIGHT_LANTERN / LIGHT_LAMP_GAIN, 5.5], [49.0, 9.5, 2.0, LANTERN, LIGHT_LANTERN / LIGHT_LAMP_GAIN, 5.0],
-		[54.5, 10.5, 2.2, LANTERN, LIGHT_LANTERN / LIGHT_LAMP_GAIN, 6.5],
-		[25.0, 18.5, 2.0, LIGHT_BATH, 1.1, 7.0], [22.5, 16.5, 1.5, LIGHT_BATH, 0.8, 5.0],
+		[25.0, 18.5 + Den.BATH_DY, 2.0, LIGHT_BATH, 1.1, 7.0], [22.5, 16.5 + Den.BATH_DY, 1.5, LIGHT_BATH, 0.8, 5.0],
 	]:
 		var l := OmniLight3D.new()
 		l.position = to_world(spot[0], spot[1], spot[2])
@@ -1435,9 +1431,17 @@ func _lamps() -> void:
 		l.light_specular = 0.0
 		l.light_volumetric_fog_energy = 0.0
 		add_child(l)
-	# The paper lanterns of the dojo, glowing.
-	for t in [Vector2(24.0, 4.0), Vector2(27.5, 11.0), Vector2(34.5, 5.5), Vector2(40.5, 5.5), Vector2(38.0, 2.5), Vector2(38.0, 9.5),
-			Vector2(46.5, 3.5), Vector2(54.0, 3.5), Vector2(45.5, 10.0), Vector2(49.0, 9.5), Vector2(54.5, 10.5)]:
+	# The paper lanterns of the dojo, glowing: one hung in the middle of each bay, with its light.
+	for t in _bay_centres():
+		var bay_light := OmniLight3D.new()
+		bay_light.position = to_world(t.x, t.y, 2.2)
+		bay_light.light_color = LANTERN
+		bay_light.light_energy = LIGHT_LANTERN
+		bay_light.omni_range = 9.0
+		bay_light.omni_attenuation = 1.0
+		bay_light.light_specular = 0.0
+		bay_light.light_volumetric_fog_energy = 0.0
+		add_child(bay_light)
 		var lantern := MeshInstance3D.new()
 		var s := SphereMesh.new()
 		s.radius = 0.22
