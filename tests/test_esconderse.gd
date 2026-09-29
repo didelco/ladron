@@ -99,41 +99,34 @@ func out_key(d: Vector2i, p2 := false) -> Key:
 	return {Vector2i(1, 0): KEY_D, Vector2i(-1, 0): KEY_A, Vector2i(0, 1): KEY_S, Vector2i(0, -1): KEY_W}[d]
 
 
-## Wriggle in with these two keys, a press every `every` seconds, till in
+## Shove into it with this action key, a press every `every` seconds, till in
 ## (or a time out): the seconds it took, or -1.
-func wriggle(p: Thief, left: Callable, right: Callable, every := 0.42, hold_last := true) -> float:
+func wriggle(p: Thief, action: Callable, every := 0.42, hold_last := true) -> float:
 	var t := 0.0
-	var side := 0
 	while t < 10.0:
-		var k: Callable = left if side == 0 else right
-		k.call(true)
+		action.call(true)
 		run(6)
-		if OS.has_environment("DEBUG_WRIGGLE"):
-			print("    t=%.2f game=%s step=%s hiding=%s at=(%.2f,%.2f)" % [t, p.game.kind if p.game else "-", p.game.step if p.game else -1, p.hiding, p.x, p.y])
 		t += 6 * DT
 		if p.hiding:
 			if not hold_last:
-				k.call(false)
+				action.call(false)
 			return t
-		k.call(false)
+		action.call(false)
 		var rest := int(every / DT) - 6
 		run(rest)
 		t += rest * DT
 		if p.hiding:
 			return t
-		side = 1 - side
 	return -1.0
 
 
-## Get in from where it stands with this action key and these two keys to
-## wriggle: true once in.
-func get_in(p: Thief, action: Callable, left: Callable, right: Callable) -> bool:
+## Get in from where it stands with this action key (once to start, then to
+## shove): true once in.
+func get_in(p: Thief, action: Callable) -> bool:
 	action.call(true)
 	run(2)
 	action.call(false)
-	var took := wriggle(p, left, right)
-	left.call(false)
-	right.call(false)
+	var took := wriggle(p, action)
 	run(3)
 	return took > 0.0 and p.hiding
 
@@ -155,8 +148,6 @@ func _init() -> void:
 		if c is TitleScreen:
 			c.free()
 	var e := func(d): key(KEY_E, d)
-	var a := func(d): key(KEY_A, d)
-	var dk := func(d): key(KEY_D, d)
 
 	# --- On the keyboard, alone, with the minigames on ---------------------------
 	var night_on := Story.LOCKPICK_NIGHT
@@ -174,8 +165,13 @@ func _init() -> void:
 	key(KEY_E, false)
 	run(2)
 	check(p.game is SqueezeGame and p.game.step == 0, "la E que te mete no cuenta como contoneo")
-	var took := wriggle(p, a, dk)
-	check(took > 0.0 and took <= 5.0, "contoneándose con A y D, dentro en %.1f s" % took)
+	for k in [KEY_A, KEY_D, KEY_W, KEY_S]:
+		key(k, true)
+		run(4)
+		key(k, false)
+	check(p.game is SqueezeGame and (p.game as SqueezeGame).sink <= 0.0 and p.game.step == 0, "las direcciones no empujan: solo la acción")
+	var took := wriggle(p, e)
+	check(took > 0.0 and took <= 5.0, "empujando con E, dentro en %.1f s" % took)
 	check(p.hiding, "... y sigue dentro con la última tecla aún pulsada")
 	run(30)
 	check(p.hiding, "... también medio segundo después")
@@ -217,7 +213,7 @@ func _init() -> void:
 	# Let it sneeze: nothing pressed.
 	p.x = at.x
 	p.y = at.y
-	check(get_in(p, e, a, dk), "otra vez dentro")
+	check(get_in(p, e), "otra vez dentro")
 	till_sneeze(p)
 	run(int(4.0 / DT))
 	check(not p.hiding and p.game == null, "sin pulsar nada: ¡achís!, fuera y sin minijuego")
@@ -232,7 +228,7 @@ func _init() -> void:
 	p.x = at.x
 	p.y = at.y
 	run(5)
-	check(get_in(p, e, a, dk), "y dentro de nuevo")
+	check(get_in(p, e), "y dentro de nuevo")
 	till_sneeze(p)
 	var pushes := [0]
 	var spam := 0
@@ -267,18 +263,13 @@ func _init() -> void:
 	spot = beside_hideout(p)
 	way = from
 	var pa := func(d): button(0, JOY_BUTTON_A, d)
-	# The stick, never quite level: a little up with the left, a little down
-	# with the right.
-	var sl := func(d): axis(0, JOY_AXIS_LEFT_X, -0.9 if d else 0.0); axis(0, JOY_AXIS_LEFT_Y, -0.35 if d else 0.0)
-	var sr := func(d): axis(0, JOY_AXIS_LEFT_X, 0.9 if d else 0.0); axis(0, JOY_AXIS_LEFT_Y, 0.35 if d else 0.0)
 	button(0, JOY_BUTTON_A, true)
 	run(2)
 	button(0, JOY_BUTTON_A, false)
 	check(p.game is SqueezeGame, "A junto al escondite: a colarse")
-	took = wriggle(p, sl, sr)
-	check(took > 0.0 and took <= 5.0, "con el stick algo torcido, dentro en %.1f s" % took)
-	check(p.hiding, "... y sigue dentro con el stick aún echado")
-	sl.call(false)
+	took = wriggle(p, pa)
+	check(took > 0.0 and took <= 5.0, "empujando con A del mando, dentro en %.1f s" % took)
+	check(p.hiding, "... y sigue dentro")
 	run(5)
 	var dz: float = m.deadzone / 100.0
 	axis(0, JOY_AXIS_LEFT_X if way.x != 0 else JOY_AXIS_LEFT_Y, signf(way.x + way.y) * (dz + 0.1))
@@ -288,9 +279,7 @@ func _init() -> void:
 	axis(0, JOY_AXIS_LEFT_Y, 0.0)
 	run(30)
 	spot = beside_hideout(p)
-	var cl := func(d): button(0, JOY_BUTTON_DPAD_LEFT, d)
-	var cr := func(d): button(0, JOY_BUTTON_DPAD_RIGHT, d)
-	check(get_in(p, pa, cl, cr), "con la cruceta, dentro")
+	check(get_in(p, pa), "con A del mando otra vez, dentro")
 	run(5)
 
 	# --- Two thieves on one keyboard ---------------------------------------------
@@ -313,8 +302,8 @@ func _init() -> void:
 	run(2)
 	key(KEY_PERIOD, false)
 	check(p2.game is SqueezeGame and p1.game == null, "J2 con el punto: J2 a colarse, J1 nada")
-	took = wriggle(p2, func(d): key(KEY_LEFT, d), func(d): key(KEY_RIGHT, d))
-	check(took > 0.0 and p2.hiding and not p1.hiding, "J2 con las flechas, dentro en %.1f s" % took)
+	took = wriggle(p2, func(d): key(KEY_PERIOD, d))
+	check(took > 0.0 and p2.hiding and not p1.hiding, "J2 con el punto, dentro en %.1f s" % took)
 	check(Vector2(p1.x, p1.y) == p1_at, "y J1 no se ha movido")
 	key(KEY_LEFT, false)
 	key(KEY_RIGHT, false)

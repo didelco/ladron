@@ -1,9 +1,9 @@
 extends MinigameView
 ## Getting into a hideout (SqueezeGame): the thief, in its colours, in a
-## walnut chest with a brass rim, curling up a little more with each
-## wriggle until it is under the rim, swaying to the side it wriggled; an arrow
-## each side, the one for the next wriggle lit gold once the body has
-## settled. Stuck, the chest shudders; in, the lid comes down.
+## walnut chest with a brass rim, curling up as it sinks after each shove
+## until it is under the rim; a gold arrow over it, lit when a shove would
+## count, and a red bar across the front while someone looks (a shove then
+## sinks slowly). In, the lid comes down.
 
 ## How far it sways each way (in Figure.set_lean's units, short of the
 ## sweat); it sinks by curling up, feet on the chest's floor.
@@ -18,6 +18,7 @@ var _dim: StandardMaterial3D
 var _lid: Node3D
 var _chest: Node3D
 var _lean := 0.0
+var _eye: MeshInstance3D
 
 
 func framing() -> Dictionary:
@@ -58,36 +59,35 @@ func build() -> void:
 	var lid := box(Vector3(1.06, 0.06, 0.74), WOOD.lightened(0.08), Vector3(0, 0.03, 0.37))
 	remove_child(lid)
 	_lid.add_child(lid)
-	# An arrow each side, pointing out: left and right.
+	# One arrow, pointing down into the chest (the shove), and a red bar
+	# across the front while a guard looks (or the lantern is on it).
 	_lit = glowing(GOLD, 2.5)
 	_dim = MenuStage._material(GOLD.darkened(0.55))
-	for s in [-1, 1]:
-		var a := arrow(GOLD)
-		a.position = Vector3(s * 0.78, 0.5, 0.2)
-		a.rotation.z = -s * PI * 0.5
-		_arrows.append(a)
+	var a := arrow(GOLD)
+	a.position = Vector3(0, 1.05, 0.2)
+	a.rotation.z = PI
+	_arrows.append(a)
+	_eye = box(Vector3(1.2, 0.05, 0.05), RED, Vector3(0, 0.66, 0.4))
+	_eye.material_override = glowing(RED, 3.0)
 
 
 func pose(dt: float) -> void:
 	var g := game as SqueezeGame
-	var p := g.progress()
-	# Each wriggle sways it to that side, easing back towards upright.
-	var want := 0.0
-	if g.step > 0 and not g.done:
-		want = SWAY if g.side == SqueezeGame.LEFT else -SWAY
-	_lean = lerpf(_lean, want * (1.0 - clampf(g.settle / SqueezeGame.SETTLE_S, 0.0, 1.0) * 0.3), minf(1.0, dt * 10.0))
-	_thief.set_state(Vector3(0, 0.06, 0), PI / 2, p, dt)
+	# It sinks by curling up as it goes; each shove leans it to a side.
+	_lean = lerpf(_lean, (0.0 if g.done or g.sink <= 0.0 else SWAY * (1.0 if g.step % 2 == 0 else -1.0)), minf(1.0, dt * 10.0))
+	_thief.set_state(Vector3(0, 0.06, 0), PI / 2, g.progress(), dt)
 	_thief.set_lean(_lean)
-	# Stuck: the chest shudders.
-	_chest.position.x = 0.02 * bad * sin(t * 60.0)
+	# Stuck under the lantern: the chest shudders.
+	_chest.position.x = 0.02 * bad * sin(t * 60.0) + (0.012 * sin(t * 40.0) if g.sink > 0.0 and g.slow else 0.0)
 	# The lid: open, then down once it is done.
 	var shut := -1.9 if not g.done else 0.0
 	_lid.rotation.x = lerpf(_lid.rotation.x, shut, minf(1.0, dt * 12.0))
-	# The arrows: the next side lit once the body has settled.
-	for i in _arrows.size():
-		var dir := SqueezeGame.LEFT if i == 0 else SqueezeGame.RIGHT
-		var on := g.ready() and (g.side < 0 or g.side == dir)
-		_arrows[i].visible = not g.done
-		for m in _arrows[i].get_children():
-			(m as MeshInstance3D).material_override = _lit if on else _dim
-		_arrows[i].scale = Vector3.ONE * (1.0 + (0.12 * sin(t * 9.0) if on else 0.0))
+	# The arrow: lit when the shove would count, dim while it sinks.
+	var on := g.ready()
+	_arrows[0].visible = not g.done
+	for m in _arrows[0].get_children():
+		(m as MeshInstance3D).material_override = _lit if on else _dim
+	_arrows[0].scale = Vector3.ONE * (1.0 + (0.12 * sin(t * 9.0) if on else 0.0))
+	_arrows[0].position.y = 1.05 + (0.05 * sin(t * 9.0) if on else 0.0)
+	# The red bar: someone looks.
+	_eye.visible = g.lit() and not g.done

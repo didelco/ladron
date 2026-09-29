@@ -13,7 +13,7 @@ extends RefCounted
 ##
 ##   of the action kind, which cannot be failed, only done slowly:
 ##     "lockpick" (LockpickGame), "wires" (WiresGame), "steady" (SteadyGame),
-##     "squeeze" (SqueezeGame: wriggling into a hideout);
+##     "squeeze" (SqueezeGame: a shove into a hideout);
 ##   of the enduring kind, which can be failed:
 ##     "balance" (BalanceGame: posing as a statue on one foot),
 ##     "sneeze" (SneezeGame: holding in a sneeze while hiding, which never
@@ -40,7 +40,7 @@ var kind := ""
 var what := ""
 ## 0 easy, 1 medium, 2 hard
 var level := 1
-## how many pins, wires, lamps or wriggles, and how many done
+## how many pins, wires, lamps or shoves, and how many done
 var steps := 1
 var step := 0
 ## seconds spent at it
