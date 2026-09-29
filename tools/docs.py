@@ -23,6 +23,11 @@ Las etiquetas de licencia de las fichas de objetos y sonidos y la tabla plegada 
 «Assets a incorporar») salen de assets/PROCEDENCIA.json, la fuente única de dónde viene cada asset y con qué
 licencia: se resuelve con tools/procedencia.py en docs/data/procedencia.js, tanto en `build` como en `texts` y `serve`.
 
+El «Resumen» corto de la portada sale de docs/data/resumen.json (a mano: titular, cifras, y bloques de líneas
+cortas con su «más detalle →»); `texts`, `build` y `serve` lo vuelcan a docs/data/resumen.js con la versión de
+project.godot. Las cifras (robos, museos) se leen de historia.json y ciudad.json al cargar. El resumen largo de
+antes (qué quieres hacer, el mapa, las pantallas) sigue en un desplegable al final de la misma página.
+
 Assets a incorporar: docs/data/propuestas.json es la lista de assets concretos propuestos (un modelo, un sonido, un
 icono, un pack pequeño: {id, nombre, pack, pack_url, url, tipo, licencia, atribucion, preview_url, para, estado,
 nota}; estado: propuesto / aceptado / incorporado / descartado). Se valida con `python3 tools/procedencia.py` y se
@@ -252,6 +257,14 @@ def write_propuestas():
     write_js("referencias.js", "REFERENCIAS", procedencia.ref_web_data())
 
 
+def write_resumen():
+    """resumen.js: el Resumen corto de la portada (docs/data/resumen.json, a mano) más la versión de project.godot."""
+    r = load_json("resumen.json", {})
+    m = re.search(r'^config/version="([^"]+)"', open(os.path.join(ROOT, "project.godot"), encoding="utf-8").read(), re.M)
+    r["version"] = m.group(1) if m else ""
+    write_js("resumen.js", "RESUMEN", r)
+
+
 def build_static():
     """Lo escrito a mano (docs/ESTILO.md), las constantes del código y la fuente, al lado del HTML."""
     build_code()
@@ -259,6 +272,7 @@ def build_static():
     write_js("estilo.js", "ESTILO", open(path, encoding="utf-8").read() if os.path.exists(path) else "")
     write_js("funciones.js", "FUNCIONES", functions())
     write_propuestas()
+    write_resumen()
     os.makedirs(os.path.join(DOCS, "fuentes"), exist_ok=True)
     for f in ["PressStart2P-Regular.ttf", "OFL.txt"]:
         shutil.copy(os.path.join(ROOT, "assets", "fonts", f), os.path.join(DOCS, "fuentes"))
@@ -661,6 +675,7 @@ class Handler(SimpleHTTPRequestHandler):
 def serve():
     # La procedencia se edita a mano en assets/PROCEDENCIA.json: se relee al arrancar.
     write_propuestas()
+    write_resumen()
     httpd = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
     print(f"Documentación en http://localhost:{PORT}  (Ctrl+C para parar)")
     try:

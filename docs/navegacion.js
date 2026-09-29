@@ -18,7 +18,7 @@
 const num = (n, uno, varios) => `${n} ${n === 1 ? uno : varios}`;
 const GRUPOS = [
   { id: "empezar", titulo: "Empezar", paginas: [
-    { id: "inicio", titulo: "Resumen", desc: "El mapa de toda la documentación: qué hay y dónde encontrarlo." },
+    { id: "inicio", titulo: "Resumen", desc: "El juego en 30 segundos y el mapa de la documentación: qué hay y dónde encontrarlo." },
     { id: "capturas", titulo: "Capturas", desc: "Todas las capturas del juego, ordenadas por sección.", n: () => num((J.capturas || []).length, "captura", "capturas"), kw: "imagenes fotos screenshots" },
   ] },
   { id: "juego", titulo: "Jugar y diseño", paginas: [
@@ -142,13 +142,35 @@ const INTENCIONES = [
   ["Proponer un asset de terceros para el juego, o ver qué se ha propuesto", ["propuestas", "referencias"]],
   ["Ver cómo ha cambiado el juego", ["versiones"]],
 ];
+// El Resumen corto (docs/data/resumen.json → resumen.js): las cifras salen de los datos, no del texto.
+function datosResumen() {
+  const R = window.RESUMEN || {};
+  const robos = ((J.historia || {}).nights || []).length, museos = (((J.ciudad || {}).museums) || []).length;
+  const g = J.generado || {};
+  const sust = s => String(s ?? "").replace(/\{robos\}/g, robos).replace(/\{museos\}/g, museos).replace(/\{version\}/g, R.version || "").replace(/\{fecha\}/g, (g.fecha || "").split(" ")[0]);
+  const item = i => (typeof i === "string" ? { t: sust(i) } : { t: sust(i.t), href: i.href });
+  return {
+    titular: sust(R.titular || "Ninja Karma"), subtitulo: sust(R.subtitulo || ""),
+    chips: (R.chips || []).map(c => ({ ...c, valor: sust(c.valor) })),
+    secciones: (R.secciones || []).map(x => ({ ...x, titulo: sust(x.titulo), items: (x.items || []).map(item) })),
+  };
+}
 function portada() {
   const g = J.generado || {};
   const el = q1("#p-inicio");
   if (!el) return;
+  const D = datosResumen();
   const linea = p => `<li><a href="#${p.id}"><b>${html(p.titulo)}</b></a>${p.n ? ` <span class="estado">· ${html(p.n())}</span>` : ""}<br><span class="estado">${html(p.desc)}</span></li>`;
-  el.innerHTML = `<div class="cabeza"><div><h1>Ninja Karma</h1><div class="sub">Documentación del juego, sacada del propio juego · ${html(g.fecha || "—")}</div></div></div>
+  const museos = (((J.ciudad || {}).museums) || []).map(m => `<span class="tag">${html(tx(m.name))}</span>`).join("");
+  const seccion = x => `<section class="res-sec" aria-labelledby="inicio-${html(x.id)}"><h3 id="inicio-${html(x.id)}">${html(x.icono ? x.icono + " " : "")}${html(x.titulo)}</h3>
+      <ul>${x.items.map(i => `<li>${i.href ? `<a href="${html(i.href)}">${html(i.t)}</a>` : html(i.t)}</li>`).join("")}</ul>
+      ${x.museos && museos ? `<div class="res-tags">${museos}</div>` : ""}
+      ${x.mas ? `<a class="res-mas" href="${html(x.mas.href)}">${html(x.mas.t ? "Más detalle: " + x.mas.t : "Más detalle")} →</a>` : ""}</section>`;
+  el.innerHTML = `<div class="cabeza"><div><h1>${html(D.titular)}</h1><div class="sub res-sub">${html(D.subtitulo)}</div></div></div>
+    <ul class="res-chips" aria-label="Cifras clave">${D.chips.map(c => `<li>${c.href ? `<a href="${html(c.href)}">` : "<span>"}<b>${html(c.valor)}</b> ${html(c.etiqueta)}${c.href ? "</a>" : "</span>"}</li>`).join("")}</ul>
     <button class="portada-buscar" type="button" data-buscar><span>Buscar en toda la documentación: un texto, un objeto, un sonido, una licencia…</span><kbd>/</kbd></button>
+    <div class="res-rejilla">${D.secciones.map(seccion).join("")}</div>
+    <details class="mas res-completo" id="inicio-completo"><summary>Ver el resumen completo</summary>
     <h2 id="inicio-que-quieres">¿Qué quieres hacer?</h2>
     <div class="intenciones">${INTENCIONES.map(([tit, ids]) => `<section class="intencion"><h3>${html(tit)}</h3><ul>${ids.map(i => linea(PAG[i])).join("")}</ul></section>`).join("")}</div>
     <h2 id="inicio-mapa">El mapa, por grupos</h2>
@@ -159,8 +181,9 @@ function portada() {
     <details class="mas"><summary>Sobre esta documentación</summary>
       <p class="estado">Generada el ${html(g.fecha || "—")} desde <code>${html(g.rama || "")}</code> @ <code>${html(g.commit || "")}</code>.
       <code>python3 tools/docs.py build</code> lo regenera todo (abre el juego unos minutos); <code>build --fast</code>, solo datos y textos;
-      <code>serve</code> la sirve en <code>http://localhost:8765</code> con los textos editables. A mano solo están <code>docs/ESTILO.md</code> y <code>docs/pantallas.js</code>.
+      <code>serve</code> la sirve en <code>http://localhost:8765</code> con los textos editables. A mano solo están <code>docs/ESTILO.md</code>, <code>docs/pantallas.js</code> y <code>docs/data/resumen.json</code> (este resumen).
       Atajos: <kbd>/</kbd> o <kbd>Ctrl</kbd>+<kbd>K</kbd> buscan; en una pantalla, <kbd>←</kbd> y <kbd>→</kbd> pasan a la anterior y la siguiente.</p>
+    </details>
     </details>`;
 }
 
@@ -305,7 +328,7 @@ function despues() {
   // Con ids nuevos (los que se ponen aquí) ir() no pudo llegar: se llega ahora.
   let el = destino;
   if (!el && sub && pag !== "pantalla" && pag !== "objetos") el = document.getElementById(pag + "-" + sub) || document.getElementById(sub);
-  if (el) { el.scrollIntoView(); destello(el); }
+  if (el) { for (let d = el.closest("details"); d; d = d.parentElement && d.parentElement.closest("details")) d.open = true; el.scrollIntoView(); destello(el); }
   else if (cambio && !(pag === "objetos" && sub)) window.scrollTo(0, 0);
   if (cambio) q1("#main").focus({ preventScroll: true });
   accesibilidad();
@@ -340,6 +363,15 @@ function construirIndice() {
   const h = "#";
   // Páginas
   for (const p of LINEAL) add("Páginas", p.titulo, p.desc, h + p.id, p.grupo.titulo + " " + (p.kw || ""), 30);
+  // El Resumen: sus bloques (con las líneas dentro, para que se encuentren) y lo del resumen completo
+  const R = datosResumen(), rp = PAG.inicio;
+  rp.kw = R.subtitulo + " " + R.chips.map(c => c.valor + " " + c.etiqueta).join(" ") + " " + R.secciones.map(x => x.titulo + " " + x.items.map(i => i.t).join(" ")).join(" ");
+  it.forEach(x => { if (x.href === "#inicio") { x.h = norm(x.titulo + " " + x.sub + " " + rp.grupo.titulo + " " + rp.kw); } });
+  for (const x of R.secciones) add("Apartados", x.titulo, "Resumen", "#inicio/" + x.id, x.items.map(i => i.t).join(" "), 9);
+  add("Apartados", "Ver el resumen completo", "Resumen", "#inicio/completo", "qué quieres hacer mapa por grupos pantallas sobre esta documentación", 9);
+  for (const [tit] of INTENCIONES) add("Apartados", tit, "Resumen · ¿Qué quieres hacer?", "#inicio/que-quieres", "", 4);
+  add("Apartados", "El mapa, por grupos", "Resumen", "#inicio/mapa", "", 6);
+  add("Apartados", "Por dónde empezar con las pantallas", "Resumen", "#inicio/pantallas", "", 6);
   // Apartados de las páginas de texto largo (los títulos que ya tienen)
   for (const p of LINEAL) {
     if (["textos", "megafonia", "propuestas", "referencias", "pantallas", "paleta", "objetos", "sonidos", "inicio"].includes(p.id)) continue;

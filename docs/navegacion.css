@@ -152,3 +152,19 @@ a.bus-item[aria-selected=true] mark { background: #fff3b0; color: var(--texto); 
   .intenciones, .mapa-grupos { grid-template-columns: 1fr; }
 }
 @media print { .barra, .toc, .toc-movil, .arriba, .pie-pag, nav#nav, .buscador { display: none !important; } .layout { display: block; } }
+
+/* Resumen (portada): titular, cifras en chips, bloques cortos y el resumen completo plegado */
+.res-sub { font-size: 16px; margin-bottom: 12px; max-width: 760px; }
+.res-chips { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0 0 14px; }
+.res-chips a, .res-chips span { display: inline-block; border: 1px solid var(--borde); border-radius: 14px; padding: 3px 12px; font-size: 14px; color: var(--tenue); text-decoration: none; background: var(--fondo2); }
+.res-chips a:hover { border-color: var(--texto); color: var(--texto); }
+.res-chips b { color: var(--texto); font-size: 16px; }
+.res-rejilla { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); margin: 14px 0 8px; }
+.res-sec { border: 1px solid var(--linea); border-radius: 3px; padding: 8px 14px 10px; display: flex; flex-direction: column; }
+.res-sec h3 { margin: 0 0 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--claro); }
+.res-sec ul { margin: 0; padding-left: 18px; flex: 1; }
+.res-sec li { line-height: 1.45; margin: 1px 0; }
+.res-tags { margin-top: 4px; }
+.res-mas { margin-top: 6px; font-size: 13px; color: var(--tenue); }
+.res-completo { margin-top: 20px; }
+.res-completo > summary { font-size: 15px; }
