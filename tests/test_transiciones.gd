@@ -121,8 +121,8 @@ func _init() -> void:
 	await frames(Hud.SWAP_WAIT_FRAMES + 2)
 	await press(KEY_2)
 	await frames(2)
-	check(m.phase == "join" and m.join_for == "story" and m.join_count == 2, "elegir 2 en el bocadillo va directo a los mandos de la historia")
-	m._unjoin()
+	check(m.phase == "join" and m.hands.join_for == "story" and m.hands.join_count == 2, "elegir 2 en el bocadillo va directo a los mandos de la historia")
+	m.hands.unjoin()
 	await frames(Hud.SWAP_WAIT_FRAMES + 2)
 	check(m.phase == "pick" and hud.bubble_open() and hud.bubble_focus() == 1, "atrás desde los mandos vuelve al bocadillo, en el 2")
 	# The generative: its bubble, then its menu with the gang picked.
@@ -204,8 +204,8 @@ func _init() -> void:
 	m._start("generative", 1)
 	await frames(3)
 	check(m.phase == "brief", "a la previa del golpe")
-	var last: int = m._brief_pages().size() - 1
-	m._show_brief(last)
+	var last: int = m.briefing.pages().size() - 1
+	m.briefing.show(last)
 	# Straight away, while the page is still swapping in: the press counts.
 	await frames()
 	await press(KEY_E)
@@ -225,7 +225,7 @@ func _init() -> void:
 
 	# Tab skips the briefing from the keyboard too, not just Start on a pad.
 	m._new_round(1)
-	m._show_brief(0)
+	m.briefing.show(0)
 	await frames(3)
 	await press(KEY_TAB)
 	await frames()
@@ -251,11 +251,11 @@ func _init() -> void:
 	var level: int = m.level
 	await press(KEY_E)
 	await frames(3)
-	check(m.phase == "brief" and m.brief_page == 0 and m.level == level, "OTRA VEZ, una vez: la previa, en su primera página")
+	check(m.phase == "brief" and m.briefing.brief_page == 0 and m.level == level, "OTRA VEZ, una vez: la previa, en su primera página")
 	# A second press is on the new page's button: one page on, never two.
 	await press(KEY_E)
 	await frames(3)
-	check(m.phase == "brief" and m.brief_page == mini(1, m._brief_pages().size() - 1), "la siguiente pulsación, una página más")
+	check(m.phase == "brief" and m.briefing.brief_page == mini(1, m.briefing.pages().size() - 1), "la siguiente pulsación, una página más")
 
 	# --- Out of a night: away with it, and back out to the title --------------------
 	m._start_playing()

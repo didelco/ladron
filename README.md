@@ -9,8 +9,19 @@ Regla general: **simplificar**. Se porta la lógica tal cual; las mejoras, despu
 
 ```
 logic/   lógica pura, sin nodos (GDScript con tipos): se prueba sola
-scenes/  lo visual: main (bucle y HUD), museum_view (museo), figure (personajes), y lo que
-         habla con fuera (brain_client, el cliente HTTP del cerebro)
+scenes/  lo visual: main (`Game`, el nodo raíz: estado, pantallas hasta la noche y orden del
+         fotograma), museum_view (museo), figure (personajes), y lo que habla con fuera
+         (brain_client, el cliente HTTP del cerebro). `main.gd` reparte el trabajo en
+         controladores hijos, cada uno una clase con una cara corta que guarda la referencia
+         a `Game` (`host`): night_loop (el bucle de la noche: `tick` en fases), scenery (el mundo
+         3D de la ronda: se construye y se dibuja), night_env (Environment, luna, cámara y oídos),
+         camera_rig (seguir, alejar, temblar), hands (asientos, teclas y mandos por jugador,
+         vibración, glifos), megaphone_run (la megafonía en juego), house_run (la casa de la
+         banda: salas a la vista, espantapájaros, banco de pruebas y juegos del dojo),
+         settings_screens (ajustes y assets), challenge_screens (retos y editor), brief_screens
+         (prólogo y ficha de la noche), preview_stand (la peana de las piezas) y launch_args
+         (las opciones `--menu=…` y compañía). Otros scripts de escena ya eran así: plan_talk,
+         tour, end_pages, menu_stage, city_stage.
 brain/   el cerebro: FastAPI sobre Laya, igual que en la web
 tests/   pruebas sin ventana
 art/     el catálogo en Blender (.blend por grupos) y su exportador a assets/models
@@ -121,6 +132,7 @@ godot --headless --script tests/test_escondite.gd # El Escondite del Calcetín: 
 godot --headless --script tests/test_smoke.gd     # bomba de humo: dos por ladrón, tapa la vista, despista al que persigue
 godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (necesita el cerebro)
 python3 tools/ciclos.py -v --estricto            # ciclos de dependencia entre los scripts de logic/ (sale con 1 si hay uno sin permitir)
+python3 tools/tamanos.py -v --estricto           # ficheros de más de 1.500 líneas y funciones de más de 80 (límite blando; sale con 1 si hay uno nuevo o una excepción que crece)
 ```
 
 `tests/visual/figures.tscn` enseña de cerca al ladrón y al guardia con sus animaciones, y
@@ -254,7 +266,7 @@ no tienes que agacharte ni levantarte. P1 usa el `Shift` izquierdo y P2 el derec
 flechas); solo, cualquiera de los dos. `Shift` mantenido para ir despacio es lo habitual en PC; `Ctrl`
 no se usa porque en Mac choca con `Ctrl`+`Espacio` (cambiar de idioma del teclado) y `Ctrl`+flechas
 (escritorios), ni `Cmd` por `Cmd`+`Q`. Godot no distingue los dos `Shift` al consultar el teclado, así
-que `scenes/main.gd` los sigue por `InputEventKey.location`. En el mando, mantener LB
+que `scenes/hands.gd` los sigue por `InputEventKey.location`. En el mando, mantener LB
 o inclinar el stick poco (pasada la zona muerta, menos de la mitad de lo que queda hasta el borde).
 **A gatas** se va a 1,5 casillas/s, algo más deprisa y sin ningún ruido, pero cuesta 1,5 s agacharse y
 otro tanto levantarse.

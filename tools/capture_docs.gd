@@ -130,7 +130,7 @@ func _save_json(rel: String, data: Variant) -> void:
 ## Out of whatever round is on: unpaused, map shut, no menu.
 func _reset() -> void:
 	paused = false
-	main.testing = null
+	main.challenges.testing = null
 	main._close_map()
 	for t in main.thieves:
 		t.game = null
@@ -200,28 +200,28 @@ func _shots() -> void:
 	await _shot("menu_generativo_dificultad", "menus", "Generativo: la dificultad", "Pulsar una tarjeta saca debajo un bocadillo con sus tres, cada una en su diorama quieto, como el de cuántos ladrones del título; la que hay, encendida.")
 	main.hud.close_bubble(true)
 	await _wait(0.5)
-	main._show_challenge_menu()
+	main.challenges.show_menu()
 	await _wait(1.5)
 	await _shot("menu_retos", "menus", "Retos", "Los robos de la historia y los mapas hechos a mano, con el plano del elegido.")
 	var maps := MapFile.list()
 	if not maps.is_empty():
-		main._show_challenge_map(maps[0])
+		main.challenges.show_map(maps[0])
 		await _wait(1.5)
 		await _shot("menu_reto_mapa", "menus", "Un reto elegido", maps[0].name if "name" in maps[0] else "")
-	main._show_night_map(1)
+	main.challenges.show_night_map(1)
 	await _wait(1.5)
 	await _shot("menu_reto_noche", "menus", "Retos: un robo de la historia", "Para retocar su museo en el editor.")
-	main._show_editor(MapFile.generated(4242, "small"))
+	main.challenges.show_editor(MapFile.generated(4242, "small"))
 	await _wait(1.5)
 	await _shot("menu_editor", "menus", "Editor de mapas")
-	main._drop_editor()
-	main._show_join("generative", 3)
+	main.challenges.drop_editor()
+	main.hands.show_join("generative", 3)
 	await _wait(1.5)
 	await _shot("menu_elegir_mandos", "menus", "Elegir mandos", "Cada ladrón pulsa en su mando o en su mitad del teclado.")
 
 	# Settings.
 	for page in ["", "sound", "screen", "pads"]:
-		main._show_settings("title", page)
+		main.options.show("title", page)
 		await _wait(1.2)
 		await _shot("ajustes_" + (page if page != "" else "inicio"), "ajustes",
 			{"": "Ajustes", "sound": "Ajustes: sonido", "screen": "Ajustes: pantalla", "pads": "Ajustes: mandos y controles"}[page])
@@ -232,7 +232,7 @@ func _shots() -> void:
 	main.players = 1
 	var pages := Story.prologue()
 	for p in pages.size():
-		main._show_prologue(p)
+		main.briefing.show_prologue(p)
 		await _wait(1.5)
 		await _shot("previa_prologo_%d" % (p + 1), "previas", "Prólogo, página %d de %d" % [p + 1, pages.size()])
 	# The story's way in (Tour): the plan out of its room, the piece's tale
@@ -261,7 +261,7 @@ func _shots() -> void:
 	main.mode = "generative"
 	main.players = 2
 	main._new_round(1)
-	main._show_brief(0)
+	main.briefing.show(0)
 	await _wait(1.6)
 	await _shot("previa_generativo_plan", "previas", "Generativo: el plan, dos ladrones")
 	main._start_countdown()
@@ -354,7 +354,7 @@ func _shots() -> void:
 	await _play("generative", 1, 1, 3.0)
 	await _shot("juego_generativo", "juego", "Generativo: un museo nuevo")
 	if not maps.is_empty():
-		main.challenge_map = maps[0]
+		main.challenges.challenge_map = maps[0]
 		await _play("challenge", 1, 1, 3.0)
 		await _shot("juego_reto", "juego", "Un reto hecho a mano")
 	await _play("story", 6, 1, 2.0)
@@ -470,27 +470,27 @@ func _on_sky(stage: CityStage) -> Image:
 func _assets() -> void:
 	print("docs: assets")
 	var out := {"piezas": [], "objetos": [], "paginas": []}
-	var loot: Array = main._asset_loot()
+	var loot: Array = main.options.asset_loot()
 	for i in loot.size():
-		main._show_assets("loot", i)
+		main.options.show_assets("loot", i)
 		await _wait(0.9)
 		var l: Dictionary = loot[i]
 		var file := "assets/piezas/%02d.webp" % (i + 1)
-		main.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
+		main.podium.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
 		out.piezas.append({"file": file, "name": l.name, "blurb": l.get("blurb", ""), "shape": l.get("shape", ""), "colour": l.get("colour", ""),
 			"night": i + 1 if i < Story.count() else 0})
 		if i == 0:
 			await _shot("assets_piezas", "assets", "Assets: piezas")
 	for i in Props.KINDS.size():
-		main._show_assets("props", i)
+		main.options.show_assets("props", i)
 		await _wait(0.9)
 		var file := "assets/objetos/%s.webp" % Props.KINDS[i]
-		main.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
+		main.podium.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
 		out.objetos.append({"file": file, "kind": Props.KINDS[i], "name": Props.name_of(Props.KINDS[i])})
 	for tab in ["props", "people", "sounds", "map"]:
-		main._show_assets(tab, 0)
+		main.options.show_assets(tab, 0)
 		await _wait(1.5)
-		await _shot("assets_" + tab, "assets", "Assets: " + Text.t(main.ASSET_TABS[tab]).to_lower())
+		await _shot("assets_" + tab, "assets", "Assets: " + Text.t(main.options.ASSET_TABS[tab]).to_lower())
 	_save_json("data/assets.json", out)
 
 
@@ -647,7 +647,7 @@ func _objects() -> void:
 		main.players = 1
 		var seats: Array[String] = ["any"]
 		main.seats = seats
-		main.challenge_map = m
+		main.challenges.challenge_map = m
 		main._new_round(1)
 		main._start_playing()
 		await _wait(0.4)
@@ -655,11 +655,11 @@ func _objects() -> void:
 		# about: no thieves, no guards, nor their torches and cones.
 		Engine.time_scale = 0.001
 		main.hud.visible = false
-		for f in main.thief_nodes + main.guard_nodes:
+		for f in main.scenery.thief_nodes + main.scenery.guard_nodes:
 			f.visible = false
-		for t in main.torches:
+		for t in main.scenery.torches:
 			t.visible = false
-		for c in main.cones:
+		for c in main.scenery.cones:
 			c.visible = false
 		var files := {}
 		for view in [["mapa", OBJECT_FAR], ["cerca", OBJECT_NEAR]]:
@@ -693,11 +693,11 @@ func _aim(target: Vector3, dist: float) -> void:
 		_cam = Camera3D.new()
 		main.add_child(_cam)
 	_cam.fov = main.camera.fov
-	_cam.position = target + main.CAM_OFFSET.normalized() * dist
+	_cam.position = target + main.rig.CAM_OFFSET.normalized() * dist
 	_cam.look_at(target)
 	_cam.make_current()
-	main.cam_zoom = dist / main.CAM_OFFSET.length()
-	main._fog_follows_zoom()
+	main.rig.cam_zoom = dist / main.rig.CAM_OFFSET.length()
+	main.rig.fog_follows_zoom()
 
 
 ## A piece's name on screen (Themes.label), as its key.
@@ -814,7 +814,7 @@ func _nights_laid_out() -> Array:
 			if Themes.is_unique(b.kind) and not b.kind in icons:
 				icons.append(b.kind)
 		var tuning := Story.tuning(n)
-		out.append({"n": n, "pages": main._brief_pages(),
+		out.append({"n": n, "pages": main.briefing.pages(),
 			"tips": Briefing.tips(main.guards, n), "game_level": tuning.game_level, "lockpick": tuning.lockpick,
 			"minigames": Heist.minigames(), "hideouts": hides, "plinths": Plinths.list.size(), "arcades": games, "icons": icons,
 			"size": Museum.size_name, "w": Museum.w, "h": Museum.h})

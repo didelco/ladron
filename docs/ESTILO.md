@@ -14,7 +14,7 @@ El juego se llama **Ninja Karma** (28-09-2026). El logo, en `art/logo_original.p
 
 ## Reglas
 
-1. **La noche es azul, no gris**: «un hotel encantado, no un apagón» (`scenes/main.gd`, `AMBIENT_COLOUR` `#6256aa`). Solo lámparas y linternas son cálidas.
+1. **La noche es azul, no gris**: «un hotel encantado, no un apagón» (`scenes/night_env.gd`, `AMBIENT_COLOUR` `#6256aa`). Solo lámparas y linternas son cálidas.
 2. **La linterna es la luz protagonista**: `#fff1d8`, más cálida que la luna y más fría que las lámparas, para que no se confunda con ninguna. Se pone roja al verte.
 3. **Todo lo que se ve desde arriba, más grande que en la realidad**: objetos ×1,35, el ninja ×1,1, estrellitas de mareo grandes, pocas partículas («un puñado de motas se lee mejor que una nube»).
 4. **La fuente arcade solo grita**: títulos, botones, el reloj y el grito. Nunca en párrafos (`scenes/hud.gd`, commit `0c923c2`).
