@@ -1288,7 +1288,7 @@ window.TEXTOS = [
  },
  {
   "key": "STORY_ENDING",
-  "es": "¡Lo habéis conseguido!\n\nEl abuelo Paco vuelve a masticar turrón, el pato canta a las siete en punto, el yeti tiene los pies calentitos y Jake ya tiene su ketchup (su nevera vuelve a oler fatal, como debe ser).\n\nSin su diamante, los directores dejaron de bostezar, rompieron aquel papel y abrieron otra vez sus museos. Gratis para los niños.\n\nAl Barón Von Bostezo solo le quedó mirar sus vitrinas vacías... y bostezar. Se quedó dormido de pie. Dicen que todavía ronca.\n\nFIN (de momento)",
+  "es": "¡Lo habéis conseguido!\n\nEl abuelo Paco vuelve a masticar turrón, el pato canta a las siete en punto, Bruto ya tiene su hueso y Jake ya tiene su ketchup (su nevera vuelve a oler fatal, como debe ser).\n\nSin su diamante, los directores dejaron de bostezar, rompieron aquel papel y abrieron otra vez sus museos. Gratis para los niños.\n\nAl Barón Von Bostezo solo le quedó mirar sus vitrinas vacías... y bostezar. Se quedó dormido de pie. Dicen que todavía ronca.\n\nFIN (de momento)",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -1856,7 +1856,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_02_NAME",
-  "es": "el calcetín del yeti",
+  "es": "la bola de chicle del récord",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -1867,7 +1867,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_02_BLURB",
-  "es": "Talla 98. Huele a glaciar... y a pie.",
+  "es": "Masticada por todo el pueblo durante cien años. Casi un fósil.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -1878,7 +1878,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_02_VERB",
-  "es": "DOBLANDO LA LANA",
+  "es": "DESPEGANDO EL CHICLE",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -1889,7 +1889,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_02_TALE",
-  "es": "Un yeti muy educado se lo dejó en la lavandería, y el Barón lo expone como «piel de mamut». Ahora el yeti tiene frío en un pie y, cada vez que estornuda, provoca una avalancha.",
+  "es": "Cada vecino le añadía un chicle el día de su cumpleaños. El Barón la expone como «coprolito gigante de mamut» y le ha puesto un cartel: «No tocar». Nadie la toca: se queda pegado.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -1944,7 +1944,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_04_NAME",
-  "es": "el gnomo que baila claqué",
+  "es": "el hueso del perro Bruto",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -1955,7 +1955,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_04_BLURB",
-  "es": "De barro, con zapatos de metal. Ya bailaba para los dinosaurios.",
+  "es": "Enorme, roído y con marcas de dientes. Casi un dinosaurio.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -1966,7 +1966,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_04_VERB",
-  "es": "CALMANDO AL GNOMO",
+  "es": "SACANDO EL HUESO",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -1977,7 +1977,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_04_TALE",
-  "es": "Era el gnomo del jardín de la señora Remedios, y por las noches bailaba claqué para espantar a los topos. El Barón lo expone como «ídolo de las cavernas». Sin él, los topos han montado una discoteca bajo las lechugas.",
+  "es": "Bruto lo enterró en el jardín hace un año. El Barón lo expone como «fémur de mamut». Bruto lleva una semana cavando... en el jardín de los vecinos.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2043,7 +2043,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_06_NAME",
-  "es": "la corona de la Reina de los Pepinillos",
+  "es": "la planta carnívora Filomena",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2054,7 +2054,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_06_BLURB",
-  "es": "Verde, con granitos. Muy real.",
+  "es": "Con dientes, hambre y maceta.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2065,7 +2065,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_06_VERB",
-  "es": "DESATORNILLANDO",
+  "es": "SOLTANDO LA MACETA",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2076,7 +2076,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_06_TALE",
-  "es": "El Barón la expone como «hortaliza coronada, especie rarísima». Sin su corona, los pepinillos no le hacen caso a su reina y se pasan la noche bailando la conga por las calles. Nadie consigue dormir.",
+  "es": "La vecina Remedios la riega cada día y le habla. El Barón la expone como «flor rarísima de la selva» y no se atreve a regarla. Filomena lleva dos días sin comer y ya mira mal a los guardias.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2087,7 +2087,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_07_NAME",
-  "es": "la bufanda del caracol friolero",
+  "es": "el caracol Anselmo",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2098,7 +2098,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_07_BLURB",
-  "es": "Seis metros de lana. Para un cuello muy largo... y muy lento.",
+  "es": "Lento, brillante y con la casa a cuestas.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2109,7 +2109,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_07_VERB",
-  "es": "DESENROLLANDO LA BUFANDA",
+  "es": "DESPEGANDO AL CARACOL",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2120,7 +2120,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_07_TALE",
-  "es": "El caracol Anselmo tardó once años en tejerla. El Barón se la quitó en diez segundos. Ahora Anselmo no sale de su concha y dice que hace frío hasta en agosto.",
+  "es": "Anselmo salió a por una lechuga y el Barón se lo metió en el bolsillo. Ahora está en una vitrina, «gigante de las Indias», y dice que sigue de camino hacia la lechuga.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2175,7 +2175,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_09_NAME",
-  "es": "la bola de pelo del gato Misifú",
+  "es": "la amatista gigante de la abuela Lola",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2186,7 +2186,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_09_BLURB",
-  "es": "La más gorda del mundo. Tiene trofeo y todo.",
+  "es": "Morada, con puntas. Pesa como una abuela.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2197,7 +2197,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_09_VERB",
-  "es": "PEINANDO LA BOLA",
+  "es": "SACANDO LA PIEDRA",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2208,7 +2208,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_09_TALE",
-  "es": "Misifú tardó tres años en toserla y ganó el concurso del pueblo. El Barón dice que es un erizo en peligro de extinción. Misifú está tan triste que ya ha empezado a toser otra, por si acaso.",
+  "es": "La abuela Lola la usa de pisapapeles desde 1974. El Barón la expone como «mineral rarísimo de las profundidades». Sin ella, los papeles vuelan por toda la casa y la abuela los persigue en zapatillas.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2230,7 +2230,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_10_BLURB",
-  "es": "Amarillo, de goma, con voz de tenor.",
+  "es": "Amarillo, de goma, con voz de tenor. Parece vivo.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2252,7 +2252,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_10_TALE",
-  "es": "Cada mañana cantaba ópera a las siete en punto y despertaba a todo el pueblo. Sin él nadie se levanta, y el panadero ya ha quemado cuarenta barras de pan. El Barón lo tiene en su mejor vitrina, con un guardia pegado que se sabe todas las canciones.",
+  "es": "Cantaba ópera cada mañana a las siete y el panadero ya ha quemado cuarenta barras. El Barón lo expone como «pato de las marismas, especie recién descubierta», con un guardia pegado que le da migas.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2274,7 +2274,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_11_NAME",
-  "es": "el faraón de juguete de Pablito",
+  "es": "el ánfora «Recuerdo de Atenas»",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2285,7 +2285,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_11_BLURB",
-  "es": "Salió en un huevo sorpresa. El Barón jura que es de oro.",
+  "es": "Con asas, dibujos griegos y un imán de nevera.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2296,7 +2296,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_11_VERB",
-  "es": "SOLTANDO EL JUGUETE",
+  "es": "SOLTANDO EL ÁNFORA",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2307,7 +2307,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_11_TALE",
-  "es": "El Barón lo expone como «estatua auténtica de un faraón». Pablito dice que es suyo y que se llama Tutankaleco. Hasta que vuelva, Pablito no se come la verdura.",
+  "es": "Manolo la compró en un viaje de jubilados, a tres euros. El Barón la expone como «ánfora original del siglo V». Manolo jura que pone «Made in China»; el Barón, que eso es griego antiguo.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2318,7 +2318,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_12_NAME",
-  "es": "el despertador de la momia Ramona",
+  "es": "la corona de laurel de neón de César",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2329,7 +2329,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_12_BLURB",
-  "es": "Suena cada tres mil años. Le toca el martes.",
+  "es": "Hace bzzz y parpadea. Muy romana, muy hortera.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2340,7 +2340,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_12_VERB",
-  "es": "PARANDO LA ALARMA",
+  "es": "APAGANDO EL NEÓN",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2351,7 +2351,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_12_TALE",
-  "es": "La momia Ramona lo pone para no dormirse el día de su cumpleaños. Si el martes no suena, se pierde la tarta, y lleva tres mil años esperándola. Está muy vendada y muy enfadada.",
+  "es": "César, el de la pizzería, se la pone al cerrar y se siente emperador. El Barón la expone como «laurel imperial». Sin ella, el cartel no se enciende y los clientes cenan a oscuras y con miedo.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2362,7 +2362,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_13_NAME",
-  "es": "el pato de goma de Arquímedes",
+  "es": "la columna dórica de plástico de los Pérez",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2373,7 +2373,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_13_BLURB",
-  "es": "Arquímedes, el fontanero, no se baña sin él.",
+  "es": "Se hincha con una bomba. Casi una columna.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2384,7 +2384,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_13_VERB",
-  "es": "ESCURRIENDO EL PATO",
+  "es": "DESINFLANDO LA COLUMNA",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2395,7 +2395,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_13_TALE",
-  "es": "Arquímedes se baña con su pato gritando «¡Eureka!», y nadie sabe por qué. El Barón lo expone como «pato sagrado del Nilo». Desde entonces Arquímedes no se baña, y los vecinos lo notan. Mucho.",
+  "es": "Adornaba la piscina de los Pérez. El Barón la expone como «pilar del Partenón». Sin ella, el trampolín está torcido y los Pérez se tiran con miedo.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2406,7 +2406,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_14_NAME",
-  "es": "el huevo duro del tío Ramsés",
+  "es": "el David con delantal del carnicero",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2417,7 +2417,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_14_BLURB",
-  "es": "Lleva siglos en la fiambrera. Nadie se atreve a olerlo.",
+  "es": "Mármol blanco, delantal a cuadros. Muy musculoso, muy limpio.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2428,7 +2428,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_14_VERB",
-  "es": "ABRIENDO LA FIAMBRERA",
+  "es": "QUITANDO EL DELANTAL",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2439,7 +2439,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_14_TALE",
-  "es": "El tío Ramsés se lo llevó de excursión a las pirámides y se le olvidó comérselo. El Barón lo expone como «huevo de faraón». El tío Ramsés lo quiere de vuelta: dice que ahora está en su punto.",
+  "es": "Vigilaba la carnicería de Rosendo con cara de héroe. El Barón lo expone como «escultura de un dios griego, sin restaurar». Sin él, Rosendo pesa el jamón a ojo y nadie se fía.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2450,7 +2450,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_15_NAME",
-  "es": "el anillo de Cleopatra, la del quinto",
+  "es": "la Venus con gafas de sol de la peluquería",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2461,7 +2461,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_15_BLURB",
-  "es": "De caramelo verde. Ella dice que es una esmeralda.",
+  "es": "Sin brazos, pero con mucho estilo.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2472,7 +2472,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_15_VERB",
-  "es": "DESPEGANDO EL CARAMELO",
+  "es": "QUITANDO LAS GAFAS",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2483,7 +2483,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_15_TALE",
-  "es": "Cleopatra, la vecina del quinto, dice que es reina de Egipto y del ascensor. Sin su anillo nadie la cree, y ahora tiene que esperar el ascensor como todo el mundo. Tres guardias lo vigilan, y uno no se mueve del camino.",
+  "es": "Presidía la peluquería de Loli, que sin ella no sabe qué peinado le queda bien a cada cliente. El Barón la expone como «diosa del amor, original». Tres guardias la vigilan, y uno no se mueve del camino.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2593,7 +2593,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_18_NAME",
-  "es": "la bola de cristal de la bruja Paca",
+  "es": "la espada en la piedra",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2604,7 +2604,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_18_BLURB",
-  "es": "Enseña el futuro. Hoy sale una banda con calcetines.",
+  "es": "Nadie la saca. Ni con jabón.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2615,7 +2615,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_18_VERB",
-  "es": "LIMPIANDO EL CRISTAL",
+  "es": "SACANDO LA ESPADA",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2626,7 +2626,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_18_TALE",
-  "es": "Sin su bola, la bruja Paca no sabe si va a llover, y ya se le ha mojado tres veces la escoba. El Barón la mira cada noche para ver quién viene a robarle, pero solo ve niebla: con tanto bostezo, se empaña.",
+  "es": "Un niño la clavó en el parque: «Quien la saque será rey». Nadie pudo. El Barón se llevó la piedra entera, y ahora el niño es rey del parque sin nadie a quien mandar.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2637,7 +2637,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_19_NAME",
-  "es": "la mascarilla del dragón estornudón",
+  "es": "el ornitóptero de Leonardo",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2648,7 +2648,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_19_BLURB",
-  "es": "Verde, con escamas. Pica un poco la nariz.",
+  "es": "Alas de tela, pedales y mucha fe. Casi vuela.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2659,7 +2659,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_19_VERB",
-  "es": "SOPLANDO EL POLVO",
+  "es": "PLEGANDO LAS ALAS",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2670,7 +2670,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_19_TALE",
-  "es": "El dragón del monte se la pone para no quemar nada cuando estornuda. Sin ella ya ha tostado tres pajares y el sombrero del alcalde. ¡Achís!",
+  "es": "Leonardo, el inventor del pueblo, se tiró con él desde el campanario: casi vuela. El Barón lo expone como «pájaro medieval, sin terminar». Leonardo ya dibuja otro, con paracaídas.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2780,7 +2780,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_22_NAME",
-  "es": "la bola de chicle del récord",
+  "es": "el plátano pegado con cinta de Toni",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2791,7 +2791,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_22_BLURB",
-  "es": "Masticada por todo el pueblo durante cien años.",
+  "es": "Amarillo, con cinta plateada. Vale un millón. O un plátano.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2802,7 +2802,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_22_VERB",
-  "es": "DESPEGANDO EL CHICLE",
+  "es": "DESPEGANDO LA CINTA",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2813,7 +2813,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_22_TALE",
-  "es": "Cada vecino le añadía un chicle el día de su cumpleaños. El Barón dice que es una escultura moderna y le ha puesto un cartel: «No tocar». Nadie la toca: se queda pegado.",
+  "es": "Toni se lo iba a comer de merienda. El Barón lo pegó a la pared con cinta, lo tituló «Merienda» y le puso precio de un millón. Toni no puede ver un plátano sin llorar.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2824,7 +2824,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_23_NAME",
-  "es": "la dentadura que brilla en la oscuridad",
+  "es": "el cubo de fregona de la señora Paqui",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2835,7 +2835,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_23_BLURB",
-  "es": "De la abuela Tomasa. Ahora es una lámpara de diseño.",
+  "es": "Con agua turbia, fregona y mucha personalidad.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2846,7 +2846,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_23_VERB",
-  "es": "APAGANDO LA SONRISA",
+  "es": "VACIANDO EL CUBO",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -2857,7 +2857,7 @@ window.TEXTOS = [
  },
  {
   "key": "NIGHT_23_TALE",
-  "es": "El Barón la ha colgado del techo de su torre como si fuera una lámpara carísima. La abuela Tomasa sonríe con la boca cerrada y su gato ya no la reconoce. Y de noche no encuentra el baño.",
+  "es": "El Barón lo expone como escultura, «Limpieza y vacío», y nadie se atreve a fregar alrededor. La señora Paqui lleva una semana con el portal sucio y los nervios de punta.",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -5693,7 +5693,7 @@ window.TEXTOS = [
  },
  {
   "key": "MUSEUM_3_NAME",
-  "es": "La Villa de las Antigüedades",
+  "es": "La Villa Clásica",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -5704,7 +5704,7 @@ window.TEXTOS = [
  },
  {
   "key": "MUSEUM_3_TEXT",
-  "es": "Momias, estatuas y tesoros de Egipto, Grecia y Roma",
+  "es": "Estatuas, columnas y jarrones de Grecia y Roma, de lo más auténtico... y de plástico",
   "broken": false,
   "extra": [],
   "group": "Historia",
@@ -6441,7 +6441,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:429"
+   "logic/map_file.gd:430"
   ],
   "via": []
  },
@@ -6452,7 +6452,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:439"
+   "logic/map_file.gd:440"
   ],
   "via": []
  },
@@ -6463,7 +6463,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:441"
+   "logic/map_file.gd:442"
   ],
   "via": []
  },
@@ -6474,7 +6474,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:447"
+   "logic/map_file.gd:448"
   ],
   "via": []
  },
@@ -6485,7 +6485,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:451"
+   "logic/map_file.gd:452"
   ],
   "via": []
  },
@@ -6496,8 +6496,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:454",
-   "logic/map_file.gd:456"
+   "logic/map_file.gd:455",
+   "logic/map_file.gd:457"
   ],
   "via": []
  },
@@ -6508,7 +6508,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:459"
+   "logic/map_file.gd:460"
   ],
   "via": []
  },
@@ -6519,7 +6519,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:462"
+   "logic/map_file.gd:463"
   ],
   "via": []
  },
@@ -6530,8 +6530,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:467",
-   "logic/map_file.gd:468"
+   "logic/map_file.gd:468",
+   "logic/map_file.gd:469"
   ],
   "via": []
  },
@@ -7486,7 +7486,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:525"
+   "logic/map_file.gd:526"
   ],
   "via": []
  },
@@ -7779,6 +7779,149 @@ window.TEXTOS = [
  {
   "key": "EDITOR_SHAPE_KETCHUP",
   "es": "KETCHUP",
+  "broken": false,
+  "extra": [],
+  "group": "Editor de mapas",
+  "at": [],
+  "via": [
+   "EDITOR_SHAPE_…"
+  ]
+ },
+ {
+  "key": "EDITOR_SHAPE_BONE",
+  "es": "HUESO",
+  "broken": false,
+  "extra": [],
+  "group": "Editor de mapas",
+  "at": [],
+  "via": [
+   "EDITOR_SHAPE_…"
+  ]
+ },
+ {
+  "key": "EDITOR_SHAPE_PLANT",
+  "es": "PLANTA CARNIVORA",
+  "broken": false,
+  "extra": [],
+  "group": "Editor de mapas",
+  "at": [],
+  "via": [
+   "EDITOR_SHAPE_…"
+  ]
+ },
+ {
+  "key": "EDITOR_SHAPE_SNAIL",
+  "es": "CARACOL",
+  "broken": false,
+  "extra": [],
+  "group": "Editor de mapas",
+  "at": [],
+  "via": [
+   "EDITOR_SHAPE_…"
+  ]
+ },
+ {
+  "key": "EDITOR_SHAPE_CRYSTAL",
+  "es": "AMATISTA",
+  "broken": false,
+  "extra": [],
+  "group": "Editor de mapas",
+  "at": [],
+  "via": [
+   "EDITOR_SHAPE_…"
+  ]
+ },
+ {
+  "key": "EDITOR_SHAPE_AMPHORA",
+  "es": "ANFORA",
+  "broken": false,
+  "extra": [],
+  "group": "Editor de mapas",
+  "at": [],
+  "via": [
+   "EDITOR_SHAPE_…"
+  ]
+ },
+ {
+  "key": "EDITOR_SHAPE_LAUREL",
+  "es": "LAUREL DE NEON",
+  "broken": false,
+  "extra": [],
+  "group": "Editor de mapas",
+  "at": [],
+  "via": [
+   "EDITOR_SHAPE_…"
+  ]
+ },
+ {
+  "key": "EDITOR_SHAPE_COLUMN",
+  "es": "COLUMNA",
+  "broken": false,
+  "extra": [],
+  "group": "Editor de mapas",
+  "at": [],
+  "via": [
+   "EDITOR_SHAPE_…"
+  ]
+ },
+ {
+  "key": "EDITOR_SHAPE_DAVID",
+  "es": "DAVID",
+  "broken": false,
+  "extra": [],
+  "group": "Editor de mapas",
+  "at": [],
+  "via": [
+   "EDITOR_SHAPE_…"
+  ]
+ },
+ {
+  "key": "EDITOR_SHAPE_VENUS",
+  "es": "VENUS",
+  "broken": false,
+  "extra": [],
+  "group": "Editor de mapas",
+  "at": [],
+  "via": [
+   "EDITOR_SHAPE_…"
+  ]
+ },
+ {
+  "key": "EDITOR_SHAPE_SWORD",
+  "es": "ESPADA",
+  "broken": false,
+  "extra": [],
+  "group": "Editor de mapas",
+  "at": [],
+  "via": [
+   "EDITOR_SHAPE_…"
+  ]
+ },
+ {
+  "key": "EDITOR_SHAPE_ORNITHOPTER",
+  "es": "ORNITOPTERO",
+  "broken": false,
+  "extra": [],
+  "group": "Editor de mapas",
+  "at": [],
+  "via": [
+   "EDITOR_SHAPE_…"
+  ]
+ },
+ {
+  "key": "EDITOR_SHAPE_BANANA",
+  "es": "PLATANO",
+  "broken": false,
+  "extra": [],
+  "group": "Editor de mapas",
+  "at": [],
+  "via": [
+   "EDITOR_SHAPE_…"
+  ]
+ },
+ {
+  "key": "EDITOR_SHAPE_BUCKET",
+  "es": "CUBO DE FREGONA",
   "broken": false,
   "extra": [],
   "group": "Editor de mapas",
@@ -10443,7 +10586,7 @@ window.TEXTOS = [
  },
  {
   "key": "THEME_ANTIGUO",
-  "es": "MUNDO ANTIGUO",
+  "es": "MUNDO CLÁSICO",
   "broken": false,
   "extra": [],
   "group": "Generador",
