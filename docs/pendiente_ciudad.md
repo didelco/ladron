@@ -2,6 +2,8 @@
 
 Petición del usuario: casita del dojo más a la derecha y más lejos del primer museo (ahora solapaba con el río); moverse con varias teclas (diagonales); botones ANTERIOR / SIGUIENTE a los lados de la pantalla para el ratón.
 
+> Nota: la navegación por ruta (LB/RB, botones laterales, diagonal con dos teclas y ventana de 0,1 s) se retiró; ver docs/propuesta_navegacion_ciudad.md.
+
 ## Hecho y verificado (tests en verde)
 
 - **Casita movida**: `CityStage.HIDEOUT_SPOT = Vector2(24, -16)` (`scenes/city_stage.gd:46`; s a lo largo del río, q hacia arriba desde su centro). Antes `(-21, -8)`. Queda en una manzana libre de la orilla de abajo, en tierra firme, a la derecha y junto al quinto museo, a unas 36 unidades en pantalla del primero (antes ~5). El resto (ruta `_route`, `sight()`, `_keep`, rótulo, altura, anillo, candado) sale de `_hideout_lot` / `hideout_spot`, así que no hubo que tocar nada más. Ningún museo se movió.

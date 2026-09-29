@@ -1189,84 +1189,6 @@ window.JUEGO = {
   {
    "colours": [
     {
-     "hex": "#fff1d8",
-     "key": ""
-    }
-   ],
-   "file": "scenes/main.gd",
-   "name": "TORCH_COLOUR",
-   "note": "The torch is the hero light: a crisp near-white beam that owns the dark, brighter when its guard is on the hunt. Its colour is warmer than the moon and cooler than the lamps, so it never reads as either."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#ffc47e",
-     "key": ""
-    }
-   ],
-   "file": "scenes/main.gd",
-   "name": "ROOM_LIGHT_COLOUR",
-   "note": "Lit rooms glow warm, like a hotel lobby with the chandeliers on."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#6256aa",
-     "key": ""
-    }
-   ],
-   "file": "scenes/main.gd",
-   "name": "AMBIENT_COLOUR",
-   "note": "The night, graded: deep blue-violet shadows and a cold moon, so the warm practical lights and the torches are the only warm things on screen."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#8ea2ff",
-     "key": ""
-    }
-   ],
-   "file": "scenes/main.gd",
-   "name": "MOON_COLOUR",
-   "note": "The night, graded: deep blue-violet shadows and a cold moon, so the warm practical lights and the torches are the only warm things on screen."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#0a0918",
-     "key": ""
-    }
-   ],
-   "file": "scenes/main.gd",
-   "name": "BACKGROUND",
-   "note": "The night, graded: deep blue-violet shadows and a cold moon, so the warm practical lights and the torches are the only warm things on screen."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#ffffff00",
-     "key": "0"
-    },
-    {
-     "hex": "#ffd43b",
-     "key": "1"
-    },
-    {
-     "hex": "#ff922b",
-     "key": "2"
-    },
-    {
-     "hex": "#ff3048",
-     "key": "3"
-    }
-   ],
-   "file": "scenes/main.gd",
-   "name": "SUSPICION_COLOURS",
-   "note": "The colour of each level of suspicion: a hunch, alert, after you."
-  },
-  {
-   "colours": [
-    {
      "hex": "#1c1210",
      "key": ""
     }
@@ -2656,6 +2578,39 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#6256aa",
+     "key": ""
+    }
+   ],
+   "file": "scenes/night_env.gd",
+   "name": "AMBIENT_COLOUR",
+   "note": "The night, graded: deep blue-violet shadows and a cold moon, so the warm practical lights and the torches are the only warm things on screen."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#8ea2ff",
+     "key": ""
+    }
+   ],
+   "file": "scenes/night_env.gd",
+   "name": "MOON_COLOUR",
+   "note": "The night, graded: deep blue-violet shadows and a cold moon, so the warm practical lights and the torches are the only warm things on screen."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#0a0918",
+     "key": ""
+    }
+   ],
+   "file": "scenes/night_env.gd",
+   "name": "BACKGROUND",
+   "note": "The night, graded: deep blue-violet shadows and a cold moon, so the warm practical lights and the torches are the only warm things on screen."
+  },
+  {
+   "colours": [
+    {
      "hex": "#150f24eb",
      "key": ""
     }
@@ -2941,6 +2896,51 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#fff1d8",
+     "key": ""
+    }
+   ],
+   "file": "scenes/scenery.gd",
+   "name": "TORCH_COLOUR",
+   "note": "The torch is the hero light: a crisp near-white beam that owns the dark, brighter when its guard is on the hunt. Its colour is warmer than the moon and cooler than the lamps, so it never reads as either."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffc47e",
+     "key": ""
+    }
+   ],
+   "file": "scenes/scenery.gd",
+   "name": "ROOM_LIGHT_COLOUR",
+   "note": "Lit rooms glow warm, like a hotel lobby with the chandeliers on."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffffff00",
+     "key": "0"
+    },
+    {
+     "hex": "#ffd43b",
+     "key": "1"
+    },
+    {
+     "hex": "#ff922b",
+     "key": "2"
+    },
+    {
+     "hex": "#ff3048",
+     "key": "3"
+    }
+   ],
+   "file": "scenes/scenery.gd",
+   "name": "SUSPICION_COLOURS",
+   "note": "The colour of each level of suspicion: a hunch, alert, after you."
+  },
+  {
+   "colours": [
+    {
      "hex": "#e8e4dc",
      "key": ""
     }
@@ -3014,6 +3014,17 @@ window.JUEGO = {
    "file": "scenes/tour.gd",
    "name": "SIGN_SHUT",
    "note": "The words over the scene, all here to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#fff0d6",
+     "key": ""
+    }
+   ],
+   "file": "scenes/tour.gd",
+   "name": "ARROW",
+   "note": "Picking a stop of the town by the way you push (the arrows, WASD, the cross or the stick): the stops within this many degrees of that way are the candidates, the nearest wins; none there, the most in line (no more than MAX_OFF off), or nothing. The arrows over the town: cream, this far (px) from the stop picked."
   },
   {
    "colours": [
@@ -8925,8 +8936,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "29-09-2026 19:05",
-  "commit": "76463cd",
-  "rama": "mira-si-toda-la-rama-esta-limp"
+  "fecha": "29-09-2026 22:55",
+  "commit": "235abeb",
+  "rama": "worktree-agent-a26cbee3d62deb32b"
  }
 };
