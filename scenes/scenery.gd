@@ -145,13 +145,15 @@ func _view() -> void:
 	if home:
 		host.den_view = view as DenView
 	# (The world is new: what the last one held of a game went with it.)
-	host.house.dojo_game = null
-	host.house.dojo_lantern = null
-	host.house.dojo_view = null
+	host.house.trial = null
+	host.house.trial_lantern = null
+	host.house.trial_view = null
 	if home:
-		host.house.dojo_view = DojoGamesView.new()
-		host.world.add_child(host.house.dojo_view)
-		host.house.dojo_view.setup(host.camera)
+		host.house.trial_view = TrialView.new()
+		host.world.add_child(host.house.trial_view)
+		host.house.trial_view.setup(host.camera)
+		host.house.trial_view.picked.connect(host.house.choose)
+		host.house.trial_view.moved.connect(func() -> void: host.sfx.ui("nav", 0.6))
 
 
 ## The dust in the air and the things that fall over.
@@ -207,9 +209,9 @@ func _practice_ground() -> void:
 	host.house.mannequins.clear()
 	host.house.scarecrow_list.clear()
 	host.house.scarecrow_alert = Practice.alert_new()
-	host.house.bench = Practice.bench_new()
-	host.house.dojo_end()
-	host.house.bench_target.clear()
+	host.house.lamps = Practice.lamps_new()
+	host.house.scarecrow_time = 0.0
+	host.house.trial_end()
 	if host.mode != Practice.MODE:
 		return
 	for sc in Practice.scarecrows(host.players):

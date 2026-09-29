@@ -1189,7 +1189,7 @@ func _stepper(button: Button, step: Callable) -> void:
 ## The frame every menu control shares: a pill of dark glass with a thin
 ## pale rim and a soft shadow; with the focus the rim turns warm and glows.
 ## selected (the choice in force) keeps a rim of its colour while it waits.
-func _frame(colour: Color, lit: bool, selected := false, radius := 26) -> StyleBoxFlat:
+static func _frame(colour: Color, lit: bool, selected := false, radius := 26) -> StyleBoxFlat:
 	var st := StyleBoxFlat.new()
 	st.bg_color = GLASS_LIT if lit else GLASS
 	st.set_corner_radius_all(radius)
@@ -1205,6 +1205,39 @@ func _frame(colour: Color, lit: bool, selected := false, radius := 26) -> StyleB
 		st.shadow_size = 6
 		st.shadow_offset = Vector2(0, 3)
 	return st
+
+
+## A choice of a panel drawn over the game (the end of a trial): the same pill
+## as every menu button (_button), with the colours of a lit or an unlit one
+## and no focus of its own: whoever owns the panel (TrialMenu) says which choice
+## is the lit one, so the keys, the pad and the mouse never point at two.
+static func pill_button(text: String, size := 16) -> Button:
+	var button := Button.new()
+	button.text = text
+	button.focus_mode = Control.FOCUS_NONE
+	button.add_theme_font_override("font", ARCADE)
+	button.add_theme_font_size_override("font_size", size)
+	button.add_theme_color_override("font_color", CREAM)
+	for key in ["font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
+		button.add_theme_color_override(key, CREAM)
+	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	pill_lit(button, false)
+	return button
+
+
+## A pill lit (the choice) or not: the warm rim and glow of the focused button.
+static func pill_lit(button: Button, lit: bool) -> void:
+	for state in ["normal", "hover", "pressed", "focus"]:
+		var st := _frame(C.safe, lit, false, 22)
+		st.set_content_margin_all(12)
+		st.content_margin_left = 24
+		st.content_margin_right = 24
+		button.add_theme_stylebox_override(state, st)
+	var colour := GLOW_TEXT if lit else CREAM
+	for key in ["font_color", "font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
+		button.add_theme_color_override(key, colour)
+	button.pivot_offset = button.size / 2
+	button.scale = Vector2.ONE * (1.07 if lit else 1.0)
 
 
 ## A picture clipped to rounded corners.

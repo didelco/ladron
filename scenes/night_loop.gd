@@ -80,7 +80,7 @@ func game_sounds(p: Thief) -> void:
 ## (SneezeGame): it is held in until the thief gets out, whichever way.
 func sneeze_coming(p: Thief, i: int, keys: Dictionary, dt: float) -> void:
 	# In a game of the dojo the sneeze is the game's own (HideGame).
-	if host.house.dojo_game != null:
+	if host.house.trial != null:
 		if p.game is SneezeGame:
 			p.game = null
 		p.hidden_for = 0.0
@@ -153,9 +153,9 @@ func guard_footsteps() -> void:
 func tick(dt: float) -> void:
 	HeistStats.time += dt
 	if host.mode == Practice.MODE:
-		host.house.dojo_lock = maxf(0.0, host.house.dojo_lock - dt)
+		host.house.trial_lock = maxf(0.0, host.house.trial_lock - dt)
 		host.house.scarecrow_tick(dt)
-		host.house.bench_tick(dt)
+		host.house.lamps_tick(dt)
 	if host.mode == Practice.MODE and host.house.home_tick():
 		return
 	var now := Sim.now_ms()
@@ -164,9 +164,9 @@ func tick(dt: float) -> void:
 	_move_thieves(dt, keys, noises)
 	_props_and_actions(now, keys, noises)
 	_smoke(now, keys, noises)
-	host.house.dojo_poll()
-	if host.house.dojo_game != null:
-		host.house.dojo_tick(dt, keys)
+	host.house.trial_poll()
+	if host.house.trial != null:
+		host.house.trial_tick(dt, keys)
 	_job(dt, now, noises)
 	_guards(dt, now, noises)
 	_light_events()
@@ -189,6 +189,9 @@ func tick(dt: float) -> void:
 ## held-button bookkeeping); every few frames it is redrawn.
 func _read_keys() -> Dictionary:
 	var keys := host.hands.pressed_keys()
+	# The panel at the end of a trial has the keys: the band stands still.
+	if host.mode == Practice.MODE and host.house.panel_open():
+		return {}
 	if host.map_open:
 		# The controls lean the map instead of moving anyone.
 		var push := Vector2.ZERO
@@ -269,7 +272,7 @@ func _play_game(p: Thief, i: int, keys: Dictionary, dt: float, noises: Array[Sou
 			sneeze(p, noises)
 		"fail":
 			# Lost its balance: down it comes, and the guards hear it.
-			host.house.dojo_fell[i] = true
+			host.house.trial_fell[i] = true
 			Plinths.fall(p, (p.game as BalanceGame).lean, noises)
 			p.game = null
 			host.sfx.noise("roll_bump", host._to_world(p.x, p.y), Hearing.LOUDNESS["tumble"])
@@ -280,7 +283,8 @@ func _play_game(p: Thief, i: int, keys: Dictionary, dt: float, noises: Array[Sou
 			host.loudspeaker.act("plinth_fall", i)
 		_:
 			game_sounds(p)
-			if p.game.kind == "squeeze":
+			# (The bench's ESCONDITE is a trial, not a hideout to get into.)
+			if p.game.kind == "squeeze" and p.game.what == "hideout":
 				squeeze(p, played == "done")
 
 
@@ -349,10 +353,8 @@ func _do_action(t: Thief, i: int, act: Dictionary, keys: Dictionary, now: float,
 			t.dir = atan2(arcade.y + 0.5 - t.y, arcade.x + 0.5 - t.x)
 			host.sfx.at("pong_score", host._to_world(t.x, t.y, 1.0), 0.4, 2.0)
 			host._log(Text.t("LOG_ARCADE"))
-		"bench":
-			host.house.bench_act(t, i, act.at, keys)
-		"game":
-			host.house.dojo_start(String(act.id), int(act.tier))
+		"trial":
+			host.house.trial_start(String(act.id), int(act.tier), i, keys)
 		"switch":
 			Sim.flip_switch(act.at, t, host.guards, now, noises)
 		"push":
