@@ -441,12 +441,14 @@ details.fam .dentro { padding: 0 10px 10px; }
   .indice { columns: 1; }
 }
 </style>
+<link rel="stylesheet" href="navegacion.css">
 </head>
 <body>
 <div class="layout">
   <nav id="nav"></nav>
   <main id="main">
     <section class="pagina" id="p-inicio"></section>
+    <section class="pagina" id="p-pantallas"></section>
     <section class="pagina" id="p-pantalla"></section>
     <section class="pagina" id="p-capturas"></section>
     <section class="pagina" id="p-estilo"></section>
@@ -482,6 +484,7 @@ details.fam .dentro { padding: 0 10px 10px; }
 <script src="data/referencias.js" onerror="void 0"></script>
 <script src="pantallas.js"></script>
 <script src="mecanicas.js"></script>
+<script src="navegacion.js"></script>
 <script>
 "use strict";
 const J = window.JUEGO || {};
@@ -540,19 +543,8 @@ function arbol(lista, sel) {
     return `<li class="${k && !ab ? "cerrado" : ""}"><div class="fila">${k ? flecha("n:" + n.id, ab) : `<span class="flecha"></span>`}<a href="#pantalla/${n.id}" class="${n.id === sel ? "on" : ""}">${esc(nombre(n))}</a>${k && !ab ? `<span class="cuenta">${k}</span>` : ""}</div>${k ? arbol(subpaginas(n), sel) : ""}</li>`;
   }).join("")}</ul>`;
 }
-function nav(pag, sel) {
-  const g = J.generado || {};
-  const enlace = (h, txt) => `<a href="#${h}" class="${pag === h ? "on" : ""}">${txt}</a>`;
-  const grupo = (id, titulo, n, html) => {
-    const ab = PLIEGUES["g:" + id] ?? true;
-    return `<div class="grupo ${ab ? "" : "cerrado"}"><button class="cab" data-plegar="g:${id}"><span class="flecha ${ab ? "ab" : ""}">›</span>${titulo}${ab ? "" : `<span class="cuenta">${n}</span>`}</button><div class="dentro">${html}</div></div>`;
-  };
-  $("#nav").innerHTML = `<div class="marca"><a href="#inicio"><img src="logo.webp" alt="Ninja Karma" width="640" height="428"></a><small>Documentación del juego</small></div>
-    ${grupo("pantallas", "Pantallas", ORDEN.length, `${enlace("inicio", "Resumen")}${enlace("capturas", "Capturas")}<div class="arbol">${arbol(P, sel)}</div>`)}
-    ${grupo("juego", "El juego", ENTIDADES.length + 6, enlace("historia", "Historia") + enlace("ciudad", "Ciudad") + enlace("previa", "Antes de un robo") + enlace("minijuegos", "Minijuegos") + enlace("escondites", "Escondites") + enlace("coleccion", "Colección") + ENTIDADES.map(([k, txt]) => enlace(k, txt)).join(""))}
-    ${grupo("referencia", "Referencia", 8, enlace("estilo", "Estilo") + enlace("paleta", "Paleta") + enlace("propuesta", "Paleta propuesta") + enlace("versiones", "Versiones") + enlace("textos", "Textos") + enlace("megafonia", "Megafonía") + enlace("procedencia", "Procedencia") + enlace("referencias", "Referencias"))}
-    <div class="meta">${esc(g.fecha || "—")} · ${esc(g.commit || "—")}${EDITABLE ? " · edición activa" : ""}</div>`;
-}
+// La barra lateral por grupos, el buscador, las migas y el índice de página viven en navegacion.js.
+function nav(pag, sel) { NAV.nav(pag, sel); }
 let ACTUAL = [null, null];
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-plegar]");
@@ -564,9 +556,10 @@ document.addEventListener("click", e => {
   nav(...ACTUAL);
 });
 
-function ir() {
-  let [pag, sub] = decodeURIComponent(location.hash.slice(1) || "inicio").split("/");
-  if (pag === "pantallas") pag = "inicio";
+function irBase() {
+  // El trozo tras la primera «/» es todo el resto (hay ids de objeto con «/»: objeto-exhibit:temas/antiguo/…).
+  const partes = decodeURIComponent(location.hash.slice(1) || "inicio").split("/");
+  let pag = partes[0], sub = partes.slice(1).join("/");
   // La antigua página de assets, repartida por entidades.
   if (pag === "assets") { pag = { modelos: "objetos" }[sub] || (ENTIDADES.some(([k]) => k === sub) ? sub : "piezas"); sub = null; }
   // Las piezas a robar viven ahora en objetos, como una categoría.
@@ -590,6 +583,8 @@ function ir() {
   const el = hoja ? document.getElementById("pantalla-" + hoja) : sub && pag !== "pantalla" ? document.getElementById(pag + "-" + sub) : null;
   if (el) el.scrollIntoView(); else window.scrollTo(0, 0);
 }
+// ir(): lo de siempre (irBase) y, después, migas, índice de la página, pie y enlaces profundos (navegacion.js).
+function ir() { irBase(); NAV.despues(); }
 window.addEventListener("hashchange", ir);
 
 // --- Portada: todas las pantallas --------------------------------------------------------
@@ -599,17 +594,11 @@ const tarjeta = n => {
     <div class="t">${esc(nombre(n))}</div>${PADRE[n.id] ? `<div class="r">${ruta(n.id).slice(0, -1).map(x => esc(nombre(NODOS[x]))).join(" › ")}</div>` : ""}</a>`;
 };
 function inicio() {
-  const g = J.generado || {};
   const todas = n => [n, ...(n.children || []).flatMap(todas)];
-  $("#p-inicio").innerHTML = `
-    <div class="cabeza"><div><h1>Ninja Karma</h1><div class="sub">Todas las pantallas del juego · pulsa una para verla con las que cuelgan de ella</div></div></div>
+  $("#p-pantallas").innerHTML = `
+    <div class="cabeza"><div><h1>Pantallas</h1><div class="sub">Todas las pantallas del juego · pulsa una para verla con las que cuelgan de ella</div></div></div>
     ${P.map(r => `<div class="seccion"><h2><a href="#pantalla/${r.id}">${esc(nombre(r))}</a></h2><span class="nota">${todas(r).length} pantallas</span></div>
-      <div class="tarjetas">${todas(r).map(tarjeta).join("")}</div>`).join("")}
-    <details class="mas"><summary>Sobre esta documentación</summary>
-      <p class="estado">Generada el ${esc(g.fecha || "—")} desde <code>${esc(g.rama || "")}</code> @ <code>${esc(g.commit || "")}</code>.
-      <code>python3 tools/docs.py build</code> lo regenera todo (abre el juego unos minutos); <code>build --fast</code>, solo datos y textos;
-      <code>serve</code> la sirve en <code>http://localhost:8765</code> con los textos editables. A mano solo están <code>docs/ESTILO.md</code> y <code>docs/pantallas.js</code>.</p>
-    </details>`;
+      <div class="tarjetas">${todas(r).map(tarjeta).join("")}</div>`).join("")}`;
 }
 
 // --- Una pantalla y todas las que cuelgan de ella ------------------------------------
@@ -638,7 +627,7 @@ const enlaceA = id => NODOS[id] ? `<a href="#pantalla/${id}">${esc(nombre(NODOS[
 function pantalla(id) {
   const n = NODOS[id];
   const el = $("#p-pantalla");
-  if (!n) { el.innerHTML = `<h1>No existe</h1><p>No hay ninguna pantalla «${esc(id)}». <a href="#inicio">Resumen</a>.</p>`; return; }
+  if (!n) { el.innerHTML = `<h1>No existe</h1><p>No hay ninguna pantalla «${esc(id)}». <a href="#pantallas">Pantallas</a>.</p>`; return; }
   const r = ruta(id);
   const i = ORDEN.indexOf(id), antes = ORDEN[i - 1], despues = ORDEN[i + 1];
   const paso = (x, txt) => x ? `<a href="#pantalla/${x}" title="${esc(nombre(NODOS[x]))}">${txt}</a>` : `<a class="no">${txt}</a>`;
@@ -652,7 +641,7 @@ function pantalla(id) {
     <div class="seccion ${hondo ? "hondo" : ""}" id="pantalla-${c.id}"><h2>${PAGINA(c) ? `<a href="#pantalla/${c.id}">${esc(nombre(c))}</a>` : esc(nombre(c))}</h2>${c.text ? `<span class="nota">${esc(c.text)}</span>` : ""}</div>
     ${grandes(c)}${PAGINA(c) ? "" : detalles(c)}${debajo(c, true)}`).join("");
   el.innerHTML = `
-    <div class="ruta">${r.slice(0, -1).map(enlaceA).join(" › ") || `<a href="#inicio">Resumen</a>`}</div>
+    <div class="ruta">${r.slice(0, -1).map(enlaceA).join(" › ") || `<a href="#pantallas">Pantallas</a>`}</div>
     <div class="cabeza"><div><h1>${esc(nombre(n))}</h1>${n.text ? `<div class="sub">${esc(n.text)}</div>` : ""}</div>
       <div class="pasos">${paso(antes, "← Anterior")}${paso(despues, "Siguiente →")}</div></div>
     ${(n.children || []).length ? `<div class="saltos">${n.children.map(c => `<a class="tag" href="#pantalla/${c.id}">${esc(nombre(c))}</a>`).join("")}</div>` : ""}
@@ -671,7 +660,7 @@ function capturas() {
   for (const n of Object.values(NODOS)) for (const s of n.shots || []) donde[s] = n.id;
   $("#p-capturas").innerHTML = `<h1>Todas las capturas</h1>
     <div class="sub">${c.length} capturas a 1600×900, sacadas del juego por <code>tools/capture_docs.gd</code></div>
-    <p class="lead">Por secciones. Para verlas junto a su pantalla, <a href="#inicio">todas las pantallas</a>.</p>` +
+    <p class="lead">Por secciones. Para verlas junto a su pantalla, <a href="#pantallas">todas las pantallas</a>.</p>` +
     Object.entries(SECCIONES).map(([k, nom]) => {
       const lista = c.filter(s => s.section === k);
       return lista.length ? `<h2 id="capturas-${k}">${nom}</h2><div class="galeria">${lista.map(s => fig(s).replace("</figcaption>", donde[s.id] ? ` <a href="#pantalla/${donde[s.id]}">Ver pantalla</a></figcaption>` : "</figcaption>")).join("")}</div>` : "";
@@ -786,8 +775,8 @@ function piezasComoObjetos() {
 // Cada objeto del catálogo del editor, con todo lo suyo: nombre, descripción, tamaño,
 // tipo, colección, su imagen y cómo se ve en el mapa (tools/capture_docs.gd, _objects);
 // y las piezas a robar, como una categoría más.
-const TIPOS = [["case", "EDITOR_TYPE_CASE"], ["small", "EDITOR_TYPE_SMALL"], ["big", "EDITOR_TYPE_BIG"], ["prop", "EDITOR_TYPE_PROP"], ["loot", ""]];
-const DONDE = { case: "en vitrina", small: "en peana", big: "en el suelo", prop: "en el suelo, se puede tirar" };
+const TIPOS = [["case", "EDITOR_TYPE_CASE"], ["small", "EDITOR_TYPE_SMALL"], ["big", "EDITOR_TYPE_BIG"], ["prop", "EDITOR_TYPE_PROP"], ["hide", "EDITOR_TYPE_HIDE"], ["loot", ""]];
+const DONDE = { case: "en vitrina", small: "en peana", big: "en el suelo", prop: "en el suelo, se puede tirar", hide: "en el suelo, el ladrón se esconde dentro" };
 const METAL = ["bin", "armour"];
 let filtroTipo = "";
 let objSel = "";
@@ -900,7 +889,7 @@ function sonidos() {
     <div class="sub">Generados en código (<code>scenes/sfx.gd</code>) y exportados a <code>.wav</code></div>
     <p class="estado">Procedencia: ${prLinea("scenes/sfx.gd")}</p>
     <div id="banda-sonidos">${s.length ? alBanda("scenes/sfx.gd", { titulo: s[0].name, nuestra: cmpAudio(s[0].file) }) : ""}</div>
-    <div style="max-width:760px">${s.map((x, i) => `<div class="sonido"><b>${esc(x.name)}</b><audio controls preload="none" src="${x.file}"></audio><button class="btn" data-sonido-cmp="${i}" title="Compararlo con las alternativas">Comparar</button><span class="estado">${x.seconds} s${SONIDO_DE[x.name] ? ` · <a href="#${SONIDO_DE[x.name]}">${esc(ENTIDADES.find(e => e[0] === SONIDO_DE[x.name])[1].toLowerCase())}</a>` : ""}</span></div>`).join("")}</div>`;
+    <div style="max-width:760px">${s.map((x, i) => `<div class="sonido" id="sonidos-${esc(x.name)}"><b>${esc(x.name)}</b><audio controls preload="none" src="${x.file}"></audio><button class="btn" data-sonido-cmp="${i}" title="Compararlo con las alternativas">Comparar</button><span class="estado">${x.seconds} s${SONIDO_DE[x.name] ? ` · <a href="#${SONIDO_DE[x.name]}">${esc(ENTIDADES.find(e => e[0] === SONIDO_DE[x.name])[1].toLowerCase())}</a>` : ""}</span></div>`).join("")}</div>`;
 }
 
 // --- Procedencia: de dónde sale cada asset y con qué licencia (assets/PROCEDENCIA.json) -----------
@@ -1354,7 +1343,7 @@ function noche(n, lecciones) {
   const tam = { small: "pequeño", medium: "mediano", large: "grande" }[n.size] || n.size;
   const p = ((J.assets || {}).piezas || [])[n.n - 1];
   const hd = ((J.historia || {}).played || [])[n.n - 1];
-  return `<div class="noche"><div class="n">${String(n.n).padStart(2, "0")}</div><div>${p ? `<img class="mini" loading="lazy" src="${p.file}" alt="" data-img="${p.file}" data-cap="${esc(tx(l.name))}">` : ""}
+  return `<div class="noche" id="historia-robo-${n.n}"><div class="n">${String(n.n).padStart(2, "0")}</div><div>${p ? `<img class="mini" loading="lazy" src="${p.file}" alt="" data-img="${p.file}" data-cap="${esc(tx(l.name))}">` : ""}
     <div class="pz"><span class="punto" style="background:${l.colour}"></span>${t(l.name)} <a class="estado" href="#objetos/pieza-${n.n}">ficha de la pieza</a></div>
     <p><span class="etq">Descripción</span>${t(l.blurb)}</p>
     <p><span class="etq">Mientras la coge</span>${t(l.verb)}</p>
@@ -1407,7 +1396,7 @@ function textos() {
 function filas() {
   const q = filtro.q.toLowerCase();
   const lista = TX.filter(x => (filtro.grupo === "Todos" || x.group === filtro.grupo) && (!q || x.key.toLowerCase().includes(q) || x.es.toLowerCase().includes(q)));
-  $("#filas").innerHTML = lista.slice(0, 600).map(x => {
+  $("#filas").innerHTML = !lista.length ? `<tr><td colspan="2" class="vacio">Ningún texto coincide${q ? ` con «${esc(filtro.q)}»` : ""}${filtro.grupo !== "Todos" ? ` en el grupo «${esc(filtro.grupo)}»` : ""}. Prueba con menos palabras o con otro grupo.</td></tr>` : lista.slice(0, 600).map(x => {
     const donde = x.at.length ? x.at.join(" · ") : x.via.length ? "vía " + x.via.join(", ") : "se arma en código o no se usa";
     const valor = x.broken ? x.es + "," + x.extra.join(",") : x.es;
     return `<tr class="${x.broken ? "roto" : ""}"><td class="k">${esc(x.key)}<small>${esc(x.group)} · ${esc(donde)}</small></td><td class="v" data-key="${esc(x.key)}" ${x.broken ? `data-valor="${esc(valor)}"` : ""}>${marcas(valor)}</td></tr>`;
@@ -1868,7 +1857,7 @@ document.addEventListener("keydown", e => {
 });
 
 function pintar() {
-  inicio(); capturas(); estilo(); paleta(); objetos(); personajes(); sonidos(); historia(); ciudad(); textos(); megafonia(); procedencia(); referencias();
+  NAV.portada(); inicio(); capturas(); estilo(); paleta(); objetos(); personajes(); sonidos(); historia(); ciudad(); textos(); megafonia(); procedencia(); referencias();
   previa(); minijuegos(); escondites(); coleccion(); propuesta(); versiones();
   document.body.classList.toggle("editable", EDITABLE);
 }
