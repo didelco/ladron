@@ -3823,7 +3823,7 @@ window.TEXTOS = [
  },
  {
   "key": "GAME_HOW_SQUEEZE",
-  "es": "{lr} ALTERNA CON RITMO",
+  "es": "{action} EMPUJA CUANDO NO MIREN",
   "broken": false,
   "extra": [],
   "group": "Juego",
@@ -3924,7 +3924,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:276"
+   "scenes/night_loop.gd:278"
   ],
   "via": []
  },
@@ -3990,7 +3990,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:397"
+   "scenes/night_loop.gd:399"
   ],
   "via": []
  },
@@ -4034,7 +4034,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:447"
+   "scenes/night_loop.gd:449"
   ],
   "via": []
  },
@@ -4045,7 +4045,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:447"
+   "scenes/night_loop.gd:449"
   ],
   "via": []
  },
@@ -4210,7 +4210,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:332"
+   "scenes/night_loop.gd:334"
   ],
   "via": []
  },
@@ -4221,7 +4221,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:349"
+   "scenes/night_loop.gd:351"
   ],
   "via": []
  },
@@ -4243,7 +4243,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:332"
+   "scenes/night_loop.gd:334"
   ],
   "via": []
  },
@@ -4276,7 +4276,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:314"
+   "scenes/night_loop.gd:316"
   ],
   "via": []
  },
@@ -4298,7 +4298,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:402"
+   "scenes/night_loop.gd:404"
   ],
   "via": []
  },
@@ -4309,7 +4309,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:410"
+   "scenes/night_loop.gd:412"
   ],
   "via": []
  },
@@ -4320,7 +4320,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:410"
+   "scenes/night_loop.gd:412"
   ],
   "via": []
  },
@@ -4331,7 +4331,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:413"
+   "scenes/night_loop.gd:415"
   ],
   "via": []
  },
@@ -4342,7 +4342,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:443"
+   "scenes/night_loop.gd:445"
   ],
   "via": []
  },
@@ -4353,7 +4353,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:443"
+   "scenes/night_loop.gd:445"
   ],
   "via": []
  },
@@ -4364,7 +4364,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:443"
+   "scenes/night_loop.gd:445"
   ],
   "via": []
  },
@@ -4375,7 +4375,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:448"
+   "scenes/night_loop.gd:450"
   ],
   "via": []
  },
@@ -4386,7 +4386,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:433"
+   "scenes/night_loop.gd:435"
   ],
   "via": []
  },
@@ -4397,7 +4397,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:468"
+   "scenes/night_loop.gd:470"
   ],
   "via": []
  },
@@ -4408,7 +4408,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:465"
+   "scenes/night_loop.gd:467"
   ],
   "via": []
  },
@@ -4419,7 +4419,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:465"
+   "scenes/night_loop.gd:467"
   ],
   "via": []
  },
@@ -4430,7 +4430,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:456"
+   "scenes/night_loop.gd:458"
   ],
   "via": []
  },
@@ -4441,7 +4441,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:519"
+   "scenes/night_loop.gd:521"
   ],
   "via": []
  },
@@ -10822,7 +10822,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:383"
+   "scenes/night_loop.gd:385"
   ],
   "via": []
  },
