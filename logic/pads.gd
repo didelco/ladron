@@ -1,11 +1,12 @@
 class_name Pads
 extends RefCounted
-## The pads that count. Some devices call themselves pads and are not: on
-## some Macs an Apple one (05ac:0004) shows up with its stick stuck to the
-## left, and echoes the presses of the real pads — so a gang could end up
-## with a thief taking orders from every pad at once, or menus paging on
-## their own. Those are ignored everywhere: joining, playing, menus and
-## rumble (PadFilter drops their events before anything sees them).
+## The pads that count. A device could call itself a pad and not be one, so
+## FAKE lists the (vendor, product) pairs to ignore everywhere: joining,
+## playing, menus and rumble (PadFilter drops their events before anything
+## sees them). It is empty on purpose: on macOS Godot names every pad
+## "HID" 05ac:0004 (an Apple id), so that pair is a real pad, and ignoring it
+## left a Mac with no pad at all. SDL_JOYSTICK_IGNORE_DEVICES=0x05ac/0x0004
+## (CLAUDE.md) is for tests and screenshot runs only: it hides the real pad too.
 ##
 ## And the pads that went: a pad that drops out mid-game (a wireless one
 ## asleep, flat batteries) leaves its thief without hands (lost); the same
@@ -13,7 +14,7 @@ extends RefCounted
 ## (Main._pad_changed, Main._reclaim_pad).
 
 ## (vendor, product) of the devices that are not pads.
-const FAKE := [Vector2i(0x05ac, 0x0004)]
+const FAKE: Array[Vector2i] = []
 
 
 ## A real pad, not one of FAKE.

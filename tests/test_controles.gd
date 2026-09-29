@@ -79,7 +79,7 @@ func _init() -> void:
 	m._give_pad(0, 5)
 	check(m.seats == ["pad:5", "pad:7"] and m.pads_lost.is_empty(), "J1 vuelve a tener mando")
 	check(Pads.real(0) and Pads.real(-1), "un mando cualquiera cuenta")
-	check(Vector2i(0x05ac, 0x0004) in Pads.FAKE, "el falso mando de Apple (05ac:0004) se ignora")
+	check(Vector2i(0x05ac, 0x0004) not in Pads.FAKE, "05ac:0004 es como macOS llama a un mando de verdad: cuenta")
 	m.seats.assign(["any"])
 	m.pads_lost.clear()
 	print("etiqueta de KEY_SLASH en este teclado: ", m._key_label(KEY_SLASH), " · punto: ", m._key_label(KEY_PERIOD))

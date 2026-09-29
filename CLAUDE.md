@@ -10,4 +10,4 @@ Hacer capturas cuesta tiempo (y a cada agente, su rato). No se sacan en cada cam
 - **Hitos** (`python3 tools/docs.py version …`): uno por pantalla y por bloque de trabajo, al rehacer las capturas de la documentación; no uno por cada iteración. Antes de rehacer una pantalla que va a cambiar mucho, sí se guarda su versión anterior (con `--commit` o `--from` una imagen sacada del juego), porque luego ya no se puede.
 - Al encargar trabajo a un agente, no pedirle capturas de documentación ni hitos salvo que sea el cierre de un bloque.
 
-Al sacar capturas con Godot, lanzarlo con `SDL_JOYSTICK_IGNORE_DEVICES=0x05ac/0x0004 SDL_GAMECONTROLLER_IGNORE_DEVICES=0x05ac/0x0004`: algunos Mac tienen un HID de Apple que Godot toma por un mando y pulsa solo.
+Al sacar capturas con Godot, lanzarlo con `SDL_JOYSTICK_IGNORE_DEVICES=0x05ac/0x0004 SDL_GAMECONTROLLER_IGNORE_DEVICES=0x05ac/0x0004`: algunos Mac tienen un HID de Apple que Godot toma por un mando y pulsa solo. Solo para tests y capturas: al lanzar el juego para que lo juegue el usuario, sin esas variables, o su mando no se detecta (en macOS ese id es el del mando de verdad).
