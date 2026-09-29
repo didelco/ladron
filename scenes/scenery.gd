@@ -541,7 +541,8 @@ func draw_loot() -> void:
 	draw_panel()
 	var t := Time.get_ticks_msec() / 1000.0
 	# The piece shows only on its case; taken, it is in the sack.
-	loot_node.visible = not Heist.taken and host.house.home_shows(Heist.at.x + 0.5, Heist.at.y + 0.5)
+	# (The house has no piece to show: no sock over the bench.)
+	loot_node.visible = host.mode != Practice.MODE and not Heist.taken and host.house.home_shows(Heist.at.x + 0.5, Heist.at.y + 0.5)
 	loot_node.position = host._to_world(Heist.at.x + 0.5, Heist.at.y + 0.5, 1.05 + sin(t * 2.0) * 0.05)
 	loot_node.rotation.y = t * 1.2
 	sack_node.visible = false

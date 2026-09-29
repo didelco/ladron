@@ -120,7 +120,7 @@ func bench_open(c: int) -> void:
 	Practice.bench_open(bench, c)
 	host.sfx.ui("stolen")
 	var at: Vector2i = Practice.bench_case(c).at
-	Fx.sparkle(host.world, host._to_world(at.x + 0.5, at.y + 0.5, 1.05), Color("#e2262f"))
+	Fx.sparkle(host.world, host._to_world(at.x + 0.5, at.y + 0.5, 1.05), BenchProps.LAMP_ON)
 
 
 func bench_tick(dt: float) -> void:

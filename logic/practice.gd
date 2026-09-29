@@ -72,22 +72,42 @@ const ITEMS := [
 
 
 # --- The bench of cases ---------------------------------------------------------------------
-## Cases to practise opening, as often as one likes. Each test (BENCH_TESTS, taught
+## Things to practise on, as often as one likes. Each test (BENCH_TESTS, taught
 ## by its lesson) has three, side by side in a column, one for each difficulty
-## (level 0 easy, 1 medium, 2 hard: rows BENCH_Y): the tests are the same games as
-## in a heist (Minigame) at that level, and QUIETO (`hold`) is standing still by
-## the case for BENCH_HOLD_S seconds, more the harder. A case is `slot` = test * 3 +
-## level. Opened, a case shows the sock, stays open BENCH_OPEN_S, closes over
-## BENCH_REARM_S and is armed again. Nothing here is a heist: no stars, no
-## progress, no noise, nobody comes.
+## (level 0 easy, 1 medium, 2 hard: rows BENCH_Y), each test with its own kind
+## of thing (BENCH_OBJECTS; DenView dresses it with BenchProps): QUIETO
+## (`hold`) a marked tile on the floor, GANZÚA (`lockpick`) an empty glass case,
+## APRETAR (`squeeze`) a press, CABLES (`wires`) an alarm box on the wall (3 to 6
+## wires by the level, as in a heist), PULSO (`steady`) a window pane for the
+## suction cup. The tests are the same games as in a heist (Minigame) at that
+## level, and QUIETO is standing still on its tile for BENCH_HOLD_S seconds,
+## more the harder. A "case" (the word stays) is `slot` = test * 3 + level.
+## Done, it signals (a green light, the glass up, the lever down), stays so
+## BENCH_OPEN_S, goes back over BENCH_REARM_S and is armed again. Nothing here
+## is a heist: no stars, no progress, no noise, nobody comes, and no sock (that
+## is PILLA EL CALCETÍN's).
 const BENCH_TESTS := ["hold", "lockpick", "squeeze", "wires", "steady"]
-const BENCH_X := [22, 24, 26, 28, 30]
+## The column of each test. CABLES' is the last, against the east wall (its
+## alarm boxes hang on it), and PULSO's the one before.
+const BENCH_X := [22, 24, 26, 30, 28]
 const BENCH_Y := [3, 7, 11]
 const BENCH_HOLD_S := [3.0, 5.0, 8.0]
 const BENCH_OPEN_S := 3.5
 const BENCH_REARM_S := 0.6
 ## As close as a heist asks to work a case (Heist.REACH).
 const BENCH_REACH := 1.5
+## What each test's things are (the one place to change one): `object` is the
+## model BenchProps builds; `solid` if it stands on a cover tile (a wall of the
+## plan the feet go round) and not on the floor; `reach` how close to be to it
+## (default BENCH_REACH: QUIETO's tile is stood on); `wall` the side of the tile
+## it is hung on (a step on the plan), none if it stands free.
+const BENCH_OBJECTS := {
+	"hold": {"object": "tile", "solid": false, "reach": 0.7},
+	"lockpick": {"object": "vitrine", "solid": true},
+	"squeeze": {"object": "press", "solid": true},
+	"wires": {"object": "alarm", "solid": false, "wall": Vector2i(1, 0)},
+	"steady": {"object": "window", "solid": true},
+}
 ## How close to a sock on its pedestal, or to the middle of a circle, to take it.
 const SOCK_REACH := 1.3
 const RING_REACH := 0.6
@@ -153,13 +173,23 @@ static func bench_kind_text(kind: String) -> String:
 	return ""
 
 
+## How close one has to be to a case (BENCH_OBJECTS).
+static func bench_reach(c: Dictionary) -> float:
+	return float(BENCH_OBJECTS[c.kind].get("reach", BENCH_REACH))
+
+
+## What a test's things are: an entry of BENCH_OBJECTS.
+static func bench_object(kind: String) -> Dictionary:
+	return BENCH_OBJECTS[kind]
+
+
 ## The bench case a point is beside (its slot), the nearest within reach, or -1.
 static func bench_case_at(pos: Vector2, players := 1) -> int:
 	var best := -1
-	var best_d := BENCH_REACH
+	var best_d := INF
 	for c in bench_cases(players):
 		var d := pos.distance_to(Vector2(c.at) + Vector2(0.5, 0.5))
-		if d <= best_d:
+		if d <= bench_reach(c) and d < best_d:
 			best_d = d
 			best = c.slot
 	return best
@@ -169,12 +199,12 @@ static func bench_case_at(pos: Vector2, players := 1) -> int:
 ## the nearest closed case in reach, or empty for nothing.
 static func bench_action(pos: Vector2, state: Dictionary, players := 1) -> Dictionary:
 	var best: Dictionary = {}
-	var best_d := BENCH_REACH
+	var best_d := INF
 	for c in bench_cases(players):
 		if state.cases[c.slot].state != "closed":
 			continue
 		var d := pos.distance_to(Vector2(c.at) + Vector2(0.5, 0.5))
-		if d <= best_d:
+		if d <= bench_reach(c) and d < best_d:
 			best_d = d
 			best = {"what": "case", "i": c.slot}
 	return best
@@ -194,7 +224,7 @@ static func bench_game(kind: String, level: int, input: Dictionary) -> Minigame:
 	return Minigame.make(kind, "bench", steps, input, 0, level)
 
 
-## Case i is opened: the sock shows, and the count goes up.
+## Case i is done: it signals, and the count goes up.
 static func bench_open(state: Dictionary, i: int) -> void:
 	state.cases[i].state = "open"
 	state.cases[i].t = 0.0
@@ -378,13 +408,14 @@ static func map(players := 1) -> MapFile:
 	m.name = Text.t("HIDEOUT_NAME")
 	m.seed = 4242
 	m.difficulty = "easy"
-	m.loot = {"shape": "sock", "colour": "#e2262f", "name": Text.t("HIDEOUT_SOCK"), "blurb": Text.t("HIDEOUT_SOCK_BLURB"),
+	m.loot = {"shape": "gem", "colour": "#e2262f", "name": Text.t("HIDEOUT_PIECE"), "blurb": Text.t("HIDEOUT_PIECE_BLURB"),
 		"story": "", "seconds": 3.0}
 	m.spawn = Den.SPAWN
 	m.exit = Den.EXIT
 	m.piece = Den.CASE_AT
 	for i in items:
-		if i.has("bench"):
+		# What stands (not marked on the floor or hung on a wall) is cover to go round.
+		if i.has("bench") and BENCH_OBJECTS[i.bench].solid:
 			for level in 3:
 				cover.append(bench_case(BENCH_TESTS.find(i.bench) * 3 + level).at)
 		if i.has("game"):
