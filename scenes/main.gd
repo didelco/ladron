@@ -67,6 +67,7 @@ var hands := Hands.new(self)
 var loudspeaker := MegaphoneRun.new(self)
 var loop := NightLoop.new(self)
 var challenges := ChallengeScreens.new(self)
+var briefing := BriefScreens.new(self)
 
 ## "story", "generative" or "challenge"
 var mode := "story"
@@ -132,9 +133,6 @@ var world: Node3D
 var camera: Camera3D
 var props_view: PropsView
 var ear: AudioListener3D
-## the page of the prologue and of the briefing before a night on screen
-var prologue_page := 0
-var brief_page := 0
 
 
 func _ready() -> void:
@@ -295,7 +293,7 @@ func _story_gang(n: int) -> void:
 	mode = "story"
 	story_pick = Story.unlocked(n)
 	if story_pick == 1:
-		_show_prologue()
+		briefing.show_prologue()
 	else:
 		_show_city()
 
@@ -497,47 +495,7 @@ func _start(which: String, n: int, picked := false) -> void:
 		_new_round(story_pick)
 	else:
 		_new_round(1)
-	_show_brief(0)
-
-
-## The tale, a paragraph a page, whole at once: turn back, go on, or skip
-## the lot and go straight to the night.
-func _show_prologue(page := 0) -> void:
-	phase = "prologue"
-	prologue_page = page
-	var pages := Story.prologue()
-	var last := page == pages.size() - 1
-	hud.show_menu([
-		{"title": Text.t("PROLOGUE_TITLE"), "size": 44},
-		{"stage": MenuStage.make("story"), "height": 220},
-		{"text": pages[page], "size": 19, "wrap": true},
-		{"text": _dots(page, pages.size()), "colour": Hud.C.dim, "size": 14},
-		{"buttons": [
-			{"text": Text.t("MENU_BACK") if page == 0 else Text.t("MENU_PREV"), "call": _prologue_back, "colour": Hud.C.dim},
-			{"text": Text.t("MENU_NEXT"), "call": _show_city if last else _show_prologue.bind(page + 1)},
-		], "row": true, "focus": 1},
-		{"buttons": [{"text": Text.t("MENU_SKIP"), "call": _show_city, "colour": Hud.C.dim}], "small": true},
-	], "prologue:%d" % page)
-
-
-## Straight to the night: past the tale and the briefing, into the countdown.
-func _skip_story() -> void:
-	_start_countdown(Hud.FADE_S)
-
-
-func _prologue_back() -> void:
-	if prologue_page > 0:
-		_show_prologue(prologue_page - 1)
-	else:
-		_show_title("story")
-
-
-## ● ○ ○ : where you are in a run of pages.
-func _dots(at: int, count: int) -> String:
-	var out: Array[String] = []
-	for i in count:
-		out.append("●" if i == at else "○")
-	return " ".join(out)
+	briefing.show(0)
 
 
 ## A real pause: the tree stops, knocked-over props hang in mid-air, until
@@ -591,119 +549,6 @@ func _cctv_museum() -> String:
 	if mode == "challenge" and challenges.challenge_map and challenges.challenge_map.name != "":
 		return challenges.challenge_map.name.to_upper()
 	return Text.t("HUD_CCTV_MUSEUM")
-
-
-## Before a night, the same in every mode: the piece's tale if it has one,
-## what is new tonight if anything is (only the story teaches), and the plan:
-## the map and the rules for the night (Briefing).
-func _brief_pages() -> Array:
-	var pages := []
-	if String(Heist.loot.get("story", "")).strip_edges() != "":
-		pages.append("story")
-	if mode == "story" and not Story.news(level, players).is_empty():
-		pages.append("news")
-	pages.append("plan")
-	return pages
-
-
-func _show_brief(page: int) -> void:
-	var pages := _brief_pages()
-	page = clampi(page, 0, pages.size() - 1)
-	brief_page = page
-	phase = "brief"
-	# In the story, the museum's own picture behind its heists' screens.
-	if mode == "story":
-		hud.backdrop(Hud.MUSEUM_FOCUS, "museum_%d" % (Story.museum_of(level) + 1))
-	var names := {"story": Text.t("BRIEF_TAB_STORY"), "news": Text.t("BRIEF_TAB_NEWS"), "plan": Text.t("BRIEF_TAB_PLAN")}
-	var items: Array = []
-	match pages[page]:
-		"story": items.append_array(_story_items())
-		"news": items.append_array(_news_items())
-		"plan": items.append_array(_plan_items())
-	var last := page == pages.size() - 1
-	# Along the bottom: back on the left, the next page by name in the middle,
-	# and straight to the night on the right (on the last page, the middle
-	# one starts it).
-	var row: Array = [
-		{"text": Text.t("MENU_BACK"), "call": _brief_back, "colour": Hud.C.dim},
-		{"text": Text.t("BRIEF_START") if last else Text.t("BRIEF_NEXT_TAB") % names[pages[page + 1]], "call": _start_countdown.bind(Hud.FADE_S) if last else _show_brief.bind(page + 1)},
-	]
-	if not last:
-		row.append({"text": Text.t("BRIEF_SKIP"), "call": _skip_story, "colour": Hud.C.dim})
-	items.append({"buttons": row, "row": true, "focus": 1})
-	hud.show_menu(items, "brief:%d" % page)
-
-
-func _brief_back() -> void:
-	if brief_page > 0:
-		_show_brief(brief_page - 1)
-	elif mode == "story" and level == 1:
-		_show_prologue(Story.prologue().size() - 1)
-	elif mode == "story":
-		_show_museum_tour(level)
-	elif mode == "challenge":
-		_leave_game(challenges.show_map.bind(challenges.challenge_map))
-	else:
-		_show_generative_menu()
-
-
-## What changes tonight, a card for each, on the diorama that shows it.
-func _news_items() -> Array:
-	var cards: Array = []
-	for n in Story.news(level, players):
-		cards.append({"title": n.title, "text": n.text, "stage": MenuStage.make(n.stage), "static": true, "animate": true, "colour": Hud.C.gold})
-	return [
-		{"title": Text.t("BRIEF_NEWS_TITLE"), "size": 44},
-		{"text": Text.t("BRIEF_NEWS_TEXT"), "colour": Hud.C.dim},
-		{"cards": cards, "width": 330 if cards.size() < 3 else 290},
-	]
-
-
-## The story's first page: the gang's job sheet, on paper over the museum's
-## picture (EndPages.piece_card) — the piece turning in a polaroid, which
-## job this is, its name, what it is like and its tale.
-func _story_items() -> Array:
-	# Rebuilt each time: the last round's piece may still be on the stand.
-	podium.build()
-	return [
-		{"card": {"name": Heist.first_upper(Heist.loot.name), "blurb": Heist.loot.blurb,
-			"story": Heist.loot.get("story", ""), "photo": podium.preview.get_texture()}},
-		{"gap": 16},
-	]
-
-
-## The plan: the map on the left; on the right, the piece (turning under a
-## light, its name and how long it takes) and the rules for the night
-## worked out from it (Briefing).
-func _plan_items() -> Array:
-	var colours := _thief_colours().slice(0, thieves.size())
-	var keys := ["thief", "gem", "exit", "guard", "prop", "route"]
-	if Heist.team:
-		keys.append("panel")
-	var legend_loot := Color(Heist.loot.colour)
-	var left: Array = [
-		{"map": Hud.plan_map(guards, colours), "height": 390},
-		{"legend": keys.slice(0, 3), "thieves": colours, "loot": legend_loot},
-		{"legend": keys.slice(3), "thieves": colours, "loot": legend_loot},
-	]
-	# Rebuilt each time: the last round's piece may still be on the stand.
-	podium.build()
-	var piece: Array = [
-		{"text": Heist.first_upper(Heist.loot.name), "size": 26, "colour": Color(Heist.loot.colour), "wrap": true, "width": 330, "align": "left"},
-		{"text": Briefing.takes(), "size": 15, "colour": Hud.C.dim, "wrap": true, "width": 330, "align": "left"},
-	]
-	var right: Array = [{"columns": [
-		{"items": [{"picture": podium.preview.get_texture(), "smooth": true, "height": 120}], "middle": true},
-		{"items": piece, "separation": 4, "middle": true},
-	], "separation": 12}]
-	right.append({"gap": 4})
-	right.append({"title": Text.t("BRIEF_TIPS_TITLE"), "size": 24, "align": "left"})
-	for tip in Briefing.tips(guards, level if mode == "story" else 0):
-		right.append({"text": "• " + tip, "size": 17, "wrap": true, "width": 540, "align": "left"})
-	return [{"columns": [
-		{"items": left, "separation": 6, "middle": true},
-		{"items": right, "width": 540, "separation": 8, "middle": true},
-	], "separation": 36}]
 
 
 ## How many headlines the paper picks from (END_HEAD_n), and the longest
@@ -866,7 +711,7 @@ func _again() -> void:
 					tour.act("accept"))
 		return
 	_new_round(level + 1 if phase == "escaped" else level)
-	_show_brief(0)
+	briefing.show(0)
 
 
 ## Where back (Escape, Space, Enter or B: MenuKeys) goes somewhere, and so
@@ -913,7 +758,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			if phase == "prologue":
 				_show_city()
 			else:
-				_skip_story()
+				briefing.skip_story()
 		"back":
 			if phase in BACK_PHASES:
 				sfx.ui("back")
@@ -931,9 +776,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		"prev", "next":
 			var step := -1 if intent == "prev" else 1
 			if phase == "brief":
-				var to := brief_page + step
-				if to >= 0 and to < _brief_pages().size():
-					_show_brief(to)
+				var to := briefing.brief_page + step
+				if to >= 0 and to < briefing.pages().size():
+					briefing.show(to)
 			else:
 				options.show_assets(options.assets_tab, options.assets_index + step)
 
@@ -981,9 +826,9 @@ func _back() -> void:
 		"pick": hud.close_bubble(true)
 		"generative": _show_title("generative")
 		"challenge": challenges.show_menu()
-		"prologue": _prologue_back()
+		"prologue": briefing.prologue_back()
 		"ending": _show_title()
-		"brief": _brief_back()
+		"brief": briefing.back()
 		"paused": _start_playing()
 		"settings": options.back()
 		"assets": options.show(options.settings_from)
@@ -1200,7 +1045,7 @@ func _input(event: InputEvent) -> void:
 		if phase == "prologue":
 			_show_city()
 		else:
-			_skip_story()
+			briefing.skip_story()
 
 
 ## Seats whose pad dropped out: seat index -> the guid of the pad it had.

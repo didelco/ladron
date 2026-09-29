@@ -119,7 +119,7 @@ func _brief() -> void:
 			var bits := arg.substr(8).split(":")
 			host.mode = "generative" if "--gen" in OS.get_cmdline_user_args() else "story"
 			host._new_round(int(bits[0]))
-			host._show_brief(int(bits[1]) if bits.size() > 1 else 0)
+			host.briefing.show(int(bits[1]) if bits.size() > 1 else 0)
 
 
 ## --intro: the piece, then the countdown, for checking the way in.
@@ -142,7 +142,7 @@ func _autostart() -> void:
 	if "--two" in OS.get_cmdline_user_args():
 		host.players = 2
 		host._new_round(1)
-	host._show_brief(host._brief_pages().size() - 1)
+	host.briefing.show(host.briefing.pages().size() - 1)
 	host.get_tree().create_timer(2.0).timeout.connect(host._start_playing)
 	# --smoke: and a smoke bomb goes off at P1's feet a moment in.
 	if "--smoke" in OS.get_cmdline_user_args():
@@ -190,7 +190,7 @@ func look_at_pause() -> void:
 	if "--two" in args:
 		host.players = 2
 	host._new_round(host.story_pick if host.mode == "story" else 1)
-	host._show_brief(host._brief_pages().size() - 1)
+	host.briefing.show(host.briefing.pages().size() - 1)
 	host.get_tree().create_timer(1.0).timeout.connect(host._start_playing)
 	host.get_tree().create_timer(2.5).timeout.connect(func() -> void:
 		if "--lost" in args:

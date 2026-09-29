@@ -232,7 +232,7 @@ func _shots() -> void:
 	main.players = 1
 	var pages := Story.prologue()
 	for p in pages.size():
-		main._show_prologue(p)
+		main.briefing.show_prologue(p)
 		await _wait(1.5)
 		await _shot("previa_prologo_%d" % (p + 1), "previas", "Prólogo, página %d de %d" % [p + 1, pages.size()])
 	# The story's way in (Tour): the plan out of its room, the piece's tale
@@ -261,7 +261,7 @@ func _shots() -> void:
 	main.mode = "generative"
 	main.players = 2
 	main._new_round(1)
-	main._show_brief(0)
+	main.briefing.show(0)
 	await _wait(1.6)
 	await _shot("previa_generativo_plan", "previas", "Generativo: el plan, dos ladrones")
 	main._start_countdown()
@@ -814,7 +814,7 @@ func _nights_laid_out() -> Array:
 			if Themes.is_unique(b.kind) and not b.kind in icons:
 				icons.append(b.kind)
 		var tuning := Story.tuning(n)
-		out.append({"n": n, "pages": main._brief_pages(),
+		out.append({"n": n, "pages": main.briefing.pages(),
 			"tips": Briefing.tips(main.guards, n), "game_level": tuning.game_level, "lockpick": tuning.lockpick,
 			"minigames": Heist.minigames(), "hideouts": hides, "plinths": Plinths.list.size(), "arcades": games, "icons": icons,
 			"size": Museum.size_name, "w": Museum.w, "h": Museum.h})
