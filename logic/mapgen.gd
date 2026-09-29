@@ -35,13 +35,9 @@ const MIN_LEAF := 5
 ## Every shape keeps its arms at least this wide, so a gallery always fits.
 const MIN_ARM := 9
 const DIRS: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
-## The pieces that take more than one tile, in tiles across and along: the
-## dinosaur skeleton on its platform, the sarcophagus on its bier, the bear
-## standing up on its long plinth, arms spread; and three to hide in
-## (Hideouts): the Trojan horse on its square wheeled deck, the mammoth and the
-## hollow log.
-const BIG := {"dinosaur": Vector2i(2, 3), "sarcophagus": Vector2i(1, 3), "bear": Vector2i(1, 2),
-	"trojan_horse": Vector2i(2, 2), "mammoth": Vector2i(2, 3), "log": Vector2i(1, 3), "car": Vector2i(2, 3)}
+## The pieces that take more than one tile, in tiles across and along (the
+## table is BigPieces.SIZES, data only).
+const BIG := BigPieces.SIZES
 
 var w: int
 var h: int

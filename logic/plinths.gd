@@ -19,7 +19,7 @@ const HEIGHT := 0.3
 const GRAB := 1.3
 ## Seconds on the floor after falling off one (Minigame "balance").
 const FALL_DOWN_S := 1.2
-static var list: Array[Vector2i] = []
+static var list: Array[Vector2i] = Placed.plinths
 
 
 ## Which cases are pedestals tonight is picked along with the places to hide

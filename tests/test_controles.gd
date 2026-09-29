@@ -12,6 +12,14 @@ func key(k: Key, down: bool, loc := KEY_LOCATION_UNSPECIFIED) -> InputEventKey:
 	var e := InputEventKey.new(); e.keycode = k; e.physical_keycode = k; e.pressed = down; e.location = loc
 	Input.parse_input_event(e); Input.flush_buffered_events()
 	return e
+# Mandos de mentira para probar Pads sin hardware: 0 es un Xbox, 1 el falso de Apple.
+class FakePads extends Pads.Source:
+	func connected() -> Array[int]:
+		return [0, 1]
+	func info(device: int) -> Dictionary:
+		return {"vendor_id": 0x045e, "product_id": 0x0b13} if device == 0 else {"vendor_id": 0x05ac, "product_id": 0x0004}
+	func joy_name(device: int) -> String:
+		return "Xbox Wireless Controller" if device == 0 else "Apple HID"
 func _init() -> void:
 	var m = load("res://scenes/main.tscn").instantiate()
 	root.add_child(m)
@@ -80,6 +88,13 @@ func _init() -> void:
 	check(m.seats == ["pad:5", "pad:7"] and m.pads_lost.is_empty(), "J1 vuelve a tener mando")
 	check(Pads.real(0) and Pads.real(-1), "un mando cualquiera cuenta")
 	check(Vector2i(0x05ac, 0x0004) in Pads.FAKE, "el falso mando de Apple (05ac:0004) se ignora")
+	var real_source := Pads.source
+	Pads.source = FakePads.new()
+	check(Pads.connected() == ([0] as Array[int]), "con mandos de mentira: solo cuenta el Xbox, no el de Apple")
+	check(Pads.real(0) and not Pads.real(1), "el 0 es un mando de verdad y el 1 no")
+	check(Pads.describe(0) == "1: Xbox Wireless Controller (045e:0b13)", "describe: " + Pads.describe(0))
+	check(Pads.describe(1).contains("(05ac:0004)") and Pads.describe(1).contains(Text.t("SETTINGS_PAD_IGNORED")), "el falso lo dice: " + Pads.describe(1))
+	Pads.source = real_source
 	m.seats.assign(["any"])
 	m.pads_lost.clear()
 	print("etiqueta de KEY_SLASH en este teclado: ", m._key_label(KEY_SLASH), " · punto: ", m._key_label(KEY_PERIOD))

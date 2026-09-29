@@ -137,7 +137,7 @@ static func pick(theme: String, a: float, b: float) -> Array:
 # --- How many of a piece one museum shows (Collection) ----------------------------
 
 ## The icons: a museum has one at most, as a second would be a copy. Big
-## pieces by their kind (MapGen.BIG), the rest by their model. Every piece
+## pieces by their kind (BigPieces.SIZES), the rest by their model. Every piece
 ## not here nor in VARIANTS may stand any number of times.
 const UNIQUE := ["dinosaur", "trojan_horse", "temas/edad_media/espada_piedra", "temas/edad_media/trono",
 	"temas/edad_media/maquina_voladora"]
@@ -204,7 +204,7 @@ static func catalogue() -> Array:
 	# The furniture a thief hides in (Hideouts), each its theme's.
 	for kind in Hideouts.PIECES:
 		out.append(["exhibit:" + kind, [Hideouts.PIECES[kind].theme], "hide"])
-	for kind in MapGen.BIG:
+	for kind in BigPieces.SIZES:
 		var theme := for_big(kind)
 		out.append(["big:" + kind, [theme] if theme != "" else [], "big"])
 	for kind in PROP_THEMES:

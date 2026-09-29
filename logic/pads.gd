@@ -16,6 +16,28 @@ extends RefCounted
 const FAKE := [Vector2i(0x05ac, 0x0004)]
 
 
+## Where the pads come from: the minimum this file asks of the machine. The
+## default one asks Input; a test puts its own in `source` (a subclass that
+## says which pads are plugged in, and who they are) and so tries the rest
+## with no hardware.
+class Source:
+	## The devices plugged in (Input.get_connected_joypads).
+	func connected() -> Array[int]:
+		return Input.get_connected_joypads()
+
+	## What the system says of a device: "vendor_id", "product_id"
+	## (Input.get_joy_info).
+	func info(device: int) -> Dictionary:
+		return Input.get_joy_info(device)
+
+	## Its name (Input.get_joy_name).
+	func joy_name(device: int) -> String:
+		return Input.get_joy_name(device)
+
+
+static var source: Source = Source.new()
+
+
 ## A real pad, not one of FAKE.
 static func real(device: int) -> bool:
 	if device < 0:
@@ -26,7 +48,7 @@ static func real(device: int) -> bool:
 ## The real pads plugged in.
 static func connected() -> Array[int]:
 	var out: Array[int] = []
-	for d in Input.get_connected_joypads():
+	for d in source.connected():
 		if real(d):
 			out.append(d)
 	return out
@@ -34,7 +56,7 @@ static func connected() -> Array[int]:
 
 ## (vendor, product), or (-1, -1) when the system does not say.
 static func id_of(device: int) -> Vector2i:
-	var info := Input.get_joy_info(device)
+	var info := source.info(device)
 	return Vector2i(int(info.get("vendor_id", -1)), int(info.get("product_id", -1)))
 
 
@@ -43,7 +65,7 @@ static func id_of(device: int) -> Vector2i:
 static func describe(device: int) -> String:
 	var id := id_of(device)
 	var ids := " (%04x:%04x)" % [id.x, id.y] if id.x >= 0 else ""
-	var line := "%d: %s%s" % [device + 1, Input.get_joy_name(device).left(24), ids]
+	var line := "%d: %s%s" % [device + 1, source.joy_name(device).left(24), ids]
 	return line if real(device) else line + " · " + Text.t("SETTINGS_PAD_IGNORED")
 
 

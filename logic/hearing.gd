@@ -8,39 +8,9 @@ extends RefCounted
 ## Things falling over: they carry through walls better (see heard_at).
 const CRASHES := ["bin", "bust", "panel", "armour", "roll_bump", "tumble"]
 
-const LOUDNESS := {
-	"walk": 5.0,
-	## things knocked over (Props), at their gentlest: the tin bin clangs,
-	## the bust smashes, the panel slaps flat, the armour falls to pieces. A
-	## proper crash carries much further (Props.crash_loudness).
-	"bin": 16.0,
-	"bust": 20.0,
-	"panel": 14.0,
-	"armour": 22.0,
-	"sprint": 9.5,
-	## pushing through past a case at a run
-	"rustle": 7.0,
-	## walking into a wall in the dark: a dull, dry knock
-	"bump": 3.0,
-	## knocking a case: the loudest thing you can do
-	"shelf": 13.0,
-	## a whole thief, curled in a ball, into a wall or a case (Roll): as loud
-	## as a suit of armour going over, and as sure a sign someone is about
-	"roll_bump": 22.0,
-	## one guard telling another, under its breath
-	"whisper": 2.5,
-	## a guard yelling "stop!"
-	"shout": 30.0,
-	"alarm": 14.0,
-	## a thief flipping a light switch: a small, dry click
-	"switch": 2.5,
-	## a statue losing its balance and landing on the floor (Plinths.fall)
-	"tumble": 12.0,
-	## a thief sneezing its way out of a hideout (SneezeGame)
-	"sneeze": 15.0,
-	## a smoke bomb going off (Smoke): a soft pop, heard close by
-	"smoke": 4.0,
-}
+## How far each kind of noise carries, in tiles (a table of data, kept in
+## SoundEvent so that it does not need Hearing to make a sound).
+const LOUDNESS := SoundEvent.LOUDNESS
 
 ## Walking slowly on purpose (Sim.SLOW_SPEED) you place your feet: a step
 ## carries this share of what the same speed would. Quiet, never silent.
@@ -67,14 +37,15 @@ static func crash_loudness(speed: float, top_speed: float, shelf: bool) -> float
 
 
 ## Where a guard thinks a noise came from, or null if it does not reach. Faint
-## noises are mislocated: the guard goes roughly the right way.
-static func heard_at(g: Guard, noise: SoundEvent) -> Variant:
+## noises are mislocated: the guard goes roughly the right way. ear is the
+## night's hearing dial (Sim.tuning("hearing")), given by the caller.
+static func heard_at(g: Guard, noise: SoundEvent, ear: float) -> Variant:
 	var d := Museum.dist(g.x, g.y, noise.x, noise.y)
 	# A guard on alert is listening for you; a calm one is half asleep.
 	# A crash (something knocked over) is a deep, carrying sound: walls take
 	# half as much off it as off footsteps.
 	var damping := WALL_DAMPING * (0.5 if noise.kind in CRASHES else 1.0)
-	var reach := noise.loudness * (HEARING_ALERT if g.alert else HEARING_CALM) * Sim.tuning("hearing") \
+	var reach := noise.loudness * (HEARING_ALERT if g.alert else HEARING_CALM) * ear \
 		- damping * Museum.muffle_between(g.x, g.y, noise.x, noise.y)
 	if reach <= 0 or d > reach:
 		return null
