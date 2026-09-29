@@ -96,57 +96,29 @@ static func _rect_of(v: Variant) -> Rect2i:
 	return Rect2i()
 
 
-## The band's dojo, as Den has it today: its zones (Den.dojo_zone_at, or
-## Den.DOJO_ZONES, or the whole dojo as mats) and its doors that shut
-## (Den.dojo_gates, or none). Everything asked with care: Den is changing.
+## The band's dojo, as Den has it: its zones (Den.DOJO_ZONES, whose union is
+## the region) and its doors that shut (Den.dojo_gates when Den has it, else
+## none: the levels that ask for a door go without).
 static func from_den(m: MapFile) -> DojoField:
-	var region_ := _den_region()
-	var zone_at := Callable()
-	if _den_has("dojo_zone_at"):
-		var den: Object = Den
-		zone_at = Callable(den, "dojo_zone_at")
-	else:
-		var consts := (Den as GDScript).get_script_constant_map()
-		if consts.has("DOJO_ZONES"):
-			zone_at = func(t: Vector2i) -> String:
-				var named: Dictionary = consts["DOJO_ZONES"]
-				for id in named:
-					var r: Array = named[id]
-					if Rect2i(r[0], r[1], r[2], r[3]).has_point(t):
-						return String(id)
-				return DEFAULT_ZONE
+	var region_ := Rect2i()
+	var first := true
+	for id in Den.DOJO_ZONES:
+		var r: Array = Den.DOJO_ZONES[id]
+		var rr := Rect2i(r[0], r[1], r[2], r[3])
+		region_ = rr if first else region_.merge(rr)
+		first = false
+	var zone_at := func(t: Vector2i) -> String:
+		for id in Den.DOJO_ZONES:
+			var r: Array = Den.DOJO_ZONES[id]
+			if Rect2i(r[0], r[1], r[2], r[3]).has_point(t):
+				return String(id)
+		return DEFAULT_ZONE
 	var gates_: Array = []
-	if _den_has("dojo_gates"):
-		var den2: Object = Den
-		gates_ = den2.call("dojo_gates")
-	return from_map(m, region_, zone_at, gates_)
-
-
-static func _den_has(method: String) -> bool:
 	for d in (Den as GDScript).get_script_method_list():
-		if d.name == method:
-			return true
-	return false
-
-
-## The dojo's rect: Den.dojo_rect() if there is one, else the union of its
-## zones, else its room.
-static func _den_region() -> Rect2i:
-	if _den_has("dojo_rect"):
-		var den: Object = Den
-		return Rect2i(den.call("dojo_rect"))
-	var consts := (Den as GDScript).get_script_constant_map()
-	if consts.has("DOJO_ZONES"):
-		var all := Rect2i()
-		var first := true
-		for id in consts["DOJO_ZONES"]:
-			var r: Array = consts["DOJO_ZONES"][id]
-			var rr := Rect2i(r[0], r[1], r[2], r[3])
-			all = rr if first else all.merge(rr)
-			first = false
-		if not first:
-			return all
-	return Den.rect("dojo")
+		if d.name == "dojo_gates":
+			var den: Object = Den
+			gates_ = den.call("dojo_gates")
+	return from_map(m, region_, zone_at, gates_)
 
 
 # --- Ground ---------------------------------------------------------------------------------
@@ -172,14 +144,6 @@ static func center(t: Vector2i) -> Vector2:
 
 static func tile_of(p: Vector2) -> Vector2i:
 	return Vector2i(int(floor(p.x)), int(floor(p.y)))
-
-
-## The gate with this id, or {}.
-func gate(id: String) -> Dictionary:
-	for g in gates:
-		if g.id == id:
-			return g
-	return {}
 
 
 ## The floor tile nearest to t (t itself if it is floor), or t if there is none.

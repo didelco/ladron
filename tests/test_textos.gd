@@ -20,7 +20,6 @@ var asked := {}          ## Las claves comprobadas (para contarlas).
 ## Literales en mayúsculas que NO son claves de Text, o que solo son la base de
 ## otras (la variante _ONE/_MANY/_1 se comprueba aparte), y se saltan.
 const NOT_KEYS := [
-	"DOJO_ZONES",  # una constante de Den que busca dojo_field.gd por su nombre
 	# Los rasgos de los guardias: TIP_TRAIT_<rasgo> y TIP_ADVICE_<rasgo> se comprueban abajo.
 	"SHARP_EARS", "FAST", "FAR_EYES", "DULL_EARS", "SHORT_EYES", "SLOW",
 ]

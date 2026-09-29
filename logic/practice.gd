@@ -11,23 +11,24 @@ extends RefCounted
 
 const MODE := "practica"
 
-## What the dojo shows, and from which lesson (Story.LESSONS; the night that
+## What the dojo shows, and from which lesson (Story.LESSONS; the job that
 ## teaches it, Story.lesson_night, is the first with it): easy to add to. The
-## band's furthest night (Story.unlocked, per size of band) opens it. What
-## comes with which night, by zone (Den.DOJO_ZONES):
-##   night 1 (heist)      exposicion  the sealed case
-##   night 2 (guard)      pasillo     the corridor's scarecrow, at the end of the north arm
-##   night 4 (torch)      escondites  the scarecrow that sweeps the hiding corner
-##   night 6 (games)      exposicion  the pedestal; the bench's two lecterns (which test,
-##                        how hard) and the lock pick as a test
-##   night 8 (props)      ... the squeeze as a test (BENCH_KINDS)
-##   night 11 (case_alarm) ... the cutters (wires) as a test
-##   night 13 (two)       exposicion  the second case with its alarm panel; the
-##                        suction cup (steady) as a test
-##   night 8 (props)      patio       the bins; escondites the armours, the crate
-##                        and the locker; exposicion the bust
-##   night 11 (case_alarm) laberinto  the first maze scarecrow
-##   night 13 (two)       laberinto   the second maze scarecrow
+## band's furthest job (Story.unlocked, per size of band) opens it. Jobs are
+## numbered 1-25: museum (n - 1) / 5 + 1, test (n - 1) % 5 + 1. What comes
+## with which lesson, by zone (Den.DOJO_ZONES):
+##   heist (museum 1 · test 1)   exposicion  the sealed case
+##   guard (museum 1 · test 2)   pasillo     the corridor's scarecrow, at the end of the north arm
+##   torch (museum 1 · test 4)   escondites  the scarecrow that sweeps the hiding corner;
+##                               AGUANTA ESCONDIDO's sign post, with its own box
+##   games (museum 2 · test 1)   exposicion  the pedestal; the bench's two lecterns (which
+##                               test, how hard) and the lock pick as a test; the sign posts
+##                               of PILLA EL CALCETIN and EQUILIBRIO
+##   props (museum 2 · test 3)   patio       the bins and BOLOS's sign post; escondites the
+##                               armours, the crate and the locker; exposicion the bust;
+##                               the squeeze as a test (BENCH_KINDS)
+##   case_alarm (museum 3 · 1)   laberinto   the first maze scarecrow; the cutters (wires) as a test
+##   two (museum 3 · test 3)     laberinto   the second maze scarecrow; exposicion the second
+##                               case with its alarm panel; the suction cup (steady) as a test
 ##   id       what it is (a key of the docs' and the tests')
 ##   lesson   the lesson that brings it
 ##   text     its name in words (a key into Text)
@@ -362,20 +363,15 @@ static func alert_step(state: Dictionary, dt: float, seen: bool) -> Dictionary:
 		s.left_s = ALERT_S
 	return s
 
-## Not yet: a bench for the lock pick (the case opening on the pick and giving
-## the sock back), the alarm panel (lesson "two"), the light switches
-## (lesson "lights"), the big pieces (lesson "big"). Each would be one more
-## line in ITEMS once the round can take it.
+## Not yet: the light switches (lesson "lights") and the big pieces (lesson
+## "big"). Each would be one more line in ITEMS once the round can take it.
 
-static var _cache := {}
-
-
-## The night the band has got to (each size of band has its own).
+## The job the band has got to (each size of band has its own).
 static func reached(players := 1) -> int:
 	return Story.unlocked(players)
 
 
-## The night an item comes with.
+## The job an item comes with.
 static func item_night(item: Dictionary) -> int:
 	return maxi(1, Story.lesson_night(item.lesson))
 
@@ -432,7 +428,7 @@ static func map(players := 1) -> MapFile:
 	return m
 
 
-## The night's settings, for Sim.custom: no guards, the case sealed, and
+## The dojo's settings, for Sim.custom: no guards, the case sealed, and
 ## everything else on for the feet to try (the bombs, the pick, the props,
 ## the places to hide are the dojo's, whatever it shows).
 static func tuning() -> Dictionary:
