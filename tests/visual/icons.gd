@@ -50,7 +50,8 @@ func _ready() -> void:
 	for k in ["trojan_horse", "mammoth", "log", "car"]:
 		items["big_" + k] = func(p: Node3D) -> void: p.add_child(MuseumView.asset(MuseumView.BIG_MODELS[k]))
 	# The pieces to steal, in the gold the editor starts them in.
-	for shape in ["teeth", "duck", "sock", "toast", "crown", "rock", "gum", "mask", "clock", "egg", "idol", "gem", "ketchup"]:
+	for shape in ["teeth", "duck", "sock", "toast", "crown", "rock", "gum", "mask", "clock", "egg", "idol", "gem", "ketchup",
+			"bone", "plant", "snail", "crystal", "amphora", "laurel", "column", "david", "venus", "sword", "ornithopter", "banana", "bucket"]:
 		items["loot_" + shape] = func(p: Node3D) -> void: p.add_child(LootModels.build(shape, Color("#f0c46a")))
 	for k in ["bust", "bin", "panel", "armour"]:
 		items["prop_" + k] = func(p: Node3D) -> void: p.add_child(PropsView.model(k))
