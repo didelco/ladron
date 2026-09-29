@@ -364,6 +364,12 @@ func stop_on_screen(m: int) -> Vector2:
 	return Vector2(p.x, -p.y)
 
 
+## Where stop m is on the screen, a little over its ground: what the mouse
+## points at and the arrows go from and to.
+func stop_point(m: int) -> Vector2:
+	return _cam.unproject_position(_museums[m].global_position + Vector3(0, 1.0, 0))
+
+
 ## Where a point of the town (or anything) is on screen.
 func on_screen(p: Vector3) -> Vector2:
 	return _cam.unproject_position(p)

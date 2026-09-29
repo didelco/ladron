@@ -39,17 +39,12 @@ const SIGN_SHUT := Color("#8a7fa3")
 ## or the stick): the stops within this many degrees of that way are the
 ## candidates, the nearest wins; none there, the most in line (no more than
 ## MAX_OFF off), or nothing.
+## The arrows over the town: cream, this far (px) from the stop picked.
+const ARROW := Color(1.0, 0.94, 0.84)
+const ARROW_R := 150.0
 const CONE := 60.0
 const MAX_OFF := 75.0
-## Two keys for a diagonal are never pressed on the same frame: the pushes
-## this close together (s) are one, and move once.
-const DIR_WINDOW := 0.1
 const DIR_VECTORS := {"left": Vector2(-1, 0), "right": Vector2(1, 0), "up": Vector2(0, -1), "down": Vector2(0, 1)}
-## The two buttons at the sides of the town.
-const SIDE_W := 210.0
-const SIDE_H := 74.0
-const SIDE_GAP := 22.0
-
 var stage: CityStage
 var state := "city"
 var players := 1
@@ -64,19 +59,16 @@ var _sign_stars: Label
 var _title: Label
 var _subtitle: Label
 var _hints: HBoxContainer
-## the buttons at the sides of the town: the stop before and the one after
-## in the route (the hideout, then the museums)
-var _prev_btn: Button
-var _next_btn: Button
-## the pushes waiting for the rest of their window (name -> true), and when
-## the first came (ms); dir_window is DIR_WINDOW, or none while the stage
-## hurries (the tests); set it to try the window there
-var _pending := {}
-var _pending_at := 0
-var dir_window := -1.0
 var _pad := false
-## the stick, per pad: where it was last frame, to move once a push
-var _stick := {}
+## the stick, per pad: where it is, whether it is pushed (it moves once per
+## push, and not again until it is let back), and the pad whose push waits
+## for the next frame (its two axes come as two events)
+var _sticks := {}
+var _stick_on := {}
+var _stick_push := -100
+var _stick_vec := Vector2.ZERO
+## over the town: the way each direction leads from the stop picked
+var _arrows: Control
 ## the rooms of the museum inside, as Story has them: heist numbers
 var _nights: Array[int] = []
 ## under each room reached, its stars
@@ -126,8 +118,11 @@ func _init() -> void:
 	_hints.add_theme_constant_override("separation", 28)
 	_hints.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(_hints)
-	_prev_btn = _side_button(Text.t("TOUR_PREV"), "prev")
-	_next_btn = _side_button(Text.t("TOUR_NEXT"), "next")
+	_arrows = Control.new()
+	_arrows.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_arrows.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_arrows.draw.connect(_draw_arrows)
+	_root.add_child(_arrows)
 
 
 ## The town for a gang of `n`, as far as it has got: museum `pick` picked.
@@ -190,27 +185,6 @@ func _pick_museum(m: int) -> void:
 	_sign_stars.visible = stage.is_open(m)
 
 
-## The stops in the order of the route: the hideout, then the museums
-## 1 to 5; only those open.
-func _route_order() -> Array[int]:
-	var order: Array[int] = []
-	for m in [CityStage.HIDEOUT, 0, 1, 2, 3, 4]:
-		if stage.is_open(m):
-			order.append(m)
-	return order
-
-
-## The next open stop along the route (dir -1 or 1), if any. At either
-## end it stays (and the button there dims).
-func _step_route(dir: int) -> void:
-	var order := _route_order()
-	var at := order.find(stage.picked) + dir
-	if at < 0 or at >= order.size():
-		return
-	_nav()
-	_pick_museum(order[at])
-
-
 ## Which of `stops` (id -> where on the screen) lies the way `dir` says
 ## from `from`, both on the screen's plane (y down). One way (an arrow): of
 ## those within CONE degrees of it the nearest; none there, the most in line
@@ -245,17 +219,19 @@ static func toward(from: Vector2, dir: Vector2, stops: Dictionary) -> int:
 	return near
 
 
-## Move the pick the way the pushes say (names of act: "left", "right",
-## "up", "down"; opposite ones cancel), among the open stops.
-func step_dirs(dirs: Array) -> void:
-	var v := Vector2.ZERO
-	for d in dirs:
-		v += DIR_VECTORS.get(d, Vector2.ZERO)
+## The other stops that can be picked (open ones), where they are on the screen.
+func _stops_open() -> Dictionary:
 	var stops := {}
 	for m in [CityStage.HIDEOUT, 0, 1, 2, 3, 4]:
 		if m != stage.picked and stage.is_open(m):
 			stops[m] = stage.stop_on_screen(m)
-	var to := toward(stage.stop_on_screen(stage.picked), v, stops)
+	return stops
+
+
+## Move the pick the way `v` points on the screen (x right, y down; an arrow
+## is one of DIR_VECTORS, the stick any angle), among the open stops.
+func step(v: Vector2) -> void:
+	var to := toward(stage.stop_on_screen(stage.picked), v, _stops_open())
 	if to < 0:
 		return
 	_nav()
@@ -469,7 +445,8 @@ func fade_out() -> void:
 ## "up", "down", "accept", "back", "skip", "prev", "next", or "" for nothing.
 ## Keys: the arrows and WASD; accept, back and skip as on every menu
 ## (MenuKeys: E or the full stop to take, Escape, Space or Enter to go back,
-## Tab to skip); a pad: the cross or the left stick, A, B, Start, LB and RB.
+## Tab to skip); a pad: the cross or the left stick, A, B, Start, LB and RB
+## (which flick between rooms inside a museum; in the town they do nothing).
 func intent(event: InputEvent) -> String:
 	var what := MenuKeys.of(event)
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -494,20 +471,23 @@ func intent(event: InputEvent) -> String:
 		if not Pads.real(event.device):
 			return ""
 		# Once a push: past half way it moves, and not again until it is let
-		# back under a third.
-		var key := "%d:%d" % [event.device, event.axis]
-		var was: int = _stick.get(key, 0)
-		var now := 0
-		if absf(event.axis_value) > 0.5:
-			now = 1 if event.axis_value > 0 else -1
-		elif absf(event.axis_value) > 0.33:
-			now = was
-		_stick[key] = now
-		if now != 0 and now != was:
+		# back under a third. Where it goes is decided next frame (_process),
+		# when both axes have come.
+		var v: Vector2 = _sticks.get(event.device, Vector2.ZERO)
+		if event.axis == JOY_AXIS_LEFT_X:
+			v.x = event.axis_value
+		else:
+			v.y = event.axis_value
+		_sticks[event.device] = v
+		var was: bool = _stick_on.get(event.device, false)
+		var now := v.length() > 0.5 or (was and v.length() > 0.33)
+		_stick_on[event.device] = now
+		if now and not was:
 			_pad = true
-			if event.axis == JOY_AXIS_LEFT_X:
-				return "right" if now > 0 else "left"
-			return "down" if now > 0 else "up"
+			_stick_push = event.device
+			_stick_vec = Vector2.ZERO
+		if _stick_push == event.device and v.length() > _stick_vec.length():
+			_stick_vec = v
 	return ""
 
 
@@ -517,38 +497,7 @@ func input(event: InputEvent) -> void:
 	if what == "":
 		return
 	_hints_for_device()
-	if state == "city" and DIR_VECTORS.has(what):
-		_push(what)
-		return
-	_flush()
 	act(what)
-
-
-## A push in the town: it waits DIR_WINDOW for the other key of a diagonal
-## (up and right come a few milliseconds apart, and the action state may not
-## hold both yet), then the pushes so far are one move (_flush).
-func _push(what: String) -> void:
-	if _pending.is_empty():
-		_pending_at = Time.get_ticks_msec()
-	_pending[what] = true
-	if _window() <= 0.0:
-		_flush()
-
-
-func _window() -> float:
-	if dir_window >= 0.0:
-		return dir_window
-	return 0.0 if stage.hurry else DIR_WINDOW
-
-
-## Move once for the pushes that came together, and forget them.
-func _flush() -> void:
-	if _pending.is_empty():
-		return
-	var dirs := _pending.keys()
-	_pending.clear()
-	if state == "city":
-		step_dirs(dirs)
 
 
 ## Do what a press means, in the step it is in.
@@ -556,9 +505,7 @@ func act(what: String) -> void:
 	match state:
 		"city":
 			match what:
-				"left", "up", "right", "down": step_dirs([what])
-				"prev": _step_route(-1)
-				"next": _step_route(1)
+				"left", "up", "right", "down": step(DIR_VECTORS[what])
 				"accept": _enter_museum()
 				"back":
 					_sound("back")
@@ -598,7 +545,7 @@ func _on_mouse(event: InputEvent) -> void:
 				talk.mouse(event)
 		"city":
 			for m in stage._museums.size():
-				var d := at.distance_to(stage.on_screen(stage._museums[m].global_position + Vector3(0, 1.0, 0)))
+				var d := at.distance_to(stage.stop_point(m))
 				if d < near:
 					near = d
 					best = m
@@ -644,9 +591,16 @@ func _on_mouse(event: InputEvent) -> void:
 
 func _process(_dt: float) -> void:
 	var view := _root.get_viewport_rect().size
-	if not _pending.is_empty() and Time.get_ticks_msec() - _pending_at >= int(_window() * 1000.0):
-		_flush()
-	_place_sides(view)
+	if _stick_push != -100:
+		var v := _stick_vec
+		_stick_push = -100
+		_hints_for_device()
+		if state == "city":
+			step(v)
+		else:
+			act(("right" if v.x > 0 else "left") if absf(v.x) > absf(v.y) else ("down" if v.y > 0 else "up"))
+	_arrows.visible = state == "city"
+	_arrows.queue_redraw()
 	# Wider than the town is built for (CityStage.WIDEST), its sides fade
 	# into the sky, over the safe margin; close in on a museum, nothing fades.
 	var edges := _view.material as ShaderMaterial
@@ -739,64 +693,28 @@ static func _arcade(l: Label) -> void:
 		l.remove_theme_font_override("font")
 
 
-## A button at a side of the town: the stop before or after, along the route
-## (what: "prev" or "next"). Like the pills of the plan (PlanTalk): dark
-## glass, a warm rim under the mouse, its words in the arcade face; it never
-## takes the focus, so the keys and the pad stay as they are.
-func _side_button(words: String, what: String) -> Button:
-	var b := Button.new()
-	b.text = words
-	b.focus_mode = Control.FOCUS_NONE
-	b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	b.size = Vector2(SIDE_W, SIDE_H)
-	b.custom_minimum_size = b.size
-	b.add_theme_font_override("font", Hud.ARCADE)
-	b.add_theme_font_size_override("font_size", 15)
-	for st_name in ["normal", "hover", "pressed", "disabled"]:
-		var st := StyleBoxFlat.new()
-		var lit: bool = st_name in ["hover", "pressed"]
-		st.bg_color = Hud.GLASS_LIT if lit else Hud.GLASS
-		st.set_corner_radius_all(26)
-		st.anti_aliasing = true
-		st.border_color = Hud.GLOW if lit else Hud.GLASS_EDGE
-		st.set_border_width_all(4 if st_name == "pressed" else 3 if lit else 2)
-		st.shadow_color = Color(Hud.GLOW, 0.45) if lit else Color(0, 0, 0, 0.35)
-		st.shadow_size = 16 if lit else 6
-		st.shadow_offset = Vector2.ZERO if lit else Vector2(0, 3)
-		st.set_content_margin_all(12)
-		b.add_theme_stylebox_override(st_name, st)
-	for key in ["font_color", "font_disabled_color"]:
-		b.add_theme_color_override(key, Hud.CREAM)
-	for key in ["font_hover_color", "font_pressed_color", "font_hover_pressed_color"]:
-		b.add_theme_color_override(key, Hud.GLOW_TEXT)
-	b.pivot_offset = b.size * 0.5
-	b.button_down.connect(func() -> void:
-		b.scale = Vector2.ONE * 0.94
-		create_tween().tween_property(b, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT))
-	b.pressed.connect(func() -> void:
-		if state == "city":
-			act(what))
-	_root.add_child(b)
-	return b
-
-
-## The two buttons at the middle of the screen's sides, in the town only; at
-## the end of the route the one that has nowhere to go dims.
-func _place_sides(view: Vector2) -> void:
-	var here := state == "city"
-	_prev_btn.visible = here
-	_next_btn.visible = here
-	if not here:
+## Over the town, from the stop picked: a ring on each stop a push can reach
+## and an arrow towards it, on the way it lies on the screen, so what each
+## direction does is seen before it is pressed.
+func _draw_arrows() -> void:
+	if state != "city":
 		return
-	var y := view.y * 0.5 - SIDE_H * 0.5
-	_prev_btn.position = Vector2(SIDE_GAP, y)
-	_next_btn.position = Vector2(view.x - SIDE_W - SIDE_GAP, y)
-	var order := _route_order()
-	var at := order.find(stage.picked)
-	_prev_btn.disabled = at <= 0
-	_next_btn.disabled = at < 0 or at >= order.size() - 1
-	_prev_btn.modulate.a = 0.4 if _prev_btn.disabled else 1.0
-	_next_btn.modulate.a = 0.4 if _next_btn.disabled else 1.0
+	var from := stage.stop_point(stage.picked)
+	var here := stage.stop_on_screen(stage.picked)
+	var stops := _stops_open()
+	var seen := {}
+	for d in DIR_VECTORS:
+		var to := toward(here, DIR_VECTORS[d], stops)
+		if to < 0 or seen.has(to):
+			continue
+		seen[to] = true
+		var at := stage.stop_point(to)
+		var dir := (at - from).normalized()
+		var base := from + dir * minf(ARROW_R, from.distance_to(at) * 0.4)
+		var side := dir.orthogonal() * 18.0
+		_arrows.draw_arc(at, 36.0, 0.0, TAU, 40, Color(ARROW, 0.8), 4.0, true)
+		_arrows.draw_colored_polygon(PackedVector2Array([base + dir * 34.0, base + side, base - side]), ARROW)
+		_arrows.draw_polyline(PackedVector2Array([base + dir * 34.0, base + side, base - side, base + dir * 34.0]), Color("#1a1024"), 4.0, true)
 
 
 func _nav() -> void:
