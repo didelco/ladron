@@ -56,6 +56,9 @@ static func _default_path() -> String:
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--settings="):
 			return arg.substr(11)
+	# A headless run is a test or a tool, never the player: it must not save over theirs.
+	if DisplayServer.get_name() == "headless":
+		return "user://headless_settings.cfg"
 	return "user://settings.cfg"
 
 
