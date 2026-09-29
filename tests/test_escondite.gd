@@ -836,6 +836,109 @@ func _init() -> void:
 	m._new_round(1)
 	check(m.house.dojo_game == null and is_instance_valid(m.house.dojo_view), "una casa nueva empieza sin juego")
 
+	# Con una prueba en marcha, lo demás de la casa no responde ni ofrece su aviso.
+	m._start_playing()
+	m.house.dojo_lock = 0.0
+	var tt: Thief = m.thieves[0]
+	var other_start: Vector2i = Practice.start_of("atrapa", 0, 1)
+	var bin2: Props.Prop = Props.list.filter(func(q: Props.Prop) -> bool: return q.kind == "bin")[0]
+	var crate2: Hideouts.Spot = Hideouts.all().filter(func(q: Hideouts.Spot) -> bool: return q.kind == "box")[0]
+	var nearby := {
+		"game": Vector2(other_start) + Vector2(0.5, 1.5),
+		"push": Vector2(bin2.x + 0.5, bin2.y + 0.5),
+		"hide": crate2.middle(),
+		"bench": beside,
+	}
+	var act_at := func(kind: String) -> Dictionary:
+		tt.x = nearby[kind].x
+		tt.y = nearby[kind].y
+		tt.moving = false
+		tt.speed = 0.0
+		return m._action_for(tt)
+	var all_free := func() -> bool:
+		m.house.dojo_lock = 0.0
+		return nearby.keys().all(func(k: String) -> bool: return act_at.call(k).get("do", "") == k)
+	var all_blocked := func(except := "") -> bool:
+		return nearby.keys().all(func(k: String) -> bool: return k == except or act_at.call(k).is_empty())
+	check(not m.house.trial_active() and all_free.call(), "sin prueba, todo responde: otro calcetín, la papelera, la caja y la vitrina")
+	for pair in [["atrapa", 1], ["bolos", 2], ["pedestal", 0], ["aguanta", 0]]:
+		m.house.dojo_lock = 0.0
+		m.house.dojo_start(pair[0], pair[1])
+		check(m.house.dojo_game != null and m.house.trial_active(), "%s en marcha: hay prueba" % pair[0])
+		# AGUANTA is the one that asks for hideouts: the open ones of the round.
+		var open_crate: bool = m.house.dojo_game is HideGame and (m.house.dojo_game as HideGame).open_hides.any(func(k: Vector2i) -> bool: return crate2.tiles.has(k))
+		check(all_blocked.call("hide" if open_crate else ""), "%s: otro punto de inicio, la papelera, la vitrina y los escondites que no son suyos, no hacen nada" % pair[0])
+		if open_crate:
+			check(act_at.call("hide").get("do", "") == "hide", "... y el escondite que abre la prueba, sí")
+		tt.x = nearby.push.x
+		tt.y = nearby.push.y
+		var rows: Array = m._prompt_rows(0)
+		check(rows.size() <= 1 and rows.all(func(r: Dictionary) -> bool: return String(r.verb) == Text.t("HIDEOUT_GAME_LEAVE_KEY")), "... ni aviso de acción, solo el de dejar la prueba")
+		var before_start: DojoGame = m.house.dojo_game
+		m.house.dojo_poll()
+		m.house.dojo_start("bolos", 0)
+		check(m.house.dojo_game == before_start, "... ni se empieza otra prueba encima")
+		# Panel de fin: sigue bloqueado hasta aceptar OTRA VEZ o salir.
+		m.house.dojo_game.state = "lost"
+		check(m.house.dojo_game.finished() and m.house.trial_active() and all_blocked.call(), "%s: en el panel de fin, sigue todo bloqueado" % pair[0])
+		m.house.dojo_view.show_view(m.house.dojo_game.view())
+		m.house.dojo_input(_accept_key())
+		check(m.house.dojo_game != null and m.house.dojo_game.state == "ready" and m.house.trial_active(), "... y OTRA VEZ es una prueba de nuevo")
+		m.house.dojo_end()
+		check(not m.house.trial_active() and all_free.call(), "%s: salir del panel lo devuelve todo" % pair[0])
+	# Tab, la pausa (también lo que hace perder un mando) y la puerta.
+	m.house.dojo_lock = 0.0
+	m.house.dojo_start("atrapa", 0)
+	m._unhandled_input(tab)
+	check(not m.house.trial_active() and all_free.call(), "Tab deja la prueba y todo vuelve")
+	m.house.dojo_lock = 0.0
+	m.house.dojo_start("bolos", 0)
+	m._pause()
+	check(not m.house.trial_active(), "la pausa deja la prueba")
+	m._start_playing()
+	check(all_free.call(), "... y al seguir, todo responde")
+	m.house.dojo_lock = 0.0
+	m.house.dojo_start("aguanta", 0)
+	m._new_round(1)
+	m._start_playing()
+	check(not m.house.trial_active(), "una casa nueva con una prueba a medias no arrastra el bloqueo")
+	tt = m.thieves[0]
+	m.house.dojo_lock = 0.0
+	m.house.dojo_start("atrapa", 0)
+	tt.x = 10.0
+	tt.y = 22.5
+	run(2)
+	await frames(6)
+	check(m.phase == "tour" and not m.house.trial_active(), "salir por la puerta durante la prueba la abandona, como Tab: %s" % m.phase)
+	m.mode = Practice.MODE
+	m.players = 1
+	m._new_round(1)
+	m._start_playing()
+	tt = m.thieves[0]
+	check(not m.house.trial_active() and all_free.call(), "... y de vuelta en la casa, todo responde")
+	# Las vitrinas del banco: quieto (sin minijuego) y con minijuego.
+	var cases: Array = Practice.bench_cases(1)
+	m.house.bench_act(tt, 0, {"what": "case", "i": 0}, {})
+	check(m.house.bench_hold.has(tt.id) and m.house.trial_active() and all_blocked.call("bench"), "esperando quieto en QUIETO, lo demás no responde")
+	check(m._prompt_rows(0).size() == 1 and m._prompt_rows(0)[0].has("progress"), "... y solo se ve la cuenta de la espera")
+	tt.moving = true
+	m.house.bench_tick(0.25)
+	tt.moving = false
+	check(not m.house.trial_active() and all_free.call(), "moverse deshace la espera y todo vuelve")
+	var lock_slot := -1
+	for c in cases:
+		if c.kind != "hold":
+			lock_slot = c.slot
+			break
+	if lock_slot >= 0:
+		m.house.bench_act(tt, 0, {"what": "case", "i": lock_slot}, {})
+		check(tt.game != null and tt.game.what == "bench" and m.house.trial_active() and all_blocked.call(), "con el minijuego de una vitrina, lo demás no responde")
+		tt.game = null
+		check(not m.house.trial_active() and all_free.call(), "dejar el minijuego (sin esperar al siguiente cuadro) lo devuelve todo")
+	else:
+		print("(no hay vitrina con minijuego desbloqueada: se salta)")
+	m.house.bench_target.clear()
+
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
 	print("\n%d fallos" % fails)
 	quit(1 if fails > 0 else 0)
