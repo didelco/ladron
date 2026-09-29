@@ -20,7 +20,6 @@ var asked := {}          ## Las claves comprobadas (para contarlas).
 ## Literales en mayúsculas que NO son claves de Text, o que solo son la base de
 ## otras (la variante _ONE/_MANY/_1 se comprueba aparte), y se saltan.
 const NOT_KEYS := [
-	"DOJO_ZONES",  # una constante de Den que busca dojo_field.gd por su nombre
 	# Los rasgos de los guardias: TIP_TRAIT_<rasgo> y TIP_ADVICE_<rasgo> se comprueban abajo.
 	"SHARP_EARS", "FAST", "FAR_EYES", "DULL_EARS", "SHORT_EYES", "SLOW",
 ]
@@ -171,10 +170,13 @@ func _families() -> void:
 	var games := []
 	for id in DojoGames.ids():
 		var info := DojoGames.info(id)
-		games.append_array([info.name_key, info.blurb_key, "HIDEOUT_GAME_LOST_" + upper(id)])
+		games.append_array([info.name_key, "HIDEOUT_GAME_LOST_" + upper(id)])
 	for why in ["time", "fall", "down", "late", "seen", "left", "sneeze"]:  # los _lose(...) de logic/*_game.gd
 		games.append("HIDEOUT_GAME_WHY_" + upper(why))
-	games.append_array(numbered("HIDEOUT_BENCH_LEVEL_", 0, 2))
+	for t in DojoGames.TIERS:
+		games.append(t.text)
+	for id in ["atrapa", "bolos"]:
+		games.append(DojoGames.info(id).start_key)
 	need_all(games, "juegos del dojo")
 	# Minijuegos (Minigame.how(): GAME_HOW_<tipo>; cada tipo es una clase de logic/).
 	var hows := []

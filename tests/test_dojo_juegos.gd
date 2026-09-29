@@ -3,7 +3,8 @@ extends SceneTree
 ## CALCETÍN, BOLOS, EQUILIBRIO y AGUANTA ESCONDIDO. Lógica pura sobre un campo
 ## sintético (con puerta, laberinto y espantapájaros) y sobre el dojo de verdad
 ## (Practice.map): niveles, dificultad, pérdida, victoria con un bot, semillas,
-## el guardado del mejor nivel por banda y la vista.
+## las tres dificultades (tramos de niveles), el guardado del mejor nivel por
+## dificultad y banda, los puntos de inicio del dojo y la vista.
 var fails := 0
 const DT := 1.0 / 60.0
 var field: DojoField
@@ -56,8 +57,10 @@ func synthetic(scarecrows: bool) -> DojoField:
 	return f
 
 
-func game(id: String, seed_ := 7, players := 1, f: DojoField = null) -> DojoGame:
-	return DojoGames.make(id, players, seed_, f if f != null else field, start)
+func game(id: String, seed_ := 7, players := 1, f: DojoField = null, tier := 0) -> DojoGame:
+	var g := DojoGames.make(id, players, seed_, f if f != null else field, start, tier)
+	g.starter = 0
+	return g
 
 
 func run(g: DojoGame, secs: float, fn := Callable()) -> Array:
@@ -172,35 +175,28 @@ func _params_tests() -> void:
 	var need := {
 		"atrapa": ["dmin", "dmax", "zones", "base", "slack", "move", "gate", "watch", "watch_n", "maze", "ring", "min_time"],
 		"bolos": ["n", "cluster", "movers", "move", "dmin", "dmax", "zones", "base", "slack", "gate", "maze", "min_time"],
-		"pedestal": ["hold", "topple", "nudge", "nudge_s", "wind", "game_level", "pressure"],
+		"pedestal": ["hold"],
 		"aguanta": ["hold", "sweep", "amp", "spots", "rise", "burst", "enter"],
 	}
 	var cls := {"atrapa": CatchGame, "bolos": BowlingGame, "pedestal": PedestalGame, "aguanta": HideGame}
 	for id in need:
 		var full := true
-		for lv in range(1, 21):
+		for lv in range(1, 11):
 			var p: Dictionary = cls[id].params(lv)
 			for k in need[id]:
 				if not p.has(k):
 					full = false
-		check(full and cls[id].LEVELS.size() == 10, "%s: diez niveles definidos y hora extra, con todos sus parámetros" % id)
+		check(full and cls[id].LEVELS.size() == 10, "%s: diez niveles definidos, con todos sus parámetros" % id)
 	# Monotone difficulty.
 	var prev := 1e9
 	var mono := true
-	for lv in range(1, 21):
+	for lv in range(1, 11):
 		var t := CatchGame.time_for(lv, 10)
 		if t > prev + 0.0001:
 			mono = false
 		prev = t
-	check(mono, "atrapa: el tiempo para el mismo camino no sube de nivel en nivel (1 a 20)")
-	var extras := true
-	for lv in range(11, 21):
-		var a := CatchGame.params(lv - 1)
-		var b := CatchGame.params(lv)
-		if b.slack > a.slack + 0.0001 or b.dmax < a.dmax or b.slack < CatchGame.EXTRA_SLACK_MIN - 0.0001:
-			extras = false
-	check(extras, "atrapa: en la hora extra el margen no sube, el alcance no encoge y el margen no baja de 1,0")
-	check(CatchGame.params(15).min_time == 4.0 and CatchGame.params(10).min_time == 4.5, "atrapa: tiempo mínimo 4,5 en el 10 y 4,0 en la hora extra")
+	check(mono, "atrapa: el tiempo para el mismo camino no sube de nivel en nivel (1 a 10)")
+	check(CatchGame.params(10).min_time == 4.5 and CatchGame.params(9).min_time == 0.0, "atrapa: tiempo mínimo 4,5 en el 10")
 	check(is_equal_approx(CatchGame.time_for(1, 6), 3.0 + 2.2 * 6 * 0.24), "atrapa: tiempo = base + margen * camino * 0,24")
 	check(is_equal_approx(CatchGame.time_for(6, 10, true), 2.0 + 1.45 * 10 * 0.24 + 1.5), "atrapa: +1,5 s con puerta")
 	check(CatchGame.params(5).move == 0.8 and CatchGame.params(9).move == 1.4 and CatchGame.params(10).move == 1.8, "atrapa: los que se mueven a 0,8, 1,4 y 1,8")
@@ -209,30 +205,30 @@ func _params_tests() -> void:
 	mono = true
 	prev = 1e9
 	var prev_n := 0
-	for lv in range(1, 21):
+	for lv in range(1, 11):
 		var t := BowlingGame.time_for(lv, 10)
 		if t > prev + 0.0001 or BowlingGame.params(lv).n < prev_n:
 			mono = false
 		prev = t
 		prev_n = BowlingGame.params(lv).n
-	check(mono, "bolos: el tiempo no sube y los bolos por ronda no bajan (1 a 20)")
+	check(mono, "bolos: el tiempo no sube y los bolos por ronda no bajan (1 a 10)")
 	mono = true
 	var last := {}
-	for lv in range(1, 21):
+	for lv in range(1, 11):
 		var p := PedestalGame.params(lv)
-		if not last.is_empty() and (p.hold <= last.hold or p.topple < last.topple or p.nudge < last.nudge or p.nudge_s > last.nudge_s or p.wind < last.wind):
+		if not last.is_empty() and p.hold <= last.hold:
 			mono = false
 		last = p
-	check(mono, "equilibrio: cada ronda más tiempo, más vuelco, más empujones y más viento (1 a 20)")
+	check(mono, "equilibrio: cada ronda más tiempo (1 a 10)")
 	check(PedestalGame.params(1).hold == 4.0 and PedestalGame.params(4).hold == 8.0 and PedestalGame.params(7).hold == 15.0, "equilibrio: 4 s, 5, 6, 8, 10, 12, 15...")
 	mono = true
 	last = {}
-	for lv in range(1, 21):
+	for lv in range(1, 11):
 		var p := HideGame.params(lv)
 		if not last.is_empty() and (p.hold <= last.hold or p.sweep < last.sweep or p.spots > last.spots or p.rise < last.rise or p.enter > last.enter):
 			mono = false
 		last = p
-	check(mono, "aguanta: más tiempo, linterna más rápida, estornudos más seguidos y menos escondites (1 a 20)")
+	check(mono, "aguanta: más tiempo, linterna más rápida, estornudos más seguidos y menos escondites (1 a 10)")
 	check(HideGame.params(1).hold == 5.0 and HideGame.params(4).hold == 12.0, "aguanta: 5 s, 7, 9, 12, 15...")
 	check(HideGame.params(4).rise == 0.0 and HideGame.params(5).rise > 0.0, "aguanta: el estornudo llega en el nivel 5")
 
@@ -244,12 +240,11 @@ func _base_tests() -> void:
 	check(g.state == "idle" and not g.active(), "un juego nuevo está parado")
 	check(not g.alarm(), "la alarma no vale fuera de juego")
 	g.start()
-	check(g.state == "ready" and g.level == 1 and g.got == 0 and g.goal == 10, "start: ¿LISTOS?")
+	check(g.state == "ready" and g.level == 1 and g.got == 0 and g.goal == 3, "start: ¿LISTOS?")
 	run(g, 1.9)
 	check(g.state == "ready", "... dos segundos")
 	var evs := run(g, 0.25)
 	check(g.state == "playing" and not of(evs, "spawn").is_empty(), "... y sale el primero")
-	check(not g.continue_extra(), "no hay hora extra sin ganar")
 	g.abort()
 	check(g.state == "idle", "abort: se sale de donde se esté")
 	check(of(g.step(DT, bl([])), "abort").size() == 1, "... y lo dice")
@@ -259,7 +254,7 @@ func _base_tests() -> void:
 	check(g.state == "lost" and g.lost_why == "time", "sin nadie, se pierde por tiempo")
 	check(not g.alarm() and g.step(DT, bl([])).is_empty(), "perdido, nada más pasa")
 	var v := g.view()
-	check(v.state == "lost" and v.reached == g.level and v.goal == 10 and v.has("objects") and v.has("timer"), "view() trae lo que la vista necesita")
+	check(v.state == "lost" and v.reached == g.level and v.goal == 3 and v.tier == 0 and v.has("objects") and v.has("timer"), "view() trae lo que la vista necesita")
 	check(DojoGames.make("nada", 1, 1, field, start) == null, "make: un juego que no existe, nulo")
 	var same := true
 	for e in DojoGames.GAMES:
@@ -281,34 +276,34 @@ func _catch_bot(g: DojoGame) -> Array:
 
 
 func _catch_tests() -> void:
-	var g := game("atrapa", 11)
-	var spawns := []
-	g.start()
-	var evs := run_end(g, _catch_bot, 400.0)
-	spawns = of(evs, "spawn")
-	check(g.state == "won" and g.got == 10 and g.level == 10, "atrapa: un bot que se pone encima gana a los diez (level %d got %d)" % [g.level, g.got])
-	check(spawns.size() == 10 and of(evs, "catch").size() == 10 and of(evs, "level").size() == 9, "atrapa: 10 apariciones, 10 cogidos, 9 subidas de nivel")
-	check(of(evs, "won").size() == 1 and g.credits[0] == 10, "atrapa: ganó, con los diez a su nombre")
-	var times_ok := true
-	for i in spawns.size():
-		if spawns[i].level != i + 1 or spawns[i].time <= 0.0:
-			times_ok = false
-	check(times_ok, "atrapa: cada aparición trae su nivel y su tiempo")
-	check(g.continue_extra() and g.extra and g.level == 11, "atrapa: SEGUIR lleva a la hora extra (nivel 11)")
-	var more := run(g, 2.0, _catch_bot)
-	check(g.state in ["playing", "between", "ready"] and of(more, "spawn").size() >= 1, "... y sigue")
-	run_end(g, _catch_bot, 200.0)
-	check(g.state != "lost" and g.got > 12 and g.level > 12, "... sin ganar otra vez, sin fin (nivel %d)" % g.level)
+	for tier in 3:
+		var first: int = DojoGames.TIERS[tier].from
+		var last: int = DojoGames.TIERS[tier].to
+		var n := last - first + 1
+		var g := game("atrapa", 11, 1, null, tier)
+		g.start()
+		check(g.level == first and g.goal == n, "atrapa %s: empieza en el nivel %d y hay que hacer %d" % [DojoGames.TIERS[tier].id, first, n])
+		var evs := run_end(g, _catch_bot, 400.0)
+		var spawns := of(evs, "spawn")
+		check(g.state == "won" and g.got == n and g.level == last, "atrapa %s: un bot que se pone encima gana el tramo (level %d got %d)" % [DojoGames.TIERS[tier].id, g.level, g.got])
+		check(spawns.size() == n and of(evs, "catch").size() == n and of(evs, "level").size() == n - 1, "atrapa %s: %d apariciones, %d cogidos, %d subidas de nivel" % [DojoGames.TIERS[tier].id, n, n, n - 1])
+		check(of(evs, "won").size() == 1 and g.credits[0] == n, "atrapa %s: ganó, con todos a su nombre" % DojoGames.TIERS[tier].id)
+		var times_ok := true
+		for i in spawns.size():
+			if spawns[i].level != first + i or spawns[i].time <= 0.0:
+				times_ok = false
+		check(times_ok, "atrapa %s: cada aparición trae su nivel y su tiempo" % DojoGames.TIERS[tier].id)
+		check(g.state == "won" and g.step(DT, bl([])).is_empty(), "atrapa %s: ganado, no sigue" % DojoGames.TIERS[tier].id)
 	# Determinism.
-	var a := game("atrapa", 5)
-	var b := game("atrapa", 5)
-	var c := game("atrapa", 6)
+	var a := game("atrapa", 5, 1, null, 2)
+	var b := game("atrapa", 5, 1, null, 2)
+	var c := game("atrapa", 6, 1, null, 2)
 	for x in [a, b, c]:
 		x.start()
 	var ta := of(run_end(a, _catch_bot, 400.0), "spawn").map(func(e): return e.tile)
 	var tb := of(run_end(b, _catch_bot, 400.0), "spawn").map(func(e): return e.tile)
 	var tc := of(run_end(c, _catch_bot, 400.0), "spawn").map(func(e): return e.tile)
-	check(ta == tb and ta.size() == 10, "atrapa: la misma semilla, los mismos sitios")
+	check(ta == tb and ta.size() == 4, "atrapa: la misma semilla, los mismos sitios")
 	check(ta != tc, "atrapa: otra semilla, otros sitios")
 	# The rule of the catch.
 	var h := game("atrapa", 2)
@@ -339,7 +334,7 @@ func _catch_tests() -> void:
 	var zone_ok := true
 	var win_ok := true
 	var bad := ""
-	for lv in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15]:
+	for lv in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
 		for s in range(1, 9):
 			var q := game("atrapa", s)
 			begin(q, lv)
@@ -354,7 +349,7 @@ func _catch_tests() -> void:
 					zone_ok = false
 				if sp.path < p.dmin or sp.path > p.dmax:
 					win_ok = false
-	check(reach_ok, "atrapa: los puntos de los niveles 1 a 10 y 12, 15 son claros y alcanzables %s" % bad)
+	check(reach_ok, "atrapa: los puntos de los niveles 1 a 10 son claros y alcanzables %s" % bad)
 	check(zone_ok, "atrapa: y, si nada se ha aflojado, de su zona")
 	check(win_ok, "atrapa: y a su distancia")
 	# Door.
@@ -492,22 +487,25 @@ func _bowl_bot(g: DojoGame) -> Array:
 
 
 func _bowling_tests() -> void:
-	var g := game("bolos", 21)
-	g.start()
-	var evs := run_end(g, _bowl_bot, 600.0)
-	check(g.state == "won" and g.got == 10, "bolos: un bot que rueda contra cada bolo gana las diez rondas (level %d)" % g.level)
-	var sp := of(evs, "spawn")
-	var counts_ok := true
-	for i in sp.size():
-		if sp[i].pins.size() != BowlingGame.params(i + 1).n:
-			counts_ok = false
-	check(sp.size() == 10 and counts_ok, "bolos: cada ronda saca los bolos de la tabla (%s)" % [sp.map(func(s): return s.pins.size())])
-	check(g.pins_down == 1 + 1 + 2 + 2 + 2 + 3 + 3 + 3 + 4 + 4, "bolos: y los tira todos (%d)" % g.pins_down)
-	check(g.continue_extra() and g.level == 11, "bolos: SEGUIR lleva a la hora extra")
-	run(g, 2.5, _bowl_bot)
-	check(g.pins.size() == BowlingGame.params(11).n, "bolos: ... con la tabla de la hora extra")
-	var a := game("bolos", 5)
-	var b := game("bolos", 5)
+	for tier in 3:
+		var first: int = DojoGames.TIERS[tier].from
+		var last: int = DojoGames.TIERS[tier].to
+		var g := game("bolos", 21, 1, null, tier)
+		g.start()
+		var evs := run_end(g, _bowl_bot, 600.0)
+		var name: String = DojoGames.TIERS[tier].id
+		check(g.state == "won" and g.got == last - first + 1 and g.level == last, "bolos %s: un bot que rueda contra cada bolo gana el tramo (level %d)" % [name, g.level])
+		var sp := of(evs, "spawn")
+		var counts_ok := true
+		var pins := 0
+		for i in sp.size():
+			if sp[i].pins.size() != BowlingGame.params(first + i).n:
+				counts_ok = false
+			pins += BowlingGame.params(first + i).n
+		check(sp.size() == last - first + 1 and counts_ok, "bolos %s: cada ronda saca los bolos de la tabla (%s)" % [name, sp.map(func(s): return s.pins.size())])
+		check(g.pins_down == pins, "bolos %s: y los tira todos (%d)" % [name, g.pins_down])
+	var a := game("bolos", 5, 1, null, 2)
+	var b := game("bolos", 5, 1, null, 2)
 	a.start()
 	b.start()
 	var ta := of(run_end(a, _bowl_bot, 600.0), "spawn").map(func(e): return e.pins.map(func(p): return p.tile))
@@ -573,83 +571,70 @@ func _bowling_tests() -> void:
 
 # --- EQUILIBRIO --------------------------------------------------------------------------------------
 
-func _ped_bot(g: DojoGame) -> Array:
-	var p := g as PedestalGame
-	var push := clampf(-(20.0 * p.lean + 8.0 * p.lean_v) / PedestalGame.PUSH_GAIN, -1.0, 1.0)
-	return [body(0, DojoField.center(p.lit), {"posing": true, "hidden": true, "push": push})]
+## The holder up on the pedestal, balanced (what the host says when the minigame keeps the pose).
+func _ped_up(g: DojoGame) -> Array:
+	return [body(0, DojoField.center(g.start_tile), {"posing": true, "hidden": true, "fell": false, "lean": 0.2})]
 
 
-func _ped_idle(g: DojoGame) -> Array:
-	var p := g as PedestalGame
-	return [body(0, DojoField.center(p.lit), {"posing": true, "hidden": true, "push": 0.0})]
+## Begin at a level with the holder up on the pedestal.
+func begin_up(g: DojoGame, lv := 1) -> Array:
+	g.start()
+	g.level = lv
+	return run(g, DojoGame.READY_S + 0.1, _ped_up)
 
 
 func _pedestal_tests() -> void:
-	var g := game("pedestal", 31)
-	(g as PedestalGame).set_pedestals([Vector2i(5, 5), Vector2i(20, 3), Vector2i(35, 8)])
-	g.start()
-	var evs := run_end(g, _ped_bot, 400.0)
-	check(g.state == "won" and g.got == 10, "equilibrio: un bot que corrige el vuelco aguanta las diez rondas (level %d, why %s)" % [g.level, g.lost_why])
-	var sp := of(evs, "spawn")
-	var holds := sp.map(func(e): return e.hold)
-	check(holds == [4.0, 5.0, 6.0, 8.0, 10.0, 12.0, 15.0, 18.0, 22.0, 26.0], "equilibrio: los tiempos objetivo crecen: %s" % [holds])
-	var moved := true
-	for i in range(1, sp.size()):
-		if sp[i].tile == sp[i - 1].tile:
-			moved = false
-	check(moved, "equilibrio: con varios pedestales, cada ronda en uno distinto")
-	check(of(evs, "nudge").size() > 10 and not of(evs, "wobble").is_empty() or of(evs, "nudge").size() > 10, "equilibrio: hay empujones")
-	# Idle: falls, at every level.
+	for tier in 3:
+		var first: int = DojoGames.TIERS[tier].from
+		var last: int = DojoGames.TIERS[tier].to
+		var name: String = DojoGames.TIERS[tier].id
+		var g := game("pedestal", 31, 1, null, tier)
+		g.start()
+		var evs := run_end(g, _ped_up, 400.0)
+		check(g.state == "won" and g.got == last - first + 1 and g.level == last, "equilibrio %s: aguantar las rondas del tramo lo gana (level %d, why %s)" % [name, g.level, g.lost_why])
+		var sp := of(evs, "spawn")
+		var holds := sp.map(func(e): return e.hold)
+		var want := []
+		for lv in range(first, last + 1):
+			want.append(PedestalGame.params(lv).hold)
+		check(holds == want, "equilibrio %s: los tiempos objetivo crecen: %s" % [name, holds])
+		check(sp.all(func(e): return e.tile == start), "equilibrio %s: todas las rondas en el mismo pedestal, el de salida" % name)
+		check(g.credits[0] == last - first + 1, "equilibrio %s: las rondas, a nombre de quien las aguantó" % name)
+	# The minigame's fall, at every level.
 	var all_fall := true
-	var when := 0.0
 	for lv in range(1, 11):
 		var f := game("pedestal", 40 + lv)
-		f.start()
-		f.level = lv
-		run(f, 2.1)
-		var e := run_end(f, _ped_idle, 30.0)
+		begin_up(f, lv)
+		run(f, 1.0, _ped_up)
+		var e := run(f, 0.1, func(_g): return [body(0, DojoField.center(f.start_tile), {"posing": false, "fell": true, "lean": 1.7})])
 		if f.state != "lost" or f.lost_why != "fall" or of(e, "fall").is_empty():
 			all_fall = false
-		when = maxf(when, f.time)
-	check(all_fall, "equilibrio: quieto, sin corregir, te caes en cada nivel (y pierdes)")
+	check(all_fall, "equilibrio: el 'fell' del minijuego pierde por caída, en cada nivel")
+	var fell_up := game("pedestal", 3)
+	begin_up(fell_up, 1)
+	run(fell_up, 0.3, func(_g): return [body(0, DojoField.center(fell_up.start_tile), {"posing": true, "fell": true, "lean": 1.7})])
+	check(fell_up.state == "lost" and fell_up.lost_why == "fall", "equilibrio: 'fell' pierde aunque el cuerpo siga marcado como subido")
 	# Down early.
 	var d := game("pedestal", 3)
-	begin(d, 1)
-	run(d, 0.5, _ped_bot)
+	begin_up(d, 1)
+	run(d, 0.5, _ped_up)
 	run(d, 0.2, func(_g): return [body(0, Vector2(3, 3), {"posing": false})])
 	check(d.state == "lost" and d.lost_why == "down", "equilibrio: bajarse antes de tiempo pierde")
-	# Nobody climbs.
+	# Nobody up there.
 	var late := game("pedestal", 3)
-	begin(late, 1)
-	run(late, PedestalGame.CLIMB_S + 1.0, func(_g): return [body(0, Vector2(3, 3))])
-	check(late.state == "lost" and late.lost_why == "late", "equilibrio: si nadie sube en 15 s, se pierde")
-	# Others up on other pedestals do not count, nor away.
-	var away := game("pedestal", 3)
-	begin(away, 1)
-	run(away, 1.0, func(_g): return [body(0, Vector2(2, 2), {"posing": true, "hidden": true})])
-	check(away.phase == "climb", "equilibrio: subido a otro pedestal no cuenta")
-	# The minigame's own lean.
+	begin_up(late, 1)
+	run(late, 0.2, func(_g): return [body(1, DojoField.center(late.start_tile), {"posing": true})])
+	check(late.state == "lost" and late.lost_why == "down", "equilibrio: si el que lo empezó no está arriba, se pierde; otro subido no cuenta")
+	# The lean reaches the picture; the time is the game's.
 	var ext := game("pedestal", 3)
-	begin(ext, 1)
-	run(ext, 5.0, func(_g): return [body(0, DojoField.center(ext.lit), {"posing": true, "fell": false, "lean": 0.3})])
+	begin_up(ext, 1)
+	run(ext, 1.0, _ped_up)
+	check(is_equal_approx(ext.view().lean, 0.2) and ext.view().timer.kind == "hold" and ext.view().fall == BalanceGame.FALL, "equilibrio: la inclinación del minijuego llega a la vista")
+	run(ext, 5.0, _ped_up)
 	check(ext.state == "between" or ext.got == 1, "equilibrio: con el minijuego llevando el equilibrio, se cuenta el tiempo y se supera la ronda")
-	var ext2 := game("pedestal", 3)
-	begin(ext2, 3)
-	run(ext2, 1.0, func(_g): return [body(0, DojoField.center(ext2.lit), {"posing": true, "fell": false, "lean": 0.3})])
-	var fe := run(ext2, 0.1, func(_g): return [body(0, DojoField.center(ext2.lit), {"posing": false, "fell": true, "lean": 1.7})])
-	check(ext2.state == "lost" and ext2.lost_why == "fall" and not of(fe, "fall").is_empty(), "equilibrio: 'fell' del minijuego pierde por caída")
-	check(PedestalGame.params(1).game_level == 0 and PedestalGame.params(5).game_level == 1 and PedestalGame.params(9).game_level == 2, "equilibrio: game_level 0, 1 y 2 para el minijuego")
-	# Determinism.
-	var a := game("pedestal", 9)
-	var b := game("pedestal", 9)
-	for x in [a, b]:
-		x.start()
-	run_end(a, _ped_bot, 60.0)
-	run_end(b, _ped_bot, 60.0)
-	check(a.lean == b.lean and a.lean_v == b.lean_v and a.got == b.got, "equilibrio: la misma semilla, la misma inclinación")
 	var al := game("pedestal", 3)
-	begin(al, 1)
-	run(al, 0.3, _ped_bot)
+	begin_up(al, 1)
+	run(al, 0.3, _ped_up)
 	var hold0: float = al.hold_left
 	al.alarm(2.0)
 	check(al.hold_left > hold0 + 1.5, "equilibrio: alarm() alarga lo que hay que aguantar")
@@ -660,8 +645,8 @@ func _pedestal_tests() -> void:
 var hides: Array[Vector2i] = [Vector2i(5, 4), Vector2i(6, 12), Vector2i(20, 12), Vector2i(26, 5)]
 
 
-func _hide_game(seed_ := 51, players := 1) -> HideGame:
-	var g := game("aguanta", seed_, players) as HideGame
+func _hide_game(seed_ := 51, players := 1, tier := 0) -> HideGame:
+	var g := game("aguanta", seed_, players, null, tier) as HideGame
 	g.set_hideouts(hides)
 	g.set_lantern(Vector2i(10, 2), PI / 2.0)
 	g.seen = func(_sc, pos, hidden): return not hidden and pos.x > 40.0
@@ -678,15 +663,30 @@ func _hide_bot(g: DojoGame) -> Array:
 
 
 func _hide_tests() -> void:
-	var g := _hide_game()
-	g.start()
-	var evs := run_end(g, _hide_bot, 400.0)
-	check(g.state == "won" and g.got == 10, "aguanta: un bot escondido que aguanta el estornudo gana las diez rondas (level %d, why %s)" % [g.level, g.lost_why])
-	var holds := of(evs, "spawn").map(func(e): return e.hold)
-	check(holds == [5.0, 7.0, 9.0, 12.0, 15.0, 18.0, 21.0, 24.0, 27.0, 30.0], "aguanta: el tiempo a aguantar crece: %s" % [holds])
-	var spots := of(evs, "spawn").map(func(e): return e.spots)
-	check(spots == [4, 4, 4, 3, 3, 3, 2, 2, 1, 1], "aguanta: cada vez menos escondites abiertos: %s" % [spots])
-	check(g.got == 10, "aguanta: (con el bot que toca la barra no llega al aviso)")
+	var all_holds := []
+	var all_spots := []
+	for tier in 3:
+		var first: int = DojoGames.TIERS[tier].from
+		var last: int = DojoGames.TIERS[tier].to
+		var g := _hide_game(51, 1, tier)
+		g.start()
+		var evs := run_end(g, _hide_bot, 400.0)
+		check(g.state == "won" and g.got == last - first + 1 and g.level == last, "aguanta %s: un bot escondido que aguanta el estornudo gana el tramo (level %d, why %s)" % [DojoGames.TIERS[tier].id, g.level, g.lost_why])
+		all_holds.append_array(of(evs, "spawn").map(func(e): return e.hold))
+		all_spots.append_array(of(evs, "spawn").map(func(e): return e.spots))
+	check(all_holds == [5.0, 7.0, 9.0, 12.0, 15.0, 18.0, 21.0, 24.0, 27.0, 30.0], "aguanta: el tiempo a aguantar crece: %s" % [all_holds])
+	check(all_spots == [4, 4, 4, 3, 3, 3, 2, 2, 1, 1], "aguanta: cada vez menos escondites abiertos: %s" % [all_spots])
+	# The first round leaves open the armour one started in.
+	var open_ok := true
+	for seed_ in range(1, 13):
+		var st := DojoGames.make("aguanta", 1, seed_, field, hides[3], 2) as HideGame
+		st.set_hideouts(hides)
+		st.set_lantern(Vector2i(10, 2), PI / 2.0)
+		st.start()
+		run(st, DojoGame.READY_S + 0.1)
+		if st.spots != 2 or not st.open_hides.has(hides[3]):
+			open_ok = false
+	check(open_ok, "aguanta: en la primera ronda queda abierto el escondite donde se empezó (con dos abiertos, en el difícil)")
 	# Leaving loses.
 	var l := _hide_game()
 	begin(l, 1)
@@ -789,14 +789,15 @@ func _save_tests() -> void:
 	DojoGames.record("atrapa", 1, 10, true)
 	check(DojoGames.won("atrapa", 1) and not DojoGames.won("atrapa", 2), "guardado: ganado, por banda")
 	check(not DojoGames.record("atrapa", 1, 10, true), "guardado: ganar otra vez con el mismo nivel no es récord")
-	check(DojoGames.record("atrapa", 1, 14, true) and DojoGames.best("atrapa", 1) == 14, "guardado: la hora extra sube el mejor")
+	check(DojoGames.record("atrapa", 1, 9, false, 2) and DojoGames.best("atrapa", 1, 2) == 9 and DojoGames.best("atrapa", 1, 0) == 10
+		and DojoGames.best("atrapa", 1, 1) == 0 and not DojoGames.won("atrapa", 1, 2), "guardado: cada dificultad con su mejor y su ganado")
 	DojoGames.record("bolos", 3, 500, false)
 	check(DojoGames.best("bolos", 3) == 99, "guardado: tope 99")
 	check(Story.unlocked(1) == story_before and (Story.star_mask(1, 1) & Story.STAR_TAKEN) != 0, "guardado: no pierde [story] ni [stars]")
 	var cfg := ConfigFile.new()
 	cfg.load(Story.save)
-	check(cfg.has_section_key("dojo", "atrapa_best_1") and cfg.has_section_key("dojo", "atrapa_won_1") and cfg.has_section_key("dojo", "atrapa_best_2"),
-		"guardado: claves <id>_best_<n> y <id>_won_<n> en [dojo]")
+	check(cfg.has_section_key("dojo", "atrapa_easy_best_1") and cfg.has_section_key("dojo", "atrapa_easy_won_1") and cfg.has_section_key("dojo", "atrapa_easy_best_2")
+		and cfg.has_section_key("dojo", "atrapa_hard_best_1"), "guardado: claves <id>_<dificultad>_best_<n> y <id>_<dificultad>_won_<n> en [dojo]")
 	check(not DojoGames.record("nada", 1, 5, false), "guardado: un juego que no existe no se guarda")
 	# A progress from before the dojo (no [dojo]).
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
@@ -815,9 +816,14 @@ func _save_tests() -> void:
 	g.start()
 	var evs := run_end(g, func(_g): return [body(0, Vector2(3, 3))], 60.0)
 	check(g.state == "lost" and DojoGames.settle(g, evs) and g.new_record and g.best == g.level, "settle: al perder se guarda el nivel y es récord")
-	check(DojoGames.best("atrapa", 2) == g.level, "... para esa banda")
+	check(DojoGames.best("atrapa", 2) == g.level and DojoGames.best("atrapa", 2, 1) == 0, "... para esa banda y esa dificultad")
 	var again := game("atrapa", 5, 2)
 	check(again.best == g.level, "make trae el mejor de la banda")
+	var hard := game("atrapa", 5, 2, null, 2)
+	hard.start()
+	var hard_evs := run_end(hard, func(_g): return [body(0, Vector2(3, 3))], 60.0)
+	check(hard.level == 7 and DojoGames.settle(hard, hard_evs) and DojoGames.best("atrapa", 2, 2) == 7 and hard.best == 7 and again.best == g.level,
+		"settle: el difícil empieza en el 7 y guarda en lo suyo, sin tocar el fácil")
 	again.start()
 	var evs2 := run_end(again, func(_g): return [body(0, Vector2(3, 3))], 60.0)
 	check(not DojoGames.settle(again, evs2) and not again.new_record, "settle: igual, no es récord")
@@ -842,8 +848,9 @@ func _den_tests() -> void:
 	var from: Vector2i = f.all_clear()[0]
 	for id in DojoGames.ids():
 		var g := DojoGames.make(id, 1, 77, f, from)
+		g.starter = 0
 		g.start()
-		run(g, 2.3)
+		run(g, 2.3, func(_g): return [body(0, DojoField.center(from), {"posing": true})])
 		check(g.state == "playing", "dojo real: %s empieza sin colgarse" % id)
 		if id == "atrapa":
 			var okk := true
@@ -875,12 +882,10 @@ func _view_tests() -> void:
 	var ok := true
 	for id in DojoGames.ids():
 		var g := game(id, 3)
-		if id == "pedestal":
-			(g as PedestalGame).set_pedestals([Vector2i(5, 5)])
 		if id == "aguanta":
 			(g as HideGame).set_hideouts(hides)
 		g.start()
-		run(g, 2.3)
+		run(g, 2.3, _ped_up if id == "pedestal" else Callable())
 		v.show_view(g.view())
 		await process_frame
 		v.react(g.step(DT, bl([])))
@@ -897,7 +902,7 @@ func _view_tests() -> void:
 	var won_evs := run_end(w, _catch_bot, 400.0)
 	v.show_view(w.view())
 	await process_frame
-	check(v.menu() == ["again", "go_on", "exit"] and v.selected() == "again", "vista: al ganar, también SEGUIR (HORA EXTRA) [%s %s]" % [w.state, v.menu()])
+	check(v.menu() == ["again", "exit"] and v.selected() == "again" and w.state == "won", "vista: al ganar, OTRA VEZ y SALIR (sin hora extra) [%s %s]" % [w.state, v.menu()])
 	w.abort()
 	v.show_view(w.view())
 	check(not v.visible and v.accept() == "", "vista: parado, se esconde")
@@ -908,8 +913,8 @@ func _view_tests() -> void:
 		if not sounds.has(DojoGamesView.SOUNDS[k]):
 			all_sounds = false
 	check(all_sounds, "vista: usa sonidos de Sfx que existen")
-	for k in ["HIDEOUT_GAME_ATRAPA", "HIDEOUT_GAME_START", "HIDEOUT_GAME_LEAVE", "HIDEOUT_GAME_READY", "HIDEOUT_GAME_LEVEL", "HIDEOUT_GAME_LOST_BOLOS",
-			"HIDEOUT_GAME_MVP", "HIDEOUT_GAME_GO_ON", "HIDEOUT_GAME_WHY_SNEEZE"]:
+	for k in ["HIDEOUT_GAME_ATRAPA", "HIDEOUT_GAME_START_ATRAPA", "HIDEOUT_GAME_START_BOLOS", "HIDEOUT_GAME_LEAVE_KEY", "HIDEOUT_GAME_READY", "HIDEOUT_GAME_LEVEL",
+			"HIDEOUT_GAME_LOST_BOLOS", "HIDEOUT_GAME_MVP", "HIDEOUT_TIER_EASY", "HIDEOUT_TIER_MEDIUM", "HIDEOUT_TIER_HARD", "HIDEOUT_GAME_WHY_SNEEZE"]:
 		check(Text.t(k) != k, "texto %s existe" % k)
 	v.queue_free()
 	cam.queue_free()

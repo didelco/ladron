@@ -106,7 +106,7 @@ func build() -> void:
 	_dojo_walls()
 	_dojo_wall_things()
 	_bench()
-	_game_signs()
+	_game_starts()
 	_scarecrows()
 	_alarm_lights()
 	_bath()
@@ -629,19 +629,20 @@ func _short_name(m: int) -> String:
 
 # --- The dojo ---------------------------------------------------------------------
 
-## The dojo's walls and what is open in it: the sealed case, a pedestal, a
-## box to hide in (whatever Practice.open_items says), a ring on the wall,
+## The dojo's walls and what is open in it: the bench's cases, the pedestals,
+## the boxes to hide in (whatever Practice.open_items says), a ring on the wall,
 ## lanterns, a weapon rack and the board that counts what is open.
 func _dojo() -> void:
 	for t in Museum.cover_tiles:
 		var piece := Node3D.new()
 		piece.position = to_world(t.x + 0.5, t.y + 0.5)
 		add_child(piece)
-		if t == Heist.at:
+		var slot := Practice.bench_slot_of(t)
+		if slot >= 0:
 			_base(piece)
 			_vitrine(piece, null)
-			_bench_glass[0] = piece.get_child(piece.get_child_count() - 1)
-			_bench_spots[0] = piece
+			_bench_glass[slot] = piece.get_child(piece.get_child_count() - 1)
+			_bench_spots[slot] = piece
 		elif Plinths.is_plinth(t):
 			_empty_plinth(piece)
 		else:
@@ -886,64 +887,34 @@ func _dojo_wall_things() -> void:
 
 # --- The bench of cases -----------------------------------------------------------------------
 
-## The glass of each bench case (hidden while it is open) and the node each
-## stands on, the glows under them, the sock in the second, the lecterns'
-## and the count's boards, the panel's lamps.
+## The glass of each bench case (by slot; hidden while it is open) and the node
+## each stands on, the glows under them, the socks in them and the boards: the
+## count, and on each case its test and difficulty.
 var _bench_glass := {}
 var _bench_spots := {}
 var _bench_glows := {}
-var _bench_sock: Node3D
+var _bench_socks := {}
 var _bench_labels := {}
-var _panel_lamps: Array[StandardMaterial3D] = []
 var _bench_clock := 0.0
-var _bench_open_now := [false, false]
+var _bench_open_now := {}
 
 
-## Two lecterns (which test, how hard), the second case with its panel, and
-## the boards; what shows depends on the lessons (Practice.ITEMS).
+## The boards and the socks of the bench cases; what shows depends on the
+## lessons (Practice.ITEMS). The cases themselves are dressed with the dojo's.
 func _bench() -> void:
-	var cases := Practice.bench_cases(players)
 	# The count, over the cases.
-	_bench_labels.count = _board(to_world(28.0, 4.7, 1.4), 26, Color("#ffe28a"))
-	if Practice.bench_lecterns(players):
-		for which in ["kind", "level"]:
-			var tile: Vector2i = Practice.BENCH_LECTERN_KIND if which == "kind" else Practice.BENCH_LECTERN_LEVEL
-			var p := _pivot(self, to_world(tile.x + 0.5, tile.y + 0.5), 0.0)
-			_mesh(p, _box(Vector3(0.7, 0.7, 0.5)), WOOD, Vector3(0, 0.35, 0))
-			var board := _mesh(p, _box(Vector3(0.8, 0.06, 0.55)), Color("#3b2614"), Vector3(0, 0.74, 0.02))
-			board.rotation.x = -0.35
-			_bench_labels[which] = _board(to_world(tile.x + 0.5, tile.y + 0.5, 1.35), 22, Color("#e8f0c0"))
-	if cases.size() > 1:
-		var t: Vector2i = cases[1].at
-		var piece := Node3D.new()
-		piece.position = to_world(t.x + 0.5, t.y + 0.5)
-		add_child(piece)
-		_base(piece)
-		_vitrine(piece, null)
-		_bench_glass[1] = piece.get_child(piece.get_child_count() - 1)
-		_bench_spots[1] = piece
-		_bench_sock = LootModels.build("sock", Color("#e2262f"))
-		_fit(_bench_sock, 0.5)
-		_bench_sock.position = to_world(t.x + 0.5, t.y + 0.5, 1.0)
-		add_child(_bench_sock)
-		# The panel, on the north wall: a grey box, a window and two lamps.
-		var wall := Den.rect("dojo").position.y
-		var pp := _pivot(self, to_world(Practice.BENCH_PANEL.x, wall + PANEL + 0.01), 0.0)
-		_mesh(pp, _box(Vector3(0.6, 0.7, 0.1)), Color("#6f7378"), Vector3(0, 0.7, 0.05))
-		_mesh(pp, _box(Vector3(0.44, 0.3, 0.02)), Color("#1c2530"), Vector3(0, 0.78, 0.11), true)
-		for sx in [-0.14, 0.14]:
-			var lm := StandardMaterial3D.new()
-			lm.albedo_color = Color("#ff3030")
-			lm.emission_enabled = true
-			lm.emission = Color("#ff3030")
-			lm.emission_energy_multiplier = 0.9
-			var lamp := MeshInstance3D.new()
-			lamp.mesh = _box(Vector3(0.1, 0.1, 0.03))
-			lamp.material_override = lm
-			lamp.position = Vector3(sx, 0.52, 0.11)
-			lamp.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-			pp.add_child(lamp)
-			_panel_lamps.append(lm)
+	_bench_labels.count = _board(to_world(28.0, 5.0, 1.4), 26, Color("#ffe28a"))
+	for c in Practice.bench_cases(players):
+		var t: Vector2i = c.at
+		var label := _board(to_world(t.x + 0.5, t.y + 0.5, 1.55), 15, Color("#e8f0c0"))
+		label.text = "%s\n%s" % [Text.t(Practice.bench_kind_text(c.kind)), Text.t(DojoGames.TIERS[c.level].text)]
+		# Each case holds a sock; the first has main's, the one of the loot.
+		if t != Heist.at:
+			var sock := LootModels.build("sock", Color("#e2262f"))
+			_fit(sock, 0.5)
+			sock.position = to_world(t.x + 0.5, t.y + 0.5, 0.62)
+			add_child(sock)
+			_bench_socks[c.slot] = sock
 	# A green glow under each case for while it is open.
 	for i in _bench_spots:
 		var glow := MeshInstance3D.new()
@@ -980,24 +951,17 @@ func _board(at: Vector3, size: int, colour: Color) -> Label3D:
 	return l
 
 
-## The bench as it is now (Practice.bench_new): the boards' words, the glass
-## up or off, the glows, the panel's lamps.
+## The bench as it is now (Practice.bench_new): the count's board, the glass
+## up or off, the glows.
 func set_bench(state: Dictionary) -> void:
 	if _bench_labels.has("count"):
 		(_bench_labels.count as Label3D).text = "%s\n%d" % [Text.t("HIDEOUT_BENCH_COUNT"), state.opened]
-	if _bench_labels.has("kind"):
-		(_bench_labels.kind as Label3D).text = "%s\n%s" % [Text.t("HIDEOUT_BENCH_KIND"), Text.t(Practice.bench_kind_text(state.kind))]
-	if _bench_labels.has("level"):
-		(_bench_labels.level as Label3D).text = "%s\n%s" % [Text.t("HIDEOUT_BENCH_LEVEL"), Text.t("HIDEOUT_BENCH_LEVEL_%d" % int(state.level))]
 	for i in _bench_glass:
 		var open: bool = state.cases[i].state != "closed"
 		(_bench_glass[i] as Node3D).visible = not open or state.cases[i].state == "rearming"
 		if _bench_glows.has(i):
 			(_bench_glows[i] as Node3D).visible = state.cases[i].state == "open"
 		_bench_open_now[i] = state.cases[i].state == "open"
-	for m in _panel_lamps:
-		m.albedo_color = Color("#39d353") if state.panel_off else Color("#ff3030")
-		m.emission = m.albedo_color
 
 
 # --- The scarecrows -----------------------------------------------------------------------
@@ -1103,46 +1067,53 @@ func _scarecrow_cone(sc: Dictionary) -> void:
 	_cone_mats.append(m)
 
 
-# --- The games' sign posts and lantern -----------------------------------------------------
+# --- The games' start points and lantern ------------------------------------------------
 
-## sign post -> its board, by the game's id
-var _sign_boards := {}
+## the board of each start point, by "<game>:<tier>"
+var _start_boards := {}
 ## the lantern's scarecrow of AGUANTA ESCONDIDO, built the first time it is asked for
 var _lantern: Node3D
 
 
-## A sign post for each of the dojo's games the band has got to (Practice.game_signs):
-## a post with a slanted board and, over it, the game's name and the band's best.
-func _game_signs() -> void:
-	_sign_boards.clear()
-	for sg in Practice.game_signs(players):
-		var t: Vector2i = sg.at
+## The start points of the games the band has got to (Practice.game_starts): a
+## pedestal with a golden sock on it (PILLA EL CALCETÍN), a painted circle
+## (BOLOS); the pedestals of EQUILIBRIO and the armours of AGUANTA ESCONDIDO are
+## dressed with the dojo's and the house's. Over each, a board with the game's
+## name, its difficulty and the band's best.
+func _game_starts() -> void:
+	_start_boards.clear()
+	for st in Practice.game_starts(players):
+		var t: Vector2i = st.at
 		var p := _pivot(self, to_world(t.x + 0.5, t.y + 0.5), 0.0)
-		_mesh(p, _box(Vector3(0.16, 1.0, 0.16)), DOJO_WOOD_DARK, Vector3(0, 0.5, 0))
-		_mesh(p, _box(Vector3(0.9, 0.5, 0.06)), WOOD, Vector3(0, 1.05, 0.0), true)
-		_mesh(p, _box(Vector3(0.96, 0.06, 0.08)), DOJO_RAIL, Vector3(0, 1.32, 0.0), true)
-		var lamp := MeshInstance3D.new()
-		lamp.mesh = _box(Vector3(0.12, 0.12, 0.12))
-		var lm := StandardMaterial3D.new()
-		lm.albedo_color = Color("#ffcf3a")
-		lm.emission_enabled = true
-		lm.emission = Color("#ffcf3a")
-		lm.emission_energy_multiplier = 0.8
-		lamp.material_override = lm
-		lamp.position = Vector3(0, 1.45, 0)
-		lamp.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		p.add_child(lamp)
-		_sign_boards[sg.id] = _board(to_world(t.x + 0.5, t.y + 0.5, 1.95), 22, Color("#ffe28a"))
+		match st.via:
+			"sock":
+				_empty_plinth(p)
+				var sock := LootModels.build("sock", Color("#ffcf3a"))
+				_fit(sock, 0.5)
+				sock.position = Vector3(0, Plinths.HEIGHT + 0.3, 0)
+				p.add_child(sock)
+			"ring":
+				var disc := MeshInstance3D.new()
+				var ring := TorusMesh.new()
+				ring.inner_radius = 0.38
+				ring.outer_radius = 0.5
+				disc.mesh = ring
+				disc.material_override = toon(Color("#c1272d") if st.tier == 2 else (Color("#e0a030") if st.tier == 1 else Color("#3f8f4f")))
+				disc.position = Vector3(0, 0.03, 0)
+				p.add_child(disc)
+		_start_boards["%s:%d" % [st.game, st.tier]] = _board(to_world(t.x + 0.5, t.y + 0.5, 1.95), 16, Color("#ffe28a"))
 	refresh_signs()
 
 
-## The signs' words: the game and the band's best level in it.
+## The boards' words: the game, its difficulty and the band's best level in it.
 func refresh_signs() -> void:
-	for sg in Practice.game_signs(players):
-		if not _sign_boards.has(sg.id):
+	for st in Practice.game_starts(players):
+		var key := "%s:%d" % [st.game, st.tier]
+		if not _start_boards.has(key):
 			continue
-		var best := DojoGames.best(sg.id, players)
-		(_sign_boards[sg.id] as Label3D).text = Text.t(sg.text) if best <= 0 else "%s\n%s" % [Text.t(sg.text), Text.t("HIDEOUT_GAME_BEST") % best]
+		var best := DojoGames.best(st.game, players, st.tier)
+		var words := "%s\n%s" % [Text.t(st.text), Text.t(DojoGames.TIERS[st.tier].text)]
+		(_start_boards[key] as Label3D).text = words if best <= 0 else "%s · %s" % [words, Text.t("HIDEOUT_GAME_BEST") % best]
 
 
 ## The lantern's scarecrow (AGUANTA ESCONDIDO): standing on its post while the
@@ -1349,10 +1320,11 @@ func _show_room(id: String) -> void:
 func _process(dt: float) -> void:
 	_pose_alert(dt)
 	_bench_clock += dt
-	if _bench_sock != null:
+	for i in _bench_socks:
 		# Under the glass it lies still; open, it floats up and turns.
-		_bench_sock.position.y = 1.1 + sin(_bench_clock * 3.0) * 0.06 if _bench_open_now[1] else 0.62
-		_bench_sock.rotation.y = _bench_clock * 1.6 if _bench_open_now[1] else 0.4
+		var open: bool = _bench_open_now.get(i, false)
+		_bench_socks[i].position.y = 1.1 + sin(_bench_clock * 3.0) * 0.06 if open else 0.62
+		_bench_socks[i].rotation.y = _bench_clock * 1.6 if open else 0.4
 	_arcade_clock += dt
 	for m in _arcade_pictures:
 		# A screen that flickers: bright most of the time, dimmer in steps.

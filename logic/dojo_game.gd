@@ -1,38 +1,38 @@
 class_name DojoGame
 extends RefCounted
 ## What the dojo's games (DojoGames) share: a game of rounds each harder than
-## the last, lost at the first failure, the aim being to see how far one gets.
-## Nothing here is won for the story: no guards, no stars, no progress but the
-## best level kept for each size of band (DojoGames.record).
+## the last, lost at the first failure. It is played at one of three
+## difficulties (DojoGames.TIERS: easy, medium, hard), each a stretch of the ten
+## levels: it begins at the first level of the stretch and is won by doing the
+## last. Nothing here is won for the story: no guards, no stars, no progress
+## but the best level kept for each stretch and size of band (DojoGames.record).
 ##
 ## The flow:
 ##   idle     not begun (start() begins)
 ##   ready    "¿LISTOS?", READY_S seconds
 ##   playing  a level, until it is done or lost
 ##   between  BETWEEN_S seconds before the next level
-##   won      GOAL levels done; continue_extra() goes on, without end ("hora
-##            extra", level GOAL + 1 on)
+##   won      the last level of the stretch done
 ##   lost     failed; the level reached is `level`, and `got` were done
 ## `level` is the level being played (or, once lost, failed; once won, the last
-## one done); `got` the levels done. abort() leaves the game from wherever.
+## one done); `got` the levels done, out of `goal`. abort() leaves the game from
+## wherever.
 ##
 ## Pure logic, no nodes. The host (Main, in the house) calls step(dt, bodies)
 ## every frame with the band's bodies and plays what comes back:
 ##   {id: int (whoever it is), pos: Vector2 (tiles), rolling: bool, hidden: bool
 ##    (in a hideout; for "pedestal", up on a pedestal), speed: float (tiles/s),
 ##    out: bool (down, caught, out of play)}, and, for the games that use them,
-##   push: float (-1..1, left and right, "pedestal"), hold: bool (the action key
-##   held, "aguanta"), posing: bool (up on a pedestal, "pedestal"; defaults to
-##   `hidden`), fell: bool and lean: float (the pedestal game's own lean, when it
-##   is the game's Minigame "balance" that is keeping it).
+##   hold: bool (the action key held, "aguanta"), posing: bool (up on a
+##   pedestal, "pedestal"; defaults to `hidden`), fell: bool and lean: float
+##   (the pedestal game's: the Minigame "balance" keeps the pose, this only
+##   counts the time).
 ## The events are dictionaries with "e" for what happened, each game's own, and
 ## these of all: {"e": "ready"}, {"e": "level", level, got}, {"e": "alarm", by,
 ## seconds}, {"e": "lost", level, got, why}, {"e": "won", level, got},
 ## {"e": "abort"}.
 
-const GOAL := 10
 const READY_S := 2.0
-const READY_EXTRA_S := 1.0
 const BETWEEN_S := 1.0
 ## A scarecrow that sees a thief takes this long off the clock, and the dojo
 ## goes red for ALERT_RED_S; the same scarecrow does not do it again for
@@ -46,14 +46,19 @@ var players := 1
 var state := "idle"
 var level := 0
 var got := 0
-var goal := GOAL
-## on after GOAL, going on without end
-var extra := false
+## the stretch of levels played (DojoGames.TIERS): its index, first and last level
+var tier := 0
+var first := 1
+var last := 10
+## how many levels the stretch has
+var goal := 10
 var field: DojoField
 var seed_value := 0
 var rng: Mulberry32
-## where the band starts (the first thing is placed from here)
+## where the game starts (the first thing is placed from here): the tile of its
+## start point, and the thief that started it (-1: whoever)
 var start_tile := Vector2i.ZERO
+var starter := -1
 ## The rule of sight: Callable(scarecrow: Dictionary, pos: Vector2, hidden: bool)
 ## -> bool. Invalid: the field's own (DojoField.sees). The host gives Practice's.
 var seen := Callable()
@@ -78,21 +83,24 @@ var _tick_key := -1
 var _cool := {}
 
 
-func setup(players_: int, seed_: int, field_: DojoField, start_: Vector2i) -> void:
+func setup(players_: int, seed_: int, field_: DojoField, start_: Vector2i, tier_ := 0) -> void:
 	players = clampi(players_, 1, 4)
 	seed_value = seed_
 	rng = Mulberry32.new(seed_)
 	field = field_
 	start_tile = start_
+	tier = clampi(tier_, 0, DojoGames.TIERS.size() - 1)
+	first = int(DojoGames.TIERS[tier].from)
+	last = int(DojoGames.TIERS[tier].to)
+	goal = last - first + 1
 
 
-## Begin (or begin again, from level 1): "¿LISTOS?", then the first level.
+## Begin (or begin again, from the stretch's first level): "¿LISTOS?", then it.
 func start() -> void:
 	rng = Mulberry32.new(seed_value)
 	state = "ready"
-	level = 1
+	level = first
 	got = 0
-	extra = false
 	time = 0.0
 	lost_why = ""
 	new_record = false
@@ -103,18 +111,6 @@ func start() -> void:
 	_ready_left = READY_S
 	_reset()
 	_emit({"e": "ready", "level": level})
-
-
-## After winning: on, into the hora extra, without end.
-func continue_extra() -> bool:
-	if state != "won":
-		return false
-	extra = true
-	level = got + 1
-	state = "ready"
-	_ready_left = READY_EXTRA_S
-	_emit({"e": "ready", "level": level})
-	return true
 
 
 ## Leave the game, from wherever, with nothing kept.
@@ -144,15 +140,6 @@ func alarm(seconds := ALARM_S, by := "") -> bool:
 	_penalize(seconds)
 	_emit({"e": "alarm", "by": by, "seconds": seconds, "red": ALERT_RED_S})
 	return true
-
-
-## The level reached (what is kept as the best), and the levels done.
-func reached() -> int:
-	return level
-
-
-func cleared() -> int:
-	return got
 
 
 ## The band's member with most to their name, or -1 for none (or a lone thief).
@@ -206,8 +193,8 @@ func step(dt: float, bodies: Array[Dictionary]) -> Array[Dictionary]:
 ## What the host draws: the same for every game, plus what each adds (`objects`
 ## to draw, `timer`, ...).
 func view() -> Dictionary:
-	var v := {"id": id, "state": state, "level": level, "got": got, "goal": goal, "extra": extra,
-		"best": best, "players": players, "new_record": new_record, "reached": reached(),
+	var v := {"id": id, "state": state, "level": level, "got": got, "goal": goal, "tier": tier,
+		"best": best, "players": players, "new_record": new_record, "reached": level,
 		"alert": clampf(alert_left / ALERT_RED_S, 0.0, 1.0), "time": time,
 		"ready": maxf(0.0, _ready_left), "mvp": mvp(), "mvp_name": mvp_name(), "why": lost_why,
 		"names": names}
@@ -259,11 +246,18 @@ func _live(bodies: Array[Dictionary]) -> Array[Dictionary]:
 	return out
 
 
-## The level is done: on to the next (after BETWEEN_S), or, at GOAL, won.
+## The level's turn comes: play it.
+func _begin_play() -> void:
+	state = "playing"
+	_tick_key = -1
+	_begin_level()
+
+
+## The level is done: on to the next (after BETWEEN_S), or, the stretch's last, won.
 func _clear_level() -> void:
 	got += 1
 	_emit({"e": "clear", "level": level, "got": got})
-	if got >= goal and not extra:
+	if level >= last:
 		state = "won"
 		_emit({"e": "won", "level": level, "got": got})
 		return
@@ -273,12 +267,16 @@ func _clear_level() -> void:
 	_emit({"e": "level", "level": level, "got": got})
 
 
-func _lose(why: String) -> void:
+## The game is lost; `more` is what the event "lost" carries besides its own
+## (who, which pin).
+func _lose(why: String, more := {}) -> void:
 	if state == "lost":
 		return
 	state = "lost"
 	lost_why = why
-	_emit({"e": "lost", "level": level, "got": got, "why": why})
+	var e := {"e": "lost", "level": level, "got": got, "why": why}
+	e.merge(more)
+	_emit(e)
 
 
 ## A beat for a clock: an event every second with `left` <= 5, and every half
@@ -314,6 +312,12 @@ func _watch(list: Array, bodies: Array[Dictionary]) -> void:
 				_cool[sc.id] = ALARM_COOLDOWN_S
 				alarm(ALARM_S, String(sc.id))
 				break
+
+
+## The row of a game's LEVELS for level `lv` (the last one past the end), to
+## be worked on: a copy.
+static func level_row(levels: Array, lv: int) -> Dictionary:
+	return (levels[clampi(lv, 1, levels.size()) - 1] as Dictionary).duplicate(true)
 
 
 func _shuffle(list: Array) -> void:

@@ -4,9 +4,9 @@ extends Node3D
 ## pedestal or hideouts in the world, each with a column of light, and on top,
 ## in 2D, the rings that empty, the arrows at the edge of the screen for what is
 ## off it, the lantern's cone, the sneeze bars and the lean, the head-up display
-## (NIVEL n, the count, MEJOR, the time) and, at the end, the panel (¡SE FUE
-## EL CALCETÍN! / ¡GANASTE!, the level reached, ¡NUEVO RÉCORD!, the MVP, and
-## OTRA VEZ / SEGUIR / SALIR).
+## (NIVEL n and the difficulty, the count, MEJOR, the time) and, at the end, the
+## panel (¡SE FUE EL CALCETÍN! / ¡GANASTE!, the level reached, ¡NUEVO RÉCORD!,
+## the MVP, and OTRA VEZ / SALIR).
 ##
 ## Nothing here decides anything: show(view) is given DojoGame.view() every
 ## frame, react(events) the events of step(). Whoever runs it (Main) reads the
@@ -26,7 +26,7 @@ const EDGE := 40.0
 ## up, a tick, catching, going up a level, the alarm, losing, winning.
 const SOUNDS := {"spawn": "pin", "tick": "tick", "catch": "stolen", "knock": "bin", "strike": "sting", "clear": "ok",
 	"level": "go", "alarm": "siren", "lost": "caught", "won": "escaped", "sneeze": "sneeze", "tickle": "nav",
-	"up": "go", "in": "ok", "fall": "roll_bump", "ready": "nav"}
+	"in": "ok", "fall": "roll_bump", "ready": "nav"}
 
 var _camera: Camera3D
 var _layer: CanvasLayer
@@ -76,11 +76,6 @@ func show_view(view: Dictionary) -> void:
 		_ui.queue_redraw()
 
 
-## As the name in the brief: show(view).
-func show_game(view: Dictionary) -> void:
-	show_view(view)
-
-
 ## Sounds and bursts for the events of a frame; sfx and the parent for the
 ## bursts (the world's node) may be null.
 func react(events: Array, sfx: Sfx = null, world: Node3D = null) -> void:
@@ -106,14 +101,9 @@ func react(events: Array, sfx: Sfx = null, world: Node3D = null) -> void:
 
 # --- The panel at the end ---------------------------------------------------------------
 
-## The choices of the panel at the end, in order: "again", "go_on" (only after
-## winning), "exit".
+## The choices of the panel at the end, in order: "again", "exit".
 func menu() -> Array[String]:
-	var out: Array[String] = ["again"]
-	if _view.get("state", "") == "won":
-		out.append("go_on")
-	out.append("exit")
-	return out
+	return ["again", "exit"]
 
 
 func selected() -> String:
@@ -128,7 +118,7 @@ func move(dir: int) -> void:
 		_ui.queue_redraw()
 
 
-## The choice made ("again", "go_on" or "exit"); "" if the game is not at its end.
+## The choice made ("again" or "exit"); "" if the game is not at its end.
 func accept() -> String:
 	if not (_view.get("state", "") in ["won", "lost"]):
 		return ""
@@ -141,33 +131,16 @@ func _process(dt: float) -> void:
 	_t += dt
 	for i in _nodes.size():
 		if _nodes[i].visible:
-			_nodes[i].rotation.y = _t * 1.6 if _nodes[i].name.begins_with("sock") else _nodes[i].rotation.y
-			var bob := 0.08 * sin(_t * 4.0 + i)
-			_nodes[i].position.y = _base_y(_nodes[i]) + bob
+			if _nodes[i].name.begins_with("sock"):
+				_nodes[i].rotation.y = _t * 1.6
+			_nodes[i].position.y = 0.08 * sin(_t * 4.0 + i)
 	if _ui != null and _ui.is_visible_in_tree():
 		_ui.queue_redraw()
 
 
-func _base_y(n: Node3D) -> float:
-	return float(n.get_meta("y", 0.0))
-
-
 func _update_objects(objects: Array) -> void:
 	while _nodes.size() < objects.size():
-		var holder := Node3D.new()
-		add_child(holder)
-		_nodes.append(holder)
-		var col := MeshInstance3D.new()
-		var cyl := CylinderMesh.new()
-		cyl.top_radius = 0.3
-		cyl.bottom_radius = 0.3
-		cyl.height = 3.0
-		col.mesh = cyl
-		col.material_override = _glow(Color(GOLD, 0.22))
-		col.position.y = 1.5
-		col.visible = false
-		add_child(col)
-		_column.append(col)
+		_add_slot()
 	for i in _nodes.size():
 		var n := _nodes[i]
 		if i >= objects.size():
@@ -186,13 +159,30 @@ func _update_objects(objects: Array) -> void:
 		var w := MuseumView.to_world(p.x, p.y, 0.0)
 		n.visible = true
 		n.position = w
-		n.set_meta("y", 0.0)
 		n.rotation.z = 0.0
 		if kind == "pin" and o.get("down", false):
 			n.rotation.z = deg_to_rad(90.0) * float(o.get("fell", 1.0))
 		_column[i].visible = kind != "pin" or not o.get("down", false)
 		_column[i].position = Vector3(w.x, 1.5, w.z)
 		_column[i].material_override = _glow(Color(RED if o.get("gate", "") != "" else GOLD, 0.2))
+
+
+## One more thing to show: its holder node and its column of light.
+func _add_slot() -> void:
+	var holder := Node3D.new()
+	add_child(holder)
+	_nodes.append(holder)
+	var col := MeshInstance3D.new()
+	var cyl := CylinderMesh.new()
+	cyl.top_radius = 0.3
+	cyl.bottom_radius = 0.3
+	cyl.height = 3.0
+	col.mesh = cyl
+	col.material_override = _glow(Color(GOLD, 0.22))
+	col.position.y = 1.5
+	col.visible = false
+	add_child(col)
+	_column.append(col)
 
 
 func _build(n: Node3D, kind: String) -> void:
@@ -230,23 +220,21 @@ func _build(n: Node3D, kind: String) -> void:
 			band.position.y = 0.62
 			n.add_child(band)
 		"pedestal":
-			var ring := MeshInstance3D.new()
-			var t := TorusMesh.new()
-			t.inner_radius = 0.55
-			t.outer_radius = 0.7
-			ring.mesh = t
-			ring.material_override = _glow(Color(GREEN, 0.8))
-			ring.position.y = 0.05
-			n.add_child(ring)
+			_add_ring(n, GREEN)
 		_:
-			var ring2 := MeshInstance3D.new()
-			var t2 := TorusMesh.new()
-			t2.inner_radius = 0.55
-			t2.outer_radius = 0.7
-			ring2.mesh = t2
-			ring2.material_override = _glow(Color(GOLD, 0.8))
-			ring2.position.y = 0.05
-			n.add_child(ring2)
+			_add_ring(n, GOLD)
+
+
+## A glowing ring on the floor (a pedestal, a hideout).
+func _add_ring(n: Node3D, colour: Color) -> void:
+	var ring := MeshInstance3D.new()
+	var t := TorusMesh.new()
+	t.inner_radius = 0.55
+	t.outer_radius = 0.7
+	ring.mesh = t
+	ring.material_override = _glow(Color(colour, 0.8))
+	ring.position.y = 0.05
+	n.add_child(ring)
 
 
 func _flat(colour: Color) -> StandardMaterial3D:
@@ -316,7 +304,7 @@ func _draw_ui() -> void:
 func _goal_hint() -> String:
 	match String(_view.get("id", "")):
 		"bolos": return Text.t("HIDEOUT_GAME_ROLL")
-		"pedestal": return Text.t("HIDEOUT_GAME_CLIMB")
+		"pedestal": return Text.t("HIDEOUT_GAME_HOLD")
 		"aguanta": return Text.t("HIDEOUT_GAME_HIDE")
 	return Text.t("HIDEOUT_GAME_ATRAPA")
 
@@ -326,66 +314,84 @@ func _draw_world_marks(size: Vector2) -> void:
 	var frame := Rect2(Vector2.ZERO, size).grow(-EDGE)
 	for o in v.get("objects", []):
 		var p := _screen(o.pos)
-		var ring: float = o.get("ring", -1.0)
 		if frame.has_point(p):
-			if ring >= 0.0:
-				var col := GOLD.lerp(RED, 1.0 - clampf(ring * 2.0, 0.0, 1.0))
-				_ui.draw_arc(p, RING_R, -PI / 2, -PI / 2 + TAU, 40, Color(INK, 0.6), 8.0, true)
-				if ring > 0.0:
-					_ui.draw_arc(p, RING_R, -PI / 2, -PI / 2 + TAU * ring, 40, col, 6.0, true)
-			if o.get("gate", "") != "":
-				_text("|-|", p + Vector2(0, -RING_R - 30), 14, RED, true)
+			_draw_ring(o, p)
 		else:
-			# Off the screen: an arrow at the edge, towards it.
-			var mid := size * 0.5
-			var dir := (p - mid).normalized()
-			var t := INF
-			var half := size * 0.5 - Vector2(EDGE, EDGE)
-			if absf(dir.x) > 0.001:
-				t = minf(t, half.x / absf(dir.x))
-			if absf(dir.y) > 0.001:
-				t = minf(t, half.y / absf(dir.y))
-			var tip := mid + dir * t
-			var side := dir.orthogonal()
-			_ui.draw_colored_polygon(PackedVector2Array([tip, tip - dir * 26 + side * 14, tip - dir * 26 - side * 14]), GOLD)
-	# The lantern's cone.
+			_draw_arrow(p, size)
 	var lan: Dictionary = v.get("lantern", {})
 	if not lan.is_empty():
-		var from: Vector2 = lan.pos
-		var pts := PackedVector2Array([_screen(from, 0.9)])
-		for i in 9:
-			var a: float = float(lan.angle) - float(lan.cone) + 2.0 * float(lan.cone) * i / 8.0
-			pts.append(_screen(from + Vector2.from_angle(a) * float(lan.range), 0.0))
-		_ui.draw_colored_polygon(pts, Color(GOLD, 0.16))
+		_draw_cone(lan)
 	# The sneeze bars, over the heads of the ones that hold it in, and the
 	# lean of the one on the pedestal.
 	var bars: Dictionary = v.get("bars", {})
 	if not bars.is_empty():
-		var i := 0
-		for k in bars:
-			var at := Vector2(size.x * 0.5 - 110 + i * 120, size.y - 90)
-			_ui.draw_rect(Rect2(at, Vector2(100, 14)), Color(INK, 0.8))
-			_ui.draw_rect(Rect2(at, Vector2(100 * clampf(float(bars[k]), 0.0, 1.0), 14)), GOLD.lerp(RED, clampf(float(bars[k]), 0.0, 1.0)))
-			_text(Text.t("HIDEOUT_GAME_SNEEZE") if i == 0 else "", at + Vector2(0, -26), 12, CREAM)
-			i += 1
-	if v.has("lean") and v.get("phase", "") == "hold":
-		var fall: float = v.fall
-		var lean: float = v.lean
-		var at2 := Vector2(size.x * 0.5 - 150, size.y - 80)
-		_ui.draw_rect(Rect2(at2, Vector2(300, 16)), Color(INK, 0.8))
-		_ui.draw_rect(Rect2(at2 + Vector2(150 - 300 * 0.6 / fall * 0.5, 0), Vector2(300 * 0.6 / fall, 16)), Color(GREEN, 0.4))
-		var x := at2.x + 150 + clampf(lean / fall, -1.0, 1.0) * 150
-		_ui.draw_rect(Rect2(Vector2(x - 4, at2.y - 6), Vector2(8, 28)), GOLD if absf(lean) < 0.6 else RED)
+		_draw_bars(size, bars)
+	if v.has("lean") and v.state == "playing":
+		_draw_lean(size, float(v.lean), float(v.fall))
+
+
+## The ring that empties round a thing on the screen, and a mark on one behind a door.
+func _draw_ring(o: Dictionary, p: Vector2) -> void:
+	var ring: float = o.get("ring", -1.0)
+	if ring >= 0.0:
+		var col := GOLD.lerp(RED, 1.0 - clampf(ring * 2.0, 0.0, 1.0))
+		_ui.draw_arc(p, RING_R, -PI / 2, -PI / 2 + TAU, 40, Color(INK, 0.6), 8.0, true)
+		if ring > 0.0:
+			_ui.draw_arc(p, RING_R, -PI / 2, -PI / 2 + TAU * ring, 40, col, 6.0, true)
+	if o.get("gate", "") != "":
+		_text("|-|", p + Vector2(0, -RING_R - 30), 14, RED, true)
+
+
+## Off the screen: an arrow at the edge, towards it.
+func _draw_arrow(p: Vector2, size: Vector2) -> void:
+	var mid := size * 0.5
+	var dir := (p - mid).normalized()
+	var t := INF
+	var half := size * 0.5 - Vector2(EDGE, EDGE)
+	if absf(dir.x) > 0.001:
+		t = minf(t, half.x / absf(dir.x))
+	if absf(dir.y) > 0.001:
+		t = minf(t, half.y / absf(dir.y))
+	var tip := mid + dir * t
+	var side := dir.orthogonal()
+	_ui.draw_colored_polygon(PackedVector2Array([tip, tip - dir * 26 + side * 14, tip - dir * 26 - side * 14]), GOLD)
+
+
+## The lantern's cone on the floor.
+func _draw_cone(lan: Dictionary) -> void:
+	var from: Vector2 = lan.pos
+	var pts := PackedVector2Array([_screen(from, 0.9)])
+	for i in 9:
+		var a: float = float(lan.angle) - float(lan.cone) + 2.0 * float(lan.cone) * i / 8.0
+		pts.append(_screen(from + Vector2.from_angle(a) * float(lan.range), 0.0))
+	_ui.draw_colored_polygon(pts, Color(GOLD, 0.16))
+
+
+func _draw_bars(size: Vector2, bars: Dictionary) -> void:
+	var i := 0
+	for k in bars:
+		var at := Vector2(size.x * 0.5 - 110 + i * 120, size.y - 90)
+		_ui.draw_rect(Rect2(at, Vector2(100, 14)), Color(INK, 0.8))
+		_ui.draw_rect(Rect2(at, Vector2(100 * clampf(float(bars[k]), 0.0, 1.0), 14)), GOLD.lerp(RED, clampf(float(bars[k]), 0.0, 1.0)))
+		_text(Text.t("HIDEOUT_GAME_SNEEZE") if i == 0 else "", at + Vector2(0, -26), 12, CREAM)
+		i += 1
+
+
+## The holder's lean on a bar, the green stretch being the safe one.
+func _draw_lean(size: Vector2, lean: float, fall: float) -> void:
+	var at := Vector2(size.x * 0.5 - 150, size.y - 80)
+	_ui.draw_rect(Rect2(at, Vector2(300, 16)), Color(INK, 0.8))
+	_ui.draw_rect(Rect2(at + Vector2(150 - 300 * 0.6 / fall * 0.5, 0), Vector2(300 * 0.6 / fall, 16)), Color(GREEN, 0.4))
+	var x := at.x + 150 + clampf(lean / fall, -1.0, 1.0) * 150
+	_ui.draw_rect(Rect2(Vector2(x - 4, at.y - 6), Vector2(8, 28)), GOLD if absf(lean) < 0.6 else RED)
 
 
 func _draw_hud(size: Vector2) -> void:
 	var v := _view
 	var top := Vector2(size.x * 0.5, 14)
-	var title := Text.t("HIDEOUT_GAME_LEVEL") % int(v.level)
-	if v.get("extra", false):
-		title += "  " + Text.t("HIDEOUT_GAME_EXTRA")
+	var title := Text.t("HIDEOUT_GAME_LEVEL") % int(v.level) + "  " + Text.t(DojoGames.TIERS[int(v.tier)].text)
 	_text(title, top, 26, CREAM, true)
-	var line := Text.t("HIDEOUT_GAME_COUNT") % [int(v.got), int(v.goal)] if not v.get("extra", false) else str(int(v.got))
+	var line := Text.t("HIDEOUT_GAME_COUNT") % [int(v.got), int(v.goal)]
 	var best: int = int(v.get("best", 0))
 	if best > 0:
 		line += "    " + Text.t("HIDEOUT_GAME_BEST") % best
@@ -403,8 +409,6 @@ func _draw_hud(size: Vector2) -> void:
 		_text("%.1f" % float(tm.left), bar.position + Vector2(bar.size.x + 12, -6), 16, CREAM)
 		if String(v.id) == "aguanta" and String(v.get("phase", "")) == "enter":
 			_text(Text.t("HIDEOUT_GAME_HIDE"), Vector2(size.x * 0.5, 96), 18, GOLD, true)
-		elif String(v.id) == "pedestal" and String(v.get("phase", "")) == "climb":
-			_text(Text.t("HIDEOUT_GAME_CLIMB"), Vector2(size.x * 0.5, 96), 18, GOLD, true)
 
 
 func _draw_popups(size: Vector2) -> void:
@@ -437,7 +441,7 @@ func _draw_end(size: Vector2) -> void:
 		_text(Text.t("HIDEOUT_GAME_NEW_RECORD"), Vector2(centre, box.position.y + 148 + 3 * sin(_t * 8.0)), 24, GOLD, true)
 	if String(v.get("mvp_name", "")) != "":
 		_text(Text.t("HIDEOUT_GAME_MVP") % String(v.mvp_name), Vector2(centre, box.position.y + 190), 14, CREAM, true)
-	var labels := {"again": Text.t("HIDEOUT_GAME_AGAIN"), "go_on": Text.t("HIDEOUT_GAME_GO_ON"), "exit": Text.t("HIDEOUT_GAME_EXIT")}
+	var labels := {"again": Text.t("HIDEOUT_GAME_AGAIN"), "exit": Text.t("HIDEOUT_GAME_EXIT")}
 	var m := menu()
 	for i in m.size():
 		var y := box.position.y + 240 + i * 42
