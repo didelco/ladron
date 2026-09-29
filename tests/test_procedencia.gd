@@ -49,6 +49,7 @@ func _init() -> void:
 			_licence("regla %d" % (i + 1), r["licencia"], allowed, licences)
 
 	_alternatives(cols)
+	_references()
 
 	var ignore: Array = data.get("ignorar", [])
 	var paths := {}
@@ -156,6 +157,33 @@ func _alternatives(cols: Dictionary) -> void:
 				check(typeof(a.get("atribucion")) == TYPE_BOOL, "%s: atribucion debe ser booleano" % aw)
 				var e = a.get("encaje")
 				check((typeof(e) == TYPE_FLOAT or typeof(e) == TYPE_INT) and e >= 1 and e <= 5 and e == int(e), "%s: encaje de 1 a 5" % aw)
+
+
+## Las referencias guardadas (docs/data/referencias.json): lo mismo que valida tools/procedencia.py.
+func _references() -> void:
+	var path := "res://docs/data/referencias.json"
+	if not FileAccess.file_exists(path):
+		return
+	var refs = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if typeof(refs) != TYPE_ARRAY:
+		check(false, "referencias.json: no es una lista")
+		return
+	var ids := {}
+	var re := RegEx.create_from_string("^\\d{4}-\\d{2}-\\d{2}$")
+	for r in refs:
+		if typeof(r) != TYPE_DICTIONARY:
+			check(false, "referencias.json: una referencia no es un objeto")
+			continue
+		var w := "referencias.json, %s" % str(r.get("id", "?"))
+		for k in ["id", "titulo", "url", "tipo", "fecha", "estado"]:
+			check(typeof(r.get(k)) == TYPE_STRING and str(r[k]).strip_edges() != "", "%s: falta %s" % [w, k])
+		check(not ids.has(r.get("id")), "%s: id repetido" % w)
+		ids[r.get("id")] = true
+		check(str(r.get("url", "")).begins_with("http://") or str(r.get("url", "")).begins_with("https://"), "%s: url debe ser http(s)" % w)
+		check(str(r.get("tipo", "")) in ["icons", "modelos", "audio", "arte", "codigo", "articulo", "otro"], "%s: tipo no válido" % w)
+		check(str(r.get("estado", "")) in ["guardada", "evaluada", "usada", "descartada"], "%s: estado no válido" % w)
+		check(re.search(str(r.get("fecha", ""))) != null, "%s: fecha debe ser YYYY-MM-DD" % w)
+		check(typeof(r.get("etiquetas", [])) == TYPE_ARRAY, "%s: etiquetas debe ser una lista" % w)
 
 
 func _as_array(v) -> Array:

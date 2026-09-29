@@ -2,7 +2,7 @@
 """De dónde sale cada asset y con qué licencia: lee assets/PROCEDENCIA.json.
 
     python3 tools/procedencia.py                 # comprueba (falla si un asset no tiene regla, una licencia no está permitida
-                                                 # o un JSON de docs/data/alternativas/ es incorrecto)
+                                                 # o un JSON de docs/data/alternativas/ o docs/data/referencias.json es incorrecto)
     python3 tools/procedencia.py resumen         # cuántos ficheros hay por licencia y por colección
     python3 tools/procedencia.py lista [texto]   # cada fichero con su colección y licencia (filtra por texto)
     python3 tools/procedencia.py credits         # reescribe CREDITS.md a partir de esa fuente
@@ -18,6 +18,8 @@ import fnmatch
 import json
 import os
 import sys
+from datetime import datetime
+from urllib.parse import urlparse
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCE = os.path.join(ROOT, "assets", "PROCEDENCIA.json")
@@ -25,6 +27,9 @@ CREDITS = os.path.join(ROOT, "CREDITS.md")
 ALT_DIR = os.path.join(ROOT, "docs", "data", "alternativas")
 ELEGIDAS = os.path.join(ROOT, "docs", "data", "alternativas_elegidas.json")
 NUESTRA = "nuestra"
+REFERENCIAS = os.path.join(ROOT, "docs", "data", "referencias.json")
+REF_TIPOS = ("icons", "modelos", "audio", "arte", "codigo", "articulo", "otro")
+REF_ESTADOS = ("guardada", "evaluada", "usada", "descartada")
 NO_DOC = "LicenseRef-Sin-Documentar"
 
 
@@ -126,6 +131,7 @@ def analyse(data=None):
             sin_regla.append(path)
     alt_e, alt_w = alternativas_errors(data)
     errors.extend(alt_e)
+    errors.extend(referencias_errors())
     warnings.extend(alt_w)
     for path in sin_regla:
         errors.append(f"sin regla de procedencia: {path}")
@@ -275,6 +281,117 @@ def alt_web_data():
     valid = {g["key"]: {a.get("id") for a in g["alternativas"]} | {NUESTRA} for g in grupos}
     elegidas = {k: v for k, v in alt_elegidas().items() if k in valid and v in valid[k] and v != NUESTRA}
     return {"categorias": cats, "grupos": grupos, "elegidas": elegidas}
+
+
+# --- Referencias guardadas (docs/data/referencias.json) ---------------------------------
+# Enlaces de inspiración y recursos: [{id, titulo, url, tipo, etiquetas[], licencia, nota, fecha, estado}].
+
+REF_REQUIRED = ("id", "titulo", "url", "tipo", "fecha", "estado")
+
+
+def ref_load():
+    """(lista, error o None). Si el fichero no existe, es una lista vacía."""
+    try:
+        with open(REFERENCIAS, encoding="utf-8") as f:
+            d = json.load(f)
+    except FileNotFoundError:
+        return [], None
+    except (OSError, ValueError) as e:
+        return [], str(e)
+    if not isinstance(d, list):
+        return [], "debe ser una lista de referencias"
+    return d, None
+
+
+def ref_save(refs):
+    """Escritura atómica de docs/data/referencias.json (quien llame se encarga del candado)."""
+    tmp = REFERENCIAS + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(refs, f, ensure_ascii=False, indent=1)
+        f.write("\n")
+    os.replace(tmp, REFERENCIAS)
+
+
+def ref_item_errors(r, w="referencia"):
+    """Errores de una referencia suelta (los campos obligatorios, la URL http(s), tipo, estado y fecha)."""
+    if not isinstance(r, dict):
+        return [f"{w}: no es un objeto"]
+    errs = []
+    for k in REF_REQUIRED:
+        if not isinstance(r.get(k), str) or not r[k].strip():
+            errs.append(f"{w}: falta '{k}'")
+    rid = r.get("id")
+    if isinstance(rid, str) and rid and not all(c.isalnum() or c in "-_" for c in rid):
+        errs.append(f"{w}: id no válido (letras, cifras, - y _)")
+    u = r.get("url")
+    if isinstance(u, str) and u:
+        p = urlparse(u)
+        if p.scheme not in ("http", "https") or not p.netloc:
+            errs.append(f"{w}: 'url' debe ser http(s)://…")
+    if isinstance(r.get("tipo"), str) and r["tipo"] and r["tipo"] not in REF_TIPOS:
+        errs.append(f"{w}: tipo «{r['tipo']}» no válido ({', '.join(REF_TIPOS)})")
+    if isinstance(r.get("estado"), str) and r["estado"] and r["estado"] not in REF_ESTADOS:
+        errs.append(f"{w}: estado «{r['estado']}» no válido ({', '.join(REF_ESTADOS)})")
+    if isinstance(r.get("fecha"), str) and r["fecha"]:
+        try:
+            datetime.strptime(r["fecha"], "%Y-%m-%d")
+        except ValueError:
+            errs.append(f"{w}: 'fecha' debe ser YYYY-MM-DD")
+    et = r.get("etiquetas", [])
+    if not isinstance(et, list) or not all(isinstance(x, str) and x.strip() for x in et):
+        errs.append(f"{w}: 'etiquetas' debe ser una lista de textos")
+    for k in ("licencia", "nota"):
+        if k in r and not isinstance(r[k], str):
+            errs.append(f"{w}: '{k}' debe ser un texto")
+    return errs
+
+
+def referencias_errors():
+    refs, err = ref_load()
+    if err:
+        return [f"referencias.json: {err}"]
+    errors, seen = [], {}
+    for i, r in enumerate(refs):
+        w = f"referencias.json, {i + 1}" + (f" («{r['id']}»)" if isinstance(r, dict) and r.get("id") else "")
+        errors += ref_item_errors(r, w)
+        rid = r.get("id") if isinstance(r, dict) else None
+        if isinstance(rid, str) and rid:
+            if rid in seen:
+                errors.append(f"{w}: id repetido")
+            seen[rid] = True
+    return errors
+
+
+def _host(u):
+    h = urlparse(u).netloc.lower() if isinstance(u, str) else ""
+    return h[4:] if h.startswith("www.") else h
+
+
+def ref_web_data():
+    """Las referencias para el visor, cada una con lo que comparte dominio con una colección o una alternativa."""
+    refs, _ = ref_load()
+    src = load()
+    hosts = {}  # dominio -> [(coleccion, nombre de la alternativa o "")]
+    for cid, c in src.get("colecciones", {}).items():
+        for u in [c.get("url")] + [x.get("url") for x in c.get("componentes", [])]:
+            if _host(u):
+                hosts.setdefault(_host(u), []).append((cid, ""))
+    for g in alt_web_data()["grupos"]:
+        for a in g["alternativas"]:
+            if _host(a.get("url")):
+                hosts.setdefault(_host(a["url"]), []).append((g.get("coleccion", ""), a.get("nombre", "")))
+    out = []
+    for r in refs:
+        if not isinstance(r, dict) or ref_item_errors(r):
+            continue
+        rel, vistos = [], set()
+        for cid, alt in hosts.get(_host(r["url"]), []):
+            if (cid, alt) in vistos or cid not in src.get("colecciones", {}):
+                continue
+            vistos.add((cid, alt))
+            rel.append({"coleccion": cid, "nombre": src["colecciones"][cid].get("nombre", cid), "alternativa": alt})
+        out.append({**r, "etiquetas": r.get("etiquetas", []), "dominio": _host(r["url"]), "relacionadas": rel})
+    return out
 
 
 # --- La documentación (docs/data/procedencia.js) ---------------------------------------

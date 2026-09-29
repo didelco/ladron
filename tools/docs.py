@@ -29,6 +29,10 @@ página «Procedencia» las colecciones con alternativas llevan un distintivo y 
 nuestra»); con `serve`, la elección se guarda en docs/data/alternativas_elegidas.json (POST /api/alternativa
 {grupo, eleccion}; GET /api/alternativas la lee).
 
+Referencias: docs/data/referencias.json (a mano, o desde la página «Referencias» con `serve`) guarda enlaces de
+inspiración y recursos; se validan con `python3 tools/procedencia.py` y se vuelcan a docs/data/referencias.js.
+Con `serve`: POST /api/referencia {accion: "añadir"|"estado"|"borrar", …}; GET /api/referencias las lee.
+
 `version` guarda a propósito una versión de una imagen importante (un hito: un
 cambio muy visible, o una muy antigua cuando algo ha ido cambiando poco a poco),
 en docs/versiones/<asunto>/<fecha>-<nombre>.webp, y la apunta en
@@ -64,6 +68,7 @@ MANIFEST = os.path.join(VERSIONS, "versiones.json")
 GODOT_PARTS = ["shots", "city", "assets", "models", "objects", "sounds", "data"]
 PY_PARTS = ["palette", "versions"]
 ELEGIDAS_LOCK = threading.Lock()
+REFERENCIAS_LOCK = threading.Lock()
 PORT = int(os.environ.get("PORT", "8765"))
 
 # Grupos del visor de textos, por el prefijo de la clave.
@@ -239,6 +244,7 @@ def write_alternativas():
     """procedencia.js y alternativas.js (docs/data/alternativas/*.json + alternativas_elegidas.json)."""
     write_js("procedencia.js", "PROCEDENCIA", procedencia.web_data())
     write_js("alternativas.js", "ALTERNATIVAS", procedencia.alt_web_data())
+    write_js("referencias.js", "REFERENCIAS", procedencia.ref_web_data())
 
 
 def build_static():
@@ -521,7 +527,56 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json(200, {"ok": True, "editable": True})
         if self.path == "/api/alternativas":
             return self._json(200, procedencia.alt_web_data()["elegidas"])
+        if self.path == "/api/referencias":
+            return self._json(200, procedencia.ref_web_data())
         return super().do_GET()
+
+    def _referencia(self, body):
+        """Añade, cambia de estado o borra una referencia en docs/data/referencias.json (y solo ahí)."""
+        accion = body.get("accion")
+        if accion not in ("añadir", "estado", "borrar"):
+            return self._json(400, {"error": "acción no válida"})
+        with REFERENCIAS_LOCK:
+            refs, err = procedencia.ref_load()
+            if err:
+                return self._json(500, {"error": f"referencias.json no es válido: {err}"})
+            if accion == "añadir":
+                url = str(body.get("url", "")).strip()
+                titulo = str(body.get("titulo", "")).strip() or procedencia._host(url)
+                base = re.sub(r"[^a-z0-9]+", "-", titulo.lower()).strip("-")[:40] or "referencia"
+                ids = {r.get("id") for r in refs if isinstance(r, dict)}
+                rid, n = base, 2
+                while rid in ids:
+                    rid, n = f"{base}-{n}", n + 1
+                etq = body.get("etiquetas", [])
+                if not isinstance(etq, list):
+                    etq = []
+                nueva = {"id": rid, "titulo": titulo, "url": url, "tipo": str(body.get("tipo", "otro")),
+                         "etiquetas": [str(x).strip() for x in etq if str(x).strip()],
+                         "licencia": str(body.get("licencia", "")).strip(), "nota": str(body.get("nota", "")).strip(),
+                         "fecha": datetime.now().strftime("%Y-%m-%d"), "estado": "guardada"}
+                errs = procedencia.ref_item_errors(nueva)
+                if errs:
+                    return self._json(400, {"error": "; ".join(errs)})
+                if any(isinstance(r, dict) and r.get("url") == url for r in refs):
+                    return self._json(409, {"error": "esa URL ya está guardada"})
+                refs.append(nueva)
+                print(f"referencia añadida: {rid}")
+            else:
+                rid = body.get("id")
+                i = next((k for k, r in enumerate(refs) if isinstance(r, dict) and r.get("id") == rid), None)
+                if not isinstance(rid, str) or i is None:
+                    return self._json(404, {"error": f"no hay referencia {rid}"})
+                if accion == "borrar":
+                    refs.pop(i)
+                else:
+                    estado = body.get("estado")
+                    if estado not in procedencia.REF_ESTADOS:
+                        return self._json(400, {"error": f"estado no válido: {estado}"})
+                    refs[i]["estado"] = estado
+                print(f"referencia {accion}: {rid}")
+            procedencia.ref_save(refs)
+        return self._json(200, {"ok": True, "referencias": procedencia.ref_web_data()})
 
     def _alternativa(self, body):
         """Guarda la elección de un grupo en docs/data/alternativas_elegidas.json (y solo ahí)."""
@@ -548,7 +603,7 @@ class Handler(SimpleHTTPRequestHandler):
         return self._json(200, {"ok": True, "elegidas": procedencia.alt_web_data()["elegidas"]})
 
     def do_POST(self):
-        if self.path not in ("/api/texto", "/api/alternativa"):
+        if self.path not in ("/api/texto", "/api/alternativa", "/api/referencia"):
             return self._json(404, {"error": "no existe"})
         # Solo desde esta máquina: es un editor local, no un servicio.
         if self.client_address[0] not in ("127.0.0.1", "::1"):
@@ -562,6 +617,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json(400, {"error": "cuerpo no válido"})
         if self.path == "/api/alternativa":
             return self._alternativa(body)
+        if self.path == "/api/referencia":
+            return self._referencia(body)
         key, value = body.get("key", ""), body.get("es")
         if not isinstance(value, str) or not re.fullmatch(r"[A-Z][A-Z0-9_]*", key or ""):
             return self._json(400, {"error": "clave o texto no válidos"})
