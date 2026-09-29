@@ -180,10 +180,22 @@ func _references() -> void:
 		check(not ids.has(r.get("id")), "%s: id repetido" % w)
 		ids[r.get("id")] = true
 		check(str(r.get("url", "")).begins_with("http://") or str(r.get("url", "")).begins_with("https://"), "%s: url debe ser http(s)" % w)
-		check(str(r.get("tipo", "")) in ["icons", "modelos", "audio", "arte", "codigo", "articulo", "otro"], "%s: tipo no válido" % w)
+		check(str(r.get("tipo", "")) in ["icons", "modelos", "audio", "arte", "codigo", "articulo", "texturas", "fuentes", "voz", "otro"], "%s: tipo no válido" % w)
 		check(str(r.get("estado", "")) in ["guardada", "evaluada", "usada", "descartada"], "%s: estado no válido" % w)
 		check(re.search(str(r.get("fecha", ""))) != null, "%s: fecha debe ser YYYY-MM-DD" % w)
 		check(typeof(r.get("etiquetas", [])) == TYPE_ARRAY, "%s: etiquetas debe ser una lista" % w)
+		var its = r.get("items", [])
+		check(typeof(its) == TYPE_ARRAY, "%s: items debe ser una lista" % w)
+		if typeof(its) == TYPE_ARRAY:
+			for it in its:
+				if typeof(it) != TYPE_DICTIONARY:
+					check(false, "%s: un item no es un objeto" % w)
+					continue
+				for k in ["nombre", "para"]:
+					check(typeof(it.get(k)) == TYPE_STRING and str(it[k]).strip_edges() != "", "%s: item sin %s" % [w, k])
+				if it.has("url"):
+					check(str(it["url"]).begins_with("http://") or str(it["url"]).begins_with("https://"), "%s: url de item debe ser http(s)" % w)
+				check(typeof(it.get("ya_lo_usamos", false)) == TYPE_BOOL, "%s: ya_lo_usamos debe ser booleano" % w)
 
 
 func _as_array(v) -> Array:

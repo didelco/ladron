@@ -258,6 +258,9 @@ a.tag:hover { border-color: var(--texto); }
 .rf-form label { display: flex; flex-direction: column; font-size: 13px; color: var(--tenue); gap: 2px; }
 .rf-form .ancho { grid-column: 1 / -1; }
 .rf-form input, .rf-form select, .rf-form textarea { font: inherit; font-size: 14px; border: 1px solid var(--borde); border-radius: 2px; padding: 5px 8px; background: var(--blanco); color: var(--texto); min-width: 0; }
+.rf-items ul { margin: 4px 0 4px 18px; padding: 0; }
+.rf-items li { margin: 2px 0; }
+.rf-items summary { cursor: pointer; }
 .rf-acc { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
 .rf-acc select { font: inherit; font-size: 13px; }
 @media (max-width: 600px) { .rf-form { grid-template-columns: 1fr; } .pr-buscar { min-width: 0; width: 100%; } }
@@ -983,7 +986,7 @@ function procedencia() {
 }
 // --- Referencias: enlaces de inspiración y recursos (docs/data/referencias.json) ------------------
 let RF = window.REFERENCIAS || [];
-const RF_TIPOS = ["icons", "modelos", "audio", "arte", "codigo", "articulo", "otro"];
+const RF_TIPOS = ["icons", "modelos", "audio", "arte", "codigo", "articulo", "texturas", "fuentes", "voz", "otro"];
 const RF_ESTADOS = ["guardada", "evaluada", "usada", "descartada"];
 const rfFiltro = { q: "", tipo: "", etq: "", estado: "" };
 const rfDe = id => RF.filter(x => (x.relacionadas || []).some(y => y.coleccion === id));
@@ -991,7 +994,7 @@ function rfLista() {
   const q = rfFiltro.q.trim().toLowerCase();
   const xs = RF.filter(x => (!rfFiltro.tipo || x.tipo === rfFiltro.tipo) && (!rfFiltro.estado || x.estado === rfFiltro.estado)
     && (!rfFiltro.etq || (x.etiquetas || []).includes(rfFiltro.etq))
-    && (!q || `${x.titulo} ${x.url} ${x.nota || ""} ${x.licencia || ""} ${(x.etiquetas || []).join(" ")}`.toLowerCase().includes(q)))
+    && (!q || `${x.titulo} ${x.url} ${x.nota || ""} ${x.licencia || ""} ${(x.etiquetas || []).join(" ")} ${(x.items || []).map(i => i.nombre + " " + i.para).join(" ")}`.toLowerCase().includes(q)))
     .sort((a, b) => b.fecha.localeCompare(a.fecha) || a.titulo.localeCompare(b.titulo));
   if (!xs.length) return `<p class="vacio">${RF.length ? "Nada con ese filtro." : "Todavía no hay referencias guardadas."}</p>`;
   return xs.map(x => `<div class="rf" id="referencias-${esc(x.id)}">
@@ -999,6 +1002,7 @@ function rfLista() {
     <div><span class="lic est-${esc(x.estado)}">${esc(x.estado)}</span><span class="lic">${esc(x.tipo)}</span>${(x.etiquetas || []).map(t => `<span class="lic">${esc(t)}</span>`).join("")}</div>
     ${x.licencia ? `<p><span class="etq">Licencia</span>${esc(x.licencia)}</p>` : ""}
     ${x.nota ? `<p>${esc(x.nota)}</p>` : ""}
+    ${(x.items || []).length ? `<details class="rf-items"><summary>Qué podemos coger (${x.items.length})</summary><ul>${x.items.map(it => `<li>${it.ya_lo_usamos ? `<span class="lic est-usada">ya lo usamos</span> ` : ""}${it.url ? `<a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.nombre)}</a>` : `<b>${esc(it.nombre)}</b>`} <span class="estado">· para ${esc(it.para)}</span></li>`).join("")}</ul></details>` : ""}
     ${(x.relacionadas || []).length ? `<p class="estado">En Procedencia: ${x.relacionadas.map(y => `<a href="#procedencia/${encodeURIComponent(y.coleccion)}">${esc(y.nombre)}</a>${y.alternativa ? ` (alternativa «${esc(y.alternativa)}»)` : ""}`).join(" · ")}</p>` : ""}
     ${EDITABLE ? `<div class="rf-acc"><select data-rf-estado="${esc(x.id)}" aria-label="Estado">${RF_ESTADOS.map(e => `<option ${e === x.estado ? "selected" : ""}>${e}</option>`).join("")}</select><button class="btn" data-rf-borrar="${esc(x.id)}">Borrar</button></div>` : ""}
   </div>`).join("");
