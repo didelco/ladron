@@ -202,11 +202,10 @@ window.PANTALLAS = [
         text: "Desde el título o desde la pausa. Cada línea es un ajuste: A, E, el punto o clic lo cambia, ← y → lo bajan y suben. Cada cambio se guarda en user://settings.cfg.",
         shots: ["ajustes_inicio"],
         options: [
-          { key: "SETTINGS_MEGAPHONE", text: "La megafonía del museo, con cuatro valores que cambian en este orden: CARTEL Y SONIDO (por defecto: rótulo y voz), SOLO CARTEL (rótulo, sin voz), SOLO SONIDO (voz, sin rótulo; la frase sin audio no se ve ni suena) y NO." },
-          { key: "SETTINGS_IA", text: "Enseña lo que piensa cada guardia (Laya o las reglas de reserva)." },
           { key: "SETTINGS_SOUND_PAGE", to: "ajustes_sonido" },
           { key: "SETTINGS_SCREEN_PAGE", to: "ajustes_pantalla" },
-          { key: "SETTINGS_PADS_PAGE", to: "ajustes_controles" },
+          { key: "SETTINGS_CONTROLS_PAGE", to: "ajustes_controles" },
+          { key: "SETTINGS_OPTIONS_PAGE", to: "ajustes_opciones" },
           { key: "MENU_BACK", text: "Al título o a la pausa, según de dónde se vino." },
         ],
         children: [
@@ -235,13 +234,22 @@ window.PANTALLAS = [
             ],
           },
           {
-            id: "ajustes_controles", title: "SETTINGS_PADS_TITLE", fn: "_show_settings", phase: "settings",
+            id: "ajustes_controles", title: "SETTINGS_CONTROLS_TITLE", fn: "_show_settings", phase: "settings",
             text: "Los mandos conectados, la vibración, la zona muerta y la tabla de controles (teclado izquierdo, derecho y mando).",
             shots: ["ajustes_pads"],
             options: [
               { key: "SETTINGS_RUMBLE" },
               { key: "SETTINGS_RUMBLE_STRENGTH" },
               { key: "SETTINGS_DEADZONE", text: "Entre 20 % y 80 % del recorrido del stick." },
+              { key: "MENU_BACK", to: "ajustes" },
+            ],
+          },
+          {
+            id: "ajustes_opciones", title: "SETTINGS_OPTIONS_TITLE", fn: "_show_settings", phase: "settings",
+            text: "Lo demás: la megafonía y el panel de la IA.", shots: ["ajustes_options"],
+            options: [
+              { key: "SETTINGS_MEGAPHONE", text: "La megafonía del museo, con cuatro valores que cambian en este orden: CARTEL Y SONIDO (por defecto: rótulo y voz), SOLO CARTEL (rótulo, sin voz), SOLO SONIDO (voz, sin rótulo; la frase sin audio no se ve ni suena) y NO." },
+              { key: "SETTINGS_IA", text: "Enseña lo que piensa cada guardia (Laya o las reglas de reserva)." },
               { key: "MENU_BACK", to: "ajustes" },
             ],
           },

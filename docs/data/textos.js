@@ -73,7 +73,7 @@ window.TEXTOS = [
   "at": [
    "scenes/main.gd:223",
    "scenes/main.gd:535",
-   "scenes/settings_screens.gd:44"
+   "scenes/settings_screens.gd:46"
   ],
   "via": []
  },
@@ -134,7 +134,7 @@ window.TEXTOS = [
    "scenes/challenge_screens.gd:148",
    "scenes/challenge_screens.gd:201",
    "scenes/main.gd:468",
-   "scenes/settings_screens.gd:43"
+   "scenes/settings_screens.gd:45"
   ],
   "via": []
  },
@@ -517,7 +517,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:44"
+   "scenes/settings_screens.gd:46"
   ],
   "via": []
  },
@@ -528,18 +528,29 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:44"
+   "scenes/settings_screens.gd:46"
   ],
   "via": []
  },
  {
-  "key": "SETTINGS_PADS_TITLE",
+  "key": "SETTINGS_CONTROLS_TITLE",
   "es": "CONTROLES",
   "broken": false,
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:44"
+   "scenes/settings_screens.gd:46"
+  ],
+  "via": []
+ },
+ {
+  "key": "SETTINGS_OPTIONS_TITLE",
+  "es": "OPCIONES",
+  "broken": false,
+  "extra": [],
+  "group": "Ajustes y controles",
+  "at": [
+   "scenes/settings_screens.gd:46"
   ],
   "via": []
  },
@@ -550,7 +561,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:38"
+   "scenes/settings_screens.gd:39"
   ],
   "via": []
  },
@@ -561,18 +572,29 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:39"
+   "scenes/settings_screens.gd:40"
   ],
   "via": []
  },
  {
-  "key": "SETTINGS_PADS_PAGE",
+  "key": "SETTINGS_CONTROLS_PAGE",
   "es": "CONTROLES >",
   "broken": false,
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:40"
+   "scenes/settings_screens.gd:41"
+  ],
+  "via": []
+ },
+ {
+  "key": "SETTINGS_OPTIONS_PAGE",
+  "es": "OPCIONES >",
+  "broken": false,
+  "extra": [],
+  "group": "Ajustes y controles",
+  "at": [
+   "scenes/settings_screens.gd:42"
   ],
   "via": []
  },
@@ -584,7 +606,7 @@ window.TEXTOS = [
   "group": "Ajustes y controles",
   "at": [
    "scenes/main.gd:555",
-   "scenes/settings_screens.gd:78"
+   "scenes/settings_screens.gd:80"
   ],
   "via": []
  },
@@ -596,7 +618,7 @@ window.TEXTOS = [
   "group": "Ajustes y controles",
   "at": [
    "scenes/main.gd:556",
-   "scenes/settings_screens.gd:78"
+   "scenes/settings_screens.gd:80"
   ],
   "via": []
  },
@@ -607,7 +629,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:80"
+   "scenes/settings_screens.gd:82"
   ],
   "via": []
  },
@@ -618,7 +640,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:81"
+   "scenes/settings_screens.gd:83"
   ],
   "via": []
  },
@@ -629,7 +651,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:82"
+   "scenes/settings_screens.gd:84"
   ],
   "via": []
  },
@@ -640,7 +662,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:83"
+   "scenes/settings_screens.gd:85"
   ],
   "via": []
  },
@@ -651,7 +673,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:84"
+   "scenes/settings_screens.gd:86"
   ],
   "via": []
  },
@@ -662,7 +684,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:85"
+   "scenes/settings_screens.gd:87"
   ],
   "via": []
  },
@@ -673,7 +695,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:88"
+   "scenes/settings_screens.gd:90"
   ],
   "via": []
  },
@@ -684,7 +706,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:88"
+   "scenes/settings_screens.gd:90"
   ],
   "via": []
  },
@@ -695,7 +717,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:89"
+   "scenes/settings_screens.gd:91"
   ],
   "via": []
  },
@@ -706,7 +728,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:90"
+   "scenes/settings_screens.gd:92"
   ],
   "via": []
  },
@@ -717,7 +739,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:90"
+   "scenes/settings_screens.gd:92"
   ],
   "via": []
  },
@@ -728,7 +750,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:90"
+   "scenes/settings_screens.gd:92"
   ],
   "via": []
  },
@@ -739,7 +761,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:91"
+   "scenes/settings_screens.gd:93"
   ],
   "via": []
  },
@@ -750,7 +772,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:92"
+   "scenes/settings_screens.gd:94"
   ],
   "via": []
  },
@@ -761,7 +783,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:94"
+   "scenes/settings_screens.gd:96"
   ],
   "via": []
  },
@@ -772,7 +794,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:95"
+   "scenes/settings_screens.gd:97"
   ],
   "via": []
  },
@@ -783,7 +805,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:96"
+   "scenes/settings_screens.gd:98"
   ],
   "via": []
  },
@@ -794,7 +816,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:48"
+   "scenes/settings_screens.gd:50"
   ],
   "via": []
  },
@@ -805,7 +827,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:52"
+   "scenes/settings_screens.gd:54"
   ],
   "via": []
  },
@@ -816,7 +838,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:52"
+   "scenes/settings_screens.gd:54"
   ],
   "via": []
  },
@@ -915,7 +937,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:63"
+   "scenes/settings_screens.gd:65"
   ],
   "via": []
  },
@@ -926,7 +948,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:63"
+   "scenes/settings_screens.gd:65"
   ],
   "via": []
  },
@@ -937,7 +959,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:63"
+   "scenes/settings_screens.gd:65"
   ],
   "via": []
  },
@@ -948,7 +970,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:64"
+   "scenes/settings_screens.gd:66"
   ],
   "via": []
  },
@@ -959,7 +981,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:64"
+   "scenes/settings_screens.gd:66"
   ],
   "via": []
  },
@@ -970,7 +992,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:64"
+   "scenes/settings_screens.gd:66"
   ],
   "via": []
  },
@@ -981,7 +1003,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:68"
+   "scenes/settings_screens.gd:70"
   ],
   "via": []
  },
@@ -992,7 +1014,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:68"
+   "scenes/settings_screens.gd:70"
   ],
   "via": []
  },
@@ -1003,7 +1025,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:68"
+   "scenes/settings_screens.gd:70"
   ],
   "via": []
  },
@@ -1014,7 +1036,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:68"
+   "scenes/settings_screens.gd:70"
   ],
   "via": []
  },
@@ -1025,7 +1047,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:68"
+   "scenes/settings_screens.gd:70"
   ],
   "via": []
  },
@@ -1036,7 +1058,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:68"
+   "scenes/settings_screens.gd:70"
   ],
   "via": []
  },
@@ -1047,7 +1069,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:68"
+   "scenes/settings_screens.gd:70"
   ],
   "via": []
  },
@@ -1058,7 +1080,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:68"
+   "scenes/settings_screens.gd:70"
   ],
   "via": []
  },
@@ -1069,7 +1091,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:54"
+   "scenes/settings_screens.gd:56"
   ],
   "via": []
  },
@@ -12534,7 +12556,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/settings_screens.gd:93"
+   "scenes/settings_screens.gd:95"
   ],
   "via": []
  },

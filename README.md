@@ -284,7 +284,7 @@ quiera.
 Con mando, como en la mayoría de juegos: stick izquierdo o cruceta para moverse, A (✕) la acción, B (○) para rodar
 y soltar un minijuego, X (□) o clic del stick para ponerse a gatas, View para el mapa y Start para la
 pausa; Y (△) suelta una bomba de humo. En los menús A acepta, B vuelve, LB/RB pasan las páginas de la previa y Start
-salta la historia y la previa. Así A y B significan lo mismo jugando que en los menús: A hace, B se aparta. Con el
+salta la historia y la previa. AJUSTES (desde el título y la pausa) tiene SONIDO, PANTALLA, CONTROLES (mandos, vibración, zona muerta y tabla de teclas) y OPCIONES (megafonía y panel de IA); atrás vuelve un nivel. Así A y B significan lo mismo jugando que en los menús: A hace, B se aparta. Con el
 teclado, igual (cada mitad es un mando): `E` y `.` aceptan, como la acción; `Espacio` y `Enter` vuelven, como rodar, y
 `Esc` también; ninguna tecla acepta en una pantalla y vuelve en otra (`logic/menu_keys.gd`). Por los menús se mueve cada
 uno con lo suyo, como jugando: WASD, flechas, stick o cruceta (`ui_up`… en `project.godot`). Solo, vale cualquier mando; con dos, el mando 1 es P1 y el
