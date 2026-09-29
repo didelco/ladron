@@ -693,11 +693,11 @@ func _aim(target: Vector3, dist: float) -> void:
 		_cam = Camera3D.new()
 		main.add_child(_cam)
 	_cam.fov = main.camera.fov
-	_cam.position = target + main.CAM_OFFSET.normalized() * dist
+	_cam.position = target + main.rig.CAM_OFFSET.normalized() * dist
 	_cam.look_at(target)
 	_cam.make_current()
-	main.cam_zoom = dist / main.CAM_OFFSET.length()
-	main._fog_follows_zoom()
+	main.rig.cam_zoom = dist / main.rig.CAM_OFFSET.length()
+	main.rig.fog_follows_zoom()
 
 
 ## A piece's name on screen (Themes.label), as its key.
