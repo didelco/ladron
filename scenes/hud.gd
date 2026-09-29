@@ -285,7 +285,7 @@ func _ready() -> void:
 	_status = _label(16, C.text, self, true)
 	_status.position = Vector2(24, 16)
 	_version = _label(12, C.dim)
-	_version.text = "v" + str(ProjectSettings.get_setting("application/config/version", ""))
+	_version.text = Text.t("HUD_VERSION") % str(ProjectSettings.get_setting("application/config/version", ""))
 	_version.visible = false
 	_log = _label(15, C.dim)
 	_log.position = Vector2(24, 64)

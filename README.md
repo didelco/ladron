@@ -87,6 +87,16 @@ caparazón, caballo de Troya, mamut y tronco) salieron de `art/temas/escondites.
 
 ## Pruebas
 
+Todas de golpe (recorre `tests/test_*.gd`, 4 a la vez, con un log por test; sale con código distinto de 0 si algo falla):
+
+```bash
+tests/run_all.sh              # todos
+tests/run_all.sh sim heist    # solo algunos
+GODOT=/ruta/a/godot tests/run_all.sh   # otra ruta de Godot (por defecto la de macOS)
+```
+
+El criterio es el código de salida más la línea de resumen (`FALLOS: 0`, `0 fallos`, `OK:`), no buscar «error» en el log: en headless hay ruido conocido. `test_escondite` se reintenta una vez. Un test nuevo entra solo si se llama `tests/test_*.gd`; en GitHub Actions lo corre `.github/workflows/tests.yml` en cada PR. Uno a uno:
+
 ```bash
 godot --headless --script tests/test_mapgen.gd   # museos bien formados (306 de todos los tamaños y formas)
 godot --headless --script tests/test_sim.gd      # escenarios de la simulación

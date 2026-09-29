@@ -22,6 +22,7 @@ Prioridad: **A** alta, **M** media, **B** baja. Tamaño: **S** menos de una hora
 Se movió a `../megafonia-tool` (repo propio, con sus modelos, cachés y `.venv` fuera de git). `regenerar_juego.sh` usa `GODOT_DIR` (por defecto `../nosy-horesradish`). Si el `.venv` falla tras el traslado, recrearlo con `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`.
 
 ### [EST-3] Lanzador común de tests y CI — A · M
+**HECHO (2026-09-29).** `tests/run_all.sh` (variable `GODOT`, `JOBS`, `LOGDIR`; reintento único de `test_escondite`), `.github/workflows/tests.yml` (`barichello/godot-ci`, import previo y caché de `.godot`) y sección de Pruebas del README. El workflow no se ha podido probar en GitHub desde aquí.
 **Contexto.** Hay 29 tests `extends SceneTree` (unas 8.400 líneas) que se lanzan a mano uno a uno (README, líneas 90-102). No hay lista única, así que un test nuevo puede quedar sin ejecutarse, y no hay CI (`.github` no existe).
 **Qué hacer.**
 - `tests/run_all.sh` (o `tools/test.py`): recorrer `tests/test_*.gd`, lanzar `godot --headless --script` con `SDL_JOYSTICK_IGNORE_DEVICES=0x05ac/0x0004 SDL_GAMECONTROLLER_IGNORE_DEVICES=0x05ac/0x0004`, ir en paralelo (4 a la vez va bien), sumar fallos y devolver código de salida.
@@ -85,6 +86,7 @@ los une por caminos más largos (`Sim`, sus satélites, `Museum`, `MapGen`, `The
   Con la fuente por defecto, el comportamiento es el de antes.
 
 ### [EST-6] Helper común de tests — M · S
+**Comprobado (2026-09-29), sin hacer.** La duplicación es real: `func check(ok, what)` está copiada en 21 de los 23 tests, en dos variantes (14 con `failures.append(what)` y salida `  ok   `/`  FALLO `; 7 con `fails += 1` y `ok   `/`FALLO `), más `check_quiet` en uno. Unificarla toca los 21 ficheros y decidir un formato de resumen único; es una sesión aparte. Los tests son `extends SceneTree`, así que el helper iría en un `tests/support.gd` cargado con `preload` (o un `RefCounted` con `check`, contadores y `summary()` que imprima `FALLOS: n` / `OK: ...`, que es lo que lee `run_all.sh`).
 **Contexto.** `test_dojo_juegos.gd` (915 líneas), `test_escondite.gd` (784) y `test_megafonia.gd` (632) ya son grandes; no se ha medido si repiten código.
 **Qué hacer.** Comprobar duplicación y, si la hay, un `tests/support.gd` con `check`, contadores y salida de resumen.
 
@@ -98,10 +100,12 @@ los une por caminos más largos (`Sim`, sus satélites, `Museum`, `MapGen`, `The
 **Qué hacer.** `git gc` cuando no haya otros agentes ni sesiones escribiendo (hay varios worktrees).
 
 ### [EST-9] Filtro de exportación — B · S
+**HECHO (2026-09-29)** en los tres presets: `tests/*, brain/*, build/*, art/*, docs/*, tools/*, locale/*.csv`. No se ha exportado un build para comprobarlo; el juego usa `locale/texts.es.translation`, no el CSV.
 **Contexto.** `export_presets.cfg` (Windows, Linux, macOS) excluye `tests/*, brain/*, build/*`. Godot ya ignora las carpetas con `.gdignore`, pero no todas lo tienen.
 **Qué hacer.** Añadir `art/*, docs/*, tools/*, locale/*.csv`. Comprobar que el build sigue arrancando.
 
 ### [EST-10] Cadena de versión sin traducir — B · S
+**HECHO (2026-09-29).** Clave `HUD_VERSION` (`v%s`) en `locale/texts.csv`, reimportada, y `hud.gd` la usa con `Text.t`.
 `scenes/hud.gd:288` construye la cadena de versión sin pasar por `Text.t`. Cosmético.
 
 ---
