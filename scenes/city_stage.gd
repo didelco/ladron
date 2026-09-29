@@ -183,7 +183,7 @@ func _init() -> void:
 	size = Vector2i(1280, 720)
 	own_world_3d = true
 	transparent_bg = true
-	msaa_3d = Viewport.MSAA_4X
+	Quality.setup_viewport(self)
 	var env := Environment.new()
 	_env = env
 	env.background_mode = Environment.BG_CLEAR_COLOR

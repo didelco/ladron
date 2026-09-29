@@ -35,7 +35,7 @@ func _init() -> void:
 	size = SIZE
 	own_world_3d = true
 	transparent_bg = true
-	msaa_3d = Viewport.MSAA_4X
+	Quality.setup_viewport(self)
 	var env := Environment.new()
 	env.background_mode = Environment.BG_CLEAR_COLOR
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR

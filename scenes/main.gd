@@ -1157,7 +1157,7 @@ func _show_settings(from: String, page := "") -> void:
 	var keys: Array = {
 		"": ["ia"],
 		"sound": ["sound", "music", "music_volume", "effects_volume"],
-		"screen": ["fullscreen", "window", "ui_scale", "vsync"],
+		"screen": ["fullscreen", "window", "ui_scale", "quality", "render_scale", "vsync"],
 		"pads": ["rumble", "rumble_strength", "deadzone"],
 	}[page]
 	var rows: Array = []
@@ -1215,6 +1215,8 @@ func _setting_text(key: String) -> String:
 			var w := Settings.window_size(window)
 			return Text.t("SETTINGS_WINDOW_AUTO" if window < 0 else "SETTINGS_WINDOW") % [w.x, w.y]
 		"ui_scale": return Text.t("SETTINGS_UI_SCALE") % ui_scale
+		"quality": return Text.t("SETTINGS_QUALITY") % Text.t("SETTINGS_QUALITY_LOW" if Quality.is_low() else "SETTINGS_QUALITY_HIGH")
+		"render_scale": return Text.t("SETTINGS_RENDER_SCALE") % Quality.scale
 		"ia": return Text.t("SETTINGS_IA") % yes.call(show_ia)
 		"rumble": return Text.t("SETTINGS_RUMBLE") % yes.call(rumble)
 		"rumble_strength": return Text.t("SETTINGS_RUMBLE_STRENGTH") % _volume_bar(rumble_strength)
@@ -1249,6 +1251,8 @@ func _step_setting(dir: int, key: String) -> String:
 		"ui_scale":
 			ui_scale = Settings.UI_SCALE_MIN if dir == 0 and ui_scale >= Settings.UI_SCALE_MAX else clampi(ui_scale + (10 if dir >= 0 else -10), Settings.UI_SCALE_MIN, Settings.UI_SCALE_MAX)
 			_apply_ui_scale()
+		"quality", "render_scale":
+			_step_quality(key)
 		"rumble":
 			rumble = not rumble
 			# Feel it straight away.
@@ -1269,6 +1273,24 @@ func _step_setting(dir: int, key: String) -> String:
 			sfx.set_volumes(music_volume / 100.0, effects_volume / 100.0)
 	_save_settings()
 	return _setting_text(key)
+
+
+## Graphics quality flips; the 3D render scale goes to the next on offer.
+func _step_quality(key: String) -> void:
+	if key == "quality":
+		Quality.set_state("high" if Quality.is_low() else "low", Quality.scale)
+	else:
+		Quality.set_state(Quality.level, Quality.next_scale(Quality.scale))
+	_apply_quality()
+
+
+## Quality and render scale, applied to the night and to every 3D viewport.
+func _apply_quality() -> void:
+	if world_env:
+		Quality.apply_environment(world_env)
+	if moon_light:
+		Quality.apply_light(moon_light)
+	Quality.apply_tree(get_tree())
 
 
 func _set_sound(on: bool) -> void:
@@ -1299,6 +1321,7 @@ func _load_settings() -> void:
 	vsync = s.vsync
 	window = s.window
 	ui_scale = s.ui_scale
+	Quality.set_state(s.quality, s.render_scale)
 	music_volume = s.music_volume
 	effects_volume = s.effects_volume
 	rumble = s.rumble
@@ -1310,6 +1333,7 @@ func _load_settings() -> void:
 	sfx.set_volumes(music_volume / 100.0, effects_volume / 100.0)
 	Settings.apply_display(fullscreen, vsync, window)
 	_apply_ui_scale()
+	Quality.apply_tree(get_tree())
 
 
 ## Menus and HUD drawn bigger or smaller, whatever the window's size: the
@@ -1323,6 +1347,7 @@ func _save_settings() -> void:
 		"sound": sound_on, "music": music_on, "ia": show_ia,
 		"difficulty": Sim.difficulty, "size": size,
 		"fullscreen": fullscreen, "vsync": vsync, "window": window, "ui_scale": ui_scale,
+		"quality": Quality.level, "render_scale": Quality.scale,
 		"music_volume": music_volume, "effects_volume": effects_volume,
 		"rumble": rumble, "rumble_strength": rumble_strength,
 		"deadzone": deadzone,
@@ -1616,7 +1641,7 @@ func _build_preview(loot: Dictionary = Heist.loot) -> void:
 	preview.size = Vector2i(480, 300)
 	preview.own_world_3d = true
 	preview.transparent_bg = true
-	preview.msaa_3d = Viewport.MSAA_4X
+	Quality.setup_viewport(preview)
 	add_child(preview)
 	# Axonometric, like every picture in the menus.
 	var cam := Camera3D.new()
@@ -3067,6 +3092,7 @@ func _build_environment() -> void:
 	env.ssr_max_steps = 48
 	env.ssr_fade_in = 0.1
 	env.ssr_fade_out = 2.0
+	Quality.apply_environment(env)
 	var we := WorldEnvironment.new()
 	we.environment = env
 	world_env = env
@@ -3085,7 +3111,8 @@ func _build_environment() -> void:
 	moon.shadow_enabled = true
 	moon.shadow_opacity = 0.85
 	moon.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
-	moon.directional_shadow_max_distance = 35.0
+	Quality.apply_light(moon)
+	moon_light = moon
 	add_child(moon)
 	camera = Camera3D.new()
 	camera.fov = 50
@@ -3690,6 +3717,7 @@ var punch := 0.0
 var cam_zoom := 1.0
 ## the Environment, for the fog to reach as far as the camera pulls back
 var world_env: Environment
+var moon_light: DirectionalLight3D
 var punch_tween: Tween
 ## 0..1: how close the camera is on the gang at the start of a night (1 on top
 ## of them, 0 the usual follow), so you see where you are before you go

@@ -86,7 +86,7 @@ static func make(what: String) -> MenuStage:
 func _setup() -> void:
 	size = SIZE
 	own_world_3d = true
-	msaa_3d = Viewport.MSAA_4X
+	Quality.setup_viewport(self)
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = BACKDROP.get(kind + ":" + arg, BACKDROP.get(kind, CREAM))

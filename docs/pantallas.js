@@ -214,11 +214,13 @@ window.PANTALLAS = [
           },
           {
             id: "ajustes_pantalla", title: "SETTINGS_SCREEN_TITLE", fn: "_show_settings", phase: "settings",
-            text: "La ventana y el tamaño de la interfaz.", shots: ["ajustes_screen"],
+            text: "La ventana, el tamaño de la interfaz y la calidad gráfica.", shots: ["ajustes_screen"],
             options: [
               { key: "SETTINGS_FULLSCREEN" },
               { key: "SETTINGS_WINDOW", text: "Tamaños 16:9 que quepan en la pantalla, o AUTO (el mayor)." },
               { key: "SETTINGS_UI_SCALE", text: "De 70 % a 150 %, menús y HUD." },
+              { key: "SETTINGS_QUALITY", text: "ALTA (la de siempre) o BAJA, para ordenadores justos: sin reflejos, luz rebotada, oclusión ni niebla volumétrica, sombras más cortas, MSAA 2x y sin partículas de humo." },
+              { key: "SETTINGS_RENDER_SCALE", text: "100 %, 85 % o 70 %: el 3D se dibuja más pequeño y se estira; menús y HUD no cambian." },
               { key: "SETTINGS_VSYNC" },
               { key: "MENU_BACK", to: "ajustes" },
             ],

@@ -15,6 +15,10 @@ const DEFAULTS := {
 	"size": "small",
 	"fullscreen": false,
 	"vsync": true,
+	# graphics: "high" (as designed) or "low" (Quality), and the 3D render
+	# scale in percent (one of Quality.SCALES)
+	"quality": "high",
+	"render_scale": 100,
 	# the window's size: an index into WINDOW_SIZES, or -1 for the biggest
 	# that fits the screen
 	"window": -1,
@@ -73,6 +77,8 @@ static func read() -> Dictionary:
 		out[k] = volume(out[k])
 	out.deadzone = clampi(snappedi(out.deadzone, VOLUME_STEP), 20, 80)
 	out.window = clampi(out.window, -1, WINDOW_SIZES.size() - 1)
+	out.quality = Quality.valid_level(out.quality)
+	out.render_scale = Quality.valid_scale(out.render_scale)
 	out.ui_scale = clampi(snappedi(out.ui_scale, 10), UI_SCALE_MIN, UI_SCALE_MAX)
 	return out
 
