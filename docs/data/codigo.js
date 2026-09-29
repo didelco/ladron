@@ -484,7 +484,7 @@ window.CODIGO = {
    },
    "UNIQUE": {
     "value": "[\"dinosaur\", \"trojan_horse\", \"temas/edad_media/espada_piedra\", \"temas/edad_media/trono\", \"temas/edad_media/maquina_voladora\"]",
-    "note": "The icons: a museum has one at most, as a second would be a copy. Big pieces by their kind (MapGen.BIG), the rest by their model. Every piece not here nor in VARIANTS may stand any number of times.",
+    "note": "The icons: a museum has one at most, as a second would be a copy. Big pieces by their kind (BigPieces.SIZES), the rest by their model. Every piece not here nor in VARIANTS may stand any number of times.",
     "line": 142
    },
    "VARIANTS": {
