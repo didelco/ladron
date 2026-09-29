@@ -9,7 +9,7 @@ var host: Game
 ## where the settings screen goes back to: "title" or "paused"
 var settings_from := "title"
 
-## the settings page on show: "" for the main one, or "sound", "screen", "pads"
+## the settings page on show: "" for the main one, or "sound", "screen", "pads" (the controls) or "options"
 var settings_page := ""
 
 
@@ -17,7 +17,7 @@ func _init(game: Game) -> void:
 	host = game
 
 
-## Sound and music, their volumes, the screen and the IA panel. Opens from
+## The settings: SONIDO, PANTALLA, CONTROLES and OPCIONES (loudspeaker, IA panel). Opens from
 ## the title and from the pause. Each line is a setting (Hud._stepper): accept
 ## or a click moves it on, ← and → move it down and up; each change is saved.
 func show(from: String, page := "") -> void:
@@ -28,20 +28,22 @@ func show(from: String, page := "") -> void:
 	settings_page = page
 	host.phase = "settings"
 	var keys: Array = {
-		"": ["megaphone", "ia"],
+		"": [],
 		"sound": ["sound", "music", "music_volume", "effects_volume"],
 		"screen": ["fullscreen", "window", "ui_scale", "quality", "render_scale", "vsync"],
 		"pads": ["rumble", "rumble_strength", "deadzone"],
+		"options": ["megaphone", "ia"],
 	}[page]
 	var rows: Array = []
 	if page == "":
 		rows.append({"text": Text.t("SETTINGS_SOUND_PAGE"), "call": show.bind(from, "sound")})
 		rows.append({"text": Text.t("SETTINGS_SCREEN_PAGE"), "call": show.bind(from, "screen")})
-		rows.append({"text": Text.t("SETTINGS_PADS_PAGE"), "call": show.bind(from, "pads")})
+		rows.append({"text": Text.t("SETTINGS_CONTROLS_PAGE"), "call": show.bind(from, "pads")})
+		rows.append({"text": Text.t("SETTINGS_OPTIONS_PAGE"), "call": show.bind(from, "options")})
 	for k in keys:
 		rows.append({"text": text_of(k), "step": step.bind(k)})
 	rows.append({"text": Text.t("MENU_BACK"), "call": back, "colour": Hud.C.dim})
-	var title := Text.t({"": "MENU_SETTINGS", "sound": "SETTINGS_SOUND_TITLE", "screen": "SETTINGS_SCREEN_TITLE", "pads": "SETTINGS_PADS_TITLE"}[page])
+	var title := Text.t({"": "MENU_SETTINGS", "sound": "SETTINGS_SOUND_TITLE", "screen": "SETTINGS_SCREEN_TITLE", "pads": "SETTINGS_CONTROLS_TITLE", "options": "SETTINGS_OPTIONS_TITLE"}[page])
 	var items: Array = [{"title": title, "size": 48}, {"buttons": rows}]
 	match page:
 		"sound":

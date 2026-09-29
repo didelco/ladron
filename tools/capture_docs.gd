@@ -220,11 +220,11 @@ func _shots() -> void:
 	await _shot("menu_elegir_mandos", "menus", "Elegir mandos", "Cada ladrón pulsa en su mando o en su mitad del teclado.")
 
 	# Settings.
-	for page in ["", "sound", "screen", "pads"]:
+	for page in ["", "sound", "screen", "pads", "options"]:
 		main.options.show("title", page)
 		await _wait(1.2)
 		await _shot("ajustes_" + (page if page != "" else "inicio"), "ajustes",
-			{"": "Ajustes", "sound": "Ajustes: sonido", "screen": "Ajustes: pantalla", "pads": "Ajustes: mandos y controles"}[page])
+			{"": "Ajustes", "sound": "Ajustes: sonido", "screen": "Ajustes: pantalla", "pads": "Ajustes: mandos y controles", "options": "Ajustes: opciones"}[page])
 
 	# Before a heist: the tale, the news (the lesson) and the plan; the
 	# lessons' nights and the museums' big jobs.
