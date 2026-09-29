@@ -170,10 +170,13 @@ func _families() -> void:
 	var games := []
 	for id in DojoGames.ids():
 		var info := DojoGames.info(id)
-		games.append_array([info.name_key, info.blurb_key, "HIDEOUT_GAME_LOST_" + upper(id)])
+		games.append_array([info.name_key, "HIDEOUT_GAME_LOST_" + upper(id)])
 	for why in ["time", "fall", "down", "late", "seen", "left", "sneeze"]:  # los _lose(...) de logic/*_game.gd
 		games.append("HIDEOUT_GAME_WHY_" + upper(why))
-	games.append_array(numbered("HIDEOUT_BENCH_LEVEL_", 0, 2))
+	for t in DojoGames.TIERS:
+		games.append(t.text)
+	for id in ["atrapa", "bolos"]:
+		games.append(DojoGames.info(id).start_key)
 	need_all(games, "juegos del dojo")
 	# Minijuegos (Minigame.how(): GAME_HOW_<tipo>; cada tipo es una clase de logic/).
 	var hows := []

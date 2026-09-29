@@ -1,9 +1,9 @@
 class_name Practice
 extends RefCounted
 ## The band's house as a place to be in (Den) and, in its dojo, to practise:
-## no guards, a case that will not open, and nothing in it won or kept (no
-## stars, no progress). What the dojo shows grows with the story: each thing
-## to try comes into it when the night that teaches it is reached (ITEMS).
+## no guards, and nothing in it won or kept (no stars, no progress). What the
+## dojo shows grows with the story: each thing to try comes into it when the
+## job that teaches it is reached (ITEMS).
 ##
 ## The mode is still called "practica" (it began as one room), and its plan
 ## is built here in code, not read from a file: MapFile.list() only reads the
@@ -16,96 +16,81 @@ const MODE := "practica"
 ## band's furthest job (Story.unlocked, per size of band) opens it. Jobs are
 ## numbered 1-25: museum (n - 1) / 5 + 1, test (n - 1) % 5 + 1. What comes
 ## with which lesson, by zone (Den.DOJO_ZONES):
-##   heist (museum 1 · test 1)   exposicion  the sealed case
+##   heist (museum 1 · test 1)   exposicion  the bench's QUIETO cases
 ##   guard (museum 1 · test 2)   pasillo     the corridor's scarecrow, at the end of the north arm
 ##   torch (museum 1 · test 4)   escondites  the scarecrow that sweeps the hiding corner;
-##                               AGUANTA ESCONDIDO's sign post, with its own box
-##   games (museum 2 · test 1)   exposicion  the pedestal; the bench's two lecterns (which
-##                               test, how hard) and the lock pick as a test; the sign posts
-##                               of PILLA EL CALCETIN and EQUILIBRIO
-##   props (museum 2 · test 3)   patio       the bins and BOLOS's sign post; escondites the
-##                               armours, the crate and the locker; exposicion the bust;
-##                               the squeeze as a test (BENCH_KINDS)
-##   case_alarm (museum 3 · 1)   laberinto   the first maze scarecrow; the cutters (wires) as a test
-##   two (museum 3 · test 3)     laberinto   the second maze scarecrow; exposicion the second
-##                               case with its alarm panel; the suction cup (steady) as a test
+##                               AGUANTA ESCONDIDO's three armours
+##   games (museum 2 · test 1)   exposicion  the GANZÚA cases; escondites the three
+##                               pedestals of EQUILIBRIO and the three of PILLA EL CALCETÍN
+##   props (museum 2 · test 3)   patio       the bins and BOLOS's three circles; escondites the
+##                               crate and the locker; exposicion the bust and the APRETAR cases
+##   case_alarm (museum 3 · 1)   laberinto   the first maze scarecrow; exposicion the CABLES cases
+##   two (museum 3 · test 3)     laberinto   the second maze scarecrow; exposicion the PULSO cases
 ##   id       what it is (a key of the docs' and the tests')
 ##   lesson   the lesson that brings it
 ##   text     its name in words (a key into Text)
 ##   zone     where it stands (Den.DOJO_ZONES)
-##   cover    tiles it stands on (they block the way)
-##   plinth   a tile that is an empty pedestal to pose on (minigame "balance")
 ##   hide     tile and furniture (Hideouts.PIECES) to hide in
 ##   props    things to knock over, {kind, at}
 ##   scarecrows  a guard's scarecrow with a lantern, {at: its tile, dir: where it
 ##            looks, in radians on the plan (0 east, PI/2 south)}
-##   case     the sealed case with the practice sock
-##   game     a sign post (`sign`, a tile that blocks the way) where the dojo's game
-##            of that id (DojoGames) is started
+##   bench    a kind of test of the bench of cases (BENCH_TESTS): its three cases, one
+##            for each difficulty (bench_case)
+##   game     one of the dojo's games (DojoGames) and, in `starts`, its three start
+##            points, easy, medium and hard, that `via` says how to start: "sock" (a
+##            pedestal with a sock on it: the action key takes it), "ring" (a circle
+##            on the floor: the action key on it), "plinth" (a pedestal: climb it) or
+##            "armour" (a suit of armour: hide in it)
 const ITEMS := [
-	{"id": "case", "lesson": "heist", "zone": "exposicion", "text": "HIDEOUT_ITEM_CASE", "case": Vector2i(27, 6)},
+	{"id": "bench_hold", "lesson": "heist", "zone": "exposicion", "text": "HIDEOUT_BENCH_KIND_HOLD", "bench": "hold"},
 	{"id": "dummy", "lesson": "guard", "zone": "pasillo", "text": "HIDEOUT_ITEM_DUMMY",
 		"scarecrows": [{"at": Vector2i(38, 1), "dir": PI / 2}]},
 	{"id": "dummy_back", "lesson": "torch", "zone": "escondites", "text": "HIDEOUT_ITEM_DUMMY_BACK",
 		"scarecrows": [{"at": Vector2i(57, 3), "dir": PI}]},
-	{"id": "pedestal", "lesson": "games", "zone": "exposicion", "text": "HIDEOUT_ITEM_PEDESTAL", "plinth": Vector2i(23, 4)},
+	{"id": "game_aguanta", "lesson": "torch", "zone": "escondites", "text": "HIDEOUT_GAME_AGUANTA", "game": "aguanta", "via": "armour",
+		"starts": [Vector2i(53, 2), Vector2i(53, 4), Vector2i(53, 6)]},
+	{"id": "game_pedestal", "lesson": "games", "zone": "escondites", "text": "HIDEOUT_GAME_PEDESTAL", "game": "pedestal", "via": "plinth",
+		"starts": [Vector2i(44, 3), Vector2i(47, 3), Vector2i(50, 3)]},
+	{"id": "game_atrapa", "lesson": "games", "zone": "escondites", "text": "HIDEOUT_GAME_ATRAPA", "game": "atrapa", "via": "sock",
+		"starts": [Vector2i(47, 1), Vector2i(49, 1), Vector2i(51, 1)]},
+	{"id": "bench_lockpick", "lesson": "games", "zone": "exposicion", "text": "HIDEOUT_BENCH_KIND_LOCKPICK", "bench": "lockpick"},
 	{"id": "bins", "lesson": "props", "zone": "patio", "text": "HIDEOUT_ITEM_BINS",
 		"props": [{"kind": "bin", "at": Vector2i(53, 9)}, {"kind": "bin", "at": Vector2i(56, 12)}]},
-	{"id": "armour", "lesson": "props", "zone": "escondites", "text": "HIDEOUT_ITEM_ARMOUR",
-		"props": [{"kind": "armour", "at": Vector2i(53, 2)}, {"kind": "armour", "at": Vector2i(53, 5)}]},
-	{"id": "bust", "lesson": "props", "zone": "exposicion", "text": "HIDEOUT_ITEM_BUST", "props": [{"kind": "bust", "at": Vector2i(30, 11)}]},
+	{"id": "bust", "lesson": "props", "zone": "exposicion", "text": "HIDEOUT_ITEM_BUST", "props": [{"kind": "bust", "at": Vector2i(30, 9)}]},
 	{"id": "crate", "lesson": "props", "zone": "escondites", "text": "HIDEOUT_ITEM_CRATE", "hide": {"tile": Vector2i(49, 4), "piece": "box"}},
 	{"id": "locker", "lesson": "props", "zone": "escondites", "text": "HIDEOUT_ITEM_LOCKER", "hide": {"tile": Vector2i(46, 2), "piece": "fridge"}},
-	{"id": "bench_kinds", "lesson": "games", "zone": "exposicion", "text": "HIDEOUT_ITEM_BENCH",
-		"cover": [Vector2i(27, 2), Vector2i(29, 2)]},
-	{"id": "bench_alarm", "lesson": "two", "zone": "exposicion", "text": "HIDEOUT_ITEM_BENCH_ALARM",
-		"cover": [Vector2i(29, 6)]},
+	{"id": "game_bolos", "lesson": "props", "zone": "patio", "text": "HIDEOUT_GAME_BOLOS", "game": "bolos", "via": "ring",
+		"starts": [Vector2i(54, 10), Vector2i(56, 10), Vector2i(54, 12)]},
+	{"id": "bench_squeeze", "lesson": "props", "zone": "exposicion", "text": "HIDEOUT_BENCH_KIND_SQUEEZE", "bench": "squeeze"},
 	{"id": "maze_a", "lesson": "case_alarm", "zone": "laberinto", "text": "HIDEOUT_ITEM_MAZE_A",
 		"scarecrows": [{"at": Vector2i(47, 12), "dir": -PI / 2}]},
+	{"id": "bench_wires", "lesson": "case_alarm", "zone": "exposicion", "text": "HIDEOUT_BENCH_KIND_WIRES", "bench": "wires"},
 	{"id": "maze_b", "lesson": "two", "zone": "laberinto", "text": "HIDEOUT_ITEM_MAZE_B",
 		"scarecrows": [{"at": Vector2i(50, 12), "dir": -PI / 2}]},
-	# The sign posts of the dojo's games (DojoGames). AGUANTA ESCONDIDO brings its
-	# own box to hide in (the crate and the locker come later, with the props).
-	{"id": "game_atrapa", "lesson": "games", "zone": "exposicion", "text": "HIDEOUT_GAME_ATRAPA", "game": "atrapa", "sign": Vector2i(22, 12)},
-	{"id": "game_pedestal", "lesson": "games", "zone": "exposicion", "text": "HIDEOUT_GAME_PEDESTAL", "game": "pedestal", "sign": Vector2i(24, 2)},
-	{"id": "game_bolos", "lesson": "props", "zone": "patio", "text": "HIDEOUT_GAME_BOLOS", "game": "bolos", "sign": Vector2i(52, 13)},
-	{"id": "game_aguanta", "lesson": "torch", "zone": "escondites", "text": "HIDEOUT_GAME_AGUANTA", "game": "aguanta", "sign": Vector2i(44, 5),
-		"hide": {"tile": Vector2i(47, 5), "piece": "box"}},
+	{"id": "bench_steady", "lesson": "two", "zone": "exposicion", "text": "HIDEOUT_BENCH_KIND_STEADY", "bench": "steady"},
 ]
 
 
 # --- The bench of cases ---------------------------------------------------------------------
-## Cases to practise opening, as often as one likes: the sealed case of the
-## first lesson (Den.CASE_AT) is the first, and with the lesson on the alarm
-## panel a second one, that will not give while its panel is armed. Each test
-## is a way of opening (the same games as a heist, Minigame), taught by its
-## lesson; two lecterns pick which and how hard (level 0 easy .. 2 hard).
-## Opened, a case shows the sock, stays open BENCH_OPEN_S, closes over
+## Cases to practise opening, as often as one likes. Each test (BENCH_TESTS, taught
+## by its lesson) has three, side by side in a column, one for each difficulty
+## (level 0 easy, 1 medium, 2 hard: rows BENCH_Y): the tests are the same games as
+## in a heist (Minigame) at that level, and QUIETO (`hold`) is standing still by
+## the case for BENCH_HOLD_S seconds, more the harder. A case is `slot` = test * 3 +
+## level. Opened, a case shows the sock, stays open BENCH_OPEN_S, closes over
 ## BENCH_REARM_S and is armed again. Nothing here is a heist: no stars, no
 ## progress, no noise, nobody comes.
-const BENCH_KINDS := [
-	{"id": "hold", "lesson": "heist", "text": "HIDEOUT_BENCH_KIND_HOLD"},
-	{"id": "lockpick", "lesson": "games", "text": "HIDEOUT_BENCH_KIND_LOCKPICK"},
-	{"id": "squeeze", "lesson": "props", "text": "HIDEOUT_BENCH_KIND_SQUEEZE"},
-	{"id": "wires", "lesson": "case_alarm", "text": "HIDEOUT_BENCH_KIND_WIRES"},
-	{"id": "steady", "lesson": "two", "text": "HIDEOUT_BENCH_KIND_STEADY"},
-]
-## Standing still by the case this long opens it (the first test).
-const BENCH_HOLD_S := 3.0
+const BENCH_TESTS := ["hold", "lockpick", "squeeze", "wires", "steady"]
+const BENCH_X := [22, 24, 26, 28, 30]
+const BENCH_Y := [3, 7, 11]
+const BENCH_HOLD_S := [3.0, 5.0, 8.0]
 const BENCH_OPEN_S := 3.5
 const BENCH_REARM_S := 0.6
 ## As close as a heist asks to work a case (Heist.REACH).
 const BENCH_REACH := 1.5
-const BENCH_ALARM_CASE := Vector2i(29, 6)
-## The alarm case's panel: on the north wall, and how close to work it.
-const BENCH_PANEL := Vector2(30.5, 1.5)
-const BENCH_PANEL_REACH := 1.1
-## The lecterns: which test, and how hard.
-const BENCH_LECTERN_KIND := Vector2i(27, 2)
-const BENCH_LECTERN_LEVEL := Vector2i(29, 2)
-const BENCH_LECTERN_REACH := 1.3
-## How close to a game's sign post to start it.
-const SIGN_REACH := 1.3
+## How close to a sock on its pedestal, or to the middle of a circle, to take it.
+const SOCK_REACH := 1.3
+const RING_REACH := 0.6
 ## The lantern of AGUANTA ESCONDIDO: the post it stands on (only while the game
 ## is on), and where its swing is centred (radians on the plan, 0 east).
 const LANTERN_AT := Vector2i(52, 3)
@@ -119,100 +104,89 @@ static func _item(id: String) -> Dictionary:
 	return {}
 
 
-## The bench as it starts: the first test, the easy level, none opened.
+## The bench as it starts: every case closed, none opened.
 static func bench_new() -> Dictionary:
-	return {"kind": "hold", "level": 0, "opened": 0, "panel_off": false,
-		"cases": [{"state": "closed", "t": 0.0}, {"state": "closed", "t": 0.0}]}
+	var cases: Array = []
+	for i in BENCH_TESTS.size() * 3:
+		cases.append({"state": "closed", "t": 0.0})
+	return {"opened": 0, "cases": cases}
 
 
-## The cases there are for a band this size: [{at, alarm}].
+## Case `slot`: {slot, kind (of BENCH_TESTS), level (0..2), at (its tile)}.
+static func bench_case(slot: int) -> Dictionary:
+	var k := slot / 3
+	var level := slot % 3
+	return {"slot": slot, "kind": BENCH_TESTS[k], "level": level, "at": Vector2i(BENCH_X[k], BENCH_Y[level])}
+
+
+## The slot of the bench case that stands on a tile, or -1 (whether or not it is open).
+static func bench_slot_of(tile: Vector2i) -> int:
+	var k := BENCH_X.find(tile.x)
+	var level := BENCH_Y.find(tile.y)
+	return k * 3 + level if k >= 0 and level >= 0 else -1
+
+
+## The cases there are for a band this size, in slot order: [{slot, kind, level, at}].
 static func bench_cases(players := 1) -> Array:
-	var out: Array = [{"at": Den.CASE_AT, "alarm": false}]
-	if is_open(_item("bench_alarm"), players):
-		out.append({"at": BENCH_ALARM_CASE, "alarm": true})
+	var out: Array = []
+	var kinds := bench_kinds(players)
+	for slot in BENCH_TESTS.size() * 3:
+		if kinds.has(BENCH_TESTS[slot / 3]):
+			out.append(bench_case(slot))
 	return out
 
 
-## Whether the lecterns are up (the tests to pick from come with the pick).
-static func bench_lecterns(players := 1) -> bool:
-	return is_open(_item("bench_kinds"), players)
-
-
-## The tests taught so far, in the order the lectern goes through them.
+## The tests taught so far, in the order of BENCH_TESTS.
 static func bench_kinds(players := 1) -> Array[String]:
 	var out: Array[String] = []
-	var reach := reached(players)
-	for k in BENCH_KINDS:
-		if reach >= maxi(1, Story.lesson_night(k.lesson)):
-			out.append(String(k.id))
+	for i in open_items(players):
+		if i.has("bench"):
+			out.append(String(i.bench))
 	return out
-
-
-## The lectern's next test (or the first one, if the one picked is not taught).
-static func bench_cycle_kind(state: Dictionary, players := 1) -> void:
-	var kinds := bench_kinds(players)
-	var at := kinds.find(state.kind)
-	state.kind = kinds[(at + 1) % kinds.size()] if at >= 0 else kinds[0]
-
-
-static func bench_cycle_level(state: Dictionary) -> void:
-	state.level = (int(state.level) + 1) % 3
 
 
 ## The name of a test (a key of Text).
-static func bench_kind_text(id: String) -> String:
-	for k in BENCH_KINDS:
-		if k.id == id:
-			return k.text
+static func bench_kind_text(kind: String) -> String:
+	for i in ITEMS:
+		if i.get("bench", "") == kind:
+			return i.text
 	return ""
 
 
-## The bench case a point is beside (its index into bench_cases), the nearest
-## within reach, or -1.
+## The bench case a point is beside (its slot), the nearest within reach, or -1.
 static func bench_case_at(pos: Vector2, players := 1) -> int:
 	var best := -1
 	var best_d := BENCH_REACH
-	var cases := bench_cases(players)
-	for i in cases.size():
-		var c: Vector2i = cases[i].at
-		var d := pos.distance_to(Vector2(c) + Vector2(0.5, 0.5))
+	for c in bench_cases(players):
+		var d := pos.distance_to(Vector2(c.at) + Vector2(0.5, 0.5))
 		if d <= best_d:
 			best_d = d
-			best = i
+			best = c.slot
 	return best
 
 
-## What the action key does for someone at a point: {what: "case" (i) |
-## "need_panel" (the alarm case is still armed) | "panel" | "kind" | "level"},
-## or empty for nothing. The nearest of them.
+## What the action key does for someone at a point: {what: "case", i: slot} for
+## the nearest closed case in reach, or empty for nothing.
 static func bench_action(pos: Vector2, state: Dictionary, players := 1) -> Dictionary:
-	# Every thing to do in reach: [distance, what].
-	var found: Array = []
-	var cases := bench_cases(players)
-	for i in cases.size():
-		var c: Vector2i = cases[i].at
-		if state.cases[i].state != "closed":
-			continue
-		var armed: bool = cases[i].alarm and not state.panel_off
-		found.append([pos.distance_to(Vector2(c) + Vector2(0.5, 0.5)) - BENCH_REACH,
-			{"what": "need_panel" if armed else "case", "i": i}])
-	if cases.size() > 1 and not state.panel_off and state.cases[1].state == "closed":
-		found.append([pos.distance_to(BENCH_PANEL) - BENCH_PANEL_REACH, {"what": "panel"}])
-	if bench_lecterns(players):
-		found.append([pos.distance_to(Vector2(BENCH_LECTERN_KIND) + Vector2(0.5, 0.5)) - BENCH_LECTERN_REACH, {"what": "kind"}])
-		found.append([pos.distance_to(Vector2(BENCH_LECTERN_LEVEL) + Vector2(0.5, 0.5)) - BENCH_LECTERN_REACH, {"what": "level"}])
-	# (Negative: in reach; the one deepest in it wins.)
 	var best: Dictionary = {}
-	var best_d := 0.0
-	for f in found:
-		if f[0] <= 0.0 and (best.is_empty() or f[0] < best_d):
-			best_d = f[0]
-			best = f[1]
+	var best_d := BENCH_REACH
+	for c in bench_cases(players):
+		if state.cases[c.slot].state != "closed":
+			continue
+		var d := pos.distance_to(Vector2(c.at) + Vector2(0.5, 0.5))
+		if d <= best_d:
+			best_d = d
+			best = {"what": "case", "i": c.slot}
 	return best
 
 
-## The game a test is (null for the first, standing still): the same
-## Minigame as in a heist, at the level picked; input is the keys held.
+## How long to stand still by case `slot` to open it (QUIETO), by its difficulty.
+static func bench_hold_s(slot: int) -> float:
+	return BENCH_HOLD_S[slot % 3]
+
+
+## The game a test is (null for standing still): the same Minigame as in a
+## heist, at the difficulty of the case; input is the keys held.
 static func bench_game(kind: String, level: int, input: Dictionary) -> Minigame:
 	if kind == "hold":
 		return null
@@ -227,11 +201,9 @@ static func bench_open(state: Dictionary, i: int) -> void:
 	state.opened = int(state.opened) + 1
 
 
-## Time passes on the bench: an open case closes, then arms again (and with
-## the alarm case, its panel).
+## Time passes on the bench: an open case closes, then arms again.
 static func bench_step(state: Dictionary, dt: float) -> void:
-	for i in state.cases.size():
-		var c: Dictionary = state.cases[i]
+	for c in state.cases:
 		if c.state == "open":
 			c.t = float(c.t) + dt
 			if c.t >= BENCH_OPEN_S:
@@ -242,14 +214,66 @@ static func bench_step(state: Dictionary, dt: float) -> void:
 			if c.t >= BENCH_REARM_S:
 				c.state = "closed"
 				c.t = 0.0
-				if i == 1:
-					state.panel_off = false
 
 
 ## Standing still by a case, second by second: the progress (seconds) after
 ## dt, back to 0 the moment the thief moves off or stirs.
 static func bench_hold_step(held: float, still_at_case: bool, dt: float) -> float:
 	return held + dt if still_at_case else 0.0
+
+
+# --- The games' start points ----------------------------------------------------------------
+
+## The start points of the games the band has got to: [{game, tier (0..2), at
+## (tile), via, text (the game's name)}], game by game and easy to hard.
+static func game_starts(players := 1) -> Array:
+	var out: Array = []
+	for i in open_items(players):
+		if i.has("game"):
+			for t in 3:
+				out.append({"game": i.game, "tier": t, "at": i.starts[t], "via": i.via, "text": i.text})
+	return out
+
+
+## The start point one presses the action key at (a sock on its pedestal, a
+## circle): {id, tier} of the game it starts, or empty. The nearest within reach.
+static func game_at(pos: Vector2, players := 1) -> Dictionary:
+	var best: Dictionary = {}
+	var best_d := INF
+	for s in game_starts(players):
+		var reach := SOCK_REACH if s.via == "sock" else (RING_REACH if s.via == "ring" else 0.0)
+		var d := pos.distance_to(Vector2(s.at) + Vector2(0.5, 0.5))
+		if d <= reach and d < best_d:
+			best_d = d
+			best = {"id": s.game, "tier": s.tier}
+	return best
+
+
+## The tile of a game's start point at a difficulty (0..2).
+static func start_of(game: String, tier: int, _players := 1) -> Vector2i:
+	return _item("game_" + game).starts[clampi(tier, 0, 2)]
+
+
+## The difficulty (0..2) of the start point of a game at a tile, or -1 if none is.
+static func start_tier(game: String, tile: Vector2i, players := 1) -> int:
+	for s in game_starts(players):
+		if s.game == game and s.at == tile:
+			return s.tier
+	return -1
+
+
+## The tiles of the hideouts the band has got to: the crate and the locker, and
+## the armours of AGUANTA ESCONDIDO.
+static func hide_tiles(players := 1) -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	for i in open_items(players):
+		if i.has("hide"):
+			out.append(i.hide.tile)
+		elif i.get("via", "") == "armour":
+			for t in i.starts:
+				out.append(t)
+	return out
+
 
 # --- The scarecrows -------------------------------------------------------------------
 ## A guard's scarecrow: a coat on a cross with a torch taped to it. It stands
@@ -302,46 +326,6 @@ static func scarecrow_sees(sc: Dictionary, pos: Vector2, hidden: bool, low := fa
 	return Museum.has_line_of_sight(from.x, from.y, pos.x, pos.y, low)
 
 
-## The sign posts of the games the band has got to: [{id (of the game), at (tile)}].
-static func game_signs(players := 1) -> Array:
-	var out: Array = []
-	for i in open_items(players):
-		if i.has("game"):
-			out.append({"id": i.game, "at": i.sign, "text": i.text})
-	return out
-
-
-## The sign post a point is beside (within SIGN_REACH of its middle): its
-## game's id, or "".
-static func game_at(pos: Vector2, players := 1) -> String:
-	var best := ""
-	var best_d := SIGN_REACH
-	for s in game_signs(players):
-		var d := pos.distance_to(Vector2(s.at) + Vector2(0.5, 0.5))
-		if d <= best_d:
-			best_d = d
-			best = s.id
-	return best
-
-
-## The tiles of the hideouts (`hide`) the band has got to.
-static func hide_tiles(players := 1) -> Array[Vector2i]:
-	var out: Array[Vector2i] = []
-	for i in open_items(players):
-		if i.has("hide"):
-			out.append(i.hide.tile)
-	return out
-
-
-## ... and of the pedestals (`plinth`).
-static func plinth_tiles(players := 1) -> Array[Vector2i]:
-	var out: Array[Vector2i] = []
-	for i in open_items(players):
-		if i.has("plinth"):
-			out.append(i.plinth)
-	return out
-
-
 ## The alarm's state: {active, left_s (of the alarm), cooldown_s}.
 static func alert_new() -> Dictionary:
 	return {"active": false, "left_s": 0.0, "cooldown_s": 0.0}
@@ -362,9 +346,6 @@ static func alert_step(state: Dictionary, dt: float, seen: bool) -> Dictionary:
 		s.active = true
 		s.left_s = ALERT_S
 	return s
-
-## Not yet: the light switches (lesson "lights") and the big pieces (lesson
-## "big"). Each would be one more line in ITEMS once the round can take it.
 
 ## The job the band has got to (each size of band has its own).
 static func reached(players := 1) -> int:
@@ -387,7 +368,7 @@ static func open_items(players := 1) -> Array:
 
 
 ## The house as a map for a band of this size: the plan, the dojo's things
-## that are open, the way in and the door. The case's tile is always the
+## that are open, the way in and the door. The first case's tile is always the
 ## sock's, and the scarecrows (scarecrows) stand on cover tiles of their own
 ## (the round dresses them, see Main._build_world).
 static func map(players := 1) -> MapFile:
@@ -403,13 +384,21 @@ static func map(players := 1) -> MapFile:
 	m.exit = Den.EXIT
 	m.piece = Den.CASE_AT
 	for i in items:
-		if i.has("case"):
-			cover.append(i.case)
-		if i.has("plinth"):
-			cover.append(i.plinth)
-			m.exhibits[i.plinth] = "plinth"
-		if i.has("sign"):
-			cover.append(i.sign)
+		if i.has("bench"):
+			for level in 3:
+				cover.append(bench_case(BENCH_TESTS.find(i.bench) * 3 + level).at)
+		if i.has("game"):
+			match i.via:
+				"sock":
+					for t in i.starts:
+						cover.append(t)
+				"plinth":
+					for t in i.starts:
+						cover.append(t)
+						m.exhibits[t] = "plinth"
+				"armour":
+					for t in i.starts:
+						m.props.append({"kind": "armour", "at": t})
 		if i.has("hide"):
 			cover.append(i.hide.tile)
 			m.exhibits[i.hide.tile] = i.hide.piece
@@ -417,8 +406,6 @@ static func map(players := 1) -> MapFile:
 			m.props.append(p.duplicate())
 		for sc in i.get("scarecrows", []):
 			cover.append(sc.at)
-		for c in i.get("cover", []):
-			cover.append(c)
 	var rows := Den.rows(cover)
 	m._resize_plan(Den.W, Den.H)
 	for y in Den.H:
@@ -428,7 +415,7 @@ static func map(players := 1) -> MapFile:
 	return m
 
 
-## The dojo's settings, for Sim.custom: no guards, the case sealed, and
+## The dojo's settings, for Sim.custom: no guards, no case to rob, and
 ## everything else on for the feet to try (the bombs, the pick, the props,
 ## the places to hide are the dojo's, whatever it shows).
 static func tuning() -> Dictionary:

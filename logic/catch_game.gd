@@ -8,7 +8,8 @@ extends DojoGame
 ## The time of each is base + slack * path * SLACK_K, path being the steps on
 ## foot from where the last one was (plus GATE_BONUS if a shut door stands in
 ## between, WATCH_BONUS if it can only be got by crossing a scarecrow's cone),
-## never under the level's min_time. Each level asks more (LEVELS):
+## never under the level's min_time. Each level asks more (LEVELS; a game
+## plays the stretch of its difficulty, DojoGames.TIERS):
 ##   dmin, dmax  how far from the last one, in steps on foot
 ##   zones       where it may turn up (empty: anywhere)
 ##   base, slack the time
@@ -32,8 +33,6 @@ const SLACK_K := 0.24
 const GATE_BONUS := 1.5
 const WATCH_BONUS := 1.5
 const CATCH_R := 0.8
-const EXTRA_SLACK_MIN := 1.0
-const EXTRA_MIN_TIME := 4.0
 const LEVELS := [
 	{"dmin": 5, "dmax": 8, "zones": ["tatami"], "base": 3.0, "slack": 2.2, "move": 0.0, "gate": false, "watch": false, "watch_n": 0, "maze": false, "ring": true, "min_time": 0.0},
 	{"dmin": 6, "dmax": 10, "zones": ["tatami"], "base": 2.8, "slack": 2.0, "move": 0.0, "gate": false, "watch": false, "watch_n": 0, "maze": false, "ring": true, "min_time": 0.0},
@@ -59,13 +58,9 @@ var last_spawn := {}
 var shut: Array[String] = []
 
 
-## The level's numbers; past the tenth, the hora extra's.
+## The level's numbers.
 static func params(lv: int) -> Dictionary:
-	var p := level_row(LEVELS, lv)
-	if lv > LEVELS.size():
-		stretch_race(p, lv - LEVELS.size(), EXTRA_SLACK_MIN)
-		p.min_time = EXTRA_MIN_TIME
-	return p
+	return level_row(LEVELS, lv)
 
 
 ## The time a sock gets for a way of `path` steps.

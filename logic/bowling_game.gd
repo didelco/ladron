@@ -7,7 +7,7 @@ extends DojoGame
 ## voltereta is 7.3). A pin that goes down knocks over the pins beside it (within
 ## CHAIN_R of one that is falling, and so on): a strike, and it counts for
 ## whoever rolled. A round is done when all its pins are down; ten rounds
-## won; then the hora extra.
+## won.
 ##
 ## The time of a pin is base + slack * path * BOWL_K + GATE_BONUS if it is
 ## behind a shut door, never under MIN_TIME. LEVELS, by round:
@@ -34,9 +34,6 @@ const CHAIN_R := 1.5
 const KEEP_APART := 3
 ## A pin takes this long to fall over (for the picture).
 const FALL_S := 0.7
-const EXTRA_SLACK_MIN := 1.2
-const EXTRA_PINS_EVERY := 3
-const MAX_PINS := 6
 const LEVELS := [
 	{"n": 1, "cluster": false, "movers": 0, "move": 0.0, "dmin": 4, "dmax": 8, "zones": ["tatami"], "base": 4.0, "slack": 2.4, "gate": false, "maze": false},
 	{"n": 1, "cluster": false, "movers": 0, "move": 0.0, "dmin": 6, "dmax": 10, "zones": ["tatami"], "base": 3.8, "slack": 2.3, "gate": false, "maze": false},
@@ -62,10 +59,6 @@ var strikes := 0
 
 static func params(lv: int) -> Dictionary:
 	var p := level_row(LEVELS, lv)
-	if lv > LEVELS.size():
-		var k := lv - LEVELS.size()
-		stretch_race(p, k, EXTRA_SLACK_MIN)
-		p.n = mini(MAX_PINS, int(p.n) + k / EXTRA_PINS_EVERY)
 	p.min_time = MIN_TIME
 	return p
 

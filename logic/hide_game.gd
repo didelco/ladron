@@ -2,7 +2,9 @@ class_name HideGame
 extends DojoGame
 ## «AGUANTA ESCONDIDO» (aguanta): get into a hideout (Hideouts: armour, crate,
 ## locker) and stay hidden for so many seconds while a scarecrow's lantern
-## sweeps the place, and, in the higher rounds, hold in the sneeze as well.
+## sweeps the place, and, in the higher rounds, hold in the sneeze as well. It
+## begins by getting into one of its three armours (its start points: easy,
+## medium, hard); the first round always leaves that one open.
 ##
 ## A round has two parts. First the band gets in: in `enter` seconds the band
 ## must be hidden (else "late"). Then it holds `hold` seconds. Lost if:
@@ -17,8 +19,7 @@ extends DojoGame
 ## band: need = min(alive thieves, spots). Those that are hidden when the
 ## count is reached are "in" and must stay; the rest, if any, must keep out of
 ## the lantern (they are lost if it sees them: the rule is the same, whoever it
-## is). With no hideouts given (set_hideouts), any hidden body counts and
-## `spots` is the count.
+## is).
 ##
 ## The lantern: a scarecrow with a lantern (`lantern`, a DojoField scarecrow
 ## dictionary) whose facing swings: lantern_angle = lantern_center + amp *
@@ -40,12 +41,6 @@ const WARN := 0.7
 const NEAR_HIDE := 1.3
 const BURST_MIN_S := 2.0
 const BURST_MAX_S := 4.0
-const EXTRA_HOLD := 3.0
-const EXTRA_SWEEP := 0.1
-const SWEEP_MAX := 3.6
-const EXTRA_RISE := 0.03
-const RISE_MAX := 0.6
-const ENTER_MIN := 3.0
 const LEVELS := [
 	{"hold": 5.0, "sweep": 0.8, "amp": 0.9, "spots": 4, "rise": 0.0, "burst": 0.0, "enter": 8.0},
 	{"hold": 7.0, "sweep": 1.0, "amp": 0.9, "spots": 4, "rise": 0.0, "burst": 0.0, "enter": 8.0},
@@ -82,14 +77,7 @@ var _warned := {}
 
 
 static func params(lv: int) -> Dictionary:
-	var p := level_row(LEVELS, lv)
-	if lv > LEVELS.size():
-		var k := lv - LEVELS.size()
-		p.hold = float(p.hold) + EXTRA_HOLD * k
-		p.sweep = minf(SWEEP_MAX, float(p.sweep) + EXTRA_SWEEP * k)
-		p.rise = minf(RISE_MAX, float(p.rise) + EXTRA_RISE * k)
-		p.enter = maxf(ENTER_MIN, float(p.enter) - 0.25 * k)
-	return p
+	return level_row(LEVELS, lv)
 
 
 func _init() -> void:
@@ -131,23 +119,22 @@ func _begin_level() -> void:
 	_warned = {}
 	_burst_t = BURST_MIN_S + rng.next() * (BURST_MAX_S - BURST_MIN_S)
 	open_hides = []
-	spots = int(p.spots)
-	if not hideouts.is_empty():
-		var pool: Array = hideouts.duplicate()
-		_shuffle(pool)
-		spots = mini(spots, pool.size())
-		for i in spots:
-			open_hides.append(pool[i])
+	var pool: Array = hideouts.duplicate()
+	_shuffle(pool)
+	if level == first and pool.has(start_tile):
+		pool.erase(start_tile)
+		pool.push_front(start_tile)
+	spots = mini(int(p.spots), pool.size())
+	for i in spots:
+		open_hides.append(pool[i])
 	need = 1
 	_emit({"e": "spawn", "level": level, "hold": hold_left, "enter": enter_left, "hides": open_hides.duplicate(), "spots": spots})
 
 
-## Whether a body is hidden in a hideout that counts (an open one, when they are known).
+## Whether a body is hidden in a hideout that counts (an open one).
 func _counts(b: Dictionary) -> bool:
 	if not b.get("hidden", false):
 		return false
-	if open_hides.is_empty():
-		return true
 	for t in open_hides:
 		if (b.pos as Vector2).distance_to(DojoField.center(t)) <= NEAR_HIDE:
 			return true

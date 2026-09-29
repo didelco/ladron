@@ -4,9 +4,9 @@ extends Node3D
 ## pedestal or hideouts in the world, each with a column of light, and on top,
 ## in 2D, the rings that empty, the arrows at the edge of the screen for what is
 ## off it, the lantern's cone, the sneeze bars and the lean, the head-up display
-## (NIVEL n, the count, MEJOR, the time) and, at the end, the panel (¡SE FUE
-## EL CALCETÍN! / ¡GANASTE!, the level reached, ¡NUEVO RÉCORD!, the MVP, and
-## OTRA VEZ / SEGUIR / SALIR).
+## (NIVEL n and the difficulty, the count, MEJOR, the time) and, at the end, the
+## panel (¡SE FUE EL CALCETÍN! / ¡GANASTE!, the level reached, ¡NUEVO RÉCORD!,
+## the MVP, and OTRA VEZ / SALIR).
 ##
 ## Nothing here decides anything: show(view) is given DojoGame.view() every
 ## frame, react(events) the events of step(). Whoever runs it (Main) reads the
@@ -26,7 +26,7 @@ const EDGE := 40.0
 ## up, a tick, catching, going up a level, the alarm, losing, winning.
 const SOUNDS := {"spawn": "pin", "tick": "tick", "catch": "stolen", "knock": "bin", "strike": "sting", "clear": "ok",
 	"level": "go", "alarm": "siren", "lost": "caught", "won": "escaped", "sneeze": "sneeze", "tickle": "nav",
-	"up": "go", "in": "ok", "fall": "roll_bump", "ready": "nav"}
+	"in": "ok", "fall": "roll_bump", "ready": "nav"}
 
 var _camera: Camera3D
 var _layer: CanvasLayer
@@ -101,14 +101,9 @@ func react(events: Array, sfx: Sfx = null, world: Node3D = null) -> void:
 
 # --- The panel at the end ---------------------------------------------------------------
 
-## The choices of the panel at the end, in order: "again", "go_on" (only after
-## winning), "exit".
+## The choices of the panel at the end, in order: "again", "exit".
 func menu() -> Array[String]:
-	var out: Array[String] = ["again"]
-	if _view.get("state", "") == "won":
-		out.append("go_on")
-	out.append("exit")
-	return out
+	return ["again", "exit"]
 
 
 func selected() -> String:
@@ -123,7 +118,7 @@ func move(dir: int) -> void:
 		_ui.queue_redraw()
 
 
-## The choice made ("again", "go_on" or "exit"); "" if the game is not at its end.
+## The choice made ("again" or "exit"); "" if the game is not at its end.
 func accept() -> String:
 	if not (_view.get("state", "") in ["won", "lost"]):
 		return ""
@@ -309,7 +304,7 @@ func _draw_ui() -> void:
 func _goal_hint() -> String:
 	match String(_view.get("id", "")):
 		"bolos": return Text.t("HIDEOUT_GAME_ROLL")
-		"pedestal": return Text.t("HIDEOUT_GAME_CLIMB")
+		"pedestal": return Text.t("HIDEOUT_GAME_HOLD")
 		"aguanta": return Text.t("HIDEOUT_GAME_HIDE")
 	return Text.t("HIDEOUT_GAME_ATRAPA")
 
@@ -331,7 +326,7 @@ func _draw_world_marks(size: Vector2) -> void:
 	var bars: Dictionary = v.get("bars", {})
 	if not bars.is_empty():
 		_draw_bars(size, bars)
-	if v.has("lean") and v.get("phase", "") == "hold":
+	if v.has("lean") and v.state == "playing":
 		_draw_lean(size, float(v.lean), float(v.fall))
 
 
@@ -394,11 +389,9 @@ func _draw_lean(size: Vector2, lean: float, fall: float) -> void:
 func _draw_hud(size: Vector2) -> void:
 	var v := _view
 	var top := Vector2(size.x * 0.5, 14)
-	var title := Text.t("HIDEOUT_GAME_LEVEL") % int(v.level)
-	if v.get("extra", false):
-		title += "  " + Text.t("HIDEOUT_GAME_EXTRA")
+	var title := Text.t("HIDEOUT_GAME_LEVEL") % int(v.level) + "  " + Text.t(DojoGames.TIERS[int(v.tier)].text)
 	_text(title, top, 26, CREAM, true)
-	var line := Text.t("HIDEOUT_GAME_COUNT") % [int(v.got), int(v.goal)] if not v.get("extra", false) else str(int(v.got))
+	var line := Text.t("HIDEOUT_GAME_COUNT") % [int(v.got), int(v.goal)]
 	var best: int = int(v.get("best", 0))
 	line += "    " + (Text.t("HIDEOUT_GAME_BEST") % best if best > 0 else Text.t("HIDEOUT_GAME_BEST_NONE"))
 	_text(line, top + Vector2(0, 34), 16, GOLD, true)
@@ -415,8 +408,6 @@ func _draw_hud(size: Vector2) -> void:
 		_text("%.1f" % float(tm.left), bar.position + Vector2(bar.size.x + 12, -6), 16, CREAM)
 		if String(v.id) == "aguanta" and String(v.get("phase", "")) == "enter":
 			_text(Text.t("HIDEOUT_GAME_HIDE"), Vector2(size.x * 0.5, 96), 18, GOLD, true)
-		elif String(v.id) == "pedestal" and String(v.get("phase", "")) == "climb":
-			_text(Text.t("HIDEOUT_GAME_CLIMB"), Vector2(size.x * 0.5, 96), 18, GOLD, true)
 
 
 func _draw_popups(size: Vector2) -> void:
@@ -449,7 +440,7 @@ func _draw_end(size: Vector2) -> void:
 		_text(Text.t("HIDEOUT_GAME_NEW_RECORD"), Vector2(centre, box.position.y + 148 + 3 * sin(_t * 8.0)), 24, GOLD, true)
 	if String(v.get("mvp_name", "")) != "":
 		_text(Text.t("HIDEOUT_GAME_MVP") % String(v.mvp_name), Vector2(centre, box.position.y + 190), 14, CREAM, true)
-	var labels := {"again": Text.t("HIDEOUT_GAME_AGAIN"), "go_on": Text.t("HIDEOUT_GAME_GO_ON"), "exit": Text.t("HIDEOUT_GAME_EXIT")}
+	var labels := {"again": Text.t("HIDEOUT_GAME_AGAIN"), "exit": Text.t("HIDEOUT_GAME_EXIT")}
 	var m := menu()
 	for i in m.size():
 		var y := box.position.y + 240 + i * 42
