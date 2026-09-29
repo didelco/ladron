@@ -40,6 +40,9 @@ const BETWEEN_S := 1.0
 const ALARM_S := 2.0
 const ALERT_RED_S := 3.0
 const ALARM_COOLDOWN_S := 3.0
+## In the hora extra of the racing games, per level past the last (stretch_race).
+const EXTRA_SLACK_STEP := 0.02
+const EXTRA_DMAX_STEP := 0.5
 
 var id := ""
 var players := 1
@@ -146,15 +149,6 @@ func alarm(seconds := ALARM_S, by := "") -> bool:
 	return true
 
 
-## The level reached (what is kept as the best), and the levels done.
-func reached() -> int:
-	return level
-
-
-func cleared() -> int:
-	return got
-
-
 ## The band's member with most to their name, or -1 for none (or a lone thief).
 func mvp() -> int:
 	if players < 2:
@@ -207,7 +201,7 @@ func step(dt: float, bodies: Array[Dictionary]) -> Array[Dictionary]:
 ## to draw, `timer`, ...).
 func view() -> Dictionary:
 	var v := {"id": id, "state": state, "level": level, "got": got, "goal": goal, "extra": extra,
-		"best": best, "players": players, "new_record": new_record, "reached": reached(),
+		"best": best, "players": players, "new_record": new_record, "reached": level,
 		"alert": clampf(alert_left / ALERT_RED_S, 0.0, 1.0), "time": time,
 		"ready": maxf(0.0, _ready_left), "mvp": mvp(), "mvp_name": mvp_name(), "why": lost_why,
 		"names": names}
@@ -259,6 +253,13 @@ func _live(bodies: Array[Dictionary]) -> Array[Dictionary]:
 	return out
 
 
+## The level's turn comes: play it.
+func _begin_play() -> void:
+	state = "playing"
+	_tick_key = -1
+	_begin_level()
+
+
 ## The level is done: on to the next (after BETWEEN_S), or, at GOAL, won.
 func _clear_level() -> void:
 	got += 1
@@ -273,12 +274,16 @@ func _clear_level() -> void:
 	_emit({"e": "level", "level": level, "got": got})
 
 
-func _lose(why: String) -> void:
+## The game is lost; `more` is what the event "lost" carries besides its own
+## (who, which pin).
+func _lose(why: String, more := {}) -> void:
 	if state == "lost":
 		return
 	state = "lost"
 	lost_why = why
-	_emit({"e": "lost", "level": level, "got": got, "why": why})
+	var e := {"e": "lost", "level": level, "got": got, "why": why}
+	e.merge(more)
+	_emit(e)
 
 
 ## A beat for a clock: an event every second with `left` <= 5, and every half
@@ -314,6 +319,20 @@ func _watch(list: Array, bodies: Array[Dictionary]) -> void:
 				_cool[sc.id] = ALARM_COOLDOWN_S
 				alarm(ALARM_S, String(sc.id))
 				break
+
+
+## The row of a game's LEVELS for level `lv` (the last one past the end), to
+## be worked on: a copy.
+static func level_row(levels: Array, lv: int) -> Dictionary:
+	return (levels[clampi(lv, 1, levels.size()) - 1] as Dictionary).duplicate(true)
+
+
+## The hora extra of the games that race a clock over a way (atrapa, bolos):
+## each level past the last has `slack` EXTRA_SLACK_STEP less (never under
+## slack_min) and reaches EXTRA_DMAX_STEP steps further.
+static func stretch_race(p: Dictionary, k: int, slack_min: float) -> void:
+	p.slack = maxf(slack_min, float(p.slack) - EXTRA_SLACK_STEP * k)
+	p.dmax = float(p.dmax) + EXTRA_DMAX_STEP * k
 
 
 func _shuffle(list: Array) -> void:

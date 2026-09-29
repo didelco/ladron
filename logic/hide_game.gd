@@ -82,7 +82,7 @@ var _warned := {}
 
 
 static func params(lv: int) -> Dictionary:
-	var p: Dictionary = (LEVELS[clampi(lv, 1, LEVELS.size()) - 1] as Dictionary).duplicate(true)
+	var p := level_row(LEVELS, lv)
 	if lv > LEVELS.size():
 		var k := lv - LEVELS.size()
 		p.hold = float(p.hold) + EXTRA_HOLD * k
@@ -98,9 +98,7 @@ func _init() -> void:
 
 ## The dojo's hideouts (tiles), where a round may open some.
 func set_hideouts(list: Array) -> void:
-	hideouts.clear()
-	for t in list:
-		hideouts.append(t)
+	hideouts.assign(list)
 
 
 ## Set the lantern: its post (tile) and the centre of its swing.
@@ -159,75 +157,15 @@ func _counts(b: Dictionary) -> bool:
 func _play(dt: float, bodies: Array[Dictionary]) -> void:
 	var p := params(level)
 	var alive := _live(bodies)
-	# The lantern.
-	_sweep_t += dt * float(p.sweep)
-	lantern_angle = lantern_center + float(p.amp) * sin(_sweep_t)
-	lantern.facing = lantern_angle
-	for b in alive:
-		if not b.get("hidden", false) and sees(lantern, b.pos, false):
-			_lose("seen")
-			_events[_events.size() - 1]["by"] = int(b.id)
-			return
+	if not _sweep(dt, p, alive):
+		return
 	need = mini(alive.size(), spots)
-	if phase == "enter":
-		var in_ids: Array[int] = []
-		for b in alive:
-			if _counts(b):
-				in_ids.append(int(b.id))
-		if need > 0 and in_ids.size() >= need:
-			phase = "hold"
-			inside = in_ids
-			for k in inside:
-				bars[k] = 0.0
-				_out_for[k] = 0.0
-			_emit({"e": "in", "n": in_ids.size(), "need": need})
-		else:
-			enter_left -= dt
-			if enter_left <= 0.0:
-				enter_left = 0.0
-				_lose("late")
-			else:
-				_tick(enter_left)
-			return
-	# Holding: stay in.
-	for b in bodies:
-		var k := int(b.id)
-		if not inside.has(k):
-			continue
-		if b.get("out", false) or not _counts(b):
-			_out_for[k] = float(_out_for.get(k, 0.0)) + dt
-			if _out_for[k] >= LEAVE_GRACE_S:
-				_lose("left")
-				_events[_events.size() - 1]["by"] = k
-				return
-		else:
-			_out_for[k] = 0.0
-	# The sneeze.
-	if float(p.rise) > 0.0:
-		_burst_t -= dt
-		var burst := 0.0
-		if _burst_t <= 0.0:
-			_burst_t = BURST_MIN_S + rng.next() * (BURST_MAX_S - BURST_MIN_S)
-			burst = float(p.burst)
-		for b in bodies:
-			var k := int(b.id)
-			if not inside.has(k):
-				continue
-			var held: bool = b.get("hold", false)
-			if held and not _pressed.get(k, false):
-				bars[k] = maxf(0.0, float(bars[k]) - TAP)
-			_pressed[k] = held
-			bars[k] = float(bars[k]) + float(p.rise) * dt + burst
-			if bars[k] >= WARN and not _warned.get(k, false):
-				_warned[k] = true
-				_emit({"e": "tickle", "by": k, "bar": bars[k]})
-			elif bars[k] < WARN:
-				_warned[k] = false
-			if bars[k] >= 1.0:
-				_emit({"e": "sneeze", "by": k})
-				_lose("sneeze")
-				_events[_events.size() - 1]["by"] = k
-				return
+	if phase == "enter" and not _enter(dt, alive):
+		return
+	if not _stay_in(dt, bodies):
+		return
+	if float(p.rise) > 0.0 and not _sneeze(dt, p, bodies):
+		return
 	hold_left -= dt
 	if hold_left <= 0.0:
 		hold_left = 0.0
@@ -236,6 +174,90 @@ func _play(dt: float, bodies: Array[Dictionary]) -> void:
 		_clear_level()
 		return
 	_tick(hold_left)
+
+
+## The lantern swings; whoever it sees out of a hideout loses the game.
+## False if it did.
+func _sweep(dt: float, p: Dictionary, alive: Array[Dictionary]) -> bool:
+	_sweep_t += dt * float(p.sweep)
+	lantern_angle = lantern_center + float(p.amp) * sin(_sweep_t)
+	lantern.facing = lantern_angle
+	for b in alive:
+		if not b.get("hidden", false) and sees(lantern, b.pos, false):
+			_lose("seen", {"by": int(b.id)})
+			return false
+	return true
+
+
+## Getting in: once `need` of them are hidden the hold begins (true); until
+## then the time to get in runs down, and out, "late". False while still in the
+## enter part.
+func _enter(dt: float, alive: Array[Dictionary]) -> bool:
+	var in_ids: Array[int] = []
+	for b in alive:
+		if _counts(b):
+			in_ids.append(int(b.id))
+	if need > 0 and in_ids.size() >= need:
+		phase = "hold"
+		inside = in_ids
+		for k in inside:
+			bars[k] = 0.0
+			_out_for[k] = 0.0
+		_emit({"e": "in", "n": in_ids.size(), "need": need})
+		return true
+	enter_left -= dt
+	if enter_left <= 0.0:
+		enter_left = 0.0
+		_lose("late")
+	else:
+		_tick(enter_left)
+	return false
+
+
+## Holding: a thief that was in and is out (or out of play) for LEAVE_GRACE_S
+## loses the game. False if one did.
+func _stay_in(dt: float, bodies: Array[Dictionary]) -> bool:
+	for b in bodies:
+		var k := int(b.id)
+		if not inside.has(k):
+			continue
+		if b.get("out", false) or not _counts(b):
+			_out_for[k] = float(_out_for.get(k, 0.0)) + dt
+			if _out_for[k] >= LEAVE_GRACE_S:
+				_lose("left", {"by": k})
+				return false
+		else:
+			_out_for[k] = 0.0
+	return true
+
+
+## The sneeze bars rise, jump now and then, and drop TAP for each press of the
+## key; a full one sneezes and loses. False if one did.
+func _sneeze(dt: float, p: Dictionary, bodies: Array[Dictionary]) -> bool:
+	_burst_t -= dt
+	var burst := 0.0
+	if _burst_t <= 0.0:
+		_burst_t = BURST_MIN_S + rng.next() * (BURST_MAX_S - BURST_MIN_S)
+		burst = float(p.burst)
+	for b in bodies:
+		var k := int(b.id)
+		if not inside.has(k):
+			continue
+		var held: bool = b.get("hold", false)
+		if held and not _pressed.get(k, false):
+			bars[k] = maxf(0.0, float(bars[k]) - TAP)
+		_pressed[k] = held
+		bars[k] = float(bars[k]) + float(p.rise) * dt + burst
+		if bars[k] >= WARN and not _warned.get(k, false):
+			_warned[k] = true
+			_emit({"e": "tickle", "by": k, "bar": bars[k]})
+		elif bars[k] < WARN:
+			_warned[k] = false
+		if bars[k] >= 1.0:
+			_emit({"e": "sneeze", "by": k})
+			_lose("sneeze", {"by": k})
+			return false
+	return true
 
 
 func _penalize(seconds: float) -> void:
@@ -249,9 +271,9 @@ func _view() -> Dictionary:
 	var p := params(level)
 	var objects: Array[Dictionary] = []
 	for t in open_hides:
-		objects.append({"kind": "hideout", "pos": DojoField.center(t), "ring": -1.0, "lit": true})
+		objects.append({"kind": "hideout", "pos": DojoField.center(t), "ring": -1.0})
 	var timer_left := hold_left if phase == "hold" else enter_left
 	var timer_max: float = float(p.hold) if phase == "hold" else float(p.enter)
 	return {"objects": objects, "timer": {"left": timer_left, "max": timer_max, "kind": "hold" if phase == "hold" else "limit"},
 		"phase": phase, "lantern": {"pos": DojoField.torch_of(lantern), "angle": lantern_angle, "range": lantern.range, "cone": lantern.angle},
-		"bars": bars.duplicate(), "need": need, "spots": spots, "gates_closed": [], "scarecrows": [lantern], "headline": "level"}
+		"bars": bars.duplicate()}

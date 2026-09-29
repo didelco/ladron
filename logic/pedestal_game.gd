@@ -73,7 +73,7 @@ var _last_pedestal := Vector2i(-999, -999)
 
 
 static func params(lv: int) -> Dictionary:
-	var p: Dictionary = (LEVELS[clampi(lv, 1, LEVELS.size()) - 1] as Dictionary).duplicate(true)
+	var p := level_row(LEVELS, lv)
 	if lv > LEVELS.size():
 		var k := lv - LEVELS.size()
 		p.hold = float(p.hold) + EXTRA_HOLD * k
@@ -92,9 +92,7 @@ func _init() -> void:
 
 ## The pedestals of the dojo (tiles), where a round may be lit.
 func set_pedestals(list: Array) -> void:
-	pedestals.clear()
-	for t in list:
-		pedestals.append(t)
+	pedestals.assign(list)
 
 
 func _reset() -> void:
@@ -129,44 +127,55 @@ func _begin_level() -> void:
 
 
 func _play(dt: float, bodies: Array[Dictionary]) -> void:
+	if phase == "climb" and not _climb(dt, bodies):
+		return
+	_hold(dt, bodies)
+
+
+## Waiting for somebody to get up on the lit pedestal. True once one has (the
+## round goes on as a hold in this same frame).
+func _climb(dt: float, bodies: Array[Dictionary]) -> bool:
 	var mid := DojoField.center(lit)
-	if phase == "climb":
-		for b in _live(bodies):
-			if b.get("posing", b.get("hidden", false)) and (b.pos as Vector2).distance_to(mid) <= NEAR:
-				phase = "hold"
-				holder = int(b.id)
-				lean = START_LEAN * (1.0 if rng.next() < 0.5 else -1.0) * (1.0 + rng.next())
-				lean_v = 0.0
-				_emit({"e": "up", "by": holder})
-				break
-		if phase == "climb":
-			climb_left -= dt
-			if climb_left <= 0.0:
-				_lose("late")
-			return
-	# Holding.
+	for b in _live(bodies):
+		if _posing(b) and (b.pos as Vector2).distance_to(mid) <= NEAR:
+			phase = "hold"
+			holder = int(b.id)
+			lean = START_LEAN * (1.0 if rng.next() < 0.5 else -1.0) * (1.0 + rng.next())
+			lean_v = 0.0
+			_emit({"e": "up", "by": holder})
+			return true
+	climb_left -= dt
+	if climb_left <= 0.0:
+		_lose("late")
+	return false
+
+
+## Up on a pedestal (or, when the host does not say, hidden).
+func _posing(b: Dictionary) -> bool:
+	return b.get("posing", b.get("hidden", false))
+
+
+## The holder keeps the pose: down or fallen loses, and the time out wins.
+func _hold(dt: float, bodies: Array[Dictionary]) -> void:
 	var me := {}
 	for b in bodies:
 		if int(b.id) == holder:
 			me = b
-	if me.is_empty() or me.get("out", false) or not me.get("posing", me.get("hidden", false)):
+	if me.is_empty() or me.get("out", false) or not _posing(me):
 		if not me.is_empty() and me.get("fell", false):
-			_emit({"e": "fall", "by": holder})
-			_lose("fall")
+			_fall()
 		else:
 			_lose("down")
 		return
 	if me.has("fell"):
 		lean = float(me.get("lean", lean))
 		if me.fell:
-			_emit({"e": "fall", "by": holder})
-			_lose("fall")
+			_fall()
 			return
 	else:
 		_sway(dt, float(me.get("push", 0.0)))
 		if absf(lean) >= FALL:
-			_emit({"e": "fall", "by": holder})
-			_lose("fall")
+			_fall()
 			return
 	var wob := absf(lean) >= WOBBLE
 	if wob and not _wobbling:
@@ -180,6 +189,11 @@ func _play(dt: float, bodies: Array[Dictionary]) -> void:
 		_clear_level()
 		return
 	_tick(hold_left)
+
+
+func _fall() -> void:
+	_emit({"e": "fall", "by": holder})
+	_lose("fall")
 
 
 func _sway(dt: float, push: float) -> void:
@@ -204,8 +218,6 @@ func _penalize(seconds: float) -> void:
 
 func _view() -> Dictionary:
 	var p := params(level)
-	var objects: Array[Dictionary] = [{"kind": "pedestal", "pos": DojoField.center(lit), "ring": -1.0,
-		"lit": true, "up": phase == "hold"}]
+	var objects: Array[Dictionary] = [{"kind": "pedestal", "pos": DojoField.center(lit), "ring": -1.0}]
 	return {"objects": objects, "timer": {"left": hold_left if phase == "hold" else float(p.hold), "max": float(p.hold), "kind": "hold"},
-		"lean": lean, "fall": FALL, "phase": phase, "holder": holder, "climb": climb_left if phase == "climb" else 0.0,
-		"game_level": p.game_level, "pressure": p.pressure, "gates_closed": [], "scarecrows": [], "headline": "level"}
+		"lean": lean, "fall": FALL, "phase": phase}

@@ -34,9 +34,7 @@ const CHAIN_R := 1.5
 const KEEP_APART := 3
 ## A pin takes this long to fall over (for the picture).
 const FALL_S := 0.7
-const EXTRA_SLACK_STEP := 0.02
 const EXTRA_SLACK_MIN := 1.2
-const EXTRA_DMAX_STEP := 0.5
 const EXTRA_PINS_EVERY := 3
 const MAX_PINS := 6
 const LEVELS := [
@@ -53,7 +51,7 @@ const LEVELS := [
 ]
 
 ## the pins of the round: {pos, tile, left, max, down, fell (seconds since it
-## went), steps (the way it was timed by), move, path, gate, by}
+## went), steps (the way it was timed by), move, path, gate}
 var pins: Array[Dictionary] = []
 var prev := Vector2i.ZERO
 var shut: Array[String] = []
@@ -63,11 +61,10 @@ var strikes := 0
 
 
 static func params(lv: int) -> Dictionary:
-	var p: Dictionary = (LEVELS[clampi(lv, 1, LEVELS.size()) - 1] as Dictionary).duplicate(true)
+	var p := level_row(LEVELS, lv)
 	if lv > LEVELS.size():
 		var k := lv - LEVELS.size()
-		p.slack = maxf(EXTRA_SLACK_MIN, float(p.slack) - EXTRA_SLACK_STEP * k)
-		p.dmax = float(p.dmax) + EXTRA_DMAX_STEP * k
+		stretch_race(p, k, EXTRA_SLACK_MIN)
 		p.n = mini(MAX_PINS, int(p.n) + k / EXTRA_PINS_EVERY)
 	p.min_time = MIN_TIME
 	return p
@@ -95,7 +92,6 @@ func _reset() -> void:
 
 func _begin_level() -> void:
 	var p := params(level)
-	pins = []
 	shut = []
 	var opts := {}
 	if p.gate:
@@ -106,39 +102,52 @@ func _begin_level() -> void:
 	if first.is_empty():
 		first = {"tile": prev, "gate": "", "path": 0}
 	var tiles: Array[Dictionary] = [first]
-	var n: int = p.n
 	if p.cluster:
-		var ortho: Array = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)].filter(func(d): return field.has_floor(first.tile + d))
-		var diag: Array = [Vector2i(1, 1), Vector2i(-1, -1), Vector2i(1, -1), Vector2i(-1, 1)].filter(func(d): return field.has_floor(first.tile + d))
-		_shuffle(ortho)
-		_shuffle(diag)
-		for d in ortho + diag:
-			if tiles.size() >= n:
-				break
-			tiles.append({"tile": first.tile + d, "gate": first.gate, "path": int(first.path)})
+		_add_cluster(tiles, int(p.n))
 	else:
-		while tiles.size() < n:
-			var avoid: Array = tiles.map(func(c): return c.tile)
-			var o := opts.duplicate()
-			o.avoid = avoid
-			var c := field.pick(prev, p.zones, p.dmin, p.dmax, o, rng)
-			if c.is_empty():
-				break
-			tiles.append(c)
-	var movers_left: int = p.movers
+		_add_scattered(tiles, int(p.n), p, opts)
+	pins = []
 	for i in tiles.size():
-		var c: Dictionary = tiles[i]
-		var mover: bool = not p.cluster and i >= tiles.size() - movers_left
-		var closes: bool = p.gate and String(c.gate) != ""
-		if closes and not shut.has(String(c.gate)):
-			shut.append(String(c.gate))
-		var secs := time_for(level, int(c.path), closes)
-		pins.append({"pos": DojoField.center(c.tile), "tile": c.tile, "left": secs, "max": secs, "down": false, "fell": 0.0,
-			"steps": int(c.path), "move": float(p.move) if mover else 0.0, "path": [] as Array[Vector2i], "gate": String(c.gate) if closes else "", "by": -1})
+		pins.append(_new_pin(tiles[i], p, not p.cluster and i >= tiles.size() - int(p.movers)))
 	var list: Array[Dictionary] = []
 	for q in pins:
 		list.append({"pos": q.pos, "tile": q.tile, "time": q.max, "gate": q.gate, "moving": q.move > 0.0})
 	_emit({"e": "spawn", "pins": list, "level": level})
+
+
+## The rest of a heap: the tiles next to the first, straight ones before
+## diagonal ones, over floor.
+func _add_cluster(tiles: Array[Dictionary], n: int) -> void:
+	var first: Dictionary = tiles[0]
+	var ortho: Array = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)].filter(func(d): return field.has_floor(first.tile + d))
+	var diag: Array = [Vector2i(1, 1), Vector2i(-1, -1), Vector2i(1, -1), Vector2i(-1, 1)].filter(func(d): return field.has_floor(first.tile + d))
+	_shuffle(ortho)
+	_shuffle(diag)
+	for d in ortho + diag:
+		if tiles.size() >= n:
+			break
+		tiles.append({"tile": first.tile + d, "gate": first.gate, "path": int(first.path)})
+
+
+## The rest of a scattered round: spots KEEP_APART from the ones so far.
+func _add_scattered(tiles: Array[Dictionary], n: int, p: Dictionary, opts: Dictionary) -> void:
+	while tiles.size() < n:
+		var o := opts.duplicate()
+		o.avoid = tiles.map(func(c): return c.tile)
+		var c := field.pick(prev, p.zones, p.dmin, p.dmax, o, rng)
+		if c.is_empty():
+			break
+		tiles.append(c)
+
+
+## A pin on a picked spot, with its clock; a shut door it asks for is added to `shut`.
+func _new_pin(c: Dictionary, p: Dictionary, mover: bool) -> Dictionary:
+	var closes: bool = p.gate and String(c.gate) != ""
+	if closes and not shut.has(String(c.gate)):
+		shut.append(String(c.gate))
+	var secs := time_for(level, int(c.path), closes)
+	return {"pos": DojoField.center(c.tile), "tile": c.tile, "left": secs, "max": secs, "down": false, "fell": 0.0,
+		"steps": int(c.path), "move": float(p.move) if mover else 0.0, "path": [] as Array[Vector2i], "gate": String(c.gate) if closes else ""}
 
 
 func _play(dt: float, bodies: Array[Dictionary]) -> void:
@@ -189,7 +198,6 @@ func _knock(i: int, by: int, from: Vector2, chain: bool) -> int:
 	if q.down:
 		return 0
 	q.down = true
-	q.by = by
 	q.fell = 0.0
 	pins_down += 1
 	_credit(by)
@@ -220,5 +228,4 @@ func _view() -> Dictionary:
 			least = q.left
 			top = q.max
 			first = false
-	return {"objects": objects, "timer": {"left": least, "max": top, "kind": "limit"}, "gates_closed": shut.duplicate(),
-		"scarecrows": [], "headline": "level", "pins_left": pins.filter(func(q): return not q.down).size()}
+	return {"objects": objects, "timer": {"left": least, "max": top, "kind": "limit"}, "gates_closed": shut.duplicate()}

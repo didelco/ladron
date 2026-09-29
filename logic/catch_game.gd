@@ -32,9 +32,7 @@ const SLACK_K := 0.24
 const GATE_BONUS := 1.5
 const WATCH_BONUS := 1.5
 const CATCH_R := 0.8
-const EXTRA_SLACK_STEP := 0.02
 const EXTRA_SLACK_MIN := 1.0
-const EXTRA_DMAX_STEP := 0.5
 const EXTRA_MIN_TIME := 4.0
 const LEVELS := [
 	{"dmin": 5, "dmax": 8, "zones": ["tatami"], "base": 3.0, "slack": 2.2, "move": 0.0, "gate": false, "watch": false, "watch_n": 0, "maze": false, "ring": true, "min_time": 0.0},
@@ -63,11 +61,9 @@ var shut: Array[String] = []
 
 ## The level's numbers; past the tenth, the hora extra's.
 static func params(lv: int) -> Dictionary:
-	var p: Dictionary = (LEVELS[clampi(lv, 1, LEVELS.size()) - 1] as Dictionary).duplicate(true)
+	var p := level_row(LEVELS, lv)
 	if lv > LEVELS.size():
-		var n := lv - LEVELS.size()
-		p.slack = maxf(EXTRA_SLACK_MIN, float(p.slack) - EXTRA_SLACK_STEP * n)
-		p.dmax = float(p.dmax) + EXTRA_DMAX_STEP * n
+		stretch_race(p, lv - LEVELS.size(), EXTRA_SLACK_MIN)
 		p.min_time = EXTRA_MIN_TIME
 	return p
 
@@ -97,30 +93,13 @@ func _reset() -> void:
 
 func _begin_level() -> void:
 	var p := params(level)
-	var opts := {}
-	var watch: bool = p.watch and field != null and not field.scarecrows.is_empty()
-	var gate: bool = p.gate
-	var maze: bool = p.maze
-	if p.watch and not watch:
-		# No scarecrows: a door instead, or the maze if there is none.
-		if field != null and not field.gates.is_empty():
-			gate = true
-		else:
-			maze = true
-	if gate:
-		opts.gate = true
-	if maze:
-		opts.maze = true
-	if watch:
-		opts.watched = true
-		opts.watched_min = int(p.watch_n)
-		if not used.is_empty():
-			opts.prefer_not = used.duplicate()
-	var c := field.pick(prev, p.zones, p.dmin, p.dmax, opts, rng)
+	var ask := _ask(p)
+	var c := field.pick(prev, p.zones, p.dmin, p.dmax, ask.opts, rng)
 	if c.is_empty():
 		c = {"tile": prev, "zone": "", "gate": "", "path": 0, "time_path": 0, "watchers": [], "cross": [], "forced": false}
 	var tile: Vector2i = c.tile
-	var closes: bool = gate and String(c.gate) != ""
+	var watch: bool = ask.watch
+	var closes: bool = ask.gate and String(c.gate) != ""
 	shut = []
 	if closes:
 		shut.append(String(c.gate))
@@ -136,6 +115,31 @@ func _begin_level() -> void:
 	last_spawn = c
 	_emit({"e": "spawn", "pos": obj.pos, "tile": tile, "level": level, "time": secs, "gate": obj.gate,
 		"watch": watch, "forced": forced, "cross": c.cross, "moving": float(p.move) > 0.0, "ring": p.ring})
+
+
+## What the level asks of the spot: {opts (for DojoField.pick), gate, watch}.
+## A watched level with no scarecrows in the field asks for a door instead, or
+## the maze if there is none.
+func _ask(p: Dictionary) -> Dictionary:
+	var watch: bool = p.watch and field != null and not field.scarecrows.is_empty()
+	var gate: bool = p.gate
+	var maze: bool = p.maze
+	if p.watch and not watch:
+		if field != null and not field.gates.is_empty():
+			gate = true
+		else:
+			maze = true
+	var opts := {}
+	if gate:
+		opts.gate = true
+	if maze:
+		opts.maze = true
+	if watch:
+		opts.watched = true
+		opts.watched_min = int(p.watch_n)
+		if not used.is_empty():
+			opts.prefer_not = used.duplicate()
+	return {"opts": opts, "gate": gate, "watch": watch}
 
 
 func _play(dt: float, bodies: Array[Dictionary]) -> void:
@@ -177,5 +181,4 @@ func _view() -> Dictionary:
 		objects.append({"kind": "sock", "pos": obj.pos, "ring": (float(obj.left) / float(obj.max)) if obj.ring else -1.0,
 			"gate": obj.gate, "moving": obj.move > 0.0, "watch": obj.watch})
 	return {"objects": objects, "timer": {"left": float(obj.get("left", 0.0)), "max": float(obj.get("max", 0.0)), "kind": "limit"},
-		"gates_closed": shut.duplicate(), "scarecrows": field.scarecrows if field != null else [],
-		"headline": "level"}
+		"gates_closed": shut.duplicate()}
