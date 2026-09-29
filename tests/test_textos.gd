@@ -156,7 +156,7 @@ func _families() -> void:
 	for k in file_jokes:
 		jokes.append_array(numbered(String(k) + "_", 1, int(file_jokes[k])))
 	need_all(jokes, "chistes de la ficha policial")
-	need_all(main_consts.ASSET_TABS.values(), "pestañas de assets")
+	need_all(SettingsScreens.ASSET_TABS.values(), "pestañas de assets")
 	# Ajustes.
 	var modes := []
 	for m in Settings.MEGAPHONE_MODES:

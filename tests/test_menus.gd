@@ -96,14 +96,14 @@ func _init() -> void:
 	# Jugando, las mismas teclas: aceptar es la acción, atrás (menos Esc) es rodar.
 	for k in MenuKeys.ACCEPT_KEYS:
 		Input.parse_input_event(key_event(k, true)); Input.flush_buffered_events()
-		var o: Array = m._seat_input("kb_left" if k == KEY_E else "kb_right", false)
+		var o: Array = m.hands.seat_input("kb_left" if k == KEY_E else "kb_right", false)
 		check(o[5] and not o[6], name_of(k) + " jugando es la acción (A)")
 		Input.parse_input_event(key_event(k, false)); Input.flush_buffered_events()
 	for k in MenuKeys.BACK_KEYS:
 		if k == KEY_ESCAPE:
 			continue
 		Input.parse_input_event(key_event(k, true)); Input.flush_buffered_events()
-		var o: Array = m._seat_input("kb_left" if k == KEY_SPACE else "kb_right", false)
+		var o: Array = m.hands.seat_input("kb_left" if k == KEY_SPACE else "kb_right", false)
 		check(o[6] and not o[5], name_of(k) + " jugando es rodar (B)")
 		Input.parse_input_event(key_event(k, false)); Input.flush_buffered_events()
 	# Moverse: las flechas (el de la derecha, cruceta y stick) y WASD (el de la izquierda).
@@ -143,7 +143,7 @@ func _init() -> void:
 		await frames(W)
 		var i := row.find(root.gui_get_focus_owner())
 		return -99 if i < 0 else i - mid
-	var column := func() -> void: m._show_settings("title")
+	var column := func() -> void: m.options.show("title")
 	var cards := func() -> void:
 		m.players = 1
 		m._show_title()
@@ -192,11 +192,11 @@ func _init() -> void:
 	await each(ACCEPTS, "generativo", generative, func(): return m.phase == "brief" and m.mode == "generative", "EMPEZAR: a la previa")
 
 	# --- La previa (tiene una ronda ya) --------------------------------------------------
-	var pages: int = m._brief_pages().size()
-	var brief := func() -> void: m._show_brief(0)
+	var pages: int = m.briefing.pages().size()
+	var brief := func() -> void: m.briefing.show(0)
 	if pages > 1:
-		await each(ACCEPTS, "previa", brief, func(): return m.phase == "brief" and m.brief_page == 1, "la página siguiente")
-		await each(BACKS, "previa (2.ª página)", func(): m._show_brief(1), func(): return m.phase == "brief" and m.brief_page == 0, "la página anterior")
+		await each(ACCEPTS, "previa", brief, func(): return m.phase == "brief" and m.briefing.brief_page == 1, "la página siguiente")
+		await each(BACKS, "previa (2.ª página)", func(): m.briefing.show(1), func(): return m.phase == "brief" and m.briefing.brief_page == 0, "la página anterior")
 	else:
 		print("(la previa del generativo tiene una sola página: aceptar ahí empieza, se prueba en test_transiciones)")
 	await each(BACKS, "previa", brief, func(): return m.phase == "generative", "vuelve al generativo")
@@ -211,7 +211,7 @@ func _init() -> void:
 	await each(BACKS, "ajustes desde la pausa", func():
 		await pause.call()
 		await frames(W)
-		m._show_settings("paused"), func(): return m.phase == "paused", "vuelve a la pausa")
+		m.options.show("paused"), func(): return m.phase == "paused", "vuelve a la pausa")
 
 	# --- Jugando: rodar no es atrás, la acción no es aceptar -------------------------------
 	var play := func() -> void:
@@ -235,19 +235,19 @@ func _init() -> void:
 
 	# --- Los retos ----------------------------------------------------------------------------
 	var challenges := func() -> void:
-		m.challenge_at = ""
-		m._show_challenge_menu()
+		m.challenges.challenge_at = ""
+		m.challenges.show_menu()
 	await each(ACCEPTS, "retos", challenges, func(): return m.phase == "challenge", "abre el primero de la lista")
 	await each(BACKS, "retos", challenges, func(): return m.phase == "title", "vuelve al título")
-	await each(BACKS, "un reto", func(): m._show_night_map(1), func(): return m.phase == "menu", "vuelve a la lista")
+	await each(BACKS, "un reto", func(): m.challenges.show_night_map(1), func(): return m.phase == "menu", "vuelve a la lista")
 
 	# --- Los ajustes ----------------------------------------------------------------------------
-	var settings := func() -> void: m._show_settings("title")
-	await each(ACCEPTS, "ajustes", settings, func(): return m.phase == "settings" and m.settings_page == "sound", "entra en la primera página (sonido)")
+	var settings := func() -> void: m.options.show("title")
+	await each(ACCEPTS, "ajustes", settings, func(): return m.phase == "settings" and m.options.settings_page == "sound", "entra en la primera página (sonido)")
 	await each(BACKS, "ajustes", settings, func(): return m.phase == "title", "vuelve al título")
 	# Un ajuste cambia una vez por pulsación, no dos (el botón la toma al soltar).
 	for k in ACCEPTS:
-		m._show_settings("title", "sound")
+		m.options.show("title", "sound")
 		await frames(W)
 		var was: bool = m.sound_on
 		await hit(k)
@@ -256,60 +256,60 @@ func _init() -> void:
 		await hit(k)
 		await frames(W)
 		check(m.sound_on == was, "... y otra vez, como estaba")
-	await each(BACKS, "ajustes · sonido", func(): m._show_settings("title", "sound"), func(): return m.phase == "settings" and m.settings_page == "", "vuelve a los ajustes")
+	await each(BACKS, "ajustes · sonido", func(): m.options.show("title", "sound"), func(): return m.phase == "settings" and m.options.settings_page == "", "vuelve a los ajustes")
 	var assets := func() -> void:
-		m.settings_from = "title"
-		m._show_assets("loot", 0)
-	await each(ACCEPTS, "recursos", assets, func(): return m.phase == "assets" and m.assets_index == 1, "SIGUIENTE: la pieza siguiente")
+		m.options.settings_from = "title"
+		m.options.show_assets("loot", 0)
+	await each(ACCEPTS, "recursos", assets, func(): return m.phase == "assets" and m.options.assets_index == 1, "SIGUIENTE: la pieza siguiente")
 	await each(BACKS, "recursos", assets, func(): return m.phase == "settings", "vuelve a los ajustes")
 
 	# --- La historia (el cuento del principio) ----------------------------------------------------
-	var tale := func() -> void: m._show_prologue(0)
-	await each(ACCEPTS, "cuento", tale, func(): return m.phase == "prologue" and m.prologue_page == 1, "la página siguiente")
-	await each(BACKS, "cuento (2.ª página)", func(): m._show_prologue(1), func(): return m.phase == "prologue" and m.prologue_page == 0, "la página anterior")
+	var tale := func() -> void: m.briefing.show_prologue(0)
+	await each(ACCEPTS, "cuento", tale, func(): return m.phase == "prologue" and m.briefing.prologue_page == 1, "la página siguiente")
+	await each(BACKS, "cuento (2.ª página)", func(): m.briefing.show_prologue(1), func(): return m.phase == "prologue" and m.briefing.prologue_page == 0, "la página anterior")
 	await each(BACKS, "cuento", tale, func(): return m.phase == "pick", "vuelve al título, al bocadillo de la historia")
 
 	# --- Quién juega: aceptar se sienta, B (Espacio, Enter) se levanta ------------------------------
 	var join := func() -> void:
-		m._show_join("generative", 2)
-		m.joined_at = -INF
+		m.hands.show_join("generative", 2)
+		m.hands.joined_at = -INF
 	await join.call()
 	await frames(W)
 	await hit(KEY_E)
-	m.joined_at = -INF
+	m.hands.joined_at = -INF
 	await hit(KEY_PERIOD)
 	await frames()
-	check(m.joining == ["kb_left", "kb_right"], "E sienta al de la izquierda y el punto al de la derecha " + str(m.joining))
+	check(m.hands.joining == ["kb_left", "kb_right"], "E sienta al de la izquierda y el punto al de la derecha " + str(m.hands.joining))
 	# Moverse no es moverse por el menú aquí: W y ↑ sientan, cada una a los suyos.
 	await join.call()
 	await frames(W)
 	await hit(KEY_W)
-	m.joined_at = -INF
+	m.hands.joined_at = -INF
 	await hit(KEY_UP)
 	await frames()
-	check(m.joining == ["kb_left", "kb_right"], "W sienta al de la izquierda y ↑ al de la derecha " + str(m.joining))
+	check(m.hands.joining == ["kb_left", "kb_right"], "W sienta al de la izquierda y ↑ al de la derecha " + str(m.hands.joining))
 	await join.call()
 	await frames(W)
 	await hit(KEY_E)
-	m.joined_at = -INF
+	m.hands.joined_at = -INF
 	await hit(KEY_PERIOD)
 	await frames()
 	await hit(KEY_SPACE)
 	await frames()
-	check(m.joining == ["kb_right"], "Espacio levanta al de la izquierda (su B), no al último")
+	check(m.hands.joining == ["kb_right"], "Espacio levanta al de la izquierda (su B), no al último")
 	await hit(KEY_ENTER)
 	await frames()
-	check(m.joining.is_empty() and m.phase == "join", "Enter levanta al de la derecha")
-	m.joined_at = -INF
+	check(m.hands.joining.is_empty() and m.phase == "join", "Enter levanta al de la derecha")
+	m.hands.joined_at = -INF
 	await hit("A")
 	await frames()
-	check(m.joining == ["pad:0"], "A sienta al mando")
+	check(m.hands.joining == ["pad:0"], "A sienta al mando")
 	await hit(KEY_SPACE)
 	await frames()
-	check(m.joining == ["pad:0"], "Espacio no levanta al mando de otro")
+	check(m.hands.joining == ["pad:0"], "Espacio no levanta al mando de otro")
 	await hit("B")
 	await frames()
-	check(m.joining.is_empty(), "B lo levanta")
+	check(m.hands.joining.is_empty(), "B lo levanta")
 	for k in BACKS:
 		await join.call()
 		await frames(W)

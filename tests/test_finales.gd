@@ -50,18 +50,18 @@ func _init() -> void:
 	m._new_round(3)
 	HeistStats.add("seen", 4)
 	m.phase = "playing"
-	m._tick(0.5)
+	m.loop.tick(0.5)
 	check(is_equal_approx(HeistStats.time, 0.5), "el reloj corre jugando")
 	var knocked := HeistStats.count("knocked")
 	var bin := Props.Prop.new()
 	bin.kind = "bin"
-	m._prop_fell(bin)
+	m.loop.prop_fell(bin)
 	check(HeistStats.count("knocked") == knocked + 1, "tirar algo cuenta")
 	m.phase = "caught"
-	m._prop_fell(bin)
+	m.loop.prop_fell(bin)
 	check(HeistStats.count("knocked") == knocked + 1, "... pero solo jugando")
 	if not Hideouts.all().is_empty():
-		m._hid(m.thieves[0], Hideouts.all()[0])
+		m.loop.hid(m.thieves[0], Hideouts.all()[0])
 		check(HeistStats.count("hides") == 1, "esconderse cuenta")
 	m._again()
 	# In the story, again is back to the museum: the round is laid out as
@@ -133,9 +133,9 @@ func _init() -> void:
 	check(paused and hud.cctv_on(), "en pausa se ve el monitor")
 	check(buttons(hud).size() == 3, "reanudar, ajustes, salir")
 	check(Hud.cctv_caps("la sala de los fósiles") == "LA SALA DE LOS FOSILES", "el monitor escribe en mayúsculas sin tildes")
-	m._show_settings("paused")
+	m.options.show("paused")
 	check(hud.cctv_on(), "los ajustes desde la pausa lo mantienen")
-	m._settings_back()
+	m.options.back()
 	m._start_playing()
 	check(not paused, "reanudar quita la pausa")
 	await create_timer(0.5).timeout
