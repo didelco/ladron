@@ -147,7 +147,7 @@ func _autostart() -> void:
 	# --smoke: and a smoke bomb goes off at P1's feet a moment in.
 	if "--smoke" in OS.get_cmdline_user_args():
 		host.get_tree().create_timer(3.5).timeout.connect(func() -> void:
-			Smoke.drop(host.thieves[0], Sim.now_ms(), host.prop_noises))
+			Smoke.drop(host.thieves[0], Sim.now_ms(), host.loop.prop_noises))
 	# --map: and take the map out a moment later.
 	if "--map" in OS.get_cmdline_user_args():
 		host.get_tree().create_timer(3.0).timeout.connect(host._toggle_map)

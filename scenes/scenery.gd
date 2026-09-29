@@ -161,8 +161,8 @@ func _props() -> void:
 	host.world.add_child(host.props_view)
 	host.props_view.build()
 	host.props_view.set_thieves(host.thieves.size())
-	host.props_view.tipped.connect(host._on_prop_tipped)
-	host.props_view.kicked.connect(host._on_prop_kicked)
+	host.props_view.tipped.connect(host.loop.on_prop_tipped)
+	host.props_view.kicked.connect(host.loop.on_prop_kicked)
 
 
 ## Switches, and the white wash that fills a lit room.

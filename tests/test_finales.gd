@@ -50,18 +50,18 @@ func _init() -> void:
 	m._new_round(3)
 	HeistStats.add("seen", 4)
 	m.phase = "playing"
-	m._tick(0.5)
+	m.loop.tick(0.5)
 	check(is_equal_approx(HeistStats.time, 0.5), "el reloj corre jugando")
 	var knocked := HeistStats.count("knocked")
 	var bin := Props.Prop.new()
 	bin.kind = "bin"
-	m._prop_fell(bin)
+	m.loop.prop_fell(bin)
 	check(HeistStats.count("knocked") == knocked + 1, "tirar algo cuenta")
 	m.phase = "caught"
-	m._prop_fell(bin)
+	m.loop.prop_fell(bin)
 	check(HeistStats.count("knocked") == knocked + 1, "... pero solo jugando")
 	if not Hideouts.all().is_empty():
-		m._hid(m.thieves[0], Hideouts.all()[0])
+		m.loop.hid(m.thieves[0], Hideouts.all()[0])
 		check(HeistStats.count("hides") == 1, "esconderse cuenta")
 	m._again()
 	# In the story, again is back to the museum: the round is laid out as

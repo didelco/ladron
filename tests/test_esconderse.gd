@@ -50,7 +50,7 @@ func run(frames: int) -> void:
 	for f in frames:
 		# Frame after frame, as the physics would (no "resumed" gap).
 		m.hands.pad_frame = Engine.get_physics_frames() - 1
-		m._tick(DT)
+		m.loop.tick(DT)
 
 
 ## A night with the minigames on (or off), the guards sent far off, and

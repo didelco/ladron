@@ -30,7 +30,7 @@ func frames(n := 4) -> void:
 func run(n: int) -> void:
 	for f in n:
 		m.hands.pad_frame = Engine.get_physics_frames() - 1
-		m._tick(DT)
+		m.loop.tick(DT)
 
 
 func _init() -> void:

@@ -65,6 +65,7 @@ var scenery := Scenery.new(self)
 var rig := CameraRig.new(self)
 var hands := Hands.new(self)
 var loudspeaker := MegaphoneRun.new(self)
+var loop := NightLoop.new(self)
 
 ## "story", "generative" or "challenge"
 var mode := "story"
@@ -130,8 +131,6 @@ var world: Node3D
 var camera: Camera3D
 var props_view: PropsView
 var ear: AudioListener3D
-## each guard's position last frame and the distance walked since its last step
-var guard_steps: Array = []
 ## the page of the prologue and of the briefing before a night on screen
 var prologue_page := 0
 var brief_page := 0
@@ -1443,8 +1442,8 @@ func _new_round(n: int) -> void:
 	push_held = [false, false, false, false]
 	smoke_held = [false, false, false, false]
 	Smoke.reset(thieves)
-	guard_steps.clear()
-	prop_noises.clear()
+	loop.guard_steps.clear()
+	loop.prop_noises.clear()
 	last_think = 0.0
 	think_tick = 0
 	log_lines.clear()
@@ -1503,7 +1502,7 @@ func _physics_process(dt: float) -> void:
 			at.append(_to_world(t.x, t.y) if not t.out and not t.hiding else Vector3(0, -50, 0))
 		props_view.move_thieves(at)
 	if phase == "playing":
-		_tick(dt)
+		loop.tick(dt)
 	_draw_frame(dt)
 
 
@@ -1523,129 +1522,12 @@ func _music_mood() -> void:
 	sfx.home(mode == Practice.MODE and phase in ["playing", "countdown", "paused"])
 
 
-## Noises the physics made since the last frame, for the next tick.
-var prop_noises: Array[SoundEvent] = []
-
-
-## A prop leaned past falling in the physics: if nobody pushed it on
-## purpose, it was walked into — the crash, the rumble, the log.
-func _on_prop_tipped(id: int, dir: float, at: Vector2, strength: float) -> void:
-	var p: Props.Prop = Props.list[id]
-	p.x = at.x
-	p.y = at.y
-	if p.fallen:
-		return
-	p.fallen = true
-	p.fall_dir = dir
-	p.fallen_at = Sim.now_ms()
-	prop_noises.append(SoundEvent.make(p.x, p.y, p.kind, Props.crash_loudness(p.kind, strength)))
-	_prop_fell(p, strength)
-
-
-## The crash of one going over, whoever did it.
-func _prop_fell(p: Props.Prop, strength := 0.6) -> void:
-	if phase == "playing":
-		HeistStats.add("knocked")
-	var loud := Props.crash_loudness(p.kind, strength)
-	sfx.noise(p.kind, _to_world(p.x, p.y), loud)
-	hands.rumble(0.3 + 0.5 * strength, 0.4 * strength, 0.15 + 0.2 * strength, Vector2(p.x, p.y))
-	rig.shake((0.45 if p.kind in ["bust", "armour"] else 0.25) * (0.6 + 0.8 * strength))
-	_log((Text.t("LOG_CRASH_EVERYWHERE") % Heist.first_upper(Props.name_of(p.kind))) if Props.heard_everywhere(loud) else Text.t("LOG_KNOCKED") % Props.name_of(p.kind))
-	loudspeaker.say("knocked")
-	if phase == "playing":
-		loudspeaker.act("knock_" + p.kind)
-
-
-## Something already down, sent rolling or rustling by a thief's feet: a
-## smaller noise, but a noise — the tin bin clatters, paper whispers.
-func _on_prop_kicked(kind: String, at: Vector2, strength: float) -> void:
-	var loud: float = {"bin": 7.5, "bust": 6.0, "panel": 5.0, "armour": 7.0, "paper": 2.5}.get(kind, 4.0) * (0.5 + 0.5 * strength)
-	prop_noises.append(SoundEvent.make(at.x, at.y, "kick", loud))
-	# The tin and the steel ring, the rubble and the board knock dry, the
-	# paper whispers.
-	var sound: String = {"bin": "kick_metal", "armour": "kick_metal", "paper": "whisper"}.get(kind, "kick_dry")
-	sfx.noise(sound, _to_world(at.x, at.y), loud)
-
-
 ## The keys a thief's minigame reads this frame: its directions, action key
 ## and roll key (Minigame.input_from).
 func _game_input(i: int, keys: Dictionary) -> Dictionary:
 	var scheme: String = "solo" if thieves.size() == 1 else ["wasd", "arrows", "ijkl", "numpad"][i]
 	var action: bool = keys.has(["e", "period", "o", "kpadd"][i]) or (thieves.size() == 1 and keys.has("period"))
 	return Minigame.input_from(keys, Sim.SCHEMES[scheme], action)
-
-
-## The little sounds of a job in hand, heard close by (the guards do not:
-## picking a lock is silent, the case's alarm aside).
-func _game_sounds(p: Thief) -> void:
-	var at := _to_world(p.x, p.y, 1.0)
-	for e in p.game.events:
-		match e:
-			"pin": sfx.at("pin", at, 0.7, 2.0)
-			"slip": sfx.at("slip", at, 0.6, 2.0)
-			"snip": sfx.at("snip", at, 0.7, 2.0)
-			"spark": sfx.at("spark", at, 0.6, 2.0)
-			# The arcade machine's pong (ArcadeGame): its bleeps.
-			"bounce": sfx.at("pong_hit", at, 0.35, 2.0)
-			"wall": sfx.at("pong_wall", at, 0.25, 2.0)
-			"score": sfx.at("pong_score", at, 0.35, 2.0)
-			"miss": sfx.at("pong_miss", at, 0.35, 2.0)
-			"done": hands.rumble(0.3, 0.2, 0.12, Vector2(p.x, p.y))
-
-
-## In a hideout, with the minigames on, a sneeze comes on after a while
-## (SneezeGame): it is held in until the thief gets out, whichever way.
-func _sneeze_coming(p: Thief, i: int, keys: Dictionary, dt: float) -> void:
-	# In a game of the dojo the sneeze is the game's own (HideGame).
-	if house.dojo_game != null:
-		if p.game is SneezeGame:
-			p.game = null
-		p.hidden_for = 0.0
-		return
-	if not p.hiding:
-		p.hidden_for = 0.0
-		if p.game is SneezeGame:
-			p.game = null
-		return
-	p.hidden_for += dt
-	if p.game == null and Heist.minigames() and p.hidden_for >= SneezeGame.CALM_S:
-		p.game = Minigame.make("sneeze", "hideout", 1, _game_input(i, keys))
-
-
-## ACHOO! Out of the hideout, stunned a moment, and heard all round.
-func _sneeze(p: Thief, noises: Array[SoundEvent]) -> void:
-	HeistStats.add("sneezes")
-	p.game = null
-	Hideouts.tip_out(p)
-	p.dizzy = SneezeGame.STUN_S
-	noises.append(SoundEvent.make(p.x, p.y, "sneeze"))
-	sfx.noise("sneeze", _to_world(p.x, p.y, 1.0), Hearing.LOUDNESS["sneeze"])
-	hands.rumble(0.5, 0.7, 0.25, Vector2(p.x, p.y))
-	rig.shake(0.25)
-	_log(Text.t("LOG_SNEEZE"))
-	loudspeaker.say("sneeze")
-	loudspeaker.act("sneeze", thieves.find(p))
-
-
-## A frame of a thief wriggling into a hideout (Hideouts.squeeze): in once
-## it is done, or let go if the hideout went meanwhile.
-func _squeeze(p: Thief, done: bool) -> void:
-	var spot := p.hide_target
-	match Hideouts.squeeze(p, guards, thieves, done):
-		"in":
-			p.game = null
-			_hid(p, spot)
-		"lost":
-			p.game = null
-
-
-## In: the lid's thud, and whether anyone saw it.
-func _hid(p: Thief, spot: Hideouts.Spot) -> void:
-	HeistStats.add("hides")
-	sfx.at("roll", _to_world(p.x, p.y), 0.3, 2.0)
-	_log(Text.t("LOG_HIDE_BLOWN") if p.hide_blown else Text.t("LOG_HIDE_IN") % Hideouts.name_of(spot.kind))
-	loudspeaker.say("hide")
-	loudspeaker.act("hide_seen" if p.hide_blown else ("hide_armour" if spot.kind == "armour" else "hide_other"), thieves.find(p))
 
 
 ## Each thief's minigame box, beside it on screen.
@@ -1791,23 +1673,6 @@ func _prompt_rows(i: int) -> Array:
 	return []
 
 
-## Each guard's boots, a step every stride: heard from where they are, so
-## louder the nearer (the listener rides on the thief), harder when on alert.
-func _guard_footsteps() -> void:
-	if guard_steps.size() != guards.size():
-		guard_steps = guards.map(func(g): return [Vector2(g.x, g.y), 0.0])
-	for i in guards.size():
-		var g := guards[i]
-		var here := Vector2(g.x, g.y)
-		var entry: Array = guard_steps[i]
-		entry[1] += here.distance_to(entry[0])
-		entry[0] = here
-		var stride := 0.62 if g.alert else 0.55
-		if entry[1] >= stride:
-			entry[1] = 0.0
-			sfx.at("boot", _to_world(g.x, g.y), 1.0 if g.alert else 0.75, 2.2)
-
-
 ## Out comes the map, or away it goes.
 func _toggle_map() -> void:
 	map_open = not map_open
@@ -1841,338 +1706,6 @@ func _thief_darks() -> Array:
 
 func _thief_colours() -> Array:
 	return [COLOURS.thief, COLOURS.thief2, COLOURS.thief3, COLOURS.thief4]
-
-
-func _tick(dt: float) -> void:
-	HeistStats.time += dt
-	if mode == Practice.MODE:
-		house.dojo_lock = maxf(0.0, house.dojo_lock - dt)
-		house.scarecrow_tick(dt)
-		house.bench_tick(dt)
-	if mode == Practice.MODE and house.home_tick():
-		return
-	var now := Sim.now_ms()
-	# Reading the map, nobody moves (the pads are still read, to keep their
-	# held-button bookkeeping); every few frames it is redrawn.
-	var keys := hands.pressed_keys()
-	if map_open:
-		# The controls lean the map instead of moving anyone.
-		var push := Vector2.ZERO
-		for pair in [["a", "d", "w", "s"], ["left", "right", "up", "down"]]:
-			push += Vector2(float(keys.has(pair[1])) - float(keys.has(pair[0])), float(keys.has(pair[3])) - float(keys.has(pair[2])))
-		hud.push_map(push)
-		keys = {}
-		if Engine.get_physics_frames() % 6 == 0:
-			hud.update_map(_live_map())
-	var noises: Array[SoundEvent] = []
-	# Hands at a lock or a panel (Minigame) shake as the guards grow alarmed.
-	var suspicion := 0
-	for g in guards:
-		suspicion = maxi(suspicion, g.suspicion)
-	for i in thieves.size():
-		var p := thieves[i]
-		var px := p.x
-		var py := p.y
-		# On your own both pads drive you; with two, each pad is its own.
-		var scheme: String = "solo" if thieves.size() == 1 else ["wasd", "arrows", "ijkl", "numpad"][i]
-		_sneeze_coming(p, i, keys, dt)
-		busy[i] = p.game != null
-		if p.game:
-			p.game.tremble = Minigame.tremble_for(suspicion)
-			p.game.pressure = Plinths.pressure(p, guards)
-			var lean: float = (p.game as BalanceGame).lean if p.game is BalanceGame else 0.0
-			var played := p.game.tick(_game_input(i, keys), dt)
-			match played:
-				"quit":
-					# Off the pedestal as well, if that is where it was.
-					if p.game.kind == "balance":
-						Plinths.get_down(p, lean)
-					p.hide_target = null
-					p.arcade = Vector2i(-1, -1)
-					p.game = null
-					# The roll key let go of it: it is not a roll as well.
-					p.roll_key = true
-				"fail" when p.game.kind == "sneeze":
-					_sneeze(p, noises)
-				"fail":
-					# Lost its balance: down it comes, and the guards hear it.
-					house.dojo_fell[i] = true
-					Plinths.fall(p, (p.game as BalanceGame).lean, noises)
-					p.game = null
-					sfx.noise("roll_bump", _to_world(p.x, p.y), Hearing.LOUDNESS["tumble"])
-					hands.rumble(0.5, 0.7, 0.25, Vector2(p.x, p.y))
-					rig.shake(0.3)
-					_log(Text.t("LOG_PLINTH_FELL"))
-					loudspeaker.say("dizzy")
-					loudspeaker.act("plinth_fall", i)
-				_:
-					_game_sounds(p)
-					if p.game.kind == "squeeze":
-						_squeeze(p, played == "done")
-		var step := Sim.step_thief(p, keys, dt, scheme)
-		_sneeze_coming(p, i, keys, 0.0)
-		var noise := Hearing.thief_noise(px, py, p, step.entered_cover, step.bumped, Sim.TOP_SPEED)
-		# Footsteps land once per stride; a bump is its own event.
-		stride[i] += Museum.dist(px, py, p.x, p.y)
-		if noise and (noise.kind == "walk" or noise.kind == "sprint"):
-			if stride[i] < 0.45 + p.speed / Sim.TOP_SPEED * 0.5:
-				noise = null
-			else:
-				stride[i] = 0.0
-		# Off in a ball: a rush over the floor (the guards hear nothing of it).
-		if step.roll == "start":
-			HeistStats.add("rolls")
-			loudspeaker.act("roll", i)
-			sfx.at("roll", _to_world(p.x, p.y), 0.7, 3.0)
-		# Rolled into a wall: the thump, a puff of plaster, and it hurts.
-		if step.bumped == "roll":
-			HeistStats.add("bumps")
-			Fx.puff(world, _to_world(p.x + cos(p.dir) * Sim.BODY, p.y + sin(p.dir) * Sim.BODY), false)
-			hands.rumble(0.6, 0.9, 0.3, Vector2(p.x, p.y))
-			var case := Museum.is_cover(p.x + cos(p.dir) * (Sim.BODY + 0.1), p.y + sin(p.dir) * (Sim.BODY + 0.1))
-			_log(Text.t("LOG_ROLL_CASE" if case else "LOG_ROLL_WALL"))
-			loudspeaker.act("roll_case" if case else "roll_wall", i)
-		if noise and not p.out:
-			noises.append(noise)
-			var what := "step" if noise.kind in ["walk", "sprint", "rustle"] else (noise.kind if noise.kind in ["shelf", "roll_bump"] else "bump")
-			# As loud as the guards hear it.
-			sfx.noise(what, _to_world(p.x, p.y), noise.loudness)
-
-	# Walking into things: over they go, with a crash.
-	# Things knocked over: the physics decides (PropsView pushes them with
-	# the thieves' bodies and tells us what fell or got kicked about), and
-	# what it heard since last frame joins this frame's noises.
-	Props.knocked.clear()
-	noises.append_array(prop_noises)
-	prop_noises.clear()
-	# On purpose: E (P2: . , P3: O), or X on the pad, next to one — over it goes,
-	# and the guards come to see. At a room's switch the same key flips it.
-	for i in thieves.size():
-		var t := thieves[i]
-		var pressed: bool = keys.has(["e", "period", "o", "kpadd"][i]) or (thieves.size() == 1 and keys.has("period"))
-		# Not from inside a hideout, and not the press that just ended a
-		# minigame (the sneeze let out, the balance lost): that one was the game's.
-		var act := _action_for(t) if pressed and not push_held[i] and not t.game and not busy[i] and not t.hiding else {}
-		match act.get("do", ""):
-			"job":
-				Heist.start_game(t, act.at, _game_input(i, keys))
-				if act.at.what == "case":
-					loudspeaker.act("case", i)
-				sfx.at("pick", _to_world(t.x, t.y), 0.5, 2.0)
-			"plinth":
-				Plinths.climb(t, act.at, guards)
-				loudspeaker.act("plinth", i)
-				# With minigames the pose is held on one foot (Minigame "balance").
-				if Heist.minigames():
-					t.game = Minigame.make("balance", "plinth", 1, _game_input(i, keys))
-				sfx.at("roll", _to_world(t.x, t.y), 0.4, 2.0)
-				_log(Text.t("LOG_PLINTH_BLOWN" if t.pose_blown else "LOG_PLINTH_UP"))
-			"hide":
-				# In with a moment's wriggling (Minigame "squeeze", _squeeze);
-				# before the nights have minigames, in at once.
-				if Heist.minigames():
-					Hideouts.start(t, act.at, _game_input(i, keys))
-				else:
-					Hideouts.get_in(t, act.at, guards)
-					_hid(t, act.at)
-			"arcade":
-				# A game of pong, facing the screen: nothing to win (ArcadeGame).
-				var arcade: Vector2i = act.at
-				t.game = Minigame.make("arcade", "arcade", 1, _game_input(i, keys))
-				t.arcade = arcade
-				loudspeaker.act("arcade", i)
-				t.dir = atan2(arcade.y + 0.5 - t.y, arcade.x + 0.5 - t.x)
-				sfx.at("pong_score", _to_world(t.x, t.y, 1.0), 0.4, 2.0)
-				_log(Text.t("LOG_ARCADE"))
-			"bench":
-				house.bench_act(t, i, act.at, keys)
-			"game":
-				house.dojo_start(String(act.id))
-			"switch":
-				Sim.flip_switch(act.at, t, guards, now, noises)
-			"push":
-				Props.push(act.at, t, now, noises)
-			"door":
-				# Open or shut (it was checked no one is in the way): the plan
-				# follows, the leaves slide, and what is seen is worked out again.
-				if Den.toggle_door(act.at, house.band_points()):
-					if den_view != null and is_instance_valid(den_view):
-						den_view.set_door(act.at, Den.is_open(act.at))
-					sfx.at("door", _to_world(t.x, t.y, 0.5), 0.6, 4.0)
-					house.home_sight()
-		push_held[i] = pressed
-	for p in Props.knocked:
-		props_view.shove(p)
-		_prop_fell(p)
-	# A suit of armour gone over with someone inside: out they tumble.
-	for t in thieves:
-		if t.hiding and t.hideout.prop and t.hideout.prop.fallen:
-			Hideouts.tip_out(t)
-			t.dizzy = Plinths.FALL_DOWN_S
-			t.posture = 1.0
-			_log(Text.t("LOG_HIDE_TIPPED"))
-	# Smoke bombs: F (P2 the comma), or Y on the pad, at your feet.
-	for i in thieves.size():
-		var pressed: bool = keys.has(["f", "comma", "n", "kpdot"][i])
-		if pressed and not smoke_held[i]:
-			if Smoke.drop(thieves[i], now, noises) == null and not thieves[i].out:
-				sfx.ui("back", 0.5)
-				loudspeaker.act("smoke_empty", i)
-		smoke_held[i] = pressed
-	Smoke.step(now)
-	for c in Smoke.fresh:
-		HeistStats.add("smoke")
-		SmokeFx.burst(world, _to_world(c.x, c.y), Smoke.RADIUS * 1.15, Smoke.SECONDS)
-		sfx.at("smoke", _to_world(c.x, c.y, 0.5), 0.9, 6.0)
-		hands.rumble(0.3, 0.5, 0.3, Vector2(c.x, c.y))
-		_log(Text.t("LOG_SMOKE"))
-		loudspeaker.say("smoke")
-		var by := thieves.find_custom(func(t): return t.id == c.by)
-		loudspeaker.act("smoke_last" if by >= 0 and Smoke.count(thieves[by]) == 0 else "smoke", by)
-	Smoke.clear_fresh()
-	if house.dojo_game != null:
-		house.dojo_tick(dt, keys)
-
-	# The job: working the case (and its alarm), carrying, dropping, the door.
-	var before_alarms := noises.size()
-	var cut_before := [Heist.panel_off, Heist.panel2_off]
-	var took := Heist.step(thieves, dt, now, noises)
-	if [Heist.panel_off, Heist.panel2_off] != cut_before:
-		sfx.ui("ok")
-		_log(Text.t("LOG_PANEL_CUT"))
-		loudspeaker.say("panel")
-		loudspeaker.act("panel")
-	if noises.size() > before_alarms:
-		if Heist.progress < 0.1:
-			_log(Text.t("LOG_CASE_ALARM"))
-			loudspeaker.say("alarm")
-		sfx.at("alarm", _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5), 0.8)
-	match took:
-		"stolen":
-			sfx.ui("stolen")
-			Fx.sparkle(world, _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5, 1.05), Color(Heist.loot.colour))
-			rig.punch_in()
-			_log(Text.t("LOG_GOT_IT_TEAM" if thieves.size() > 1 else "LOG_GOT_IT") % Heist.loot.name)
-			loudspeaker.say("stolen")
-		"dropped":
-			_log(Text.t("LOG_DROPPED") % Heist.first_upper(Heist.loot.name))
-		"picked":
-			sfx.ui("pick")
-
-	Sim.tick_lights(dt)
-	var saw_before := {}
-	for g in guards:
-		saw_before[g.id] = g.sees_player
-	for g in guards:
-		Sim.step_guard(g, thieves, noises, now, dt)
-	_guard_footsteps()
-	for s in Sim.call_for_backup(saw_before, guards, now):
-		sfx.at("shout", _to_world(s.x, s.y), 1.0 if s.first else 0.5)
-		if s.first:
-			HeistStats.add("seen")
-			sfx.ui("sting", 0.7)
-			hands.rumble(0.4, 0.8, 0.4)
-			rig.shake(0.6)
-			var heard_by: Array = s.heard_by
-			var heard: String = (Text.t("LOG_HEARD_BY") % Text.t("LOG_AND").join(heard_by)) if not heard_by.is_empty() else Text.t("LOG_NOBODY_HEARD")
-			var ear := thieves[0]
-			var angle := atan2(s.y - ear.y, s.x - ear.x)
-			var d := Museum.dist(ear.x, ear.y, s.x, s.y)
-			hud.shout(Text.t(SHOUTS[randi() % SHOUTS.size()]), Text.t("HUD_SHOUT_FAR" if d > 9 else "HUD_SHOUT_NEAR") % [s.from, heard], angle)
-			_log(Text.t("LOG_SHOUT") % [s.from, heard])
-			loudspeaker.say("seen")
-	for w in Sim.warn_partners(guards, now):
-		sfx.at("whisper", _to_world(w.x, w.y), 0.6)
-		_log(Text.t("LOG_WARN") % [w.from, w.to])
-	# What the guards think stays off the screen.
-	Sim.thoughts.clear()
-	for e in Sim.light_events:
-		var label := Text.t("LOG_THE_ROOM_OF")
-		for z in Museum.zones:
-			if z.room == e.room:
-				label = z.label_of
-		var r: Museum.Room = Museum.rooms[e.room]
-		sfx.at("lights", _to_world(r.switch_at.x + 0.5, r.switch_at.y + 0.5), 0.8)
-		if e.thief:
-			HeistStats.add("lights")
-			loudspeaker.act("switch")
-			_log(Text.t("LOG_YOU_LIGHTS_ON" if e.on else "LOG_YOU_LIGHTS_OFF") % label)
-			loudspeaker.say("lights_on" if e.on else "lights_off")
-		else:
-			_log(Text.t("LOG_LIGHTS") % [e.by, label])
-			loudspeaker.say("lights_on" if e.on else "lights_off")
-	Sim.light_events.clear()
-
-	if now - last_spread > 500:
-		last_spread = now
-		Sim.keep_apart(guards)
-	# Thinking. Only guards with a decision to make are asked, and everyone
-	# every third time; without the brain, the fallback rules decide.
-	if now - last_think > THINK_EVERY_MS:
-		last_think = now
-		think_tick += 1
-		var everyone := think_tick % 3 == 0
-		var asking: Array[Guard] = guards.filter(func(g): return not g.sees_player and (everyone or Sim.needs_plan(g)))
-		if not brain.ask(asking, guards, now) and not brain.busy:
-			for g in asking:
-				if Sim.needs_plan(g):
-					var others: Array[Guard] = guards.filter(func(o): return o != g)
-					Sim.apply_decision(g, Mind.fallback(g, others, now))
-
-	for p in thieves:
-		p.hidden = Sim.is_hidden(guards, p)
-		# Seen wobbling on one foot: whoever sees it knows, and comes for it.
-		if p.posing and not p.hidden and p.game and p.game.wobbling():
-			p.pose_blown = true
-			for g in Sim.witnesses(guards, p):
-				Sim.learn(g, p)
-		if Sim.caught(guards, p):
-			p.out = true
-			p.speed = 0
-			sfx.ui("caught")
-			if caught_thief < 0:
-				caught_thief = thieves.find(p)
-				caught_by = _nearest_guard(p)
-	# Once the piece is taken, whoever reaches the door slips out and is
-	# safe: out of sight, out of reach, waiting for the rest.
-	if Heist.taken:
-		for p in thieves:
-			if not p.out and Heist.at_door(p):
-				p.out = true
-				p.safe = true
-				p.speed = 0
-				if thieves.size() > 1 and not thieves.all(func(o): return o.safe):
-					_log(Text.t("LOG_OUT_WAITING") % ("P%d" % (thieves.find(p) + 1)))
-					loudspeaker.say("waiting")
-	loudspeaker.tick(dt)
-	# No clock: take as long as you like. The whole gang out of the door
-	# with the piece wins; one of you caught ends the night.
-	# The night stops there (phase "over"), a moment (Hud.HOLD_S) to see it
-	# end before its page comes up; nothing pressed meanwhile counts.
-	if thieves.any(func(p): return p.out and not p.safe):
-		_night_over("caught")
-	elif thieves.all(func(p): return p.safe):
-		sfx.ui("escaped")
-		_night_over("escaped")
-
-
-func _night_over(how: String) -> void:
-	phase = "over"
-	mega_voice.stop()
-	_close_map()
-	get_tree().create_timer(Hud.HOLD_S).timeout.connect(func() -> void:
-		if phase == "over":
-			phase = how
-			_show_end())
-
-
-## The name of the guard nearest thief p: the one that caught it.
-func _nearest_guard(p: Thief) -> String:
-	var best: Guard = null
-	for g in guards:
-		if best == null or Museum.dist(g.x, g.y, p.x, p.y) < Museum.dist(best.x, best.y, p.x, p.y):
-			best = g
-	return best.name if best else ""
 
 
 func _on_decided(decisions: Dictionary, _ms: int) -> void:

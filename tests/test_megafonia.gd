@@ -592,7 +592,7 @@ func _init() -> void:
 		for f in 100:
 			main.loudspeaker.mega._last_at = HeistStats.time - 45.0
 			main.hands.pad_frame = Engine.get_physics_frames() - 1
-			main._tick(1.0 / 60.0)
+			main.loop.tick(1.0 / 60.0)
 			if th.stars:
 				crashed = true
 				break
@@ -602,7 +602,7 @@ func _init() -> void:
 	check(crashed and walls == 1 and String(main.loudspeaker.mega._pending_kind).begins_with("act_roll_"), "rodar contra una pared en el juego lo cuenta la megafonía (%s)" % main.loudspeaker.mega._pending_kind)
 	for f in 120:
 		main.hands.pad_frame = Engine.get_physics_frames() - 1
-		main._tick(1.0 / 60.0)
+		main.loop.tick(1.0 / 60.0)
 	var last: Array = main.loudspeaker.mega.said.back() if not main.loudspeaker.mega.said.is_empty() else ["", ""]
 	check(String(last[1]).begins_with("MEGA_ACT_ROLL_") and hud._mega_text.text == Text.t(last[1]) and hud._mega_left > 0.0, "…y en pantalla sale su frase: «%s»" % hud._mega_text.text)
 	main.mode = "practica"
