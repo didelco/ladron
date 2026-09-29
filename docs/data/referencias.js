@@ -75,74 +75,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -189,74 +147,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -307,74 +223,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -455,74 +329,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -612,74 +444,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -753,74 +543,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -891,74 +639,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -1018,74 +724,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -1145,74 +809,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -1273,74 +895,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -1390,74 +970,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -1506,74 +1044,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -1613,74 +1109,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -1710,74 +1164,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -1826,74 +1238,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -1942,74 +1312,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -2048,74 +1376,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -2159,74 +1445,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -2265,74 +1509,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -2371,74 +1573,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -2477,74 +1637,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -2572,74 +1690,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -2668,74 +1744,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -2798,74 +1832,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -2914,74 +1906,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -3040,74 +1990,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -3146,74 +2054,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -3257,74 +2123,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -3372,74 +2196,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -3483,74 +2265,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -3589,74 +2329,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -3704,74 +2402,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -3809,74 +2465,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -3905,74 +2519,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -4001,74 +2573,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -4097,74 +2627,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -4202,74 +2690,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -4297,74 +2743,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -4393,74 +2797,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -4489,74 +2851,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -4595,74 +2915,32 @@ window.REFERENCIAS = [
   "dominio": "kenney.nl",
   "relacionadas": [
    {
-    "coleccion": "kenney-city-commercial",
-    "nombre": "Kenney City Kit Commercial 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
    },
    {
-    "coleccion": "kenney-city-suburban",
-    "nombre": "Kenney City Kit Suburban 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
    },
    {
-    "coleccion": "kenney-city-roads",
-    "nombre": "Kenney City Kit Roads 2.1",
-    "alternativa": ""
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
    },
    {
-    "coleccion": "kenney-furniture",
-    "nombre": "Kenney Furniture Kit 2.0",
-    "alternativa": ""
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Impact Sounds (Kenney)"
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Interface Sounds (Kenney)"
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "UI Audio (Kenney)"
-   },
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "RPG Audio (Kenney)"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Castle Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Food Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Car Kit"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Mini Arcade"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Blocky Characters"
-   },
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Mini Characters"
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
    }
   ]
  },
@@ -4688,13 +2966,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "quaternius.com",
-  "relacionadas": [
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Ultimate Animated Character Pack"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "quaternius-ultimate-monsters",
@@ -4725,13 +2997,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "quaternius.com",
-  "relacionadas": [
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Ultimate Animated Character Pack"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "quaternius-animated-dinosaurs",
@@ -4762,13 +3028,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "quaternius.com",
-  "relacionadas": [
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Ultimate Animated Character Pack"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "quaternius-fantasy-props-megakit",
@@ -4804,13 +3064,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "quaternius.com",
-  "relacionadas": [
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Ultimate Animated Character Pack"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "quaternius-medieval-village-megakit",
@@ -4836,13 +3090,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "quaternius.com",
-  "relacionadas": [
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Ultimate Animated Character Pack"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "quaternius-downtown-city-megakit",
@@ -4868,13 +3116,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "quaternius.com",
-  "relacionadas": [
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Ultimate Animated Character Pack"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "quaternius-universal-animation-library",
@@ -4904,13 +3146,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "quaternius.com",
-  "relacionadas": [
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Ultimate Animated Character Pack"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "quaternius-universal-base-characters",
@@ -4939,13 +3175,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "quaternius.com",
-  "relacionadas": [
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Ultimate Animated Character Pack"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "quaternius-junk-food",
@@ -4971,13 +3201,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "quaternius.com",
-  "relacionadas": [
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Ultimate Animated Character Pack"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "quaternius-ultimate-modular-ruins",
@@ -5003,13 +3227,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "quaternius.com",
-  "relacionadas": [
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Ultimate Animated Character Pack"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "quaternius-ultimate-home-interior",
@@ -5035,13 +3253,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "quaternius.com",
-  "relacionadas": [
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Ultimate Animated Character Pack"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "quaternius-ultimate-nature",
@@ -5071,13 +3283,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "quaternius.com",
-  "relacionadas": [
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Ultimate Animated Character Pack"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "quaternius-medieval-weapons",
@@ -5103,13 +3309,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "quaternius.com",
-  "relacionadas": [
-   {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "Ultimate Animated Character Pack"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "kaykit-furniture-bits",
@@ -5136,14 +3336,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5172,14 +3370,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5219,14 +3415,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5255,14 +3449,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5292,14 +3484,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5327,14 +3517,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5364,14 +3552,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5400,14 +3586,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5436,14 +3620,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5472,14 +3654,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5508,14 +3688,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5544,14 +3722,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5580,14 +3756,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5616,14 +3790,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5652,14 +3824,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5688,14 +3858,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5723,14 +3891,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5759,14 +3925,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5794,14 +3958,12 @@ window.REFERENCIAS = [
   "dominio": "kaylousberg.itch.io",
   "relacionadas": [
    {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "KayKit Dungeon Pack Remastered"
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
    },
    {
-    "coleccion": "personajes-blender",
-    "nombre": "Personajes (ninja y guardia)",
-    "alternativa": "KayKit Character Pack: Adventurers"
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
    }
   ]
  },
@@ -5831,24 +3993,12 @@ window.REFERENCIAS = [
   "dominio": "poly.pizza",
   "relacionadas": [
    {
-    "coleccion": "poly-pizza-estatuas",
-    "nombre": "Estatuas (Poly Pizza)",
-    "alternativa": ""
+    "propuesta": "quaternius-dinosaurios",
+    "nombre": "Animated Dinosaur Bundle"
    },
    {
-    "coleccion": "poly-google-oso",
-    "nombre": "Black bear (Poly by Google, vía Poly Pizza)",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Animated Dinosaur Bundle"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Gem Green (Poly Pizza)"
+    "propuesta": "quaternius-gema",
+    "nombre": "Gem Green (Poly Pizza)"
    }
   ]
  },
@@ -5878,24 +4028,12 @@ window.REFERENCIAS = [
   "dominio": "poly.pizza",
   "relacionadas": [
    {
-    "coleccion": "poly-pizza-estatuas",
-    "nombre": "Estatuas (Poly Pizza)",
-    "alternativa": ""
+    "propuesta": "quaternius-dinosaurios",
+    "nombre": "Animated Dinosaur Bundle"
    },
    {
-    "coleccion": "poly-google-oso",
-    "nombre": "Black bear (Poly by Google, vía Poly Pizza)",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Animated Dinosaur Bundle"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Gem Green (Poly Pizza)"
+    "propuesta": "quaternius-gema",
+    "nombre": "Gem Green (Poly Pizza)"
    }
   ]
  },
@@ -6149,24 +4287,12 @@ window.REFERENCIAS = [
   "dominio": "poly.pizza",
   "relacionadas": [
    {
-    "coleccion": "poly-pizza-estatuas",
-    "nombre": "Estatuas (Poly Pizza)",
-    "alternativa": ""
+    "propuesta": "quaternius-dinosaurios",
+    "nombre": "Animated Dinosaur Bundle"
    },
    {
-    "coleccion": "poly-google-oso",
-    "nombre": "Black bear (Poly by Google, vía Poly Pizza)",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Animated Dinosaur Bundle"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Gem Green (Poly Pizza)"
+    "propuesta": "quaternius-gema",
+    "nombre": "Gem Green (Poly Pizza)"
    }
   ]
  },
@@ -6305,24 +4431,12 @@ window.REFERENCIAS = [
   "dominio": "poly.pizza",
   "relacionadas": [
    {
-    "coleccion": "poly-pizza-estatuas",
-    "nombre": "Estatuas (Poly Pizza)",
-    "alternativa": ""
+    "propuesta": "quaternius-dinosaurios",
+    "nombre": "Animated Dinosaur Bundle"
    },
    {
-    "coleccion": "poly-google-oso",
-    "nombre": "Black bear (Poly by Google, vía Poly Pizza)",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Animated Dinosaur Bundle"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Gem Green (Poly Pizza)"
+    "propuesta": "quaternius-gema",
+    "nombre": "Gem Green (Poly Pizza)"
    }
   ]
  },
@@ -6356,24 +4470,12 @@ window.REFERENCIAS = [
   "dominio": "poly.pizza",
   "relacionadas": [
    {
-    "coleccion": "poly-pizza-estatuas",
-    "nombre": "Estatuas (Poly Pizza)",
-    "alternativa": ""
+    "propuesta": "quaternius-dinosaurios",
+    "nombre": "Animated Dinosaur Bundle"
    },
    {
-    "coleccion": "poly-google-oso",
-    "nombre": "Black bear (Poly by Google, vía Poly Pizza)",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Animated Dinosaur Bundle"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Gem Green (Poly Pizza)"
+    "propuesta": "quaternius-gema",
+    "nombre": "Gem Green (Poly Pizza)"
    }
   ]
  },
@@ -6402,24 +4504,12 @@ window.REFERENCIAS = [
   "dominio": "poly.pizza",
   "relacionadas": [
    {
-    "coleccion": "poly-pizza-estatuas",
-    "nombre": "Estatuas (Poly Pizza)",
-    "alternativa": ""
+    "propuesta": "quaternius-dinosaurios",
+    "nombre": "Animated Dinosaur Bundle"
    },
    {
-    "coleccion": "poly-google-oso",
-    "nombre": "Black bear (Poly by Google, vía Poly Pizza)",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Animated Dinosaur Bundle"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Gem Green (Poly Pizza)"
+    "propuesta": "quaternius-gema",
+    "nombre": "Gem Green (Poly Pizza)"
    }
   ]
  },
@@ -6448,24 +4538,12 @@ window.REFERENCIAS = [
   "dominio": "poly.pizza",
   "relacionadas": [
    {
-    "coleccion": "poly-pizza-estatuas",
-    "nombre": "Estatuas (Poly Pizza)",
-    "alternativa": ""
+    "propuesta": "quaternius-dinosaurios",
+    "nombre": "Animated Dinosaur Bundle"
    },
    {
-    "coleccion": "poly-google-oso",
-    "nombre": "Black bear (Poly by Google, vía Poly Pizza)",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Animated Dinosaur Bundle"
-   },
-   {
-    "coleccion": "modelos-blender",
-    "nombre": "Catálogo modelado en Blender",
-    "alternativa": "Gem Green (Poly Pizza)"
+    "propuesta": "quaternius-gema",
+    "nombre": "Gem Green (Poly Pizza)"
    }
   ]
  },
@@ -6568,19 +4646,16 @@ window.REFERENCIAS = [
   "dominio": "opengameart.org",
   "relacionadas": [
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "100 CC0 Metal and Wood SFX"
+    "propuesta": "oga-100-cc0-metal-wood",
+    "nombre": "100 CC0 Metal and Wood SFX"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "100 CC0 SFX"
+    "propuesta": "oga-100-cc0-sfx",
+    "nombre": "100 CC0 SFX"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Sneaky Music Pack"
+    "propuesta": "oga-sneaky-music-pack",
+    "nombre": "Sneaky Music Pack"
    }
   ]
  },
@@ -6648,19 +4723,16 @@ window.REFERENCIAS = [
   "dominio": "opengameart.org",
   "relacionadas": [
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "100 CC0 Metal and Wood SFX"
+    "propuesta": "oga-100-cc0-metal-wood",
+    "nombre": "100 CC0 Metal and Wood SFX"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "100 CC0 SFX"
+    "propuesta": "oga-100-cc0-sfx",
+    "nombre": "100 CC0 SFX"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Sneaky Music Pack"
+    "propuesta": "oga-sneaky-music-pack",
+    "nombre": "Sneaky Music Pack"
    }
   ]
  },
@@ -6718,19 +4790,16 @@ window.REFERENCIAS = [
   "dominio": "opengameart.org",
   "relacionadas": [
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "100 CC0 Metal and Wood SFX"
+    "propuesta": "oga-100-cc0-metal-wood",
+    "nombre": "100 CC0 Metal and Wood SFX"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "100 CC0 SFX"
+    "propuesta": "oga-100-cc0-sfx",
+    "nombre": "100 CC0 SFX"
    },
    {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Sneaky Music Pack"
+    "propuesta": "oga-sneaky-music-pack",
+    "nombre": "Sneaky Music Pack"
    }
   ]
  },
@@ -7146,13 +5215,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "sonniss.com",
-  "relacionadas": [
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Sonniss #GameAudioGDC Bundle"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "pixabay-audio",
@@ -7235,13 +5298,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "incompetech.com",
-  "relacionadas": [
-   {
-    "coleccion": "sonidos-procedurales",
-    "nombre": "Sonido sintetizado en código",
-    "alternativa": "Kevin MacLeod (incompetech)"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "game-icons-net",
@@ -7313,19 +5370,8 @@ window.REFERENCIAS = [
   "dominio": "game-icons.net",
   "relacionadas": [
    {
-    "coleccion": "ui-iconos-editor",
-    "nombre": "Iconos vectoriales del editor",
-    "alternativa": "Game-icons.net"
-   },
-   {
-    "coleccion": "ui-pegatinas-ninja",
-    "nombre": "Pegatinas de cabezas ninja",
-    "alternativa": "Game-icons.net: etiqueta ninja"
-   },
-   {
-    "coleccion": "ui-iconos-objetos",
-    "nombre": "Iconos de objetos del editor",
-    "alternativa": "Game-icons.net"
+    "propuesta": "game-icons-ninja",
+    "nombre": "Game-icons.net: etiqueta ninja"
    }
   ]
  },
@@ -7352,13 +5398,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "lucide.dev",
-  "relacionadas": [
-   {
-    "coleccion": "ui-iconos-editor",
-    "nombre": "Iconos vectoriales del editor",
-    "alternativa": "Lucide"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "tabler-icons",
@@ -7383,13 +5423,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "tabler.io",
-  "relacionadas": [
-   {
-    "coleccion": "ui-iconos-editor",
-    "nombre": "Iconos vectoriales del editor",
-    "alternativa": "Tabler Icons"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "material-symbols",
@@ -7413,23 +5447,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "fonts.google.com",
-  "relacionadas": [
-   {
-    "coleccion": "fuente-press-start-2p",
-    "nombre": "Press Start 2P",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "fuente-unifraktur",
-    "nombre": "UnifrakturMaguntia",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "fuente-abril-fatface",
-    "nombre": "Abril Fatface",
-    "alternativa": ""
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "phosphor-icons",
@@ -7477,23 +5495,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "fonts.google.com",
-  "relacionadas": [
-   {
-    "coleccion": "fuente-press-start-2p",
-    "nombre": "Press Start 2P",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "fuente-unifraktur",
-    "nombre": "UnifrakturMaguntia",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "fuente-abril-fatface",
-    "nombre": "Abril Fatface",
-    "alternativa": ""
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "openmoji",
@@ -7553,23 +5555,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "fonts.google.com",
-  "relacionadas": [
-   {
-    "coleccion": "fuente-press-start-2p",
-    "nombre": "Press Start 2P",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "fuente-unifraktur",
-    "nombre": "UnifrakturMaguntia",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "fuente-abril-fatface",
-    "nombre": "Abril Fatface",
-    "alternativa": ""
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "google-fonts-tematicas",
@@ -7638,23 +5624,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "fonts.google.com",
-  "relacionadas": [
-   {
-    "coleccion": "fuente-press-start-2p",
-    "nombre": "Press Start 2P",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "fuente-unifraktur",
-    "nombre": "UnifrakturMaguntia",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "fuente-abril-fatface",
-    "nombre": "Abril Fatface",
-    "alternativa": ""
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "godot-shaders",
@@ -7718,28 +5688,7 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "huggingface.co",
-  "relacionadas": [
-   {
-    "coleccion": "megafonia-tts",
-    "nombre": "Megafonía del museo (voz sintética)",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "megafonia-tts",
-    "nombre": "Megafonía del museo (voz sintética)",
-    "alternativa": "Kokoro-82M (mismos pesos, otra voz española)"
-   },
-   {
-    "coleccion": "megafonia-tts",
-    "nombre": "Megafonía del museo (voz sintética)",
-    "alternativa": "Piper: voz es_ES davefx (medium)"
-   },
-   {
-    "coleccion": "megafonia-tts",
-    "nombre": "Megafonía del museo (voz sintética)",
-    "alternativa": "Piper: voz es_ES sharvard (medium)"
-   }
-  ]
+  "relacionadas": []
  },
  {
   "id": "piper-voices",
@@ -7764,27 +5713,6 @@ window.REFERENCIAS = [
    }
   ],
   "dominio": "huggingface.co",
-  "relacionadas": [
-   {
-    "coleccion": "megafonia-tts",
-    "nombre": "Megafonía del museo (voz sintética)",
-    "alternativa": ""
-   },
-   {
-    "coleccion": "megafonia-tts",
-    "nombre": "Megafonía del museo (voz sintética)",
-    "alternativa": "Kokoro-82M (mismos pesos, otra voz española)"
-   },
-   {
-    "coleccion": "megafonia-tts",
-    "nombre": "Megafonía del museo (voz sintética)",
-    "alternativa": "Piper: voz es_ES davefx (medium)"
-   },
-   {
-    "coleccion": "megafonia-tts",
-    "nombre": "Megafonía del museo (voz sintética)",
-    "alternativa": "Piper: voz es_ES sharvard (medium)"
-   }
-  ]
+  "relacionadas": []
  }
 ];

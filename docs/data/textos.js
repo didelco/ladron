@@ -4701,7 +4701,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/sim.gd:978"
+   "logic/sim.gd:980"
   ],
   "via": []
  },
@@ -4712,7 +4712,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/sim.gd:1269"
+   "logic/sim.gd:1273"
   ],
   "via": []
  },
@@ -4723,7 +4723,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/sim.gd:1269"
+   "logic/sim.gd:1273"
   ],
   "via": []
  },
@@ -4734,7 +4734,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/sim.gd:1197"
+   "logic/sim.gd:1201"
   ],
   "via": []
  },
@@ -4745,7 +4745,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/sim.gd:1197"
+   "logic/sim.gd:1201"
   ],
   "via": []
  },
@@ -10833,7 +10833,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/sim.gd:1000"
+   "logic/sim.gd:1002"
   ],
   "via": []
  },
