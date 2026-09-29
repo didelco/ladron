@@ -52,7 +52,7 @@ su nombre escrito delante, y sale a su propio `.glb`:
 | `art/tema_edad_media.blend` | las piezas de la Edad Media | `assets/models/temas/edad_media/` |
 | `art/tema_moderna.blend` | la edad moderna: tele, tostadora, cubo de Rubik, perro-globo (peana); recreativa, móvil de Calder, semáforo (suelo); cochecito (grande, escondite); nevera y caja (escondites) | `assets/models/temas/moderna/` |
 | `art/tema_prehistoria.blend`, `tema_naturaleza.blend` | los escondites de esos temas (huevo y mamut; caparazón y tronco hueco) | `assets/models/temas/<tema>/` |
-| `art/botin.blend` | las piezas a robar: dentadura, pato, calcetín, tostada, corona, queso lunar, chicle, máscara, despertador, huevo, diamante, ídolo, bote de ketchup. Los materiales que empiezan por `color` toman el color de la pieza en el juego (`color_claro_N`, `color_oscuro_N`: un N % más claro u oscuro) | `assets/models/botin/` |
+| `art/botin.blend` | las piezas a robar: dentadura, pato, calcetín, tostada, corona, queso lunar, chicle, máscara, despertador, huevo, diamante, ídolo, bote de ketchup, y los trofeos de cada museo (hueso, planta carnívora, caracol, amatista, ánfora, laurel de neón, columna, David, Venus, espada en la piedra, ornitóptero, plátano, cubo de fregona; `art/botin/nuevas.py`). Los materiales que empiezan por `color` toman el color de la pieza en el juego (`color_claro_N`, `color_oscuro_N`: un N % más claro u oscuro) | `assets/models/botin/` |
 | `art/personajes/guardia.blend`, `ninja.blend` | un personaje con esqueleto y acciones cada uno | `assets/models/` |
 
 Para retocar: abre el fichero, cambia la pieza **sin moverla de su sitio en la fila** (la colección
@@ -212,9 +212,9 @@ En el título se elige el modo:
 - **Historia**: robar cinco museos, cinco salas en cada uno: 25 robos fijos, de muy fácil (un
   museo pequeño sin guardias) a difícil (cuatro guardias en uno grande). El Barón Von Bostezo se
   ha quedado con los cinco museos de la ciudad y la Banda del Calcetín rescata sus obras
-  (`logic/story.gd`). Cada museo es de un tema (`logic/themes.gd`), con sus colores de pared y
+  (`logic/story.gd`). Cada museo es de un tema (`logic/themes.gd`) y sus cinco trofeos también (`docs/propuesta_trofeos.md`: huevo, chicle, dentadura, ketchup y un hueso en la Prehistoria; patito, planta, caracol, amatista y pulpo en Ciencias Naturales; ánfora, laurel, columna, David y Venus en la Villa Clásica; espada, ornitóptero, despertador, albóndiga y corona en el Castillo; plátano, cubo, tostada, calcetín y diamante en Arte Contemporáneo), con sus colores de pared y
   suelo, y todo lo que enseña y se roba es de ese tema: el Museo de la Prehistoria (prehistoria),
-  el Museo de Ciencias Naturales (naturaleza), la Villa de las Antigüedades (mundo antiguo), el
+  el Museo de Ciencias Naturales (naturaleza), la Villa Clásica (Grecia y Roma, en versión kitsch), el
   Museo del Castillo (Edad Media y Renacimiento) y el Museo de Arte Contemporáneo (edad moderna). Las cuatro primeras salas son robos normales;
   la quinta, el **gran golpe** del museo, con algo especial (un guardián que ve lejos, un guardia
   pegado a la pieza, tres guardias, la sala del trono, el gran final); al hacerlo se abre el

@@ -44,7 +44,8 @@ const MAX_GUARDS := 5
 const DOOR_FROM_START := 7
 const DIRS: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
 ## The pieces a map can have stolen (LootModels.build).
-const LOOT_SHAPES := ["gem", "teeth", "duck", "sock", "toast", "crown", "rock", "gum", "mask", "clock", "egg", "idol", "ketchup"]
+const LOOT_SHAPES := ["gem", "teeth", "duck", "sock", "toast", "crown", "rock", "gum", "mask", "clock", "egg", "idol", "ketchup",
+	"bone", "plant", "snail", "crystal", "amphora", "laurel", "column", "david", "venus", "sword", "ornithopter", "banana", "bucket"]
 
 var name := ""
 var w := 23

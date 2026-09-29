@@ -1,13 +1,18 @@
 class_name LootModels
 extends RefCounted
 ## The pieces to steal, each with a little character: the grandad's dentures
-## with pink gums, the opera duck in a bow tie, the yeti's furry striped
+## with pink gums, the opera duck in a bow tie, the yeti-style striped
 ## sock, the toast with the Barón's burnt moustache, the pickle queen's
 ## crown, the cheese meteorite, the record ball of chewing gum, the octopus
 ## wrestler's mask, the alarm clock that runs backwards, the dinosaur egg in
 ## its nest, a brilliant-cut diamond, the obsidian idol, and the squeeze
 ## bottle of ketchup so long in the fridge that it has frost on its
-## shoulders, mould on its label and a crust on its nozzle.
+## shoulders, mould on its label and a crust on its nozzle. And the ones
+## that fit their museum (docs/propuesta_trofeos.md): a gnawed bone, a
+## carnivorous plant, a snail, an amethyst, a souvenir amphora, a neon laurel
+## wreath, an inflatable Doric column, a David in an apron, a Venus in
+## sunglasses, the sword in the stone, Leonardo's ornithopter, a taped
+## banana and a mop bucket.
 ##
 ## They are modelled in Blender (art/botin.blend, one collection a piece) and
 ## come out as assets/models/botin/<name>.glb. The materials whose name
@@ -23,9 +28,13 @@ extends RefCounted
 ## The shapes, and the name of each piece in the catalogue.
 const NAMES := {"teeth": "dentadura", "duck": "pato", "sock": "calcetin", "toast": "tostada", "crown": "corona",
 	"rock": "queso_lunar", "gum": "chicle", "mask": "mascara", "clock": "despertador", "egg": "huevo",
-	"gem": "diamante", "idol": "idolo", "ketchup": "ketchup"}
+	"gem": "diamante", "idol": "idolo", "ketchup": "ketchup",
+	"bone": "hueso", "plant": "planta", "snail": "caracol", "crystal": "amatista", "amphora": "anfora_souvenir",
+	"laurel": "laurel", "column": "columna", "david": "david", "venus": "venus", "sword": "espada",
+	"ornithopter": "ornitoptero", "banana": "platano", "bucket": "cubo"}
 ## The shapes this builds; anything else gets the gem.
-const SHAPES := ["teeth", "duck", "sock", "toast", "crown", "rock", "gum", "mask", "clock", "egg", "gem", "idol", "ketchup"]
+const SHAPES := ["teeth", "duck", "sock", "toast", "crown", "rock", "gum", "mask", "clock", "egg", "gem", "idol", "ketchup",
+	"bone", "plant", "snail", "crystal", "amphora", "laurel", "column", "david", "venus", "sword", "ornithopter", "banana", "bucket"]
 
 
 static func build(shape: String, colour: Color) -> Node3D:
