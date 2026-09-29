@@ -6,7 +6,7 @@
     python3 tools/docs.py build objects   # solo unas partes: shots, city, assets, models, objects, sounds, data
     python3 tools/docs.py build palette   # solo la auditoría de colores (tools/palette.py, sin Godot)
     python3 tools/docs.py serve           # http://localhost:8765, con los textos editables
-    python3 tools/docs.py texts           # solo textos y ESTILO.md (rápido, sin Godot)
+    python3 tools/docs.py texts           # solo textos, ESTILO.md y procedencia (rápido, sin Godot)
     python3 tools/docs.py version <asunto> "<título>" [--from <ruta o captura>] [--commit <hash>]
                                           # guarda un hito en docs/versiones/ (ver `version --help`)
     python3 tools/docs.py version --list  # los hitos guardados
@@ -18,6 +18,10 @@ locale/texts.csv, para que docs/index.html se pueda abrir tal cual, sin servidor
 `serve` sirve docs/ y deja cambiar textos desde el visor: cada cambio se escribe
 en locale/texts.csv (solo esa fila, respetando el resto del fichero) y Godot
 reimporta la traducción.
+
+La página «Procedencia» (y las etiquetas de licencia de las fichas de objetos y sonidos) sale de
+assets/PROCEDENCIA.json, la fuente única de dónde viene cada asset y con qué licencia: se resuelve
+con tools/procedencia.py en docs/data/procedencia.js, tanto en `build` como en `texts` y `serve`.
 
 `version` guarda a propósito una versión de una imagen importante (un hito: un
 cambio muy visible, o una muy antigua cuando algo ha ido cambiando poco a poco),
@@ -40,6 +44,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import palette  # noqa: E402  (tools/palette.py)
+import procedencia  # noqa: E402  (tools/procedencia.py: assets/PROCEDENCIA.json)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOCS = os.path.join(ROOT, "docs")
@@ -228,6 +233,7 @@ def build_static():
     path = os.path.join(DOCS, "ESTILO.md")
     write_js("estilo.js", "ESTILO", open(path, encoding="utf-8").read() if os.path.exists(path) else "")
     write_js("funciones.js", "FUNCIONES", functions())
+    write_js("procedencia.js", "PROCEDENCIA", procedencia.web_data())
     os.makedirs(os.path.join(DOCS, "fuentes"), exist_ok=True)
     for f in ["PressStart2P-Regular.ttf", "OFL.txt"]:
         shutil.copy(os.path.join(ROOT, "assets", "fonts", f), os.path.join(DOCS, "fuentes"))
@@ -525,6 +531,8 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 def serve():
+    # La procedencia se edita a mano en assets/PROCEDENCIA.json: se relee al arrancar.
+    write_js("procedencia.js", "PROCEDENCIA", procedencia.web_data())
     httpd = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
     print(f"Documentación en http://localhost:{PORT}  (Ctrl+C para parar)")
     try:

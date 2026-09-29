@@ -148,12 +148,34 @@ func bench_tick(dt: float) -> void:
 		host.den_view.set_bench(bench)
 
 
+## Whether a test is on: a game of the dojo (until its panel is accepted or left)
+## or a case of the bench being worked (standing still, or its minigame). While
+## it is, nothing else in the house answers the action key (trial_action), the
+## start points of the other games included, and nothing tips over.
+func trial_active() -> bool:
+	if dojo_game != null or not bench_hold.is_empty():
+		return true
+	return host.thieves.any(func(p: Thief) -> bool: return p.game != null and p.game.what == "bench")
+
+
+## What the action key does for thief t while a test is on: only what the test
+## itself needs, {} for the rest. Today that is AGUANTA ESCONDIDO's hideouts
+## (the ones open this round); every other test asks nothing of the objects.
+func trial_action(t: Thief) -> Dictionary:
+	if dojo_game is HideGame and not dojo_game.finished():
+		var open: Array[Vector2i] = (dojo_game as HideGame).open_hides
+		var spot := Hideouts.within_reach(t, host.thieves, func(s: Hideouts.Spot) -> bool: return s.tiles.any(func(k: Vector2i) -> bool: return open.has(k)))
+		if spot:
+			return {"do": "hide", "at": spot}
+	return {}
+
+
 ## Who has just got onto a start point of a game (one of the band, now), starts it.
 func dojo_poll() -> void:
 	if host.mode != Practice.MODE:
 		return
 	var s := dojo_watch.poll(host.thieves, host.players)
-	if not s.is_empty() and dojo_game == null and dojo_lock <= 0.0:
+	if not s.is_empty() and not trial_active() and dojo_lock <= 0.0:
 		dojo_start(String(s.game), int(s.tier), int(s.by))
 
 

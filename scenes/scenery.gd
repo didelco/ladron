@@ -208,6 +208,7 @@ func _practice_ground() -> void:
 	host.house.scarecrow_list.clear()
 	host.house.scarecrow_alert = Practice.alert_new()
 	host.house.bench = Practice.bench_new()
+	host.house.dojo_end()
 	host.house.bench_hold.clear()
 	host.house.bench_target.clear()
 	if host.mode != Practice.MODE:

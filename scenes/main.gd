@@ -1074,7 +1074,8 @@ func _physics_process(dt: float) -> void:
 	if props_view and not thieves.is_empty():
 		var at: Array[Vector3] = []
 		for t in thieves:
-			at.append(_to_world(t.x, t.y) if not t.out and not t.hiding else Vector3(0, -50, 0))
+			# Nothing tips over while a test is on in the house: the bodies stay away.
+			at.append(_to_world(t.x, t.y) if not t.out and not t.hiding and not (mode == Practice.MODE and house.trial_active()) else Vector3(0, -50, 0))
 		props_view.move_thieves(at)
 	if phase == "playing":
 		loop.tick(dt)
@@ -1166,8 +1167,12 @@ func _draw_prompts(dt: float) -> void:
 ## ("hide"), an arcade machine ("arcade"), a room's switch ("switch"), a
 ## prop to push over ("push"). In the band's house, a door next to one
 ## ("door": open it, or shut it if no one is in its way) comes before all but
-## the job. {do, at}, or empty for nothing.
+## the job. While a test is on in the house (HouseRun.trial_active) only what
+## the test itself needs is offered. {do, at}, or empty for nothing.
 func _action_for(t: Thief) -> Dictionary:
+	# A test on in the house: only what it needs (HouseRun.trial_action).
+	if mode == Practice.MODE and house.trial_active():
+		return house.trial_action(t)
 	var job := Heist.game_for(t)
 	if not job.is_empty():
 		return {"do": "job", "at": job}
