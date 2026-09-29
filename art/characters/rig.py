@@ -439,20 +439,9 @@ def preview(arm, prefix, names, frames=8):
                 bpy.ops.render.render(write_still=True)
 
 
-## Para el juego basta con una fracción de los triángulos del render.
-GAME_DETAIL = 0.22
-
-
 def export(path):
-    """A glTF con el esqueleto, la malla con pesos (aligerada para el juego)
-    y todas las acciones."""
-    for o in bpy.data.objects:
-        if o.type == "MESH" and any(m.type == "ARMATURE" for m in o.modifiers):
-            d = o.modifiers.new("aligerar", "DECIMATE")
-            d.ratio = GAME_DETAIL
-            d.use_collapse_triangulate = True
-            # Antes que el esqueleto.
-            o.modifiers.move(o.modifiers.find(d.name), 0)
+    """A glTF con el esqueleto, las piezas con pesos y todas las acciones. Las piezas ya
+    llevan las caras justas (art/characters/mejorar_partes.py): no se aligera nada aquí."""
     bpy.ops.export_scene.gltf(filepath=path, export_format="GLB", export_yup=True, export_apply=True,
                               export_animations=True, export_animation_mode="ACTIONS", export_skins=True,
                               export_force_sampling=True, export_frame_step=1, export_optimize_animation_size=True)

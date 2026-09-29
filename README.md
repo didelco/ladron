@@ -18,7 +18,7 @@ scenes/  lo visual: main (`Game`, el nodo raíz: estado, pantallas hasta la noch
          camera_rig (seguir, alejar, temblar), hands (asientos, teclas y mandos por jugador,
          vibración, glifos), megaphone_run (la megafonía en juego), house_run (la casa de la
          banda: salas a la vista, espantapájaros, banco de pruebas y juegos del dojo),
-         settings_screens (ajustes y assets), challenge_screens (retos y editor), brief_screens
+         settings_screens (ajustes), challenge_screens (retos y editor), brief_screens
          (prólogo y ficha de la noche), preview_stand (la peana de las piezas) y launch_args
          (las opciones `--menu=…` y compañía). Otros scripts de escena ya eran así: plan_talk,
          tour, end_pages, menu_stage, city_stage.
@@ -111,6 +111,7 @@ El criterio es el código de salida más la línea de resumen (`FALLOS: 0`, `0 f
 ```bash
 godot --headless --script tests/test_mapgen.gd   # museos bien formados (306 de todos los tamaños y formas)
 godot --headless --script tests/test_sim.gd      # escenarios de la simulación
+godot --headless --script tests/test_alerta.gd   # la alerta baja sola tras perder al ladrón (!!! → !! → ! → calma en ~95 s) y los guardias no se la pasan en bucle
 godot --headless --script tests/test_heist.gd    # el golpe, el cuadro de alarma y los 25 robos de la historia (salas y grandes golpes)
 godot --headless --script tests/test_mapfile.gd  # mapas guardados: ida y vuelta, validación y que se juegan
 godot --headless --script tests/test_story.gd    # la historia: cinco museos de un tema, cinco robos cada uno, progreso por jugadores (y el de 20 noches)
@@ -129,7 +130,8 @@ godot --headless --script tests/test_megafonia_voz.gd # voz de la megafonía (Me
 godot --headless --script tests/test_textos.gd # textos: ninguna clave que pide el código (literales, tablas y las armadas con prefijo o número) se queda sin texto en la traducción cargada, filas del CSV bien formadas y sin repetir, y los %s/%d de cada Text.t("…") % … cuadran con lo que se pasa (si falla por la traducción: godot --headless --import)
 godot --headless --script tests/test_procedencia.gd # procedencia de los assets: cada fichero de assets/, audio/ y art/ tiene regla en assets/PROCEDENCIA.json y toda licencia declarada está en la lista de permitidas (lo mismo que `python3 tools/procedencia.py`)
 godot --headless --script tests/test_dojo_juegos.gd # los cuatro juegos del dojo (lógica y vista): niveles, eventos, récords por banda, panel de fin
-godot --headless --script tests/test_escondite.gd # El Escondite del Calcetín: la casa de la banda (orientación de cada mueble auditada, recreativa jugable, dojo grande con zonas, pasillos de dos, espantapájaros y alarma roja solo en el dojo, 12 objetos del banco (cuatro pruebas por tres dificultades, en su sitio y alcanzables) con rearme, sin calcetines fuera de PILLA EL CALCETÍN, cuatro salas alcanzables, puertas que bloquean o dejan pasar y que no se cierran con alguien en el umbral, salas a oscuras según lo visible por puertas abiertas con 1 a 4 ladrones, dojo según lo desbloqueado, 25 puestos de trofeos que se llenan con el botín por tamaño de banda, sin cuenta atrás al entrar, salir por pausa y por la puerta, música; puntos de inicio de los juegos del dojo (calcetín, círculo, pedestal, armadura) que empiezan a su dificultad, no se repiten y abortan (pausa, Tab) sin tocar más que `[dojo]`; sin guardias ni guardado)
+godot --headless --script tests/test_pruebas.gd # las nueve pruebas del dojo, todas iguales: el contrato de cada fila del registro, récords (nivel o tiempo), el panel de fin con teclado, mando y ratón (elegida de entrada, sordo al principio, sin doble aceptación) y cada prueba en la casa hasta el panel
+godot --headless --script tests/test_escondite.gd # El Escondite del Calcetín: la casa de la banda (orientación de cada mueble auditada, recreativa jugable, dojo de nueve bahías (zonas que no se solapan y cubren el dojo, tres puntos de inicio por prueba dentro de la suya, pasillos de tres entre bahías, circuito en serpiente), espantapájaros solo en el circuito que giran y ven con el alcance y el ángulo de la regla, alarma roja solo en el dojo, sin calcetines fuera de PILLA EL CALCETÍN, cuatro salas alcanzables, puertas que bloquean o dejan pasar y que no se cierran con alguien en el umbral, salas a oscuras según lo visible por puertas abiertas con 1 a 4 ladrones, dojo según lo desbloqueado, 25 puestos de trofeos que se llenan con el botín por tamaño de banda, sin cuenta atrás al entrar, salir por pausa y por la puerta, música; sin guardias ni guardado)
 godot --headless --script tests/test_smoke.gd     # bomba de humo: dos por ladrón, tapa la vista, despista al que persigue
 godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (necesita el cerebro)
 python3 tools/ciclos.py -v --estricto            # ciclos de dependencia entre los scripts de logic/ (sale con 1 si hay uno sin permitir)
@@ -168,8 +170,8 @@ van encontrando, con buscador y filtros por tipo, etiqueta y estado. Se añaden 
   se toca `docs/data/referencias.json`. Sin servidor, la página es de solo lectura.
 
 `python3 tools/procedencia.py` (y `tests/test_procedencia.gd`) comprueba el fichero: campos obligatorios,
-URL http(s), ids únicos, tipos y estados válidos. Si una referencia comparte dominio con una colección de
-Procedencia o con una de sus alternativas, las dos páginas se enlazan.
+URL http(s), ids únicos, tipos y estados válidos. Si una referencia comparte dominio con una propuesta de
+«Assets a incorporar», las dos páginas se enlazan.
 
 Además de pantallas, objetos, sonidos y textos, la web explica la historia (con el paso del progreso
 guardado de 20 noches), la ciudad (el mapa entero, que en el juego nunca cabe en la pantalla, con un
@@ -192,15 +194,18 @@ python3 tools/docs.py version icono "Pixel art" --from assets/icon.png --commit 
 python3 tools/docs.py version --list
 ```
 
-**Alternativas de terceros**: para sustituir lo hecho con IA (modelos, sonidos, voz, ilustraciones…)
-por algo de terceros con licencia libre, se apuntan en `docs/data/alternativas/<categoria>.json`
-(plantilla en `_ejemplo.json`: `categoria` y `grupos` con `coleccion` de `assets/PROCEDENCIA.json`,
-`que_es` y `alternativas` con `id`, `nombre`, `url`, `autor`, `licencia`, `atribucion`, `cubre`,
-`encaje` 1-5 y, si quieres, `preview_url` y `notas`; un grupo con `id` propio permite varios por
-colección). `python3 tools/procedencia.py` y `tests/test_procedencia.gd` los validan. En la página
-«Procedencia» las colecciones con alternativa llevan el distintivo «Tiene alternativa», y con
-`python3 tools/docs.py serve` se elige una (o «la nuestra») por grupo; la elección queda en
-`docs/data/alternativas_elegidas.json` y arriba se ve lo pendiente de sustituir.
+**Assets a incorporar**: un tablero de propuestas, una tarjeta por asset concreto de terceros (un modelo, un
+sonido, un icono, un pack pequeño) con vista previa (audio con reproductor), pack de origen con enlace, licencia,
+si exige atribución, **para qué** lo pondríamos («vitrina del museo Castillo», «sonido de puerta») y estado:
+propuesto, aceptado, incorporado o descartado. Solo hay filtros por tipo y estado, un buscador y el orden por
+estado. Los datos son `docs/data/propuestas.json`, una lista de `{id, nombre, pack, pack_url, url, tipo, licencia,
+atribucion, preview_url, para, estado, nota}` (`tipo`: modelo, sonido, imagen u otro); `python3 tools/docs.py texts`
+la vuelca a `docs/data/propuestas.js`, y `python3 tools/procedencia.py` y `tests/test_procedencia.gd` la validan
+(campos, URL http(s), estados, ids únicos). Con `python3 tools/docs.py serve` cada tarjeta cambia de estado con un
+clic y el botón «Proponer un asset» añade una (enlace, nombre, pack, para qué…): POST `/api/propuesta`, validado y
+con escritura atómica. Sin servidor, la página es de solo lectura. Al pie, plegada, «Lo que ya usamos» lista las
+colecciones que ya están en el juego con su licencia (sale de `assets/PROCEDENCIA.json`). Los antiguos `#procedencia`
+y `#alternativas` llevan a esta página.
 
 Las capturas lanzan Godot sin el dispositivo HID de Apple que algunos Mac enseñan como mando
 (`SDL_JOYSTICK_IGNORE_DEVICES=0x05ac/0x0004`, lo pone `docs.py`).
@@ -279,8 +284,8 @@ quiera.
 
 Con mando, como en la mayoría de juegos: stick izquierdo o cruceta para moverse, A (✕) la acción, B (○) para rodar
 y soltar un minijuego, X (□) o clic del stick para ponerse a gatas, View para el mapa y Start para la
-pausa; Y (△) suelta una bomba de humo. En los menús A acepta, B vuelve, LB/RB cambian de pestaña y Start
-salta la historia y la previa. Así A y B significan lo mismo jugando que en los menús: A hace, B se aparta. Con el
+pausa; Y (△) suelta una bomba de humo. En los menús A acepta, B vuelve, LB/RB pasan las páginas de la previa y Start
+salta la historia y la previa. AJUSTES (desde el título y la pausa) tiene SONIDO, PANTALLA, CONTROLES (mandos, vibración, zona muerta y tabla de teclas) y OPCIONES (megafonía y panel de IA); atrás vuelve un nivel. Así A y B significan lo mismo jugando que en los menús: A hace, B se aparta. Con el
 teclado, igual (cada mitad es un mando): `E` y `.` aceptan, como la acción; `Espacio` y `Enter` vuelven, como rodar, y
 `Esc` también; ninguna tecla acepta en una pantalla y vuelve en otra (`logic/menu_keys.gd`). Por los menús se mueve cada
 uno con lo suyo, como jugando: WASD, flechas, stick o cruceta (`ui_up`… en `project.godot`). Solo, vale cualquier mando; con dos, el mando 1 es P1 y el
@@ -311,25 +316,35 @@ andando: el **salón** (sofás con cojines, alfombras, tele con altavoz, cocina 
 museo, cada sección con su rótulo y su alfombra en el color del museo; tres nichos en la pared y dos vitrinas en
 el suelo por sección, con su placa —número del robo, «?» y, al robarla, sus ★—; un puesto se llena con la pieza
 real, con un foco suave, cuando el robo se hizo con la pieza cogida, la estrella «botín», `Den.filled`, por
-tamaño de banda; una estrella dorada, no un calcetín, sobre el rótulo del museo completado (y donde el botín de un robo es un calcetín, los puestos enseñan esa estrella); bancos, cuadros, felpudos y una mesita con lámpara), el **dojo** (un
-pequeño museo de práctica de 37 × 13 casillas, unas 2,6 veces el de antes, con muros de papel de arroz —zócalo de madera, listones *shoji*, remate,
-postes y ventanitas altas— y cinco zonas de fácil a difícil, `Den.DOJO_PLAN` y `Den.DOJO_ZONES`: la **exposición**, con pilares,
-vitrinas bajas y el banco de vitrinas; el **pasillo** de dos casillas con un cruce; los **escondites**, una sala con armaduras, caja y taquilla; el
-**laberinto** de tres vaivenes de dos casillas; y el **patio** con papeleras y cajas; escondites, patio y laberinto se enlazan en anillo con el pasillo.
-Sin guardias: hay **espantapájaros** de guardia con una linterna pegada, que ven con la regla de los guardias y sus propios números
-—`Practice.scarecrow_sees`, alcance 5,5 y ±24°—; si ven a un ladrón (no escondido) **todo el dojo se pone rojo con una sirena 3 s**
-(`Practice.alert_step`, enfriamiento de 1,5 s) y no pasa nada más. Según el robo al que ha llegado la banda (museo · prueba, `Practice.ITEMS`): el espantapájaros del pasillo —«guard», 1 · 2—, el de los escondites y las tres armaduras de AGUANTA ESCONDIDO —«torch», 1 · 4—, las vitrinas de GANZÚA y los
-pedestales de EQUILIBRIO y PILLA EL CALCETÍN —«games», 2 · 1—, papeleras, busto, caja, taquilla, escondites de ESCONDITE y círculos de BOLOS —«props», 2 · 3—, el primer espantapájaros del laberinto y las
-cajas de alarma de CABLES —«case_alarm», 3 · 1— y el segundo, con las de PULSO —«two», 3 · 3—. **Nadie elige prueba ni dificultad**: cada cosa tiene **tres puntos de inicio fijos, uno por
-dificultad** (fácil, medio, difícil; `HIDEOUT_TIER_*`), y se empieza acercándose y pulsando la acción, sin menús ni atriles.
-**Banco de pruebas** (`Practice.bench_*`, en la exposición): cuatro pruebas con **tres objetos cada una**, uno por dificultad (12 en total según lo enseñado, en las casillas de `Practice.BENCH_AT`, cada uno con su rótulo y su dificultad; `Practice.BENCH_OBJECTS` es la tabla de qué objeto lleva cada prueba, y cambiarlo es cambiar una línea; los modelos, primitivas o piezas de la casa, están en `BenchProps`): GANZÚA, una vitrina vacía (sin calcetín: el calcetín es solo de PILLA EL CALCETÍN); ESCONDITE, un mueble de `Hideouts.PIECES` (nevera, caja y baúl, cada vez más justo, `Hideouts.TIGHT`) con el minijuego de colarse; CABLES, una caja de alarma en la pared este con 3, 4 o 6 cables colgando; PULSO, otra en la pared oeste con un cristal y un aro cada vez más pequeño. La acción junto a uno (`PROBAR`, por el mismo punto único `Game._action_for`, así que el filtro de «una prueba a la vez» lo cubre) lo hace con su minijuego al nivel de su fila (el mismo que en un robo); al acabar se enciende una luz verde y sube el cristal / baja la palanca / se suelta la ventosa (con el sonido de éxito de siempre), y se rearma sola a los ~4 s; un cartel cuenta las hechas. Sin QUIETO: no necesita tutorial. **Juegos del dojo** (`DojoGames`): cada juego tiene sus
-tres puntos de inicio (`Practice.ITEMS` con `game`, `via` y `starts`); las tres dificultades son tramos de los diez niveles (`DojoGames.TIERS`: fácil 1-3, medio 4-6, difícil 7-10):
-se empieza en el primero del tramo y se gana al hacer el último, sin hora extra. PILLA EL CALCETÍN (`atrapa`, escondites, tres pedestales con un calcetín dorado encima: la acción coge el calcetín),
-EQUILIBRIO (`pedestal`, tres pedestales de `Plinths`: al subirse empieza; el que subió aguanta todas las rondas encima, y la dificultad del pedestal es la del minijuego del equilibrio),
-BOLOS (`bolos`, patio, tres círculos pintados en el suelo: la acción encima; la bola eres tú, hay que rodar contra los bolos) y AGUANTA ESCONDIDO (`aguanta`, escondites, tres armaduras: al
-esconderse en una empieza; con una linterna que barre, `Practice.LANTERN_AT`, y la primera ronda deja abierta la armadura de salida). `DojoWatch` vigila quién se sube o se esconde en un punto (solo
-avisa al llegar, no mientras sigue ahí). Tab, la pausa o salir por la puerta lo dejan; al acabar, panel con OTRA VEZ (mismo tramo) / SALIR; solo se guarda el mejor nivel por juego, dificultad y tamaño de banda
-(`<id>_<dificultad>_best_<n>` en la sección `[dojo]` del progreso). **Una prueba a la vez**: mientras haya una en marcha —un juego del dojo, con su panel de fin hasta aceptar OTRA VEZ o salir, o un objeto del banco con su minijuego— nada más de la casa responde a la acción ni enseña su aviso (`HouseRun.trial_active`, filtro único al principio de `Game._action_for`: ni otros puntos de inicio, ni otras vitrinas, ni papeleras, armaduras, recreativa, interruptores o puertas interiores; lo único que deja pasar es lo que la prueba pide, `HouseRun.trial_action`: los escondites abiertos de la ronda de AGUANTA ESCONDIDO), y los cuerpos de los ladrones no empujan las cosas (`PropsView.move_thieves` los aparta). Al acabar por donde sea vuelve todo, sin nada colgado (el bloqueo se lee del estado real, no de una marca). Sin estrellas, progreso de museo, ruido ni megafonía) y el **aseo** (bañera con cortina, lavabo, váter y una ducha de esquina con la abertura hacia dentro; solo estético, `Den.BATH_GAG`
+tamaño de banda; una estrella dorada, no un calcetín, sobre el rótulo del museo completado (y donde el botín de un robo es un calcetín, los puestos enseñan esa estrella); bancos, cuadros, felpudos y una mesita con lámpara), el **dojo** (nueve
+bahías de práctica en tres filas, 41 × 28 casillas —más de dos veces el de antes—, con muros de papel de arroz —zócalo de madera, listones *shoji*, remate,
+postes y ventanitas altas— y pasillos de tres casillas entre bahías, `Den.DOJO_PLAN` y `Den.DOJO_ZONES`; una bahía por prueba, rotulada, con sitio para sus tres puntos de inicio:
+arriba, **alarma y vitrinas** (GANZÚA, CABLES, PULSO); en medio, **juegos de habilidad** (PILLA EL CALCETÍN, EQUILIBRIO, BOLOS); abajo, **sigilo** (el CIRCUITO con guardias, ESCONDITE, AGUANTA ESCONDIDO);
+el croquis está en `docs/pendiente_dojo_juegos.md`). Los únicos **espantapájaros** de guardia con linterna están en el circuito, tres, que **giran** su linterna (`Practice.scarecrow_facing`,
+`turn: {amp, speed, phase}`) y ven con la regla de los guardias y sus propios números —`Practice.scarecrow_sees`, alcance 5,5 y ±24°—; si ven a un ladrón (no escondido)
+**todo el dojo se pone rojo con una sirena 3 s** (`Practice.alert_step`, enfriamiento de 1,5 s) y no pasa nada más (salvo en la prueba CIRCUITO, donde es perderla). AGUANTA ESCONDIDO y las rondas «vigiladas» de
+PILLA EL CALCETÍN no llevan guardias propios: el primero pone su espantapájaros de linterna solo mientras dura (`Practice.LANTERN_AT`), las segundas colocan el calcetín en el cono de los del circuito.
+Según el robo al que ha llegado la banda (museo · prueba, `Story.lesson_night`): el circuito y sus espantapájaros —«guard», 1 · 2—, las tres armaduras de AGUANTA ESCONDIDO —«torch», 1 · 4—, GANZÚA, EQUILIBRIO y PILLA EL CALCETÍN —«games», 2 · 1—,
+papeleras, busto, caja, taquilla, ESCONDITE y BOLOS —«props», 2 · 3—, CABLES —«case_alarm», 3 · 1— y PULSO —«two», 3 · 3—. **Nadie elige prueba ni dificultad**: cada prueba tiene **tres puntos de inicio fijos, uno por
+dificultad** (fácil, medio, difícil; `HIDEOUT_TIER_*`), y se empieza acercándose y pulsando la acción (o subiéndose al pedestal / escondiéndose en la armadura), sin menús.
+
+**Las pruebas del dojo, todas iguales** (`DojoTrials`, `DojoTrial`): las nueve —cuatro juegos, cuatro pruebas del banco y el circuito— comparten estructura y experiencia:
+- **Registro** (`DojoTrials.TABLE`): una fila por prueba con su id, su clase, su nombre, la lección que la abre, su zona, el tipo de objeto que es su punto de inicio (`via`, `Practice.VIAS`), las tres casillas de inicio y lo suyo (pasos y reloj del banco, meta y barrido del circuito).
+- **Ciclo de vida** (`DojoTrial`): parada → `start()` → «¿LISTOS?» 2 s → en juego → superada / fallada → panel → SEGUIR / OTRA VEZ / SALIR; `abort()` desde cualquier sitio. Una sola forma de decidir: `_win()` y `_lose(por_qué)`.
+- **Tres adaptadores** finos: `DojoGame` (los cuatro juegos: rondas, diez niveles, tres dificultades = tramos 1-3, 4-6 y 7-10; récord: el nivel), `BenchTrial` (GANZÚA, ESCONDITE, CABLES y PULSO: una tirada del minijuego de un robo a la dificultad del punto, fallada si se agota el reloj de la fila; récord: el tiempo) y `CircuitTrial` (de un anillo a la meta sin que te vea una linterna; récord: el tiempo). En el banco, las dificultades ya son los niveles (1-3 pines, 3-4-6 cables, aro más pequeño, mueble más justo), así que no hay rondas: una tirada por dificultad.
+- **Una entrada de acciones**: `Game._action_for` → `{"do": "trial", id, tier}` para las que se empiezan con la acción, y `HouseRun.trial_action` (filtro de «una prueba a la vez» al principio de `_action_for`); las que se empiezan subiéndose o escondiéndose las avisa `DojoWatch`. Todo lo lleva `HouseRun` (`trial_start`, `trial_tick`, `trial_input`, `choose`, `trial_end`).
+- **Una vista**: `TrialView` dibuja el HUD (nombre y dificultad arriba, «NIVEL 2  1/3» o «45%» y `MEJOR …` debajo, el reloj y `TAB: SALIR` abajo: mismo sitio y estilo para todas) y el panel de fin. **Un rotulado**: `DenView._trial_starts` pone el objeto de cada punto (`BenchProps` para los del banco), su rótulo (nombre, dificultad y mejor marca) y el nombre de la bahía; las luces de los objetos del banco se encienden al superarlas (`Practice.lamp_*`).
+- **Un guardado** (`DojoTrials.record`, `settle`): por prueba, dificultad y tamaño de banda, en `[dojo]` del progreso: `<id>_<dificultad>_best_<n>` (nivel, los juegos) o `<id>_<dificultad>_time_<n>` (segundos, lo demás) y `<id>_<dificultad>_won_<n>`; solo se escribe lo que mejora y lo guardado antes se lee igual.
+- **El panel de fin** (`TrialMenu`, `TrialView`): las opciones son los botones de los menús en fila, con **una seleccionada** con el brillo cálido (`Hud.pill_button`, `Hud.pill_lit`): tras ganar, SEGUIR (la siguiente dificultad, desde el mismo sitio; no está en la difícil) / OTRA VEZ / SALIR y sale elegida SEGUIR; tras perder, OTRA VEZ / SALIR y sale elegida OTRA VEZ.
+  Izquierda / derecha (y arriba / abajo) —flechas, WASD, cruceta, stick, y los gatillos— mueven la selección dando la vuelta; aceptar (E, el punto, A) hace lo elegido; atrás (Esc, Espacio, Enter, B), Tab y Start salen; el ratón elige lo que pisa y un clic lo hace. La línea de ayuda de abajo dice
+  `◀ ▶ ELEGIR · E ACEPTAR · ESC SALIR` (con el mando, `A ACEPTAR · B SALIR`). El panel está sordo 0,4 s (`TrialMenu.GUARD_S`) para que la pulsación que acabó la prueba no acepte, no se acepta dos veces (la elegida cambia de prueba y cierra el panel) y mientras está abierto la banda se queda quieta.
+- Tab, la pausa o salir por la puerta dejan la prueba (o soltar el minijuego, en las del banco), sin guardar nada.
+
+**Cómo añadir una prueba al dojo**: (1) su lógica: una clase que extienda `DojoTrial` (una prueba de una tirada; `_play`, `_win`/`_lose`, `score`, `record_kind`) o `DojoGame` (de rondas); (2) una fila en `DojoTrials.TABLE` con su
+id, clase, textos (`HIDEOUT_TRIAL_NAME_<ID>`, `_START_`, `_HINT_` en `locale/texts.csv`), lección, zona, `via` y las tres casillas; (3) su bahía en `Den.DOJO_ZONES` (y `DOJO_PLAN` si lleva muros); (4) su objeto: un `via` nuevo en `Practice.VIAS`
+y, si no es de los que ya se dibujan, su modelo en `BenchProps.build`. `tests/test_pruebas.gd` recorre el registro y comprueba el contrato de cada fila (ciclo de vida, tres dificultades, punto de inicio alcanzable, récord, panel).
+
+y el **aseo** (bañera con cortina, lavabo, váter y una ducha de esquina con la abertura hacia dentro; solo estético, `Den.BATH_GAG`
 espera una idea). Cada mueble tiene su frente en datos (`Den.FRONT`, `Den.yaw_for`, `Den.audit`): se dice a qué lado mira y el giro sale del modelo. Las salas se unen por **puertas** (`Den.DOORS`: id, casillas y las dos salas que unen), que se abren y se
 cierran con el botón de acción junto a ellas (`ABRIR`/`CERRAR`; unas hojas correderas que se esconden en el muro en
 0,3 s, con su ruido): cerrada es muro para los pies (`Den.apply_doors` la pone en `Museum.grid`), y no se puede cerrar con
@@ -357,6 +372,8 @@ uv pip install --python brain/.venv/bin/python -r brain/requirements.txt
 ```
 
 Sin el cerebro, los guardias deciden con reglas fijas: el juego siempre se puede jugar.
+
+**Niveles de alerta de un guardia** (`Sim.step_guard`, constantes en `logic/sim.gd`): calma → «!» (sospecha, se va a los `calm_after` × 0,35 s de la última señal: ~3,5 s en media) → «!!» (alerta, aguanta `ALERT_HOLD_MS` = 30 s desde lo último que la alimentó) → «!!!» (te ve; si te pierde, baja a «!!» a los `CHASE_LOST_MS` = 60 s, antes 90). Perdido el ladrón, todos vuelven a calma en ~95 s. Nada dura para siempre: antes, quien te había visto (o el que llegaba al número de `alarms`) se quedaba en «!!» eternamente; ahora `alarms` solo decide cuánto se «convence» (`calm_in`), y también baja. Un guardia solo avisa a un compañero (`warn_partners`) si conserva una pista fresca: estar en alerta ya no basta, así que dos guardias no se despiertan el uno al otro en bucle.
 
 ## Versión
 
@@ -404,4 +421,4 @@ Recursos de terceros y sus licencias: `CREDITS.md`, que **se genera** (`python3 
 licencia (con su SPDX), URL y si exige atribución. Se edita a mano: colecciones y reglas por carpeta o patrón (gana la
 primera; una regla por fichero es la excepción). Un asset nuevo necesita una regla o `python3 tools/procedencia.py` y
 `tests/test_procedencia.gd` fallan; lo que no se sabe se marca «origen sin documentar» (`documentado: false`), no se inventa.
-La documentación lo enseña en su página «Procedencia» (con filtro por licencia) y en las fichas de objetos y sonidos.
+La documentación lo enseña en las etiquetas de licencia de las fichas de objetos y sonidos y en la tabla plegada «Lo que ya usamos» de «Assets a incorporar».

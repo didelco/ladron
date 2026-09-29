@@ -53,7 +53,7 @@ func _label(size: int, colour: Color) -> Label:
 func _start() -> void:
 	var kind: String = KINDS[_kind]
 	var steps: int = {"lockpick": 4, "steady": 6, "wires": 0, "balance": 1}.get(kind, 0)
-	_game = Minigame.make(kind, "case", steps, _keys(), 0, _level)
+	_game = Minigame.make(kind, "bench" if kind == "squeeze" else "case", steps, _keys(), 0, _level)
 	_result.text = ""
 	_again_in = -1.0
 

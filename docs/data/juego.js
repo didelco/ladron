@@ -223,6 +223,70 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#8a2323",
+     "key": ""
+    }
+   ],
+   "file": "scenes/bench_props.gd",
+   "name": "LAMP_OFF",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#4cf07a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/bench_props.gd",
+   "name": "LAMP_ON",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#5c6370",
+     "key": ""
+    }
+   ],
+   "file": "scenes/bench_props.gd",
+   "name": "STEEL",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#e04b4b",
+     "key": "0"
+    },
+    {
+     "hex": "#4b8fe0",
+     "key": "1"
+    },
+    {
+     "hex": "#f0c53a",
+     "key": "2"
+    },
+    {
+     "hex": "#4bc46a",
+     "key": "3"
+    },
+    {
+     "hex": "#e08a2b",
+     "key": "4"
+    },
+    {
+     "hex": "#b06ae0",
+     "key": "5"
+    }
+   ],
+   "file": "scenes/bench_props.gd",
+   "name": "WIRE_COLOURS",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
      "hex": "#110d1f",
      "key": ""
     }
@@ -460,72 +524,6 @@ window.JUEGO = {
    "file": "scenes/den_view.gd",
    "name": "CONE_RED",
    "note": "Warm and red for a scarecrow's cone of torchlight."
-  },
-  {
-   "colours": [
-    {
-     "hex": "#2a160d",
-     "key": ""
-    }
-   ],
-   "file": "scenes/dojo_games_view.gd",
-   "name": "INK",
-   "note": ""
-  },
-  {
-   "colours": [
-    {
-     "hex": "#f1dfbd",
-     "key": ""
-    }
-   ],
-   "file": "scenes/dojo_games_view.gd",
-   "name": "CREAM",
-   "note": ""
-  },
-  {
-   "colours": [
-    {
-     "hex": "#ffcf3a",
-     "key": ""
-    }
-   ],
-   "file": "scenes/dojo_games_view.gd",
-   "name": "GOLD",
-   "note": ""
-  },
-  {
-   "colours": [
-    {
-     "hex": "#ff3b3b",
-     "key": ""
-    }
-   ],
-   "file": "scenes/dojo_games_view.gd",
-   "name": "RED",
-   "note": ""
-  },
-  {
-   "colours": [
-    {
-     "hex": "#7be07b",
-     "key": ""
-    }
-   ],
-   "file": "scenes/dojo_games_view.gd",
-   "name": "GREEN",
-   "note": ""
-  },
-  {
-   "colours": [
-    {
-     "hex": "#35211a",
-     "key": ""
-    }
-   ],
-   "file": "scenes/dojo_games_view.gd",
-   "name": "PANEL",
-   "note": ""
   },
   {
    "colours": [
@@ -3583,6 +3581,72 @@ window.JUEGO = {
    "file": "scenes/town_builder.gd",
    "name": "PLAIN",
    "note": "A street tile without its white lines (NIGHT_SHADER: own.a)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2a160d",
+     "key": ""
+    }
+   ],
+   "file": "scenes/trial_view.gd",
+   "name": "INK",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#f1dfbd",
+     "key": ""
+    }
+   ],
+   "file": "scenes/trial_view.gd",
+   "name": "CREAM",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffcf3a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/trial_view.gd",
+   "name": "GOLD",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ff3b3b",
+     "key": ""
+    }
+   ],
+   "file": "scenes/trial_view.gd",
+   "name": "RED",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#7be07b",
+     "key": ""
+    }
+   ],
+   "file": "scenes/trial_view.gd",
+   "name": "GREEN",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#35211a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/trial_view.gd",
+   "name": "PANEL",
+   "note": ""
   }
  ],
  "historia": {
@@ -3932,10 +3996,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_02_BLURB",
-     "colour": "#dee2e6",
+     "colour": "#f783ac",
      "name": "NIGHT_02_NAME",
      "seconds": 2.0,
-     "shape": "sock",
+     "shape": "gum",
      "story": "NIGHT_02_TALE",
      "verb": "NIGHT_02_VERB"
     },
@@ -3992,10 +4056,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_04_BLURB",
-     "colour": "#e03131",
+     "colour": "#e9e2cf",
      "name": "NIGHT_04_NAME",
      "seconds": 2.5,
-     "shape": "idol",
+     "shape": "bone",
      "story": "NIGHT_04_TALE",
      "verb": "NIGHT_04_VERB"
     },
@@ -4059,7 +4123,7 @@ window.JUEGO = {
      "colour": "#7bc043",
      "name": "NIGHT_06_NAME",
      "seconds": 3.0,
-     "shape": "crown",
+     "shape": "plant",
      "story": "NIGHT_06_TALE",
      "verb": "NIGHT_06_VERB"
     },
@@ -4089,10 +4153,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_07_BLURB",
-     "colour": "#ff6b6b",
+     "colour": "#e07a5f",
      "name": "NIGHT_07_NAME",
      "seconds": 3.0,
-     "shape": "sock",
+     "shape": "snail",
      "story": "NIGHT_07_TALE",
      "verb": "NIGHT_07_VERB"
     },
@@ -4157,10 +4221,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_09_BLURB",
-     "colour": "#e8a860",
+     "colour": "#9b5de5",
      "name": "NIGHT_09_NAME",
      "seconds": 3.5,
-     "shape": "gum",
+     "shape": "crystal",
      "story": "NIGHT_09_TALE",
      "verb": "NIGHT_09_VERB"
     },
@@ -4215,10 +4279,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_11_BLURB",
-     "colour": "#e8b53a",
+     "colour": "#d9743c",
      "name": "NIGHT_11_NAME",
      "seconds": 4.0,
-     "shape": "idol",
+     "shape": "amphora",
      "story": "NIGHT_11_TALE",
      "verb": "NIGHT_11_VERB"
     },
@@ -4252,7 +4316,7 @@ window.JUEGO = {
      "colour": "#2ec4b6",
      "name": "NIGHT_12_NAME",
      "seconds": 4.5,
-     "shape": "clock",
+     "shape": "laurel",
      "story": "NIGHT_12_TALE",
      "verb": "NIGHT_12_VERB"
     },
@@ -4277,10 +4341,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_13_BLURB",
-     "colour": "#4dabf7",
+     "colour": "#f4f1e6",
      "name": "NIGHT_13_NAME",
      "seconds": 4.5,
-     "shape": "duck",
+     "shape": "column",
      "story": "NIGHT_13_TALE",
      "verb": "NIGHT_13_VERB"
     },
@@ -4313,7 +4377,7 @@ window.JUEGO = {
      "colour": "#f4f1e6",
      "name": "NIGHT_14_NAME",
      "seconds": 5.0,
-     "shape": "egg",
+     "shape": "david",
      "story": "NIGHT_14_TALE",
      "verb": "NIGHT_14_VERB"
     },
@@ -4338,10 +4402,10 @@ window.JUEGO = {
     "lights": false,
     "loot": {
      "blurb": "NIGHT_15_BLURB",
-     "colour": "#12b886",
+     "colour": "#f4f1e6",
      "name": "NIGHT_15_NAME",
      "seconds": 5.5,
-     "shape": "gem",
+     "shape": "venus",
      "story": "NIGHT_15_TALE",
      "verb": "NIGHT_15_VERB"
     },
@@ -4427,10 +4491,10 @@ window.JUEGO = {
     "lights": true,
     "loot": {
      "blurb": "NIGHT_18_BLURB",
-     "colour": "#b197fc",
+     "colour": "#adb5bd",
      "name": "NIGHT_18_NAME",
      "seconds": 5.0,
-     "shape": "gum",
+     "shape": "sword",
      "story": "NIGHT_18_TALE",
      "verb": "NIGHT_18_VERB"
     },
@@ -4454,10 +4518,10 @@ window.JUEGO = {
     "lights": true,
     "loot": {
      "blurb": "NIGHT_19_BLURB",
-     "colour": "#40c057",
+     "colour": "#e9d8a6",
      "name": "NIGHT_19_NAME",
      "seconds": 5.5,
-     "shape": "mask",
+     "shape": "ornithopter",
      "story": "NIGHT_19_TALE",
      "verb": "NIGHT_19_VERB"
     },
@@ -4545,10 +4609,10 @@ window.JUEGO = {
     "lights": true,
     "loot": {
      "blurb": "NIGHT_22_BLURB",
-     "colour": "#f783ac",
+     "colour": "#ffd43b",
      "name": "NIGHT_22_NAME",
      "seconds": 5.0,
-     "shape": "gum",
+     "shape": "banana",
      "story": "NIGHT_22_TALE",
      "verb": "NIGHT_22_VERB"
     },
@@ -4572,10 +4636,10 @@ window.JUEGO = {
     "lights": true,
     "loot": {
      "blurb": "NIGHT_23_BLURB",
-     "colour": "#f4f1e6",
+     "colour": "#4dabf7",
      "name": "NIGHT_23_NAME",
      "seconds": 5.5,
-     "shape": "teeth",
+     "shape": "bucket",
      "story": "NIGHT_23_TALE",
      "verb": "NIGHT_23_VERB"
     },
@@ -6371,41 +6435,6 @@ window.JUEGO = {
    "section": "finales",
    "text": "",
    "title": "El final de la historia"
-  },
-  {
-   "file": "capturas/assets_piezas.webp",
-   "id": "assets_piezas",
-   "section": "assets",
-   "text": "",
-   "title": "Assets: piezas"
-  },
-  {
-   "file": "capturas/assets_props.webp",
-   "id": "assets_props",
-   "section": "assets",
-   "text": "",
-   "title": "Assets: objetos"
-  },
-  {
-   "file": "capturas/assets_people.webp",
-   "id": "assets_people",
-   "section": "assets",
-   "text": "",
-   "title": "Assets: personajes"
-  },
-  {
-   "file": "capturas/assets_sounds.webp",
-   "id": "assets_sounds",
-   "section": "assets",
-   "text": "",
-   "title": "Assets: sonidos"
-  },
-  {
-   "file": "capturas/assets_map.webp",
-   "id": "assets_map",
-   "section": "assets",
-   "text": "",
-   "title": "Assets: mapa"
   }
  ],
  "ciudad": {
@@ -8925,8 +8954,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "29-09-2026 23:11",
-  "commit": "528196c",
-  "rama": "worktree-agent-a26cbee3d62deb32b"
+  "fecha": "30-09-2026 00:57",
+  "commit": "a029265",
+  "rama": "main"
  }
 };

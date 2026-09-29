@@ -137,7 +137,7 @@
 		"personajes-blender": {
 			"nombre": "Personajes (ninja y guardia)",
 			"tipo": "propio",
-			"metodo": "Modelados por script en Blender (art/characters/kit.py, ninja.py, guardia.py, rig.py: formas sencillas fundidas con remallado de vóxeles, esqueleto y acciones) y retocados a mano en art/personajes/*.blend; exportados con art/export.py.",
+			"metodo": "Modelados por script en Blender (art/characters/kit.py, ninja.py, guardia.py, rig.py: formas sencillas fundidas con remallado de vóxeles, esqueleto y acciones) y retocados a mano en art/personajes/*.blend (hoy piezas sueltas, con manos y caras rehechas por art/characters/mejorar_partes.py); exportados con art/export.py. art/blockbench/ guarda copias .obj/.glb para abrirlos en Blockbench.",
 			"autor": "Chema, con Claude",
 			"licencia": "LicenseRef-Propia",
 			"url": "",
@@ -271,7 +271,7 @@
 		{"patron": ["assets/models/casa/*"], "coleccion": "kenney-furniture"},
 
 		{"patron": ["assets/models/globo_world.png"], "coleccion": "globo-mapamundi"},
-		{"patron": ["assets/models/guardia.glb", "assets/models/ninja.glb"], "coleccion": "personajes-blender"},
+		{"patron": ["assets/models/guardia.glb", "assets/models/ninja.glb", "art/blockbench/*"], "coleccion": "personajes-blender"},
 		{"patron": ["assets/models/*.glb", "assets/models/botin/*.glb", "assets/models/temas/*.glb"], "coleccion": "modelos-blender"},
 
 		{"patron": ["audio/megafonia/*"], "coleccion": "megafonia-tts"},

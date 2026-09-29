@@ -35,11 +35,13 @@ const CALM_AFTER_S := 10.0
 ## How long each level of alert lasts past the last thing that fed it (seen
 ## or heard), before it drops a step: a hunch (!) passes at once — a share of
 ## the night's calm_after; on alert (!!) holds about half a minute; after a
-## chase (!!!) it takes about a minute and a half.
+## chase (!!!) it takes about a minute. Nothing lasts for good: even a guard
+## that is sure comes down (calm_in is put back when it does).
 const HUNCH_SHARE := 0.35
 const ALERT_HOLD_MS := 30000.0
-const CHASE_LOST_MS := 90000.0
-## The sound that alarms a guard this many times is no longer a creak.
+const CHASE_LOST_MS := 60000.0
+## The sound that alarms a guard this many times is no longer a creak (it is
+## sure someone is about, but that too wears off).
 const ALARMS_TO_STAY := 3
 const CATCH_RANGE := 0.75
 ## Nearer than this, a chasing guard goes straight for you.
@@ -1020,10 +1022,12 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 				g.suspicion = 2
 				g.suspicion_at = now
 		2:
-			if g.calm_in != INF and now - g.suspicion_at > ALERT_HOLD_MS:
+			# Sure or not, !! wears off: "for good" used to mean it never did.
+			if now - g.suspicion_at > ALERT_HOLD_MS:
 				g.suspicion = 1
 				g.suspicion_at = now
 				g.alert = false
+				g.calm_in = 0.0
 				g.memory = null
 				g.search_spot = Vector2i(-1, -1)
 				g.errand = ""
@@ -1317,7 +1321,7 @@ static func call_for_backup(saw_before: Dictionary, guards: Array[Guard], now: f
 	return shouts
 
 
-## An alert guard that sees a colleague who does not know yet walks over and
+## An alert guard with a fresh clue that sees a colleague who does not know yet walks over and
 ## tells it, quietly. More important than lights, less than chasing the thief.
 ## Returns the warnings given: {from, to, x, y}.
 static func warn_partners(guards: Array[Guard], now: float) -> Array[Dictionary]:
@@ -1333,6 +1337,11 @@ static func warn_partners(guards: Array[Guard], now: float) -> Array[Dictionary]
 			var best_d := INF
 			for o in guards:
 				if o == me or o.alert or not in_view(me, o.x, o.y):
+					continue
+				# Only a guard with something to tell (a clue still fresh)
+				# warns: alert alone is not news, or two guards would keep
+				# waking each other up for ever.
+				if me.memory == null:
 					continue
 				var d := Museum.dist(me.x, me.y, o.x, o.y)
 				if d < best_d:

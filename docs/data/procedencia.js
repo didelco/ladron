@@ -183,14 +183,14 @@ window.PROCEDENCIA = {
   "personajes-blender": {
    "nombre": "Personajes (ninja y guardia)",
    "tipo": "propio",
-   "metodo": "Modelados por script en Blender (art/characters/kit.py, ninja.py, guardia.py, rig.py: formas sencillas fundidas con remallado de vóxeles, esqueleto y acciones) y retocados a mano en art/personajes/*.blend; exportados con art/export.py.",
+   "metodo": "Modelados por script en Blender (art/characters/kit.py, ninja.py, guardia.py, rig.py: formas sencillas fundidas con remallado de vóxeles, esqueleto y acciones) y retocados a mano en art/personajes/*.blend (hoy piezas sueltas, con manos y caras rehechas por art/characters/mejorar_partes.py); exportados con art/export.py. art/blockbench/ guarda copias .obj/.glb para abrirlos en Blockbench.",
    "autor": "Chema, con Claude",
    "licencia": "LicenseRef-Propia",
    "url": "",
    "notas": "",
    "atribucion": false,
    "documentado": true,
-   "n": 2
+   "n": 14
   },
   "globo-mapamundi": {
    "nombre": "Mapamundi del globo",
@@ -346,20 +346,34 @@ window.PROCEDENCIA = {
    "notas": "",
    "atribucion": false,
    "documentado": true,
-   "n": 30
+   "n": 32
   }
  },
  "variantes": {},
  "archivos": {
+  "art/blockbench/guardia.glb": "personajes-blender",
+  "art/blockbench/guardia.mtl": "personajes-blender",
+  "art/blockbench/guardia.obj": "personajes-blender",
+  "art/blockbench/guardia_partes.blend": "personajes-blender",
+  "art/blockbench/guardia_partes.mtl": "personajes-blender",
+  "art/blockbench/guardia_partes.obj": "personajes-blender",
+  "art/blockbench/ninja.glb": "personajes-blender",
+  "art/blockbench/ninja.mtl": "personajes-blender",
+  "art/blockbench/ninja.obj": "personajes-blender",
+  "art/blockbench/ninja_partes.blend": "personajes-blender",
+  "art/blockbench/ninja_partes.mtl": "personajes-blender",
+  "art/blockbench/ninja_partes.obj": "personajes-blender",
   "art/botin.blend": "codigo-de-arte",
   "art/botin/importar.py": "codigo-de-arte",
   "art/botin/nuevas.py": "codigo-de-arte",
   "art/botin/primitivas.gd": "codigo-de-arte",
   "art/botin/remodelar.py": "codigo-de-arte",
   "art/catalogo.py": "codigo-de-arte",
+  "art/characters/animar.py": "codigo-de-arte",
   "art/characters/armadura.py": "codigo-de-arte",
   "art/characters/guardia.py": "codigo-de-arte",
   "art/characters/kit.py": "codigo-de-arte",
+  "art/characters/mejorar_partes.py": "codigo-de-arte",
   "art/characters/ninja.py": "codigo-de-arte",
   "art/characters/rig.py": "codigo-de-arte",
   "art/characters/sheet.py": "codigo-de-arte",
@@ -1068,13 +1082,13 @@ window.PROCEDENCIA = {
   "scenes/wall.gdshader": "shaders-propios"
  },
  "por_licencia": {
-  "LicenseRef-Propia": 570,
+  "LicenseRef-Propia": 584,
   "LicenseRef-Sin-Documentar": 12,
   "OFL-1.1": 6,
   "CC-BY-3.0": 2,
   "CC0-1.0": 125
  },
  "sin_regla": [],
- "total": 715,
+ "total": 729,
  "sin_documentar": 12
 };

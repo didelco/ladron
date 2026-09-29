@@ -48,7 +48,7 @@ func _init() -> void:
 		if r.has("licencia"):
 			_licence("regla %d" % (i + 1), r["licencia"], allowed, licences)
 
-	_alternatives(cols)
+	_proposals()
 	_references()
 
 	var ignore: Array = data.get("ignorar", [])
@@ -105,58 +105,32 @@ func _licence(where: String, lid: String, allowed: Array, licences: Dictionary) 
 		check(false, "%s: licencia «%s» no permitida" % [where, lid])
 
 
-## Las alternativas de terceros (docs/data/alternativas/*.json): lo mismo que valida tools/procedencia.py.
-## Los ficheros que empiezan por «_» son plantillas: se validan pero sus ids no chocan con los reales.
-func _alternatives(cols: Dictionary) -> void:
-	var d := DirAccess.open("res://docs/data/alternativas")
-	if d == null:
+## Las propuestas de assets (docs/data/propuestas.json): lo mismo que valida tools/procedencia.py.
+func _proposals() -> void:
+	var path := "res://docs/data/propuestas.json"
+	if not FileAccess.file_exists(path):
+		return
+	var props = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if typeof(props) != TYPE_ARRAY:
+		check(false, "propuestas.json: no es una lista")
 		return
 	var ids := {}
-	var keys := {}
-	var names := Array(d.get_files())
-	names.sort()
-	for fn in names:
-		var fname: String = fn
-		if not fname.ends_with(".json"):
+	for r in props:
+		if typeof(r) != TYPE_DICTIONARY:
+			check(false, "propuestas.json: una propuesta no es un objeto")
 			continue
-		var w := "alternativas/" + fname
-		var tpl := fname.begins_with("_")
-		var my_ids: Dictionary = {} if tpl else ids
-		var my_keys: Dictionary = {} if tpl else keys
-		var doc = JSON.parse_string(FileAccess.get_file_as_string("res://docs/data/alternativas/" + fname))
-		if typeof(doc) != TYPE_DICTIONARY or typeof(doc.get("grupos")) != TYPE_ARRAY:
-			check(false, "%s: JSON no válido o sin lista 'grupos'" % w)
-			continue
-		check(str(doc.get("categoria", "")) != "", "%s: sin categoria" % w)
-		for g in doc["grupos"]:
-			if typeof(g) != TYPE_DICTIONARY:
-				check(false, "%s: un grupo no es un objeto" % w)
-				continue
-			var col := str(g.get("coleccion", ""))
-			var gw := "%s, grupo %s" % [w, col]
-			check(cols.has(col), "%s: colección desconocida" % gw)
-			check(str(g.get("que_es", "")) != "", "%s: sin que_es" % gw)
-			var key := str(g.get("id", col)) if str(g.get("id", "")) != "" else col
-			check(not my_keys.has(key), "%s: grupo repetido «%s»" % [gw, key])
-			my_keys[key] = true
-			if typeof(g.get("alternativas")) != TYPE_ARRAY:
-				check(false, "%s: falta la lista alternativas" % gw)
-				continue
-			for a in g["alternativas"]:
-				if typeof(a) != TYPE_DICTIONARY:
-					check(false, "%s: una alternativa no es un objeto" % gw)
-					continue
-				var aid := str(a.get("id", ""))
-				var aw := "%s, alternativa %s" % [gw, aid]
-				for k in ["id", "nombre", "url", "autor", "licencia", "cubre"]:
-					check(typeof(a.get(k)) == TYPE_STRING and str(a[k]).strip_edges() != "", "%s: falta %s" % [aw, k])
-				check(aid != "nuestra", "%s: id reservado" % aw)
-				check(not my_ids.has(aid), "%s: id repetido" % aw)
-				my_ids[aid] = true
-				check(str(a.get("url", "")).begins_with("http"), "%s: url debe ser http(s)" % aw)
-				check(typeof(a.get("atribucion")) == TYPE_BOOL, "%s: atribucion debe ser booleano" % aw)
-				var e = a.get("encaje")
-				check((typeof(e) == TYPE_FLOAT or typeof(e) == TYPE_INT) and e >= 1 and e <= 5 and e == int(e), "%s: encaje de 1 a 5" % aw)
+		var w := "propuestas.json, %s" % str(r.get("id", "?"))
+		for k in ["id", "nombre", "pack", "url", "tipo", "licencia", "para", "estado"]:
+			check(typeof(r.get(k)) == TYPE_STRING and str(r[k]).strip_edges() != "", "%s: falta %s" % [w, k])
+		check(not ids.has(r.get("id")), "%s: id repetido" % w)
+		ids[r.get("id")] = true
+		check(str(r.get("url", "")).begins_with("http://") or str(r.get("url", "")).begins_with("https://"), "%s: url debe ser http(s)" % w)
+		for k in ["pack_url", "preview_url"]:
+			var u := str(r.get(k, ""))
+			check(u == "" or u.begins_with("http://") or u.begins_with("https://"), "%s: %s debe ser http(s) o vacío" % [w, k])
+		check(str(r.get("tipo", "")) in ["modelo", "sonido", "imagen", "otro"], "%s: tipo no válido" % w)
+		check(str(r.get("estado", "")) in ["propuesto", "aceptado", "incorporado", "descartado"], "%s: estado no válido" % w)
+		check(typeof(r.get("atribucion")) == TYPE_BOOL, "%s: atribucion debe ser booleano" % w)
 
 
 ## Las referencias guardadas (docs/data/referencias.json): lo mismo que valida tools/procedencia.py.
@@ -180,10 +154,22 @@ func _references() -> void:
 		check(not ids.has(r.get("id")), "%s: id repetido" % w)
 		ids[r.get("id")] = true
 		check(str(r.get("url", "")).begins_with("http://") or str(r.get("url", "")).begins_with("https://"), "%s: url debe ser http(s)" % w)
-		check(str(r.get("tipo", "")) in ["icons", "modelos", "audio", "arte", "codigo", "articulo", "otro"], "%s: tipo no válido" % w)
+		check(str(r.get("tipo", "")) in ["icons", "modelos", "audio", "arte", "codigo", "articulo", "texturas", "fuentes", "voz", "otro"], "%s: tipo no válido" % w)
 		check(str(r.get("estado", "")) in ["guardada", "evaluada", "usada", "descartada"], "%s: estado no válido" % w)
 		check(re.search(str(r.get("fecha", ""))) != null, "%s: fecha debe ser YYYY-MM-DD" % w)
 		check(typeof(r.get("etiquetas", [])) == TYPE_ARRAY, "%s: etiquetas debe ser una lista" % w)
+		var its = r.get("items", [])
+		check(typeof(its) == TYPE_ARRAY, "%s: items debe ser una lista" % w)
+		if typeof(its) == TYPE_ARRAY:
+			for it in its:
+				if typeof(it) != TYPE_DICTIONARY:
+					check(false, "%s: un item no es un objeto" % w)
+					continue
+				for k in ["nombre", "para"]:
+					check(typeof(it.get(k)) == TYPE_STRING and str(it[k]).strip_edges() != "", "%s: item sin %s" % [w, k])
+				if it.has("url"):
+					check(str(it["url"]).begins_with("http://") or str(it["url"]).begins_with("https://"), "%s: url de item debe ser http(s)" % w)
+				check(typeof(it.get("ya_lo_usamos", false)) == TYPE_BOOL, "%s: ya_lo_usamos debe ser booleano" % w)
 
 
 func _as_array(v) -> Array:

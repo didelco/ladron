@@ -332,11 +332,21 @@ func _init() -> void:
 		await frames(W)
 		check(m.sound_on == was, "... y otra vez, como estaba")
 	await each(BACKS, "ajustes · sonido", func(): m.options.show("title", "sound"), func(): return m.phase == "settings" and m.options.settings_page == "", "vuelve a los ajustes")
-	var assets := func() -> void:
-		m.options.settings_from = "title"
-		m.options.show_assets("loot", 0)
-	await each(ACCEPTS, "recursos", assets, func(): return m.phase == "assets" and m.options.assets_index == 1, "SIGUIENTE: la pieza siguiente")
-	await each(BACKS, "recursos", assets, func(): return m.phase == "settings", "vuelve a los ajustes")
+	# La página de ajustes tiene SONIDO, PANTALLA, CONTROLES, OPCIONES y VOLVER, por ese orden.
+	m.options.show("title")
+	await frames(W)
+	var main_rows: Array = m.hud._panel_box.find_children("*", "Button", true, false).map(func(b): return (b as Button).text)
+	check(main_rows == [Text.t("SETTINGS_SOUND_PAGE"), Text.t("SETTINGS_SCREEN_PAGE"), Text.t("SETTINGS_CONTROLS_PAGE"), Text.t("SETTINGS_OPTIONS_PAGE"), Text.t("MENU_BACK")], "ajustes: sonido, pantalla, controles, opciones y volver: %s" % [main_rows])
+	# Opciones: la megafonía (y el panel de IA) cambian con aceptar; atrás vuelve a los ajustes.
+	for k in ACCEPTS:
+		m.options.show("title", "options")
+		await frames(W)
+		m.options.set_megaphone_mode("both")
+		await hit(k)
+		await frames(W)
+		check(m.megaphone_mode == "text" and m.phase == "settings", "ajustes · opciones · %s: la primera línea es la megafonía y cambia una vez" % name_of(k))
+	await each(BACKS, "ajustes · opciones", func(): m.options.show("title", "options"), func(): return m.phase == "settings" and m.options.settings_page == "", "vuelve a los ajustes")
+	await each(BACKS, "ajustes · controles", func(): m.options.show("title", "pads"), func(): return m.phase == "settings" and m.options.settings_page == "", "vuelve a los ajustes")
 
 	# --- La historia (el cuento del principio) ----------------------------------------------------
 	var tale := func() -> void: m.briefing.show_prologue(0)

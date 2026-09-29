@@ -1,6 +1,6 @@
 window.CODIGO = {
  "logic/minigame.gd": {
-  "doc": "A job done with the hands, in a little box by the thief (MinigameBox), as in Among Us: the world goes on meanwhile, so the longer it takes, the longer you stand there to be seen.  This is what they all share: the keys (only presses count, and what was already held when it opened is not a press), the time, the level, how much the hands shake, being held off by someone else's part, and letting go with the roll key (B) — only that one, so a brush of the stick never throws a job away. Each kind is a script of its own in logic/minigames/, named as the kind, with its look in scenes/minigame_views/ (MinigameView):  of the action kind, which cannot be failed, only done slowly: \"lockpick\" (LockpickGame), \"wires\" (WiresGame), \"steady\" (SteadyGame), \"squeeze\" (SqueezeGame: wriggling into a hideout); of the enduring kind, which can be failed: \"balance\" (BalanceGame: posing as a statue on one foot), \"sneeze\" (SneezeGame: holding in a sneeze while hiding, which never ends while you stay in); and one just for fun, which never ends: \"arcade\" (ArcadeGame: pong on the arcade machine, Arcades).  A new one: logic/minigames/<kind>.gd extending this (its _setup and _play, and progress if it is not counted in steps), scenes/minigame_views/<kind>.gd extending MinigameView, a line GAME_HOW_<KIND> in locale/texts.csv, and whoever starts it calls Minigame.make(\"<kind>\", …). Nothing else needs to know it exists.  Each comes in three levels (level: 0 easy .. 2 hard, level_now()), and frightened hands shake (tremble, 0..1, from how alarmed the guards are).",
+  "doc": "A job done with the hands, in a little box by the thief (MinigameBox), as in Among Us: the world goes on meanwhile, so the longer it takes, the longer you stand there to be seen.  This is what they all share: the keys (only presses count, and what was already held when it opened is not a press), the time, the level, how much the hands shake, being held off by someone else's part, and letting go with the roll key (B) — only that one, so a brush of the stick never throws a job away. Each kind is a script of its own in logic/minigames/, named as the kind, with its look in scenes/minigame_views/ (MinigameView):  of the action kind, which cannot be failed, only done slowly: \"lockpick\" (LockpickGame), \"wires\" (WiresGame), \"steady\" (SteadyGame), \"squeeze\" (SqueezeGame: a shove into a hideout); of the enduring kind, which can be failed: \"balance\" (BalanceGame: posing as a statue on one foot), \"sneeze\" (SneezeGame: holding in a sneeze while hiding, which never ends while you stay in); and one just for fun, which never ends: \"arcade\" (ArcadeGame: pong on the arcade machine, Arcades).  A new one: logic/minigames/<kind>.gd extending this (its _setup and _play, and progress if it is not counted in steps), scenes/minigame_views/<kind>.gd extending MinigameView, a line GAME_HOW_<KIND> in locale/texts.csv, and whoever starts it calls Minigame.make(\"<kind>\", …). Nothing else needs to know it exists.  Each comes in three levels (level: 0 easy .. 2 hard, level_now()), and frightened hands shake (tremble, 0..1, from how alarmed the guards are).",
   "consts": {
    "SCRIPTS": {
     "value": "\"res://logic/minigames/%s.gd\"",
@@ -270,37 +270,42 @@ window.CODIGO = {
   }
  },
  "logic/minigames/squeeze.gd": {
-  "doc": "Getting into a hideout (Hideouts): the thief wriggles in, left, right, left, right, sinking a little deeper with each wriggle. Each one counts only once the body has settled from the last (SETTLE_S): mashing gets you nowhere faster, and a wriggle too soon, or to the same side twice, gets you stuck a moment. It cannot be failed, only done slowly: from about two seconds calm and loose to about five in a tight fit with the guards alarmed — and all that time you are out there to be seen.  steps_ is how tight the fit is: 1 for one more wriggle (Hideouts.TIGHT).",
+  "doc": "Getting into a hideout (Hideouts): one shove with the action key and the thief sinks in. Short, and the risk is the guard, not the keys: a shove made while a guard looks (watched) gets stuck and sinks slowly, so it pays to pick the moment the light has passed. It cannot be failed, only done slowly, and all that time you are out there to be seen.  By level (what the ESCONDITE tests of the dojo teach): easy   one shove, and in. Nobody looks. medium one shove, but a lantern sweeps the place: shove between sweeps. hard   two shoves (half in, then all the way), with the lantern's gaps shorter. Pick both moments. In a heist the lantern is the real guards (watched, set every frame by whoever runs it); in the dojo, where there are none, a lantern of its own goes round (LANTERN_S and LIT_LEVEL), so the same lesson is there.  steps_ is how tight the fit is: 1 for a little longer to sink (Hideouts.TIGHT).",
   "consts": {
-   "WRIGGLES_LEVEL": {
-    "value": "[7, 8, 9]",
-    "note": "Wriggles it takes to get in, by level, before the fit.",
-    "line": 14
-   },
-   "SETTLE_S": {
-    "value": "0.32",
-    "note": "After a wriggle, the body settles this long before the next one counts, and at full tremble this much longer.",
-    "line": 17
-   },
-   "SHAKE_SETTLE": {
-    "value": "0.06",
-    "note": "After a wriggle, the body settles this long before the next one counts, and at full tremble this much longer.",
-    "line": 18
-   },
-   "STUCK_S": {
-    "value": "0.35",
-    "note": "Too soon, or the same side twice: stuck this long.",
-    "line": 20
-   },
-   "LEFT": {
-    "value": "3",
-    "note": "Left and right, as DIRS has them.",
+   "SHOVES_LEVEL": {
+    "value": "[1, 1, 2]",
+    "note": "Shoves it takes to get in, by level.",
     "line": 22
    },
-   "RIGHT": {
-    "value": "1",
-    "note": "Left and right, as DIRS has them.",
-    "line": 23
+   "SINK_LEVEL": {
+    "value": "[0.7, 0.8, 0.5]",
+    "note": "Seconds sinking after a shove, by level (two shoves on the hard one, each half the way), and this much more for a tight fit, per shove.",
+    "line": 25
+   },
+   "TIGHT_SINK": {
+    "value": "0.2",
+    "note": "Seconds sinking after a shove, by level (two shoves on the hard one, each half the way), and this much more for a tight fit, per shove.",
+    "line": 26
+   },
+   "SHAKE_SINK": {
+    "value": "0.15",
+    "note": "Shaking hands sink this much longer at full tremble.",
+    "line": 28
+   },
+   "WATCHED_SLOW": {
+    "value": "2.0",
+    "note": "Shoved while watched: it sinks this many times slower.",
+    "line": 30
+   },
+   "LANTERN_S": {
+    "value": "2.2",
+    "note": "The dojo's lantern: seconds for a round, and the share of it that lights the place, by level (none on the easy one).",
+    "line": 33
+   },
+   "LIT_LEVEL": {
+    "value": "[0.0, 0.35, 0.4]",
+    "note": "The dojo's lantern: seconds for a round, and the share of it that lights the place, by level (none on the easy one).",
+    "line": 34
    }
   }
  },
@@ -365,7 +370,7 @@ window.CODIGO = {
   }
  },
  "logic/hideouts.gd": {
-  "doc": "Places to hide in. Next to one, the action key gets you in; any direction gets you out, onto the free floor that way.  the big pieces (Museum.big_pieces) you fit inside: the sarcophagus, the Trojan horse, the mammoth (under its coat), the hollow log and the little car on its stand; pieces of furniture on a case tile of their own (pieces), one theme each: a retro fridge and a cardboard box (modern), a legionary's armour (ancient), a confessional and a chest (middle ages), a giant dinosaur egg (prehistory), a giant tortoise shell (nature); a suit of armour still standing (Props): you step inside it.  Whatever looks like a place to hide is one: every big piece and every suit of armour standing in the museum, and every piece of furniture. What keeps it from being too easy is how few of them there are, far apart from one another: the generator stands only so many big pieces to hide in (MapGen), the props only so many suits of armour (Props.place), and each night adds furniture, and empty pedestals to pose on (Plinths), up to the museum's share (places, spread). A saved map keeps what it stood by hand. Getting in takes a moment of wriggling (Minigame \"squeeze\", start), two to five seconds out in the open — once the nights have minigames (Heist.minigames); before that, the action key gets you in at once.  Inside, you make no sound and no guard sees you. Same deal as the statue (Plinths): it only works unseen. Get in in front of a guard and it remembers (Guard.knows) and comes straight for you, and once beside it pulls you out; a guard that did not see you walks right past. A suit of armour knocked over with you inside it tips you out onto the floor.",
+  "doc": "Places to hide in. Next to one, the action key gets you in; any direction gets you out, onto the free floor that way.  the big pieces (Museum.big_pieces) you fit inside: the sarcophagus, the Trojan horse, the mammoth (under its coat), the hollow log and the little car on its stand; pieces of furniture on a case tile of their own (pieces), one theme each: a retro fridge and a cardboard box (modern), a legionary's armour (ancient), a confessional and a chest (middle ages), a giant dinosaur egg (prehistory), a giant tortoise shell (nature); a suit of armour still standing (Props): you step inside it.  Whatever looks like a place to hide is one: every big piece and every suit of armour standing in the museum, and every piece of furniture. What keeps it from being too easy is how few of them there are, far apart from one another: the generator stands only so many big pieces to hide in (MapGen), the props only so many suits of armour (Props.place), and each night adds furniture, and empty pedestals to pose on (Plinths), up to the museum's share (places, spread). A saved map keeps what it stood by hand. Getting in takes a shove or two (Minigame \"squeeze\", start), one to three seconds out in the open — once the nights have minigames (Heist.minigames); before that, the action key gets you in at once.  Inside, you make no sound and no guard sees you. Same deal as the statue (Plinths): it only works unseen. Get in in front of a guard and it remembers (Guard.knows) and comes straight for you, and once beside it pulls you out; a guard that did not see you walks right past. A suit of armour knocked over with you inside it tips you out onto the floor.",
   "consts": {
    "REACH": {
     "value": "1.0",
@@ -414,7 +419,7 @@ window.CODIGO = {
    },
    "TIGHT": {
     "value": "{\"box\": 1, \"egg\": 1, \"chest\": 1, \"shell\": 1, \"armour\": 1, \"legionary\": 1}",
-    "note": "How tight a squeeze each is: that many more wriggles to get in (SqueezeGame); the roomy ones take none.",
+    "note": "How tight a squeeze each is: a little slower to sink in (SqueezeGame); the roomy ones are not.",
     "line": 64
    }
   }

@@ -124,33 +124,18 @@ func balance(late: float, pressure: float, seed_: int, limit: float, level := 1,
 	return t
 
 
-## Seconds to wriggle into a hideout: the next side `react` seconds after the
-## body settles (the masher, every < 0 aside, presses a side every `every`
-## seconds whatever; wrong_every: every so many wriggles, the same side twice).
-func squeeze(react: float, tremble: float, level := 1, tight := 0, every := -1.0, wrong_every := 0) -> float:
-	var g := Minigame.make("squeeze", "hideout", tight, {}, 3, level) as SqueezeGame
+## Seconds to get into a hideout: the shove `react` seconds after it could
+## be made (`wait`: only when the place is dark, at the dojo's own lantern).
+func squeeze(react: float, tremble: float, level := 1, tight := 0, wait := false, what := "hideout") -> float:
+	var g := Minigame.make("squeeze", what, tight, {}, 3, level) as SqueezeGame
 	g.tremble = tremble
 	var since := 0.0
-	var last := 0.0
 	var held := false
-	var n := 0
 	while not g.done and g.t < 30.0:
-		var press := false
-		if every > 0.0:
-			press = g.t - last >= every
-		else:
-			since = since + DT if g.ready() else 0.0
-			press = g.ready() and since >= react
-		var key := ""
-		if press and not held:
-			last = g.t
-			var side: int = g.side if g.side >= 0 else SqueezeGame.RIGHT
-			if wrong_every > 0 and n % wrong_every == wrong_every - 1:
-				side = SqueezeGame.LEFT if side == SqueezeGame.RIGHT else SqueezeGame.RIGHT
-			key = Minigame.DIRS[side]
-			n += 1
-		held = press and not held
-		g.tick({key: true} if key != "" else {}, DT)
+		since = since + DT if g.ready() and not (wait and g.watched) else 0.0
+		var press := g.ready() and since >= react
+		g.tick({"action": true} if press and not held else {}, DT)
+		held = press
 	return g.t
 
 
@@ -292,33 +277,57 @@ func _init() -> void:
 
 	print("Colarse en un escondite")
 	var quickest := squeeze(0.0, 0.0, 0)
-	var usual := squeeze(0.15, 0.0, 1)
-	var worst := squeeze(0.15, 1.0, 2, 1)
-	var fumbling := squeeze(0.15, 0.0, 1, 0, -1.0, 4)
-	check(quickest >= 1.9 and quickest <= 2.3, "lo más rápido posible, fácil y holgado: %.1f s" % quickest)
-	check(usual >= 2.3 and usual <= 4.0, "normal: %.1f s" % usual)
-	check(worst > usual and worst <= 5.2, "difícil, apretado y temblando: %.1f s" % worst)
-	check(fumbling > usual, "equivocándose de lado de vez en cuando: %.1f s" % fumbling)
-	check(squeeze(0.15, 0.0, 1, 1) > usual, "apretado cuesta más")
-	check(squeeze(0.15, 1.0, 1) > usual, "con las manos temblando cuesta más")
-	var mash := squeeze(0.0, 0.0, 1, 0, 0.1)
-	check(mash > usual, "machacar izquierda-derecha no sirve: %.1f s frente a %.1f s con ritmo" % [mash, usual])
-	var sq := Minigame.make("squeeze", "hideout", 0, {}, 3, 1) as SqueezeGame
-	sq.tick({"left": true}, DT)
-	check(sq.step == 1 and sq.side == SqueezeGame.RIGHT, "cualquier lado para empezar; luego toca el otro")
-	sq.settle = 0.0
+	var usual := squeeze(0.2, 0.0, 1, 0, true, "bench")
+	var hardest := squeeze(0.2, 0.0, 2, 1, true, "bench")
+	var worst := squeeze(0.2, 1.0, 2, 1, true, "bench")
+	check(quickest >= 0.6 and quickest <= 1.0, "lo más rápido posible, fácil: %.1f s" % quickest)
+	check(squeeze(0.3, 0.0, 0) <= 2.0, "fácil: 2 s como mucho: %.1f s" % squeeze(0.3, 0.0, 0))
+	check(usual <= 3.0, "medio, esperando a que pase la linterna: %.1f s" % usual)
+	check(hardest > usual and hardest <= 3.0, "difícil y apretado, esperando dos veces: %.1f s (3 s como mucho)" % hardest)
+	check(worst >= hardest and worst <= 3.6, "difícil, apretado y temblando: %.1f s" % worst)
+	check(squeeze(0.2, 0.0, 1, 1) > squeeze(0.2, 0.0, 1), "apretado cuesta más")
+	check(squeeze(0.2, 1.0, 1) > squeeze(0.2, 0.0, 1), "con las manos temblando cuesta más")
+	var sq := Minigame.make("squeeze", "hideout", 0, {"action": true}, 3, 1) as SqueezeGame
+	sq.tick({"action": true}, DT)
+	check(sq.sink <= 0.0 and sq.step == 0 and sq.events.is_empty(), "la E que abrió el juego no empuja")
 	sq.tick({}, DT)
-	sq.tick({"left": true}, DT)
-	check(sq.step == 1 and sq.lock > 0.0 and sq.events.has("slip"), "el mismo lado dos veces: atascado un momento")
-	check(sq.tick({"cancel": true}, DT) == "quit", "B (rodar) lo deja")
-	# The stick is never quite level: right with a touch of down is right.
-	var tilted := Minigame.make("squeeze", "hideout", 0, {}, 3, 1) as SqueezeGame
-	tilted.tick({"right": true, "down": true}, DT)
-	check(tilted.step == 1 and tilted.side == SqueezeGame.LEFT, "derecha con algo de abajo (el stick torcido) cuenta como derecha")
-	tilted.settle = 0.0
-	tilted.tick({}, DT)
-	tilted.tick({"up": true}, DT)
-	check(tilted.step == 1 and tilted.lock == 0.0, "arriba o abajo solos no cuentan ni atascan")
+	sq.tick({"action": true}, DT)
+	check(sq.sink > 0.0 and sq.events.has("pin") and not sq.slow, "empujar: empieza a hundirse")
+	var was := sq.sink
+	sq.tick({}, DT)
+	sq.tick({"action": true}, DT)
+	check(sq.sink < was and sq.events.is_empty(), "machacar no acelera: hundiéndose no cuenta")
+	for i in 60:
+		sq.tick({}, DT)
+	check(sq.done and sq.step == sq.steps and sq.progress() == 1.0, "una sola vez y dentro (medio)")
+	# Watched, it sinks slowly.
+	var seen := Minigame.make("squeeze", "hideout", 0, {}, 3, 1) as SqueezeGame
+	var free := Minigame.make("squeeze", "hideout", 0, {}, 3, 1) as SqueezeGame
+	seen.watched = true
+	seen.tick({"action": true}, DT)
+	free.tick({"action": true}, DT)
+	check(seen.sink > free.sink * 1.8 and seen.slow and seen.events.has("slip"), "empujar a la vista: se hunde a cámara lenta (y suena mal)")
+	# The dojo's own lantern: none on the easy one, on part of the round on the rest.
+	var lamp := [0, 0, 0]
+	for lv in 3:
+		var b := Minigame.make("squeeze", "bench", 0, {}, 3, lv) as SqueezeGame
+		for i in 220:
+			b.tick({}, DT)
+			lamp[lv] += 1 if b.watched else 0
+	check(lamp[0] == 0 and lamp[1] > 40 and lamp[2] > lamp[1] and lamp[2] < 200, "la linterna del dojo: ninguna en fácil, más en difícil (%s)" % str(lamp))
+	var hard := Minigame.make("squeeze", "hideout", 1, {}, 3, 2) as SqueezeGame
+	check(hard.steps == 2 and Minigame.make("squeeze", "hideout", 0, {}, 3, 0).steps == 1, "difícil: dos empujones; fácil y medio, uno")
+	hard.tick({"action": true}, DT)
+	for i in 80:
+		hard.tick({}, DT)
+	check(not hard.done and hard.step == 1 and hard.progress() == 0.5 and hard.ready(), "difícil: a mitad de camino toca otro empujón")
+	check(hard.tick({"cancel": true}, DT) == "quit", "B (rodar) lo deja")
+	# Only the action key: a direction never does anything.
+	var dirs := Minigame.make("squeeze", "hideout", 0, {}, 3, 1) as SqueezeGame
+	for k in ["left", "right", "up", "down"]:
+		dirs.tick({k: true}, DT)
+		dirs.tick({}, DT)
+	check(dirs.sink <= 0.0 and dirs.step == 0 and dirs.lock == 0.0, "las direcciones no empujan ni atascan")
 
 	print("Minijuegos: uno por fichero")
 	for k in ["lockpick", "wires", "steady", "balance", "squeeze"]:

@@ -73,7 +73,7 @@ func _run() -> void:
 		await _models()
 	if _wants("objects"):
 		await _objects()
-	if _wants("shots") or _wants("city") or _wants("assets"):
+	if _wants("shots") or _wants("city"):
 		_save_shots()
 	print("docs: hecho")
 	quit()
@@ -220,11 +220,11 @@ func _shots() -> void:
 	await _shot("menu_elegir_mandos", "menus", "Elegir mandos", "Cada ladrón pulsa en su mando o en su mitad del teclado.")
 
 	# Settings.
-	for page in ["", "sound", "screen", "pads"]:
+	for page in ["", "sound", "screen", "pads", "options"]:
 		main.options.show("title", page)
 		await _wait(1.2)
 		await _shot("ajustes_" + (page if page != "" else "inicio"), "ajustes",
-			{"": "Ajustes", "sound": "Ajustes: sonido", "screen": "Ajustes: pantalla", "pads": "Ajustes: mandos y controles"}[page])
+			{"": "Ajustes", "sound": "Ajustes: sonido", "screen": "Ajustes: pantalla", "pads": "Ajustes: mandos y controles", "options": "Ajustes: opciones"}[page])
 
 	# Before a heist: the tale, the news (the lesson) and the plan; the
 	# lessons' nights and the museums' big jobs.
@@ -301,7 +301,7 @@ func _shots() -> void:
 		["wires", "panel", 19, "Minijuego: los cables", "Desconectar el cuadro de alarma."],
 		["steady", "case", 19, "Minijuego: la ventosa", "Cortar el cristal sin moverse."],
 		["balance", "plinth", 21, "Minijuego: el equilibrio", "Hacerse pasar por estatua sobre un pedestal."],
-		["squeeze", "hideout", 11, "Minijuego: colarse", "Meterse en un escondite, de dos a cinco segundos a la vista."],
+		["squeeze", "hideout", 11, "Minijuego: colarse", "Meterse en un escondite, un empujón, de uno a tres segundos a la vista."],
 		["sneeze", "hideout", 18, "Minijuego: el estornudo", "Escondido, aguantar el estornudo: pulsar cuando el polvo pasa por la barra."],
 		["arcade", "arcade", 21, "Minijuego: la recreativa", "Un pong de broma en la máquina: no se gana nada y los guardias siguen su ronda."]]
 	for g in games:
@@ -465,33 +465,52 @@ func _on_sky(stage: CityStage) -> Image:
 
 # --- Assets --------------------------------------------------------------------------
 
-## The assets page, a picture of each piece and prop on its stand, and the
-## page itself for the characters and the map's marks.
+## A picture of each piece and prop on its stand (the podium, the same one the
+## game shows the loot on), for the assets page of the documentation.
 func _assets() -> void:
 	print("docs: assets")
 	var out := {"piezas": [], "objetos": [], "paginas": []}
-	var loot: Array = main.options.asset_loot()
+	var loot: Array = _asset_loot()
 	for i in loot.size():
-		main.options.show_assets("loot", i)
-		await _wait(0.9)
 		var l: Dictionary = loot[i]
 		var file := "assets/piezas/%02d.webp" % (i + 1)
-		main.podium.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
+		await _podium_shot(file, func() -> void: main.podium.build(l))
 		out.piezas.append({"file": file, "name": l.name, "blurb": l.get("blurb", ""), "shape": l.get("shape", ""), "colour": l.get("colour", ""),
 			"night": i + 1 if i < Story.count() else 0})
-		if i == 0:
-			await _shot("assets_piezas", "assets", "Assets: piezas")
 	for i in Props.KINDS.size():
-		main.options.show_assets("props", i)
-		await _wait(0.9)
 		var file := "assets/objetos/%s.webp" % Props.KINDS[i]
-		main.podium.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
+		await _podium_shot(file, func() -> void:
+			main.podium.build()
+			main.podium.put_node(PropsView.model(Props.KINDS[i]), Color("#b8a888"), 2.0, 0.6))
 		out.objetos.append({"file": file, "kind": Props.KINDS[i], "name": Props.name_of(Props.KINDS[i])})
-	for tab in ["props", "people", "sounds", "map"]:
-		main.options.show_assets(tab, 0)
-		await _wait(1.5)
-		await _shot("assets_" + tab, "assets", "Assets: " + Text.t(main.options.ASSET_TABS[tab]).to_lower())
+	main.podium.drop()
 	_save_json("data/assets.json", out)
+
+
+## Put something on the podium (the same stand the game shows the loot on) and
+## save its picture. Something in the game now and then takes the podium away
+## meanwhile, so it is put again until the picture is there.
+func _podium_shot(file: String, put: Callable) -> void:
+	for attempt in 6:
+		put.call()
+		await _wait(0.9)
+		if main.podium.preview != null:
+			main.podium.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
+			return
+	push_error("docs: no hay manera de sacar " + file)
+
+
+## Every piece there is: each night's, and one of each shape the generative heists make up.
+func _asset_loot() -> Array:
+	var out: Array = []
+	var names := {}
+	for n in range(1, Story.count() + 1):
+		out.append(Story.level(n).loot)
+		names[Story.level(n).loot.name] = true
+	for l in LootGen.samples():
+		if not names.has(l.name):
+			out.append(l)
+	return out
 
 
 ## Each sound the game makes up, as a .wav.

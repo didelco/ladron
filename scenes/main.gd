@@ -261,7 +261,7 @@ func _players_picked(which: String, n: int) -> void:
 ## Out of a game to where it was started from: the editor, if it was a try.
 func _leave_game(to: Callable) -> void:
 	mega_voice.stop()
-	house.dojo_end()
+	house.trial_end()
 	if challenges.testing:
 		challenges.back_to_editor()
 	else:
@@ -279,7 +279,7 @@ func _leave_text() -> String:
 func _quit() -> void:
 	options.save()
 	mega_voice.stop(true)
-	house.dojo_end()
+	house.trial_end()
 	if quit_hook.is_valid():
 		quit_hook.call()
 	else:
@@ -519,7 +519,7 @@ func _start(which: String, n: int, picked := false) -> void:
 ## A real pause: the tree stops, knocked-over props hang in mid-air, until
 ## SEGUIR (or Esc, or P) or the way out to the title.
 func _pause() -> void:
-	house.dojo_end()
+	house.trial_end()
 	_close_map()
 	quit_asking = false
 	phase = "paused"
@@ -753,7 +753,7 @@ func _again() -> void:
 
 ## Where back (Escape, Space, Enter or B: MenuKeys) goes somewhere, and so
 ## sounds.
-const BACK_PHASES := ["menu", "pick", "generative", "challenge", "prologue", "ending", "brief", "paused", "settings", "assets", "caught", "escaped"]
+const BACK_PHASES := ["menu", "pick", "generative", "challenge", "prologue", "ending", "brief", "paused", "settings", "caught", "escaped"]
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -767,7 +767,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if phase == "over":
 		return
 	# A game of the dojo on: Tab leaves it, and at its end the panel takes the keys.
-	if house.dojo_game != null and phase == "playing" and house.dojo_input(event):
+	if house.trial != null and phase == "playing" and house.trial_input(event):
 		get_viewport().set_input_as_handled()
 		return
 	var key: Key = event.keycode if event is InputEventKey and event.pressed and not event.echo else KEY_NONE
@@ -816,8 +816,6 @@ func _unhandled_input(event: InputEvent) -> void:
 				var to := briefing.brief_page + step
 				if to >= 0 and to < briefing.pages().size():
 					briefing.show(to)
-			else:
-				options.show_assets(options.assets_tab, options.assets_index + step)
 
 
 ## What a press does on the screen that is up: MenuKeys says what it means
@@ -846,7 +844,7 @@ func _intent(event: InputEvent) -> String:
 				return "skip"
 	if start:
 		return "accept"
-	if phase in ["brief", "assets"]:
+	if phase == "brief":
 		if key == KEY_Q:
 			return "prev"
 		if what in ["prev", "next"]:
@@ -872,7 +870,6 @@ func _back() -> void:
 			else:
 				_start_playing()
 		"settings": options.back()
-		"assets": options.show(options.settings_from)
 		"caught", "escaped": _leave_game(_way_out())
 
 
@@ -1201,10 +1198,10 @@ func _draw_prompts(dt: float) -> void:
 ## ("hide"), an arcade machine ("arcade"), a room's switch ("switch"), a
 ## prop to push over ("push"). In the band's house, a door next to one
 ## ("door": open it, or shut it if no one is in its way) comes before all but
-## the job. While a test is on in the house (HouseRun.trial_active) only what
-## the test itself needs is offered. {do, at}, or empty for nothing.
+## the job. While a trial is on in the house (HouseRun.trial_active) only what
+## the trial itself needs is offered. {do, at}, or empty for nothing.
 func _action_for(t: Thief) -> Dictionary:
-	# A test on in the house: only what it needs (HouseRun.trial_action).
+	# A trial on in the house: only what it needs (HouseRun.trial_action).
 	if mode == Practice.MODE and house.trial_active():
 		return house.trial_action(t)
 	var job := Heist.game_for(t)
@@ -1214,13 +1211,11 @@ func _action_for(t: Thief) -> Dictionary:
 		var door := Den.door_near(Vector2i(int(floor(t.x)), int(floor(t.y))))
 		if door != "" and Den.can_toggle(door, house.band_points()):
 			return {"do": "door", "at": door}
-		var bench_act := Practice.bench_action(Vector2(t.x, t.y), house.bench, players)
-		if not bench_act.is_empty():
-			return {"do": "bench", "at": bench_act}
-		if house.dojo_game == null and house.dojo_lock <= 0.0:
-			var start := Practice.game_at(Vector2(t.x, t.y), players)
+		# The start point of a trial next to it (the games, the bench's tests, the circuit).
+		if house.trial_lock <= 0.0:
+			var start := Practice.start_at(Vector2(t.x, t.y), players)
 			if not start.is_empty():
-				return {"do": "game", "id": start.id, "tier": start.tier}
+				return {"do": "trial", "id": start.id, "tier": start.tier}
 	var plinth = Plinths.within_reach(t, thieves)
 	if plinth != null:
 		return {"do": "plinth", "at": plinth}
@@ -1263,12 +1258,12 @@ func _prompt_rows(i: int) -> Array:
 		return [row.call("move", Text.t("HUD_PLINTH_DOWN"))]
 	if p.hiding:
 		return [row.call("move", Text.t("HUD_HIDE_OUT"))]
-	if house.dojo_game != null:
-		return [] if house.dojo_game.finished() else [{"verb": Text.t("HIDEOUT_GAME_LEAVE_KEY")}]
+	# A trial on says how to leave it in its own HUD (TrialView), the same for all.
+	if house.trial != null:
+		return []
 	var act := _action_for(p)
 	match act.get("do", ""):
-		"game": return [row.call("action", DojoGames.start_label(act.id, act.tier))]
-		"bench": return [row.call("action", Text.t("HIDEOUT_BENCH_OPEN"))]
+		"trial": return [row.call("action", DojoTrials.start_label(act.id, act.tier))]
 		"job": return [row.call("action", Text.t({"lockpick": "HUD_GAME_PICK_HINT", "steady": "HUD_GAME_STEADY_HINT"}.get(act.at.kind, "HUD_GAME_WIRES_HINT")))]
 		"plinth": return [row.call("action", Text.t("HUD_PLINTH_HINT"))]
 		"hide": return [row.call("action", Text.t("HUD_HIDE_HINT") % Hideouts.name_of(act.at.kind).to_upper())]

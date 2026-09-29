@@ -66,7 +66,7 @@ window.PANTALLAS = [
             children: [
               {
                 id: "escondite", title: "«El Escondite del Calcetín»", fn: "_tour_practice", phase: "playing",
-                text: "La casa de la banda, en la orilla de abajo, a la derecha junto al último museo y lejos del primero: se elige con las flechas y, al aceptar, la ciudad se funde en la casa, sin plano ni briefing y sin cuenta atrás: al acabar el fundido ya se anda (Den, DenView, Practice). Cuatro salas unidas por puertas (Den.DOORS) por las que se anda con la cámara del juego; se abren y cierran con la acción junto a ellas (ABRIR/CERRAR; correderas, 0,3 s; cerrada es muro y no se cierra con alguien en el umbral), empiezan cerradas y solo se ven las salas con alguien dentro o vistas a través de una puerta abierta: las demás, a oscuras y sin lo que hay dentro (DenView, Den.visible_rooms). Las salas: el salón (sofás, tele, cocina, barra, ventanas con cortinas, pósters y una recreativa que se juega; aquí se aparece y está la puerta de casa), la sala de trofeos (un museo pequeño: 25 puestos vacíos, cinco por museo con su rótulo y su color, que se llenan con la pieza real al robarla (una estrella, no un calcetín), con las estrellas en la placa), el dojo (37 × 13 casillas de tatami con muros de papel de arroz y cinco zonas: exposición con el banco de vitrinas, pasillo de dos casillas con cruce, escondites, laberinto de tres vaivenes y patio; espantapájaros de guardia con linterna que ponen todo el dojo en rojo con una sirena 3 s si ven a alguien, y doce objetos de práctica (vitrinas vacías de GANZÚA, escondites, y cajas de alarma en la pared de CABLES y de PULSO) —cuatro pruebas por tres dificultades, uno por dificultad y prueba, con su rótulo— que se hacen con la acción y su prueba, se señalan con una luz verde y se rearman; lo demás según lo desbloqueado, Practice.ITEMS) y el aseo (bañera con cortina, lavabo, váter y ducha de esquina; solo estético). Estética doméstica y cálida, de luz suave, sin HUD de robo, con el nombre de la sala al entrar y música propia, lenta y lo-fi. Cuatro juegos (PILLA EL CALCETÍN, EQUILIBRIO, BOLOS y AGUANTA ESCONDIDO, según el robo alcanzado; Practice.ITEMS, DojoGames), cada uno con tres puntos de inicio fijos —calcetín en su pedestal, pedestal, círculo o armadura—, uno por dificultad (fácil, medio, difícil: tramos de sus diez niveles, sin hora extra): se empieza acercándose y con la acción (o subiéndose, o escondiéndose), sin menús; se dejan con Tab, la pausa o la puerta y solo guardan el mejor nivel de cada dificultad. Una prueba a la vez: con un juego del dojo o un objeto del banco en marcha, ningún otro objeto (otros puntos de inicio, vitrinas, papeleras, escondites, recreativa, puertas interiores) responde ni enseña su aviso hasta que acaba. No da estrellas, no abre robos y no guarda nada más. Se sale por la pausa o cruzando la puerta del salón.",
+                text: "La casa de la banda, en la orilla de abajo, a la derecha junto al último museo y lejos del primero: se elige con las flechas y, al aceptar, la ciudad se funde en la casa, sin plano ni briefing y sin cuenta atrás: al acabar el fundido ya se anda (Den, DenView, Practice). Cuatro salas unidas por puertas (Den.DOORS) por las que se anda con la cámara del juego; se abren y cierran con la acción junto a ellas (ABRIR/CERRAR; correderas, 0,3 s; cerrada es muro y no se cierra con alguien en el umbral), empiezan cerradas y solo se ven las salas con alguien dentro o vistas a través de una puerta abierta: las demás, a oscuras y sin lo que hay dentro (DenView, Den.visible_rooms). Las salas: el salón (sofás, tele, cocina, barra, ventanas con cortinas, pósters y una recreativa que se juega; aquí se aparece y está la puerta de casa), la sala de trofeos (un museo pequeño: 25 puestos vacíos, cinco por museo con su rótulo y su color, que se llenan con la pieza real al robarla (una estrella, no un calcetín), con las estrellas en la placa), el dojo (nueve bahías de 41 × 28 casillas con muros de papel de arroz, una por prueba y con pasillos de tres casillas entre ellas: arriba, alarma y vitrinas (GANZÚA, CABLES, PULSO); en medio, juegos de habilidad (PILLA EL CALCETÍN, EQUILIBRIO, BOLOS); abajo, sigilo (el CIRCUITO con muros, cajas y tres espantapájaros de guardia que giran su linterna, ESCONDITE y AGUANTA ESCONDIDO); los espantapájaros del circuito, si ven a alguien, ponen todo el dojo en rojo con una sirena 3 s), y las nueve pruebas del dojo, todas iguales: cada una con sus tres puntos de inicio fijos, uno por dificultad y con su objeto rotulado (calcetín en su pedestal, pedestal, círculo, armadura, vitrina, mueble, caja de alarma en la pared), según lo desbloqueado (Practice, DojoTrials.TABLE) y el aseo (bañera con cortina, lavabo, váter y ducha de esquina; solo estético). Estética doméstica y cálida, de luz suave, sin HUD de robo, con el nombre de la sala al entrar y música propia, lenta y lo-fi. Se empieza acercándose y con la acción (o subiéndose, o escondiéndose), sin menús; el HUD es el mismo en todas (nombre y dificultad, nivel o porcentaje, MEJOR, reloj y TAB: SALIR) y el final también: un panel con el resultado, la mejor marca de esa dificultad y de esa banda y las opciones SEGUIR (la siguiente dificultad) / OTRA VEZ / SALIR como botones de menú, con una elegida (SEGUIR tras ganar, OTRA VEZ tras perder) y flechas, WASD, cruceta, stick, ratón y aceptar / atrás como en todos los menús. Los juegos son tramos de diez niveles (fácil, medio, difícil); las pruebas del banco y el circuito, una tirada por dificultad con su reloj; se guarda el mejor nivel o el mejor tiempo (Practice.ITEMS, DojoTrials). Una prueba a la vez: con una en marcha (o su panel), ningún otro objeto de la casa responde ni enseña su aviso hasta que acaba. No da estrellas, no abre robos y no guarda nada más. Se sale por la pausa o cruzando la puerta del salón.",
                 options: [
                   { key: "PRACTICE_LEAVE", text: "Desde la pausa, o cruzando la puerta de casa: vuelve a la ciudad, con la casita elegida.", to: "ciudad" },
                 ],
@@ -202,12 +202,10 @@ window.PANTALLAS = [
         text: "Desde el título o desde la pausa. Cada línea es un ajuste: A, E, el punto o clic lo cambia, ← y → lo bajan y suben. Cada cambio se guarda en user://settings.cfg.",
         shots: ["ajustes_inicio"],
         options: [
-          { key: "SETTINGS_MEGAPHONE", text: "La megafonía del museo, con cuatro valores que cambian en este orden: CARTEL Y SONIDO (por defecto: rótulo y voz), SOLO CARTEL (rótulo, sin voz), SOLO SONIDO (voz, sin rótulo; la frase sin audio no se ve ni suena) y NO." },
-          { key: "SETTINGS_IA", text: "Enseña lo que piensa cada guardia (Laya o las reglas de reserva)." },
           { key: "SETTINGS_SOUND_PAGE", to: "ajustes_sonido" },
           { key: "SETTINGS_SCREEN_PAGE", to: "ajustes_pantalla" },
-          { key: "SETTINGS_PADS_PAGE", to: "ajustes_controles" },
-          { key: "SETTINGS_ASSETS_PAGE", to: "assets_juego" },
+          { key: "SETTINGS_CONTROLS_PAGE", to: "ajustes_controles" },
+          { key: "SETTINGS_OPTIONS_PAGE", to: "ajustes_opciones" },
           { key: "MENU_BACK", text: "Al título o a la pausa, según de dónde se vino." },
         ],
         children: [
@@ -236,7 +234,7 @@ window.PANTALLAS = [
             ],
           },
           {
-            id: "ajustes_controles", title: "SETTINGS_PADS_TITLE", fn: "_show_settings", phase: "settings",
+            id: "ajustes_controles", title: "SETTINGS_CONTROLS_TITLE", fn: "_show_settings", phase: "settings",
             text: "Los mandos conectados, la vibración, la zona muerta y la tabla de controles (teclado izquierdo, derecho y mando).",
             shots: ["ajustes_pads"],
             options: [
@@ -247,16 +245,11 @@ window.PANTALLAS = [
             ],
           },
           {
-            id: "assets_juego", title: "ASSETS_TITLE", fn: "_show_assets", phase: "assets",
-            text: "Todo lo que forma el juego, para mirarlo dentro de él. Esta documentación tiene la misma página fuera del juego: ver Assets.",
-            shots: ["assets_piezas", "assets_people", "assets_props", "assets_sounds", "assets_map"],
+            id: "ajustes_opciones", title: "SETTINGS_OPTIONS_TITLE", fn: "_show_settings", phase: "settings",
+            text: "Lo demás: la megafonía y el panel de la IA.", shots: ["ajustes_options"],
             options: [
-              { key: "ASSETS_TAB_LOOT", text: "Cada pieza a robar en su peana.", doc: "piezas" },
-              { key: "ASSETS_TAB_PEOPLE", text: "Ladrones y guardias en sus dioramas.", doc: "personajes" },
-              { key: "ASSETS_TAB_PROPS", text: "Los objetos que se caen.", doc: "objetos/sin" },
-              { key: "ASSETS_TAB_SOUNDS", text: "Cada sonido, con un botón para oírlo.", doc: "sonidos" },
-              { key: "ASSETS_TAB_MAP", text: "La leyenda del mapa y las marcas de los guardias." },
-              { key: "MENU_PREVIOUS" }, { key: "MENU_NEXT" },
+              { key: "SETTINGS_MEGAPHONE", text: "La megafonía del museo, con cuatro valores que cambian en este orden: CARTEL Y SONIDO (por defecto: rótulo y voz), SOLO CARTEL (rótulo, sin voz), SOLO SONIDO (voz, sin rótulo; la frase sin audio no se ve ni suena) y NO." },
+              { key: "SETTINGS_IA", text: "Enseña lo que piensa cada guardia (Laya o las reglas de reserva)." },
               { key: "MENU_BACK", to: "ajustes" },
             ],
           },
@@ -310,7 +303,7 @@ window.PANTALLAS = [
               { key: "GAME_HOW_WIRES", text: "Los cables, en el cuadro de alarma.", doc: "minijuegos/wires" },
               { key: "GAME_HOW_STEADY", text: "La ventosa, en el cristal.", doc: "minijuegos/steady" },
               { key: "GAME_HOW_BALANCE", text: "El equilibrio, posando como estatua en un pedestal.", doc: "minijuegos/balance" },
-              { key: "GAME_HOW_SQUEEZE", text: "Colarse en un escondite: a un lado y a otro, con ritmo; de 2 a 5 s a la vista.", doc: "escondites" },
+              { key: "GAME_HOW_SQUEEZE", text: "Colarse en un escondite: un empujón con la acción cuando no miren; de 1 a 3 s a la vista.", doc: "escondites" },
               { key: "GAME_HOW_SNEEZE", text: "El estornudo, al rato de estar escondido; si se escapa, ¡ACHÍS! y fuera.", doc: "minijuegos/sneeze" },
               { key: "GAME_HOW_ARCADE", text: "Un pong de broma en la recreativa: no se gana nada y nunca acaba.", doc: "minijuegos/arcade" },
               { key: "GAME_LET_GO" },

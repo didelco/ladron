@@ -156,7 +156,6 @@ func _families() -> void:
 	for k in file_jokes:
 		jokes.append_array(numbered(String(k) + "_", 1, int(file_jokes[k])))
 	need_all(jokes, "chistes de la ficha policial")
-	need_all(SettingsScreens.ASSET_TABS.values(), "pestañas de assets")
 	# Ajustes.
 	var modes := []
 	for m in Settings.MEGAPHONE_MODES:
@@ -168,16 +167,18 @@ func _families() -> void:
 		den.append("HIDEOUT_ROOM_" + upper(r))
 	need_all(den, "salas del refugio")
 	var games := []
-	for id in DojoGames.ids():
-		var info := DojoGames.info(id)
-		games.append_array([info.name_key, "HIDEOUT_GAME_LOST_" + upper(id)])
-	for why in ["time", "fall", "down", "late", "seen", "left", "sneeze"]:  # los _lose(...) de logic/*_game.gd
-		games.append("HIDEOUT_GAME_WHY_" + upper(why))
-	for t in DojoGames.TIERS:
+	for id in DojoTrials.ids():
+		var info := DojoTrials.info(id)
+		games.append_array([info.name, info.hint])
+		if String(info.start_text) != "":
+			games.append(info.start_text)
+		if info.kind == "game":
+			games.append("HIDEOUT_GAME_LOST_" + upper(id))
+	for why in ["time", "fall", "down", "late", "seen", "left", "sneeze"]:  # los _lose(...) de logic/*_game.gd y *_trial.gd
+		games.append("HIDEOUT_TRIAL_WHY_" + upper(why))
+	for t in DojoTrials.TIERS:
 		games.append(t.text)
-	for id in ["atrapa", "bolos"]:
-		games.append(DojoGames.info(id).start_key)
-	need_all(games, "juegos del dojo")
+	need_all(games, "pruebas del dojo")
 	# Minijuegos (Minigame.how(): GAME_HOW_<tipo>; cada tipo es una clase de logic/).
 	var hows := []
 	for kind in ["lockpick", "steady", "wires", "balance", "squeeze", "arcade", "sneeze"]:

@@ -10,26 +10,5709 @@ window.REFERENCIAS = [
    "svg"
   ],
   "licencia": "CC BY 3.0 (la mayoría; atribución al autor de cada icono)",
-  "nota": "Iconos vectoriales de ninjas para las pegatinas ninja del juego; ya está listada como alternativa de las colecciones ui-pegatinas-ninja y ui-iconos-objetos",
+  "nota": "Iconos vectoriales de ninjas para las pegatinas ninja del juego; ya está propuesta en «Assets a incorporar»",
   "fecha": "2026-09-29",
   "estado": "guardada",
+  "items": [
+   {
+    "nombre": "ninja-head, flying-shuriken, kusarigama, running-ninja",
+    "para": "pegatinas ninja del juego (ya están listadas como alternativa)",
+    "url": "https://game-icons.net/tags/ninja.html"
+   }
+  ],
   "dominio": "game-icons.net",
   "relacionadas": [
    {
-    "coleccion": "ui-iconos-editor",
-    "nombre": "Iconos vectoriales del editor",
-    "alternativa": "Game-icons.net"
-   },
-   {
-    "coleccion": "ui-pegatinas-ninja",
-    "nombre": "Pegatinas de cabezas ninja",
-    "alternativa": "Game-icons.net: etiqueta ninja"
-   },
-   {
-    "coleccion": "ui-iconos-objetos",
-    "nombre": "Iconos de objetos del editor",
-    "alternativa": "Game-icons.net"
+    "propuesta": "game-icons-ninja",
+    "nombre": "Game-icons.net: etiqueta ninja"
    }
   ]
+ },
+ {
+  "id": "kenney-city-kit-commercial",
+  "titulo": "Kenney · City Kit Commercial",
+  "url": "https://kenney.nl/assets/city-kit-commercial",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "ciudad"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución)",
+  "nota": "Ya está en assets/models/ciudad/comercial. Quedan piezas sin usar (parasoles, toldos).",
+  "fecha": "2026-09-29",
+  "estado": "usada",
+  "items": [
+   {
+    "nombre": "building-a … building-n",
+    "para": "edificios comerciales de la ciudad (los museos y sus vecinos)",
+    "url": "https://kenney.nl/assets/city-kit-commercial",
+    "ya_lo_usamos": true
+   },
+   {
+    "nombre": "building-skyscraper-a … e",
+    "para": "rascacielos del fondo de la ciudad",
+    "url": "https://kenney.nl/assets/city-kit-commercial",
+    "ya_lo_usamos": true
+   },
+   {
+    "nombre": "detail-awning / detail-awning-wide",
+    "para": "toldos para la tienda de recuerdos y las fachadas de los museos",
+    "url": "https://kenney.nl/assets/city-kit-commercial"
+   },
+   {
+    "nombre": "detail-parasol-a / detail-parasol-b",
+    "para": "terraza del bar del barrio (escondite o decorado de la ciudad)",
+    "url": "https://kenney.nl/assets/city-kit-commercial"
+   },
+   {
+    "nombre": "low-detail-building-a … n",
+    "para": "edificios lejanos con menos polígonos si la ciudad pesa",
+    "url": "https://kenney.nl/assets/city-kit-commercial"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-city-kit-suburban",
+  "titulo": "Kenney · City Kit Suburban",
+  "url": "https://kenney.nl/assets/city-kit-suburban",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "ciudad"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución)",
+  "nota": "Ya está en assets/models/ciudad/suburbios.",
+  "fecha": "2026-09-29",
+  "estado": "usada",
+  "items": [
+   {
+    "nombre": "building-type-a … u",
+    "para": "casas del barrio y de la ciudad",
+    "url": "https://kenney.nl/assets/city-kit-suburban",
+    "ya_lo_usamos": true
+   },
+   {
+    "nombre": "fence, fence-1x2 … fence-3x3, fence-low",
+    "para": "vallas de los jardines",
+    "url": "https://kenney.nl/assets/city-kit-suburban",
+    "ya_lo_usamos": true
+   },
+   {
+    "nombre": "tree-large / tree-small / planter",
+    "para": "árboles y maceteros de la calle",
+    "url": "https://kenney.nl/assets/city-kit-suburban",
+    "ya_lo_usamos": true
+   },
+   {
+    "nombre": "path-stones-messy, path-stones-long",
+    "para": "caminos de piedra hasta las puertas de los museos",
+    "url": "https://kenney.nl/assets/city-kit-suburban"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-city-kit-roads",
+  "titulo": "Kenney · City Kit Roads",
+  "url": "https://kenney.nl/assets/city-kit-roads",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "ciudad"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución)",
+  "nota": "Ya está en assets/models/ciudad/calles.",
+  "fecha": "2026-09-29",
+  "estado": "usada",
+  "items": [
+   {
+    "nombre": "road-crossroad, road-roundabout, road-bend",
+    "para": "calles, cruces y rotondas de la ciudad",
+    "url": "https://kenney.nl/assets/city-kit-roads",
+    "ya_lo_usamos": true
+   },
+   {
+    "nombre": "light-square, light-curved",
+    "para": "farolas de la ciudad de noche",
+    "url": "https://kenney.nl/assets/city-kit-roads",
+    "ya_lo_usamos": true
+   },
+   {
+    "nombre": "construction-cone, construction-barrier, construction-fence",
+    "para": "obras de la calle: escondites y cortes de camino",
+    "url": "https://kenney.nl/assets/city-kit-roads"
+   },
+   {
+    "nombre": "dumpster",
+    "para": "contenedor: escondite en la calle",
+    "url": "https://kenney.nl/assets/city-kit-roads"
+   },
+   {
+    "nombre": "electricity-pole, electricity-wires",
+    "para": "postes y cables del skyline",
+    "url": "https://kenney.nl/assets/city-kit-roads"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-furniture-kit",
+  "titulo": "Kenney · Furniture Kit",
+  "url": "https://kenney.nl/assets/furniture-kit",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "muebles",
+   "dojo"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución)",
+  "nota": "Los muebles de la casa de la banda ya salen de aquí (assets/models/casa). Sin usar todavía: cama, teddy, ventilador, escaleras.",
+  "fecha": "2026-09-29",
+  "estado": "usada",
+  "items": [
+   {
+    "nombre": "kitchenFridge, kitchenStove, kitchenSink, toaster",
+    "para": "cocina del dojo (y la tostadora como trofeo del museo cotidiano)",
+    "url": "https://kenney.nl/assets/furniture-kit",
+    "ya_lo_usamos": true
+   },
+   {
+    "nombre": "loungeSofa, loungeSofaCorner, loungeSofaLong",
+    "para": "sofás del salón de la banda",
+    "url": "https://kenney.nl/assets/furniture-kit",
+    "ya_lo_usamos": true
+   },
+   {
+    "nombre": "bathtub, toilet, bathroomSink, shower",
+    "para": "baño del dojo (el váter es un trofeo de arte contemporáneo)",
+    "url": "https://kenney.nl/assets/furniture-kit",
+    "ya_lo_usamos": true
+   },
+   {
+    "nombre": "televisionVintage, radio, speaker",
+    "para": "salón del dojo y trofeo tele antigua",
+    "url": "https://kenney.nl/assets/furniture-kit",
+    "ya_lo_usamos": true
+   },
+   {
+    "nombre": "trashcan",
+    "para": "papelera del museo y de la calle",
+    "url": "https://kenney.nl/assets/furniture-kit",
+    "ya_lo_usamos": true
+   },
+   {
+    "nombre": "bear",
+    "para": "osito de peluche: trofeo del museo cotidiano absurdo",
+    "url": "https://kenney.nl/assets/furniture-kit"
+   },
+   {
+    "nombre": "bedSingle, bedDouble, bedBunk",
+    "para": "literas y habitaciones del dojo",
+    "url": "https://kenney.nl/assets/furniture-kit"
+   },
+   {
+    "nombre": "ceilingFan",
+    "para": "ventilador de techo: escondite o gag en el dojo",
+    "url": "https://kenney.nl/assets/furniture-kit"
+   },
+   {
+    "nombre": "stairs, stairsOpen, doorway, wallWindow, floorFull",
+    "para": "estructura de salas si el dojo crece",
+    "url": "https://kenney.nl/assets/furniture-kit"
+   },
+   {
+    "nombre": "cardboardBoxClosed, cardboardBoxOpen",
+    "para": "caja de cartón: escondite (ya hay una) y variantes",
+    "url": "https://kenney.nl/assets/furniture-kit",
+    "ya_lo_usamos": true
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-food-kit",
+  "titulo": "Kenney · Food Kit",
+  "url": "https://kenney.nl/assets/food-kit",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "comida",
+   "trofeos"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 200 modelos (lista leída del ZIP del pack)",
+  "nota": "Ideal para los trofeos del museo de lo cotidiano absurdo y para el dojo.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "bottle-ketchup",
+    "para": "trofeo: bote de ketchup (cotidiano absurdo)",
+    "url": "https://kenney.nl/assets/food-kit"
+   },
+   {
+    "nombre": "cheese, cheese-cut",
+    "para": "trofeo: queso lunar (cotidiano absurdo)",
+    "url": "https://kenney.nl/assets/food-kit"
+   },
+   {
+    "nombre": "egg, egg-cooked, egg-half",
+    "para": "huevo (base para el huevo de dinosaurio de Prehistoria)",
+    "url": "https://kenney.nl/assets/food-kit"
+   },
+   {
+    "nombre": "banana",
+    "para": "Arte contemporáneo: el plátano pegado con cinta",
+    "url": "https://kenney.nl/assets/food-kit"
+   },
+   {
+    "nombre": "soda-can-crushed",
+    "para": "Arte contemporáneo: lata aplastada como escultura",
+    "url": "https://kenney.nl/assets/food-kit"
+   },
+   {
+    "nombre": "donut-sprinkles, croissant, cake-birthday, cupcake",
+    "para": "trofeos comestibles del museo cotidiano",
+    "url": "https://kenney.nl/assets/food-kit"
+   },
+   {
+    "nombre": "meat-ribs, meat-raw",
+    "para": "Prehistoria: costillar de mamut en el diorama",
+    "url": "https://kenney.nl/assets/food-kit"
+   },
+   {
+    "nombre": "fish-bones",
+    "para": "Ciencias Naturales: esqueleto de pez en vitrina",
+    "url": "https://kenney.nl/assets/food-kit"
+   },
+   {
+    "nombre": "mortar-pestle",
+    "para": "Prehistoria: mortero de piedra",
+    "url": "https://kenney.nl/assets/food-kit"
+   },
+   {
+    "nombre": "plate-broken",
+    "para": "Villa Clásica: cerámica rota de excavación",
+    "url": "https://kenney.nl/assets/food-kit"
+   },
+   {
+    "nombre": "hot-dog, corn-dog, pizza-box",
+    "para": "tienda de recuerdos del museo",
+    "url": "https://kenney.nl/assets/food-kit"
+   },
+   {
+    "nombre": "frying-pan, rollingPin",
+    "para": "armas absurdas de la banda en el dojo",
+    "url": "https://kenney.nl/assets/food-kit"
+   },
+   {
+    "nombre": "pumpkin",
+    "para": "Ciencias Naturales: calabaza gigante del huerto",
+    "url": "https://kenney.nl/assets/food-kit"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-nature-kit",
+  "titulo": "Kenney · Nature Kit",
+  "url": "https://kenney.nl/assets/nature-kit",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "naturaleza"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 330 archivos (lista leída del ZIP)",
+  "nota": "Sirve para los dioramas de Prehistoria y Ciencias Naturales.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "rock_largeA … F, rock_tallA … J",
+    "para": "rocas de los dioramas de Prehistoria",
+    "url": "https://kenney.nl/assets/nature-kit"
+   },
+   {
+    "nombre": "cliff_cave_rock, cliff_blockCave_rock",
+    "para": "cueva prehistórica",
+    "url": "https://kenney.nl/assets/nature-kit"
+   },
+   {
+    "nombre": "campfire_stones, campfire_logs",
+    "para": "hoguera del campamento de las cavernas",
+    "url": "https://kenney.nl/assets/nature-kit"
+   },
+   {
+    "nombre": "statue_head, statue_column, statue_columnDamaged, statue_obelisk, statue_ring",
+    "para": "estatuas de piedra: Villa Clásica y jardines",
+    "url": "https://kenney.nl/assets/nature-kit"
+   },
+   {
+    "nombre": "mushroom_redGroup, mushroom_tanTall",
+    "para": "setas de Ciencias Naturales",
+    "url": "https://kenney.nl/assets/nature-kit"
+   },
+   {
+    "nombre": "lily_large, lily_small",
+    "para": "estanque del diorama de Ciencias Naturales",
+    "url": "https://kenney.nl/assets/nature-kit"
+   },
+   {
+    "nombre": "flower_redA, flower_yellowA, flower_purpleA",
+    "para": "jardín del museo y de la casa",
+    "url": "https://kenney.nl/assets/nature-kit"
+   },
+   {
+    "nombre": "log_stack, stump_old, stump_roundDetailed",
+    "para": "tronco hueco y escondites de bosque",
+    "url": "https://kenney.nl/assets/nature-kit"
+   },
+   {
+    "nombre": "cactus_tall, tree_oak, tree_pineTallA, plant_bushLarge",
+    "para": "vegetación de dioramas y de la calle",
+    "url": "https://kenney.nl/assets/nature-kit"
+   },
+   {
+    "nombre": "canoe, canoe_paddle",
+    "para": "canoa de museo etnográfico (Prehistoria)",
+    "url": "https://kenney.nl/assets/nature-kit"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-graveyard-kit",
+  "titulo": "Kenney · Graveyard Kit",
+  "url": "https://kenney.nl/assets/graveyard-kit",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "personajes",
+   "animaciones",
+   "gotico"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 90 archivos con animaciones (lista del ZIP)",
+  "nota": "Útil para sarcófagos, urnas y el ala oscura del Castillo; trae personajes animados.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "coffin-old, coffin",
+    "para": "sarcófago y ataúdes (tema antiguo y ala de terror)",
+    "url": "https://kenney.nl/assets/graveyard-kit"
+   },
+   {
+    "nombre": "urn-round, urn-square",
+    "para": "urnas y vasijas: Villa Clásica",
+    "url": "https://kenney.nl/assets/graveyard-kit"
+   },
+   {
+    "nombre": "detail-chalice, detail-bowl, detail-plate",
+    "para": "cáliz y vajilla del Castillo medieval",
+    "url": "https://kenney.nl/assets/graveyard-kit"
+   },
+   {
+    "nombre": "candle, candle-multiple, lantern-glass",
+    "para": "velas y linternas de todas las salas nocturnas",
+    "url": "https://kenney.nl/assets/graveyard-kit"
+   },
+   {
+    "nombre": "pillar-obelisk, column-large, pillar-square",
+    "para": "obeliscos y columnas: Villa Clásica y tema antiguo",
+    "url": "https://kenney.nl/assets/graveyard-kit"
+   },
+   {
+    "nombre": "altar-stone",
+    "para": "altar de la sala del Castillo",
+    "url": "https://kenney.nl/assets/graveyard-kit"
+   },
+   {
+    "nombre": "character-skeleton, character-ghost, character-zombie, character-vampire, character-keeper",
+    "para": "personajes animados: fantasma del museo, esqueleto de la sala de terror",
+    "url": "https://kenney.nl/assets/graveyard-kit"
+   },
+   {
+    "nombre": "crypt, crypt-large, crypt-door",
+    "para": "cripta del Castillo medieval",
+    "url": "https://kenney.nl/assets/graveyard-kit"
+   },
+   {
+    "nombre": "iron-fence-border-gate",
+    "para": "verja del jardín del museo",
+    "url": "https://kenney.nl/assets/graveyard-kit"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-castle-kit",
+  "titulo": "Kenney · Castle Kit",
+  "url": "https://kenney.nl/assets/castle-kit",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "medieval",
+   "castillo"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 75 archivos (lista del ZIP)",
+  "nota": "El museo Castillo entero puede montarse con esto.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "gate, metal-gate, door",
+    "para": "puertas del museo Castillo",
+    "url": "https://kenney.nl/assets/castle-kit"
+   },
+   {
+    "nombre": "bridge-draw",
+    "para": "puente levadizo de la entrada",
+    "url": "https://kenney.nl/assets/castle-kit"
+   },
+   {
+    "nombre": "wall, wall-corner, wall-doorway, wall-narrow-gate",
+    "para": "murallas y almenas exteriores",
+    "url": "https://kenney.nl/assets/castle-kit"
+   },
+   {
+    "nombre": "tower-square-arch, tower-hexagon-base, tower-hexagon-roof, tower-slant-roof",
+    "para": "torres del castillo",
+    "url": "https://kenney.nl/assets/castle-kit"
+   },
+   {
+    "nombre": "siege-catapult, siege-trebuchet, siege-ballista, siege-ram, siege-tower",
+    "para": "máquinas de asedio como piezas del museo (Leonardo)",
+    "url": "https://kenney.nl/assets/castle-kit"
+   },
+   {
+    "nombre": "flag, flag-banner-long, flag-pennant",
+    "para": "estandartes del Castillo",
+    "url": "https://kenney.nl/assets/castle-kit"
+   },
+   {
+    "nombre": "stairs-stone",
+    "para": "escaleras de piedra",
+    "url": "https://kenney.nl/assets/castle-kit"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-fantasy-town-kit",
+  "titulo": "Kenney · Fantasy Town Kit",
+  "url": "https://kenney.nl/assets/fantasy-town-kit",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "medieval",
+   "pueblo"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 160 archivos (lista del ZIP)",
+  "nota": "Fuentes, puestos y muros redondeados para la Villa Clásica y el pueblo medieval.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "fountain-round-detail, fountain-square-detail, fountain-corner",
+    "para": "fuente del patio de la Villa Clásica",
+    "url": "https://kenney.nl/assets/fantasy-town-kit"
+   },
+   {
+    "nombre": "stall-red, stall-green, stall-bench",
+    "para": "puestos de mercado medieval",
+    "url": "https://kenney.nl/assets/fantasy-town-kit"
+   },
+   {
+    "nombre": "wall-arch, wall-doorway-round, wall-window-shutters",
+    "para": "arcos y ventanas de la Villa",
+    "url": "https://kenney.nl/assets/fantasy-town-kit"
+   },
+   {
+    "nombre": "banner-red, banner-green, lantern",
+    "para": "estandartes y farolillos del pueblo",
+    "url": "https://kenney.nl/assets/fantasy-town-kit"
+   },
+   {
+    "nombre": "hedge-gate, hedge-large, fence-gate",
+    "para": "setos del jardín de la Villa",
+    "url": "https://kenney.nl/assets/fantasy-town-kit"
+   },
+   {
+    "nombre": "cart, cart-high",
+    "para": "carro medieval (escondite)",
+    "url": "https://kenney.nl/assets/fantasy-town-kit"
+   },
+   {
+    "nombre": "pillar-stone, stairs-stone-handrail",
+    "para": "columnas y escalinatas",
+    "url": "https://kenney.nl/assets/fantasy-town-kit"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-mini-dungeon",
+  "titulo": "Kenney · Mini Dungeon",
+  "url": "https://kenney.nl/assets/mini-dungeon",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "personajes",
+   "animaciones",
+   "medieval"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 30 archivos (lista del ZIP)",
+  "nota": "Piezas pequeñas de botín y armas para las vitrinas.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "chest",
+    "para": "cofre del tesoro: escondite o trofeo",
+    "url": "https://kenney.nl/assets/mini-dungeon"
+   },
+   {
+    "nombre": "key",
+    "para": "llave: trofeo del Castillo (llave del sello)",
+    "url": "https://kenney.nl/assets/mini-dungeon"
+   },
+   {
+    "nombre": "coin, potion",
+    "para": "monedas y poción en vitrinas",
+    "url": "https://kenney.nl/assets/mini-dungeon"
+   },
+   {
+    "nombre": "shield-round, shield-rectangle",
+    "para": "escudos del Castillo",
+    "url": "https://kenney.nl/assets/mini-dungeon"
+   },
+   {
+    "nombre": "weapon-sword, weapon-spear",
+    "para": "espada de la espada en la piedra (base)",
+    "url": "https://kenney.nl/assets/mini-dungeon"
+   },
+   {
+    "nombre": "character-human, character-orc",
+    "para": "personajes animados (guardias alternativos)",
+    "url": "https://kenney.nl/assets/mini-dungeon"
+   },
+   {
+    "nombre": "banner, column, gate, trap",
+    "para": "decorado de sala",
+    "url": "https://kenney.nl/assets/mini-dungeon"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-mini-arena",
+  "titulo": "Kenney · Mini Arena",
+  "url": "https://kenney.nl/assets/mini-arena",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "animaciones",
+   "trofeos"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 20 archivos (lista del ZIP)",
+  "nota": "Trae una estatua, un trofeo y una percha de armas.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "statue",
+    "para": "estatua de la Villa Clásica",
+    "url": "https://kenney.nl/assets/mini-arena"
+   },
+   {
+    "nombre": "trophy",
+    "para": "copa de trofeo para el dojo o el museo cotidiano",
+    "url": "https://kenney.nl/assets/mini-arena"
+   },
+   {
+    "nombre": "weapon-rack",
+    "para": "percha de armas del Castillo",
+    "url": "https://kenney.nl/assets/mini-arena"
+   },
+   {
+    "nombre": "column, column-damaged",
+    "para": "columnas de la Villa Clásica",
+    "url": "https://kenney.nl/assets/mini-arena"
+   },
+   {
+    "nombre": "character-soldier",
+    "para": "soldado animado (guardia del Castillo)",
+    "url": "https://kenney.nl/assets/mini-arena"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-mini-market",
+  "titulo": "Kenney · Mini Market",
+  "url": "https://kenney.nl/assets/mini-market",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "tienda"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 20 archivos (lista del ZIP)",
+  "nota": "Para la tienda de recuerdos del museo y la calle.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "cash-register",
+    "para": "caja de la tienda de recuerdos",
+    "url": "https://kenney.nl/assets/mini-market"
+   },
+   {
+    "nombre": "shopping-cart, shopping-basket",
+    "para": "carro de la compra: escondite o trofeo cotidiano",
+    "url": "https://kenney.nl/assets/mini-market"
+   },
+   {
+    "nombre": "shelf-boxes, shelf-bags, display-fruit",
+    "para": "estantes de la tienda",
+    "url": "https://kenney.nl/assets/mini-market"
+   },
+   {
+    "nombre": "freezer, freezers-standing",
+    "para": "congelador (escondite alternativo a la nevera)",
+    "url": "https://kenney.nl/assets/mini-market"
+   },
+   {
+    "nombre": "character-employee",
+    "para": "dependiente animado",
+    "url": "https://kenney.nl/assets/mini-market"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-mini-characters",
+  "titulo": "Kenney · Mini Characters",
+  "url": "https://kenney.nl/assets/mini-characters",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "personajes",
+   "animaciones"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 25 archivos (lista del ZIP)",
+  "nota": "Personas variadas para el público de la ciudad; con accesorios.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "character-male-a … f, character-female-a … f",
+    "para": "visitantes y peatones de la ciudad",
+    "url": "https://kenney.nl/assets/mini-characters"
+   },
+   {
+    "nombre": "aid-sunglasses, aid-glasses, aid-mask",
+    "para": "gafas y máscaras sueltas: trofeos o disfraces de la banda",
+    "url": "https://kenney.nl/assets/mini-characters"
+   },
+   {
+    "nombre": "wheelchair, aid-cane",
+    "para": "accesorios de visitantes",
+    "url": "https://kenney.nl/assets/mini-characters"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-blocky-characters",
+  "titulo": "Kenney · Blocky Characters",
+  "url": "https://kenney.nl/assets/blocky-characters",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "personajes",
+   "animaciones"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 20 archivos, 18 personajes (character-a … r)",
+  "nota": "Dieciocho personajes cuadrados animados.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "character-a … character-r",
+    "para": "guardias distintos por museo, visitantes y figurantes",
+    "url": "https://kenney.nl/assets/blocky-characters"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-survival-kit",
+  "titulo": "Kenney · Survival Kit",
+  "url": "https://kenney.nl/assets/survival-kit",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "prehistoria"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 80 archivos (lista del ZIP)",
+  "nota": "Campamento y herramientas para el diorama prehistórico.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "campfire-pit, campfire-stand",
+    "para": "hoguera prehistórica",
+    "url": "https://kenney.nl/assets/survival-kit"
+   },
+   {
+    "nombre": "tool-axe, tool-pickaxe, tool-hammer, tool-shovel",
+    "para": "herramientas de excavación (Prehistoria) y de la banda",
+    "url": "https://kenney.nl/assets/survival-kit"
+   },
+   {
+    "nombre": "tent, tent-canvas",
+    "para": "tienda de campaña del arqueólogo",
+    "url": "https://kenney.nl/assets/survival-kit"
+   },
+   {
+    "nombre": "bedroll, signpost, bucket, barrel",
+    "para": "escenografía de campamento",
+    "url": "https://kenney.nl/assets/survival-kit"
+   },
+   {
+    "nombre": "rock-a … c, resource-stone, resource-wood",
+    "para": "rocas y recursos de dioramas",
+    "url": "https://kenney.nl/assets/survival-kit"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-holiday-kit",
+  "titulo": "Kenney · Holiday Kit",
+  "url": "https://kenney.nl/assets/holiday-kit",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "kitsch"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 100 archivos (lista del ZIP)",
+  "nota": "Kitsch navideño para el museo cotidiano absurdo.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "nutcracker",
+    "para": "cascanueces: trofeo kitsch",
+    "url": "https://kenney.nl/assets/holiday-kit"
+   },
+   {
+    "nombre": "snowman, snowman-hat",
+    "para": "muñeco de nieve: pieza absurda de Ciencias Naturales",
+    "url": "https://kenney.nl/assets/holiday-kit"
+   },
+   {
+    "nombre": "present-a-cube, present-b-round",
+    "para": "regalos-trofeo",
+    "url": "https://kenney.nl/assets/holiday-kit"
+   },
+   {
+    "nombre": "gingerbread-man",
+    "para": "galleta de jengibre: trofeo comestible",
+    "url": "https://kenney.nl/assets/holiday-kit"
+   },
+   {
+    "nombre": "reindeer, sled",
+    "para": "reno y trineo como pieza de museo etnográfico absurdo",
+    "url": "https://kenney.nl/assets/holiday-kit"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-pirate-kit",
+  "titulo": "Kenney · Pirate Kit",
+  "url": "https://kenney.nl/assets/pirate-kit",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "piratas"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 70 archivos (lista del ZIP)",
+  "nota": "No encaja con los cinco museos; por si hay una sala o un reto de piratas.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "chest, cannon, flag-pirate",
+    "para": "botín pirata",
+    "url": "https://kenney.nl/assets/pirate-kit"
+   },
+   {
+    "nombre": "ship-pirate-small, ship-wreck",
+    "para": "barco como pieza grande",
+    "url": "https://kenney.nl/assets/pirate-kit"
+   },
+   {
+    "nombre": "palm-straight, tool-paddle, crate-bottles",
+    "para": "escenografía",
+    "url": "https://kenney.nl/assets/pirate-kit"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-space-kit",
+  "titulo": "Kenney · Space Kit",
+  "url": "https://kenney.nl/assets/space-kit",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "ciencias"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 150 archivos (lista del ZIP)",
+  "nota": "Meteoritos y astronautas para Ciencias Naturales.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "meteor, meteor_detailed, meteor_half",
+    "para": "meteorito (ya tenemos uno propio; variantes)",
+    "url": "https://kenney.nl/assets/space-kit"
+   },
+   {
+    "nombre": "astronautA, astronautB, alien",
+    "para": "figuras de la sala del espacio",
+    "url": "https://kenney.nl/assets/space-kit"
+   },
+   {
+    "nombre": "desk_computer, machine_generator",
+    "para": "laboratorio de Ciencias Naturales",
+    "url": "https://kenney.nl/assets/space-kit"
+   },
+   {
+    "nombre": "crater, craterLarge",
+    "para": "diorama lunar (queso lunar)",
+    "url": "https://kenney.nl/assets/space-kit"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-toy-car-kit",
+  "titulo": "Kenney · Toy Car Kit",
+  "url": "https://kenney.nl/assets/toy-car-kit",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "juguetes"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 100 archivos (lista del ZIP)",
+  "nota": "Piezas de juego con plátano y conos, para gags de la banda.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "item-banana",
+    "para": "cáscara de plátano: trampa o gag para guardias",
+    "url": "https://kenney.nl/assets/toy-car-kit"
+   },
+   {
+    "nombre": "item-cone",
+    "para": "cono de tráfico: trofeo de arte contemporáneo",
+    "url": "https://kenney.nl/assets/toy-car-kit"
+   },
+   {
+    "nombre": "item-coin-gold, item-box",
+    "para": "monedas y caja de premio en los minijuegos",
+    "url": "https://kenney.nl/assets/toy-car-kit"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-car-kit",
+  "titulo": "Kenney · Car Kit",
+  "url": "https://kenney.nl/assets/car-kit",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "vehiculos"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 45 archivos (lista del ZIP)",
+  "nota": "Coches para la ciudad.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "police, ambulance, taxi, delivery",
+    "para": "vehículos que pasan por la ciudad",
+    "url": "https://kenney.nl/assets/car-kit"
+   },
+   {
+    "nombre": "garbage-truck, van, firetruck",
+    "para": "camión y furgoneta de escape",
+    "url": "https://kenney.nl/assets/car-kit"
+   },
+   {
+    "nombre": "cone, box",
+    "para": "conos y cajas en la calle",
+    "url": "https://kenney.nl/assets/car-kit"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-modular-buildings",
+  "titulo": "Kenney · Modular Buildings",
+  "url": "https://kenney.nl/assets/modular-buildings",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly",
+   "edificios"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 100 archivos (lista del ZIP)",
+  "nota": "Fachadas modulares para variar los museos por fuera.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "building-door, building-door-window, building-steps-wide",
+    "para": "entrada del museo con escalinata",
+    "url": "https://kenney.nl/assets/modular-buildings"
+   },
+   {
+    "nombre": "building-window-balcony, roof-flat-awning-a",
+    "para": "balcones y toldos",
+    "url": "https://kenney.nl/assets/modular-buildings"
+   },
+   {
+    "nombre": "detail-ac-a, detail-ac-b",
+    "para": "aires acondicionados en la azotea (entrada alternativa)",
+    "url": "https://kenney.nl/assets/modular-buildings"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-platformer-kit",
+  "titulo": "Kenney · Platformer Kit",
+  "url": "https://kenney.nl/assets/platformer-kit",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "low-poly"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 150 archivos con animaciones",
+  "nota": "Bloques y obstáculos; solo si los minijuegos del dojo pasan a 3D.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "block-grass, barrel, arrow",
+    "para": "prototipos de minijuegos en 3D",
+    "url": "https://kenney.nl/assets/platformer-kit"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-prototype-textures",
+  "titulo": "Kenney · Prototype Textures",
+  "url": "https://kenney.nl/assets/prototype-textures",
+  "tipo": "texturas",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "texturas",
+   "prototipos"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 75 archivos: texture_01 … texture_13 (en color)",
+  "nota": "Rejillas para probar tamaños; no para el arte final.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "texture_01 … texture_13",
+    "para": "suelos de prueba del banco de pruebas del dojo",
+    "url": "https://kenney.nl/assets/prototype-textures"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-impact-sounds",
+  "titulo": "Kenney · Impact Sounds",
+  "url": "https://kenney.nl/assets/impact-sounds",
+  "tipo": "audio",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "sfx"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 130 archivos .ogg (lista leída del ZIP)",
+  "nota": "Ahora el sonido es sintetizado en código; esto daría golpes y pasos más físicos.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "footstep_carpet_000 … 004",
+    "para": "pasos del ninja y los guardias en las salas alfombradas",
+    "url": "https://kenney.nl/assets/impact-sounds"
+   },
+   {
+    "nombre": "footstep_concrete_000, footstep_wood_000, footstep_grass_000, footstep_snow_000",
+    "para": "pasos por suelo según museo y calle",
+    "url": "https://kenney.nl/assets/impact-sounds"
+   },
+   {
+    "nombre": "impactGlass_heavy_000, impactGlass_light_000",
+    "para": "rotura de la vitrina al robar",
+    "url": "https://kenney.nl/assets/impact-sounds"
+   },
+   {
+    "nombre": "impactBell_heavy_000",
+    "para": "campana de alarma del museo",
+    "url": "https://kenney.nl/assets/impact-sounds"
+   },
+   {
+    "nombre": "impactPunch_heavy_000",
+    "para": "golpe al guardia (noqueado)",
+    "url": "https://kenney.nl/assets/impact-sounds"
+   },
+   {
+    "nombre": "impactMetal_heavy_000, impactPlate_heavy_000",
+    "para": "caída de armaduras y rejas del Castillo",
+    "url": "https://kenney.nl/assets/impact-sounds"
+   },
+   {
+    "nombre": "impactWood_medium_000, impactPlank_medium_000",
+    "para": "puertas y muebles del dojo",
+    "url": "https://kenney.nl/assets/impact-sounds"
+   },
+   {
+    "nombre": "impactSoft_heavy_000",
+    "para": "el ninja se cae en un cojín (escondite)",
+    "url": "https://kenney.nl/assets/impact-sounds"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-interface-sounds",
+  "titulo": "Kenney · Interface Sounds",
+  "url": "https://kenney.nl/assets/interface-sounds",
+  "tipo": "audio",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "sfx",
+   "ui"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 100 archivos .ogg (lista del ZIP)",
+  "nota": "Sonidos de menú.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "click_001, select_001, confirmation_001",
+    "para": "aceptar en menús",
+    "url": "https://kenney.nl/assets/interface-sounds"
+   },
+   {
+    "nombre": "back_001, close_001, error_001",
+    "para": "volver, cerrar y error",
+    "url": "https://kenney.nl/assets/interface-sounds"
+   },
+   {
+    "nombre": "open_001, maximize_001, minimize_001, scroll_001",
+    "para": "abrir paneles, editor de niveles",
+    "url": "https://kenney.nl/assets/interface-sounds"
+   },
+   {
+    "nombre": "toggle_001, switch_001, tick_001",
+    "para": "ajustes",
+    "url": "https://kenney.nl/assets/interface-sounds"
+   },
+   {
+    "nombre": "glitch_001, scratch_001, pluck_001, bong_001, question_001",
+    "para": "gags de menú de humor absurdo",
+    "url": "https://kenney.nl/assets/interface-sounds"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-rpg-audio",
+  "titulo": "Kenney · RPG Audio",
+  "url": "https://kenney.nl/assets/rpg-audio",
+  "tipo": "audio",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "sfx",
+   "medieval"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 50 archivos .ogg (lista del ZIP)",
+  "nota": "Puertas, libros y monedas para el Castillo y los cofres.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "doorOpen_1, doorClose_1, creak1",
+    "para": "puertas de los museos",
+    "url": "https://kenney.nl/assets/rpg-audio"
+   },
+   {
+    "nombre": "handleCoins, handleCoins2",
+    "para": "coger botín",
+    "url": "https://kenney.nl/assets/rpg-audio"
+   },
+   {
+    "nombre": "bookOpen, bookFlip1",
+    "para": "códice de Leonardo y manuscrito",
+    "url": "https://kenney.nl/assets/rpg-audio"
+   },
+   {
+    "nombre": "metalLatch, metalClick",
+    "para": "cerraduras de las vitrinas",
+    "url": "https://kenney.nl/assets/rpg-audio"
+   },
+   {
+    "nombre": "footstep00 … footstep09",
+    "para": "pasos alternativos",
+    "url": "https://kenney.nl/assets/rpg-audio"
+   },
+   {
+    "nombre": "drawKnife1, knifeSlice",
+    "para": "desenvainar la espada de la piedra",
+    "url": "https://kenney.nl/assets/rpg-audio"
+   },
+   {
+    "nombre": "cloth1, clothBelt",
+    "para": "el ninja al moverse",
+    "url": "https://kenney.nl/assets/rpg-audio"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-casino-audio",
+  "titulo": "Kenney · Casino Audio",
+  "url": "https://kenney.nl/assets/casino-audio",
+  "tipo": "audio",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "sfx",
+   "minijuegos"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 50 archivos .ogg (lista del ZIP)",
+  "nota": "Dados, cartas y fichas para los juegos del dojo.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "dice-throw-1, dice-shake-1, dice-grab-1",
+    "para": "juego de dados del dojo",
+    "url": "https://kenney.nl/assets/casino-audio"
+   },
+   {
+    "nombre": "card-slide-1, card-shuffle, card-place-1",
+    "para": "juego de cartas",
+    "url": "https://kenney.nl/assets/casino-audio"
+   },
+   {
+    "nombre": "chips-stack-1, chips-handle-1",
+    "para": "apuestas con fichas",
+    "url": "https://kenney.nl/assets/casino-audio"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-digital-audio",
+  "titulo": "Kenney · Digital Audio",
+  "url": "https://kenney.nl/assets/digital-audio",
+  "tipo": "audio",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "sfx",
+   "retro"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 60 archivos .ogg (lista del ZIP)",
+  "nota": "Pitidos retro para la recreativa y los minijuegos.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "powerUp1 … powerUp12",
+    "para": "logros y mejoras en los minijuegos",
+    "url": "https://kenney.nl/assets/digital-audio"
+   },
+   {
+    "nombre": "laser1 … laser9, zap1",
+    "para": "disparos de la recreativa",
+    "url": "https://kenney.nl/assets/digital-audio"
+   },
+   {
+    "nombre": "threeTone1, twoTone1, lowThreeTone",
+    "para": "avisos y errores retro",
+    "url": "https://kenney.nl/assets/digital-audio"
+   },
+   {
+    "nombre": "phaseJump1, pepSound1",
+    "para": "saltos y rebotes de minijuegos",
+    "url": "https://kenney.nl/assets/digital-audio"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-sci-fi-sounds",
+  "titulo": "Kenney · Sci-fi Sounds",
+  "url": "https://kenney.nl/assets/sci-fi-sounds",
+  "tipo": "audio",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "sfx"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 70 archivos .ogg (lista del ZIP)",
+  "nota": "Láseres y campos de fuerza para la seguridad de los museos modernos.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "forceField_000 … 004",
+    "para": "alarma-láser de Arte Contemporáneo",
+    "url": "https://kenney.nl/assets/sci-fi-sounds"
+   },
+   {
+    "nombre": "computerNoise_000",
+    "para": "panel de seguridad hackeado",
+    "url": "https://kenney.nl/assets/sci-fi-sounds"
+   },
+   {
+    "nombre": "laserRetro_000, laserSmall_000",
+    "para": "haz de seguridad",
+    "url": "https://kenney.nl/assets/sci-fi-sounds"
+   },
+   {
+    "nombre": "slime_000",
+    "para": "cosas pringosas absurdas (chicle)",
+    "url": "https://kenney.nl/assets/sci-fi-sounds"
+   },
+   {
+    "nombre": "doorOpen_000, doorClose_000",
+    "para": "puertas automáticas del museo moderno",
+    "url": "https://kenney.nl/assets/sci-fi-sounds"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-voiceover-pack",
+  "titulo": "Kenney · Voiceover Pack",
+  "url": "https://kenney.nl/assets/voiceover-pack",
+  "tipo": "voz",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "voz",
+   "ingles"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 90 archivos de voz (en inglés)",
+  "nota": "Frases de juego en inglés; la megafonía del juego es en español y propia.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "mission_completed, mission_failed, game_over",
+    "para": "pantallas de fin de noche (para probar el ritmo)",
+    "url": "https://kenney.nl/assets/voiceover-pack"
+   },
+   {
+    "nombre": "ready, set, go, hurry_up, time_over",
+    "para": "cuenta atrás de minijuegos",
+    "url": "https://kenney.nl/assets/voiceover-pack"
+   },
+   {
+    "nombre": "correct, wrong, congratulations",
+    "para": "respuestas del minijuego de cartas",
+    "url": "https://kenney.nl/assets/voiceover-pack"
+   },
+   {
+    "nombre": "1 … 10",
+    "para": "cuenta atrás",
+    "url": "https://kenney.nl/assets/voiceover-pack"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-ui-audio",
+  "titulo": "Kenney · UI Audio",
+  "url": "https://kenney.nl/assets/ui-audio",
+  "tipo": "audio",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "sfx",
+   "ui"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 50 archivos .ogg (lista del ZIP)",
+  "nota": "Alternativa más pequeña al Interface Sounds.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "click1 … 5, mouseclick1, mouserelease1",
+    "para": "clics de menú",
+    "url": "https://kenney.nl/assets/ui-audio"
+   },
+   {
+    "nombre": "rollover1 … 6",
+    "para": "pasar el ratón por un botón",
+    "url": "https://kenney.nl/assets/ui-audio"
+   },
+   {
+    "nombre": "switch1 … 38",
+    "para": "interruptores y ajustes",
+    "url": "https://kenney.nl/assets/ui-audio"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-music-jingles",
+  "titulo": "Kenney · Music Jingles",
+  "url": "https://kenney.nl/assets/music-jingles",
+  "tipo": "audio",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "musica"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 85 archivos .ogg (lista del ZIP)",
+  "nota": "Jingles cortos por instrumento: SAX, PIZZI, STEEL, NES y HIT.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "jingles_PIZZI00 … 16",
+    "para": "stinger de sigilo (cuerdas pellizcadas) al entrar en un museo",
+    "url": "https://kenney.nl/assets/music-jingles"
+   },
+   {
+    "nombre": "jingles_SAX00 … 16",
+    "para": "jingle de resumen de noche (humor)",
+    "url": "https://kenney.nl/assets/music-jingles"
+   },
+   {
+    "nombre": "jingles_STEEL00 … 16",
+    "para": "stinger de la ciudad o el dojo",
+    "url": "https://kenney.nl/assets/music-jingles"
+   },
+   {
+    "nombre": "jingles_NES00 … 16",
+    "para": "logros de los minijuegos retro",
+    "url": "https://kenney.nl/assets/music-jingles"
+   },
+   {
+    "nombre": "jingles_HIT00 … 16",
+    "para": "golpes de detenido/victoria",
+    "url": "https://kenney.nl/assets/music-jingles"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-ui-pack",
+  "titulo": "Kenney · UI Pack",
+  "url": "https://kenney.nl/assets/ui-pack",
+  "tipo": "arte",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "ui"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 430 archivos (PNG, vector y fuentes)",
+  "nota": "Paneles, botones y barras en colores; incluye Sounds/ (click-a, switch-a, tap-a) y la fuente Kenney Future.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "PNG/Blue, Green, Grey, Red, Yellow",
+    "para": "botones y paneles del menú principal y los ajustes",
+    "url": "https://kenney.nl/assets/ui-pack"
+   },
+   {
+    "nombre": "Font/Kenney Future.ttf",
+    "para": "fuente de números y etiquetas de HUD",
+    "url": "https://kenney.nl/assets/ui-pack"
+   },
+   {
+    "nombre": "Sounds/click-a.ogg, switch-a.ogg, tap-a.ogg",
+    "para": "sonidos de botón",
+    "url": "https://kenney.nl/assets/ui-pack"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-ui-pack-adventure",
+  "titulo": "Kenney · UI Pack Adventure",
+  "url": "https://kenney.nl/assets/ui-pack-adventure",
+  "tipo": "arte",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "ui",
+   "medieval"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 130 archivos",
+  "nota": "Paquete de interfaz de estilo aventura (no se ha revisado a fondo su aspecto).",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "paneles y botones estilo aventura",
+    "para": "menús de la ficha del Castillo medieval",
+    "url": "https://kenney.nl/assets/ui-pack-adventure"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-game-icons",
+  "titulo": "Kenney · Game Icons",
+  "url": "https://kenney.nl/assets/game-icons",
+  "tipo": "icons",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "ui",
+   "iconos"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 105 iconos en PNG (1x, 2x) y vector (vector_blackIcons, vector_whiteIcons)",
+  "nota": "Iconos genéricos de interfaz (flechas, cofres, ajustes).",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "vector_blackIcons / vector_whiteIcons",
+    "para": "iconos del editor y del HUD si hay que rehacerlos",
+    "url": "https://kenney.nl/assets/game-icons"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-input-prompts",
+  "titulo": "Kenney · Input Prompts",
+  "url": "https://kenney.nl/assets/input-prompts",
+  "tipo": "icons",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "ui",
+   "mandos"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 1500 archivos: teclado y ratón, Xbox Series, PlayStation Series, Nintendo Switch, Steam Deck, Touch…",
+  "nota": "Glifos de botones por mando (el juego ya dibuja glifos por jugador).",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "Keyboard & Mouse / Xbox Series / PlayStation Series / Nintendo Switch / Steam Deck (Default, Double, Vector)",
+    "para": "glifos del HUD y del menú de controles por tipo de mando",
+    "url": "https://kenney.nl/assets/input-prompts"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-fonts",
+  "titulo": "Kenney · Fonts",
+  "url": "https://kenney.nl/assets/kenney-fonts",
+  "tipo": "fuentes",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "fuentes"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 11 fuentes .ttf (leídas del ZIP)",
+  "nota": "Fuentes pixel y geométricas sin atribución.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "Kenney Pixel, Kenney Pixel Square, Kenney Mini Square Mono",
+    "para": "textos de la recreativa y los minijuegos",
+    "url": "https://kenney.nl/assets/kenney-fonts"
+   },
+   {
+    "nombre": "Kenney Future, Kenney Future Narrow",
+    "para": "HUD tecnológico del museo moderno",
+    "url": "https://kenney.nl/assets/kenney-fonts"
+   },
+   {
+    "nombre": "Kenney Blocks, Kenney Rocket",
+    "para": "titulares de pantalla de resultados",
+    "url": "https://kenney.nl/assets/kenney-fonts"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-cursor-pack",
+  "titulo": "Kenney · Cursor Pack",
+  "url": "https://kenney.nl/assets/cursor-pack",
+  "tipo": "icons",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "ui"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 180 archivos",
+  "nota": "Cursores para el editor de niveles.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "cursores de flecha y de mano",
+    "para": "editor de niveles con ratón",
+    "url": "https://kenney.nl/assets/cursor-pack"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-emotes-pack",
+  "titulo": "Kenney · Emotes Pack",
+  "url": "https://kenney.nl/assets/emotes-pack",
+  "tipo": "icons",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "ui",
+   "emotes"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 480 archivos (pixel y vector)",
+  "nota": "Emoticonos sobre la cabeza del guardia (alerta, duda, sueño).",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "PNG/Vector y PNG/Pixel (hojas pixel_style1 … 7)",
+    "para": "burbujas de estado de los guardias y del ninja",
+    "url": "https://kenney.nl/assets/emotes-pack"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-board-game-icons",
+  "titulo": "Kenney · Board Game Icons",
+  "url": "https://kenney.nl/assets/board-game-icons",
+  "tipo": "icons",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "ui",
+   "minijuegos"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 250 archivos SVG/PNG",
+  "nota": "Dados, cartas y fichas para los juegos del dojo.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "dados, cartas y fichas",
+    "para": "iconos de los juegos de mesa del dojo",
+    "url": "https://kenney.nl/assets/board-game-icons"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "kenney-particle-pack",
+  "titulo": "Kenney · Particle Pack",
+  "url": "https://kenney.nl/assets/particle-pack",
+  "tipo": "arte",
+  "etiquetas": [
+   "kenney",
+   "cc0",
+   "vfx",
+   "particulas"
+  ],
+  "licencia": "CC0 1.0 (leído en la página del pack; sin atribución). 80 texturas 512×512 (circle, dirt, fire, flame, light, magic, smoke, spark, star, twirl…)",
+  "nota": "Texturas para GPUParticles3D.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "smoke_01 … , spark_01 …, star_01 …",
+    "para": "humo del ninja al desaparecer, chispas al forzar cerraduras",
+    "url": "https://kenney.nl/assets/particle-pack"
+   },
+   {
+    "nombre": "magic_01 …, twirl_01 …",
+    "para": "destellos de botín al cogerlo",
+    "url": "https://kenney.nl/assets/particle-pack"
+   },
+   {
+    "nombre": "dirt_01 …, scratch_01 …",
+    "para": "polvo al caer y arañazos",
+    "url": "https://kenney.nl/assets/particle-pack"
+   }
+  ],
+  "dominio": "kenney.nl",
+  "relacionadas": [
+   {
+    "propuesta": "kenney-castle-kit",
+    "nombre": "Castle Kit"
+   },
+   {
+    "propuesta": "kenney-food-kit",
+    "nombre": "Food Kit"
+   },
+   {
+    "propuesta": "kenney-car-kit",
+    "nombre": "Car Kit"
+   },
+   {
+    "propuesta": "kenney-mini-arcade",
+    "nombre": "Mini Arcade"
+   },
+   {
+    "propuesta": "kenney-impact-sounds",
+    "nombre": "Impact Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-interface-sounds",
+    "nombre": "Interface Sounds (Kenney)"
+   },
+   {
+    "propuesta": "kenney-rpg-audio",
+    "nombre": "RPG Audio (Kenney)"
+   }
+  ]
+ },
+ {
+  "id": "quaternius-licencia",
+  "titulo": "Quaternius · sitio y licencia",
+  "url": "https://quaternius.com/license.html",
+  "tipo": "otro",
+  "etiquetas": [
+   "quaternius",
+   "licencia",
+   "cc0"
+  ],
+  "licencia": "Quaternius: los packs antiguos son CC0 y los nuevos van con la Quaternius Asset License v1.0 (uso personal, educativo y comercial sin atribución; no se pueden revender ni redistribuir como assets). Leído en quaternius.com/license.html",
+  "nota": "La versión gratuita de cada pack basta; la «Source» de pago añade proyectos de motor. Sus modelos también están en Poly Pizza.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "Todos los packs",
+    "para": "qué cogemos de cada uno está en las fichas de cada pack",
+    "url": "https://quaternius.com"
+   }
+  ],
+  "dominio": "quaternius.com",
+  "relacionadas": []
+ },
+ {
+  "id": "quaternius-ultimate-monsters",
+  "titulo": "Quaternius · Ultimate Monsters",
+  "url": "https://quaternius.com/packs/ultimatemonsters.html",
+  "tipo": "modelos",
+  "etiquetas": [
+   "quaternius",
+   "cc0",
+   "low-poly",
+   "personajes",
+   "animaciones"
+  ],
+  "licencia": "CC0 (según la página del pack). 50 modelos animados",
+  "nota": "Las etiquetas del pack en la portada de Quaternius incluyen ninja, ghost, skull, yeti, panda, bee, bat y chicken. En Poly Pizza hay un modelo «Ninja» de Quaternius (CC0), sin confirmar que sea de este pack.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "Ninja (Quaternius, en Poly Pizza)",
+    "para": "referencia para el ninja del juego o un ninja enemigo del Museo de Arte Contemporáneo",
+    "url": "https://poly.pizza/m/xGYmeDpfTu"
+   },
+   {
+    "nombre": "los 50 monstruos animados",
+    "para": "fantasmas del Castillo, mascotas absurdas del Museo Cotidiano y figurantes",
+    "url": "https://quaternius.com/packs/ultimatemonsters.html"
+   }
+  ],
+  "dominio": "quaternius.com",
+  "relacionadas": []
+ },
+ {
+  "id": "quaternius-animated-dinosaurs",
+  "titulo": "Quaternius · Animated Dinosaur Pack",
+  "url": "https://quaternius.com/packs/animateddinosaurs.html",
+  "tipo": "modelos",
+  "etiquetas": [
+   "quaternius",
+   "cc0",
+   "low-poly",
+   "animaciones",
+   "prehistoria"
+  ],
+  "licencia": "CC0 (según la página del pack). 6 dinosaurios animados",
+  "nota": "Para Prehistoria. En Poly Pizza está el «T-Rex» (CC0).",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "T-Rex",
+    "para": "reemplazo o compañero del esqueleto de dinosaurio de Prehistoria",
+    "url": "https://poly.pizza/m/UYtneO5FpF"
+   },
+   {
+    "nombre": "los 6 dinosaurios animados",
+    "para": "dioramas de Prehistoria (versión viva de las piezas)",
+    "url": "https://quaternius.com/packs/animateddinosaurs.html"
+   }
+  ],
+  "dominio": "quaternius.com",
+  "relacionadas": []
+ },
+ {
+  "id": "quaternius-fantasy-props-megakit",
+  "titulo": "Quaternius · Fantasy Props MegaKit",
+  "url": "https://quaternius.com/packs/fantasypropsmegakit.html",
+  "tipo": "modelos",
+  "etiquetas": [
+   "quaternius",
+   "cc0",
+   "low-poly",
+   "medieval",
+   "props"
+  ],
+  "licencia": "Licencia QAL (Quaternius) según su página; la versión estándar es gratuita. 200+ modelos",
+  "nota": "La página dice: armas, herramientas, verduras, pociones, puestos de mercado, cofres, muebles. Solo 4 texturas para todo.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "armas y herramientas",
+    "para": "espadas, hachas y escudos de las vitrinas del Castillo",
+    "url": "https://quaternius.com/packs/fantasypropsmegakit.html"
+   },
+   {
+    "nombre": "pociones y cofres",
+    "para": "botín del Castillo y trofeos",
+    "url": "https://quaternius.com/packs/fantasypropsmegakit.html"
+   },
+   {
+    "nombre": "puestos de mercado y muebles",
+    "para": "mercado medieval de la ciudad y salas del Castillo",
+    "url": "https://quaternius.com/packs/fantasypropsmegakit.html"
+   }
+  ],
+  "dominio": "quaternius.com",
+  "relacionadas": []
+ },
+ {
+  "id": "quaternius-medieval-village-megakit",
+  "titulo": "Quaternius · Medieval Village MegaKit",
+  "url": "https://quaternius.com/packs/medievalvillagemegakit.html",
+  "tipo": "modelos",
+  "etiquetas": [
+   "quaternius",
+   "cc0",
+   "low-poly",
+   "medieval",
+   "modular"
+  ],
+  "licencia": "CC0 (según la página). 300+ modelos",
+  "nota": "Muros que valen por dentro y por fuera; techos, escaleras, puertas, ventanas y enredaderas.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "muros, suelos, escaleras, techos, puertas y ventanas modulares",
+    "para": "construir salas y fachadas del museo Castillo",
+    "url": "https://quaternius.com/packs/medievalvillagemegakit.html"
+   }
+  ],
+  "dominio": "quaternius.com",
+  "relacionadas": []
+ },
+ {
+  "id": "quaternius-downtown-city-megakit",
+  "titulo": "Quaternius · Downtown City MegaKit",
+  "url": "https://quaternius.com/packs/downtowncitymegakit.html",
+  "tipo": "modelos",
+  "etiquetas": [
+   "quaternius",
+   "cc0",
+   "low-poly",
+   "ciudad",
+   "modular"
+  ],
+  "licencia": "CC0 (según la página). 300+ modelos",
+  "nota": "Edificios modulares y calles con siete edificios de ejemplo; trae shader de ventanas.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "piezas de edificio y calle",
+    "para": "más variedad de edificios para los museos modernos y la ciudad",
+    "url": "https://quaternius.com/packs/downtowncitymegakit.html"
+   }
+  ],
+  "dominio": "quaternius.com",
+  "relacionadas": []
+ },
+ {
+  "id": "quaternius-universal-animation-library",
+  "titulo": "Quaternius · Universal Animation Library",
+  "url": "https://quaternius.com/packs/universalanimationlibrary.html",
+  "tipo": "modelos",
+  "etiquetas": [
+   "quaternius",
+   "cc0",
+   "animaciones",
+   "personajes"
+  ],
+  "licencia": "CC0 (según la página). 120+ animaciones",
+  "nota": "Locomoción en 8 direcciones, sprint, arrastrarse, nadar, sentarse, muertes; probado en Godot. Hay una segunda (130+ animaciones: combos, parkour…).",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "locomoción, arrastrarse y sentarse",
+    "para": "ninja y guardias: caminar, agacharse y sentarse en escondites",
+    "url": "https://quaternius.com/packs/universalanimationlibrary.html"
+   },
+   {
+    "nombre": "Universal Animation Library 2",
+    "para": "combos, parkour, pesca y locomoción zombi",
+    "url": "https://quaternius.com/packs/universalanimationlibrary2.html"
+   }
+  ],
+  "dominio": "quaternius.com",
+  "relacionadas": []
+ },
+ {
+  "id": "quaternius-universal-base-characters",
+  "titulo": "Quaternius · Universal Base Characters",
+  "url": "https://quaternius.com/packs/universalbasecharacters.html",
+  "tipo": "modelos",
+  "etiquetas": [
+   "quaternius",
+   "cc0",
+   "personajes"
+  ],
+  "licencia": "CC0 (según la página). 6 modelos base y 20 peinados",
+  "nota": "Personajes con rig humanoide compatibles con la Universal Animation Library.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "6 personajes base + 20 peinados",
+    "para": "visitantes y miembros de la banda con variedad",
+    "url": "https://quaternius.com/packs/universalbasecharacters.html"
+   },
+   {
+    "nombre": "Modular Character Outfits - Fantasy (12 conjuntos)",
+    "para": "guardias del Castillo con armadura por piezas",
+    "url": "https://quaternius.com/packs/modularcharacteroutfitsfantasy.html"
+   }
+  ],
+  "dominio": "quaternius.com",
+  "relacionadas": []
+ },
+ {
+  "id": "quaternius-junk-food",
+  "titulo": "Quaternius · Junk Food Pack",
+  "url": "https://quaternius.com/packs/junkfood.html",
+  "tipo": "modelos",
+  "etiquetas": [
+   "quaternius",
+   "cc0",
+   "low-poly",
+   "comida",
+   "trofeos"
+  ],
+  "licencia": "CC0 (según la página). 16 modelos: pizza, helado, perritos, galletas…",
+  "nota": "Pack antiguo (2017), FBX/OBJ/Blend.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "pizza, helado, hot dog, galletas",
+    "para": "trofeos comestibles del museo cotidiano absurdo",
+    "url": "https://quaternius.com/packs/junkfood.html"
+   }
+  ],
+  "dominio": "quaternius.com",
+  "relacionadas": []
+ },
+ {
+  "id": "quaternius-ultimate-modular-ruins",
+  "titulo": "Quaternius · Ultimate Modular Ruins",
+  "url": "https://quaternius.com/packs/ultimatemodularruins.html",
+  "tipo": "modelos",
+  "etiquetas": [
+   "quaternius",
+   "cc0",
+   "low-poly",
+   "clasico",
+   "ruinas"
+  ],
+  "licencia": "CC0 (según la página). 90 modelos",
+  "nota": "Ruinas modulares para la Villa Clásica.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "90 modelos de ruinas modulares",
+    "para": "patio de ruinas de la Villa Clásica",
+    "url": "https://quaternius.com/packs/ultimatemodularruins.html"
+   }
+  ],
+  "dominio": "quaternius.com",
+  "relacionadas": []
+ },
+ {
+  "id": "quaternius-ultimate-home-interior",
+  "titulo": "Quaternius · Ultimate Home Interior",
+  "url": "https://quaternius.com/packs/ultimatehomeinterior.html",
+  "tipo": "modelos",
+  "etiquetas": [
+   "quaternius",
+   "cc0",
+   "low-poly",
+   "muebles",
+   "dojo"
+  ],
+  "licencia": "CC0 (según la página). 123 modelos",
+  "nota": "Alternativa de estilo al Furniture Kit de Kenney para el dojo.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "muebles y decoración de casa",
+    "para": "habitaciones del dojo y objetos del museo cotidiano",
+    "url": "https://quaternius.com/packs/ultimatehomeinterior.html"
+   }
+  ],
+  "dominio": "quaternius.com",
+  "relacionadas": []
+ },
+ {
+  "id": "quaternius-ultimate-nature",
+  "titulo": "Quaternius · Ultimate Nature y Stylized Nature",
+  "url": "https://quaternius.com/packs/ultimatenature.html",
+  "tipo": "modelos",
+  "etiquetas": [
+   "quaternius",
+   "cc0",
+   "low-poly",
+   "naturaleza"
+  ],
+  "licencia": "CC0 (según la página). Ultimate Nature: 150 modelos; Stylized Nature (63 modelos): ultimatestylizednature.html",
+  "nota": "Naturaleza: dos packs (150 y 63 modelos).",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "Ultimate Nature Pack (150)",
+    "para": "dioramas de Ciencias Naturales",
+    "url": "https://quaternius.com/packs/ultimatenature.html"
+   },
+   {
+    "nombre": "Ultimate Stylized Nature (63)",
+    "para": "jardines de la Villa y del dojo",
+    "url": "https://quaternius.com/packs/ultimatestylizednature.html"
+   }
+  ],
+  "dominio": "quaternius.com",
+  "relacionadas": []
+ },
+ {
+  "id": "quaternius-medieval-weapons",
+  "titulo": "Quaternius · Medieval Weapons",
+  "url": "https://quaternius.com/packs/medievalweapons.html",
+  "tipo": "modelos",
+  "etiquetas": [
+   "quaternius",
+   "cc0",
+   "low-poly",
+   "medieval",
+   "armas"
+  ],
+  "licencia": "CC0 (según la página). 24 modelos",
+  "nota": "Armas medievales sueltas.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "24 armas medievales",
+    "para": "espada en la piedra y vitrinas del Castillo",
+    "url": "https://quaternius.com/packs/medievalweapons.html"
+   }
+  ],
+  "dominio": "quaternius.com",
+  "relacionadas": []
+ },
+ {
+  "id": "kaykit-furniture-bits",
+  "titulo": "KayKit · Furniture Bits",
+  "url": "https://kaylousberg.itch.io/furniture-bits",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly",
+   "muebles"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución). 50+ modelos",
+  "nota": "Atlas de un solo degradado (1024×1024).",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "50+ muebles",
+    "para": "dojo y salas del museo cotidiano",
+    "url": "https://kaylousberg.itch.io/furniture-bits"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-halloween-bits",
+  "titulo": "KayKit · Halloween Bits",
+  "url": "https://kaylousberg.itch.io/halloween-bits",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly",
+   "terror"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución). 60+ modelos",
+  "nota": "Cementerio y cosas de miedo.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "60+ modelos de Halloween",
+    "para": "ala de terror del Castillo y rincón de Halloween del museo cotidiano",
+    "url": "https://kaylousberg.itch.io/halloween-bits"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-dungeon",
+  "titulo": "KayKit · Dungeon Pack (legado)",
+  "url": "https://kaylousberg.itch.io/kaykit-dungeon",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly",
+   "medieval",
+   "personajes"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución). 200+ modelos",
+  "nota": "Hay una versión remasterizada en otra página. Trae 4 aventureros (caballero, mago, bárbaro, pícaro), 24 armas y botín.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "caballero, mago, bárbaro y pícaro",
+    "para": "guardias del Castillo y estatuas de armadura",
+    "url": "https://kaylousberg.itch.io/kaykit-dungeon"
+   },
+   {
+    "nombre": "24 armas, botín, oro y pociones",
+    "para": "trofeos y vitrinas del Castillo",
+    "url": "https://kaylousberg.itch.io/kaykit-dungeon"
+   },
+   {
+    "nombre": "muros, suelos y escaleras",
+    "para": "mazmorra bajo el museo Castillo",
+    "url": "https://kaylousberg.itch.io/kaykit-dungeon"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-medieval-hexagon",
+  "titulo": "KayKit · Medieval Hexagon Pack",
+  "url": "https://kaylousberg.itch.io/kaykit-medieval-hexagon",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly",
+   "medieval"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución). 200+ modelos",
+  "nota": "Casillas hexagonales de un pueblo medieval.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "herrería, iglesia, taberna, mercado, molino, torres",
+    "para": "maqueta del pueblo medieval para el museo Castillo",
+    "url": "https://kaylousberg.itch.io/kaykit-medieval-hexagon"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-adventurers",
+  "titulo": "KayKit · Character Pack: Adventurers",
+  "url": "https://kaylousberg.itch.io/kaykit-adventurers",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly",
+   "personajes",
+   "animaciones"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución). 5 personajes animados (+3 en la versión extra)",
+  "nota": "Con 25+ accesorios: espadas, escudos, arcos, cetros.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "5 aventureros con rig y animaciones",
+    "para": "guardias del Castillo o el dojo",
+    "url": "https://kaylousberg.itch.io/kaykit-adventurers"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-character-animations",
+  "titulo": "KayKit · Character Animations",
+  "url": "https://kaylousberg.itch.io/kaykit-character-animations",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "animaciones"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución)",
+  "nota": "Animaciones humanoides gratuitas para los personajes KayKit.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "animaciones humanoides",
+    "para": "probar animaciones en el ninja o un guardia nuevo",
+    "url": "https://kaylousberg.itch.io/kaykit-character-animations"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-skeletons",
+  "titulo": "KayKit · Character Pack: Skeletons",
+  "url": "https://kaylousberg.itch.io/kaykit-skeletons",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly",
+   "personajes",
+   "animaciones"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución)",
+  "nota": "Esqueletos animados.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "esqueletos animados",
+    "para": "esqueleto de las salas de terror o figurantes en Ciencias Naturales",
+    "url": "https://kaylousberg.itch.io/kaykit-skeletons"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-forest",
+  "titulo": "KayKit · Forest Nature Pack",
+  "url": "https://kaylousberg.itch.io/kaykit-forest",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly",
+   "naturaleza"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución)",
+  "nota": "Árboles, rocas, hierba.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "árboles, rocas y hierba",
+    "para": "dioramas de Ciencias Naturales",
+    "url": "https://kaylousberg.itch.io/kaykit-forest"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-rpg-tools-bits",
+  "titulo": "KayKit · RPG Tools Bits",
+  "url": "https://kaylousberg.itch.io/rpg-tools-bits",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly",
+   "herramientas"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución)",
+  "nota": "Herramientas y equipo de RPG.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "herramientas y equipo",
+    "para": "botín de la banda y trofeos de excavación",
+    "url": "https://kaylousberg.itch.io/rpg-tools-bits"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-fantasy-weapons-bits",
+  "titulo": "KayKit · Fantasy Weapons Bits",
+  "url": "https://kaylousberg.itch.io/fantasy-weapons-bits",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly",
+   "armas"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución)",
+  "nota": "Espadas, arcos, hachas, escudos, varitas y dagas.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "espadas, escudos, dagas y varitas",
+    "para": "vitrinas del Castillo",
+    "url": "https://kaylousberg.itch.io/fantasy-weapons-bits"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-restaurant-bits",
+  "titulo": "KayKit · Restaurant Bits",
+  "url": "https://kaylousberg.itch.io/restaurant-bits",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly",
+   "comida"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución)",
+  "nota": "Comida y cocina de restaurante.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "platos, comida y cocina",
+    "para": "cafetería del museo y trofeos cotidianos",
+    "url": "https://kaylousberg.itch.io/restaurant-bits"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-board-game-bits",
+  "titulo": "KayKit · Board Game Bits",
+  "url": "https://kaylousberg.itch.io/board-game-bits",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly",
+   "minijuegos"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución)",
+  "nota": "Accesorios de juegos de mesa.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "dados, cartas y fichas",
+    "para": "juegos del dojo en 3D",
+    "url": "https://kaylousberg.itch.io/board-game-bits"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-city-builder-bits",
+  "titulo": "KayKit · City Builder Bits",
+  "url": "https://kaylousberg.itch.io/city-builder-bits",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly",
+   "ciudad"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución)",
+  "nota": "Edificios y vehículos de ciudad.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "edificios y vehículos",
+    "para": "variedad extra en la ciudad",
+    "url": "https://kaylousberg.itch.io/city-builder-bits"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-resource-bits",
+  "titulo": "KayKit · Resource Bits",
+  "url": "https://kaylousberg.itch.io/resource-bits",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly",
+   "botin"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución)",
+  "nota": "Materiales y recursos.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "lingotes, madera, piedra",
+    "para": "botín genérico y decorado de excavación",
+    "url": "https://kaylousberg.itch.io/resource-bits"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-prototype-bits",
+  "titulo": "KayKit · Prototype Bits",
+  "url": "https://kaylousberg.itch.io/prototype-bits",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly",
+   "prototipos"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución)",
+  "nota": "Formas básicas para prototipos.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "formas básicas",
+    "para": "probar tamaños de salas y bloques",
+    "url": "https://kaylousberg.itch.io/prototype-bits"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-holiday-bits",
+  "titulo": "KayKit · Holiday Bits",
+  "url": "https://kaylousberg.itch.io/holiday-bits",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly",
+   "kitsch"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución)",
+  "nota": "Modelos festivos.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "modelos de fiestas",
+    "para": "rincón kitsch del museo cotidiano",
+    "url": "https://kaylousberg.itch.io/holiday-bits"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-platformer",
+  "titulo": "KayKit · Platformer Pack",
+  "url": "https://kaylousberg.itch.io/kaykit-platformer",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución)",
+  "nota": "Elementos, obstáculos y trampas de plataformas.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "obstáculos y trampas",
+    "para": "minijuegos en 3D del dojo",
+    "url": "https://kaylousberg.itch.io/kaykit-platformer"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-space-base-bits",
+  "titulo": "KayKit · Space Base Bits",
+  "url": "https://kaylousberg.itch.io/space-base-bits",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly",
+   "ciencias"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución)",
+  "nota": "Base espacial.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "módulos de base espacial",
+    "para": "sala del espacio de Ciencias Naturales",
+    "url": "https://kaylousberg.itch.io/space-base-bits"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "kaykit-block-bits",
+  "titulo": "KayKit · Block Bits",
+  "url": "https://kaylousberg.itch.io/block-bits",
+  "tipo": "modelos",
+  "etiquetas": [
+   "kaykit",
+   "cc0",
+   "low-poly"
+  ],
+  "licencia": "CC0 (leído en la página del pack en itch.io; sin atribución)",
+  "nota": "Bloques.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "bloques",
+    "para": "prototipos y juguetes del dojo",
+    "url": "https://kaylousberg.itch.io/block-bits"
+   }
+  ],
+  "dominio": "kaylousberg.itch.io",
+  "relacionadas": [
+   {
+    "propuesta": "kaykit-dungeon-remastered",
+    "nombre": "KayKit Dungeon Pack Remastered"
+   },
+   {
+    "propuesta": "kaykit-adventurers",
+    "nombre": "KayKit Character Pack: Adventurers"
+   }
+  ]
+ },
+ {
+  "id": "poly-pizza-estatuas-usadas",
+  "titulo": "Poly Pizza · estatuas que ya usamos",
+  "url": "https://poly.pizza/explore",
+  "tipo": "modelos",
+  "etiquetas": [
+   "poly-pizza",
+   "cc0",
+   "low-poly",
+   "estatuas"
+  ],
+  "licencia": "CC0 (según Procedencia)",
+  "nota": "statue-a y statue-b vienen de aquí; el autor exacto no se anotó (ver Procedencia).",
+  "fecha": "2026-09-29",
+  "estado": "usada",
+  "items": [
+   {
+    "nombre": "statue-a / statue-b",
+    "para": "estatuas de las salas y de la peana «statue»",
+    "url": "https://poly.pizza",
+    "ya_lo_usamos": true
+   }
+  ],
+  "dominio": "poly.pizza",
+  "relacionadas": [
+   {
+    "propuesta": "quaternius-dinosaurios",
+    "nombre": "Animated Dinosaur Bundle"
+   },
+   {
+    "propuesta": "quaternius-gema",
+    "nombre": "Gem Green (Poly Pizza)"
+   }
+  ]
+ },
+ {
+  "id": "poly-google-oso-usado",
+  "titulo": "Poly by Google · Black bear",
+  "url": "https://poly.pizza/m/56ym_pyVnel",
+  "tipo": "modelos",
+  "etiquetas": [
+   "poly-pizza",
+   "cc-by",
+   "low-poly",
+   "animales"
+  ],
+  "licencia": "CC-BY (Creative Commons Attribution) leído en la ficha; exige atribución",
+  "nota": "Ya no lo carga ningún script, pero sigue en el repositorio: mientras esté, hay que dar la atribución.",
+  "fecha": "2026-09-29",
+  "estado": "usada",
+  "items": [
+   {
+    "nombre": "Black bear",
+    "para": "oso de pie de Ciencias Naturales (ya sustituido por oso.glb)",
+    "url": "https://poly.pizza/m/56ym_pyVnel",
+    "ya_lo_usamos": true
+   }
+  ],
+  "dominio": "poly.pizza",
+  "relacionadas": [
+   {
+    "propuesta": "quaternius-dinosaurios",
+    "nombre": "Animated Dinosaur Bundle"
+   },
+   {
+    "propuesta": "quaternius-gema",
+    "nombre": "Gem Green (Poly Pizza)"
+   }
+  ]
+ },
+ {
+  "id": "poly-pizza-cc0-museo",
+  "titulo": "Poly Pizza · selección CC0 para los museos",
+  "url": "https://poly.pizza/search/museum",
+  "tipo": "modelos",
+  "etiquetas": [
+   "poly-pizza",
+   "cc0",
+   "low-poly",
+   "trofeos"
+  ],
+  "licencia": "CC0 (Public Domain) leído en la ficha de cada modelo de esta lista",
+  "nota": "Modelos sueltos de autores CC0 (Quaternius, Kenney, Kay Lousberg, CreativeTrio…). Sin atribución. Todos con enlace a su ficha.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "Rubber Duck (CreativeTrio)",
+    "para": "patito de goma: trofeo de Ciencias Naturales",
+    "url": "https://poly.pizza/m/oH3dEdlDpB"
+   },
+   {
+    "nombre": "Ducky (Isa Lousberg)",
+    "para": "patito de goma alternativo, más redondo",
+    "url": "https://poly.pizza/m/gt2eYOyOvU"
+   },
+   {
+    "nombre": "Egg (Quaternius)",
+    "para": "huevo de dinosaurio de Prehistoria (habría que moteárselo)",
+    "url": "https://poly.pizza/m/ngjyRi84lk"
+   },
+   {
+    "nombre": "Egg (Kenney)",
+    "para": "huevo alternativo de Prehistoria",
+    "url": "https://poly.pizza/m/7AertTbq90"
+   },
+   {
+    "nombre": "Bone y Large Bone (Quaternius)",
+    "para": "huesos de Prehistoria",
+    "url": "https://poly.pizza/m/uMs0lDp1u3"
+   },
+   {
+    "nombre": "T-Rex (Quaternius)",
+    "para": "esqueleto/estatua de dinosaurio",
+    "url": "https://poly.pizza/m/UYtneO5FpF"
+   },
+   {
+    "nombre": "Skull (Quaternius, Kay Lousberg)",
+    "para": "cráneos de Prehistoria y Ciencias",
+    "url": "https://poly.pizza/m/YgmRBtFlcF"
+   },
+   {
+    "nombre": "Axe Stone (Quaternius)",
+    "para": "hacha de piedra de Prehistoria",
+    "url": "https://poly.pizza/m/XnqO64KhYx"
+   },
+   {
+    "nombre": "Stone Pickaxe (Quaternius)",
+    "para": "pico de piedra de Prehistoria",
+    "url": "https://poly.pizza/m/pvOeJ5EcpW"
+   },
+   {
+    "nombre": "Crystal (iPoly3D)",
+    "para": "cristales y minerales de Ciencias Naturales",
+    "url": "https://poly.pizza/m/WzWPKHFMkL"
+   },
+   {
+    "nombre": "Gem Green (Quaternius)",
+    "para": "gema del ala de minerales",
+    "url": "https://poly.pizza/m/kbgiCMzdxg"
+   },
+   {
+    "nombre": "Cactus (Quaternius)",
+    "para": "diorama del desierto en Ciencias Naturales",
+    "url": "https://poly.pizza/m/HsEJgRLQWX"
+   },
+   {
+    "nombre": "Fish (Quaternius)",
+    "para": "peces de Ciencias Naturales",
+    "url": "https://poly.pizza/m/BEcU9rjiAq"
+   },
+   {
+    "nombre": "Globe (CreativeTrio)",
+    "para": "globo terráqueo alternativo",
+    "url": "https://poly.pizza/m/Y4Dof9b2p5"
+   },
+   {
+    "nombre": "Column (Quaternius)",
+    "para": "columnas de la Villa Clásica",
+    "url": "https://poly.pizza/m/wLubNpOTX4"
+   },
+   {
+    "nombre": "Fountain (Isa Lousberg)",
+    "para": "fuente de la Villa Clásica",
+    "url": "https://poly.pizza/m/WHc7dwttlk"
+   },
+   {
+    "nombre": "Horse Statue / Stag Statue / Fox Statue (Quaternius)",
+    "para": "estatuas de animales de la Villa (kitsch)",
+    "url": "https://poly.pizza/m/AK9CmjFnL6"
+   },
+   {
+    "nombre": "Chalice (Quaternius)",
+    "para": "cáliz del Castillo medieval",
+    "url": "https://poly.pizza/m/VZencXtC2I"
+   },
+   {
+    "nombre": "Crown (Quaternius)",
+    "para": "corona del Castillo medieval",
+    "url": "https://poly.pizza/m/i0PZVuVlYv"
+   },
+   {
+    "nombre": "Sword (Quaternius)",
+    "para": "espada en la piedra (la espada)",
+    "url": "https://poly.pizza/m/ajOJ2NLz5m"
+   },
+   {
+    "nombre": "Shield y Shield Round (Quaternius)",
+    "para": "escudos del Castillo",
+    "url": "https://poly.pizza/m/srN1KGAO7f"
+   },
+   {
+    "nombre": "Armor Metal (Quaternius)",
+    "para": "armadura del Castillo",
+    "url": "https://poly.pizza/m/TMUoxILh9w"
+   },
+   {
+    "nombre": "Cannon (Quaternius)",
+    "para": "cañón del Castillo",
+    "url": "https://poly.pizza/m/J15vlPVvKK"
+   },
+   {
+    "nombre": "Torch (Quaternius)",
+    "para": "antorchas de las salas",
+    "url": "https://poly.pizza/m/Gq38E7hFZw"
+   },
+   {
+    "nombre": "Scroll y Parchment (Quaternius)",
+    "para": "códice y manuscritos",
+    "url": "https://poly.pizza/m/MWGB9nxMIc"
+   },
+   {
+    "nombre": "Open Book (Quaternius)",
+    "para": "libro del códice de Leonardo",
+    "url": "https://poly.pizza/m/FsCIGEfTEs"
+   },
+   {
+    "nombre": "Candles (Quaternius)",
+    "para": "velas de cualquier sala",
+    "url": "https://poly.pizza/m/AnzHB44wlW"
+   },
+   {
+    "nombre": "Key (Quaternius)",
+    "para": "llave del sello",
+    "url": "https://poly.pizza/m/bg6e1lfNsO"
+   },
+   {
+    "nombre": "Chest, Chest Gold, Chest with Gold (Quaternius)",
+    "para": "cofres de botín",
+    "url": "https://poly.pizza/m/O72u4Drp8k"
+   },
+   {
+    "nombre": "Coin (Quaternius)",
+    "para": "monedas de botín",
+    "url": "https://poly.pizza/m/QHZtj94fvh"
+   },
+   {
+    "nombre": "Trophy (CreativeTrio)",
+    "para": "copa de trofeo",
+    "url": "https://poly.pizza/m/fLy8KmmD1t"
+   },
+   {
+    "nombre": "Banana Bundle (BlenderVoyage)",
+    "para": "Arte contemporáneo: plátano",
+    "url": "https://poly.pizza/m/1ySgHdwK0q"
+   },
+   {
+    "nombre": "Toilet (Quaternius)",
+    "para": "váter dorado de Arte contemporáneo",
+    "url": "https://poly.pizza/m/WAu50yGFVt"
+   },
+   {
+    "nombre": "Traffic Cone (Quaternius)",
+    "para": "cono en la cabeza de una estatua: gag de Arte contemporáneo",
+    "url": "https://poly.pizza/m/lAx8JytxGD"
+   },
+   {
+    "nombre": "Mannequin (reyshapes)",
+    "para": "maniquí de Arte contemporáneo",
+    "url": "https://poly.pizza/m/tYwjQJvcFX"
+   },
+   {
+    "nombre": "Toaster (Kenney, MilkAndBanana)",
+    "para": "tostadora del museo cotidiano",
+    "url": "https://poly.pizza/m/wALulTo6gm"
+   },
+   {
+    "nombre": "Alarm Clock (CreativeTrio)",
+    "para": "despertador del museo cotidiano",
+    "url": "https://poly.pizza/m/y5f363OS9C"
+   },
+   {
+    "nombre": "Bottle Ketchup (Kenney) y Ketchup Bottle (Quaternius)",
+    "para": "bote de ketchup (trofeo)",
+    "url": "https://poly.pizza/m/Yi64J2aKtI"
+   },
+   {
+    "nombre": "Cheese (Kay Lousberg)",
+    "para": "queso lunar (trofeo)",
+    "url": "https://poly.pizza/m/PzVtWHjNRj"
+   },
+   {
+    "nombre": "Donut (Quaternius)",
+    "para": "donut trofeo",
+    "url": "https://poly.pizza/m/UQRRrsP3wj"
+   },
+   {
+    "nombre": "Sofa (Quaternius)",
+    "para": "sofá del dojo o del museo cotidiano",
+    "url": "https://poly.pizza/m/X5kQPKzAWp"
+   },
+   {
+    "nombre": "Coffin (Kay Lousberg)",
+    "para": "sarcófago/ataúd",
+    "url": "https://poly.pizza/m/ySERERWPgE"
+   },
+   {
+    "nombre": "Books (CreativeTrio)",
+    "para": "libros",
+    "url": "https://poly.pizza/m/dxt7dETAy9"
+   },
+   {
+    "nombre": "Painting (CreativeTrio)",
+    "para": "cuadro rupestre o de sala",
+    "url": "https://poly.pizza/m/Pi6oReAizt"
+   },
+   {
+    "nombre": "Ninja (Quaternius)",
+    "para": "ninja alternativo (dos variantes)",
+    "url": "https://poly.pizza/m/mCNoqcqpvC"
+   },
+   {
+    "nombre": "Guard Tower (Quaternius)",
+    "para": "torre de vigilancia del Castillo",
+    "url": "https://poly.pizza/m/sbaM8I229r"
+   }
+  ],
+  "dominio": "poly.pizza",
+  "relacionadas": [
+   {
+    "propuesta": "quaternius-dinosaurios",
+    "nombre": "Animated Dinosaur Bundle"
+   },
+   {
+    "propuesta": "quaternius-gema",
+    "nombre": "Gem Green (Poly Pizza)"
+   }
+  ]
+ },
+ {
+  "id": "poly-pizza-cc-by-museo",
+  "titulo": "Poly Pizza · selección CC-BY para los museos (con atribución)",
+  "url": "https://poly.pizza/search/dinosaur",
+  "tipo": "modelos",
+  "etiquetas": [
+   "poly-pizza",
+   "cc-by",
+   "low-poly",
+   "trofeos"
+  ],
+  "licencia": "Creative Commons Attribution (CC-BY) leído en la ficha de cada modelo; obliga a dar crédito al autor",
+  "nota": "Solo si el CC0 no da; hay que sumar la atribución en Procedencia y en los créditos (como con el oso).",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "Rubber Duck (Poly by Google)",
+    "para": "patito de goma de Ciencias Naturales",
+    "url": "https://poly.pizza/m/9pffFcv7LSm"
+   },
+   {
+    "nombre": "Rubber Duck (J-Toastie)",
+    "para": "patito de goma alternativo",
+    "url": "https://poly.pizza/m/71P9WRRZ4F"
+   },
+   {
+    "nombre": "Teeth (Poly by Google)",
+    "para": "dentadura de Prehistoria/objetos antiquísimos",
+    "url": "https://poly.pizza/m/eNR_DPPP1Hp"
+   },
+   {
+    "nombre": "Shark tooth (Poly by Google)",
+    "para": "diente fósil de Prehistoria",
+    "url": "https://poly.pizza/m/6lZSwZSWTPw"
+   },
+   {
+    "nombre": "Dinosaur (Poly by Google)",
+    "para": "dinosaurio pequeño de vitrina",
+    "url": "https://poly.pizza/m/f5AfWX7Fyeb"
+   },
+   {
+    "nombre": "Ground sloth (Poly by Google)",
+    "para": "perezoso gigante de Prehistoria",
+    "url": "https://poly.pizza/m/34WS63awSqJ"
+   },
+   {
+    "nombre": "Butterfly (Poly by Google)",
+    "para": "mariposas de Ciencias Naturales",
+    "url": "https://poly.pizza/m/e9NAQQrCbLu"
+   },
+   {
+    "nombre": "Microscope (Username12)",
+    "para": "microscopio de Ciencias Naturales",
+    "url": "https://poly.pizza/m/q9zNs4U5NG"
+   },
+   {
+    "nombre": "Globe (jeremy)",
+    "para": "globo terráqueo",
+    "url": "https://poly.pizza/m/2445qv4neDQ"
+   },
+   {
+    "nombre": "Doric Greek Column (Victor Viña)",
+    "para": "columna dórica de la Villa Clásica",
+    "url": "https://poly.pizza/m/5VD5-v8NBZ4"
+   },
+   {
+    "nombre": "Amphora (Bruno Oliveira)",
+    "para": "ánfora de la Villa Clásica",
+    "url": "https://poly.pizza/m/7Q8MkXjALbL"
+   },
+   {
+    "nombre": "Anubis Statue (Zach Miller)",
+    "para": "estatua de Anubis del tema antiguo",
+    "url": "https://poly.pizza/m/9iPeQxL30oq"
+   },
+   {
+    "nombre": "Sword in the Stone (Jarlan Perez)",
+    "para": "trofeo espada en la piedra del Castillo",
+    "url": "https://poly.pizza/m/3XX56qjUA5-"
+   },
+   {
+    "nombre": "Throne (Poly by Google)",
+    "para": "trono del Castillo",
+    "url": "https://poly.pizza/m/bpFCWQSs-aT"
+   },
+   {
+    "nombre": "Catapult (Poly by Google)",
+    "para": "catapulta / máquinas de Leonardo",
+    "url": "https://poly.pizza/m/9ahVI0EijEi"
+   },
+   {
+    "nombre": "Balloon (Poly by Google)",
+    "para": "globo aerostático absurdo, cerca de la máquina voladora",
+    "url": "https://poly.pizza/m/7Fej0Jd3_Di"
+   },
+   {
+    "nombre": "Pyramid (Poly by Google)",
+    "para": "pirámide del tema antiguo",
+    "url": "https://poly.pizza/m/c-tEGK9e49p"
+   },
+   {
+    "nombre": "Socks (MiniPoly)",
+    "para": "calcetín: trofeo del museo cotidiano",
+    "url": "https://poly.pizza/m/hcfzStK2HR"
+   },
+   {
+    "nombre": "Cactus (Poly by Google)",
+    "para": "cactus de Ciencias Naturales",
+    "url": "https://poly.pizza/m/9UCcl_W0Xq3"
+   },
+   {
+    "nombre": "Penguin (Poly by Google)",
+    "para": "pingüino de Ciencias Naturales",
+    "url": "https://poly.pizza/m/fBXvsC6pe_V"
+   },
+   {
+    "nombre": "Toilet (Poly by Google)",
+    "para": "váter de Arte contemporáneo",
+    "url": "https://poly.pizza/m/1Xudt9ErVxm"
+   },
+   {
+    "nombre": "Banana (Poly by Google)",
+    "para": "plátano de Arte contemporáneo",
+    "url": "https://poly.pizza/m/ahOO6wz8sV0"
+   },
+   {
+    "nombre": "Trophy (Casey Tumbers)",
+    "para": "trofeo genérico",
+    "url": "https://poly.pizza/m/6Xu7mttjodo"
+   }
+  ],
+  "dominio": "poly.pizza",
+  "relacionadas": [
+   {
+    "propuesta": "quaternius-dinosaurios",
+    "nombre": "Animated Dinosaur Bundle"
+   },
+   {
+    "propuesta": "quaternius-gema",
+    "nombre": "Gem Green (Poly Pizza)"
+   }
+  ]
+ },
+ {
+  "id": "poly-pizza-poly-by-google",
+  "titulo": "Poly Pizza · archivo de Poly by Google",
+  "url": "https://poly.pizza/u/Poly%20by%20Google",
+  "tipo": "modelos",
+  "etiquetas": [
+   "poly-pizza",
+   "cc-by",
+   "low-poly"
+  ],
+  "licencia": "CC-BY (Creative Commons Attribution): la página del autor lista 2.294 modelos",
+  "nota": "El archivo de Google Poly: miles de objetos sencillos. Todos exigen atribución.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "Black bear",
+    "para": "oso ya usado",
+    "url": "https://poly.pizza/m/56ym_pyVnel",
+    "ya_lo_usamos": true
+   },
+   {
+    "nombre": "archivo entero (2.294 modelos)",
+    "para": "cualquier objeto pequeño que falte; hay que dar crédito",
+    "url": "https://poly.pizza/u/Poly%20by%20Google"
+   }
+  ],
+  "dominio": "poly.pizza",
+  "relacionadas": [
+   {
+    "propuesta": "quaternius-dinosaurios",
+    "nombre": "Animated Dinosaur Bundle"
+   },
+   {
+    "propuesta": "quaternius-gema",
+    "nombre": "Gem Green (Poly Pizza)"
+   }
+  ]
+ },
+ {
+  "id": "poly-pizza-quaternius",
+  "titulo": "Poly Pizza · modelos de Quaternius",
+  "url": "https://poly.pizza/u/Quaternius",
+  "tipo": "modelos",
+  "etiquetas": [
+   "poly-pizza",
+   "cc0",
+   "low-poly",
+   "quaternius"
+  ],
+  "licencia": "CC0 (Public Domain) en las fichas leídas",
+  "nota": "Todos los modelos de Quaternius sueltos, con búsqueda y descarga individual (mejor que bajar un pack entero).",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "página de autor",
+    "para": "coger solo las piezas que necesitemos de sus packs",
+    "url": "https://poly.pizza/u/Quaternius"
+   }
+  ],
+  "dominio": "poly.pizza",
+  "relacionadas": [
+   {
+    "propuesta": "quaternius-dinosaurios",
+    "nombre": "Animated Dinosaur Bundle"
+   },
+   {
+    "propuesta": "quaternius-gema",
+    "nombre": "Gem Green (Poly Pizza)"
+   }
+  ]
+ },
+ {
+  "id": "poly-pizza-kenney",
+  "titulo": "Poly Pizza · modelos de Kenney",
+  "url": "https://poly.pizza/u/Kenney",
+  "tipo": "modelos",
+  "etiquetas": [
+   "poly-pizza",
+   "cc0",
+   "low-poly",
+   "kenney"
+  ],
+  "licencia": "CC0 (Public Domain) en las fichas leídas",
+  "nota": "Piezas sueltas de Kenney (toaster, egg, cheese, bottle-ketchup…).",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "página de autor",
+    "para": "piezas sueltas de sus kits sin bajar el ZIP",
+    "url": "https://poly.pizza/u/Kenney"
+   }
+  ],
+  "dominio": "poly.pizza",
+  "relacionadas": [
+   {
+    "propuesta": "quaternius-dinosaurios",
+    "nombre": "Animated Dinosaur Bundle"
+   },
+   {
+    "propuesta": "quaternius-gema",
+    "nombre": "Gem Green (Poly Pizza)"
+   }
+  ]
+ },
+ {
+  "id": "oga-3d-cc0",
+  "titulo": "OpenGameArt · 3D CC0",
+  "url": "https://opengameart.org/art-search-advanced?keys=&field_art_type_tid%5B%5D=10",
+  "tipo": "modelos",
+  "etiquetas": [
+   "opengameart",
+   "cc0",
+   "3d"
+  ],
+  "licencia": "Cada obra lleva su licencia (CC0, CC-BY 3.0/4.0, CC-BY-SA, GPL, OGA-BY); las de esta lista son CC0 (leído en su página)",
+  "nota": "Buscador de OpenGameArt filtrado a 3D; abajo, hallazgos concretos con licencia CC0 verificada en su ficha.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "3TD Fantasy Ruins Pack",
+    "para": "ruinas de la Villa Clásica y el Castillo",
+    "url": "https://opengameart.org/content/3td-fantasy-ruins-pack"
+   },
+   {
+    "nombre": "Free Pillars models / Free Pillars 02",
+    "para": "columnas de la Villa Clásica",
+    "url": "https://opengameart.org/content/free-pillars-models"
+   },
+   {
+    "nombre": "Lowpoly Trajan's column model",
+    "para": "columna trajana para la Villa Clásica",
+    "url": "https://opengameart.org/content/lowpoly-trajans-column-model"
+   },
+   {
+    "nombre": "3d Greek Weapons Set",
+    "para": "armas griegas de la Villa Clásica",
+    "url": "https://opengameart.org/content/3d-greek-weapons-set"
+   },
+   {
+    "nombre": "Aspis hoplite shield",
+    "para": "escudo hoplita de la Villa Clásica",
+    "url": "https://opengameart.org/content/aspis-hoplite-shield"
+   },
+   {
+    "nombre": "Achilles Spartan Greek Warrior",
+    "para": "estatua guerrera de la Villa Clásica",
+    "url": "https://opengameart.org/content/achilles-spartan-greek-warrior"
+   },
+   {
+    "nombre": "Medieval Statue / Knight statue",
+    "para": "estatuas del Castillo",
+    "url": "https://opengameart.org/content/medieval-statue"
+   },
+   {
+    "nombre": "3D Castle / Dungeon Tileset Extended",
+    "para": "salas del Castillo",
+    "url": "https://opengameart.org/content/3d-castle-dungeon-tileset-extended"
+   },
+   {
+    "nombre": "Cethiel's Weapons 3D",
+    "para": "armas para vitrinas",
+    "url": "https://opengameart.org/content/cethiels-weapons-3d"
+   },
+   {
+    "nombre": "Egg and cracked egg",
+    "para": "huevo de dinosaurio y huevo roto (eclosión)",
+    "url": "https://opengameart.org/content/egg-and-cracked-egg"
+   },
+   {
+    "nombre": "Low Spec Triceratops / Dromaeosaur Dinosaur",
+    "para": "dinosaurios de Prehistoria",
+    "url": "https://opengameart.org/content/low-spec-triceratops"
+   },
+   {
+    "nombre": "Skeleton with rig",
+    "para": "esqueleto con rig",
+    "url": "https://opengameart.org/content/skeleton-with-rig"
+   },
+   {
+    "nombre": "Shuriken / 3D Shuriken Pack",
+    "para": "shurikens del ninja y del dojo",
+    "url": "https://opengameart.org/content/3d-shuriken-pack"
+   },
+   {
+    "nombre": "Neptunian Museum - Museum Model",
+    "para": "referencia de edificio de museo",
+    "url": "https://opengameart.org/content/neptunian-museum-museum-model"
+   },
+   {
+    "nombre": "Household Containers",
+    "para": "objetos domésticos del museo cotidiano",
+    "url": "https://opengameart.org/content/household-containers"
+   },
+   {
+    "nombre": "Animated Characters Pack",
+    "para": "personajes animados",
+    "url": "https://opengameart.org/content/animated-characters-pack"
+   }
+  ],
+  "dominio": "opengameart.org",
+  "relacionadas": [
+   {
+    "propuesta": "oga-100-cc0-metal-wood",
+    "nombre": "100 CC0 Metal and Wood SFX"
+   },
+   {
+    "propuesta": "oga-100-cc0-sfx",
+    "nombre": "100 CC0 SFX"
+   },
+   {
+    "propuesta": "oga-sneaky-music-pack",
+    "nombre": "Sneaky Music Pack"
+   }
+  ]
+ },
+ {
+  "id": "oga-sonido-cc0",
+  "titulo": "OpenGameArt · efectos de sonido CC0",
+  "url": "https://opengameart.org/art-search-advanced?keys=&field_art_type_tid%5B%5D=13",
+  "tipo": "audio",
+  "etiquetas": [
+   "opengameart",
+   "cc0",
+   "sfx"
+  ],
+  "licencia": "Cada obra lleva su licencia (CC0, CC-BY 3.0/4.0, CC-BY-SA, GPL, OGA-BY); las de esta lista son CC0 (leído en su página)",
+  "nota": "Packs de efectos con CC0 verificada en su página.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "Short alarm",
+    "para": "alarma corta del museo",
+    "url": "https://opengameart.org/content/short-alarm"
+   },
+   {
+    "nombre": "75 CC0 breaking / falling / hit sfx",
+    "para": "roturas, golpes y caídas: vitrina, armadura, guardia",
+    "url": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx"
+   },
+   {
+    "nombre": "100 CC0 SFX y 100 CC0 SFX #2",
+    "para": "sonidos varios de juego",
+    "url": "https://opengameart.org/content/100-cc0-sfx"
+   },
+   {
+    "nombre": "Swishes Sound Pack",
+    "para": "movimientos rápidos del ninja",
+    "url": "https://opengameart.org/content/swishes-sound-pack"
+   },
+   {
+    "nombre": "Fantozzi's Footsteps (Grass/Sand & Stone)",
+    "para": "pasos por tierra y piedra: Prehistoria y calle",
+    "url": "https://opengameart.org/content/fantozzis-footsteps-grasssand-stone"
+   },
+   {
+    "nombre": "Wood Wobbling & Rattling",
+    "para": "muebles que se tambalean",
+    "url": "https://opengameart.org/content/wood-wobbling-rattling"
+   },
+   {
+    "nombre": "27 Metal Audio Samples (SFX)",
+    "para": "metales: armaduras y rejas",
+    "url": "https://opengameart.org/content/27-metal-audio-samples-sfx"
+   },
+   {
+    "nombre": "Level up, power up, Coin get (13 Sounds)",
+    "para": "logros y monedas",
+    "url": "https://opengameart.org/content/level-up-power-up-coin-get-13-sounds"
+   },
+   {
+    "nombre": "50 RPG sound effects / 80 CC0 RPG SFX",
+    "para": "efectos de fantasía para el Castillo",
+    "url": "https://opengameart.org/content/50-rpg-sound-effects"
+   }
+  ],
+  "dominio": "opengameart.org",
+  "relacionadas": [
+   {
+    "propuesta": "oga-100-cc0-metal-wood",
+    "nombre": "100 CC0 Metal and Wood SFX"
+   },
+   {
+    "propuesta": "oga-100-cc0-sfx",
+    "nombre": "100 CC0 SFX"
+   },
+   {
+    "propuesta": "oga-sneaky-music-pack",
+    "nombre": "Sneaky Music Pack"
+   }
+  ]
+ },
+ {
+  "id": "oga-musica-cc0",
+  "titulo": "OpenGameArt · música CC0",
+  "url": "https://opengameart.org/art-search-advanced?keys=&field_art_type_tid%5B%5D=12",
+  "tipo": "audio",
+  "etiquetas": [
+   "opengameart",
+   "cc0",
+   "musica"
+  ],
+  "licencia": "Cada obra lleva su licencia (CC0, CC-BY 3.0/4.0, CC-BY-SA, GPL, OGA-BY); las de esta lista son CC0 (leído en su página)",
+  "nota": "Piezas con CC0 verificada en su página (Espionage lleva además OGA-BY 3.0).",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "Heavy Heist",
+    "para": "música de atraco para la noche de robo",
+    "url": "https://opengameart.org/content/heavy-heist"
+   },
+   {
+    "nombre": "Espionage",
+    "para": "música de sigilo (CC0 y OGA-BY 3.0)",
+    "url": "https://opengameart.org/content/espionage"
+   },
+   {
+    "nombre": "Backup Plan",
+    "para": "tema de planificación de la banda",
+    "url": "https://opengameart.org/content/backup-plan"
+   },
+   {
+    "nombre": "Deliberate Concealment",
+    "para": "tema de esconderse",
+    "url": "https://opengameart.org/content/deliberate-concealment"
+   },
+   {
+    "nombre": "Medieval: The Old Tower Inn / The Bard's Tale / Minstrel Dance",
+    "para": "música del museo Castillo",
+    "url": "https://opengameart.org/content/medieval-the-old-tower-inn"
+   },
+   {
+    "nombre": "Bossa Nova",
+    "para": "música de ascensor para el museo cotidiano",
+    "url": "https://opengameart.org/content/bossa-nova"
+   },
+   {
+    "nombre": "Shop Theme",
+    "para": "tienda de recuerdos",
+    "url": "https://opengameart.org/content/shop-theme"
+   }
+  ],
+  "dominio": "opengameart.org",
+  "relacionadas": [
+   {
+    "propuesta": "oga-100-cc0-metal-wood",
+    "nombre": "100 CC0 Metal and Wood SFX"
+   },
+   {
+    "propuesta": "oga-100-cc0-sfx",
+    "nombre": "100 CC0 SFX"
+   },
+   {
+    "propuesta": "oga-sneaky-music-pack",
+    "nombre": "Sneaky Music Pack"
+   }
+  ]
+ },
+ {
+  "id": "polyhaven-modelos",
+  "titulo": "Poly Haven · modelos",
+  "url": "https://polyhaven.com/models",
+  "tipo": "modelos",
+  "etiquetas": [
+   "polyhaven",
+   "cc0",
+   "fotoescaneados"
+  ],
+  "licencia": "CC0 (leído en polyhaven.com/license: todo el sitio)",
+  "nota": "Son escaneos detallados (muchos polígonos): no combinan con el low-poly, pero sirven de referencia y para hornear a baja resolución. Nombres leídos de la API.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "Rubber Duck Toy",
+    "para": "referencia del patito de goma",
+    "url": "https://polyhaven.com/a/rubber_duck_toy"
+   },
+   {
+    "nombre": "Marble Bust 01",
+    "para": "referencia de busto de mármol",
+    "url": "https://polyhaven.com/a/marble_bust_01"
+   },
+   {
+    "nombre": "Gothic Statue",
+    "para": "referencia de estatua del Castillo",
+    "url": "https://polyhaven.com/a/gothic_statue"
+   },
+   {
+    "nombre": "Large Castle Door",
+    "para": "referencia para las puertas del Castillo",
+    "url": "https://polyhaven.com/a/large_castle_door"
+   },
+   {
+    "nombre": "Kite Shield / Ornate Medieval Dagger / Ornate Medieval Mace",
+    "para": "armas de vitrina del Castillo",
+    "url": "https://polyhaven.com/a/kite_shield"
+   },
+   {
+    "nombre": "Moon Rock 01 … 07",
+    "para": "meteoritos y rocas lunares",
+    "url": "https://polyhaven.com/a/moon_rock_01"
+   },
+   {
+    "nombre": "Lambis Shell",
+    "para": "concha de Ciencias Naturales",
+    "url": "https://polyhaven.com/a/lambis_shell"
+   },
+   {
+    "nombre": "Garden Gnome",
+    "para": "gnomo: trofeo del museo cotidiano",
+    "url": "https://polyhaven.com/a/garden_gnome"
+   },
+   {
+    "nombre": "Vintage Microscope / Magnifying Glass 01",
+    "para": "laboratorio de Ciencias Naturales",
+    "url": "https://polyhaven.com/a/vintage_microscope"
+   },
+   {
+    "nombre": "Alarm Clock 01 / Mantel Clock 01",
+    "para": "relojes del museo cotidiano",
+    "url": "https://polyhaven.com/a/alarm_clock_01"
+   },
+   {
+    "nombre": "Antique Ceramic Vase 01",
+    "para": "vasija de la Villa Clásica",
+    "url": "https://polyhaven.com/a/antique_ceramic_vase_01"
+   },
+   {
+    "nombre": "Treasure Chest",
+    "para": "cofre de botín",
+    "url": "https://polyhaven.com/a/treasure_chest"
+   },
+   {
+    "nombre": "Security Camera 01 / 02",
+    "para": "cámaras de seguridad de los museos",
+    "url": "https://polyhaven.com/a/security_camera_01"
+   },
+   {
+    "nombre": "Fancy Picture Frame 01 / 02",
+    "para": "marcos de cuadros",
+    "url": "https://polyhaven.com/a/fancy_picture_frame_01"
+   },
+   {
+    "nombre": "Chandelier 01 … 03",
+    "para": "lámparas de araña de la Villa",
+    "url": "https://polyhaven.com/a/Chandelier_01"
+   }
+  ],
+  "dominio": "polyhaven.com",
+  "relacionadas": []
+ },
+ {
+  "id": "polyhaven-hdris",
+  "titulo": "Poly Haven · HDRI",
+  "url": "https://polyhaven.com/hdris",
+  "tipo": "texturas",
+  "etiquetas": [
+   "polyhaven",
+   "cc0",
+   "hdri",
+   "cielos"
+  ],
+  "licencia": "CC0 (polyhaven.com/license)",
+  "nota": "Cielos e interiores (nombres leídos de la API). El juego usa noches propias; sirve para reflejos y para el visor de piezas.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "church_museum",
+    "para": "reflejo del visor de piezas: interior tipo museo",
+    "url": "https://polyhaven.com/a/church_museum"
+   },
+   {
+    "nombre": "museum_of_ethnography",
+    "para": "reflejo para bustos y vitrinas",
+    "url": "https://polyhaven.com/a/museum_of_ethnography"
+   },
+   {
+    "nombre": "hall_of_mammals",
+    "para": "sala de Ciencias Naturales como referencia",
+    "url": "https://polyhaven.com/a/hall_of_mammals"
+   },
+   {
+    "nombre": "penguin_museum",
+    "para": "sala de Ciencias Naturales como referencia",
+    "url": "https://polyhaven.com/a/penguin_museum"
+   },
+   {
+    "nombre": "moonlit_golf / moonless_golf",
+    "para": "cielos nocturnos de la ciudad",
+    "url": "https://polyhaven.com/a/moonlit_golf"
+   },
+   {
+    "nombre": "cobblestone_street_night, courtyard_night",
+    "para": "noche en patio y calle",
+    "url": "https://polyhaven.com/a/courtyard_night"
+   },
+   {
+    "nombre": "dresden_station_night, modern_buildings_night",
+    "para": "noche urbana",
+    "url": "https://polyhaven.com/a/modern_buildings_night"
+   },
+   {
+    "nombre": "bank_vault",
+    "para": "reflejo de la sala de la caja fuerte",
+    "url": "https://polyhaven.com/a/bank_vault"
+   }
+  ],
+  "dominio": "polyhaven.com",
+  "relacionadas": []
+ },
+ {
+  "id": "polyhaven-texturas",
+  "titulo": "Poly Haven · texturas",
+  "url": "https://polyhaven.com/textures",
+  "tipo": "texturas",
+  "etiquetas": [
+   "polyhaven",
+   "cc0",
+   "texturas",
+   "pbr"
+  ],
+  "licencia": "CC0 (polyhaven.com/license)",
+  "nota": "Materiales PBR de alta calidad.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "suelos de mármol, madera y roca",
+    "para": "suelos de las cinco salas (bajados a baja resolución)",
+    "url": "https://polyhaven.com/textures"
+   }
+  ],
+  "dominio": "polyhaven.com",
+  "relacionadas": []
+ },
+ {
+  "id": "ambientcg",
+  "titulo": "ambientCG · materiales",
+  "url": "https://ambientcg.com",
+  "tipo": "texturas",
+  "etiquetas": [
+   "ambientcg",
+   "cc0",
+   "texturas",
+   "pbr"
+  ],
+  "licencia": "CC0 1.0 (leído en docs.ambientcg.com/license; se puede incluir en el juego)",
+  "nota": "Más de 2.800 activos (materiales, HDRI, modelos). Identificadores leídos de su API.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "Marble012, Marble016, Marble021",
+    "para": "suelos y zócalos de la Villa Clásica",
+    "url": "https://ambientcg.com/view?id=Marble012"
+   },
+   {
+    "nombre": "Onyx015, Onyx013",
+    "para": "plintos de ónice del Museo de Arte Contemporáneo",
+    "url": "https://ambientcg.com/view?id=Onyx015"
+   },
+   {
+    "nombre": "Terrazzo013, Terrazzo005, Terrazzo018",
+    "para": "suelo de terrazo del vestíbulo de los museos modernos",
+    "url": "https://ambientcg.com/view?id=Terrazzo013"
+   },
+   {
+    "nombre": "Carpet016, Carpet012, Carpet001",
+    "para": "alfombras de pasillos (ligadas a los pasos de moqueta)",
+    "url": "https://ambientcg.com/view?id=Carpet016"
+   },
+   {
+    "nombre": "Bricks105, Bricks097",
+    "para": "muros de ladrillo de la ciudad y del dojo",
+    "url": "https://ambientcg.com/view?id=Bricks105"
+   },
+   {
+    "nombre": "Rock064, Rock063, Rock058",
+    "para": "rocas del diorama de Prehistoria",
+    "url": "https://ambientcg.com/view?id=Rock064"
+   },
+   {
+    "nombre": "Leather037, Leather038",
+    "para": "tapizados del dojo y sillones",
+    "url": "https://ambientcg.com/view?id=Leather037"
+   },
+   {
+    "nombre": "PaintedPlaster017, Plaster001",
+    "para": "paredes interiores de museo",
+    "url": "https://ambientcg.com/view?id=PaintedPlaster017"
+   },
+   {
+    "nombre": "Travertine009",
+    "para": "travertino: suelo de la Villa Clásica",
+    "url": "https://ambientcg.com/view?id=Travertine009"
+   },
+   {
+    "nombre": "NightSkyHDRI003, NightSkyHDRI008",
+    "para": "cielos nocturnos",
+    "url": "https://ambientcg.com/view?id=NightSkyHDRI003"
+   }
+  ],
+  "dominio": "ambientcg.com",
+  "relacionadas": []
+ },
+ {
+  "id": "sketchfab-cc",
+  "titulo": "Sketchfab · modelos descargables con licencia Creative Commons",
+  "url": "https://sketchfab.com/tags/cc0",
+  "tipo": "modelos",
+  "etiquetas": [
+   "sketchfab",
+   "cc0",
+   "cc-by"
+  ],
+  "licencia": "Cada modelo tiene su licencia (CC0, CC-BY, CC-BY-SA, CC-BY-NC…); solo CC0 y CC-BY sirven para un juego comercial. Comprobado por búsqueda; sin contenido verificado en la propia página",
+  "nota": "Enorme catálogo de esculturas y museos escaneados. Descarga en glTF con cuenta. Revisar la licencia de cada modelo antes de usarlo.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "etiqueta cc0",
+    "para": "esculturas y bustos para la Villa Clásica y el Castillo",
+    "url": "https://sketchfab.com/tags/cc0"
+   }
+  ],
+  "dominio": "sketchfab.com",
+  "relacionadas": []
+ },
+ {
+  "id": "itch-assets-cc0",
+  "titulo": "itch.io · assets CC0",
+  "url": "https://itch.io/game-assets/assets-cc0",
+  "tipo": "modelos",
+  "etiquetas": [
+   "itch",
+   "cc0"
+  ],
+  "licencia": "CC0 (filtro del sitio; comprobar cada pack)",
+  "nota": "2.728 resultados. Aquí están KayKit y Quaternius (que ya están en la lista) y muchos packs 2D.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "Ninja Adventure - Asset Pack (pixel-boy)",
+    "para": "solo si hiciéramos un minijuego 2D de ninjas",
+    "url": "https://itch.io/game-assets/assets-cc0"
+   },
+   {
+    "nombre": "monogram (datagoblin)",
+    "para": "fuente pixel",
+    "url": "https://itch.io/game-assets/assets-cc0"
+   }
+  ],
+  "dominio": "itch.io",
+  "relacionadas": []
+ },
+ {
+  "id": "synty-polygon-starter",
+  "titulo": "Synty · POLYGON Starter Pack (gratis)",
+  "url": "https://syntystore.com/products/polygon-starter-pack",
+  "tipo": "modelos",
+  "etiquetas": [
+   "synty",
+   "low-poly",
+   "gratis"
+  ],
+  "licencia": "Licencia de compra única de Synty: uso comercial permitido; prohíbe redistribuir los assets tal cual y compartir sus ficheros fuente fuera del equipo (leído en syntystore.com/pages/one-time-purchase-licence)",
+  "nota": "Gratis, pero con licencia propia (5 puestos por unidad). Si el repositorio fuera público, los modelos no podrían ir dentro. Estilo distinto al nuestro.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "Personaje vaquero, coche rojo y props",
+    "para": "casi nada útil: mejor no",
+    "url": "https://syntystore.com/products/polygon-starter-pack"
+   }
+  ],
+  "dominio": "syntystore.com",
+  "relacionadas": []
+ },
+ {
+  "id": "mixamo",
+  "titulo": "Mixamo · personajes y animaciones",
+  "url": "https://www.mixamo.com",
+  "tipo": "modelos",
+  "etiquetas": [
+   "mixamo",
+   "personajes",
+   "animaciones",
+   "adobe"
+  ],
+  "licencia": "Gratis con Adobe ID. Royalty-free para uso personal, comercial y sin ánimo de lucro; no se pueden redistribuir los ficheros crudos de personajes o animaciones ni empaquetarlos (según el FAQ oficial de Adobe, leído por resultado de búsqueda porque helpx devuelve 403 a curl)",
+  "nota": "Rig automático solo para humanoides bípedos. Los nombres exactos de animaciones no se han verificado (la web exige sesión): son orientativos.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "animaciones de sigilo (agachado, andar de puntillas, escondido)",
+    "para": "el ninja al colarse por los museos",
+    "url": "https://www.mixamo.com"
+   },
+   {
+    "nombre": "animaciones de reacción (sorpresa, caída, dormir de pie)",
+    "para": "guardias que se asustan o duermen",
+    "url": "https://www.mixamo.com"
+   },
+   {
+    "nombre": "auto-rig del ninja y del guardia",
+    "para": "probar animaciones sobre nuestros modelos antes de animar a mano",
+    "url": "https://www.mixamo.com"
+   }
+  ],
+  "dominio": "mixamo.com",
+  "relacionadas": []
+ },
+ {
+  "id": "freesound",
+  "titulo": "Freesound · efectos de sonido",
+  "url": "https://freesound.org",
+  "tipo": "audio",
+  "etiquetas": [
+   "freesound",
+   "cc0",
+   "cc-by",
+   "sfx"
+  ],
+  "licencia": "Cada sonido tiene la suya: CC0, CC-BY (atribución) o CC-BY-NC (no comercial, no vale) (leído en freesound.org/help/faq)",
+  "nota": "Filtrar por licencia «Creative Commons 0». No se ha podido consultar la API (necesita clave), así que no hay sonidos concretos verificados.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "búsqueda CC0: cristal roto",
+    "para": "rotura de vitrina",
+    "url": "https://freesound.org/search/?q=glass+break&f=license%3A%22Creative+Commons+0%22"
+   },
+   {
+    "nombre": "búsqueda CC0: pasos, puertas, alarmas, cuac",
+    "para": "sonidos del museo y del patito de goma",
+    "url": "https://freesound.org/search/?q=rubber+duck&f=license%3A%22Creative+Commons+0%22"
+   }
+  ],
+  "dominio": "freesound.org",
+  "relacionadas": []
+ },
+ {
+  "id": "sonniss-gdc",
+  "titulo": "Sonniss · GDC Game Audio Bundle",
+  "url": "https://sonniss.com/gameaudiogdc/",
+  "tipo": "audio",
+  "etiquetas": [
+   "sonniss",
+   "sfx",
+   "gratis"
+  ],
+  "licencia": "Royalty-free y de uso comercial, sin atribución; no se pueden redistribuir como archivos sueltos; prohibido entrenar IA (leído con lector web; curl devuelve 403)",
+  "nota": "Paquetes anuales de miles de efectos profesionales. El último visto es el de 2024 (9 partes). Pesado (decenas de GB).",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "GDC 2024 (9 partes)",
+    "para": "efectos realistas de puertas, cristales, metal y pasos",
+    "url": "https://sonniss.com/gameaudiogdc/"
+   }
+  ],
+  "dominio": "sonniss.com",
+  "relacionadas": []
+ },
+ {
+  "id": "pixabay-audio",
+  "titulo": "Pixabay · música y efectos",
+  "url": "https://pixabay.com/sound-effects/",
+  "tipo": "audio",
+  "etiquetas": [
+   "pixabay",
+   "sfx",
+   "musica"
+  ],
+  "licencia": "Licencia de Contenido de Pixabay: uso libre sin atribución (recomendada), prohibido vender o distribuir el contenido solo; contenido con marcas reconocibles puede limitarse (leído con lector web; curl devuelve 403)",
+  "nota": "Cubre imágenes, vídeo y audio. Cuidado con obras con derechos de terceros dentro.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "efectos y música",
+    "para": "relleno de ambiente si no hay CC0 mejor",
+    "url": "https://pixabay.com/sound-effects/"
+   }
+  ],
+  "dominio": "pixabay.com",
+  "relacionadas": []
+ },
+ {
+  "id": "incompetech",
+  "titulo": "Incompetech · música de Kevin MacLeod",
+  "url": "https://incompetech.com/music/royalty-free/music.html",
+  "tipo": "audio",
+  "etiquetas": [
+   "incompetech",
+   "cc-by",
+   "musica"
+  ],
+  "licencia": "CC BY 4.0: exige crédito visible («Título Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0») (leído en incompetech.com/music/royalty-free/faq.html)",
+  "nota": "Catálogo de 1.443 piezas (lo leí de su pieces.json). En un juego, el crédito va en la pantalla de créditos.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "Thief in the Night (3:05)",
+    "para": "música de sigilo de la noche",
+    "url": "https://incompetech.com/music/royalty-free/music.html"
+   },
+   {
+    "nombre": "Spy Glass (3:47)",
+    "para": "música de espionaje para la casa o el mapa",
+    "url": "https://incompetech.com/music/royalty-free/music.html"
+   },
+   {
+    "nombre": "Cretaceous Dawn (4:05) y Sauropod Spotting (3:45)",
+    "para": "música del museo de Prehistoria",
+    "url": "https://incompetech.com/music/royalty-free/music.html"
+   },
+   {
+    "nombre": "The Britons (5:07), Village Consort (3:35)",
+    "para": "música del museo Castillo (medieval)",
+    "url": "https://incompetech.com/music/royalty-free/music.html"
+   },
+   {
+    "nombre": "Curse of the Scarab (5:27), Return of the Mummy (2:50)",
+    "para": "tema antiguo y Villa Clásica",
+    "url": "https://incompetech.com/music/royalty-free/music.html"
+   },
+   {
+    "nombre": "Grand Dark Waltz, Ancient Mystery Waltz",
+    "para": "vals elegante para los museos clásicos",
+    "url": "https://incompetech.com/music/royalty-free/music.html"
+   },
+   {
+    "nombre": "Quirky Dog (2:29), Monster Promenade (2:30), Local Forecast (2:45)",
+    "para": "humor absurdo del museo cotidiano y menús",
+    "url": "https://incompetech.com/music/royalty-free/music.html"
+   },
+   {
+    "nombre": "Cyborg Ninja (3:00)",
+    "para": "música ninja de Arte contemporáneo o del dojo",
+    "url": "https://incompetech.com/music/royalty-free/music.html"
+   }
+  ],
+  "dominio": "incompetech.com",
+  "relacionadas": []
+ },
+ {
+  "id": "game-icons-net",
+  "titulo": "Game-icons.net · iconos de juego",
+  "url": "https://game-icons.net",
+  "tipo": "icons",
+  "etiquetas": [
+   "game-icons",
+   "cc-by",
+   "iconos",
+   "svg"
+  ],
+  "licencia": "CC BY 3.0: hay que citar al autor de cada icono («Icons made by {autor}. Available on https://game-icons.net») (leído en game-icons.net/about.html)",
+  "nota": "Miles de iconos SVG. Nombres y autores leídos de sus páginas de etiquetas (greek-roman, stone-age, statue, egypt, police, mineral, egg, money, household, ninja).",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "delapouite/discobolus, delapouite/stone-bust, delapouite/gargoyle, delapouite/moai",
+    "para": "iconos de estatuas para la ficha de objetos",
+    "url": "https://game-icons.net/tags/statue.html"
+   },
+   {
+    "nombre": "lorc/dinosaur-egg",
+    "para": "icono del huevo de dinosaurio",
+    "url": "https://game-icons.net/1x1/lorc/dinosaur-egg.html"
+   },
+   {
+    "nombre": "lorc/stone-axe, lorc/bone-knife, lorc/stone-tablet",
+    "para": "iconos de Prehistoria",
+    "url": "https://game-icons.net/tags/stone-age.html"
+   },
+   {
+    "nombre": "caro-asercion/philosopher-bust, lorc/crested-helmet",
+    "para": "iconos de la Villa Clásica",
+    "url": "https://game-icons.net/tags/greek-roman.html"
+   },
+   {
+    "nombre": "lorc/gold-scarab, lorc/ankh, delapouite/anubis, delapouite/bastet",
+    "para": "iconos del tema antiguo",
+    "url": "https://game-icons.net/tags/egypt.html"
+   },
+   {
+    "nombre": "lorc/crowned-skull, lorc/barbute, lorc/visored-helm",
+    "para": "iconos del Castillo",
+    "url": "https://game-icons.net/tags/medieval-fantasy.html"
+   },
+   {
+    "nombre": "lorc/crystal-cluster, faithtoken/minerals, skoll/amethyst",
+    "para": "iconos de minerales",
+    "url": "https://game-icons.net/tags/mineral.html"
+   },
+   {
+    "nombre": "skoll/siren, skoll/baton, andymeneely/police-badge",
+    "para": "iconos de guardias y alarmas",
+    "url": "https://game-icons.net/tags/police.html"
+   },
+   {
+    "nombre": "lorc/globe, lorc/desk-lamp, caro-asercion/fridge",
+    "para": "iconos del museo cotidiano",
+    "url": "https://game-icons.net/tags/household.html"
+   },
+   {
+    "nombre": "darkzaitzev/ninja-head, darkzaitzev/flying-shuriken",
+    "para": "iconos ninja (ya listados en la otra referencia)",
+    "url": "https://game-icons.net/tags/ninja.html"
+   }
+  ],
+  "dominio": "game-icons.net",
+  "relacionadas": [
+   {
+    "propuesta": "game-icons-ninja",
+    "nombre": "Game-icons.net: etiqueta ninja"
+   }
+  ]
+ },
+ {
+  "id": "lucide",
+  "titulo": "Lucide · iconos de interfaz",
+  "url": "https://lucide.dev",
+  "tipo": "icons",
+  "etiquetas": [
+   "lucide",
+   "iconos",
+   "svg",
+   "ui"
+  ],
+  "licencia": "ISC (leído en lucide.dev/license); sin atribución visible",
+  "nota": "Iconos de línea coherentes para el editor.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "iconos de interfaz (lupa, engranaje, candado, ojo)",
+    "para": "editor de niveles y herramientas",
+    "url": "https://lucide.dev"
+   }
+  ],
+  "dominio": "lucide.dev",
+  "relacionadas": []
+ },
+ {
+  "id": "tabler-icons",
+  "titulo": "Tabler Icons",
+  "url": "https://tabler.io/icons",
+  "tipo": "icons",
+  "etiquetas": [
+   "tabler",
+   "iconos",
+   "svg",
+   "ui"
+  ],
+  "licencia": "MIT (según el repositorio de tabler-icons); sin atribución visible",
+  "nota": "Más de 6.000 iconos de línea.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "iconos de interfaz",
+    "para": "editor y ajustes",
+    "url": "https://tabler.io/icons"
+   }
+  ],
+  "dominio": "tabler.io",
+  "relacionadas": []
+ },
+ {
+  "id": "material-symbols",
+  "titulo": "Material Symbols (Google)",
+  "url": "https://fonts.google.com/icons",
+  "tipo": "icons",
+  "etiquetas": [
+   "google",
+   "iconos",
+   "ui"
+  ],
+  "licencia": "Apache 2.0 (según el repositorio google/material-design-icons)",
+  "nota": "Iconos con pesos variables.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "iconos de interfaz",
+    "para": "ajustes y accesibilidad",
+    "url": "https://fonts.google.com/icons"
+   }
+  ],
+  "dominio": "fonts.google.com",
+  "relacionadas": []
+ },
+ {
+  "id": "phosphor-icons",
+  "titulo": "Phosphor Icons",
+  "url": "https://phosphoricons.com",
+  "tipo": "icons",
+  "etiquetas": [
+   "phosphor",
+   "iconos",
+   "ui"
+  ],
+  "licencia": "MIT (según el repositorio phosphor-icons/core)",
+  "nota": "Seis pesos por icono.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "iconos de interfaz",
+    "para": "editor de niveles",
+    "url": "https://phosphoricons.com"
+   }
+  ],
+  "dominio": "phosphoricons.com",
+  "relacionadas": []
+ },
+ {
+  "id": "noto-emoji",
+  "titulo": "Noto Emoji (Google)",
+  "url": "https://fonts.google.com/noto/specimen/Noto+Emoji",
+  "tipo": "fuentes",
+  "etiquetas": [
+   "google",
+   "emoji",
+   "ofl"
+  ],
+  "licencia": "OFL 1.1 (según el repositorio googlefonts/noto-emoji)",
+  "nota": "Emojis para burbujas y carteles.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "emojis monocromos",
+    "para": "reacciones de guardias y de la banda",
+    "url": "https://fonts.google.com/noto/specimen/Noto+Emoji"
+   }
+  ],
+  "dominio": "fonts.google.com",
+  "relacionadas": []
+ },
+ {
+  "id": "openmoji",
+  "titulo": "OpenMoji",
+  "url": "https://openmoji.org",
+  "tipo": "icons",
+  "etiquetas": [
+   "openmoji",
+   "emoji",
+   "cc-by-sa"
+  ],
+  "licencia": "CC BY-SA 4.0 (según el repositorio hfg-gmuend/openmoji): copyleft, mejor evitar",
+  "nota": "Solo referencia: la licencia Share-Alike complica el juego.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "emojis",
+    "para": "no coger",
+    "url": "https://openmoji.org"
+   }
+  ],
+  "dominio": "openmoji.org",
+  "relacionadas": []
+ },
+ {
+  "id": "fuentes-usadas",
+  "titulo": "Google Fonts · Press Start 2P, UnifrakturMaguntia, Abril Fatface (ya usadas)",
+  "url": "https://fonts.google.com/specimen/Press+Start+2P",
+  "tipo": "fuentes",
+  "etiquetas": [
+   "google-fonts",
+   "ofl"
+  ],
+  "licencia": "OFL 1.1",
+  "nota": "Ya están en assets/fonts.",
+  "fecha": "2026-09-29",
+  "estado": "usada",
+  "items": [
+   {
+    "nombre": "Press Start 2P",
+    "para": "textos de recreativa y menús",
+    "url": "https://fonts.google.com/specimen/Press+Start+2P",
+    "ya_lo_usamos": true
+   },
+   {
+    "nombre": "UnifrakturMaguntia",
+    "para": "rótulos góticos del Castillo",
+    "url": "https://fonts.google.com/specimen/UnifrakturMaguntia",
+    "ya_lo_usamos": true
+   },
+   {
+    "nombre": "Abril Fatface",
+    "para": "titulares",
+    "url": "https://fonts.google.com/specimen/Abril+Fatface",
+    "ya_lo_usamos": true
+   }
+  ],
+  "dominio": "fonts.google.com",
+  "relacionadas": []
+ },
+ {
+  "id": "google-fonts-tematicas",
+  "titulo": "Google Fonts · fuentes por museo",
+  "url": "https://fonts.google.com",
+  "tipo": "fuentes",
+  "etiquetas": [
+   "google-fonts",
+   "ofl",
+   "apache"
+  ],
+  "licencia": "OFL 1.1 salvo indicación (leído en el METADATA.pb de cada fuente en google/fonts): Apache 2.0 en Permanent Marker, Special Elite, Luckiest Guy y Rock Salt",
+  "nota": "Familias para los rótulos de cada museo.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "Cinzel (OFL)",
+    "para": "rótulos de la Villa Clásica (capitales romanas)",
+    "url": "https://fonts.google.com/specimen/Cinzel"
+   },
+   {
+    "nombre": "MedievalSharp (OFL), Pirata One (OFL), IM Fell English (OFL)",
+    "para": "carteles del museo Castillo",
+    "url": "https://fonts.google.com/specimen/MedievalSharp"
+   },
+   {
+    "nombre": "Uncial Antiqua (OFL)",
+    "para": "códice de Leonardo y manuscritos",
+    "url": "https://fonts.google.com/specimen/Uncial+Antiqua"
+   },
+   {
+    "nombre": "Bangers (OFL)",
+    "para": "onomatopeyas y golpes (cómic)",
+    "url": "https://fonts.google.com/specimen/Bangers"
+   },
+   {
+    "nombre": "Permanent Marker (Apache 2.0), Rock Salt (Apache 2.0)",
+    "para": "carteles a mano del Museo Cotidiano",
+    "url": "https://fonts.google.com/specimen/Permanent+Marker"
+   },
+   {
+    "nombre": "Special Elite (Apache 2.0)",
+    "para": "fichas de detenido a máquina de escribir",
+    "url": "https://fonts.google.com/specimen/Special+Elite"
+   },
+   {
+    "nombre": "Creepster (OFL)",
+    "para": "sala de terror",
+    "url": "https://fonts.google.com/specimen/Creepster"
+   },
+   {
+    "nombre": "Fredoka (OFL), Lilita One (OFL)",
+    "para": "menús redondeados y divertidos",
+    "url": "https://fonts.google.com/specimen/Fredoka"
+   },
+   {
+    "nombre": "Bungee (OFL), Rubik Mono One (OFL)",
+    "para": "carteles de Arte contemporáneo",
+    "url": "https://fonts.google.com/specimen/Bungee"
+   },
+   {
+    "nombre": "Luckiest Guy (Apache 2.0)",
+    "para": "títulos de humor",
+    "url": "https://fonts.google.com/specimen/Luckiest+Guy"
+   }
+  ],
+  "dominio": "fonts.google.com",
+  "relacionadas": []
+ },
+ {
+  "id": "godot-shaders",
+  "titulo": "Godot Shaders",
+  "url": "https://godotshaders.com",
+  "tipo": "codigo",
+  "etiquetas": [
+   "godot",
+   "shaders",
+   "cc0",
+   "mit"
+  ],
+  "licencia": "Cada shader elige CC0, MIT o GPL v3 (leído en godotshaders.com/license); vigilar la GPL, que contagia al juego",
+  "nota": "Repositorio comunitario de shaders para Godot 4. No se han verificado shaders concretos (el sitio bloquea curl con 455).",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "toon / cel-shading",
+    "para": "afinar el sombreado toon de las piezas",
+    "url": "https://godotshaders.com"
+   },
+   {
+    "nombre": "contornos (outline)",
+    "para": "contorno de objetos robables",
+    "url": "https://godotshaders.com"
+   },
+   {
+    "nombre": "disolver (dissolve)",
+    "para": "el ninja al desaparecer o el objeto robado",
+    "url": "https://godotshaders.com"
+   },
+   {
+    "nombre": "agua y cristal",
+    "para": "vitrinas y fuentes",
+    "url": "https://godotshaders.com"
+   }
+  ],
+  "dominio": "godotshaders.com",
+  "relacionadas": []
+ },
+ {
+  "id": "kokoro-tts",
+  "titulo": "Kokoro-82M · síntesis de voz",
+  "url": "https://huggingface.co/hexgrad/Kokoro-82M",
+  "tipo": "voz",
+  "etiquetas": [
+   "tts",
+   "voz",
+   "apache"
+  ],
+  "licencia": "Apache 2.0 (leído en la ficha del modelo en Hugging Face)",
+  "nota": "Modelo pequeño de voz (82 millones de parámetros). No se ha comprobado qué voces en español trae: verificarlo antes de tocar la megafonía.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "voz sintética de baja latencia",
+    "para": "megafonía de los museos (alternativa a la voz actual)",
+    "url": "https://huggingface.co/hexgrad/Kokoro-82M"
+   }
+  ],
+  "dominio": "huggingface.co",
+  "relacionadas": []
+ },
+ {
+  "id": "piper-voices",
+  "titulo": "Piper · voces (rhasspy/piper-voices)",
+  "url": "https://huggingface.co/rhasspy/piper-voices",
+  "tipo": "voz",
+  "etiquetas": [
+   "tts",
+   "voz",
+   "mit",
+   "espanol"
+  ],
+  "licencia": "MIT a nivel de repositorio (leído en su README); cada voz trae su ficha con la licencia del conjunto de datos: comprobarla antes de usarla",
+  "nota": "Motor Piper (repositorio rhasspy/piper archivado, MIT; el nuevo OHF-Voice/piper1-gpl es GPL-3.0). Hay voces en español.",
+  "fecha": "2026-09-29",
+  "estado": "guardada",
+  "items": [
+   {
+    "nombre": "voces en español",
+    "para": "megafonía de los museos",
+    "url": "https://huggingface.co/rhasspy/piper-voices"
+   }
+  ],
+  "dominio": "huggingface.co",
+  "relacionadas": []
  }
 ];
