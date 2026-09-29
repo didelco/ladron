@@ -7,6 +7,9 @@ de caras en ojos o pilotos del tamaño de una uña).
 
 Sin --salida guarda encima de art/personajes/<nombre>.blend. Las piezas conservan su
 nombre, su esqueleto y sus pesos; solo cambia su malla.
+
+Ya se ha pasado: no volver a ejecutarlo. Las manos de ahora (un puño abstracto) las
+rehace art/characters/manos.py, que sí se puede repetir.
 """
 import math
 import os
