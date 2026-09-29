@@ -2,14 +2,14 @@
 """De dónde sale cada asset y con qué licencia: lee assets/PROCEDENCIA.json.
 
     python3 tools/procedencia.py                 # comprueba (falla si un asset no tiene regla, una licencia no está permitida
-                                                 # o un JSON de docs/data/alternativas/ o docs/data/referencias.json es incorrecto)
+                                                 # o docs/data/propuestas.json o docs/data/referencias.json es incorrecto)
     python3 tools/procedencia.py resumen         # cuántos ficheros hay por licencia y por colección
     python3 tools/procedencia.py lista [texto]   # cada fichero con su colección y licencia (filtra por texto)
     python3 tools/procedencia.py credits         # reescribe CREDITS.md a partir de esa fuente
     python3 tools/procedencia.py credits --check # falla si CREDITS.md no coincide con lo que saldría
 
 La fuente es UNA y se edita a mano (el formato se explica en su campo «_ayuda»). La usan
-también tools/docs.py (página «Procedencia» de la documentación) y tests/test_procedencia.gd
+también tools/docs.py (etiquetas de licencia de las fichas y tabla «Lo que ya usamos» de la documentación) y tests/test_procedencia.gd
 (la misma comprobación dentro de tests/run_all.sh). Los patrones son los de fnmatch: '*' vale
 para cualquier texto, también '/'; gana la primera regla que cubra el fichero.
 """
@@ -24,9 +24,7 @@ from urllib.parse import urlparse
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCE = os.path.join(ROOT, "assets", "PROCEDENCIA.json")
 CREDITS = os.path.join(ROOT, "CREDITS.md")
-ALT_DIR = os.path.join(ROOT, "docs", "data", "alternativas")
-ELEGIDAS = os.path.join(ROOT, "docs", "data", "alternativas_elegidas.json")
-NUESTRA = "nuestra"
+PROPUESTAS = os.path.join(ROOT, "docs", "data", "propuestas.json")
 REFERENCIAS = os.path.join(ROOT, "docs", "data", "referencias.json")
 REF_TIPOS = ("icons", "modelos", "audio", "arte", "codigo", "articulo", "texturas", "fuentes", "voz", "otro")
 REF_ESTADOS = ("guardada", "evaluada", "usada", "descartada")
@@ -129,10 +127,8 @@ def analyse(data=None):
                 break
         else:
             sin_regla.append(path)
-    alt_e, alt_w = alternativas_errors(data)
-    errors.extend(alt_e)
+    errors.extend(propuestas_errors())
     errors.extend(referencias_errors())
-    warnings.extend(alt_w)
     for path in sin_regla:
         errors.append(f"sin regla de procedencia: {path}")
     for i, r in enumerate(rules):
@@ -161,126 +157,95 @@ def analyse(data=None):
             "record": record}
 
 
-# --- Alternativas de terceros (docs/data/alternativas/*.json) ------------------------------
-# Un JSON por categoría (modelos, audio, ui): {"categoria", "grupos": [{"coleccion", "que_es", "alternativas": [...]}]}.
-# Los ficheros que empiezan por «_» (plantilla) se validan pero no se enseñan en el visor.
-# Cada grupo se identifica por su "id" (opcional) o, si falta, por su colección; es lo que se elige.
+# --- Propuestas de assets a incorporar (docs/data/propuestas.json) ------------------------
+# Una lista de assets concretos (un modelo, un sonido, un icono, un pack pequeño) que se proponen para el
+# juego: [{id, nombre, pack, pack_url, url, tipo, licencia, atribucion, preview_url, para, estado, nota}].
 
-ALT_REQUIRED = ("id", "nombre", "url", "autor", "licencia", "cubre")
-
-
-def alt_files():
-    if not os.path.isdir(ALT_DIR):
-        return []
-    return sorted(f for f in os.listdir(ALT_DIR) if f.endswith(".json"))
+PROP_TIPOS = ("modelo", "sonido", "imagen", "otro")
+PROP_ESTADOS = ("propuesto", "aceptado", "incorporado", "descartado")
+PROP_REQUIRED = ("id", "nombre", "pack", "url", "tipo", "licencia", "para", "estado")
 
 
-def alt_group_key(g):
-    return g.get("id") or g.get("coleccion", "")
-
-
-def alt_load():
-    """[(fichero, contenido o None si no se puede leer, error o None)]."""
-    out = []
-    for f in alt_files():
-        try:
-            with open(os.path.join(ALT_DIR, f), encoding="utf-8") as fh:
-                out.append((f, json.load(fh), None))
-        except (OSError, ValueError) as e:
-            out.append((f, None, str(e)))
-    return out
-
-
-def alternativas_errors(data=None):
-    """(errores, avisos) de todos los JSON de alternativas."""
-    data = data or load()
-    errors, warnings = [], []
-    real_ids, real_keys = {}, {}
-    for f, doc, err in alt_load():
-        w = f"alternativas/{f}"
-        # Las plantillas («_…») se validan aparte: sus ids y grupos no chocan con los reales.
-        ids, keys = ({}, {}) if f.startswith("_") else (real_ids, real_keys)
-        if err:
-            errors.append(f"{w}: no es un JSON válido ({err})")
-            continue
-        if not isinstance(doc, dict) or not isinstance(doc.get("grupos"), list):
-            errors.append(f"{w}: falta la lista 'grupos'")
-            continue
-        if not doc.get("categoria"):
-            errors.append(f"{w}: sin 'categoria'")
-        for gi, g in enumerate(doc["grupos"]):
-            if not isinstance(g, dict):
-                errors.append(f"{w}: grupo {gi + 1} no es un objeto")
-                continue
-            col = g.get("coleccion", "")
-            gw = f"{w}, grupo {gi + 1} ({col or '?'})"
-            if col not in data["colecciones"]:
-                errors.append(f"{gw}: colección desconocida «{col}»")
-            if not g.get("que_es"):
-                errors.append(f"{gw}: sin 'que_es'")
-            key = alt_group_key(g)
-            if key in keys:
-                errors.append(f"{gw}: grupo «{key}» repetido (ya está en {keys[key]}; usa un 'id' distinto)")
-            keys[key] = w
-            alts = g.get("alternativas")
-            if not isinstance(alts, list):
-                errors.append(f"{gw}: falta la lista 'alternativas'")
-                continue
-            for ai, a in enumerate(alts):
-                if not isinstance(a, dict):
-                    errors.append(f"{gw}: alternativa {ai + 1} no es un objeto")
-                    continue
-                aw = f"{gw}, alternativa «{a.get('id', ai + 1)}»"
-                for k in ALT_REQUIRED:
-                    if not isinstance(a.get(k), str) or not a[k].strip():
-                        errors.append(f"{aw}: falta '{k}'")
-                aid = a.get("id")
-                if isinstance(aid, str) and aid:
-                    if aid == NUESTRA or not all(c.isalnum() or c in "-_" for c in aid):
-                        errors.append(f"{aw}: id no válido (letras, cifras, - y _; y no «{NUESTRA}»)")
-                    if aid in ids:
-                        errors.append(f"{aw}: id repetido (también en {ids[aid]})")
-                    ids[aid] = w
-                if isinstance(a.get("url"), str) and a["url"] and not a["url"].startswith(("http://", "https://")):
-                    errors.append(f"{aw}: 'url' debe empezar por http(s)://")
-                pv = a.get("preview_url")
-                if pv not in (None, "") and not (isinstance(pv, str) and pv.startswith(("http://", "https://"))):
-                    errors.append(f"{aw}: 'preview_url' debe ser una URL http(s), vacío o faltar")
-                if not isinstance(a.get("atribucion"), bool):
-                    errors.append(f"{aw}: 'atribucion' debe ser true o false")
-                e = a.get("encaje")
-                if not (isinstance(e, int) and not isinstance(e, bool) and 1 <= e <= 5):
-                    errors.append(f"{aw}: 'encaje' debe ser un entero de 1 a 5")
-                lic = a.get("licencia")
-                if isinstance(lic, str) and lic.strip() and lic not in data.get("permitidas", []):
-                    warnings.append(f"{aw}: licencia «{lic}» fuera de las permitidas del proyecto (¿se puede usar?)")
-    return errors, warnings
-
-
-def alt_elegidas():
+def prop_load():
+    """(lista, error o None). Si el fichero no existe, es una lista vacía."""
     try:
-        with open(ELEGIDAS, encoding="utf-8") as f:
+        with open(PROPUESTAS, encoding="utf-8") as f:
             d = json.load(f)
-        return d if isinstance(d, dict) else {}
-    except (OSError, ValueError):
-        return {}
+    except FileNotFoundError:
+        return [], None
+    except (OSError, ValueError) as e:
+        return [], str(e)
+    if not isinstance(d, list):
+        return [], "debe ser una lista de propuestas"
+    return d, None
 
 
-def alt_web_data():
-    """Lo que enseña el visor: los grupos con alternativas (sin los ficheros «_») y lo elegido."""
-    grupos, cats = [], []
-    for f, doc, err in alt_load():
-        if err or f.startswith("_") or not isinstance(doc, dict) or not isinstance(doc.get("grupos"), list):
-            continue
-        cat = doc.get("categoria", f[:-5])
-        if cat not in cats:
-            cats.append(cat)
-        for g in doc["grupos"]:
-            if isinstance(g, dict) and isinstance(g.get("alternativas"), list) and g["alternativas"]:
-                grupos.append({**g, "key": alt_group_key(g), "categoria": cat})
-    valid = {g["key"]: {a.get("id") for a in g["alternativas"]} | {NUESTRA} for g in grupos}
-    elegidas = {k: v for k, v in alt_elegidas().items() if k in valid and v in valid[k] and v != NUESTRA}
-    return {"categorias": cats, "grupos": grupos, "elegidas": elegidas}
+def prop_save(props):
+    """Escritura atómica de docs/data/propuestas.json (quien llame se encarga del candado)."""
+    tmp = PROPUESTAS + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(props, f, ensure_ascii=False, indent=1)
+        f.write("\n")
+    os.replace(tmp, PROPUESTAS)
+
+
+def _is_http(u):
+    p = urlparse(u) if isinstance(u, str) else None
+    return bool(p and p.scheme in ("http", "https") and p.netloc)
+
+
+def prop_item_errors(r, w="propuesta"):
+    """Errores de una propuesta suelta: campos, URL http(s), tipo y estado."""
+    if not isinstance(r, dict):
+        return [f"{w}: no es un objeto"]
+    errs = []
+    for k in PROP_REQUIRED:
+        if not isinstance(r.get(k), str) or not r[k].strip():
+            errs.append(f"{w}: falta '{k}'")
+    rid = r.get("id")
+    if isinstance(rid, str) and rid and not all(c.isalnum() or c in "-_" for c in rid):
+        errs.append(f"{w}: id no válido (letras, cifras, - y _)")
+    if isinstance(r.get("url"), str) and r["url"] and not _is_http(r["url"]):
+        errs.append(f"{w}: 'url' debe ser http(s)://…")
+    for k in ("pack_url", "preview_url"):
+        if r.get(k) not in (None, "") and not _is_http(r[k]):
+            errs.append(f"{w}: '{k}' debe ser una URL http(s), vacío o faltar")
+    if isinstance(r.get("tipo"), str) and r["tipo"] and r["tipo"] not in PROP_TIPOS:
+        errs.append(f"{w}: tipo «{r['tipo']}» no válido ({', '.join(PROP_TIPOS)})")
+    if isinstance(r.get("estado"), str) and r["estado"] and r["estado"] not in PROP_ESTADOS:
+        errs.append(f"{w}: estado «{r['estado']}» no válido ({', '.join(PROP_ESTADOS)})")
+    if not isinstance(r.get("atribucion"), bool):
+        errs.append(f"{w}: 'atribucion' debe ser true o false")
+    if "nota" in r and not isinstance(r["nota"], str):
+        errs.append(f"{w}: 'nota' debe ser un texto")
+    return errs
+
+
+def propuestas_errors():
+    props, err = prop_load()
+    if err:
+        return [f"propuestas.json: {err}"]
+    errors, seen = [], {}
+    for i, r in enumerate(props):
+        w = f"propuestas.json, {i + 1}" + (f" («{r['id']}»)" if isinstance(r, dict) and r.get("id") else "")
+        errors += prop_item_errors(r, w)
+        rid = r.get("id") if isinstance(r, dict) else None
+        if isinstance(rid, str) and rid:
+            if rid in seen:
+                errors.append(f"{w}: id repetido")
+            seen[rid] = True
+    return errors
+
+
+def prop_web_data():
+    """Las propuestas válidas para el visor (con todos los campos normalizados)."""
+    props, _ = prop_load()
+    out = []
+    for r in props:
+        if isinstance(r, dict) and not prop_item_errors(r):
+            out.append({**r, "pack_url": r.get("pack_url") or "", "preview_url": r.get("preview_url") or "",
+                        "nota": r.get("nota") or ""})
+    return out
 
 
 # --- Referencias guardadas (docs/data/referencias.json) ---------------------------------
@@ -387,28 +352,22 @@ def _host(u):
 
 
 def ref_web_data():
-    """Las referencias para el visor, cada una con lo que comparte dominio con una colección o una alternativa."""
+    """Las referencias para el visor, cada una con las propuestas que comparten dominio con ella."""
     refs, _ = ref_load()
-    src = load()
-    hosts = {}  # dominio -> [(coleccion, nombre de la alternativa o "")]
-    for cid, c in src.get("colecciones", {}).items():
-        for u in [c.get("url")] + [x.get("url") for x in c.get("componentes", [])]:
+    hosts = {}  # dominio -> [(id de la propuesta, nombre)]
+    for p in prop_web_data():
+        for u in (p.get("url"), p.get("pack_url")):
             if _host(u):
-                hosts.setdefault(_host(u), []).append((cid, ""))
-    for g in alt_web_data()["grupos"]:
-        for a in g["alternativas"]:
-            if _host(a.get("url")):
-                hosts.setdefault(_host(a["url"]), []).append((g.get("coleccion", ""), a.get("nombre", "")))
+                hosts.setdefault(_host(u), []).append((p["id"], p["nombre"]))
     out = []
     for r in refs:
         if not isinstance(r, dict) or ref_item_errors(r):
             continue
         rel, vistos = [], set()
-        for cid, alt in hosts.get(_host(r["url"]), []):
-            if (cid, alt) in vistos or cid not in src.get("colecciones", {}):
-                continue
-            vistos.add((cid, alt))
-            rel.append({"coleccion": cid, "nombre": src["colecciones"][cid].get("nombre", cid), "alternativa": alt})
+        for pid, nombre in hosts.get(_host(r["url"]), []):
+            if pid not in vistos:
+                vistos.add(pid)
+                rel.append({"propuesta": pid, "nombre": nombre})
         out.append({**r, "etiquetas": r.get("etiquetas", []), "dominio": _host(r["url"]), "relacionadas": rel})
     return out
 

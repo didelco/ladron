@@ -19,15 +19,15 @@ locale/texts.csv, para que docs/index.html se pueda abrir tal cual, sin servidor
 en locale/texts.csv (solo esa fila, respetando el resto del fichero) y Godot
 reimporta la traducción.
 
-La página «Procedencia» (y las etiquetas de licencia de las fichas de objetos y sonidos) sale de
-assets/PROCEDENCIA.json, la fuente única de dónde viene cada asset y con qué licencia: se resuelve
-con tools/procedencia.py en docs/data/procedencia.js, tanto en `build` como en `texts` y `serve`.
+Las etiquetas de licencia de las fichas de objetos y sonidos y la tabla plegada «Lo que ya usamos» (al pie de
+«Assets a incorporar») salen de assets/PROCEDENCIA.json, la fuente única de dónde viene cada asset y con qué
+licencia: se resuelve con tools/procedencia.py en docs/data/procedencia.js, tanto en `build` como en `texts` y `serve`.
 
-Alternativas de terceros: docs/data/alternativas/<categoria>.json (plantilla en _ejemplo.json, que el visor
-no enseña) se validan con `python3 tools/procedencia.py` y se vuelcan a docs/data/alternativas.js. En la
-página «Procedencia» las colecciones con alternativas llevan un distintivo y se puede elegir una (o «la
-nuestra»); con `serve`, la elección se guarda en docs/data/alternativas_elegidas.json (POST /api/alternativa
-{grupo, eleccion}; GET /api/alternativas la lee).
+Assets a incorporar: docs/data/propuestas.json es la lista de assets concretos propuestos (un modelo, un sonido, un
+icono, un pack pequeño: {id, nombre, pack, pack_url, url, tipo, licencia, atribucion, preview_url, para, estado,
+nota}; estado: propuesto / aceptado / incorporado / descartado). Se valida con `python3 tools/procedencia.py` y se
+vuelca a docs/data/propuestas.js. Con `serve`: POST /api/propuesta {accion: "añadir"|"estado", …} (añade una
+propuesta, o cambia el estado de una; escritura atómica y validada); GET /api/propuestas la lee.
 
 Referencias: docs/data/referencias.json (a mano, o desde la página «Referencias» con `serve`) guarda enlaces de
 inspiración y recursos (con «items» opcionales: {nombre, url?, para, ya_lo_usamos?}); se validan con `python3 tools/procedencia.py` y se vuelcan a docs/data/referencias.js.
@@ -72,7 +72,7 @@ MANIFEST = os.path.join(VERSIONS, "versiones.json")
 # Las partes de `build` que hace Godot (tools/capture_docs.gd); el resto, Python.
 GODOT_PARTS = ["shots", "city", "assets", "models", "objects", "sounds", "data"]
 PY_PARTS = ["palette", "versions"]
-ELEGIDAS_LOCK = threading.Lock()
+PROPUESTAS_LOCK = threading.Lock()
 REFERENCIAS_LOCK = threading.Lock()
 PORT = int(os.environ.get("PORT", "8765"))
 
@@ -245,34 +245,11 @@ def functions():
     return out
 
 
-def write_alternativas():
-    """procedencia.js y alternativas.js (docs/data/alternativas/*.json + alternativas_elegidas.json)."""
+def write_propuestas():
+    """procedencia.js, propuestas.js (docs/data/propuestas.json) y referencias.js (enlazadas con las propuestas)."""
     write_js("procedencia.js", "PROCEDENCIA", procedencia.web_data())
-    write_js("alternativas.js", "ALTERNATIVAS", procedencia.alt_web_data())
+    write_js("propuestas.js", "PROPUESTAS", procedencia.prop_web_data())
     write_js("referencias.js", "REFERENCIAS", procedencia.ref_web_data())
-
-
-# Muestras de lo nuestro para la comparación con alternativas (docs/assets/muestras/): imágenes de UI y una frase
-# de megafonía, pequeñas, para ponerlas al lado de las de terceros. (docs/index.html las nombra en CMP_MUESTRAS.)
-MUESTRAS = [
-    "assets/ui/ninjas_1.png", "assets/ui/ninjas_2.png", "assets/ui/ninjas_3.png", "assets/ui/ninjas_4.png",
-    "assets/models/globo_world.png",
-    "assets/icons/editor/play.svg", "assets/icons/editor/exit_door.svg", "assets/icons/editor/guard.svg",
-    "assets/icons/editor/options.svg", "assets/icons/editor/rooms.svg", "assets/icons/editor/piece.svg",
-    "assets/icons/objects/big_bear.png", "assets/icons/objects/big_car.png", "assets/icons/objects/big_dinosaur.png",
-    "assets/icons/objects/big_sarcophagus.png", "assets/icons/objects/exhibit_amphora.png", "assets/icons/objects/exhibit_ammonite.png",
-    "assets/icons/objects/loot_crown.png", "assets/icons/objects/loot_gem.png", "assets/icons/objects/exhibit_chest.png",
-    "audio/megafonia/mega_act_arcade_01.ogg",
-]
-
-
-def copy_muestras():
-    dest = os.path.join(DOCS, "assets", "muestras")
-    os.makedirs(dest, exist_ok=True)
-    for rel in MUESTRAS:
-        src = os.path.join(ROOT, rel)
-        if os.path.exists(src):
-            shutil.copy(src, os.path.join(dest, os.path.basename(rel)))
 
 
 def build_static():
@@ -281,8 +258,7 @@ def build_static():
     path = os.path.join(DOCS, "ESTILO.md")
     write_js("estilo.js", "ESTILO", open(path, encoding="utf-8").read() if os.path.exists(path) else "")
     write_js("funciones.js", "FUNCIONES", functions())
-    write_alternativas()
-    copy_muestras()
+    write_propuestas()
     os.makedirs(os.path.join(DOCS, "fuentes"), exist_ok=True)
     for f in ["PressStart2P-Regular.ttf", "OFL.txt"]:
         shutil.copy(os.path.join(ROOT, "assets", "fonts", f), os.path.join(DOCS, "fuentes"))
@@ -554,8 +530,8 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/api/ping":
             return self._json(200, {"ok": True, "editable": True})
-        if self.path == "/api/alternativas":
-            return self._json(200, procedencia.alt_web_data()["elegidas"])
+        if self.path == "/api/propuestas":
+            return self._json(200, procedencia.prop_web_data())
         if self.path == "/api/referencias":
             return self._json(200, procedencia.ref_web_data())
         return super().do_GET()
@@ -607,32 +583,51 @@ class Handler(SimpleHTTPRequestHandler):
             procedencia.ref_save(refs)
         return self._json(200, {"ok": True, "referencias": procedencia.ref_web_data()})
 
-    def _alternativa(self, body):
-        """Guarda la elección de un grupo en docs/data/alternativas_elegidas.json (y solo ahí)."""
-        grupo, eleccion = body.get("grupo"), body.get("eleccion")
-        grupos = {g["key"]: g for g in procedencia.alt_web_data()["grupos"]}
-        if not isinstance(grupo, str) or grupo not in grupos:
-            return self._json(404, {"error": f"no hay grupo {grupo}"})
-        ids = {a["id"] for a in grupos[grupo]["alternativas"]}
-        if eleccion != procedencia.NUESTRA and eleccion not in ids:
-            return self._json(400, {"error": f"alternativa no válida: {eleccion}"})
-        with ELEGIDAS_LOCK:
-            # Se parte de lo que haya en disco (aunque algún grupo ya no exista) y solo se toca esta clave.
-            actual = procedencia.alt_elegidas()
-            if eleccion == procedencia.NUESTRA:
-                actual.pop(grupo, None)
+    def _propuesta(self, body):
+        """Añade una propuesta o cambia su estado en docs/data/propuestas.json (y solo ahí)."""
+        accion = body.get("accion")
+        if accion not in ("añadir", "estado"):
+            return self._json(400, {"error": "acción no válida"})
+        with PROPUESTAS_LOCK:
+            props, err = procedencia.prop_load()
+            if err:
+                return self._json(500, {"error": f"propuestas.json no es válido: {err}"})
+            if accion == "añadir":
+                txt = lambda k: str(body.get(k, "") or "").strip()
+                url = txt("url")
+                nombre = txt("nombre") or procedencia._host(url)
+                base = re.sub(r"[^a-z0-9]+", "-", nombre.lower()).strip("-")[:40] or "propuesta"
+                ids = {r.get("id") for r in props if isinstance(r, dict)}
+                rid, n = base, 2
+                while rid in ids:
+                    rid, n = f"{base}-{n}", n + 1
+                nueva = {"id": rid, "nombre": nombre, "pack": txt("pack") or nombre, "pack_url": txt("pack_url") or url,
+                         "url": url, "tipo": txt("tipo") or "otro", "licencia": txt("licencia") or "por comprobar",
+                         "atribucion": body.get("atribucion") is True, "preview_url": txt("preview_url"),
+                         "para": txt("para"), "estado": "propuesto", "nota": txt("nota")}
+                errs = procedencia.prop_item_errors(nueva)
+                if errs:
+                    return self._json(400, {"error": "; ".join(errs)})
+                if any(isinstance(r, dict) and r.get("url") == url for r in props):
+                    return self._json(409, {"error": "esa URL ya está propuesta"})
+                props.append(nueva)
+                print(f"propuesta añadida: {rid}")
             else:
-                actual[grupo] = eleccion
-            tmp = procedencia.ELEGIDAS + ".tmp"
-            with open(tmp, "w", encoding="utf-8") as f:
-                json.dump(actual, f, ensure_ascii=False, indent=1, sort_keys=True)
-                f.write("\n")
-            os.replace(tmp, procedencia.ELEGIDAS)
-        print(f"alternativa elegida: {grupo} = {eleccion}")
-        return self._json(200, {"ok": True, "elegidas": procedencia.alt_web_data()["elegidas"]})
+                rid, estado = body.get("id"), body.get("estado")
+                i = next((k for k, r in enumerate(props) if isinstance(r, dict) and r.get("id") == rid), None)
+                if not isinstance(rid, str) or i is None:
+                    return self._json(404, {"error": f"no hay propuesta {rid}"})
+                if estado not in procedencia.PROP_ESTADOS:
+                    return self._json(400, {"error": f"estado no válido: {estado}"})
+                props[i]["estado"] = estado
+                print(f"propuesta {rid}: {estado}")
+            procedencia.prop_save(props)
+            write_propuestas()
+        return self._json(200, {"ok": True, "propuestas": procedencia.prop_web_data(),
+                                "referencias": procedencia.ref_web_data()})
 
     def do_POST(self):
-        if self.path not in ("/api/texto", "/api/alternativa", "/api/referencia"):
+        if self.path not in ("/api/texto", "/api/propuesta", "/api/referencia"):
             return self._json(404, {"error": "no existe"})
         # Solo desde esta máquina: es un editor local, no un servicio.
         if self.client_address[0] not in ("127.0.0.1", "::1"):
@@ -644,8 +639,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json(400, {"error": "cuerpo no válido"})
         if not isinstance(body, dict):
             return self._json(400, {"error": "cuerpo no válido"})
-        if self.path == "/api/alternativa":
-            return self._alternativa(body)
+        if self.path == "/api/propuesta":
+            return self._propuesta(body)
         if self.path == "/api/referencia":
             return self._referencia(body)
         key, value = body.get("key", ""), body.get("es")
@@ -665,7 +660,7 @@ class Handler(SimpleHTTPRequestHandler):
 
 def serve():
     # La procedencia se edita a mano en assets/PROCEDENCIA.json: se relee al arrancar.
-    write_alternativas()
+    write_propuestas()
     httpd = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
     print(f"Documentación en http://localhost:{PORT}  (Ctrl+C para parar)")
     try:

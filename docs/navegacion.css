@@ -13,9 +13,8 @@ kbd { font: 600 11px/1 ui-monospace, "SF Mono", Menlo, monospace; border: 1px so
 img[data-img][role=button] { cursor: zoom-in; }
 
 /* Rutas y enlaces largos: se parten en vez de ensanchar la página */
-.pr-col code, .pr-col a, .rf a, .rf p, .archivos code { overflow-wrap: anywhere; }
-.pr-col .archivos, .pr-col { min-width: 0; }
-@media (max-width: 600px) { .pr-col .archivos { columns: 1; } }
+.prop code, .prop a, .rf a, .rf p, .prop-usamos td { overflow-wrap: anywhere; }
+.prop, .prop-grid > * { min-width: 0; }
 
 /* Barra lateral: el buscador y los grupos */
 nav .nav-buscar { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 14px; font: inherit; font-size: 13.5px; color: var(--tenue); background: var(--fondo2); border: 1px solid var(--borde); border-radius: 3px; padding: 6px 10px; cursor: pointer; text-align: left; }
