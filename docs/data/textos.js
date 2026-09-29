@@ -14838,7 +14838,7 @@ window.TEXTOS = [
  },
  {
   "key": "HIDEOUT_HINT",
-  "es": "Sal por la puerta de casa, o con la pausa. El mapa, con M o View",
+  "es": "Salir: la puerta o la pausa. Mapa: M o View",
   "broken": false,
   "extra": [],
   "group": "Otros",
@@ -15080,7 +15080,7 @@ window.TEXTOS = [
  },
  {
   "key": "HIDEOUT_BENCH_COUNT",
-  "es": "VITRINAS ABIERTAS",
+  "es": "ABIERTAS",
   "broken": false,
   "extra": [],
   "group": "Otros",
@@ -15157,7 +15157,7 @@ window.TEXTOS = [
  },
  {
   "key": "HIDEOUT_BENCH_LEVEL_1",
-  "es": "MEDIA",
+  "es": "MEDIO",
   "broken": false,
   "extra": [],
   "group": "Otros",
@@ -15179,7 +15179,7 @@ window.TEXTOS = [
  },
  {
   "key": "HIDEOUT_BENCH_OPEN",
-  "es": "ABRIR LA VITRINA",
+  "es": "ABRIR VITRINA",
   "broken": false,
   "extra": [],
   "group": "Otros",
@@ -15223,7 +15223,7 @@ window.TEXTOS = [
  },
  {
   "key": "HIDEOUT_BENCH_CHANGE_KIND",
-  "es": "CAMBIAR PRUEBA",
+  "es": "OTRA PRUEBA",
   "broken": false,
   "extra": [],
   "group": "Otros",
@@ -15234,7 +15234,7 @@ window.TEXTOS = [
  },
  {
   "key": "HIDEOUT_BENCH_CHANGE_LEVEL",
-  "es": "CAMBIAR DIFICULTAD",
+  "es": "OTRO NIVEL",
   "broken": false,
   "extra": [],
   "group": "Otros",
@@ -15258,7 +15258,7 @@ window.TEXTOS = [
  },
  {
   "key": "HIDEOUT_GAME_ATRAPA_BLURB",
-  "es": "Un calcetín dorado sale corriendo. ¡Atrápalo antes de que se enfríe!",
+  "es": "Un calcetín dorado huye. ¡Atrápalo!",
   "broken": false,
   "extra": [],
   "group": "Otros",
@@ -15281,7 +15281,7 @@ window.TEXTOS = [
  },
  {
   "key": "HIDEOUT_GAME_BOLOS_BLURB",
-  "es": "La bola eres tú. Rueda contra los bolos y que no quede ni uno en pie.",
+  "es": "La bola eres tú. Tira todos los bolos.",
   "broken": false,
   "extra": [],
   "group": "Otros",
@@ -15327,7 +15327,7 @@ window.TEXTOS = [
  },
  {
   "key": "HIDEOUT_GAME_AGUANTA_BLURB",
-  "es": "Escóndete, no estornudes y que el espantapájaros se aburra.",
+  "es": "Escóndete y no estornudes.",
   "broken": false,
   "extra": [],
   "group": "Otros",
@@ -15338,7 +15338,7 @@ window.TEXTOS = [
  },
  {
   "key": "HIDEOUT_GAME_START",
-  "es": "EMPEZAR JUEGO",
+  "es": "JUGAR",
   "broken": false,
   "extra": [],
   "group": "Otros",
@@ -15358,7 +15358,7 @@ window.TEXTOS = [
  },
  {
   "key": "HIDEOUT_GAME_LEAVE_KEY",
-  "es": "TAB: DEJAR EL JUEGO",
+  "es": "TAB: SALIR",
   "broken": false,
   "extra": [],
   "group": "Otros",
@@ -15408,7 +15408,7 @@ window.TEXTOS = [
   "group": "Otros",
   "at": [
    "scenes/den_view.gd:1145",
-   "scenes/dojo_games_view.gd:390"
+   "scenes/dojo_games_view.gd:391"
   ],
   "via": []
  },
@@ -15418,10 +15418,7 @@ window.TEXTOS = [
   "broken": false,
   "extra": [],
   "group": "Otros",
-  "at": [
-   "scenes/den_view.gd:1145",
-   "scenes/dojo_games_view.gd:390"
-  ],
+  "at": [],
   "via": []
  },
  {
@@ -15486,18 +15483,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:430"
+   "scenes/dojo_games_view.gd:431"
   ],
   "via": []
  },
  {
   "key": "HIDEOUT_GAME_WON_LINE",
-  "es": "Diez niveles y ni un calcetín roto.",
+  "es": "Diez niveles superados.",
   "broken": false,
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:432"
+   "scenes/dojo_games_view.gd:433"
   ],
   "via": []
  },
@@ -15508,7 +15505,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:434"
+   "scenes/dojo_games_view.gd:435"
   ],
   "via": []
  },
@@ -15519,7 +15516,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:436"
+   "scenes/dojo_games_view.gd:437"
   ],
   "via": []
  },
@@ -15530,18 +15527,18 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:439"
+   "scenes/dojo_games_view.gd:440"
   ],
   "via": []
  },
  {
   "key": "HIDEOUT_GAME_GO_ON",
-  "es": "SEGUIR (HORA EXTRA)",
+  "es": "HORA EXTRA",
   "broken": false,
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:439"
+   "scenes/dojo_games_view.gd:440"
   ],
   "via": []
  },
@@ -15552,7 +15549,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:439"
+   "scenes/dojo_games_view.gd:440"
   ],
   "via": []
  },
@@ -15563,7 +15560,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/dojo_games_view.gd:438"
+   "scenes/dojo_games_view.gd:439"
   ],
   "via": []
  },
@@ -15608,7 +15605,7 @@ window.TEXTOS = [
   "group": "Otros",
   "at": [
    "scenes/dojo_games_view.gd:319",
-   "scenes/dojo_games_view.gd:406"
+   "scenes/dojo_games_view.gd:407"
   ],
   "via": []
  },
@@ -15620,7 +15617,7 @@ window.TEXTOS = [
   "group": "Otros",
   "at": [
    "scenes/dojo_games_view.gd:320",
-   "scenes/dojo_games_view.gd:404"
+   "scenes/dojo_games_view.gd:405"
   ],
   "via": []
  },

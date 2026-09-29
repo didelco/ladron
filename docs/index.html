@@ -223,6 +223,16 @@ a.tag:hover { border-color: var(--texto); }
 .textos td.v { white-space: pre-wrap; }
 .textos tr.roto td { background: #fee7e6; }
 .ph { font-family: ui-monospace, Menlo, monospace; font-size: 0.9em; background: var(--suave); padding: 0 2px; }
+.lic { display: inline-block; font-size: 12px; font-weight: 600; border: 1px solid var(--borde); background: var(--fondo2); border-radius: 2px; padding: 0 6px; margin: 2px 4px 2px 0; white-space: nowrap; }
+.lic.sin { border-color: var(--aviso); color: var(--aviso); background: var(--blanco); }
+.lic.atr { border-style: dashed; }
+.pr-col { border-top: 1px solid var(--suave); padding: 12px 0; max-width: 900px; }
+.pr-col h3 { margin: 0 0 4px; font-size: 16px; }
+.pr-col p { margin: 4px 0; }
+.pr-col .archivos { max-height: 260px; overflow: auto; font-size: 12px; columns: 2; }
+.pr-col .archivos div { break-inside: avoid; }
+.pr-resumen { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.pr-buscar { font: inherit; font-size: 13px; border: 1px solid var(--borde); padding: 3px 8px; border-radius: 2px; min-width: 240px; }
 .aviso { border: 1px solid var(--aviso); color: var(--aviso); padding: 8px 12px; margin: 12px 0; font-size: 14px; }
 .estado { font-size: 13px; color: var(--tenue); }
 textarea.editor { width: 100%; min-height: 64px; font: inherit; border: 1px solid var(--texto); padding: 6px 8px; resize: vertical; }
@@ -383,6 +393,7 @@ details.fam .dentro { padding: 0 10px 10px; }
     <section class="pagina" id="p-versiones"></section>
     <section class="pagina" id="p-textos"></section>
     <section class="pagina" id="p-megafonia"></section>
+    <section class="pagina" id="p-procedencia"></section>
   </main>
 </div>
 <div class="caja" id="caja"><button class="ir izq" data-ir="-1" aria-label="Anterior">‹</button><img alt=""><p></p><button class="ir der" data-ir="1" aria-label="Siguiente">›</button></div>
@@ -394,6 +405,7 @@ details.fam .dentro { padding: 0 10px 10px; }
 <script src="data/codigo.js"></script>
 <script src="data/paleta_propuesta.js"></script>
 <script src="data/versiones.js"></script>
+<script src="data/procedencia.js"></script>
 <script src="pantallas.js"></script>
 <script src="mecanicas.js"></script>
 <script>
@@ -464,7 +476,7 @@ function nav(pag, sel) {
   $("#nav").innerHTML = `<div class="marca"><a href="#inicio"><img src="logo.webp" alt="Ninja Karma" width="640" height="428"></a><small>Documentación del juego</small></div>
     ${grupo("pantallas", "Pantallas", ORDEN.length, `${enlace("inicio", "Resumen")}${enlace("capturas", "Capturas")}<div class="arbol">${arbol(P, sel)}</div>`)}
     ${grupo("juego", "El juego", ENTIDADES.length + 6, enlace("historia", "Historia") + enlace("ciudad", "Ciudad") + enlace("previa", "Antes de un robo") + enlace("minijuegos", "Minijuegos") + enlace("escondites", "Escondites") + enlace("coleccion", "Colección") + ENTIDADES.map(([k, txt]) => enlace(k, txt)).join(""))}
-    ${grupo("referencia", "Referencia", 6, enlace("estilo", "Estilo") + enlace("paleta", "Paleta") + enlace("propuesta", "Paleta propuesta") + enlace("versiones", "Versiones") + enlace("textos", "Textos") + enlace("megafonia", "Megafonía"))}
+    ${grupo("referencia", "Referencia", 7, enlace("estilo", "Estilo") + enlace("paleta", "Paleta") + enlace("propuesta", "Paleta propuesta") + enlace("versiones", "Versiones") + enlace("textos", "Textos") + enlace("megafonia", "Megafonía") + enlace("procedencia", "Procedencia"))}
     <div class="meta">${esc(g.fecha || "—")} · ${esc(g.commit || "—")}${EDITABLE ? " · edición activa" : ""}</div>`;
 }
 let ACTUAL = [null, null];
@@ -737,6 +749,7 @@ function elementos() {
           ${campo("Colección", col)}
           ${campo("Tamaño", `${o.tiles.join(" × ")} casilla${o.tiles[0] * o.tiles[1] > 1 ? "s" : ""}${m ? ` · ${tam(m)}` : ""}`)}
           ${campo("Modelo", o.model ? `<code>${esc(o.model)}.glb</code>` : "hecho en código")}
+          ${o.model ? campo("Procedencia", prLinea(`assets/models/${o.model}.glb`)) : ""}
           ${prop ? "" : campo("Por museo", vecesPorMuseo(o.kind))}
           ${m && m.variants ? campo("Variantes", `<div class="imgs">${m.variants.map(v => `<figure>${img(v.file, tx(v.name))}<figcaption>${t(v.name)}</figcaption></figure>`).join("")}</div>`) : ""}
           ${sonidos}
@@ -807,8 +820,94 @@ function sonidos() {
   const s = J.sonidos || [];
   $("#p-sonidos").innerHTML = `<h1>Sonidos</h1>
     <div class="sub">Generados en código (<code>scenes/sfx.gd</code>) y exportados a <code>.wav</code></div>
+    <p class="estado">Procedencia: ${prLinea("scenes/sfx.gd")}</p>
     <div style="max-width:760px">${s.map(x => `<div class="sonido"><b>${esc(x.name)}</b><audio controls preload="none" src="${x.file}"></audio><span class="estado">${x.seconds} s${SONIDO_DE[x.name] ? ` · <a href="#${SONIDO_DE[x.name]}">${esc(ENTIDADES.find(e => e[0] === SONIDO_DE[x.name])[1].toLowerCase())}</a>` : ""}</span></div>`).join("")}</div>`;
 }
+
+// --- Procedencia: de dónde sale cada asset y con qué licencia (assets/PROCEDENCIA.json) -----------
+const PR = window.PROCEDENCIA || { licencias: {}, colecciones: {}, variantes: {}, archivos: {}, sin_regla: [] };
+// El registro de un fichero: su colección con lo que la regla sobrescriba, o null si no hay regla.
+function prDe(ruta) {
+  const k = PR.archivos[ruta];
+  if (!k) return null;
+  const v = PR.variantes[k], id = v ? v.coleccion : k;
+  return { ...PR.colecciones[id], ...(v || {}), id, clave: k };
+}
+const prLic = r => PR.licencias[r.licencia] || { corta: r.licencia, nombre: r.licencia, url: "" };
+// Etiquetas cortas: la licencia (en rojo si el origen no está documentado) y si pide atribución.
+const prEtiquetas = r => {
+  const l = prLic(r);
+  return `<span class="lic ${r.documentado === false ? "sin" : ""}" title="${esc(l.nombre)}">${esc(l.corta)}</span>`
+    + `<span class="lic">${r.tipo === "externo" ? "de terceros" : "propio"}</span>`
+    + (r.documentado === false ? `<span class="lic sin">origen sin documentar</span>` : "")
+    + (r.atribucion ? `<span class="lic atr" title="Hay que citar al autor">atribución obligatoria</span>` : "");
+};
+// Una línea para las fichas: etiquetas, colección y cómo se hizo.
+const prLinea = ruta => {
+  const r = prDe(ruta);
+  if (!r) return `<span class="lic sin">sin regla de procedencia</span>`;
+  return `${prEtiquetas(r)} <a href="#procedencia/${encodeURIComponent(r.clave)}">${esc(r.nombre)}</a>`;
+};
+let prFiltro = { lic: "", tipo: "", q: "" };
+function prGrupos() {
+  const g = {};
+  for (const [ruta, k] of Object.entries(PR.archivos)) (g[k] = g[k] || []).push(ruta);
+  return Object.entries(g).map(([k, rutas]) => ({ r: prDe(rutas[0]), rutas: rutas.sort() }));
+}
+function prLista() {
+  const q = prFiltro.q.trim().toLowerCase();
+  const gs = prGrupos().filter(({ r, rutas }) =>
+    (!prFiltro.lic || r.licencia === prFiltro.lic)
+    && (!prFiltro.tipo || (prFiltro.tipo === "sin" ? r.documentado === false : r.tipo === prFiltro.tipo))
+    && (!q || `${r.nombre} ${r.metodo} ${r.autor} ${r.notas || ""}`.toLowerCase().includes(q) || rutas.some(x => x.toLowerCase().includes(q))));
+  gs.sort((a, b) => (a.r.tipo === b.r.tipo ? 0 : a.r.tipo === "externo" ? -1 : 1) || a.r.nombre.localeCompare(b.r.nombre));
+  if (!gs.length) return `<p class="vacio">Nada con ese filtro.</p>`;
+  return gs.map(({ r, rutas }) => {
+    const l = prLic(r);
+    return `<div class="pr-col" id="procedencia-${esc(r.clave)}">
+      <h3>${esc(r.nombre)} <span class="estado">· ${rutas.length} fichero${rutas.length === 1 ? "" : "s"}</span></h3>
+      <div>${prEtiquetas(r)}</div>
+      <p><span class="etq">Cómo se hizo</span>${esc(r.metodo)}</p>
+      <p><span class="etq">Autor</span>${esc(r.autor)}</p>
+      <p><span class="etq">Licencia</span>${l.url ? `<a href="${esc(l.url)}">${esc(l.nombre)}</a>` : esc(l.nombre)} <span class="estado">(<code>${esc(r.licencia)}</code>)</span></p>
+      ${r.url ? `<p><span class="etq">Fuente</span><a href="${esc(r.url)}">${esc(r.url)}</a></p>` : ""}
+      ${(r.componentes || []).length ? `<p><span class="etq">Lleva de terceros</span></p><ul>${r.componentes.map(c => `<li>${esc(c.nombre)} · ${esc(c.autor)} · ${esc((PR.licencias[c.licencia] || { corta: c.licencia }).corta)}${c.url ? ` · <a href="${esc(c.url)}">fuente</a>` : ""}${c.nota ? `<br><span class="estado">${esc(c.nota)}</span>` : ""}</li>`).join("")}</ul>` : ""}
+      ${r.notas ? `<p class="estado">${esc(r.notas)}</p>` : ""}
+      <details><summary class="estado">Ver los ${rutas.length} fichero${rutas.length === 1 ? "" : "s"}</summary><div class="archivos">${rutas.map(x => `<div><code>${esc(x)}</code></div>`).join("")}</div></details>
+    </div>`;
+  }).join("");
+}
+function procedencia() {
+  const gs = prGrupos();
+  const porLic = {}, porTipo = { externo: 0, propio: 0, sin: 0 };
+  for (const { r, rutas } of gs) {
+    porLic[r.licencia] = (porLic[r.licencia] || 0) + rutas.length;
+    porTipo[r.tipo] += rutas.length;
+    if (r.documentado === false) porTipo.sin += rutas.length;
+  }
+  const total = Object.values(porLic).reduce((a, b) => a + b, 0);
+  const lics = Object.entries(porLic).sort((a, b) => b[1] - a[1]);
+  const btn = (attr, val, txt, n, on) => `<button class="btn ${on ? "si" : ""}" data-pr-${attr}="${esc(val)}">${txt} <span>${n}</span></button>`;
+  $("#p-procedencia").innerHTML = `<h1>Procedencia</h1>
+    <div class="sub">De dónde sale cada asset y con qué licencia · ${total} ficheros de <code>assets/</code>, <code>audio/</code> y <code>art/</code></div>
+    <p class="lead">La fuente es una sola, <code>assets/PROCEDENCIA.json</code>, y se edita a mano: colecciones (un pack externo o un método propio) y reglas por carpeta que las asignan a los ficheros. <code>python3 tools/procedencia.py</code> (o <code>tests/test_procedencia.gd</code>) falla si aparece un asset sin regla o con una licencia no permitida, y <code>python3 tools/procedencia.py credits</code> reescribe <code>CREDITS.md</code> de ahí.</p>
+    ${(PR.sin_regla || []).length ? `<div class="aviso"><b>Sin regla de procedencia:</b> ${PR.sin_regla.map(x => `<code>${esc(x)}</code>`).join(", ")}</div>` : ""}
+    <div class="filtros" id="pr-lic">${btn("lic", "", "Todas las licencias", total, !prFiltro.lic)}${lics.map(([k, n]) => btn("lic", k, esc((PR.licencias[k] || { corta: k }).corta), n, prFiltro.lic === k)).join("")}</div>
+    <div class="filtros" id="pr-tipo">${btn("tipo", "", "Todo", total, !prFiltro.tipo)}${btn("tipo", "propio", "Propio", porTipo.propio, prFiltro.tipo === "propio")}${btn("tipo", "externo", "De terceros", porTipo.externo, prFiltro.tipo === "externo")}${btn("tipo", "sin", "Origen sin documentar", porTipo.sin, prFiltro.tipo === "sin")}
+      <input class="pr-buscar" id="pr-q" type="search" placeholder="Buscar colección o fichero" value="${esc(prFiltro.q)}"></div>
+    <div id="pr-lista">${prLista()}</div>`;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-pr-lic], [data-pr-tipo]");
+  if (!b) return;
+  if ("prLic" in b.dataset) prFiltro.lic = b.dataset.prLic; else prFiltro.tipo = b.dataset.prTipo;
+  procedencia();
+});
+document.addEventListener("input", e => {
+  if (e.target.id !== "pr-q") return;
+  prFiltro.q = e.target.value;
+  $("#pr-lista").innerHTML = prLista();
+});
 
 // --- Historia -------------------------------------------------------------------------
 function historia() {
@@ -937,6 +1036,7 @@ function megafonia() {
   $("#p-megafonia").innerHTML = `<h1>Megafonía</h1>
     <div class="sub">Las ${M.length} frases <code>MEGA_*</code> de <code>locale/texts.csv</code>, por tipo de aviso (los <code>POOLS</code> de <code>logic/megaphone.gd</code>) · ${M.length - sinVoz} con voz, ${sinVoz} sin ella</div>
     <p class="lead">${EDITABLE ? "<b>Edición activa</b>: pulsa una frase para cambiarla; se guarda en <code>locale/texts.csv</code>." : "Solo lectura: para editar, <code>python3 tools/docs.py serve</code> y abre <code>http://localhost:8765</code>."}</p>
+    <p class="estado">Procedencia de las voces: ${prLinea("audio/megafonia/megafonia_index.json")}</p>
     <div class="aviso"><b>La voz sale de este texto.</b> Cada frase suena con <code>audio/megafonia/&lt;clave en minúsculas&gt;.ogg</code>, que genera la herramienta <code>megafonia-tool</code> (carpeta hermana <code>../megafonia-tool</code>, fuera de este repositorio). Tras cambiar una frase, el audio antiguo sigue diciendo la frase vieja: hay que regenerar la voz con <code>./regenerar_juego.sh</code> desde esa carpeta. La columna «Voz» solo dice si el fichero existe, no si está al día con el texto.</div>
     ${bloque("Sucesos del robo", p => !/^(act_|hint_)/.test(p))}
     ${bloque("Pistas de los museos", p => /^hint_/.test(p))}
@@ -1350,7 +1450,7 @@ document.addEventListener("keydown", e => {
 });
 
 function pintar() {
-  inicio(); capturas(); estilo(); paleta(); objetos(); personajes(); sonidos(); historia(); ciudad(); textos(); megafonia();
+  inicio(); capturas(); estilo(); paleta(); objetos(); personajes(); sonidos(); historia(); ciudad(); textos(); megafonia(); procedencia();
   previa(); minijuegos(); escondites(); coleccion(); propuesta(); versiones();
   document.body.classList.toggle("editable", EDITABLE);
 }

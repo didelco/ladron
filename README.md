@@ -127,6 +127,7 @@ godot --headless --script tests/test_siguiente.gd # sobre el plano, solo SIGUIEN
 godot --headless --script tests/test_megafonia.gd # megafonía del museo (Megaphone): avisos de una frase por suceso y por lo que hace el ladrón (voltereta y pared, papelera, escondite...), muy escasos (calla los primeros 20-60 s, 40 s entre avisos y 15 s los de peligro, tope de 2 a 5 por robo), comentarios pronto pero solo a veces (probabilidad por acción), escalado por repetición y rachas, ninguna frase repetida ni en el robo siguiente, sin guardias en el robo 1, claves del CSV y ajuste
 godot --headless --script tests/test_megafonia_voz.gd # voz de la megafonía (MegaVoice): ruta desde la clave, sin fichero calla, modos del ajuste (cartel y sonido, solo cartel, solo sonido, no), migración de los ajustes viejos y práctica, salir la corta, un .ogg por frase (aviso mientras la carpeta esté vacía)
 godot --headless --script tests/test_textos.gd # textos: ninguna clave que pide el código (literales, tablas y las armadas con prefijo o número) se queda sin texto en la traducción cargada, filas del CSV bien formadas y sin repetir, y los %s/%d de cada Text.t("…") % … cuadran con lo que se pasa (si falla por la traducción: godot --headless --import)
+godot --headless --script tests/test_procedencia.gd # procedencia de los assets: cada fichero de assets/, audio/ y art/ tiene regla en assets/PROCEDENCIA.json y toda licencia declarada está en la lista de permitidas (lo mismo que `python3 tools/procedencia.py`)
 godot --headless --script tests/test_dojo_juegos.gd # los cuatro juegos del dojo (lógica y vista): niveles, eventos, récords por banda, panel de fin
 godot --headless --script tests/test_escondite.gd # El Escondite del Calcetín: la casa de la banda (orientación de cada mueble auditada, recreativa jugable, dojo grande con zonas, pasillos de dos, espantapájaros y alarma roja solo en el dojo, banco de vitrinas con rearme, cuatro salas alcanzables, puertas que bloquean o dejan pasar y que no se cierran con alguien en el umbral, salas a oscuras según lo visible por puertas abiertas con 1 a 4 ladrones, dojo según lo desbloqueado, 25 puestos de trofeos que se llenan con el botín por tamaño de banda, sin cuenta atrás al entrar, salir por pausa y por la puerta, música; carteles de los juegos del dojo que bloquean, empiezan y abortan (pausa, Tab) sin tocar más que `[dojo]`; sin guardias ni guardado)
 godot --headless --script tests/test_smoke.gd     # bomba de humo: dos por ladrón, tapa la vista, despista al que persigue
@@ -365,4 +366,9 @@ servicio de `brain/` esté corriendo en la misma máquina (puerto 8000).
 
 ## Créditos
 
-Recursos de terceros y sus licencias: `CREDITS.md`.
+Recursos de terceros y sus licencias: `CREDITS.md`, que **se genera** (`python3 tools/procedencia.py credits`) desde
+`assets/PROCEDENCIA.json`, la fuente única de dónde sale cada asset (pack externo o «propio» y cómo se generó), su autor,
+licencia (con su SPDX), URL y si exige atribución. Se edita a mano: colecciones y reglas por carpeta o patrón (gana la
+primera; una regla por fichero es la excepción). Un asset nuevo necesita una regla o `python3 tools/procedencia.py` y
+`tests/test_procedencia.gd` fallan; lo que no se sabe se marca «origen sin documentar» (`documentado: false`), no se inventa.
+La documentación lo enseña en su página «Procedencia» (con filtro por licencia) y en las fichas de objetos y sonidos.
