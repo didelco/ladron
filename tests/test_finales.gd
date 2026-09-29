@@ -131,7 +131,7 @@ func _init() -> void:
 	m._pause()
 	await process_frame
 	check(paused and hud.cctv_on(), "en pausa se ve el monitor")
-	check(buttons(hud).size() == 3, "reanudar, ajustes, salir")
+	check(buttons(hud).size() == 4, "reanudar, ajustes, salir a la ciudad, salir del juego")
 	check(Hud.cctv_caps("la sala de los fósiles") == "LA SALA DE LOS FOSILES", "el monitor escribe en mayúsculas sin tildes")
 	m.options.show("paused")
 	check(hud.cctv_on(), "los ajustes desde la pausa lo mantienen")

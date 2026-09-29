@@ -329,6 +329,7 @@ window.PANTALLAS = [
               { key: "MENU_RESUME", to: "juego" },
               { key: "MENU_SETTINGS", to: "ajustes" },
               { key: "MENU_TO_MENU", text: "Al menú del modo («VOLVER AL EDITOR» si se estaba probando un mapa)." },
+              { key: "MENU_QUIT_GAME", text: "Cierra el juego, sin guardar la noche en curso (los ajustes sí). La última opción. Antes pregunta «¿SALIR DEL JUEGO?» con SÍ / NO, y NO elegido; atrás (Esc, B, P, Start) es NO y vuelve a la pausa. No está en la pausa de la casa de la banda, que ya sale por su puerta." },
             ],
           },
         ],

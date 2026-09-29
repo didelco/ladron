@@ -120,7 +120,7 @@ godot --headless --script tests/test_hideouts.gd # escondites: todo lo que lo pa
 godot --headless --script tests/test_collection.gd # qué hay en cada vitrina: las piezas únicas una vez, cada recreativa un juego distinto, igual siempre
 godot --headless --script tests/test_fronts.gd    # piezas con frente (recreativa, trono, Anubis, la nevera...): nunca contra una pared
 godot --headless --script tests/test_controles.gd # teclas y botones: partida, menús y elegir sitio
-godot --headless --script tests/test_menus.gd     # aceptar (E, ., A) y atrás (Esc, Espacio, Enter, B) iguales en todas las pantallas con menú
+godot --headless --script tests/test_menus.gd     # aceptar (E, ., A) y atrás (Esc, Espacio, Enter, B) iguales en todas las pantallas con menú; SALIR DEL JUEGO en la pausa (última, pide confirmar, cancelar vuelve a la pausa, no está en el dojo)
 godot --headless --script tests/test_ciudad_nav.gd # moverse por la ciudad: parada por dirección (una tecla o dos a la vez, ventana de 0,1 s), siguiente/anterior por la ruta y los dos botones de los lados
 godot --headless --script tests/test_calidad.gd   # calidad Alta/Baja y escala 3D: valores por defecto, validación, Baja apaga SSR, SSIL, SSAO, niebla y humo, Alta lo deja como estaba
 godot --headless --script tests/test_siguiente.gd # sobre el plano, solo SIGUIENTE: el encargo, lo nuevo y las reglas de cada noche, cada cosa desde su sitio
@@ -246,7 +246,7 @@ dos como mucho: el tercero y el cuarto, con mando. En
 SETTINGS → CONTROLES: vibración y su fuerza, y zona muerta del stick.
 
 SETTINGS (se guardan en `user://settings.cfg`): sonido (`N`), música, volumen de música y de efectos (0–100 %, `←`/`→`), pantalla completa, v-sync y panel de IA; también se recuerdan la dificultad y el tamaño del modo generativo. La música (sintetizada, de misterio) sube de tensión cuando los guardias están en alerta o te ven. Solo: WASD o flechas, `E` la acción, `Espacio` o `Enter` para rodar, `C` para ponerse a gatas, `Shift` para andar lento y `F` para la bomba de humo. Dos
-jugadores: P1 con WASD, `E`, `Espacio`, `C`, el `Shift` izquierdo y `F`; P2 con flechas, `.`, `Enter`, la tecla de después del punto (`/` en un teclado inglés, `-` en uno español), el `Shift` derecho y `,`. `Esc` para la pausa. El objetivo: robar
+jugadores: P1 con WASD, `E`, `Espacio`, `C`, el `Shift` izquierdo y `F`; P2 con flechas, `.`, `Enter`, la tecla de después del punto (`/` en un teclado inglés, `-` en uno español), el `Shift` derecho y `,`. `Esc` para la pausa (la última opción, SALIR DEL JUEGO, pregunta «¿SALIR DEL JUEGO?» con NO elegido, cierra sin guardar la noche en curso y no está en la casa de la banda, que sale por su puerta). El objetivo: robar
 la pieza (quieto a su lado unos segundos, mires hacia donde mires) y salir por la puerta verde. Sin reloj: se tarda lo que se
 quiera.
 
