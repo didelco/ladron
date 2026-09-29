@@ -387,7 +387,8 @@ func _draw_hud(size: Vector2) -> void:
 	_text(title, top, 26, CREAM, true)
 	var line := Text.t("HIDEOUT_GAME_COUNT") % [int(v.got), int(v.goal)] if not v.get("extra", false) else str(int(v.got))
 	var best: int = int(v.get("best", 0))
-	line += "    " + (Text.t("HIDEOUT_GAME_BEST") % best if best > 0 else Text.t("HIDEOUT_GAME_BEST_NONE"))
+	if best > 0:
+		line += "    " + Text.t("HIDEOUT_GAME_BEST") % best
 	_text(line, top + Vector2(0, 34), 16, GOLD, true)
 	var tm: Dictionary = v.get("timer", {})
 	if String(v.state) == "playing" and not tm.is_empty() and float(tm.get("max", 0.0)) > 0.0:
