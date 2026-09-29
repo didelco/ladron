@@ -13,11 +13,14 @@ var home_room := ""
 var home_leaving := false
 
 # --- The dojo's games -----------------------------------------------------------------------
-## The sign posts of the house (Practice.ITEMS with `game`) start the dojo's games
-## (DojoGames): a game on the band's own field, stepped here with the band's
-## bodies, seen by DojoGamesView. Nothing in it counts for the story: only the
-## best level of each size of band is kept (DojoGames.settle, section [dojo]).
-## Tab or the pause leave a game; at its end the panel takes the keys.
+## The start points of the house (Practice.ITEMS with `game`) start the dojo's
+## games (DojoGames): a game on the band's own field, stepped here with the
+## band's bodies, seen by DojoGamesView. Nothing in it counts for the story:
+## only the best level of each difficulty and size of band is kept
+## (DojoGames.settle, section [dojo]). The sock and the circles are started with
+## the action key (Game._action_for), the pedestals and the armours by getting
+## onto them (dojo_poll). Tab or the pause leave a game; at its end the panel
+## takes the keys.
 var dojo_game: DojoGame
 var dojo_view: DojoGamesView
 
@@ -27,8 +30,10 @@ var dojo_lantern: Figure
 ## thief index -> fell off the pedestal this frame (the balance minigame's word)
 var dojo_fell := {}
 
-## seconds after leaving a game in which no sign post starts another
+## seconds after leaving a game in which no start point starts another
 var dojo_lock := 0.0
+## who has got onto a pedestal or into an armour (DojoWatch)
+var dojo_watch := DojoWatch.new()
 
 ## The practice ground's scarecrows (see _build_world), and the alarm they
 ## share (Practice.alert_step).
@@ -91,39 +96,22 @@ func scarecrow_tick(dt: float) -> void:
 			host.sfx.at("siren", host._to_world(r.position.x + r.size.x / 2.0, r.position.y + r.size.y / 2.0, 1.0), 0.5, 14.0)
 
 
-## The bench of practice cases (Practice.bench_*): a lectern turns to the next
-## test or level; a case is opened by the test picked, standing still or with
-## the same minigame as in a heist; the panel is cut with the suction cup. All
-## of it a game and nothing else: no stars, no progress, no noise, no megaphone.
+## The bench of practice cases (Practice.bench_*): a case is opened by its own
+## test, standing still or with the same minigame as in a heist, at its own
+## difficulty. All of it a game and nothing else: no stars, no progress, no
+## noise, no megaphone.
 func bench_act(t: Thief, i: int, what: Dictionary, keys: Dictionary) -> void:
-	var input := host._game_input(i, keys)
-	match what.what:
-		"kind":
-			Practice.bench_cycle_kind(bench, host.players)
-			host.sfx.ui("nav")
-		"level":
-			Practice.bench_cycle_level(bench)
-			host.sfx.ui("nav")
-		"need_panel":
-			host.sfx.ui("back")
-		"panel":
-			t.game = Minigame.make("steady", "bench", 4 + int(bench.level) * 2, input, 0, int(bench.level))
-			bench_target[t.id] = what
-			t.moving = false
-			t.speed = 0.0
-			t.sprinting = false
-		_:
-			var game := Practice.bench_game(bench.kind, int(bench.level), input)
-			var c: Vector2i = Practice.bench_cases(host.players)[what.i].at
-			t.dir = atan2(c.y + 0.5 - t.y, c.x + 0.5 - t.x)
-			if game == null:
-				bench_hold[t.id] = {"i": what.i, "t": 0.0}
-			else:
-				t.game = game
-				bench_target[t.id] = what
-				t.moving = false
-				t.speed = 0.0
-				t.sprinting = false
+	var c := Practice.bench_case(int(what.i))
+	var game := Practice.bench_game(c.kind, c.level, host._game_input(i, keys))
+	t.dir = atan2(c.at.y + 0.5 - t.y, c.at.x + 0.5 - t.x)
+	if game == null:
+		bench_hold[t.id] = {"i": what.i, "t": 0.0}
+	else:
+		t.game = game
+		bench_target[t.id] = what
+		t.moving = false
+		t.speed = 0.0
+		t.sprinting = false
 	if host.den_view != null and is_instance_valid(host.den_view):
 		host.den_view.set_bench(bench)
 
@@ -131,7 +119,7 @@ func bench_act(t: Thief, i: int, what: Dictionary, keys: Dictionary) -> void:
 func bench_open(c: int) -> void:
 	Practice.bench_open(bench, c)
 	host.sfx.ui("stolen")
-	var at: Vector2i = Practice.bench_cases(host.players)[c].at
+	var at: Vector2i = Practice.bench_case(c).at
 	Fx.sparkle(host.world, host._to_world(at.x + 0.5, at.y + 0.5, 1.05), Color("#e2262f"))
 
 
@@ -145,7 +133,7 @@ func bench_tick(dt: float) -> void:
 			h.t = Practice.bench_hold_step(float(h.t), still, dt)
 			if not still:
 				bench_hold.erase(p.id)
-			elif h.t >= Practice.BENCH_HOLD_S:
+			elif h.t >= Practice.bench_hold_s(int(h.i)):
 				bench_hold.erase(p.id)
 				bench_open(int(h.i))
 		if bench_target.has(p.id):
@@ -155,32 +143,42 @@ func bench_tick(dt: float) -> void:
 				var what: Dictionary = bench_target[p.id]
 				bench_target.erase(p.id)
 				p.game = null
-				if what.what == "panel":
-					bench.panel_off = true
-					host.sfx.ui("ok")
-				else:
-					bench_open(int(what.i))
+				bench_open(int(what.i))
 	if bench != before and host.den_view != null and is_instance_valid(host.den_view):
 		host.den_view.set_bench(bench)
 
 
-## Begin a game (its sign post's id) for the band, from where the first thief stands.
-func dojo_start(id: String) -> void:
+## Who has just got onto a start point of a game (one of the band, now), starts it.
+func dojo_poll() -> void:
+	if host.mode != Practice.MODE:
+		return
+	var s := dojo_watch.poll(host.thieves, host.players)
+	if not s.is_empty() and dojo_game == null and dojo_lock <= 0.0:
+		dojo_start(String(s.game), int(s.tier), int(s.by))
+
+
+## Begin a game (its id) at a difficulty (0 easy, 1 medium, 2 hard) for the band,
+## from the start point of that difficulty; `by` is the thief that started it
+## (an index of thieves), or -1 for whoever is nearest.
+func dojo_start(id: String, tier := 0, by := -1) -> void:
 	if dojo_view == null or not is_instance_valid(dojo_view) or host.thieves.is_empty() or dojo_game != null:
 		return
 	var field := DojoField.from_den(host.saved_map if host.saved_map != null else Practice.map(host.players))
 	field.set_scarecrows(Practice.scarecrows(host.players))
-	var start := DojoField.tile_of(Vector2(host.thieves[0].x, host.thieves[0].y))
-	var game := DojoGames.make(id, host.players, randi(), field, start)
+	var start := Practice.start_of(id, tier, host.players)
+	var game := DojoGames.make(id, host.players, randi(), field, start, tier)
 	if game == null:
 		return
+	game.starter = by
 	# Sight is the scarecrows' own (Practice), not the field's.
 	game.seen = func(sc: Dictionary, pos: Vector2, hidden: bool) -> bool:
 		return Practice.scarecrow_sees({"at": sc.tile, "dir": sc.facing}, pos, hidden)
 	for i in host.thieves.size():
 		game.names.append(Text.t("JOIN_PLAYER") % (i + 1))
 	if game is PedestalGame:
-		(game as PedestalGame).set_pedestals(Practice.plinth_tiles(host.players))
+		# The pedestal's tier is the balance minigame's level.
+		if by >= 0 and host.thieves[by].game is BalanceGame:
+			host.thieves[by].game.level = tier
 	elif game is HideGame:
 		(game as HideGame).set_hideouts(Practice.hide_tiles(host.players))
 		(game as HideGame).set_lantern(Practice.LANTERN_AT, Practice.LANTERN_DIR)
@@ -216,7 +214,7 @@ func dojo_end() -> void:
 	dojo_lock = 0.5
 
 
-## Keys for a game on: Tab leaves it; at its end accept picks (again, on, out),
+## Keys for a game on: Tab leaves it; at its end accept picks (again, out),
 ## back leaves, and the arrows move along the panel. True if taken.
 func dojo_input(event: InputEvent) -> bool:
 	if dojo_view == null or not is_instance_valid(dojo_view):
@@ -233,9 +231,6 @@ func dojo_input(event: InputEvent) -> bool:
 			"again":
 				dojo_fell.clear()
 				dojo_game.start()
-				host.sfx.ui("go")
-			"go_on":
-				dojo_game.continue_extra()
 				host.sfx.ui("go")
 			_:
 				host.sfx.ui("back")
@@ -261,7 +256,7 @@ func dojo_tick(dt: float, keys: Dictionary) -> void:
 		var p := host.thieves[i]
 		var input := host._game_input(i, keys)
 		bodies.append({"id": i, "pos": Vector2(p.x, p.y), "rolling": p.rolling, "speed": p.speed, "out": p.out,
-			"hidden": p.hiding or p.posing, "posing": p.posing, "push": float(input.right) - float(input.left),
+			"hidden": p.hiding or p.posing, "posing": p.posing,
 			"hold": input.action, "fell": dojo_fell.get(i, false),
 			"lean": (p.game as BalanceGame).lean if p.game is BalanceGame else 0.0})
 	dojo_fell.clear()

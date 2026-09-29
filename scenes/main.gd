@@ -1179,9 +1179,9 @@ func _action_for(t: Thief) -> Dictionary:
 		if not bench_act.is_empty():
 			return {"do": "bench", "at": bench_act}
 		if house.dojo_game == null and house.dojo_lock <= 0.0:
-			var sign_game := Practice.game_at(Vector2(t.x, t.y), players)
-			if sign_game != "":
-				return {"do": "game", "id": sign_game}
+			var start := Practice.game_at(Vector2(t.x, t.y), players)
+			if not start.is_empty():
+				return {"do": "game", "id": start.id, "tier": start.tier}
 	var plinth = Plinths.within_reach(t, thieves)
 	if plinth != null:
 		return {"do": "plinth", "at": plinth}
@@ -1225,19 +1225,13 @@ func _prompt_rows(i: int) -> Array:
 	if p.hiding:
 		return [row.call("move", Text.t("HUD_HIDE_OUT"))]
 	if house.bench_hold.has(p.id):
-		return [{"verb": Text.t("HIDEOUT_BENCH_HOLD"), "progress": float(house.bench_hold[p.id].t) / Practice.BENCH_HOLD_S}]
+		return [{"verb": Text.t("HIDEOUT_BENCH_HOLD"), "progress": float(house.bench_hold[p.id].t) / Practice.bench_hold_s(int(house.bench_hold[p.id].i))}]
 	if house.dojo_game != null:
 		return [] if house.dojo_game.finished() else [{"verb": Text.t("HIDEOUT_GAME_LEAVE_KEY")}]
 	var act := _action_for(p)
 	match act.get("do", ""):
-		"game": return [row.call("action", "%s: %s" % [Text.t("HIDEOUT_GAME_START"), Text.t(DojoGames.info(act.id).name_key)])]
-		"bench":
-			match act.at.what:
-				"need_panel": return [{"verb": Text.t("HIDEOUT_BENCH_NEED_PANEL")}]
-				"panel": return [row.call("action", Text.t("HIDEOUT_BENCH_PANEL"))]
-				"kind": return [row.call("action", Text.t("HIDEOUT_BENCH_CHANGE_KIND"))]
-				"level": return [row.call("action", Text.t("HIDEOUT_BENCH_CHANGE_LEVEL"))]
-				_: return [row.call("action", Text.t("HIDEOUT_BENCH_OPEN"))]
+		"game": return [row.call("action", DojoGames.start_label(act.id, act.tier))]
+		"bench": return [row.call("action", Text.t("HIDEOUT_BENCH_OPEN"))]
 		"job": return [row.call("action", Text.t({"lockpick": "HUD_GAME_PICK_HINT", "steady": "HUD_GAME_STEADY_HINT"}.get(act.at.kind, "HUD_GAME_WIRES_HINT")))]
 		"plinth": return [row.call("action", Text.t("HUD_PLINTH_HINT"))]
 		"hide": return [row.call("action", Text.t("HUD_HIDE_HINT") % Hideouts.name_of(act.at.kind).to_upper())]

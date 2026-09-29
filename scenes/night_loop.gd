@@ -164,6 +164,7 @@ func tick(dt: float) -> void:
 	_move_thieves(dt, keys, noises)
 	_props_and_actions(now, keys, noises)
 	_smoke(now, keys, noises)
+	host.house.dojo_poll()
 	if host.house.dojo_game != null:
 		host.house.dojo_tick(dt, keys)
 	_job(dt, now, noises)
@@ -349,7 +350,7 @@ func _do_action(t: Thief, i: int, act: Dictionary, keys: Dictionary, now: float,
 		"bench":
 			host.house.bench_act(t, i, act.at, keys)
 		"game":
-			host.house.dojo_start(String(act.id))
+			host.house.dojo_start(String(act.id), int(act.tier))
 		"switch":
 			Sim.flip_switch(act.at, t, host.guards, now, noises)
 		"push":
