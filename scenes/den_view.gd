@@ -923,7 +923,7 @@ func _bench() -> void:
 		var what := Practice.bench_object(c.kind)
 		var wall: Vector2i = what.get("wall", Vector2i.ZERO)
 		var spot := _pivot(self, to_world(t.x + 0.5 + wall.x * 0.5, t.y + 0.5 + wall.y * 0.5), atan2(-wall.x, -wall.y) if wall != Vector2i.ZERO else 0.0)
-		var part := BenchProps.build(self, what.object, spot)
+		var part := BenchProps.build(self, what.object, spot, c.level)
 		part.t = 0.0
 		_bench_parts[c.slot] = part
 		# A green glow under each one for while it is done.

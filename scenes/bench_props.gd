@@ -1,35 +1,33 @@
 class_name BenchProps
 extends RefCounted
 ## The things of the dojo's bench, one kind for each test (Practice.BENCH_OBJECTS is
-## the table that says which), composed from primitives in the house's toon colours:
-## a marked tile on the floor, an empty glass case, a press, an alarm box on the
-## wall and a window pane with a suction cup. None holds a sock (that is
-## PILLA EL CALCETÍN's). Each has a lamp: red while it waits, green once it is
-## done, and something that moves (the lid, the plunger, the cup) where it has one.
-## They face south (+z), where the camera is.
+## the table that says which), composed from primitives (or the house's models) in
+## the house's toon colours: an empty glass case (GANZÚA), a hideout (ESCONDITE), an
+## alarm box on the wall with its wires hanging (CABLES) and another with a glass
+## and a suction cup (PULSO). None holds a sock (that is PILLA EL CALCETÍN's).
+## Each has a lamp: red while it waits, green once it is done, and something that
+## moves where it has one (the glass, the lever, the cup). Wall ones are built with
+## the wall face at the node's origin and their +z out of the wall.
 
 const LAMP_OFF := Color("#8a2323")
 const LAMP_ON := Color("#4cf07a")
-const STEEL := Color("#59616b")
-const STEEL_LIGHT := Color("#8a929c")
-const GOLD := Color("#e0b030")
+const STEEL := Color("#5c6370")
+const WIRE_COLOURS := [Color("#e04b4b"), Color("#4b8fe0"), Color("#f0c53a"), Color("#4bc46a"), Color("#e08a2b"), Color("#b06ae0")]
 
 
-## Build the `object` (Practice.BENCH_OBJECTS) under `parent` (a node at the middle of its tile,
-## on the floor). Returns {lamp: MeshInstance3D, move: Node3D or null, shut: Vector3,
-## done: Vector3, rot: bool}: `move` goes from `shut` to `done` (a rotation if
-## `rot`, a position if not) as the case is done.
-static func build(view: MuseumView, object: String, parent: Node3D) -> Dictionary:
+## Build the `object` (Practice.BENCH_OBJECTS) of difficulty `level` under `parent`.
+## Returns {lamp: MeshInstance3D, move: Node3D or null, shut: Vector3, done: Vector3,
+## rot: bool}: `move` goes from `shut` to `done` (a rotation if `rot`, a position if
+## not) as the case is done.
+static func build(view: MuseumView, object: String, parent: Node3D, level: int) -> Dictionary:
 	match object:
-		"tile":
-			return _tile(view, parent)
 		"vitrine":
 			return _vitrine(view, parent)
-		"press":
-			return _press(view, parent)
-		"alarm":
-			return _alarm(view, parent)
-	return _window(view, parent)
+		"hideout":
+			return _hideout(view, parent, level)
+		"alarm_wires":
+			return _alarm_wires(view, parent, level)
+	return _alarm_glass(view, parent, level)
 
 
 static func _lamp(parent: Node3D, mesh: Mesh, at: Vector3) -> MeshInstance3D:
@@ -59,7 +57,7 @@ static func _cyl(r: float, h: float) -> CylinderMesh:
 	c.top_radius = r
 	c.bottom_radius = r
 	c.height = h
-	c.radial_segments = 14
+	c.radial_segments = 16
 	return c
 
 
@@ -72,18 +70,6 @@ static func light(part: Dictionary, on: bool) -> void:
 	((part.lamp as MeshInstance3D).material_override as StandardMaterial3D).albedo_color = LAMP_ON if on else LAMP_OFF
 
 
-## QUIETO: a yellow tile with a dark border and two footprints on it, and a strip
-## of light across its front edge.
-static func _tile(view: MuseumView, parent: Node3D) -> Dictionary:
-	view._mesh(parent, MuseumView._box(Vector3(0.92, 0.03, 0.92)), Color("#2a2418"), Vector3(0, 0.015, 0), true)
-	view._mesh(parent, MuseumView._box(Vector3(0.8, 0.04, 0.8)), Color("#e8b62c"), Vector3(0, 0.02, 0), true)
-	for sx in [-0.15, 0.15]:
-		view._mesh(parent, MuseumView._box(Vector3(0.16, 0.05, 0.3)), Color("#3a2c14"), Vector3(sx, 0.025, -0.02), true)
-		view._mesh(parent, MuseumView._box(Vector3(0.12, 0.05, 0.1)), Color("#3a2c14"), Vector3(sx, 0.025, 0.22), true)
-	var strip := _lamp(parent, MuseumView._box(Vector3(0.7, 0.05, 0.07)), Vector3(0, 0.05, 0.36))
-	return _result(strip)
-
-
 ## GANZÚA: an empty glass case on its base; the glass comes up (a bell lifted).
 static func _vitrine(view: MuseumView, parent: Node3D) -> Dictionary:
 	view._base(parent)
@@ -93,59 +79,59 @@ static func _vitrine(view: MuseumView, parent: Node3D) -> Dictionary:
 	return _result(lamp, glass, Vector3.ZERO, Vector3(0, 0.75, 0))
 
 
-## APRETAR: a press on an anvil: two posts, a crossbeam and the plunger that comes down.
-static func _press(view: MuseumView, parent: Node3D) -> Dictionary:
-	view._mesh(parent, MuseumView._box(Vector3(0.84, 0.12, 0.62)), STEEL, Vector3(0, 0.06, 0))
-	view._mesh(parent, MuseumView._box(Vector3(0.44, 0.14, 0.34)), Color("#2f353c"), Vector3(0, 0.19, 0.02))
-	for sx in [-0.34, 0.34]:
-		view._mesh(parent, MuseumView._box(Vector3(0.09, 0.78, 0.09)), STEEL_LIGHT, Vector3(sx, 0.5, -0.2))
-	view._mesh(parent, MuseumView._box(Vector3(0.78, 0.12, 0.16)), STEEL, Vector3(0, 0.86, -0.2))
-	var plunger := view._pivot(parent, Vector3(0, 0.0, 0.02))
-	view._mesh(plunger, _cyl(0.07, 0.36), STEEL_LIGHT, Vector3(0, 0.66, -0.06))
-	view._mesh(plunger, MuseumView._box(Vector3(0.4, 0.06, 0.32)), Color("#c9553a"), Vector3(0, 0.46, 0.0))
-	# A wheel on the beam to turn, for looks.
-	var wheel := view._mesh(parent, TorusMesh.new(), Color("#c9553a"), Vector3(0.0, 0.86, -0.06), true)
-	(wheel.mesh as TorusMesh).inner_radius = 0.05
-	(wheel.mesh as TorusMesh).outer_radius = 0.08
-	wheel.rotation.x = PI / 2
-	var lamp := _lamp(parent, _ball(0.06), Vector3(0.34, 0.97, -0.2))
-	return _result(lamp, plunger, Vector3.ZERO, Vector3(0, -0.14, 0))
+## ESCONDITE: a piece of furniture to hide in (Hideouts.PIECES: a fridge, a box, a
+## chest, tighter each), with a lamp on its top. It is not one to hide in: it is
+## for wriggling into, as in a heist.
+static func _hideout(view: MuseumView, parent: Node3D, level: int) -> Dictionary:
+	var kind := Practice.bench_piece(level)
+	var model := MuseumView.asset(Hideouts.PIECES[kind].model)
+	parent.add_child(model)
+	var top := view._bounds(model, Transform3D.IDENTITY)
+	var lamp := _lamp(parent, _ball(0.07), Vector3(0, top.end.y + 0.14, 0))
+	return _result(lamp)
 
 
-## CABLES: an alarm box on the wall, as in a heist (Scenery.build_panel): grey,
-## a big lamp and a red lever, that goes down when it is done. The node is on the
-## wall face, its +z out of the wall.
-static func _alarm(view: MuseumView, parent: Node3D) -> Dictionary:
-	view._mesh(parent, MuseumView._box(Vector3(0.5, 0.6, 0.14)), Color("#5c6370"), Vector3(0, 1.0, 0.07))
-	view._mesh(parent, MuseumView._box(Vector3(0.4, 0.05, 0.02)), Color("#2a2f36"), Vector3(0, 0.82, 0.15), true)
-	var lamp := _lamp(parent, _ball(0.1), Vector3(0, 1.12, 0.16))
-	var lever := view._pivot(parent, Vector3(0.14, 1.0, 0.17))
+## The alarm box of a heist (Scenery.build_panel): grey, with a big lamp.
+static func _alarm_box(view: MuseumView, parent: Node3D, size: Vector3) -> MeshInstance3D:
+	view._mesh(parent, MuseumView._box(size), STEEL, Vector3(0, 1.0, size.z / 2.0))
+	return _lamp(parent, _ball(0.1), Vector3(0, 1.0 + size.y / 2.0 - 0.12, size.z + 0.02))
+
+
+## CABLES: the alarm box with its wires hanging under it (3 to 6 by the level, as
+## the game has them) and the red lever, that goes down when it is done.
+static func _alarm_wires(view: MuseumView, parent: Node3D, level: int) -> Dictionary:
+	var lamp := _alarm_box(view, parent, Vector3(0.5, 0.6, 0.14))
+	var n: int = WiresGame.WIRES_LEVEL[level]
+	for i in n:
+		var x := (i - (n - 1) / 2.0) * 0.07
+		view._mesh(parent, MuseumView._box(Vector3(0.03, 0.3, 0.03)), WIRE_COLOURS[i], Vector3(x, 0.55, 0.1), true)
+	var lever := view._pivot(parent, Vector3(0.14, 0.95, 0.17))
 	view._mesh(lever, MuseumView._box(Vector3(0.06, 0.2, 0.06)), Color("#e03131"), Vector3(0, -0.06, 0), true)
 	return _result(lamp, lever, Vector3(0, 0, 0.7), Vector3(0, 0, -0.7), true)
 
 
-## PULSO: a pane of glass in a frame on a foot, with the suction cup stuck to it,
-## that comes off (forward) when it is done.
-static func _window(view: MuseumView, parent: Node3D) -> Dictionary:
-	view._mesh(parent, MuseumView._box(Vector3(0.84, 0.08, 0.36)), STEEL, Vector3(0, 0.04, 0))
-	view._mesh(parent, MuseumView._box(Vector3(0.08, 0.96, 0.08)), Color("#7a4a26"), Vector3(-0.38, 0.56, 0))
-	view._mesh(parent, MuseumView._box(Vector3(0.08, 0.96, 0.08)), Color("#7a4a26"), Vector3(0.38, 0.56, 0))
-	view._mesh(parent, MuseumView._box(Vector3(0.84, 0.08, 0.08)), Color("#7a4a26"), Vector3(0, 1.04, 0))
-	view._mesh(parent, MuseumView._box(Vector3(0.84, 0.08, 0.08)), Color("#7a4a26"), Vector3(0, 0.12, 0))
+## PULSO: the alarm box with a pane of glass on it, the ring to keep the suction
+## cup in (smaller the harder, as the game has it) and the cup; it comes off when
+## it is done.
+static func _alarm_glass(view: MuseumView, parent: Node3D, level: int) -> Dictionary:
+	var lamp := _alarm_box(view, parent, Vector3(0.6, 0.76, 0.14))
 	var glass := MeshInstance3D.new()
-	glass.mesh = MuseumView._box(Vector3(0.68, 0.86, 0.02))
+	glass.mesh = MuseumView._box(Vector3(0.44, 0.34, 0.02))
 	var gm := StandardMaterial3D.new()
-	gm.albedo_color = Color(0.6, 0.85, 1.0, 0.4)
+	gm.albedo_color = Color(0.6, 0.85, 1.0, 0.55)
 	gm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	gm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	glass.material_override = gm
-	glass.position = Vector3(0, 0.58, 0)
+	glass.position = Vector3(0, 0.9, 0.15)
 	glass.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(glass)
-	var cup := view._pivot(parent, Vector3(0, 0.6, 0.02))
-	var disc := view._mesh(cup, _cyl(0.13, 0.05), Color("#d8352f"), Vector3(0, 0, 0.02))
+	var ring := TorusMesh.new()
+	var r: float = 0.15 * SteadyGame.RING_LEVEL[level]
+	ring.inner_radius = r - 0.012
+	ring.outer_radius = r
+	var rm := view._mesh(parent, ring, Color("#2a1810"), Vector3(0, 0.9, 0.17), true)
+	rm.rotation.x = PI / 2
+	var cup := view._pivot(parent, Vector3(0, 0.9, 0.18))
+	var disc := view._mesh(cup, _cyl(0.06, 0.03), Color("#d8352f"), Vector3.ZERO, true)
 	disc.rotation.x = PI / 2
-	var stem := view._mesh(cup, _cyl(0.03, 0.12), Color("#d8352f"), Vector3(0, 0, 0.1))
-	stem.rotation.x = PI / 2
-	var lamp := _lamp(parent, _ball(0.06), Vector3(0.38, 1.14, 0))
-	return _result(lamp, cup, Vector3(0, 0.6, 0.02), Vector3(0, 0.6, 0.18))
+	return _result(lamp, cup, Vector3(0, 0.9, 0.18), Vector3(0, 0.9, 0.34))

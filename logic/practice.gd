@@ -16,14 +16,13 @@ const MODE := "practica"
 ## band's furthest job (Story.unlocked, per size of band) opens it. Jobs are
 ## numbered 1-25: museum (n - 1) / 5 + 1, test (n - 1) % 5 + 1. What comes
 ## with which lesson, by zone (Den.DOJO_ZONES):
-##   heist (museum 1 · test 1)   exposicion  the bench's QUIETO cases
 ##   guard (museum 1 · test 2)   pasillo     the corridor's scarecrow, at the end of the north arm
 ##   torch (museum 1 · test 4)   escondites  the scarecrow that sweeps the hiding corner;
 ##                               AGUANTA ESCONDIDO's three armours
 ##   games (museum 2 · test 1)   exposicion  the GANZÚA cases; escondites the three
 ##                               pedestals of EQUILIBRIO and the three of PILLA EL CALCETÍN
 ##   props (museum 2 · test 3)   patio       the bins and BOLOS's three circles; escondites the
-##                               crate and the locker; exposicion the bust and the APRETAR cases
+##                               crate and the locker; exposicion the bust and the ESCONDITE cases
 ##   case_alarm (museum 3 · 1)   laberinto   the first maze scarecrow; exposicion the CABLES cases
 ##   two (museum 3 · test 3)     laberinto   the second maze scarecrow; exposicion the PULSO cases
 ##   id       what it is (a key of the docs' and the tests')
@@ -42,7 +41,6 @@ const MODE := "practica"
 ##            on the floor: the action key on it), "plinth" (a pedestal: climb it) or
 ##            "armour" (a suit of armour: hide in it)
 const ITEMS := [
-	{"id": "bench_hold", "lesson": "heist", "zone": "exposicion", "text": "HIDEOUT_BENCH_KIND_HOLD", "bench": "hold"},
 	{"id": "dummy", "lesson": "guard", "zone": "pasillo", "text": "HIDEOUT_ITEM_DUMMY",
 		"scarecrows": [{"at": Vector2i(38, 1), "dir": PI / 2}]},
 	{"id": "dummy_back", "lesson": "torch", "zone": "escondites", "text": "HIDEOUT_ITEM_DUMMY_BACK",
@@ -73,40 +71,43 @@ const ITEMS := [
 
 # --- The bench of cases ---------------------------------------------------------------------
 ## Things to practise on, as often as one likes. Each test (BENCH_TESTS, taught
-## by its lesson) has three, side by side in a column, one for each difficulty
-## (level 0 easy, 1 medium, 2 hard: rows BENCH_Y), each test with its own kind
-## of thing (BENCH_OBJECTS; DenView dresses it with BenchProps): QUIETO
-## (`hold`) a marked tile on the floor, GANZÚA (`lockpick`) an empty glass case,
-## APRETAR (`squeeze`) a press, CABLES (`wires`) an alarm box on the wall (3 to 6
-## wires by the level, as in a heist), PULSO (`steady`) a window pane for the
-## suction cup. The tests are the same games as in a heist (Minigame) at that
-## level, and QUIETO is standing still on its tile for BENCH_HOLD_S seconds,
-## more the harder. A "case" (the word stays) is `slot` = test * 3 + level.
-## Done, it signals (a green light, the glass up, the lever down), stays so
-## BENCH_OPEN_S, goes back over BENCH_REARM_S and is armed again. Nothing here
-## is a heist: no stars, no progress, no noise, nobody comes, and no sock (that
-## is PILLA EL CALCETÍN's).
-const BENCH_TESTS := ["hold", "lockpick", "squeeze", "wires", "steady"]
-## The column of each test. CABLES' is the last, against the east wall (its
-## alarm boxes hang on it), and PULSO's the one before.
-const BENCH_X := [22, 24, 26, 30, 28]
-const BENCH_Y := [3, 7, 11]
-const BENCH_HOLD_S := [3.0, 5.0, 8.0]
+## by its lesson) has three, one for each difficulty (level 0 easy, 1 medium,
+## 2 hard), each test with its own kind of thing (BENCH_OBJECTS; DenView dresses
+## it with BenchProps): GANZÚA (`lockpick`) an empty glass case, ESCONDITE
+## (`squeeze`) a hideout (a fridge, a box, a chest: tighter each), CABLES
+## (`wires`) an alarm box on the wall with 3 to 6 wires by the level, PULSO
+## (`steady`) an alarm box on the wall with a glass to hold the suction cup on.
+## Where they stand is BENCH_AT. The tests are the same games as in a heist
+## (Minigame) at that level. A "case" (the word stays) is `slot` = test * 3 +
+## level. Done, it signals (a green light, the glass up, the lever down),
+## stays so BENCH_OPEN_S, goes back over BENCH_REARM_S and is armed again.
+## Nothing here is a heist: no stars, no progress, no noise, nobody comes, and
+## no sock (that is PILLA EL CALCETÍN's).
+const BENCH_TESTS := ["lockpick", "squeeze", "wires", "steady"]
+## The three tiles of each test, easy to hard: the glass cases and the hideouts
+## in a column each, the alarm boxes on a wall each (CABLES the east wall of the
+## exposicion, PULSO its west one, between the two doors).
+const BENCH_AT := {
+	"lockpick": [Vector2i(24, 3), Vector2i(24, 7), Vector2i(24, 11)],
+	"squeeze": [Vector2i(27, 3), Vector2i(27, 7), Vector2i(27, 11)],
+	"wires": [Vector2i(30, 3), Vector2i(30, 7), Vector2i(30, 11)],
+	"steady": [Vector2i(21, 5), Vector2i(21, 7), Vector2i(21, 9)],
+}
 const BENCH_OPEN_S := 3.5
 const BENCH_REARM_S := 0.6
 ## As close as a heist asks to work a case (Heist.REACH).
 const BENCH_REACH := 1.5
 ## What each test's things are (the one place to change one): `object` is the
 ## model BenchProps builds; `solid` if it stands on a cover tile (a wall of the
-## plan the feet go round) and not on the floor; `reach` how close to be to it
-## (default BENCH_REACH: QUIETO's tile is stood on); `wall` the side of the tile
-## it is hung on (a step on the plan), none if it stands free.
+## plan the feet go round) and not on the floor; `wall` the side of the tile it
+## is hung on (a step on the plan), none if it stands free; `pieces` (a hideout)
+## which of Hideouts.PIECES, by difficulty; `reach` how close to be to it
+## (default BENCH_REACH).
 const BENCH_OBJECTS := {
-	"hold": {"object": "tile", "solid": false, "reach": 0.7},
 	"lockpick": {"object": "vitrine", "solid": true},
-	"squeeze": {"object": "press", "solid": true},
-	"wires": {"object": "alarm", "solid": false, "wall": Vector2i(1, 0)},
-	"steady": {"object": "window", "solid": true},
+	"squeeze": {"object": "hideout", "solid": true, "pieces": ["fridge", "box", "chest"]},
+	"wires": {"object": "alarm_wires", "solid": false, "wall": Vector2i(1, 0)},
+	"steady": {"object": "alarm_glass", "solid": false, "wall": Vector2i(-1, 0)},
 }
 ## How close to a sock on its pedestal, or to the middle of a circle, to take it.
 const SOCK_REACH := 1.3
@@ -136,14 +137,16 @@ static func bench_new() -> Dictionary:
 static func bench_case(slot: int) -> Dictionary:
 	var k := slot / 3
 	var level := slot % 3
-	return {"slot": slot, "kind": BENCH_TESTS[k], "level": level, "at": Vector2i(BENCH_X[k], BENCH_Y[level])}
+	return {"slot": slot, "kind": BENCH_TESTS[k], "level": level, "at": BENCH_AT[BENCH_TESTS[k]][level]}
 
 
 ## The slot of the bench case that stands on a tile, or -1 (whether or not it is open).
 static func bench_slot_of(tile: Vector2i) -> int:
-	var k := BENCH_X.find(tile.x)
-	var level := BENCH_Y.find(tile.y)
-	return k * 3 + level if k >= 0 and level >= 0 else -1
+	for k in BENCH_TESTS.size():
+		var level: int = BENCH_AT[BENCH_TESTS[k]].find(tile)
+		if level >= 0:
+			return k * 3 + level
+	return -1
 
 
 ## The cases there are for a band this size, in slot order: [{slot, kind, level, at}].
@@ -210,18 +213,17 @@ static func bench_action(pos: Vector2, state: Dictionary, players := 1) -> Dicti
 	return best
 
 
-## How long to stand still by case `slot` to open it (QUIETO), by its difficulty.
-static func bench_hold_s(slot: int) -> float:
-	return BENCH_HOLD_S[slot % 3]
-
-
-## The game a test is (null for standing still): the same Minigame as in a
-## heist, at the difficulty of the case; input is the keys held.
+## The game a test is: the same Minigame as in a heist, at the difficulty of
+## the case; input is the keys held. The hideout's fit (SqueezeGame's `steps`)
+## is the tightness of its piece (Hideouts.TIGHT).
 static func bench_game(kind: String, level: int, input: Dictionary) -> Minigame:
-	if kind == "hold":
-		return null
-	var steps: int = {"lockpick": 1 + level, "squeeze": 0, "wires": 3, "steady": 4 + level * 2}.get(kind, 2)
+	var steps: int = {"lockpick": 1 + level, "squeeze": Hideouts.TIGHT.get(bench_piece(level), 0), "wires": 3, "steady": 4 + level * 2}.get(kind, 2)
 	return Minigame.make(kind, "bench", steps, input, 0, level)
+
+
+## The piece of furniture (Hideouts.PIECES) of the ESCONDITE case of a level.
+static func bench_piece(level: int) -> String:
+	return BENCH_OBJECTS.squeeze.pieces[level]
 
 
 ## Case i is done: it signals, and the count goes up.
@@ -244,12 +246,6 @@ static func bench_step(state: Dictionary, dt: float) -> void:
 			if c.t >= BENCH_REARM_S:
 				c.state = "closed"
 				c.t = 0.0
-
-
-## Standing still by a case, second by second: the progress (seconds) after
-## dt, back to 0 the moment the thief moves off or stirs.
-static func bench_hold_step(held: float, still_at_case: bool, dt: float) -> float:
-	return held + dt if still_at_case else 0.0
 
 
 # --- The games' start points ----------------------------------------------------------------
