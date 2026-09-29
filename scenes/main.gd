@@ -63,6 +63,7 @@ var options := SettingsScreens.new(self)
 var nightenv := NightEnv.new(self)
 var scenery := Scenery.new(self)
 var rig := CameraRig.new(self)
+var hands := Hands.new(self)
 
 ## "story", "generative" or "challenge"
 var mode := "story"
@@ -98,13 +99,6 @@ var deadzone := 50
 ## keyboard and every pad), "kb_left" (WASD side), "kb_right" (arrows side)
 ## or "pad:N". Picked on the player-select screen, Mario Kart style.
 var seats: Array[String] = ["any"]
-## the seats taken so far on the player-select screen, and for which mode
-var joining: Array[String] = []
-var join_for := "story"
-## when the last seat was taken (ms): one press may arrive twice — a pad
-## that shows up as two devices, or one that also sends a key — and must
-## not take both seats
-var joined_at := -INF
 ## the map is out: the thieves stand still to read it, the guards do not
 var map_open := false
 var level := 1
@@ -127,8 +121,6 @@ var smoke_held := [false, false, false, false]
 ## at a minigame as the frame began, per thief: a press that ends one is
 ## not also an action on the room
 var busy := [false, false, false, false]
-## how many seats the player-select screen is filling
-var join_count := 2
 var last_think := 0.0
 var last_spread := 0.0
 var think_tick := 0
@@ -172,8 +164,8 @@ func _ready() -> void:
 	# (Pads, PadFilter); and pads that drop out and come back (_pad_changed).
 	get_tree().root.add_child.call_deferred(PadFilter.new())
 	for d in Input.get_connected_joypads():
-		pad_guids[d] = Input.get_joy_guid(d)
-	Input.joy_connection_changed.connect(_pad_changed)
+		hands.pad_guids[d] = Input.get_joy_guid(d)
+	Input.joy_connection_changed.connect(hands.pad_changed)
 	brain = BrainClient.new()
 	add_child(brain)
 	brain.decided.connect(_on_decided)
@@ -568,7 +560,7 @@ func _quit() -> void:
 ## (_story_gang). Each gang has its own way through the nights (Story.unlocked).
 func _story_players(n: int) -> void:
 	if n >= 2:
-		_show_join("story", n)
+		hands.show_join("story", n)
 		return
 	seats = ["any"]
 	pads_lost.clear()
@@ -773,7 +765,7 @@ func _set_setting(which: String, k: String) -> void:
 func _start(which: String, n: int, picked := false) -> void:
 	# A gang: first, each one says which controls are theirs.
 	if n >= 2 and not picked:
-		_show_join(which, n)
+		hands.show_join(which, n)
 		return
 	mode = which
 	players = n
@@ -785,125 +777,6 @@ func _start(which: String, n: int, picked := false) -> void:
 	else:
 		_new_round(1)
 	_show_brief(0)
-
-
-## The keys on each side of a shared keyboard: pressing any of them on the
-## player-select screen takes that side (Shift by which of the two it is).
-## Not its B (Space, Enter: KB_BACK): as on a pad, that one gives it up.
-## One keyboard seats two at most; a third and fourth thief join with a pad.
-## KEY_SLASH is where the key is, not what it says: the one right of the
-## full stop ("/" on a US keyboard, "-" on a Spanish one).
-const KB_LEFT := [KEY_W, KEY_A, KEY_S, KEY_D, KEY_C, KEY_E, KEY_Q, KEY_F, KEY_TAB]
-const KB_RIGHT := [KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SLASH, KEY_PERIOD, KEY_COMMA]
-const KB_BACK := {KEY_SPACE: "kb_left", KEY_ENTER: "kb_right", KEY_KP_ENTER: "kb_right"}
-
-
-## Player select, like Mario Kart 64: a seat a thief, each taken by whoever
-## presses a button on their pad or a key on their part of the keyboard.
-## P1 is always teal, P2 orange and P3 purple; the first to press is P1.
-func _show_join(which: String, count := 2) -> void:
-	phase = "join"
-	join_for = which
-	join_count = count
-	joining.clear()
-	joined_at = -INF
-	_draw_join()
-
-
-func _draw_join() -> void:
-	var cards: Array = []
-	for i in join_count:
-		var seat: String = joining[i] if i < joining.size() else ""
-		cards.append({"title": Text.t("JOIN_PLAYER") % (i + 1), "text": _seat_label(seat) if seat != "" else Text.t("JOIN_PRESS"),
-			"stage": MenuStage.make("seat:%d" % (i + 1)), "colour": _thief_colours()[i],
-			"selected": seat != "", "static": true, "animate": seat != "", "dim": seat == "", "title_size": 12})
-	hud.show_menu([
-		{"title": Text.t("JOIN_TITLE"), "size": 40},
-		{"cards": cards, "width": 200},
-		{"text": Text.t("JOIN_HOW"), "size": 16},
-		{"text": Text.t("JOIN_READY") if joining.size() == join_count else Text.t("JOIN_UNDO"), "size": 16, "colour": Hud.C.gold if joining.size() == join_count else Hud.C.dim},
-	], "join")
-
-
-func _seat_label(seat: String) -> String:
-	match seat:
-		"kb_left": return Text.t("SEAT_KB_LEFT")
-		"kb_right": return Text.t("SEAT_KB_RIGHT")
-		"any": return Text.t("SEAT_ANY")
-	var pad := int(seat.substr(4))
-	return Text.t("SEAT_PAD") % [pad + 1, Input.get_joy_name(pad).left(18)]
-
-
-## A press on the player-select screen: it takes a seat; Esc frees the last
-## one, B (Space, Enter on the keyboard) its own — or goes back when none is
-## taken.
-func _join_input(event: InputEvent) -> void:
-	var seat := ""
-	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_ESCAPE:
-			_unjoin()
-			return
-		if KB_BACK.has(event.keycode):
-			_leave_seat(KB_BACK[event.keycode])
-			return
-		if event.keycode == KEY_SHIFT:
-			seat = "kb_right" if event.location == KEY_LOCATION_RIGHT else "kb_left"
-		elif event.physical_keycode in KB_LEFT or event.keycode in KB_LEFT:
-			seat = "kb_left"
-		elif event.physical_keycode in KB_RIGHT or event.keycode in KB_RIGHT:
-			seat = "kb_right"
-	elif event is InputEventJoypadButton and event.pressed:
-		if not Pads.real(event.device):
-			return
-		if event.button_index == JOY_BUTTON_B:
-			_leave_seat("pad:%d" % event.device)
-			return
-		seat = "pad:%d" % event.device
-	if seat == "" or seat in joining or joining.size() >= join_count:
-		return
-	var now := Time.get_ticks_msec()
-	if now - joined_at < 450:
-		return
-	joined_at = now
-	joining.append(seat)
-	sfx.ui("ok")
-	_rumble_pad(seat, 0.3, 0.15)
-	_draw_join()
-	if joining.size() == join_count:
-		get_tree().create_timer(0.8).timeout.connect(func() -> void:
-			if phase == "join" and joining.size() == join_count:
-				seats.assign(joining)
-				pads_lost.clear()
-				if join_for == "story":
-					# The story's gang goes on to the town, to pick a night.
-					_story_gang(join_count)
-				else:
-					_start(join_for, join_count, true))
-
-
-## B takes its own thief off (a pad's, or a keyboard side's), or with nobody
-## in, goes back: never somebody else's seat.
-func _leave_seat(mine: String) -> void:
-	if mine in joining:
-		sfx.ui("back")
-		joining.erase(mine)
-		_draw_join()
-	elif joining.is_empty():
-		_unjoin()
-
-
-func _unjoin() -> void:
-	sfx.ui("back")
-	if joining.is_empty():
-		if join_for == "story":
-			_show_title("story")
-		elif join_for == "challenge":
-			_show_challenge_map(challenge_map)
-		else:
-			_show_generative_menu()
-		return
-	joining.pop_back()
-	_draw_join()
 
 
 ## The tale, a paragraph a page, whole at once: turn back, go on, or skip
@@ -1285,7 +1158,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		tour.input(event)
 		return
 	if phase == "join":
-		_join_input(event)
+		hands.join_input(event)
 		return
 	# The night just over, frozen: nothing counts until its page is up.
 	if phase == "over":
@@ -1595,53 +1468,18 @@ func _new_round(n: int) -> void:
 var den_view: DenView
 
 
-## The physics frame _pressed_keys last ran on: a gap means play (re)started.
-var pad_frame := -1
-## Crouch, action and roll keys and buttons held over from a menu, ignored
-## until released (_fresh).
-var pad_stale := {}
-## each thief's controls as last read (_seat_input), for the prompts to see
-## a press as it happens
-var seat_now: Array = []
-
-
-func _pressed_keys() -> Dictionary:
-	var keys := {}
-	# A, B, E, Space and Enter also press and back out of menus: one still held
-	# from there when the play starts (or resumes) does nothing until let go.
-	var resumed := Engine.get_physics_frames() != pad_frame + 1
-	pad_frame = Engine.get_physics_frames()
-	# Each thief's controls, as the key names Sim reads for that thief. P3's
-	# and P4's are only names now: they play with a pad, never those keys.
-	var names := [["w", "s", "a", "d", "c", "e", "space", "lalt", "f"], ["up", "down", "left", "right", "minus", "period", "enter", "ralt", "comma"], ["i", "k", "j", "l", "u", "o", "y", "h", "n"], ["kp8", "kp5", "kp4", "kp6", "kp0", "kpadd", "kpmul", "kpsub", "kpdot"]]
-	seat_now.resize(mini(seats.size(), thieves.size()))
-	for i in mini(seats.size(), thieves.size()):
-		var got := _seat_input(seats[i], resumed)
-		seat_now[i] = got
-		for k in 9:
-			if got[k]:
-				keys[names[i][k]] = true
-	return keys
-
-
-## Which Shift keys are down, by key and KeyLocation. Polling cannot
-## tell the left one (P1's) from the right one (P2's), so their key events
-## keep this up to date.
-var mod_down := {}
-
-
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.keycode == KEY_SHIFT and not event.echo:
-		mod_down[[event.keycode, event.location]] = event.pressed
+		hands.mod_down[[event.keycode, event.location]] = event.pressed
 	# On your own either the keyboard or a pad may be in your hands: the
 	# hints show whichever was touched last.
 	if event is InputEventKey and event.pressed:
-		last_pad = false
+		hands.last_pad = false
 	elif ((event is InputEventJoypadButton and event.pressed) or (event is InputEventJoypadMotion and absf(event.axis_value) > 0.5)) and Pads.real(event.device):
-		last_pad = true
-		last_pad_device = event.device
+		hands.last_pad = true
+		hands.last_pad_device = event.device
 		if event is InputEventJoypadButton and not pads_lost.is_empty():
-			_reclaim_pad(event.device)
+			hands.reclaim_pad(event.device)
 	# Tab skips the tale and the briefing: taken here, before the menu's
 	# buttons take it to move the focus along and it never gets that far.
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_TAB and phase in ["prologue", "brief"]:
@@ -1652,187 +1490,8 @@ func _input(event: InputEvent) -> void:
 			_skip_story()
 
 
-## The last thing touched was a pad (for the hints of a thief on "any"),
-## and which one.
-var last_pad := false
-var last_pad_device := 0
-
-
-## The names of a thief's controls, for the hints: the directions ("move"),
-## left and right ("lr"), up and down ("ud"), the action key and the one to
-## let go ("cancel") — its keyboard side's keys, or its pad's.
-func _controls(i: int) -> Dictionary:
-	var seat: String = seats[i] if i < seats.size() else "any"
-	var pad := seat.begins_with("pad:") or (seat == "any" and last_pad)
-	if pad:
-		return {"move": Text.t("KEY_STICK"), "lr": "◀ ▶", "ud": "▲ ▼", "action": "A", "cancel": "B"}
-	if seat == "kb_right":
-		return {"move": "← ↑ → ↓", "lr": "← →", "ud": "↑ ↓", "action": _key_label(KEY_PERIOD), "cancel": Text.t("KEY_ENTER")}
-	return {"move": "WASD", "lr": "A D", "ud": "W S", "action": "E", "cancel": Text.t("KEY_SPACE")}
-
-
-## What the key in that place says on this keyboard: "-" for KEY_SLASH on a
-## Spanish one, "/" on a US one.
-static func _key_label(physical: Key) -> String:
-	var label := physical
-	if DisplayServer.get_name() != "headless":
-		label = DisplayServer.keyboard_get_label_from_physical(physical)
-	# A printable key is its character; the rest go by name.
-	if label > 32 and label < KEY_SPECIAL:
-		return char(label).to_upper()
-	return OS.get_keycode_string(label)
-
-
-## Is this side's Shift held? A key event that never said which
-## side counts for both; and with none down at all (let go in another
-## window), none is.
-func _mod_held(key: Key, side: KeyLocation) -> bool:
-	if not Input.is_physical_key_pressed(key):
-		for k in mod_down.keys():
-			if k[0] == key:
-				mod_down.erase(k)
-		return false
-	return mod_down.get([key, side], false) or mod_down.get([key, KEY_LOCATION_UNSPECIFIED], false)
-
-
-## Is this key or button down, and not still held over from a menu (E and
-## A accept there; Space, Enter and B back out)? One held when the play starts or
-## resumes counts once it has been let go.
-func _fresh(id: String, held: bool, resumed: bool) -> bool:
-	if held and resumed:
-		pad_stale[id] = true
-	elif not held:
-		pad_stale.erase(id)
-	return held and not pad_stale.has(id)
-
-
-## One seat's controls this frame: [up, down, left, right, crouch, push, roll,
-## slow, smoke], the way most PC games have them. P1: WASD, E the action,
-## Space the roll, C to crouch, left Shift held to walk slowly, F a smoke
-## bomb. P2 the same round the arrows: the full stop, Enter, the key after
-## the full stop (KEY_SLASH), right Shift and the comma. No Ctrl: on a Mac,
-## Ctrl and Space change the keyboard's language and Ctrl and an arrow the
-## desktop.
-func _seat_input(seat: String, resumed: bool) -> Array:
-	var out := [false, false, false, false, false, false, false, false, false]
-	if seat == "any" or seat == "kb_left":
-		for pair in [[0, KEY_W], [1, KEY_S], [2, KEY_A], [3, KEY_D], [4, KEY_C], [5, KEY_E], [6, KEY_SPACE], [8, KEY_F]]:
-			var held := Input.is_physical_key_pressed(pair[1])
-			if held if pair[0] < 4 else _fresh("key:%d" % pair[1], held, resumed):
-				out[pair[0]] = true
-		out[7] = _mod_held(KEY_SHIFT, KEY_LOCATION_LEFT)
-	if seat == "any" or seat == "kb_right":
-		for pair in [[0, KEY_UP], [1, KEY_DOWN], [2, KEY_LEFT], [3, KEY_RIGHT], [4, KEY_SLASH], [5, KEY_PERIOD], [6, KEY_ENTER], [6, KEY_KP_ENTER], [8, KEY_COMMA]]:
-			var held := Input.is_physical_key_pressed(pair[1])
-			if held if pair[0] < 4 else _fresh("key:%d" % pair[1], held, resumed):
-				out[pair[0]] = true
-		out[7] = out[7] or _mod_held(KEY_SHIFT, KEY_LOCATION_RIGHT)
-	var pads: Array = Pads.connected() if seat == "any" else ([int(seat.substr(4))] if seat.begins_with("pad:") else [])
-	var dz := deadzone / 100.0
-	for pad in pads:
-		var x := Input.get_joy_axis(pad, JOY_AXIS_LEFT_X)
-		var y := Input.get_joy_axis(pad, JOY_AXIS_LEFT_Y)
-		out[0] = out[0] or y < -dz or Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_UP)
-		out[1] = out[1] or y > dz or Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_DOWN)
-		out[2] = out[2] or x < -dz or Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_LEFT)
-		out[3] = out[3] or x > dz or Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_RIGHT)
-		# As most pads have it: A (south) the action, as it accepts in the
-		# menus; B (east) the roll, the way out, as it backs out of them; X
-		# (west) or a click of the left stick crouches; Y (north) throws a smoke
-		# bomb. Each is ignored while still held over from a menu.
-		for pair in [[5, JOY_BUTTON_A], [6, JOY_BUTTON_B], [4, JOY_BUTTON_X], [4, JOY_BUTTON_LEFT_STICK], [8, JOY_BUTTON_Y]]:
-			if _fresh("pad:%d:%d" % [pad, pair[1]], Input.is_joy_button_pressed(pad, pair[1]), resumed):
-				out[pair[0]] = true
-		# LB held walks slowly; so does the stick past the dead zone but short
-		# of halfway from there to the rim (the cross has no half measures).
-		var tilt := Vector2(x, y).length()
-		var nudged := (absf(x) > dz or absf(y) > dz) and tilt < dz + (1.0 - dz) * 0.5
-		out[7] = out[7] or Input.is_joy_button_pressed(pad, JOY_BUTTON_LEFT_SHOULDER) or nudged
-	return out
-
-
-## Shakes the pads: every one, or with `at` only the pad of the thief nearest
-## to it (pad 0 is P1, pad 1 is P2). On your own any pad may be the one in
-## your hands, so all of them shake.
-func _rumble(weak: float, strong: float, secs: float, at := Vector2.INF) -> void:
-	var who := -1
-	if thieves.size() >= 2 and at != Vector2.INF:
-		var best := INF
-		for i in thieves.size():
-			var d := Museum.dist(thieves[i].x, thieves[i].y, at.x, at.y)
-			if d < best:
-				best = d
-				who = i
-	for i in seats.size():
-		if who < 0 or i == who:
-			_rumble_pad(seats[i], weak, secs, strong)
-
-
-## Shake one seat's pad (every pad for "any"; keyboards do not shake).
-func _rumble_pad(seat: String, weak: float, secs: float, strong := -1.0) -> void:
-	if not rumble or rumble_strength == 0:
-		return
-	if strong < 0.0:
-		strong = weak
-	var k := rumble_strength / 100.0
-	var pads: Array = Pads.connected() if seat == "any" else ([int(seat.substr(4))] if seat.begins_with("pad:") else [])
-	for pad in pads:
-		Input.start_joy_vibration(pad, weak * k, strong * k, secs)
-
-
-## Each pad's guid while plugged in (device -> guid): once it is gone the
-## system no longer says, and a lost seat waits for that pad by it.
-var pad_guids := {}
 ## Seats whose pad dropped out: seat index -> the guid of the pad it had.
 var pads_lost := {}
-
-
-## A pad plugged in or out. Out: the thief it was has no hands (its seat is
-## "lost") and a game in play pauses. In: if it is the pad a thief lost,
-## back it goes to that thief.
-func _pad_changed(device: int, connected: bool) -> void:
-	if connected:
-		pad_guids[device] = Input.get_joy_guid(device)
-		var i := Pads.owner_back(pads_lost, pad_guids[device])
-		if i >= 0 and Pads.real(device) and not ("pad:%d" % device) in seats:
-			_give_pad(i, device)
-		return
-	var seat := "pad:%d" % device
-	if phase == "join" and seat in joining:
-		joining.erase(seat)
-		_draw_join()
-	for i in seats.size():
-		if seats[i] == seat:
-			seats[i] = "lost"
-			pads_lost[i] = pad_guids.get(device, "")
-	pad_guids.erase(device)
-	if not pads_lost.is_empty():
-		if phase == "playing":
-			_pause()
-		elif phase == "paused":
-			_pause()
-
-
-## A press on a pad while a thief has none: if the pad is nobody's, it is
-## the first such thief's now.
-func _reclaim_pad(device: int) -> void:
-	if ("pad:%d" % device) in seats:
-		return
-	var first := -1
-	for i in pads_lost:
-		if first < 0 or i < first:
-			first = i
-	_give_pad(first, device)
-
-
-func _give_pad(i: int, device: int) -> void:
-	seats[i] = "pad:%d" % device
-	pads_lost.erase(i)
-	sfx.ui("ok")
-	_rumble_pad(seats[i], 0.3, 0.15)
-	_log(Text.t("LOG_PAD_BACK") % (i + 1))
-	if phase == "paused":
-		_pause()
 
 
 # --- The loop ------------------------------------------------------------------------
@@ -1892,7 +1551,7 @@ func _prop_fell(p: Props.Prop, strength := 0.6) -> void:
 		HeistStats.add("knocked")
 	var loud := Props.crash_loudness(p.kind, strength)
 	sfx.noise(p.kind, _to_world(p.x, p.y), loud)
-	_rumble(0.3 + 0.5 * strength, 0.4 * strength, 0.15 + 0.2 * strength, Vector2(p.x, p.y))
+	hands.rumble(0.3 + 0.5 * strength, 0.4 * strength, 0.15 + 0.2 * strength, Vector2(p.x, p.y))
 	rig.shake((0.45 if p.kind in ["bust", "armour"] else 0.25) * (0.6 + 0.8 * strength))
 	_log((Text.t("LOG_CRASH_EVERYWHERE") % Heist.first_upper(Props.name_of(p.kind))) if Props.heard_everywhere(loud) else Text.t("LOG_KNOCKED") % Props.name_of(p.kind))
 	_mega("knocked")
@@ -1934,7 +1593,7 @@ func _game_sounds(p: Thief) -> void:
 			"wall": sfx.at("pong_wall", at, 0.25, 2.0)
 			"score": sfx.at("pong_score", at, 0.35, 2.0)
 			"miss": sfx.at("pong_miss", at, 0.35, 2.0)
-			"done": _rumble(0.3, 0.2, 0.12, Vector2(p.x, p.y))
+			"done": hands.rumble(0.3, 0.2, 0.12, Vector2(p.x, p.y))
 
 
 ## In a hideout, with the minigames on, a sneeze comes on after a while
@@ -1964,7 +1623,7 @@ func _sneeze(p: Thief, noises: Array[SoundEvent]) -> void:
 	p.dizzy = SneezeGame.STUN_S
 	noises.append(SoundEvent.make(p.x, p.y, "sneeze"))
 	sfx.noise("sneeze", _to_world(p.x, p.y, 1.0), Hearing.LOUDNESS["sneeze"])
-	_rumble(0.5, 0.7, 0.25, Vector2(p.x, p.y))
+	hands.rumble(0.5, 0.7, 0.25, Vector2(p.x, p.y))
 	rig.shake(0.25)
 	_log(Text.t("LOG_SNEEZE"))
 	_mega("sneeze")
@@ -2005,10 +1664,10 @@ func _draw_game_boxes() -> void:
 		var p: Thief = thieves[i] if i < thieves.size() else null
 		var g: Minigame = p.game if p and phase in ["playing", "paused"] else null
 		var head := camera.unproject_position(_to_world(p.x, p.y, 1.6)) if g else Vector2.ZERO
-		var controls := _controls(i)
-		controls.glyphs = {"action": _glyph(i, "action"), "cancel": _glyph(i, "roll"), "move": _glyph(i, "move")}
-		controls.glyphs.lr = controls.glyphs.move if controls.glyphs.move.kind == "stick" else _glyph(i, "lr")
-		controls.glyphs.ud = controls.glyphs.move if controls.glyphs.move.kind == "stick" else _glyph(i, "ud")
+		var controls := hands.controls(i)
+		controls.glyphs = {"action": hands.glyph(i, "action"), "cancel": hands.glyph(i, "roll"), "move": hands.glyph(i, "move")}
+		controls.glyphs.lr = controls.glyphs.move if controls.glyphs.move.kind == "stick" else hands.glyph(i, "lr")
+		controls.glyphs.ud = controls.glyphs.move if controls.glyphs.move.kind == "stick" else hands.glyph(i, "ud")
 		game_boxes[i].follow(g, head, _thief_colours()[i], controls)
 
 
@@ -2038,13 +1697,13 @@ func _draw_prompts(dt: float) -> void:
 		var head := camera.unproject_position(_to_world(p.x, p.y, 1.9)) if p else Vector2.ZERO
 		prompts[i].show_rows(rows, head, _thief_colours()[i], dt)
 		# A press on this thief's controls sinks the glyph for it.
-		if i < seat_now.size():
+		if i < hands.seat_now.size():
 			var was: Array = seat_before[i] if i < seat_before.size() else []
 			for input in INPUT_AT:
 				for k in INPUT_AT[input]:
-					if seat_now[i][k] and not (k < was.size() and was[k]):
+					if hands.seat_now[i][k] and not (k < was.size() and was[k]):
 						prompts[i].press(input)
-	seat_before = seat_now.duplicate(true)
+	seat_before = hands.seat_now.duplicate(true)
 
 
 ## What the action key would do for thief t where it stands, the first of
@@ -2094,7 +1753,7 @@ func _prompt_rows(i: int) -> Array:
 	if phase != "playing" or p.out or p.game or map_open:
 		return []
 	var row := func(input: String, verb: String) -> Dictionary:
-		return {"input": input, "glyph": _glyph(i, input), "verb": verb}
+		return {"input": input, "glyph": hands.glyph(i, input), "verb": verb}
 	# At the case: how the job goes, or why it will not give.
 	if Heist.by == p.id and not Heist.taken:
 		if Heist.waiting:
@@ -2133,43 +1792,6 @@ func _prompt_rows(i: int) -> Array:
 		"push": return [row.call("action", Text.t("HUD_PUSH_HINT") % Props.name_of(act.at.kind).to_upper())]
 		"door": return [row.call("action", Text.t("HIDEOUT_DOOR_CLOSE" if Den.is_open(act.at) else "HIDEOUT_DOOR_OPEN"))]
 	return []
-
-
-## The glyph (Glyph spec) for one of thief i's inputs, on whatever it plays
-## with: its keyboard half, or its pad drawn as that pad's maker draws it.
-func _glyph(i: int, input: String) -> Dictionary:
-	var seat: String = seats[i] if i < seats.size() else "any"
-	var pad := seat.begins_with("pad:") or (seat == "any" and last_pad)
-	if pad:
-		if input == "move":
-			return {"kind": "stick"}
-		var device := int(seat.substr(4)) if seat.begins_with("pad:") else last_pad_device
-		var place: String = {"action": "south", "crouch": "west", "roll": "east"}.get(input, "south")
-		return {"kind": "pad", "pos": place, "family": _pad_family(device)}
-	# The four to move, where the hand finds them; left-right and up-down,
-	# the same four with the other two dimmed.
-	var four = "arrows" if seat == "kb_right" else ["W", "A", "S", "D"]
-	match input:
-		"move": return {"kind": "keys4", "labels": four}
-		"lr": return {"kind": "keys4", "labels": four, "lit": [false, true, false, true]}
-		"ud": return {"kind": "keys4", "labels": four, "lit": [true, false, true, false]}
-	var keys := _controls(i)
-	var label: String = {"move": keys.move, "action": keys.action, "roll": keys.cancel,
-		"crouch": _key_label(KEY_SLASH) if seat == "kb_right" else "C"}.get(input, "?")
-	return {"kind": "key", "label": label}
-
-
-## Whose pad it is, by its name: PlayStation and Nintendo draw their buttons
-## their own way; anything else, the Xbox way (as most pads do).
-static func _pad_family(device: int) -> String:
-	var name := Input.get_joy_name(device).to_lower()
-	for mark in ["playstation", "dualsense", "dualshock", "ps3", "ps4", "ps5", "sony"]:
-		if name.contains(mark):
-			return "ps"
-	for mark in ["nintendo", "switch", "joy-con", "pro controller"]:
-		if name.contains(mark):
-			return "nintendo"
-	return "xbox"
 
 
 ## Each guard's boots, a step every stride: heard from where they are, so
@@ -2235,7 +1857,7 @@ func _tick(dt: float) -> void:
 	var now := Sim.now_ms()
 	# Reading the map, nobody moves (the pads are still read, to keep their
 	# held-button bookkeeping); every few frames it is redrawn.
-	var keys := _pressed_keys()
+	var keys := hands.pressed_keys()
 	if map_open:
 		# The controls lean the map instead of moving anyone.
 		var push := Vector2.ZERO
@@ -2281,7 +1903,7 @@ func _tick(dt: float) -> void:
 					Plinths.fall(p, (p.game as BalanceGame).lean, noises)
 					p.game = null
 					sfx.noise("roll_bump", _to_world(p.x, p.y), Hearing.LOUDNESS["tumble"])
-					_rumble(0.5, 0.7, 0.25, Vector2(p.x, p.y))
+					hands.rumble(0.5, 0.7, 0.25, Vector2(p.x, p.y))
 					rig.shake(0.3)
 					_log(Text.t("LOG_PLINTH_FELL"))
 					_mega("dizzy")
@@ -2309,7 +1931,7 @@ func _tick(dt: float) -> void:
 		if step.bumped == "roll":
 			HeistStats.add("bumps")
 			Fx.puff(world, _to_world(p.x + cos(p.dir) * Sim.BODY, p.y + sin(p.dir) * Sim.BODY), false)
-			_rumble(0.6, 0.9, 0.3, Vector2(p.x, p.y))
+			hands.rumble(0.6, 0.9, 0.3, Vector2(p.x, p.y))
 			var case := Museum.is_cover(p.x + cos(p.dir) * (Sim.BODY + 0.1), p.y + sin(p.dir) * (Sim.BODY + 0.1))
 			_log(Text.t("LOG_ROLL_CASE" if case else "LOG_ROLL_WALL"))
 			_act("roll_case" if case else "roll_wall", i)
@@ -2405,7 +2027,7 @@ func _tick(dt: float) -> void:
 		HeistStats.add("smoke")
 		SmokeFx.burst(world, _to_world(c.x, c.y), Smoke.RADIUS * 1.15, Smoke.SECONDS)
 		sfx.at("smoke", _to_world(c.x, c.y, 0.5), 0.9, 6.0)
-		_rumble(0.3, 0.5, 0.3, Vector2(c.x, c.y))
+		hands.rumble(0.3, 0.5, 0.3, Vector2(c.x, c.y))
 		_log(Text.t("LOG_SMOKE"))
 		_mega("smoke")
 		var by := thieves.find_custom(func(t): return t.id == c.by)
@@ -2452,7 +2074,7 @@ func _tick(dt: float) -> void:
 		if s.first:
 			HeistStats.add("seen")
 			sfx.ui("sting", 0.7)
-			_rumble(0.4, 0.8, 0.4)
+			hands.rumble(0.4, 0.8, 0.4)
 			rig.shake(0.6)
 			var heard_by: Array = s.heard_by
 			var heard: String = (Text.t("LOG_HEARD_BY") % Text.t("LOG_AND").join(heard_by)) if not heard_by.is_empty() else Text.t("LOG_NOBODY_HEARD")

@@ -121,8 +121,8 @@ func _init() -> void:
 	await frames(Hud.SWAP_WAIT_FRAMES + 2)
 	await press(KEY_2)
 	await frames(2)
-	check(m.phase == "join" and m.join_for == "story" and m.join_count == 2, "elegir 2 en el bocadillo va directo a los mandos de la historia")
-	m._unjoin()
+	check(m.phase == "join" and m.hands.join_for == "story" and m.hands.join_count == 2, "elegir 2 en el bocadillo va directo a los mandos de la historia")
+	m.hands.unjoin()
 	await frames(Hud.SWAP_WAIT_FRAMES + 2)
 	check(m.phase == "pick" and hud.bubble_open() and hud.bubble_focus() == 1, "atrás desde los mandos vuelve al bocadillo, en el 2")
 	# The generative: its bubble, then its menu with the gang picked.

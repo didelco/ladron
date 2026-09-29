@@ -49,7 +49,7 @@ func axis(device: int, a: int, v: float) -> void:
 func run(frames: int) -> void:
 	for f in frames:
 		# Frame after frame, as the physics would (no "resumed" gap).
-		m.pad_frame = Engine.get_physics_frames() - 1
+		m.hands.pad_frame = Engine.get_physics_frames() - 1
 		m._tick(DT)
 
 

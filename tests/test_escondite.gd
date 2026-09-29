@@ -29,7 +29,7 @@ func frames(n := 4) -> void:
 ## Frames of the game, as the physics would run them.
 func run(n: int) -> void:
 	for f in n:
-		m.pad_frame = Engine.get_physics_frames() - 1
+		m.hands.pad_frame = Engine.get_physics_frames() - 1
 		m._tick(DT)
 
 

@@ -77,7 +77,7 @@ func controls_table() -> Dictionary:
 	# The main action first, then the way out, then the rest. P2's keys by
 	# what they say on this keyboard ({slash}: "-" on a Spanish one).
 	for key in ["CONTROLS_MOVE", "CONTROLS_PUSH", "CONTROLS_ROLL", "CONTROLS_CROUCH", "CONTROLS_SLOW", "CONTROLS_MAP", "CONTROLS_PAUSE", "CONTROLS_MUTE"]:
-		var line := Text.t(key).replace("{slash}", Game._key_label(KEY_SLASH)).replace("{period}", Game._key_label(KEY_PERIOD))
+		var line := Text.t(key).replace("{slash}", Hands.key_label(KEY_SLASH)).replace("{period}", Hands.key_label(KEY_PERIOD))
 		var cells: Array = Array(line.split("|"))
 		if cells.size() == 3:
 			cells[1] = {"text": cells[1], "span": 2}
@@ -145,10 +145,10 @@ func step(dir: int, key: String) -> String:
 			host.rumble = not host.rumble
 			# Feel it straight away.
 			if key == "rumble" and host.rumble:
-				host._rumble(0.4, 0.4, 0.2)
+				host.hands.rumble(0.4, 0.4, 0.2)
 		"rumble_strength":
 			host.rumble_strength = 0 if dir == 0 and host.rumble_strength >= 100 else Settings.volume(host.rumble_strength + (Settings.VOLUME_STEP if dir >= 0 else -Settings.VOLUME_STEP))
-			host._rumble(0.4, 0.4, 0.2)
+			host.hands.rumble(0.4, 0.4, 0.2)
 		"deadzone":
 			host.deadzone = 20 if dir == 0 and host.deadzone >= 80 else clampi(host.deadzone + (10 if dir >= 0 else -10), 20, 80)
 		"music_volume", "effects_volume":

@@ -215,7 +215,7 @@ func _shots() -> void:
 	await _wait(1.5)
 	await _shot("menu_editor", "menus", "Editor de mapas")
 	main._drop_editor()
-	main._show_join("generative", 3)
+	main.hands.show_join("generative", 3)
 	await _wait(1.5)
 	await _shot("menu_elegir_mandos", "menus", "Elegir mandos", "Cada ladrón pulsa en su mando o en su mitad del teclado.")
 

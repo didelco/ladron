@@ -96,14 +96,14 @@ func _init() -> void:
 	# Jugando, las mismas teclas: aceptar es la acción, atrás (menos Esc) es rodar.
 	for k in MenuKeys.ACCEPT_KEYS:
 		Input.parse_input_event(key_event(k, true)); Input.flush_buffered_events()
-		var o: Array = m._seat_input("kb_left" if k == KEY_E else "kb_right", false)
+		var o: Array = m.hands.seat_input("kb_left" if k == KEY_E else "kb_right", false)
 		check(o[5] and not o[6], name_of(k) + " jugando es la acción (A)")
 		Input.parse_input_event(key_event(k, false)); Input.flush_buffered_events()
 	for k in MenuKeys.BACK_KEYS:
 		if k == KEY_ESCAPE:
 			continue
 		Input.parse_input_event(key_event(k, true)); Input.flush_buffered_events()
-		var o: Array = m._seat_input("kb_left" if k == KEY_SPACE else "kb_right", false)
+		var o: Array = m.hands.seat_input("kb_left" if k == KEY_SPACE else "kb_right", false)
 		check(o[6] and not o[5], name_of(k) + " jugando es rodar (B)")
 		Input.parse_input_event(key_event(k, false)); Input.flush_buffered_events()
 	# Moverse: las flechas (el de la derecha, cruceta y stick) y WASD (el de la izquierda).
@@ -271,45 +271,45 @@ func _init() -> void:
 
 	# --- Quién juega: aceptar se sienta, B (Espacio, Enter) se levanta ------------------------------
 	var join := func() -> void:
-		m._show_join("generative", 2)
-		m.joined_at = -INF
+		m.hands.show_join("generative", 2)
+		m.hands.joined_at = -INF
 	await join.call()
 	await frames(W)
 	await hit(KEY_E)
-	m.joined_at = -INF
+	m.hands.joined_at = -INF
 	await hit(KEY_PERIOD)
 	await frames()
-	check(m.joining == ["kb_left", "kb_right"], "E sienta al de la izquierda y el punto al de la derecha " + str(m.joining))
+	check(m.hands.joining == ["kb_left", "kb_right"], "E sienta al de la izquierda y el punto al de la derecha " + str(m.hands.joining))
 	# Moverse no es moverse por el menú aquí: W y ↑ sientan, cada una a los suyos.
 	await join.call()
 	await frames(W)
 	await hit(KEY_W)
-	m.joined_at = -INF
+	m.hands.joined_at = -INF
 	await hit(KEY_UP)
 	await frames()
-	check(m.joining == ["kb_left", "kb_right"], "W sienta al de la izquierda y ↑ al de la derecha " + str(m.joining))
+	check(m.hands.joining == ["kb_left", "kb_right"], "W sienta al de la izquierda y ↑ al de la derecha " + str(m.hands.joining))
 	await join.call()
 	await frames(W)
 	await hit(KEY_E)
-	m.joined_at = -INF
+	m.hands.joined_at = -INF
 	await hit(KEY_PERIOD)
 	await frames()
 	await hit(KEY_SPACE)
 	await frames()
-	check(m.joining == ["kb_right"], "Espacio levanta al de la izquierda (su B), no al último")
+	check(m.hands.joining == ["kb_right"], "Espacio levanta al de la izquierda (su B), no al último")
 	await hit(KEY_ENTER)
 	await frames()
-	check(m.joining.is_empty() and m.phase == "join", "Enter levanta al de la derecha")
-	m.joined_at = -INF
+	check(m.hands.joining.is_empty() and m.phase == "join", "Enter levanta al de la derecha")
+	m.hands.joined_at = -INF
 	await hit("A")
 	await frames()
-	check(m.joining == ["pad:0"], "A sienta al mando")
+	check(m.hands.joining == ["pad:0"], "A sienta al mando")
 	await hit(KEY_SPACE)
 	await frames()
-	check(m.joining == ["pad:0"], "Espacio no levanta al mando de otro")
+	check(m.hands.joining == ["pad:0"], "Espacio no levanta al mando de otro")
 	await hit("B")
 	await frames()
-	check(m.joining.is_empty(), "B lo levanta")
+	check(m.hands.joining.is_empty(), "B lo levanta")
 	for k in BACKS:
 		await join.call()
 		await frames(W)

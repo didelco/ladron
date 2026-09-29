@@ -74,7 +74,7 @@ func _menu(arg: String) -> void:
 		"editor": host._show_editor(MapFile.generated(4242, "small"))
 		"settings": host.options.show("title")
 		"pads": host.options.show("title", "pads")
-		"input": host._show_join("generative")
+		"input": host.hands.show_join("generative")
 		# The ends of a night and the pause, to look at them: --pick=N
 		# for the story's heist, --gen for the generative, --two or
 		# --gang=N for more thieves.
