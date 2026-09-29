@@ -432,7 +432,7 @@ func _init() -> void:
 	check(m.guards.is_empty() and Sim.guard_count("small") == 0, "sin guardias")
 	check(m.thieves.size() == 1, "un ladrón")
 	check(Den.room_at(m.thieves[0].x, m.thieves[0].y) == "salon", "... en el salón")
-	check(Props.list.is_empty() and m.mannequins.is_empty(), "sin nada que tirar ni espantapájaros: aún no se han desbloqueado")
+	check(Props.list.is_empty() and m.house.mannequins.is_empty(), "sin nada que tirar ni espantapájaros: aún no se han desbloqueado")
 	check(m.world.get_child_count() > 0 and m.hud.home, "el HUD sabe que es la casa")
 	check(Sim.feature("case") == false, "la vitrina, sellada")
 	check(not Sim.feature("case") and Heist.loot.name == "el calcetín de práctica", "la vitrina, sellada, con el calcetín")
@@ -479,7 +479,7 @@ func _init() -> void:
 	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://test_escondite_b.cfg"))
 	m._start_playing()
 	p = m.thieves[0]
-	check(Props.list.size() == 5 and m.mannequins.size() == 2, "abierto el dojo: cinco cosas y los dos espantapájaros")
+	check(Props.list.size() == 5 and m.house.mannequins.size() == 2, "abierto el dojo: cinco cosas y los dos espantapájaros")
 	check(Hideouts.all().filter(func(s) -> bool: return s.kind == "armour").size() == 2, "dos armaduras donde esconderse")
 	var bin: Props.Prop = Props.list.filter(func(q: Props.Prop) -> bool: return q.kind == "bin")[0]
 	p.x = bin.x + 0.5
@@ -511,74 +511,74 @@ func _init() -> void:
 	var dv2: DenView = m.den_view
 	p.x = 38.5
 	p.y = 4.5
-	m.scarecrow_alert = Practice.alert_new()
-	m._scarecrow_tick(0.1)
-	check(m.scarecrow_alert.active, "el espantapájaros del pasillo ve al ladrón en su cono: se dispara la alarma")
+	m.house.scarecrow_alert = Practice.alert_new()
+	m.house.scarecrow_tick(0.1)
+	check(m.house.scarecrow_alert.active, "el espantapájaros del pasillo ve al ladrón en su cono: se dispara la alarma")
 	dv2._pose_alert(0.4)
 	check(dv2.alert_level() == 1.0 and dv2._alert_slab.visible, "el dojo se pone rojo")
 	check(dv2._alert_slab.get_parent().name == "Room_dojo" and dv2._alert_lights.all(func(l: OmniLight3D) -> bool: return l.get_parent().name == "Room_dojo"), "... y el rojo cuelga del dojo, no de otra sala")
 	check(m.sfx._streams.has("siren"), "hay una sirena para el dojo")
 	for i in 29:
-		m._scarecrow_tick(0.1)
-	check(m.scarecrow_alert.active, "a los 2,9 s sigue")
-	m._scarecrow_tick(0.15)
+		m.house.scarecrow_tick(0.1)
+	check(m.house.scarecrow_alert.active, "a los 2,9 s sigue")
+	m.house.scarecrow_tick(0.15)
 	dv2.set_alert(false)
 	dv2._pose_alert(0.4)
-	check(not m.scarecrow_alert.active and dv2.alert_level() == 0.0 and not dv2._alert_slab.visible, "a los 3 s se apaga, y con ella el rojo")
+	check(not m.house.scarecrow_alert.active and dv2.alert_level() == 0.0 and not dv2._alert_slab.visible, "a los 3 s se apaga, y con ella el rojo")
 	check(m.phase == "playing" and m.guards.is_empty() and not p.out, "nadie es pillado")
 	for i in 20:
-		m._scarecrow_tick(0.1)
-	check(m.scarecrow_alert.active, "a la vista aún, pasado el enfriamiento, otra vez")
-	m.scarecrow_alert = Practice.alert_new()
+		m.house.scarecrow_tick(0.1)
+	check(m.house.scarecrow_alert.active, "a la vista aún, pasado el enfriamiento, otra vez")
+	m.house.scarecrow_alert = Practice.alert_new()
 	p.hiding = true
-	m._scarecrow_tick(0.1)
-	check(not m.scarecrow_alert.active, "escondido en una caja, no cuenta")
+	m.house.scarecrow_tick(0.1)
+	check(not m.house.scarecrow_alert.active, "escondido en una caja, no cuenta")
 	p.hiding = false
 	p.x = 30.5
 	p.y = 9.5
-	m._scarecrow_tick(0.1)
-	check(not m.scarecrow_alert.active, "en la sala de exposición, no lo ve")
+	m.house.scarecrow_tick(0.1)
+	check(not m.house.scarecrow_alert.active, "en la sala de exposición, no lo ve")
 
 	# The bench of cases: opens as many times as one likes, with nothing at stake.
-	m.scarecrow_alert = Practice.alert_new()
+	m.house.scarecrow_alert = Practice.alert_new()
 	p.x = 27.5
 	p.y = 7.5
-	m.bench = Practice.bench_new()
+	m.house.bench = Practice.bench_new()
 	var bact: Dictionary = m._action_for(p)
 	check(bact.get("do", "") == "bench" and bact.at.what == "case", "junto a la vitrina de práctica, abrirla: %s" % [bact])
 	check(m._prompt_rows(0)[0].verb == Text.t("HIDEOUT_BENCH_OPEN"), "... y la ayuda lo dice")
-	m._bench_act(p, 0, bact.at, {})
-	check(m.bench_hold.has(p.id), "la prueba por defecto es quedarse quieto")
+	m.house.bench_act(p, 0, bact.at, {})
+	check(m.house.bench_hold.has(p.id), "la prueba por defecto es quedarse quieto")
 	var held := 0.0
-	while m.bench.opened == 0 and held < 5.0:
-		m._bench_tick(0.25)
+	while m.house.bench.opened == 0 and held < 5.0:
+		m.house.bench_tick(0.25)
 		held += 0.25
-	check(m.bench.opened == 1 and m.bench.cases[0].state == "open" and absf(held - Practice.BENCH_HOLD_S) < 0.3, "tras %.1f s quieto, se abre y la cuenta sube" % held)
+	check(m.house.bench.opened == 1 and m.house.bench.cases[0].state == "open" and absf(held - Practice.BENCH_HOLD_S) < 0.3, "tras %.1f s quieto, se abre y la cuenta sube" % held)
 	check(not m.den_view._bench_glass[0].visible, "el cristal de la vitrina se quita al abrirla")
 	for i in 20:
-		m._bench_tick(0.25)
-	check(m.bench.cases[0].state == "closed" and m.den_view._bench_glass[0].visible, "y vuelve a cerrarse sola")
-	m._bench_act(p, 0, {"what": "case", "i": 0}, {})
+		m.house.bench_tick(0.25)
+	check(m.house.bench.cases[0].state == "closed" and m.den_view._bench_glass[0].visible, "y vuelve a cerrarse sola")
+	m.house.bench_act(p, 0, {"what": "case", "i": 0}, {})
 	p.moving = true
-	m._bench_tick(0.25)
-	check(not m.bench_hold.has(p.id) and m.bench.opened == 1, "moverse deshace la espera")
+	m.house.bench_tick(0.25)
+	check(not m.house.bench_hold.has(p.id) and m.house.bench.opened == 1, "moverse deshace la espera")
 	p.moving = false
-	m.bench.kind = "lockpick"
-	m._bench_act(p, 0, {"what": "case", "i": 0}, {})
+	m.house.bench.kind = "lockpick"
+	m.house.bench_act(p, 0, {"what": "case", "i": 0}, {})
 	check(p.game != null and p.game.kind == "lockpick" and p.game.what == "bench", "con la ganzúa, el minijuego de un robo")
 	p.game.done = true
-	m._bench_tick(0.01)
-	check(p.game == null and m.bench.opened == 2, "hecho, la vitrina se abre y el contador sube: %d" % m.bench.opened)
+	m.house.bench_tick(0.01)
+	check(p.game == null and m.house.bench.opened == 2, "hecho, la vitrina se abre y el contador sube: %d" % m.house.bench.opened)
 	check(not Heist.taken and Heist.progress == 0.0 and Heist.by == "" and m.phase == "playing", "sin robo: nada tomado, sin progreso, la noche sigue")
 	for i in 20:
-		m._bench_tick(0.25)
+		m.house.bench_tick(0.25)
 	Story.save = "user://test_escondite_b.cfg"
 	Story.unlock(Story.lesson_night("props"), 1)
-	m._bench_act(p, 0, {"what": "level"}, {})
-	m._bench_act(p, 0, {"what": "kind"}, {})
+	m.house.bench_act(p, 0, {"what": "level"}, {})
+	m.house.bench_act(p, 0, {"what": "kind"}, {})
 	Story.save = "user://test_escondite.cfg"
 	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://test_escondite_b.cfg"))
-	check(m.bench.level == 1 and m.bench.kind == "squeeze", "los atriles cambian el nivel y la prueba")
+	check(m.house.bench.level == 1 and m.house.bench.kind == "squeeze", "los atriles cambian el nivel y la prueba")
 	check(m.den_view._bench_labels.kind.text.contains(Text.t("HIDEOUT_BENCH_KIND_SQUEEZE")) and m.den_view._bench_labels.level.text.contains(Text.t("HIDEOUT_BENCH_LEVEL_1")), "... y los carteles lo dicen")
 	p.x = 10.5
 	p.y = 15.5
@@ -589,8 +589,8 @@ func _init() -> void:
 	# Room names as one walks between rooms.
 	p.x = 10.5
 	p.y = 5.0
-	m._home_tick()
-	check(m.home_room == "trofeos", "entrar en la sala de trofeos la nombra")
+	m.house.home_tick()
+	check(m.house.home_room == "trofeos", "entrar en la sala de trofeos la nombra")
 
 	# The pause, and out to the town with the house picked.
 	m._pause()
@@ -657,29 +657,29 @@ func _init() -> void:
 	var act0: Dictionary = m._action_for(t0)
 	check(act0.get("do", "") == "door" and act0.at == "salon_trofeos", "junto a una puerta cerrada, la acción es abrirla: %s" % [act0])
 	check(m._prompt_rows(0).size() == 1 and m._prompt_rows(0)[0].verb == Text.t("HIDEOUT_DOOR_OPEN"), "... y la ayuda dice ABRIR")
-	check(Den.toggle_door("salon_trofeos", m._band_points()), "se abre")
+	check(Den.toggle_door("salon_trofeos", m.house.band_points()), "se abre")
 	dv.set_door("salon_trofeos", true)
-	m._home_sight(true)
+	m.house.home_sight(true)
 	check(dv.shows("trofeos") and not dv.shows("dojo") and not Museum.blocks_move(9.5, 9.5), "abierta, se ve la sala de al lado (solo esa) y se pasa")
 	check(m._prompt_rows(0)[0].verb == Text.t("HIDEOUT_DOOR_CLOSE"), "... y la ayuda dice CERRAR")
 	t0.y = 9.5
 	check(m._action_for(t0).get("do", "") != "door", "con un ladrón en el umbral la puerta no se cierra ni se ofrece")
-	check(not Den.toggle_door("salon_trofeos", m._band_points()) and Den.is_open("salon_trofeos"), "... y no se cierra")
+	check(not Den.toggle_door("salon_trofeos", m.house.band_points()) and Den.is_open("salon_trofeos"), "... y no se cierra")
 	t0.y = 10.5
-	check(Den.toggle_door("salon_trofeos", m._band_points()), "en cuanto se aparta, se cierra")
+	check(Den.toggle_door("salon_trofeos", m.house.band_points()), "en cuanto se aparta, se cierra")
 	dv.set_door("salon_trofeos", false)
-	m._home_sight(true)
+	m.house.home_sight(true)
 	check(not dv.shows("trofeos") and Museum.blocks_move(9.5, 9.5), "cerrada, la sala vuelve a oscurecerse")
 	# One in the dojo, one in the bathroom: the union of the three rooms.
 	m.thieves[0].x = 25.5
 	m.thieves[0].y = 5.5
 	m.thieves[1].x = 25.5
 	m.thieves[1].y = 18.5
-	m._home_sight(true)
+	m.house.home_sight(true)
 	check(dv.shows("salon") and dv.shows("dojo") and dv.shows("aseo") and not dv.shows("trofeos"), "ladrones repartidos por tres salas: se ven esas tres")
 	m.thieves[2].x = 10.5
 	m.thieves[2].y = 5.0
-	m._home_sight(true)
+	m.house.home_sight(true)
 	check(dv.shows("trofeos"), "... y con otro en los trofeos, las cuatro")
 
 	# The dojo's games: sign posts that come with their lesson, block their tile
@@ -723,37 +723,37 @@ func _init() -> void:
 	var gact: Dictionary = m._action_for(gt)
 	check(gact.get("do", "") == "game" and gact.id == "atrapa", "junto al cartel, la acción es empezar el juego: %s" % [gact])
 	check(m._prompt_rows(0).size() == 1 and String(m._prompt_rows(0)[0].verb).begins_with(Text.t("HIDEOUT_GAME_START")), "... y la ayuda dice EMPEZAR JUEGO")
-	m._dojo_start("atrapa")
-	check(m._dojo_game != null and m._dojo_game.state == "ready" and m._action_for(gt).get("do", "") != "game", "empezado, no se ofrece otro")
+	m.house.dojo_start("atrapa")
+	check(m.house.dojo_game != null and m.house.dojo_game.state == "ready" and m._action_for(gt).get("do", "") != "game", "empezado, no se ofrece otro")
 	check(String(m._prompt_rows(0)[0].verb) == Text.t("HIDEOUT_GAME_LEAVE_KEY"), "... y la ayuda dice cómo dejarlo")
 	await frames(3)
-	m._dojo_view.show_view(m._dojo_game.view())
-	check(m._dojo_view.visible, "la vista del juego se ve")
-	m._dojo_end()
-	check(m._dojo_game == null and not m._dojo_view.visible, "abortar deja la casa como estaba")
+	m.house.dojo_view.show_view(m.house.dojo_game.view())
+	check(m.house.dojo_view.visible, "la vista del juego se ve")
+	m.house.dojo_end()
+	check(m.house.dojo_game == null and not m.house.dojo_view.visible, "abortar deja la casa como estaba")
 	check(FileAccess.get_file_as_string(Story.save) == before_cfg, "empezar y abortar no escribe nada en el progreso")
 	check(m._action_for(gt).get("do", "") != "game", "recién dejado, el cartel no vuelve a empezar solo (la tecla aún pulsada)")
-	m._dojo_lock = 0.0
+	m.house.dojo_lock = 0.0
 
 	# La pausa aborta el juego; Tab también.
-	m._dojo_start("atrapa")
+	m.house.dojo_start("atrapa")
 	m._pause()
-	check(m._dojo_game == null, "la pausa aborta el juego")
+	check(m.house.dojo_game == null, "la pausa aborta el juego")
 	m._start_playing()
-	m._dojo_lock = 0.0
-	m._dojo_start("atrapa")
+	m.house.dojo_lock = 0.0
+	m.house.dojo_start("atrapa")
 	var tab := InputEventKey.new()
 	tab.keycode = KEY_TAB
 	tab.pressed = true
 	m._unhandled_input(tab)
-	check(m._dojo_game == null, "Tab deja el juego")
+	check(m.house.dojo_game == null, "Tab deja el juego")
 
 	# Un PILLA EL CALCETÍN con un bot hasta perder: el mejor nivel queda por banda.
-	m._dojo_lock = 0.0
-	m._dojo_start("atrapa")
+	m.house.dojo_lock = 0.0
+	m.house.dojo_start("atrapa")
 	var caught := 0
 	for f in 3000:
-		var view: Dictionary = m._dojo_game.view()
+		var view: Dictionary = m.house.dojo_game.view()
 		if view.state == "playing" and not view.objects.is_empty() and caught < 2:
 			gt.x = view.objects[0].pos.x
 			gt.y = view.objects[0].pos.y
@@ -761,23 +761,23 @@ func _init() -> void:
 			gt.x = 22.5
 			gt.y = 12.5
 		run(1)
-		if m._dojo_game.finished():
+		if m.house.dojo_game.finished():
 			break
-		if m._dojo_game.got > caught:
-			caught = m._dojo_game.got
-	check(m._dojo_game.state == "lost", "sin pillarlo más, se pierde: %s" % m._dojo_game.state)
-	check(DojoGames.best("atrapa", 1) == m._dojo_game.level and DojoGames.best("atrapa", 1) >= 2, "el mejor nivel queda guardado: %d" % DojoGames.best("atrapa", 1))
+		if m.house.dojo_game.got > caught:
+			caught = m.house.dojo_game.got
+	check(m.house.dojo_game.state == "lost", "sin pillarlo más, se pierde: %s" % m.house.dojo_game.state)
+	check(DojoGames.best("atrapa", 1) == m.house.dojo_game.level and DojoGames.best("atrapa", 1) >= 2, "el mejor nivel queda guardado: %d" % DojoGames.best("atrapa", 1))
 	check(DojoGames.best("atrapa", 2) == 0, "... solo para la banda de uno")
 	var cfg := ConfigFile.new()
 	cfg.load(Story.save)
 	check(Array(cfg.get_sections()).all(func(sec): return sec in ["story", "dojo"]) and Story.stars_in(0, 1) == 0, "solo la sección [dojo] es nueva: sin estrellas ni museo")
-	m._dojo_input(_accept_key())
-	check(m._dojo_game != null and m._dojo_game.state == "ready", "en el panel de fin, aceptar es OTRA VEZ")
-	m._dojo_end()
-	check(m._dojo_game == null and m._dojo_view.accept() == "", "salir cierra el juego y la vista")
+	m.house.dojo_input(_accept_key())
+	check(m.house.dojo_game != null and m.house.dojo_game.state == "ready", "en el panel de fin, aceptar es OTRA VEZ")
+	m.house.dojo_end()
+	check(m.house.dojo_game == null and m.house.dojo_view.accept() == "", "salir cierra el juego y la vista")
 	m.mode = Practice.MODE
 	m._new_round(1)
-	check(m._dojo_game == null and is_instance_valid(m._dojo_view), "una casa nueva empieza sin juego")
+	check(m.house.dojo_game == null and is_instance_valid(m.house.dojo_view), "una casa nueva empieza sin juego")
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
 	print("\n%d fallos" % fails)
