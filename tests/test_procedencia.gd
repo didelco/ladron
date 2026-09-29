@@ -48,6 +48,8 @@ func _init() -> void:
 		if r.has("licencia"):
 			_licence("regla %d" % (i + 1), r["licencia"], allowed, licences)
 
+	_alternatives(cols)
+
 	var ignore: Array = data.get("ignorar", [])
 	var paths := {}
 	for item in data.get("ambito", []):
@@ -100,6 +102,60 @@ func _licence(where: String, lid: String, allowed: Array, licences: Dictionary) 
 		check(false, "%s: licencia desconocida «%s»" % [where, lid])
 	elif not allowed.has(lid):
 		check(false, "%s: licencia «%s» no permitida" % [where, lid])
+
+
+## Las alternativas de terceros (docs/data/alternativas/*.json): lo mismo que valida tools/procedencia.py.
+## Los ficheros que empiezan por «_» son plantillas: se validan pero sus ids no chocan con los reales.
+func _alternatives(cols: Dictionary) -> void:
+	var d := DirAccess.open("res://docs/data/alternativas")
+	if d == null:
+		return
+	var ids := {}
+	var keys := {}
+	var names := Array(d.get_files())
+	names.sort()
+	for fn in names:
+		var fname: String = fn
+		if not fname.ends_with(".json"):
+			continue
+		var w := "alternativas/" + fname
+		var tpl := fname.begins_with("_")
+		var my_ids: Dictionary = {} if tpl else ids
+		var my_keys: Dictionary = {} if tpl else keys
+		var doc = JSON.parse_string(FileAccess.get_file_as_string("res://docs/data/alternativas/" + fname))
+		if typeof(doc) != TYPE_DICTIONARY or typeof(doc.get("grupos")) != TYPE_ARRAY:
+			check(false, "%s: JSON no válido o sin lista 'grupos'" % w)
+			continue
+		check(str(doc.get("categoria", "")) != "", "%s: sin categoria" % w)
+		for g in doc["grupos"]:
+			if typeof(g) != TYPE_DICTIONARY:
+				check(false, "%s: un grupo no es un objeto" % w)
+				continue
+			var col := str(g.get("coleccion", ""))
+			var gw := "%s, grupo %s" % [w, col]
+			check(cols.has(col), "%s: colección desconocida" % gw)
+			check(str(g.get("que_es", "")) != "", "%s: sin que_es" % gw)
+			var key := str(g.get("id", col)) if str(g.get("id", "")) != "" else col
+			check(not my_keys.has(key), "%s: grupo repetido «%s»" % [gw, key])
+			my_keys[key] = true
+			if typeof(g.get("alternativas")) != TYPE_ARRAY:
+				check(false, "%s: falta la lista alternativas" % gw)
+				continue
+			for a in g["alternativas"]:
+				if typeof(a) != TYPE_DICTIONARY:
+					check(false, "%s: una alternativa no es un objeto" % gw)
+					continue
+				var aid := str(a.get("id", ""))
+				var aw := "%s, alternativa %s" % [gw, aid]
+				for k in ["id", "nombre", "url", "autor", "licencia", "cubre"]:
+					check(typeof(a.get(k)) == TYPE_STRING and str(a[k]).strip_edges() != "", "%s: falta %s" % [aw, k])
+				check(aid != "nuestra", "%s: id reservado" % aw)
+				check(not my_ids.has(aid), "%s: id repetido" % aw)
+				my_ids[aid] = true
+				check(str(a.get("url", "")).begins_with("http"), "%s: url debe ser http(s)" % aw)
+				check(typeof(a.get("atribucion")) == TYPE_BOOL, "%s: atribucion debe ser booleano" % aw)
+				var e = a.get("encaje")
+				check((typeof(e) == TYPE_FLOAT or typeof(e) == TYPE_INT) and e >= 1 and e <= 5 and e == int(e), "%s: encaje de 1 a 5" % aw)
 
 
 func _as_array(v) -> Array:

@@ -23,6 +23,12 @@ La página «Procedencia» (y las etiquetas de licencia de las fichas de objetos
 assets/PROCEDENCIA.json, la fuente única de dónde viene cada asset y con qué licencia: se resuelve
 con tools/procedencia.py en docs/data/procedencia.js, tanto en `build` como en `texts` y `serve`.
 
+Alternativas de terceros: docs/data/alternativas/<categoria>.json (plantilla en _ejemplo.json, que el visor
+no enseña) se validan con `python3 tools/procedencia.py` y se vuelcan a docs/data/alternativas.js. En la
+página «Procedencia» las colecciones con alternativas llevan un distintivo y se puede elegir una (o «la
+nuestra»); con `serve`, la elección se guarda en docs/data/alternativas_elegidas.json (POST /api/alternativa
+{grupo, eleccion}; GET /api/alternativas la lee).
+
 `version` guarda a propósito una versión de una imagen importante (un hito: un
 cambio muy visible, o una muy antigua cuando algo ha ido cambiando poco a poco),
 en docs/versiones/<asunto>/<fecha>-<nombre>.webp, y la apunta en
@@ -39,6 +45,7 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
 from datetime import datetime
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
@@ -56,6 +63,7 @@ MANIFEST = os.path.join(VERSIONS, "versiones.json")
 # Las partes de `build` que hace Godot (tools/capture_docs.gd); el resto, Python.
 GODOT_PARTS = ["shots", "city", "assets", "models", "objects", "sounds", "data"]
 PY_PARTS = ["palette", "versions"]
+ELEGIDAS_LOCK = threading.Lock()
 PORT = int(os.environ.get("PORT", "8765"))
 
 # Grupos del visor de textos, por el prefijo de la clave.
@@ -227,13 +235,19 @@ def functions():
     return out
 
 
+def write_alternativas():
+    """procedencia.js y alternativas.js (docs/data/alternativas/*.json + alternativas_elegidas.json)."""
+    write_js("procedencia.js", "PROCEDENCIA", procedencia.web_data())
+    write_js("alternativas.js", "ALTERNATIVAS", procedencia.alt_web_data())
+
+
 def build_static():
     """Lo escrito a mano (docs/ESTILO.md), las constantes del código y la fuente, al lado del HTML."""
     build_code()
     path = os.path.join(DOCS, "ESTILO.md")
     write_js("estilo.js", "ESTILO", open(path, encoding="utf-8").read() if os.path.exists(path) else "")
     write_js("funciones.js", "FUNCIONES", functions())
-    write_js("procedencia.js", "PROCEDENCIA", procedencia.web_data())
+    write_alternativas()
     os.makedirs(os.path.join(DOCS, "fuentes"), exist_ok=True)
     for f in ["PressStart2P-Regular.ttf", "OFL.txt"]:
         shutil.copy(os.path.join(ROOT, "assets", "fonts", f), os.path.join(DOCS, "fuentes"))
@@ -505,16 +519,49 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/api/ping":
             return self._json(200, {"ok": True, "editable": True})
+        if self.path == "/api/alternativas":
+            return self._json(200, procedencia.alt_web_data()["elegidas"])
         return super().do_GET()
 
+    def _alternativa(self, body):
+        """Guarda la elección de un grupo en docs/data/alternativas_elegidas.json (y solo ahí)."""
+        grupo, eleccion = body.get("grupo"), body.get("eleccion")
+        grupos = {g["key"]: g for g in procedencia.alt_web_data()["grupos"]}
+        if not isinstance(grupo, str) or grupo not in grupos:
+            return self._json(404, {"error": f"no hay grupo {grupo}"})
+        ids = {a["id"] for a in grupos[grupo]["alternativas"]}
+        if eleccion != procedencia.NUESTRA and eleccion not in ids:
+            return self._json(400, {"error": f"alternativa no válida: {eleccion}"})
+        with ELEGIDAS_LOCK:
+            # Se parte de lo que haya en disco (aunque algún grupo ya no exista) y solo se toca esta clave.
+            actual = procedencia.alt_elegidas()
+            if eleccion == procedencia.NUESTRA:
+                actual.pop(grupo, None)
+            else:
+                actual[grupo] = eleccion
+            tmp = procedencia.ELEGIDAS + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(actual, f, ensure_ascii=False, indent=1, sort_keys=True)
+                f.write("\n")
+            os.replace(tmp, procedencia.ELEGIDAS)
+        print(f"alternativa elegida: {grupo} = {eleccion}")
+        return self._json(200, {"ok": True, "elegidas": procedencia.alt_web_data()["elegidas"]})
+
     def do_POST(self):
-        if self.path != "/api/texto":
+        if self.path not in ("/api/texto", "/api/alternativa"):
             return self._json(404, {"error": "no existe"})
         # Solo desde esta máquina: es un editor local, no un servicio.
         if self.client_address[0] not in ("127.0.0.1", "::1"):
             return self._json(403, {"error": "solo en local"})
-        n = int(self.headers.get("Content-Length", "0"))
-        body = json.loads(self.rfile.read(n) or b"{}")
+        try:
+            n = int(self.headers.get("Content-Length", "0"))
+            body = json.loads(self.rfile.read(n) or b"{}")
+        except ValueError:
+            return self._json(400, {"error": "cuerpo no válido"})
+        if not isinstance(body, dict):
+            return self._json(400, {"error": "cuerpo no válido"})
+        if self.path == "/api/alternativa":
+            return self._alternativa(body)
         key, value = body.get("key", ""), body.get("es")
         if not isinstance(value, str) or not re.fullmatch(r"[A-Z][A-Z0-9_]*", key or ""):
             return self._json(400, {"error": "clave o texto no válidos"})
@@ -532,7 +579,7 @@ class Handler(SimpleHTTPRequestHandler):
 
 def serve():
     # La procedencia se edita a mano en assets/PROCEDENCIA.json: se relee al arrancar.
-    write_js("procedencia.js", "PROCEDENCIA", procedencia.web_data())
+    write_alternativas()
     httpd = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
     print(f"Documentación en http://localhost:{PORT}  (Ctrl+C para parar)")
     try:

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """De dónde sale cada asset y con qué licencia: lee assets/PROCEDENCIA.json.
 
-    python3 tools/procedencia.py                 # comprueba (falla si un asset no tiene regla o una licencia no está permitida)
+    python3 tools/procedencia.py                 # comprueba (falla si un asset no tiene regla, una licencia no está permitida
+                                                 # o un JSON de docs/data/alternativas/ es incorrecto)
     python3 tools/procedencia.py resumen         # cuántos ficheros hay por licencia y por colección
     python3 tools/procedencia.py lista [texto]   # cada fichero con su colección y licencia (filtra por texto)
     python3 tools/procedencia.py credits         # reescribe CREDITS.md a partir de esa fuente
@@ -21,6 +22,9 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCE = os.path.join(ROOT, "assets", "PROCEDENCIA.json")
 CREDITS = os.path.join(ROOT, "CREDITS.md")
+ALT_DIR = os.path.join(ROOT, "docs", "data", "alternativas")
+ELEGIDAS = os.path.join(ROOT, "docs", "data", "alternativas_elegidas.json")
+NUESTRA = "nuestra"
 NO_DOC = "LicenseRef-Sin-Documentar"
 
 
@@ -120,6 +124,9 @@ def analyse(data=None):
                 break
         else:
             sin_regla.append(path)
+    alt_e, alt_w = alternativas_errors(data)
+    errors.extend(alt_e)
+    warnings.extend(alt_w)
     for path in sin_regla:
         errors.append(f"sin regla de procedencia: {path}")
     for i, r in enumerate(rules):
@@ -146,6 +153,128 @@ def analyse(data=None):
     return {"data": data, "resueltos": resolved, "sin_regla": sin_regla, "errores": errors, "avisos": warnings,
             "por_licencia": por_licencia, "por_coleccion": por_coleccion, "sin_documentar": undocumented,
             "record": record}
+
+
+# --- Alternativas de terceros (docs/data/alternativas/*.json) ------------------------------
+# Un JSON por categoría (modelos, audio, ui): {"categoria", "grupos": [{"coleccion", "que_es", "alternativas": [...]}]}.
+# Los ficheros que empiezan por «_» (plantilla) se validan pero no se enseñan en el visor.
+# Cada grupo se identifica por su "id" (opcional) o, si falta, por su colección; es lo que se elige.
+
+ALT_REQUIRED = ("id", "nombre", "url", "autor", "licencia", "cubre")
+
+
+def alt_files():
+    if not os.path.isdir(ALT_DIR):
+        return []
+    return sorted(f for f in os.listdir(ALT_DIR) if f.endswith(".json"))
+
+
+def alt_group_key(g):
+    return g.get("id") or g.get("coleccion", "")
+
+
+def alt_load():
+    """[(fichero, contenido o None si no se puede leer, error o None)]."""
+    out = []
+    for f in alt_files():
+        try:
+            with open(os.path.join(ALT_DIR, f), encoding="utf-8") as fh:
+                out.append((f, json.load(fh), None))
+        except (OSError, ValueError) as e:
+            out.append((f, None, str(e)))
+    return out
+
+
+def alternativas_errors(data=None):
+    """(errores, avisos) de todos los JSON de alternativas."""
+    data = data or load()
+    errors, warnings = [], []
+    real_ids, real_keys = {}, {}
+    for f, doc, err in alt_load():
+        w = f"alternativas/{f}"
+        # Las plantillas («_…») se validan aparte: sus ids y grupos no chocan con los reales.
+        ids, keys = ({}, {}) if f.startswith("_") else (real_ids, real_keys)
+        if err:
+            errors.append(f"{w}: no es un JSON válido ({err})")
+            continue
+        if not isinstance(doc, dict) or not isinstance(doc.get("grupos"), list):
+            errors.append(f"{w}: falta la lista 'grupos'")
+            continue
+        if not doc.get("categoria"):
+            errors.append(f"{w}: sin 'categoria'")
+        for gi, g in enumerate(doc["grupos"]):
+            if not isinstance(g, dict):
+                errors.append(f"{w}: grupo {gi + 1} no es un objeto")
+                continue
+            col = g.get("coleccion", "")
+            gw = f"{w}, grupo {gi + 1} ({col or '?'})"
+            if col not in data["colecciones"]:
+                errors.append(f"{gw}: colección desconocida «{col}»")
+            if not g.get("que_es"):
+                errors.append(f"{gw}: sin 'que_es'")
+            key = alt_group_key(g)
+            if key in keys:
+                errors.append(f"{gw}: grupo «{key}» repetido (ya está en {keys[key]}; usa un 'id' distinto)")
+            keys[key] = w
+            alts = g.get("alternativas")
+            if not isinstance(alts, list):
+                errors.append(f"{gw}: falta la lista 'alternativas'")
+                continue
+            for ai, a in enumerate(alts):
+                if not isinstance(a, dict):
+                    errors.append(f"{gw}: alternativa {ai + 1} no es un objeto")
+                    continue
+                aw = f"{gw}, alternativa «{a.get('id', ai + 1)}»"
+                for k in ALT_REQUIRED:
+                    if not isinstance(a.get(k), str) or not a[k].strip():
+                        errors.append(f"{aw}: falta '{k}'")
+                aid = a.get("id")
+                if isinstance(aid, str) and aid:
+                    if aid == NUESTRA or not all(c.isalnum() or c in "-_" for c in aid):
+                        errors.append(f"{aw}: id no válido (letras, cifras, - y _; y no «{NUESTRA}»)")
+                    if aid in ids:
+                        errors.append(f"{aw}: id repetido (también en {ids[aid]})")
+                    ids[aid] = w
+                if isinstance(a.get("url"), str) and a["url"] and not a["url"].startswith(("http://", "https://")):
+                    errors.append(f"{aw}: 'url' debe empezar por http(s)://")
+                pv = a.get("preview_url")
+                if pv is not None and not (isinstance(pv, str) and pv.startswith(("http://", "https://"))):
+                    errors.append(f"{aw}: 'preview_url' debe ser una URL http(s) o faltar")
+                if not isinstance(a.get("atribucion"), bool):
+                    errors.append(f"{aw}: 'atribucion' debe ser true o false")
+                e = a.get("encaje")
+                if not (isinstance(e, int) and not isinstance(e, bool) and 1 <= e <= 5):
+                    errors.append(f"{aw}: 'encaje' debe ser un entero de 1 a 5")
+                lic = a.get("licencia")
+                if isinstance(lic, str) and lic.strip() and lic not in data.get("permitidas", []):
+                    warnings.append(f"{aw}: licencia «{lic}» fuera de las permitidas del proyecto (¿se puede usar?)")
+    return errors, warnings
+
+
+def alt_elegidas():
+    try:
+        with open(ELEGIDAS, encoding="utf-8") as f:
+            d = json.load(f)
+        return d if isinstance(d, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def alt_web_data():
+    """Lo que enseña el visor: los grupos con alternativas (sin los ficheros «_») y lo elegido."""
+    grupos, cats = [], []
+    for f, doc, err in alt_load():
+        if err or f.startswith("_") or not isinstance(doc, dict) or not isinstance(doc.get("grupos"), list):
+            continue
+        cat = doc.get("categoria", f[:-5])
+        if cat not in cats:
+            cats.append(cat)
+        for g in doc["grupos"]:
+            if isinstance(g, dict) and isinstance(g.get("alternativas"), list) and g["alternativas"]:
+                grupos.append({**g, "key": alt_group_key(g), "categoria": cat})
+    valid = {g["key"]: {a.get("id") for a in g["alternativas"]} | {NUESTRA} for g in grupos}
+    elegidas = {k: v for k, v in alt_elegidas().items() if k in valid and v in valid[k] and v != NUESTRA}
+    return {"categorias": cats, "grupos": grupos, "elegidas": elegidas}
 
 
 # --- La documentación (docs/data/procedencia.js) ---------------------------------------

@@ -177,6 +177,16 @@ python3 tools/docs.py version icono "Pixel art" --from assets/icon.png --commit 
 python3 tools/docs.py version --list
 ```
 
+**Alternativas de terceros**: para sustituir lo hecho con IA (modelos, sonidos, voz, ilustraciones…)
+por algo de terceros con licencia libre, se apuntan en `docs/data/alternativas/<categoria>.json`
+(plantilla en `_ejemplo.json`: `categoria` y `grupos` con `coleccion` de `assets/PROCEDENCIA.json`,
+`que_es` y `alternativas` con `id`, `nombre`, `url`, `autor`, `licencia`, `atribucion`, `cubre`,
+`encaje` 1-5 y, si quieres, `preview_url` y `notas`; un grupo con `id` propio permite varios por
+colección). `python3 tools/procedencia.py` y `tests/test_procedencia.gd` los validan. En la página
+«Procedencia» las colecciones con alternativa llevan el distintivo «Tiene alternativa», y con
+`python3 tools/docs.py serve` se elige una (o «la nuestra») por grupo; la elección queda en
+`docs/data/alternativas_elegidas.json` y arriba se ve lo pendiente de sustituir.
+
 Las capturas lanzan Godot sin el dispositivo HID de Apple que algunos Mac enseñan como mando
 (`SDL_JOYSTICK_IGNORE_DEVICES=0x05ac/0x0004`, lo pone `docs.py`).
 

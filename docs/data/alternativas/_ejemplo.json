@@ -1,0 +1,23 @@
+{
+ "categoria": "modelos",
+ "grupos": [
+  {
+   "coleccion": "modelos-blender",
+   "que_es": "Plantilla: qué parte del juego cubre este grupo (una frase corta). Un grupo por colección, o varios con un 'id' propio.",
+   "alternativas": [
+    {
+     "id": "ejemplo-pack-cc0",
+     "nombre": "Nombre del pack o modelo",
+     "url": "https://example.org/pack",
+     "autor": "Autoría",
+     "licencia": "CC0-1.0",
+     "atribucion": false,
+     "preview_url": "https://example.org/pack/preview.png",
+     "cubre": "todo | algunos | uno",
+     "encaje": 3,
+     "notas": "Opcional: estilo, formato, lo que habría que adaptar."
+    }
+   ]
+  }
+ ]
+}
