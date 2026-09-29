@@ -36,7 +36,31 @@ EXCEPCIONES_FICHERO = {
 }
 
 # Funciones que ya pasaban de MAX_FUNCION: "ruta:funcion" -> lineas de hoy (no deben crecer).
-EXCEPCIONES_FUNCION = {}
+EXCEPCIONES_FUNCION = {
+    "logic/sim.gd:step_guard": 253,
+    "tools/capture_docs.gd:_shots": 216,
+    "scenes/museum_building.gd:_antiquity": 213,
+    "scenes/museum_building.gd:_middle_ages": 184,
+    "scenes/map_editor.gd:_build": 171,
+    "scenes/museum_building.gd:_nature": 160,
+    "scenes/museum_building.gd:_prehistory": 151,
+    "logic/museum.gd:_build_zones": 138,
+    "scenes/hud.gd:_menu_item": 136,
+    "logic/sim.gd:step_thief": 124,
+    "logic/mapgen.gd:_open_doors": 122,
+    "logic/den.gd:furniture": 120,
+    "scenes/hud.gd:_ready": 109,
+    "logic/heist.gd:plan_job": 101,
+    "logic/heist.gd:step": 93,
+    "scenes/end_pages.gd:mugshot": 92,
+    "scenes/sfx.gd:_render_music": 90,
+    "scenes/museum_building.gd:_hall": 88,
+    "scenes/city_stage.gd:build": 88,
+    "logic/props.gd:place": 88,
+    "scenes/map_editor.gd:_draw_plan": 87,
+    "scenes/hud.gd:_card": 85,
+    "scenes/museum_building.gd:_contemporary": 81,
+}
 
 DECLARACION = re.compile(r"^(static\s+func|func|var|const|signal|class|enum|@\w+|static\s+var)\b")
 

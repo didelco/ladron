@@ -14,7 +14,14 @@ extends Node3D
 ## clock: a round lasts as long as it takes. The loop is the web version's Game.tsx tick: thieves and their
 ## noise, the job and its alarm, guards, the yell, the warning, keeping apart,
 ## lights, thinking (Laya through BrainClient, or the fallback rules),
-## hidden, caught.
+## hidden, caught (NightLoop).
+##
+## This script is the hub: the state that everything reads (mode, phase, thieves, guards,
+## the settings' values), the screens that lead to a night, the rounds' layout and the
+## frame's order. The rest is in controllers it owns (the vars just below), each one a
+## class in scenes/ that holds a reference back to Game and has a short public face:
+## LaunchArgs, HouseRun, PreviewStand, SettingsScreens, NightEnv, Scenery, CameraRig,
+## Hands, MegaphoneRun, NightLoop, ChallengeScreens, BriefScreens.
 
 ## the guards think this often
 const THINK_EVERY_MS := 1100.0
@@ -907,6 +914,13 @@ func _lay_out(n: int, map_seed: int) -> int:
 	elif mode == Practice.MODE:
 		piece = saved_map.loot_piece()
 	Heist.plan_job(level, piece, players, saved_map.job() if saved_map else {})
+	_place_things(map_seed)
+	return Sim.assign_posts(guards)
+
+
+## What stands about once the job is planned: the props to knock over, the pedestals
+## to pose on, the furniture to hide in, what stands on every other case, the arcades.
+func _place_things(map_seed: int) -> void:
 	# Things to knock over: never on the tiles the job needs clear.
 	var stand := Heist.route[0]
 	for t in Heist.route:
@@ -951,7 +965,6 @@ func _lay_out(n: int, map_seed: int) -> int:
 	Arcades.find()
 	if mode == Practice.MODE:
 		Arcades.find_home()
-	return Sim.assign_posts(guards)
 
 
 ## The map the round is laid out from (_lay_out): the challenge's, or a
