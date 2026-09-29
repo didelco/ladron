@@ -174,10 +174,10 @@ func step_quality(key: String) -> void:
 
 ## Quality and render scale, applied to the night and to every 3D viewport.
 func apply_quality() -> void:
-	if host.world_env:
-		Quality.apply_environment(host.world_env)
-	if host.moon_light:
-		Quality.apply_light(host.moon_light)
+	if host.nightenv.world_env:
+		Quality.apply_environment(host.nightenv.world_env)
+	if host.nightenv.moon:
+		Quality.apply_light(host.nightenv.moon)
 	Quality.apply_tree(host.get_tree())
 
 

@@ -91,13 +91,13 @@ func _init() -> void:
 		if c is TitleScreen:
 			c.queue_free()
 	await frames(2)
-	var w: Environment = m.world_env
+	var w: Environment = m.nightenv.world_env
 	check(w.ssr_enabled and w.ssil_enabled and w.ssao_enabled and w.volumetric_fog_enabled, "la noche por defecto: efectos encendidos")
-	check(m.moon_light.directional_shadow_max_distance == 35.0, "la noche por defecto: sombras a 35 m")
+	check(m.nightenv.moon.directional_shadow_max_distance == 35.0, "la noche por defecto: sombras a 35 m")
 	check(m.options.text_of("quality").contains(Text.t("SETTINGS_QUALITY_HIGH")), "el ajuste dice ALTA")
 	m.options.step(0, "quality")
 	check(Quality.is_low() and not w.ssr_enabled and not w.ssao_enabled and not w.ssil_enabled and not w.volumetric_fog_enabled, "ajuste Calidad: Baja apaga los efectos de la noche")
-	check(m.moon_light.directional_shadow_max_distance < 35.0, "ajuste Calidad: Baja acorta las sombras de la noche")
+	check(m.nightenv.moon.directional_shadow_max_distance < 35.0, "ajuste Calidad: Baja acorta las sombras de la noche")
 	check(m.options.text_of("quality").contains(Text.t("SETTINGS_QUALITY_LOW")), "el ajuste dice BAJA")
 	check(Settings.read().quality == "low", "Baja se guarda")
 	var t: String = m.options.step(0, "render_scale")
