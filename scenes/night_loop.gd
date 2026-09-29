@@ -251,6 +251,8 @@ func _move_thieves(dt: float, keys: Dictionary, noises: Array[SoundEvent]) -> vo
 func _play_game(p: Thief, i: int, keys: Dictionary, dt: float, noises: Array[SoundEvent], suspicion: int) -> void:
 	p.game.tremble = Minigame.tremble_for(suspicion)
 	p.game.pressure = Plinths.pressure(p, host.guards)
+	if p.game is SqueezeGame and p.game.what == "hideout":
+		(p.game as SqueezeGame).watched = not Sim.witnesses(host.guards, p).is_empty()
 	var lean: float = (p.game as BalanceGame).lean if p.game is BalanceGame else 0.0
 	var played := p.game.tick(host._game_input(i, keys), dt)
 	match played:

@@ -425,8 +425,7 @@ func _init() -> void:
 		for lv in 3:
 			var g: Minigame = Practice.bench_game(k, lv, {})
 			check(g != null and g.kind == k and g.level == lv and g.what == "bench", "la prueba %s a nivel %d es su minijuego de siempre" % [k, lv])
-	check(Practice.bench_game("squeeze", 0, {}).steps == SqueezeGame.WRIGGLES_LEVEL[0] and Practice.bench_game("squeeze", 1, {}).steps == SqueezeGame.WRIGGLES_LEVEL[1] + 1 \
-		and Practice.bench_game("squeeze", 2, {}).steps == SqueezeGame.WRIGGLES_LEVEL[2] + 1, "ESCONDITE: la nevera es holgada, la caja y el baúl ajustan más (Hideouts.TIGHT)")
+	check([0, 1, 2].map(func(lv): return Practice.bench_game("squeeze", lv, {}).steps) == SqueezeGame.SHOVES_LEVEL and [0, 1, 2].map(func(lv): return (Practice.bench_game("squeeze", lv, {}) as SqueezeGame).tight) == [0, 1, 1], "ESCONDITE: fácil y medio un empujón, difícil dos; la nevera es holgada, la caja y el baúl ajustan (Hideouts.TIGHT)")
 	check(Practice.bench_piece(0) == "fridge" and Practice.bench_piece(1) == "box" and Practice.bench_piece(2) == "chest" and Practice.BENCH_OBJECTS.squeeze.pieces.all(func(k): return Hideouts.PIECES.has(k)), "... con muebles de Hideouts.PIECES (no las armaduras de AGUANTA)")
 	check([0, 1, 2].map(func(lv): return Practice.bench_game("wires", lv, {}).steps) == WiresGame.WIRES_LEVEL, "CABLES: 3, 4 y 6 cables según el nivel")
 	check(Practice.bench_game("steady", 0, {}).level == 0 and Practice.bench_game("steady", 2, {}).level == 2, "PULSO: aro más pequeño y más deriva según el nivel")

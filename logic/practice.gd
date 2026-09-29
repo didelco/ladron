@@ -214,7 +214,7 @@ static func bench_action(pos: Vector2, state: Dictionary, players := 1) -> Dicti
 
 
 ## The game a test is: the same Minigame as in a heist, at the difficulty of
-## the case; input is the keys held. The hideout's fit (SqueezeGame's `steps`)
+## the case; input is the keys held. The hideout's fit (SqueezeGame's `tight`)
 ## is the tightness of its piece (Hideouts.TIGHT).
 static func bench_game(kind: String, level: int, input: Dictionary) -> Minigame:
 	var steps: int = {"lockpick": 1 + level, "squeeze": Hideouts.TIGHT.get(bench_piece(level), 0), "wires": 3, "steady": 4 + level * 2}.get(kind, 2)

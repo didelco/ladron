@@ -310,7 +310,7 @@ window.PANTALLAS = [
               { key: "GAME_HOW_WIRES", text: "Los cables, en el cuadro de alarma.", doc: "minijuegos/wires" },
               { key: "GAME_HOW_STEADY", text: "La ventosa, en el cristal.", doc: "minijuegos/steady" },
               { key: "GAME_HOW_BALANCE", text: "El equilibrio, posando como estatua en un pedestal.", doc: "minijuegos/balance" },
-              { key: "GAME_HOW_SQUEEZE", text: "Colarse en un escondite: a un lado y a otro, con ritmo; de 2 a 5 s a la vista.", doc: "escondites" },
+              { key: "GAME_HOW_SQUEEZE", text: "Colarse en un escondite: un empujón con la acción cuando no miren; de 1 a 3 s a la vista.", doc: "escondites" },
               { key: "GAME_HOW_SNEEZE", text: "El estornudo, al rato de estar escondido; si se escapa, ¡ACHÍS! y fuera.", doc: "minijuegos/sneeze" },
               { key: "GAME_HOW_ARCADE", text: "Un pong de broma en la recreativa: no se gana nada y nunca acaba.", doc: "minijuegos/arcade" },
               { key: "GAME_LET_GO" },
