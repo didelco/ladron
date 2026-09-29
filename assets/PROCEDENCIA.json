@@ -1,0 +1,290 @@
+{
+	"_ayuda": [
+		"Fuente ÚNICA de la procedencia y la licencia de todos los assets del juego. Se edita a mano.",
+		"La leen tools/procedencia.py (comprobación, CREDITS.md y el visor de la documentación) y tests/test_procedencia.gd.",
+		"Cómo se resuelve un fichero: se recorren los ficheros de 'ambito' (menos los de 'ignorar') y a cada uno se le aplica la PRIMERA regla de 'reglas' cuyo 'patron' lo cubra ('*' vale para cualquier texto, también '/'; '?' para una letra; sin corchetes). Para una excepción por fichero, pon su regla antes de la general.",
+		"Cada regla apunta a una entrada de 'colecciones' (el pack o el método) y puede sobrescribir cualquiera de sus campos (por ejemplo 'notas' o 'autor').",
+		"Campos de una colección: nombre, tipo ('propio' o 'externo'), metodo (cómo se generó o de dónde se sacó), autor, licencia (clave de 'licencias'), url, atribucion (true/false; si falta, la de la licencia), credito (la celda de CREDITS.md), componentes (piezas de terceros dentro de algo propio), documentado (false = origen sin documentar), notas.",
+		"Si algo no se sabe, no se inventa: 'documentado': false y licencia 'LicenseRef-Sin-Documentar'. La comprobación lo cuenta como aviso, no como fallo.",
+		"Para comprobar: python3 tools/procedencia.py (o godot --headless --script tests/test_procedencia.gd). Para regenerar CREDITS.md: python3 tools/procedencia.py credits."
+	],
+
+	"permitidas": ["CC0-1.0", "CC-BY-3.0", "CC-BY-4.0", "OFL-1.1", "Apache-2.0", "LicenseRef-Propia", "LicenseRef-Dominio-Publico", "LicenseRef-Sin-Documentar"],
+
+	"licencias": {
+		"CC0-1.0": {"corta": "CC0", "nombre": "Creative Commons Cero 1.0 (dominio público)", "url": "https://creativecommons.org/publicdomain/zero/1.0/", "atribucion": false},
+		"CC-BY-3.0": {"corta": "CC BY 3.0", "nombre": "Creative Commons Reconocimiento 3.0", "url": "https://creativecommons.org/licenses/by/3.0/", "atribucion": true},
+		"CC-BY-4.0": {"corta": "CC BY 4.0", "nombre": "Creative Commons Reconocimiento 4.0", "url": "https://creativecommons.org/licenses/by/4.0/", "atribucion": true},
+		"OFL-1.1": {"corta": "OFL 1.1", "nombre": "SIL Open Font License 1.1", "url": "https://openfontlicense.org/", "atribucion": false},
+		"Apache-2.0": {"corta": "Apache 2.0", "nombre": "Apache License 2.0", "url": "https://www.apache.org/licenses/LICENSE-2.0", "atribucion": false},
+		"LicenseRef-Propia": {"corta": "Propia", "nombre": "Obra propia del proyecto (sin licencia pública declarada)", "url": "", "atribucion": false},
+		"LicenseRef-Dominio-Publico": {"corta": "Dominio público", "nombre": "Dominio público", "url": "", "atribucion": false},
+		"LicenseRef-Sin-Documentar": {"corta": "Sin documentar", "nombre": "Origen y licencia sin documentar (pendiente de que el dueño los complete)", "url": "", "atribucion": false}
+	},
+
+	"ambito": [
+		"assets",
+		"audio",
+		"art",
+		"docs/logo.webp",
+		"scenes/sfx.gd",
+		{"ruta": "scenes", "patron": "*.gdshader", "recursivo": false}
+	],
+	"ignorar": ["assets/PROCEDENCIA.json", "*.import", "*.uid", "*.blend1", "*.pyc", "*/__pycache__/*", "*/.DS_Store", "*/.gitignore", ".gdignore", "*/.gdignore"],
+
+	"colecciones": {
+		"fuente-press-start-2p": {
+			"nombre": "Press Start 2P",
+			"tipo": "externo",
+			"metodo": "Tipografía descargada tal cual (Google Fonts).",
+			"autor": "The Press Start 2P Project Authors",
+			"licencia": "OFL-1.1",
+			"url": "https://fonts.google.com/specimen/Press+Start+2P",
+			"credito": "`assets/fonts/PressStart2P-Regular.ttf` (Press Start 2P)",
+			"notas": "El texto de la licencia va al lado: assets/fonts/OFL.txt."
+		},
+		"fuente-unifraktur": {
+			"nombre": "UnifrakturMaguntia",
+			"tipo": "externo",
+			"metodo": "Tipografía descargada tal cual (Google Fonts). Cabecera del periódico.",
+			"autor": "j. 'mach' wust, Peter Wiegel",
+			"licencia": "OFL-1.1",
+			"url": "https://fonts.google.com/specimen/UnifrakturMaguntia",
+			"credito": "`assets/fonts/UnifrakturMaguntia-Book.ttf` (UnifrakturMaguntia, la cabecera del periódico)",
+			"notas": "El texto de la licencia va al lado: assets/fonts/OFL-UnifrakturMaguntia.txt."
+		},
+		"fuente-abril-fatface": {
+			"nombre": "Abril Fatface",
+			"tipo": "externo",
+			"metodo": "Tipografía descargada tal cual (Google Fonts). Titulares del periódico y la ficha.",
+			"autor": "TypeTogether",
+			"licencia": "OFL-1.1",
+			"url": "https://fonts.google.com/specimen/Abril+Fatface",
+			"credito": "`assets/fonts/AbrilFatface-Regular.ttf` (Abril Fatface, los titulares del periódico y la ficha)",
+			"notas": "El texto de la licencia va al lado: assets/fonts/OFL-AbrilFatface.txt."
+		},
+		"poly-pizza-estatuas": {
+			"nombre": "Estatuas (Poly Pizza)",
+			"tipo": "externo",
+			"metodo": "Modelos .glb descargados de Poly Pizza y usados tal cual (statue-a y statue-b, las estatuas de las salas y de la peana «statue»).",
+			"autor": "— (Poly Pizza; autor sin anotar)",
+			"licencia": "CC0-1.0",
+			"url": "https://poly.pizza",
+			"credito": "`assets/models/statue-a.glb`, `assets/models/statue-b.glb` (Estatua)",
+			"notas": "CREDITS.md solo dice «Poly Pizza» y CC0: el autor original y la página exacta del modelo no se anotaron."
+		},
+		"poly-google-oso": {
+			"nombre": "Black bear (Poly by Google, vía Poly Pizza)",
+			"tipo": "externo",
+			"metodo": "Modelo .glb con su textura, descargado de Poly Pizza.",
+			"autor": "Poly by Google",
+			"licencia": "CC-BY-3.0",
+			"url": "https://poly.pizza",
+			"atribucion": true,
+			"credito": "`assets/models/bear.glb` (Black bear) y su textura `bear_BlackBear_BaseColor.png`",
+			"notas": "Ya no lo carga ningún script (el oso del juego es el propio oso.glb, desde el commit 258cf17), pero sigue en el repositorio y en las exportaciones: mientras esté, la atribución es obligatoria."
+		},
+		"kenney-city-commercial": {
+			"nombre": "Kenney City Kit Commercial 2.1",
+			"tipo": "externo",
+			"metodo": "Kit de modelos .glb usado tal cual; los colores de noche, las ventanas encendidas y los tejados los pone el juego (TownBuilder.NIGHT_SHADER).",
+			"autor": "Kenney",
+			"licencia": "CC0-1.0",
+			"url": "https://kenney.nl/assets/city-kit-commercial",
+			"credito": "`assets/models/ciudad/comercial/` (City Kit Commercial 2.1: edificios y rascacielos de la ciudad)",
+			"notas": "No pide atribución, pero se da igual. Su License.txt está en assets/models/ciudad/."
+		},
+		"kenney-city-suburban": {
+			"nombre": "Kenney City Kit Suburban 2.0",
+			"tipo": "externo",
+			"metodo": "Kit de modelos .glb usado tal cual; el color de noche lo pone el juego.",
+			"autor": "Kenney",
+			"licencia": "CC0-1.0",
+			"url": "https://kenney.nl/assets/city-kit-suburban",
+			"credito": "`assets/models/ciudad/suburbios/` (City Kit Suburban 2.0: casas, árboles y vallas)",
+			"notas": "No pide atribución, pero se da igual."
+		},
+		"kenney-city-roads": {
+			"nombre": "Kenney City Kit Roads 2.1",
+			"tipo": "externo",
+			"metodo": "Kit de modelos .glb usado tal cual.",
+			"autor": "Kenney",
+			"licencia": "CC0-1.0",
+			"url": "https://kenney.nl/assets/city-kit-roads",
+			"credito": "`assets/models/ciudad/calles/` (City Kit Roads 2.1: calles, cruces y farolas)",
+			"notas": "No pide atribución, pero se da igual."
+		},
+		"kenney-furniture": {
+			"nombre": "Kenney Furniture Kit 2.0",
+			"tipo": "externo",
+			"metodo": "Kit de modelos .glb usado tal cual (los muebles de la casa de la banda).",
+			"autor": "Kenney",
+			"licencia": "CC0-1.0",
+			"url": "https://kenney.nl/assets/furniture-kit",
+			"credito": "`assets/models/casa/` (Furniture Kit 2.0: sofás, cocina, baño y demás muebles de la casa de la banda)",
+			"notas": "No pide atribución, pero se da igual."
+		},
+
+		"modelos-blender": {
+			"nombre": "Catálogo modelado en Blender",
+			"tipo": "propio",
+			"metodo": "Modelado en Blender (art/*.blend: museo, coleccion, botin y un tema por fichero), en parte con scripts de Python (art/temas/*.py, art/botin/*.py) y retocado a mano; exportado a .glb con art/export.py. Los materiales llevan solo el color base: el sombreado toon lo pone el juego.",
+			"autor": "Chema, con Claude",
+			"licencia": "LicenseRef-Propia",
+			"url": "",
+			"notas": "Fuentes: art/*.blend. Las piezas a robar (botin) salieron primero de primitivas.gd y se rehicieron en Blender."
+		},
+		"personajes-blender": {
+			"nombre": "Personajes (ninja y guardia)",
+			"tipo": "propio",
+			"metodo": "Modelados por script en Blender (art/characters/kit.py, ninja.py, guardia.py, rig.py: formas sencillas fundidas con remallado de vóxeles, esqueleto y acciones) y retocados a mano en art/personajes/*.blend; exportados con art/export.py.",
+			"autor": "Chema, con Claude",
+			"licencia": "LicenseRef-Propia",
+			"url": "",
+			"notas": ""
+		},
+		"globo-mapamundi": {
+			"nombre": "Mapamundi del globo",
+			"tipo": "propio",
+			"metodo": "Textura del globo terráqueo (globo.glb). Estaba en el .blend como world.png, generada por un script de una sesión de Claude cuyo resultado no se conservó en el repositorio.",
+			"autor": "sin documentar",
+			"licencia": "LicenseRef-Sin-Documentar",
+			"url": "",
+			"documentado": false,
+			"notas": "No se sabe de qué datos o imagen de mapa sale ni con qué licencia."
+		},
+
+		"sonidos-procedurales": {
+			"nombre": "Sonido sintetizado en código",
+			"tipo": "propio",
+			"metodo": "Todos los efectos y la música se sintetizan al arrancar el juego (scenes/sfx.gd): ruido filtrado, parciales que decaen, sierras que se deslizan; la música es una pieza en re menor y otra en do mayor renderizadas en un hilo. No hay ficheros de audio. Los .wav de la página de sonidos de la documentación se exportan de ahí.",
+			"autor": "Chema, con Claude",
+			"licencia": "LicenseRef-Propia",
+			"url": "",
+			"notas": ""
+		},
+		"megafonia-tts": {
+			"nombre": "Megafonía del museo (voz sintética)",
+			"tipo": "propio",
+			"metodo": "Frases MEGA_* de locale/texts.csv convertidas a .ogg con megafonia-tool (carpeta hermana ../megafonia-tool, fuera de este repositorio): TTS local Kokoro-82M con mlx-audio (voz em_santa, velocidad 0,9), cadena de «bocina en sala grande» con pedalboard (paso bajo, saturación, compresor), reverb por convolución con la respuesta al impulso del hangar del Yorkshire Air Museum al 30 % (25 % en las MEGA_ALARM_*), -16 LUFS, .ogg mono a 44,1 kHz. Se regeneran con ./regenerar_juego.sh de esa herramienta. Unas pocas frases llevan una muestra grabada (risa, suspiro, ejem o tos).",
+			"autor": "Chema, con Claude",
+			"licencia": "LicenseRef-Propia",
+			"url": "",
+			"componentes": [
+				{"nombre": "Kokoro-82M (modelo TTS; voz em_santa)", "autor": "hexgrad (conversión mlx-community/Kokoro-82M-bf16)", "licencia": "Apache-2.0", "url": "https://huggingface.co/hexgrad/Kokoro-82M", "nota": "Apache 2.0 es la licencia del modelo según su ficha en Hugging Face; el README de megafonia-tool no recoge la de las voces: confirmar."},
+				{"nombre": "Respuesta al impulso «Yorkshire Air Museum, hangar T2» (reverb)", "autor": "OpenAIR, University of York", "licencia": "CC-BY-4.0", "url": "https://www.openair.hosting.york.ac.uk/", "atribucion": true, "nota": "CC BY 4.0 según el catálogo de OpenAIR; el README de megafonia-tool dice «confirmar antes de publicar». El audio resultante es una obra derivada: hay que citar «OpenAIR, University of York»."},
+				{"nombre": "Muestras vocales (risa, suspiro, ejem, tos)", "autor": "ezwa (Wikimedia Commons)", "licencia": "LicenseRef-Dominio-Publico", "url": "https://commons.wikimedia.org/wiki/File:Laughter_and_clearing_voice.ogg", "nota": "Dominio público; ver megafonia-tool/assets/LICENCIAS_vocales.md."}
+			],
+			"atribucion": true,
+			"credito": "`audio/megafonia/` (la megafonía del museo: voz Kokoro-82M con megafonia-tool y reverb de un hangar)",
+			"notas": "Origen: ver megafonia-tool/README.md. Solo la reverb del hangar exige atribución. Las respuestas EchoThief de esa herramienta (vestíbulo, pabellón, pasillo) no se usan en el juego."
+		},
+
+		"ui-pegatinas-ninja": {
+			"nombre": "Pegatinas de cabezas ninja",
+			"tipo": "propio",
+			"metodo": "Dibujadas por código con Pillow (tools/ninja_stickers.py), con los colores de los ladrones leídos de scenes/main.gd. Se regeneran con python3 tools/ninja_stickers.py.",
+			"autor": "Chema, con Claude",
+			"licencia": "LicenseRef-Propia",
+			"url": "",
+			"notas": ""
+		},
+		"ui-iconos-objetos": {
+			"nombre": "Iconos de objetos del editor",
+			"tipo": "propio",
+			"metodo": "Renders de 128 px de los propios modelos del juego, con la luz y el ángulo de siempre, sacados con tests/visual/icons.tscn. Se rehacen cuando cambia un modelo. Los de la estatua parten de un modelo CC0 de Poly Pizza.",
+			"autor": "Chema, con Claude",
+			"licencia": "LicenseRef-Propia",
+			"url": "",
+			"notas": ""
+		},
+		"ui-iconos-editor": {
+			"nombre": "Iconos vectoriales del editor",
+			"tipo": "propio",
+			"metodo": "SVG sencillos escritos como código (formas blancas sobre 64 px) para los botones del editor de mapas; el juego los tiñe.",
+			"autor": "Chema, con Claude",
+			"licencia": "LicenseRef-Propia",
+			"url": "",
+			"notas": "El commit 0d385d7 los añadió sin dejar el generador."
+		},
+		"ui-ilustraciones": {
+			"nombre": "Ilustraciones de portada, menús y museos",
+			"tipo": "propio",
+			"metodo": "Imágenes rasterizadas (PNG de más de 1,4 megapíxeles) importadas tal cual en los commits a4293cd, 73c0343 y 60cacf4. No queda anotado cómo se hicieron (herramienta, prompt o dibujante) ni de dónde salen.",
+			"autor": "sin documentar",
+			"licencia": "LicenseRef-Sin-Documentar",
+			"url": "",
+			"documentado": false,
+			"notas": "Portada, fondo de los menús y los cinco fondos de museo. El dueño debe anotar herramienta, autor y licencia."
+		},
+		"ui-ficha-detenido": {
+			"nombre": "Foto de detenido",
+			"tipo": "propio",
+			"metodo": "El commit 822fc61 la llama «la foto de detenido dibujada (de frente y de perfil)»; no dice con qué herramienta ni si es a mano, generada por IA o de otra fuente.",
+			"autor": "sin documentar",
+			"licencia": "LicenseRef-Sin-Documentar",
+			"url": "",
+			"documentado": false,
+			"notas": "Sustituyó a las dos fotos renderizadas con MugshotStage."
+		},
+		"logo-icono": {
+			"nombre": "Logo e icono de Ninja Karma",
+			"tipo": "propio",
+			"metodo": "El logo (art/logo_original.png, 1024 x 1024) llegó como imagen ya hecha; docs/logo.webp es su versión para la web. El icono de la app (assets/icon.png) es «el logo de Ninja Karma sobre la noche, con las esquinas transparentes» (commit 8a57bf5). No queda anotado cómo se hizo el logo.",
+			"autor": "sin documentar",
+			"licencia": "LicenseRef-Sin-Documentar",
+			"url": "",
+			"documentado": false,
+			"notas": "Antes el icono era un pixel-art del ladrón bajo la luna (commit ed1b2ac)."
+		},
+
+		"shaders-propios": {
+			"nombre": "Shaders del juego",
+			"tipo": "propio",
+			"metodo": "Escritos a mano en el lenguaje de shaders de Godot (suelo y pared de los museos, sombreado toon).",
+			"autor": "Chema, con Claude",
+			"licencia": "LicenseRef-Propia",
+			"url": "",
+			"notas": ""
+		},
+		"codigo-de-arte": {
+			"nombre": "Ficheros fuente de arte",
+			"tipo": "propio",
+			"metodo": "Los .blend, los scripts de Blender (art/**/*.py) y el generador de primitivas (art/botin/primitivas.gd) de los que salen los modelos.",
+			"autor": "Chema, con Claude",
+			"licencia": "LicenseRef-Propia",
+			"url": "",
+			"notas": ""
+		}
+	},
+
+	"reglas": [
+		{"patron": ["assets/fonts/PressStart2P*", "assets/fonts/OFL.txt"], "coleccion": "fuente-press-start-2p"},
+		{"patron": ["assets/fonts/*UnifrakturMaguntia*"], "coleccion": "fuente-unifraktur"},
+		{"patron": ["assets/fonts/*AbrilFatface*"], "coleccion": "fuente-abril-fatface"},
+
+		{"patron": ["assets/models/statue-a.glb", "assets/models/statue-b.glb"], "coleccion": "poly-pizza-estatuas"},
+		{"patron": ["assets/models/bear.glb", "assets/models/bear_BlackBear_BaseColor.png"], "coleccion": "poly-google-oso"},
+		{"patron": ["assets/models/ciudad/comercial/*", "assets/models/ciudad/License.txt"], "coleccion": "kenney-city-commercial"},
+		{"patron": ["assets/models/ciudad/suburbios/*"], "coleccion": "kenney-city-suburban"},
+		{"patron": ["assets/models/ciudad/calles/*"], "coleccion": "kenney-city-roads"},
+		{"patron": ["assets/models/casa/*"], "coleccion": "kenney-furniture"},
+
+		{"patron": ["assets/models/globo_world.png"], "coleccion": "globo-mapamundi"},
+		{"patron": ["assets/models/guardia.glb", "assets/models/ninja.glb"], "coleccion": "personajes-blender"},
+		{"patron": ["assets/models/*.glb", "assets/models/botin/*.glb", "assets/models/temas/*.glb"], "coleccion": "modelos-blender"},
+
+		{"patron": ["audio/megafonia/*"], "coleccion": "megafonia-tts"},
+		{"patron": ["scenes/sfx.gd"], "coleccion": "sonidos-procedurales"},
+
+		{"patron": ["assets/ui/ninjas_*.png"], "coleccion": "ui-pegatinas-ninja"},
+		{"patron": ["assets/ui/ficha_detenido.png"], "coleccion": "ui-ficha-detenido"},
+		{"patron": ["assets/ui/*"], "coleccion": "ui-ilustraciones"},
+		{"patron": ["assets/icons/objects/*"], "coleccion": "ui-iconos-objetos"},
+		{"patron": ["assets/icons/editor/*"], "coleccion": "ui-iconos-editor"},
+		{"patron": ["assets/icon.png", "art/logo_original.png", "docs/logo.webp"], "coleccion": "logo-icono"},
+
+		{"patron": ["scenes/*.gdshader"], "coleccion": "shaders-propios"},
+		{"patron": ["art/*.blend", "art/*/*.blend", "art/*.py", "art/*/*.py", "art/botin/primitivas.gd"], "coleccion": "codigo-de-arte"}
+	]
+}
