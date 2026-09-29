@@ -247,6 +247,29 @@ def write_alternativas():
     write_js("referencias.js", "REFERENCIAS", procedencia.ref_web_data())
 
 
+# Muestras de lo nuestro para la comparación con alternativas (docs/assets/muestras/): imágenes de UI y una frase
+# de megafonía, pequeñas, para ponerlas al lado de las de terceros. (docs/index.html las nombra en CMP_MUESTRAS.)
+MUESTRAS = [
+    "assets/ui/ninjas_1.png", "assets/ui/ninjas_2.png", "assets/ui/ninjas_3.png", "assets/ui/ninjas_4.png",
+    "assets/models/globo_world.png",
+    "assets/icons/editor/play.svg", "assets/icons/editor/exit_door.svg", "assets/icons/editor/guard.svg",
+    "assets/icons/editor/options.svg", "assets/icons/editor/rooms.svg", "assets/icons/editor/piece.svg",
+    "assets/icons/objects/big_bear.png", "assets/icons/objects/big_car.png", "assets/icons/objects/big_dinosaur.png",
+    "assets/icons/objects/big_sarcophagus.png", "assets/icons/objects/exhibit_amphora.png", "assets/icons/objects/exhibit_ammonite.png",
+    "assets/icons/objects/loot_crown.png", "assets/icons/objects/loot_gem.png", "assets/icons/objects/exhibit_chest.png",
+    "audio/megafonia/mega_act_arcade_01.ogg",
+]
+
+
+def copy_muestras():
+    dest = os.path.join(DOCS, "assets", "muestras")
+    os.makedirs(dest, exist_ok=True)
+    for rel in MUESTRAS:
+        src = os.path.join(ROOT, rel)
+        if os.path.exists(src):
+            shutil.copy(src, os.path.join(dest, os.path.basename(rel)))
+
+
 def build_static():
     """Lo escrito a mano (docs/ESTILO.md), las constantes del código y la fuente, al lado del HTML."""
     build_code()
@@ -254,6 +277,7 @@ def build_static():
     write_js("estilo.js", "ESTILO", open(path, encoding="utf-8").read() if os.path.exists(path) else "")
     write_js("funciones.js", "FUNCIONES", functions())
     write_alternativas()
+    copy_muestras()
     os.makedirs(os.path.join(DOCS, "fuentes"), exist_ok=True)
     for f in ["PressStart2P-Regular.ttf", "OFL.txt"]:
         shutil.copy(os.path.join(ROOT, "assets", "fonts", f), os.path.join(DOCS, "fuentes"))

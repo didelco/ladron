@@ -242,6 +242,49 @@ a.tag:hover { border-color: var(--texto); }
 .alt-op .prev img { max-width: 260px; max-height: 160px; border: 1px solid var(--linea); background: var(--blanco); }
 .alt-op .prev audio { width: 300px; max-width: 100%; }
 .alt-op .cuerpo { margin-left: 22px; }
+/* Comparación con alternativas: la nuestra a la izquierda, las de terceros en tarjetas iguales en fila */
+.cmp { container-type: inline-size; border: 2px solid var(--texto); background: var(--blanco); margin: 12px 0; padding: 8px 10px 10px; max-width: 100%; }
+.cmp-cab { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-bottom: 8px; }
+.cmp-cab b { font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; }
+.cmp-cab .estado { flex: 1 1 100%; order: 3; }
+.cmp-cab .btn { margin-left: auto; }
+.cmp-fila { display: flex; gap: 10px; align-items: stretch; }
+.cmp-nuestra { flex: 0 0 180px; }
+.cmp-alts { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; flex: 1; min-width: 0; }
+.cmp-card { flex: 0 0 210px; width: 210px; scroll-snap-align: start; border: 1px solid var(--borde); background: var(--blanco); padding: 8px; display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; line-height: 1.35; }
+.cmp-card.nuestra { flex: 1 1 auto; width: auto; border: 2px solid var(--texto); background: var(--fondo2); }
+.cmp-card.on { outline: 3px solid var(--aviso); outline-offset: -3px; }
+.cmp-card.no { opacity: 0.5; }
+.cmp-card.no:hover { opacity: 1; }
+.cmp-etq { font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tenue); }
+.cmp-prev { height: 130px; background: var(--fondo2); border: 1px solid var(--suave); display: grid; place-items: center; overflow: hidden; }
+.cmp-prev img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+.cmp-prev audio { width: 96%; height: 32px; }
+.cmp-prev .cmp-fondo { background: #202122; padding: 4px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; justify-content: center; width: 100%; height: 100%; }
+.cmp-prev .cmp-fondo img { max-height: 46%; max-width: 46%; }
+.cmp-prev.una img { max-height: 100%; }
+.cmp-sin { font-size: 12px; color: var(--claro); text-align: center; padding: 6px; }
+.cmp-nom { font-weight: 600; font-size: 13.5px; }
+.cmp-encaje { letter-spacing: 2px; font-size: 13px; }
+.cmp-encaje small { letter-spacing: 0; color: var(--claro); font-size: 11px; margin-left: 4px; }
+.cmp-cubre { border-left: 3px solid var(--borde); padding-left: 6px; }
+.cmp-cubre.todo { border-color: var(--texto); }
+.cmp-no { color: var(--aviso); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; }
+.cmp-atr { color: var(--aviso); }
+.cmp-card .btn { margin-top: auto; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
+.cmp-card .btn.el { background: var(--aviso); border-color: var(--aviso); color: var(--blanco); }
+.cmp-card .btn[disabled] { opacity: 0.55; cursor: not-allowed; }
+.cmp-notas { color: var(--tenue); font-size: 11.5px; max-height: 5.4em; overflow: auto; }
+.cmp-pantalla { position: fixed; inset: 0; z-index: 1000; background: var(--blanco); overflow: auto; padding: 0 clamp(12px, 3vw, 36px) 40px; }
+.cmp-top { position: sticky; top: 0; z-index: 2; background: var(--blanco); border-bottom: 2px solid var(--texto); display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 0; margin-bottom: 14px; }
+.cmp-top h2 { margin: 0; border: 0; padding: 0; font-size: 18px; flex: 1; min-width: 200px; }
+.cmp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; align-items: stretch; }
+.cmp-grid .cmp-card { width: auto; flex: none; font-size: 13.5px; padding: 10px; }
+.cmp-grid .cmp-prev { height: 220px; }
+.cmp-grid .cmp-card.nuestra { grid-column: span 1; }
+.cmp-grupo { grid-column: 1 / -1; margin: 10px 0 0; font-size: 14px; font-weight: 600; border-bottom: 1px solid var(--borde); }
+@container (max-width: 640px) { .cmp-fila { flex-direction: column; } .cmp-nuestra { flex: none; width: 210px; } }
+@media (max-width: 700px) { .cmp-grid { grid-template-columns: 1fr; } }
 .pr-col { border-top: 1px solid var(--suave); padding: 12px 0; max-width: 900px; }
 .pr-col h3 { margin: 0 0 4px; font-size: 16px; }
 .pr-col p { margin: 4px 0; }
@@ -768,12 +811,14 @@ function elementos() {
     const m = MODELOS[o.model];
     const prop = o.tool.startsWith("prop:"), K = o.kind.toUpperCase();
     const foto = prop ? (((J.assets || {}).objetos || []).find(x => x.kind === o.kind) || {}).file : m ? m.file : o.cerca;
-    return { id: "objeto-" + o.tool, cat: o.type, grupo: o.themes[0] || "sin", img: foto, nombre: tx(o.name), cerca: !prop && !m,
+    return { id: "objeto-" + o.tool, cat: o.type, grupo: o.themes[0] || "sin", img: foto, nombre: tx(o.name), cerca: !prop && !m, modelo: o.model,
+      ctx: `${tx(o.name)} ${o.kind} ${o.themes.map(x => tx("THEME_" + x.toUpperCase())).join(" ")}`,
       detalle: () => {
         const golpe = METAL.includes(o.kind) ? "kick_metal" : "kick_dry";
         const sonidos = prop ? campo("Al caer", t(METAL.includes(o.kind) ? "ASSETS_FALL_METAL" : "ASSETS_FALL_DRY") + " " + oir(o.kind) + oir(golpe)) : "";
         const col = o.themes.length ? o.themes.map(x => `<a href="#objetos/${x}">${t("THEME_" + x.toUpperCase())}</a>`).join(", ") : "cualquiera (también en los pasillos)";
         return `<div class="imgs"><figure>${img(foto, tx(o.name))}<figcaption>Detalle</figcaption></figure><figure>${img(o.mapa, tx(o.name) + " — en el mapa")}<figcaption>En el mapa, 3 × 3 casillas</figcaption></figure></div>
+          ${o.model ? alBanda(`assets/models/${o.model}.glb`, { titulo: tx(o.name), nuestra: cmpImg(foto, tx(o.name), !prop && !m), ctx: `${tx(o.name)} ${o.kind} ${o.themes.map(x => tx("THEME_" + x.toUpperCase())).join(" ")}` }) : ""}
           <div class="nom">${t(o.name)}${prop ? ` <span class="estado">· en el editor ${t("EDITOR_TOOL_PROP_" + K)}</span>` : ""}</div>
           ${campo("Descripción", descripcion(o.desc))}
           ${campo("Tipo", `${t(TIPOS.find(x => x[0] === o.type)[1])} <span class="estado">${DONDE[o.type]}</span>`)}
@@ -840,10 +885,12 @@ function personajes() {
   $("#p-personajes").innerHTML = `<h1>Personajes</h1>
     <div class="sub">Ladrones y guardias (<code>scenes/figure.gd</code>, modelados en <code>art/characters/</code>)</div>
     ${ficha(img(m("ninja") && m("ninja").file, "ninja.glb"), `<div class="nom">Ladrón</div>${campo("Modelo", "<code>ninja.glb</code>")}
-      ${campo("En la página de assets", `${t("ASSETS_PEOPLE_THIEF")} · ${t("ASSETS_PEOPLE_TWO")}`)}`)}
+      ${campo("En la página de assets", `${t("ASSETS_PEOPLE_THIEF")} · ${t("ASSETS_PEOPLE_TWO")}`)}
+      ${campo("Procedencia", prLinea("assets/models/ninja.glb"))}`) + alBanda("assets/models/ninja.glb", { titulo: "Ladrón", nuestra: cmpImg(m("ninja") && m("ninja").file, "Ladrón"), ctx: "ladron ninja" })}
     ${ficha(img(m("guardia") && m("guardia").file, "guardia.glb"), `<div class="nom">Guardia</div>${campo("Modelo", "<code>guardia.glb</code>")}
       ${campo("En la página de assets", `${t("ASSETS_PEOPLE_SLEEPY")} · ${t("ASSETS_PEOPLE_THREE")}`)}
-      ${campo("Lo que piensa y dice", `<a href="#textos">textos <code>GUARD_</code> y <code>MIND_</code></a>`)}`)}
+      ${campo("Lo que piensa y dice", `<a href="#textos">textos <code>GUARD_</code> y <code>MIND_</code></a>`)}
+      ${campo("Procedencia", prLinea("assets/models/guardia.glb"))}`) + alBanda("assets/models/guardia.glb", { titulo: "Guardia", nuestra: cmpImg(m("guardia") && m("guardia").file, "Guardia"), ctx: "guardia" })}
     ${shot ? `<h2>En la página de assets del juego</h2><div class="grandes una">${fig(shot)}</div>` : ""}`;
 }
 
@@ -852,7 +899,8 @@ function sonidos() {
   $("#p-sonidos").innerHTML = `<h1>Sonidos</h1>
     <div class="sub">Generados en código (<code>scenes/sfx.gd</code>) y exportados a <code>.wav</code></div>
     <p class="estado">Procedencia: ${prLinea("scenes/sfx.gd")}</p>
-    <div style="max-width:760px">${s.map(x => `<div class="sonido"><b>${esc(x.name)}</b><audio controls preload="none" src="${x.file}"></audio><span class="estado">${x.seconds} s${SONIDO_DE[x.name] ? ` · <a href="#${SONIDO_DE[x.name]}">${esc(ENTIDADES.find(e => e[0] === SONIDO_DE[x.name])[1].toLowerCase())}</a>` : ""}</span></div>`).join("")}</div>`;
+    <div id="banda-sonidos">${s.length ? alBanda("scenes/sfx.gd", { titulo: s[0].name, nuestra: cmpAudio(s[0].file) }) : ""}</div>
+    <div style="max-width:760px">${s.map((x, i) => `<div class="sonido"><b>${esc(x.name)}</b><audio controls preload="none" src="${x.file}"></audio><button class="btn" data-sonido-cmp="${i}" title="Compararlo con las alternativas">Comparar</button><span class="estado">${x.seconds} s${SONIDO_DE[x.name] ? ` · <a href="#${SONIDO_DE[x.name]}">${esc(ENTIDADES.find(e => e[0] === SONIDO_DE[x.name])[1].toLowerCase())}</a>` : ""}</span></div>`).join("")}</div>`;
 }
 
 // --- Procedencia: de dónde sale cada asset y con qué licencia (assets/PROCEDENCIA.json) -----------
@@ -921,6 +969,201 @@ function alResumen() {
   return `<div class="pr-resumen"><b>${conAlt}</b> colecci${conAlt === 1 ? "ón tiene" : "ones tienen"} alternativa de terceros · <b>${pend.length}</b> pendiente${pend.length === 1 ? "" : "s"} de sustituir
     ${pend.length ? `<ul>${pend.map(g => { const a = alElegida(g), c = PR.colecciones[g.coleccion] || {}; return `<li><a href="#procedencia/${encodeURIComponent(g.coleccion)}">${esc(c.nombre || g.coleccion)}</a> (${esc(g.que_es)}) → <b>${esc(a.nombre)}</b> · ${esc(a.autor)} · <a href="${esc(a.url)}" target="_blank" rel="noopener">fuente</a></li>`; }).join("")}</ul>` : `<div class="estado">Nada elegido todavía: todo se queda como está.</div>`}</div>`;
 }
+// --- Comparación: la nuestra al lado de las alternativas, en la ficha de cada asset y a pantalla completa ---
+const CMP = {};          // id de banda -> lo que hace falta para repintarla
+const CMP_MUESTRAS = {   // lo nuestro de las colecciones sin página propia (copiado por tools/docs.py a docs/assets/muestras/)
+  "ui-pegatinas-ninja": { fondo: false, files: [1, 2, 3, 4].map(n => `ninjas_${n}.png`) },
+  "ui-iconos-editor": { fondo: true, files: ["play", "exit_door", "guard", "options", "rooms", "piece"].map(n => `${n}.svg`) },
+  "ui-iconos-objetos": { fondo: false, files: ["big_bear", "big_car", "exhibit_amphora", "exhibit_chest", "loot_crown", "loot_gem"].map(n => `${n}.png`) },
+  "globo-mapamundi": { fondo: false, files: ["globo_world.png"] },
+};
+const cmpDir = "assets/muestras/";
+const cmpNorm = s => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[_\/]+/g, " ");
+const CMP_STOP = new Set(["tema", "temas", "todo", "algunos", "alguno", "personajes", "animados", "animadas", "paquete", "pack", "estilo", "para", "como", "cada", "este", "esta", "valdrian", "hechos", "gratuitos", "props", "objetos", "piezas", "versiones", "variantes"]);
+const CMP_TEMAS = ["antiguo", "edad", "media", "moderna", "prehistoria", "naturaleza"];
+const cmpEncaje = n => `<span class="cmp-encaje" title="Cuánto encaja con lo nuestro: ${n} de 5" aria-label="encaje ${n} de 5">${"●".repeat(n)}${"○".repeat(Math.max(0, 5 - n))}<small>${n}/5</small></span>`;
+// «cubre» = «todo|algunos|uno: qué». Devuelve el alcance y el texto.
+function alAlcance(a) {
+  const m = /^\s*(todo|algunos?|uno)\b\s*:?\s*(.*)$/i.exec(a.cubre || "");
+  if (!m) return { tipo: "", texto: a.cubre || "" };
+  const tipo = m[1].toLowerCase().replace(/^alguno$/, "algunos");
+  return { tipo, texto: m[2] };
+}
+// ¿Cubre esta alternativa el objeto? true/false, o null si no se puede saber (sin contexto fiable).
+function alCubreA(a, ctx) {
+  const { tipo, texto } = alAlcance(a);
+  if (tipo === "todo") return true;
+  if (!ctx) return null;
+  let ws = [...new Set(cmpNorm(texto).replace(/[^a-z ]/g, " ").split(/\s+/).filter(w => w.length >= 4 && !CMP_STOP.has(w)))];
+  if (tipo === "uno") { const sin = ws.filter(w => !CMP_TEMAS.includes(w)); if (sin.length) ws = sin; }
+  if (!ws.length) return null;
+  const c = cmpNorm(ctx);
+  return ws.some(w => c.includes(w.length >= 6 ? w.slice(0, w.length - 2) : w.length === 5 ? w.slice(0, 4) : w));
+}
+const alAudioSrc = u => /\.(mp3|ogg|oga|wav|m4a|flac|opus)(\?|#|$)/i.test(u || "");
+function cmpPreview(a) {
+  const enlace = `<a href="${esc(a.url)}" target="_blank" rel="noopener">abrir la página</a>`;
+  if (!a.preview_url) return `<div class="cmp-prev"><div class="cmp-sin">sin vista previa<br>${enlace}</div></div>`;
+  if (alAudioSrc(a.preview_url)) return `<div class="cmp-prev"><audio controls preload="none" referrerpolicy="no-referrer" src="${esc(a.preview_url)}"></audio></div>`;
+  return `<div class="cmp-prev"><img loading="lazy" referrerpolicy="no-referrer" src="${esc(a.preview_url)}" alt="${esc(a.nombre)}" onerror="this.parentNode.innerHTML='&lt;div class=&quot;cmp-sin&quot;&gt;la vista previa no carga&lt;/div&gt;'"></div>`;
+}
+// Tarjeta de una alternativa; ctx = texto del asset para saber si la cubre («» = no se sabe).
+function cmpTarjeta(g, a, ctx) {
+  const el = AL.elegidas[g.key] === a.id, cu = alCubreA(a, ctx), al = alAlcance(a);
+  const lic = (PR.licencias[a.licencia] || {}).corta || a.licencia;
+  const quien = { todo: "Cubre todo el grupo", algunos: "Cubre solo algunos", uno: "Cubre solo uno" }[al.tipo] || "Cubre";
+  return `<article class="cmp-card ${el ? "on" : ""} ${cu === false ? "no" : ""}">
+    ${cmpPreview(a)}
+    <div class="cmp-nom">${esc(a.nombre)}${el ? ` <span class="lic eleg">Elegida</span>` : ""}</div>
+    <div>${esc(a.autor)}</div>
+    <div><span class="lic">${esc(lic)}</span>${a.atribucion ? "" : `<span class="lic">sin atribución</span>`}</div>
+    ${a.atribucion ? `<div class="cmp-atr">Atribución obligatoria: hay que citar a ${esc(a.autor)} (${esc(lic)}).</div>` : ""}
+    <div>${cmpEncaje(a.encaje)}</div>
+    <div class="cmp-cubre ${al.tipo}"><b>${quien}</b>${al.texto ? `: ${esc(al.texto)}` : ""}</div>
+    ${cu === false ? `<div class="cmp-no" title="Según el texto de «cubre»; es una coincidencia por nombre, aproximada">No cubre este objeto</div>` : ""}
+    ${a.notas ? `<div class="cmp-notas">${esc(a.notas)}</div>` : ""}
+    <a href="${esc(a.url)}" target="_blank" rel="noopener">Ver la página ↗</a>
+    <button class="btn ${el ? "el" : ""}" data-al-boton data-al-grupo="${esc(g.key)}" data-al-elige="${el ? "nuestra" : esc(a.id)}" ${EDITABLE ? "" : `disabled title="Para elegir, abre la documentación con python3 tools/docs.py serve"`}>${el ? "Elegida · quitar" : "Elegir"}</button>
+  </article>`;
+}
+// Tarjeta de la nuestra: su imagen o reproductor, licencia y procedencia.
+function cmpNuestra(r, g, nuestra) {
+  const l = prLic(r), ninguna = !AL.elegidas[g.key];
+  return `<article class="cmp-card nuestra ${ninguna ? "on-nuestra" : ""}">
+    <div class="cmp-etq">La nuestra</div>
+    ${nuestra || `<div class="cmp-prev"><div class="cmp-sin">sin muestra</div></div>`}
+    <div class="cmp-nom">${esc(r.nombre)}</div>
+    <div><span class="lic ${r.documentado === false ? "sin" : ""}" title="${esc(l.nombre)}">${esc(l.corta)}</span><span class="lic">${r.tipo === "externo" ? "de terceros" : "propio"}</span>${r.atribucion ? `<span class="lic atr">atribución obligatoria</span>` : ""}</div>
+    <div class="estado">${esc(r.autor)} · <a href="#procedencia/${encodeURIComponent(r.clave)}">procedencia</a></div>
+    ${ninguna ? `<div class="estado"><b>Es la que se usa.</b></div>` : `<button class="btn" data-al-boton data-al-grupo="${esc(g.key)}" data-al-elige="nuestra" ${EDITABLE ? "" : "disabled"}>Quedarse con la nuestra</button>`}
+  </article>`;
+}
+function cmpMuestra(col, r) {
+  const m = CMP_MUESTRAS[col];
+  if (!m) return "";
+  if (m.files.length === 1) return `<div class="cmp-prev una"><img loading="lazy" src="${cmpDir}${m.files[0]}" alt="${esc(r.nombre)}"></div>`;
+  return `<div class="cmp-prev"><div class="cmp-fondo" ${m.fondo ? "" : `style="background:var(--fondo2)"`}>${m.files.map(f => `<img loading="lazy" src="${cmpDir}${f}" alt="">`).join("")}</div></div>`;
+}
+const cmpImg = (file, cap, cerca) => `<div class="cmp-prev">${file ? `<img loading="lazy" src="${file}" alt="${esc(cap)}" ${cerca ? `style="transform:scale(1.6)"` : ""}>` : `<div class="cmp-sin">sin imagen</div>`}</div>`;
+const cmpAudio = file => `<div class="cmp-prev"><audio controls preload="none" src="${file}"></audio></div>`;
+// Los elementos de una colección, para pasar de uno a otro a pantalla completa.
+function cmpItems(col) {
+  const r = PR.colecciones[col] || { nombre: col };
+  if (col === "modelos-blender") return elementos().filter(e => e.modelo && (prDe(`assets/models/${e.modelo}.glb`) || {}).id === col)
+    .map(e => ({ titulo: e.nombre, nuestra: cmpImg(e.img, e.nombre, e.cerca), ctx: e.ctx }));
+  if (col === "personajes-blender") return [["ninja", "Ladrón", "ladron ninja"], ["guardia", "Guardia", "guardia"]]
+    .map(([k, n, ctx]) => ({ titulo: n, nuestra: cmpImg((MODELOS[k] || {}).file, n), ctx }));
+  if (col === "sonidos-procedurales") return (J.sonidos || []).map(x => ({ titulo: x.name, nuestra: cmpAudio(x.file), ctx: "" }));
+  if (col === "megafonia-tts") return [{ titulo: "Una frase de ejemplo (mega_act_arcade_01)", nuestra: cmpAudio(cmpDir + "mega_act_arcade_01.ogg"), ctx: "" }];
+  return [{ titulo: r.nombre, nuestra: cmpMuestra(col, r), ctx: "" }];
+}
+function cmpBandaHtml(id) {
+  const d = CMP[id], r = prDe(d.ruta);
+  if (!r) return "";
+  return alDe(r.id).map(g => `<div class="cmp" data-cmp="${esc(id)}" data-cmp-g="${esc(g.key)}">
+    <div class="cmp-cab"><b>Comparar con alternativas</b><span class="estado">${esc(g.que_es)} · ${g.alternativas.length} alternativa${g.alternativas.length === 1 ? "" : "s"}</span>
+      <button class="btn si" data-cmp-abrir="${esc(id)}" title="Ver la nuestra y las alternativas a pantalla completa">Comparar ⤢</button></div>
+    <div class="cmp-fila"><div class="cmp-nuestra">${cmpNuestra(r, g, d.nuestra)}</div>
+      <div class="cmp-alts">${g.alternativas.map(a => cmpTarjeta(g, a, d.ctx)).join("")}</div></div></div>`).join("");
+}
+// La banda de un asset: ruta = un fichero suyo (para saber su colección), nuestra = su imagen o reproductor (html),
+// titulo = cómo se llama, ctx = texto con el que decidir qué alternativas lo cubren.
+function alBanda(ruta, { titulo, nuestra, ctx = "" }) {
+  const r = prDe(ruta);
+  if (!r || !alN(r.id)) return "";
+  const id = "c" + [...(r.id + "|" + titulo)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+  CMP[id] = { ruta, titulo, nuestra, ctx, col: r.id };
+  return cmpBandaHtml(id);
+}
+// --- Pantalla completa (←/→ entre los assets de la colección, Esc para salir)
+let CMPV = null;
+function cmpPantalla() {
+  const v = CMPV, r = PR.colecciones[v.col] || { nombre: v.col }, it = v.items[v.i];
+  const rr = { ...r, id: v.col, clave: v.col };
+  const grupos = alDe(v.col);
+  $("#cmp-pantalla").innerHTML = `<div class="cmp-top"><h2>${esc(r.nombre)} <span class="estado">· ${esc(it.titulo)}</span></h2>
+      <button class="btn" data-cmp-paso="-1" ${v.items.length < 2 ? "disabled" : ""} title="Anterior (←)">← Anterior</button>
+      <span class="estado">${v.i + 1} / ${v.items.length}</span>
+      <button class="btn" data-cmp-paso="1" ${v.items.length < 2 ? "disabled" : ""} title="Siguiente (→)">Siguiente →</button>
+      <button class="btn si" data-cmp-cerrar title="Cerrar (Esc)">Cerrar ✕</button></div>
+    ${grupos.map(g => `<div class="cmp-grid">${grupos.length > 1 ? `<div class="cmp-grupo">${esc(g.que_es)}</div>` : ""}${cmpNuestra(rr, g, it.nuestra)}${g.alternativas.map(a => cmpTarjeta(g, a, it.ctx)).join("")}</div>`).join("")}`;
+}
+function cmpAbrir(id) {
+  const d = CMP[id];
+  if (!d) return;
+  const items = cmpItems(d.col);
+  const i = Math.max(0, items.findIndex(x => x.titulo === d.titulo));
+  CMPV = { col: d.col, items, i };
+  let el = $("#cmp-pantalla");
+  if (!el) { el = document.createElement("div"); el.id = "cmp-pantalla"; el.className = "cmp-pantalla"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Comparar con alternativas"); document.body.appendChild(el); }
+  el.style.display = "block";
+  document.body.style.overflow = "hidden";
+  cmpPantalla();
+  el.scrollTop = 0;
+}
+function cmpCerrar() {
+  const el = $("#cmp-pantalla");
+  if (el) { el.querySelectorAll("audio").forEach(a => a.pause()); el.style.display = "none"; el.innerHTML = ""; }
+  document.body.style.overflow = "";
+  CMPV = null;
+}
+const cmpAbierta = () => CMPV && $("#cmp-pantalla") && $("#cmp-pantalla").style.display !== "none";
+function cmpPaso(d) {
+  const n = CMPV.items.length;
+  if (n < 2) return;
+  $("#cmp-pantalla").querySelectorAll("audio").forEach(a => a.pause());
+  CMPV.i = (CMPV.i + d + n) % n;
+  cmpPantalla();
+  $("#cmp-pantalla").scrollTop = 0;
+}
+document.addEventListener("keydown", e => {
+  if (!cmpAbierta()) return;
+  if (e.key === "Escape") { cmpCerrar(); e.preventDefault(); }
+  else if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && !/^(INPUT|TEXTAREA|SELECT)$/.test((e.target || {}).tagName || "")) {
+    cmpPaso(e.key === "ArrowLeft" ? -1 : 1); e.preventDefault();
+  }
+});
+document.addEventListener("click", e => {
+  const so = e.target.closest("[data-sonido-cmp]");
+  if (so) {
+    const x = (J.sonidos || [])[+so.dataset.sonidoCmp], cont = $("#banda-sonidos");
+    if (x && cont) { cont.innerHTML = alBanda("scenes/sfx.gd", { titulo: x.name, nuestra: cmpAudio(x.file) }); cont.scrollIntoView({ block: "nearest" }); }
+    return;
+  }
+  const ab = e.target.closest("[data-cmp-abrir]");
+  if (ab) { cmpAbrir(ab.dataset.cmpAbrir); return; }
+  if (e.target.closest("[data-cmp-cerrar]")) { cmpCerrar(); return; }
+  const p = e.target.closest("[data-cmp-paso]");
+  if (p) { cmpPaso(+p.dataset.cmpPaso); return; }
+  const b = e.target.closest("[data-al-boton]");
+  if (b && !b.disabled) alElegir(b.dataset.alGrupo, b.dataset.alElige);
+});
+// Repinta las bandas visibles (y la pantalla completa) tras elegir, sin mover nada más.
+function alRepintar() {
+  document.querySelectorAll(".cmp[data-cmp]").forEach(b => {
+    if (!CMP[b.dataset.cmp]) return;
+    const t = document.createElement("div");
+    t.innerHTML = cmpBandaHtml(b.dataset.cmp);
+    const nuevo = [...t.children].find(x => x.dataset.cmpG === b.dataset.cmpG);
+    if (!nuevo) return;
+    const sc = b.querySelector(".cmp-alts"), x = sc ? sc.scrollLeft : 0;
+    b.replaceWith(nuevo);
+    const n2 = nuevo.querySelector(".cmp-alts");
+    if (n2) n2.scrollLeft = x;
+  });
+  if (cmpAbierta()) { const y = $("#cmp-pantalla").scrollTop; cmpPantalla(); $("#cmp-pantalla").scrollTop = y; }
+}
+async function alElegir(grupo, eleccion) {
+  if (!EDITABLE) return;
+  try {
+    const res = await fetch("api/alternativa", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ grupo, eleccion }) });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(j.error || "No se pudo guardar");
+    AL.elegidas = j.elegidas || {};
+  } catch (err) { alert("No se pudo guardar la elección: " + err.message); }
+  alRepintar();
+  if ($("#pr-lista")) prRefrescar();
+}
 // Una línea para las fichas: etiquetas, colección y cómo se hizo.
 const prLinea = ruta => {
   const r = prDe(ruta);
@@ -953,6 +1196,7 @@ function prLista() {
       ${r.url ? `<p><span class="etq">Fuente</span><a href="${esc(r.url)}">${esc(r.url)}</a></p>` : ""}
       ${(r.componentes || []).length ? `<p><span class="etq">Lleva de terceros</span></p><ul>${r.componentes.map(c => `<li>${esc(c.nombre)} · ${esc(c.autor)} · ${esc((PR.licencias[c.licencia] || { corta: c.licencia }).corta)}${c.url ? ` · <a href="${esc(c.url)}">fuente</a>` : ""}${c.nota ? `<br><span class="estado">${esc(c.nota)}</span>` : ""}</li>`).join("")}</ul>` : ""}
       ${r.notas ? `<p class="estado">${esc(r.notas)}</p>` : ""}
+      ${CMP_MUESTRAS[r.id] ? alBanda(rutas[0], { titulo: r.nombre, nuestra: cmpMuestra(r.id, r) }) : ""}
       ${alDetalle(r, r.clave)}
       ${rfDe(r.id).length ? `<p><span class="etq">Referencias</span>${rfDe(r.id).map(x => `<a href="#referencias/${encodeURIComponent(x.id)}">${esc(x.titulo)}</a>`).join(" · ")}</p>` : ""}
       <details><summary class="estado">Ver los ${rutas.length} fichero${rutas.length === 1 ? "" : "s"}</summary><div class="archivos">${rutas.map(x => `<div><code>${esc(x)}</code></div>`).join("")}</div></details>
@@ -1065,17 +1309,9 @@ function prRefrescar() {
   $("#pr-lista").innerHTML = prLista();
   document.querySelectorAll("#pr-lista details.alt").forEach(d => { d.open = abiertas.has(d.dataset.k); });
 }
-document.addEventListener("change", async e => {
+document.addEventListener("change", e => {
   const r = e.target.closest("[data-al-elige]");
-  if (!r || !EDITABLE) return;
-  const grupo = r.dataset.alGrupo, eleccion = r.dataset.alElige;
-  try {
-    const res = await fetch("api/alternativa", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ grupo, eleccion }) });
-    const j = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(j.error || "No se pudo guardar");
-    AL.elegidas = j.elegidas || {};
-  } catch (err) { alert("No se pudo guardar la elección: " + err.message); }
-  prRefrescar();
+  if (r && EDITABLE && r.type === "radio") alElegir(r.dataset.alGrupo, r.dataset.alElige);
 });
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-pr-lic], [data-pr-tipo], [data-pr-alt]");
@@ -1218,6 +1454,7 @@ function megafonia() {
     <div class="sub">Las ${M.length} frases <code>MEGA_*</code> de <code>locale/texts.csv</code>, por tipo de aviso (los <code>POOLS</code> de <code>logic/megaphone.gd</code>) · ${M.length - sinVoz} con voz, ${sinVoz} sin ella</div>
     <p class="lead">${EDITABLE ? "<b>Edición activa</b>: pulsa una frase para cambiarla; se guarda en <code>locale/texts.csv</code>." : "Solo lectura: para editar, <code>python3 tools/docs.py serve</code> y abre <code>http://localhost:8765</code>."}</p>
     <p class="estado">Procedencia de las voces: ${prLinea("audio/megafonia/megafonia_index.json")}</p>
+    ${alBanda("audio/megafonia/megafonia_index.json", { titulo: "Una frase de ejemplo (mega_act_arcade_01)", nuestra: cmpAudio(cmpDir + "mega_act_arcade_01.ogg") })}
     <div class="aviso"><b>La voz sale de este texto.</b> Cada frase suena con <code>audio/megafonia/&lt;clave en minúsculas&gt;.ogg</code>, que genera la herramienta <code>megafonia-tool</code> (carpeta hermana <code>../megafonia-tool</code>, fuera de este repositorio). Tras cambiar una frase, el audio antiguo sigue diciendo la frase vieja: hay que regenerar la voz con <code>./regenerar_juego.sh</code> desde esa carpeta. La columna «Voz» solo dice si el fichero existe, no si está al día con el texto.</div>
     ${bloque("Sucesos del robo", p => !/^(act_|hint_)/.test(p))}
     ${bloque("Pistas de los museos", p => /^hint_/.test(p))}

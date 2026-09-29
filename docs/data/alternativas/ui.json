@@ -12,7 +12,7 @@
      "autor": "Lucide Contributors (parte de Feather, Cole Bemis)",
      "licencia": "ISC",
      "atribucion": false,
-     "preview_url": "",
+     "preview_url": "https://unpkg.com/lucide-static@latest/icons/door-open.svg",
      "cubre": "todo: iconos de interfaz de trazo limpio en SVG",
      "encaje": 4,
      "notas": "ISC (y MIT la parte derivada de Feather); solo pide conservar el aviso de copyright en distribuciones."
@@ -24,7 +24,7 @@
      "autor": "Paweł Kuna y colaboradores",
      "licencia": "MIT",
      "atribucion": false,
-     "preview_url": "",
+     "preview_url": "https://unpkg.com/@tabler/icons@latest/icons/outline/door-exit.svg",
      "cubre": "todo: más de 6000 iconos SVG",
      "encaje": 4,
      "notas": "MIT según su web. Aviso de copyright al redistribuir."
@@ -36,7 +36,7 @@
      "autor": "Google",
      "licencia": "Apache-2.0",
      "atribucion": false,
-     "preview_url": "",
+     "preview_url": "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/door_open/default/48px.svg",
      "cubre": "todo: iconos de interfaz muy completos",
      "encaje": 3,
      "notas": "Apache 2.0 según la documentación de Google Fonts."
@@ -48,7 +48,7 @@
      "autor": "Lorc, Delapouite, Skoll y otros",
      "licencia": "CC-BY-3.0",
      "atribucion": true,
-     "preview_url": "https://game-icons.net/tags/ninja.html",
+     "preview_url": "https://game-icons.net/icons/000000/ffffff/1x1/delapouite/exit-door.svg",
      "cubre": "algunos: iconos temáticos de juego (estilo más ilustrado)",
      "encaje": 3,
      "notas": "CC BY 3.0: hay que citar al autor de cada icono ('Icons made by {autor}. Available on https://game-icons.net')."
@@ -66,7 +66,7 @@
      "autor": "darkzaitzev, Lorc, Delapouite, faithtoken",
      "licencia": "CC-BY-3.0",
      "atribucion": true,
-     "preview_url": "https://game-icons.net/tags/ninja.html",
+     "preview_url": "https://game-icons.net/icons/000000/ffffff/1x1/darkzaitzev/ninja-head.svg",
      "cubre": "uno: iconos 'Ninja head' (darkzaitzev) y 'Ninja mask' (Lorc), recoloreables por ser monocromos",
      "encaje": 2,
      "notas": "CC BY 3.0 (leído en la etiqueta). Son siluetas monocromas: sirven de base pero no dan el estilo cartoon propio ni variantes por ladrón."
@@ -84,7 +84,7 @@
      "autor": "Lorc, Delapouite y otros",
      "licencia": "CC-BY-3.0",
      "atribucion": true,
-     "preview_url": "",
+     "preview_url": "https://game-icons.net/icons/000000/ffffff/1x1/lorc/crown.svg",
      "cubre": "algunos: iconos monocromos de objetos genéricos",
      "encaje": 2,
      "notas": "CC BY 3.0. Pierde la coherencia de ver el modelo real del juego; mejor mantener los renders propios."

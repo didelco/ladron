@@ -16,7 +16,7 @@ window.ALTERNATIVAS = {
      "autor": "Kenney",
      "licencia": "CC0-1.0",
      "atribucion": false,
-     "preview_url": "https://kenney.nl/assets/impact-sounds",
+     "preview_url": "https://kenney.nl/media/pages/assets/impact-sounds/4ef56f2408-1677589755/foley-preview.ogg",
      "cubre": "algunos: 130 golpes e impactos/foley (pasos, cosas que caen, metal, madera)",
      "encaje": 4,
      "notas": "Licencia CC0 leída en la página del pack (2019). Sustituiría efectos de golpe y objetos, no la música."
@@ -28,7 +28,7 @@ window.ALTERNATIVAS = {
      "autor": "Kenney",
      "licencia": "CC0-1.0",
      "atribucion": false,
-     "preview_url": "https://kenney.nl/assets/interface-sounds",
+     "preview_url": "https://kenney.nl/media/pages/assets/interface-sounds/f84eee9fab-1677589472/preview.ogg",
      "cubre": "algunos: 100 sonidos de interfaz (clics, botones, confirmaciones)",
      "encaje": 4,
      "notas": "CC0 según la página (2020). Para menús y pausa."
@@ -40,7 +40,7 @@ window.ALTERNATIVAS = {
      "autor": "Kenney",
      "licencia": "CC0-1.0",
      "atribucion": false,
-     "preview_url": "https://kenney.nl/assets/ui-audio",
+     "preview_url": "https://kenney.nl/media/pages/assets/ui-audio/683e0b08db-1677590485/preview-6.ogg",
      "cubre": "algunos: 50 sonidos de botones, interruptores y clics",
      "encaje": 3,
      "notas": "CC0 según la página. Solapa con Interface Sounds."
@@ -52,7 +52,7 @@ window.ALTERNATIVAS = {
      "autor": "Kenney",
      "licencia": "CC0-1.0",
      "atribucion": false,
-     "preview_url": "https://kenney.nl/assets/rpg-audio",
+     "preview_url": "https://kenney.nl/media/pages/assets/rpg-audio/abc868e185-1677590329/preview-4.ogg",
      "cubre": "algunos: 50 sonidos de foley, pasos y armas",
      "encaje": 3,
      "notas": "CC0 según la página (2014). Pasos y cuero/tela útiles para el ninja."
@@ -64,7 +64,7 @@ window.ALTERNATIVAS = {
      "autor": "rubberduck",
      "licencia": "CC0-1.0",
      "atribucion": false,
-     "preview_url": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+     "preview_url": "https://opengameart.org/sites/default/files/audio_preview/metal_wood_prev.ogg.mp3",
      "cubre": "algunos: puertas metálicas, llaves, cerraduras, martillo, madera que cruje",
      "encaje": 4,
      "notas": "CC0 según la ficha. Encaja con robo: cerraduras, llaves, puertas."
@@ -76,7 +76,7 @@ window.ALTERNATIVAS = {
      "autor": "rubberduck",
      "licencia": "CC0-1.0",
      "atribucion": false,
-     "preview_url": "https://opengameart.org/content/100-cc0-sfx",
+     "preview_url": "https://opengameart.org/sites/default/files/audio_preview/sfx_prev_0.ogg.mp3",
      "cubre": "algunos: campanas, platos, chirridos de puerta, cristal, explosiones",
      "encaje": 3,
      "notas": "CC0 según la ficha; grabados con un móvil Android, calidad irregular. Existe también 100 CC0 SFX #2 (https://opengameart.org/content/100-cc0-sfx-2)."
@@ -88,7 +88,7 @@ window.ALTERNATIVAS = {
      "autor": "Umplix",
      "licencia": "CC0-1.0",
      "atribucion": false,
-     "preview_url": "https://opengameart.org/content/sneaky-music-pack",
+     "preview_url": "https://opengameart.org/sites/default/files/audio_preview/dodging_lights-mp3.mp3.ogg",
      "cubre": "algunos: 3 temas de sigilo/espionaje (WAV) hechos con GarageBand",
      "encaje": 3,
      "notas": "CC0 según la ficha. Solo 3 pistas y de tono más tecno que cartoon; para música de sigilo."
@@ -100,7 +100,7 @@ window.ALTERNATIVAS = {
      "autor": "Kevin MacLeod",
      "licencia": "CC-BY-4.0",
      "atribucion": true,
-     "preview_url": "",
+     "preview_url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Sneaky%20Snitch.mp3",
      "cubre": "algunos: catálogo enorme de música de todos los géneros, apta para juegos",
      "encaje": 3,
      "notas": "CC BY 4.0 según su FAQ; exige la línea de crédito 'Título Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0' en la pantalla de créditos. Elegir tema concreto y verificar su ficha."
@@ -132,10 +132,10 @@ window.ALTERNATIVAS = {
      "autor": "hexgrad",
      "licencia": "Apache-2.0",
      "atribucion": false,
-     "preview_url": "",
+     "preview_url": "https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/samples/HEARME.wav",
      "cubre": "todo: mismo motor con em_alex o ef_dora",
      "encaje": 4,
-     "notas": "Modelo Apache 2.0 (ficha leída). La ficha no da licencia por voz. Su ficha dice que se entrenó con audio permisivo y también 'sintético de TTS cerrados de grandes proveedores', un matiz a tener en cuenta."
+     "notas": "Modelo Apache 2.0 (ficha leída). La muestra (HEARME.wav) es la de su ficha, en inglés: sirve para oír el motor, no la voz española. La ficha no da licencia por voz. Su ficha dice que se entrenó con audio permisivo y también 'sintético de TTS cerrados de grandes proveedores', un matiz a tener en cuenta."
     },
     {
      "id": "piper-davefx",
@@ -144,7 +144,7 @@ window.ALTERNATIVAS = {
      "autor": "Rhasspy / Piper (dataset OHF-Voice)",
      "licencia": "MIT",
      "atribucion": false,
-     "preview_url": "",
+     "preview_url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/davefx/medium/samples/speaker_0.mp3",
      "cubre": "todo: TTS local de una voz española de España",
      "encaje": 3,
      "notas": "Ficha leída: licencia MIT y dataset CC0 según la ficha. Calidad medium (22 kHz), inferior a Kokoro. Piper usa espeak-ng (GPL): revisar si se redistribuye el motor."
@@ -156,7 +156,7 @@ window.ALTERNATIVAS = {
      "autor": "Rhasspy / Piper (dataset Univ. Edimburgo)",
      "licencia": "CC-BY-3.0",
      "atribucion": true,
-     "preview_url": "",
+     "preview_url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/sharvard/medium/samples/speaker_0.mp3",
      "cubre": "todo: 2 hablantes españoles de España",
      "encaje": 2,
      "notas": "Ficha leída: dataset de la Universidad de Edimburgo bajo CC BY 3.0, hay que acreditarlo. Calidad medium."
@@ -212,7 +212,7 @@ window.ALTERNATIVAS = {
      "autor": "Kay Lousberg",
      "licencia": "CC0-1.0",
      "atribucion": false,
-     "preview_url": "",
+     "preview_url": "https://img.itch.zone/aW1nLzI4NTI5NzE4LnBuZw==/original/I%2BXroR.png",
      "cubre": "algunos: edad media y mobiliario (baúles, mesas, sillas, barriles, estandartes)",
      "encaje": 4,
      "notas": "Más de 200 props en la versión gratuita; FBX, GLTF y OBJ; atlas de gradiente de estilo cartoon."
@@ -248,7 +248,7 @@ window.ALTERNATIVAS = {
      "autor": "Kenney",
      "licencia": "CC0-1.0",
      "atribucion": false,
-     "preview_url": "https://kenney.nl/media/pages/assets/car-kit/5db5e6a1c7-1761348592/2073910.jpg",
+     "preview_url": "https://kenney.nl/media/pages/assets/car-kit/81f9d77bc7-1775131953/preview.png",
      "cubre": "uno: coche del tema moderna",
      "encaje": 4,
      "notas": "45 ficheros de coches y vehículos."
@@ -336,7 +336,7 @@ window.ALTERNATIVAS = {
      "autor": "Lucide Contributors (parte de Feather, Cole Bemis)",
      "licencia": "ISC",
      "atribucion": false,
-     "preview_url": "",
+     "preview_url": "https://unpkg.com/lucide-static@latest/icons/door-open.svg",
      "cubre": "todo: iconos de interfaz de trazo limpio en SVG",
      "encaje": 4,
      "notas": "ISC (y MIT la parte derivada de Feather); solo pide conservar el aviso de copyright en distribuciones."
@@ -348,7 +348,7 @@ window.ALTERNATIVAS = {
      "autor": "Paweł Kuna y colaboradores",
      "licencia": "MIT",
      "atribucion": false,
-     "preview_url": "",
+     "preview_url": "https://unpkg.com/@tabler/icons@latest/icons/outline/door-exit.svg",
      "cubre": "todo: más de 6000 iconos SVG",
      "encaje": 4,
      "notas": "MIT según su web. Aviso de copyright al redistribuir."
@@ -360,7 +360,7 @@ window.ALTERNATIVAS = {
      "autor": "Google",
      "licencia": "Apache-2.0",
      "atribucion": false,
-     "preview_url": "",
+     "preview_url": "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/door_open/default/48px.svg",
      "cubre": "todo: iconos de interfaz muy completos",
      "encaje": 3,
      "notas": "Apache 2.0 según la documentación de Google Fonts."
@@ -372,7 +372,7 @@ window.ALTERNATIVAS = {
      "autor": "Lorc, Delapouite, Skoll y otros",
      "licencia": "CC-BY-3.0",
      "atribucion": true,
-     "preview_url": "https://game-icons.net/tags/ninja.html",
+     "preview_url": "https://game-icons.net/icons/000000/ffffff/1x1/delapouite/exit-door.svg",
      "cubre": "algunos: iconos temáticos de juego (estilo más ilustrado)",
      "encaje": 3,
      "notas": "CC BY 3.0: hay que citar al autor de cada icono ('Icons made by {autor}. Available on https://game-icons.net')."
@@ -392,7 +392,7 @@ window.ALTERNATIVAS = {
      "autor": "darkzaitzev, Lorc, Delapouite, faithtoken",
      "licencia": "CC-BY-3.0",
      "atribucion": true,
-     "preview_url": "https://game-icons.net/tags/ninja.html",
+     "preview_url": "https://game-icons.net/icons/000000/ffffff/1x1/darkzaitzev/ninja-head.svg",
      "cubre": "uno: iconos 'Ninja head' (darkzaitzev) y 'Ninja mask' (Lorc), recoloreables por ser monocromos",
      "encaje": 2,
      "notas": "CC BY 3.0 (leído en la etiqueta). Son siluetas monocromas: sirven de base pero no dan el estilo cartoon propio ni variantes por ladrón."
@@ -412,7 +412,7 @@ window.ALTERNATIVAS = {
      "autor": "Lorc, Delapouite y otros",
      "licencia": "CC-BY-3.0",
      "atribucion": true,
-     "preview_url": "",
+     "preview_url": "https://game-icons.net/icons/000000/ffffff/1x1/lorc/crown.svg",
      "cubre": "algunos: iconos monocromos de objetos genéricos",
      "encaje": 2,
      "notas": "CC BY 3.0. Pierde la coherencia de ver el modelo real del juego; mejor mantener los renders propios."
