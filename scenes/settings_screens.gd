@@ -1,14 +1,8 @@
 class_name SettingsScreens
 extends RefCounted
-## The settings screens (sound, screen, pads, the loudspeaker, the IA panel) and the assets
-## page, and what is kept of them: read at the start (load_all), applied as each line moves
-## (step) and saved. The values themselves (sound_on, fullscreen, ...) live in Game, which
+## The settings screens (sound, screen, pads, the loudspeaker, the IA panel), and what
+## is kept of them: read at the start (load_all), applied as each line moves (step) and saved. The values themselves (sound_on, fullscreen, ...) live in Game, which
 ## the rest of the game reads them from.
-
-## Everything the game is made of, to look at: the pieces, the characters,
-## the things that fall over, the sounds and the map's marks. Opens from the
-## settings; a tab a page, ← → (or the buttons) along the pieces and props.
-const ASSET_TABS := {"loot": "ASSETS_TAB_LOOT", "people": "ASSETS_TAB_PEOPLE", "props": "ASSETS_TAB_PROPS", "sounds": "ASSETS_TAB_SOUNDS", "map": "ASSETS_TAB_MAP"}
 
 var host: Game
 
@@ -17,10 +11,6 @@ var settings_from := "title"
 
 ## the settings page on show: "" for the main one, or "sound", "screen", "pads"
 var settings_page := ""
-
-## the assets screen: which tab, and which item of it
-var assets_tab := "loot"
-var assets_index := 0
 
 
 func _init(game: Game) -> void:
@@ -48,7 +38,6 @@ func show(from: String, page := "") -> void:
 		rows.append({"text": Text.t("SETTINGS_SOUND_PAGE"), "call": show.bind(from, "sound")})
 		rows.append({"text": Text.t("SETTINGS_SCREEN_PAGE"), "call": show.bind(from, "screen")})
 		rows.append({"text": Text.t("SETTINGS_PADS_PAGE"), "call": show.bind(from, "pads")})
-		rows.append({"text": Text.t("SETTINGS_ASSETS_PAGE"), "call": show_assets.bind("loot", 0)})
 	for k in keys:
 		rows.append({"text": text_of(k), "step": step.bind(k)})
 	rows.append({"text": Text.t("MENU_BACK"), "call": back, "colour": Hud.C.dim})
@@ -252,84 +241,6 @@ func save() -> void:
 		"rumble": host.rumble, "rumble_strength": host.rumble_strength,
 		"deadzone": host.deadzone,
 	})
-
-
-func asset_loot() -> Array:
-	var out: Array = []
-	var names := {}
-	for n in range(1, Story.count() + 1):
-		out.append(Story.level(n).loot)
-		names[Story.level(n).loot.name] = true
-	# And one of each shape the generative heists make up (LootGen).
-	for l in LootGen.samples():
-		if not names.has(l.name):
-			out.append(l)
-	return out
-
-
-func show_assets(tab: String, index: int) -> void:
-	if settings_from != "paused":
-		host.hud.backdrop(Hud.SPOTS.settings)
-	host.phase = "assets"
-	assets_tab = tab
-	var tabs: Array = []
-	for k in ASSET_TABS:
-		tabs.append({"text": Text.t(ASSET_TABS[k]), "call": show_assets.bind(k, 0), "colour": Hud.C.gold if k == tab else Hud.C.dim, "selected": k == tab})
-	var items: Array = [{"title": Text.t("ASSETS_TITLE"), "size": 44}, {"buttons": tabs, "row": true, "small": true, "width": 190, "focus": ASSET_TABS.keys().find(tab)}, {"gap": 8}]
-	var count := 0
-	match tab:
-		"loot":
-			var list := asset_loot()
-			count = list.size()
-			index = posmod(index, count)
-			var loot: Dictionary = list[index]
-			host.podium.build(loot)
-			items.append({"picture": host.podium.preview.get_texture(), "smooth": true, "height": 260})
-			items.append({"title": loot.name.to_upper(), "size": 26, "colour": Color(loot.colour)})
-			items.append({"text": "%s · %s" % [loot.blurb, loot.shape], "colour": Hud.C.gold})
-		"props":
-			var kinds: Array = Props.KINDS
-			count = kinds.size()
-			index = posmod(index, count)
-			host.podium.build()
-			host.podium.put_node(PropsView.model(kinds[index]), Color("#b8a888"), 2.0, 0.6)
-			items.append({"picture": host.podium.preview.get_texture(), "smooth": true, "height": 260})
-			items.append({"title": Props.name_of(kinds[index]).to_upper(), "size": 26})
-			items.append({"text": Text.t("ASSETS_FALL_METAL" if kinds[index] in ["bin", "armour"] else "ASSETS_FALL_DRY"), "colour": Hud.C.gold})
-		"people":
-			host.podium.drop()
-			var cards: Array = []
-			for c in [["players:1", "ASSETS_PEOPLE_THIEF"], ["players:2", "ASSETS_PEOPLE_TWO"], ["guards:easy", "ASSETS_PEOPLE_SLEEPY"], ["guards:hard", "ASSETS_PEOPLE_THREE"]]:
-				cards.append({"title": Text.t(c[1]), "stage": MenuStage.make(c[0]), "static": true, "animate": true})
-			items.append({"cards": cards.slice(0, 2), "width": 300})
-			items.append({"cards": cards.slice(2), "width": 300})
-		"sounds":
-			host.podium.drop()
-			# One sound at a time, like the pieces: its name and a button to hear it.
-			var names: Array = host.sfx.sound_names()
-			count = names.size()
-			index = posmod(index, count)
-			items.append({"gap": 60})
-			items.append({"title": names[index].to_upper(), "size": 40})
-			items.append({"gap": 30})
-			items.append({"buttons": [{"text": Text.t("ASSETS_LISTEN"), "call": host.sfx.ui.bind(names[index], 1.0)}], "big": true, "focus": 0})
-			items.append({"gap": 40})
-		"map":
-			host.podium.drop()
-			items.append({"text": Text.t("ASSETS_MAP_TEXT"), "colour": Hud.C.dim})
-			items.append({"legend": ["thief", "gem", "exit", "guard"], "thieves": host._thief_colours(), "loot": Color("#74c0fc")})
-			items.append({"legend": ["prop", "route", "panel"]})
-			items.append({"text": Text.t("ASSETS_MAP_MARKS"), "colour": Hud.C.gold})
-	assets_index = index
-	if count > 1:
-		items.append({"text": "%d / %d" % [index + 1, count], "colour": Hud.C.dim, "size": 14})
-		items.append({"buttons": [
-			{"text": Text.t("MENU_PREVIOUS"), "call": show_assets.bind(tab, index - 1), "colour": Hud.C.dim},
-			{"text": Text.t("MENU_NEXT"), "call": show_assets.bind(tab, index + 1)},
-		# On the sounds, accept plays the one on screen; elsewhere it moves on.
-		], "row": true, "focus": -1 if tab == "sounds" else 1})
-	items.append({"buttons": [{"text": Text.t("MENU_BACK"), "call": show.bind(settings_from), "colour": Hud.C.dim}], "small": true})
-	host.hud.show_menu(items, "assets:" + tab)
 
 
 func back() -> void:

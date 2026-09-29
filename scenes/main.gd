@@ -753,7 +753,7 @@ func _again() -> void:
 
 ## Where back (Escape, Space, Enter or B: MenuKeys) goes somewhere, and so
 ## sounds.
-const BACK_PHASES := ["menu", "pick", "generative", "challenge", "prologue", "ending", "brief", "paused", "settings", "assets", "caught", "escaped"]
+const BACK_PHASES := ["menu", "pick", "generative", "challenge", "prologue", "ending", "brief", "paused", "settings", "caught", "escaped"]
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -816,8 +816,6 @@ func _unhandled_input(event: InputEvent) -> void:
 				var to := briefing.brief_page + step
 				if to >= 0 and to < briefing.pages().size():
 					briefing.show(to)
-			else:
-				options.show_assets(options.assets_tab, options.assets_index + step)
 
 
 ## What a press does on the screen that is up: MenuKeys says what it means
@@ -846,7 +844,7 @@ func _intent(event: InputEvent) -> String:
 				return "skip"
 	if start:
 		return "accept"
-	if phase in ["brief", "assets"]:
+	if phase == "brief":
 		if key == KEY_Q:
 			return "prev"
 		if what in ["prev", "next"]:
@@ -872,7 +870,6 @@ func _back() -> void:
 			else:
 				_start_playing()
 		"settings": options.back()
-		"assets": options.show(options.settings_from)
 		"caught", "escaped": _leave_game(_way_out())
 
 
