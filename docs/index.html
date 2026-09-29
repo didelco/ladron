@@ -1013,7 +1013,7 @@ function referencias() {
   const etqs = [...new Set(RF.flatMap(x => x.etiquetas || []))].sort();
   $("#p-referencias").innerHTML = `<h1>Referencias</h1>
     <div class="sub">Enlaces de inspiración y recursos que se van encontrando · ${RF.length} guardada${RF.length === 1 ? "" : "s"}</div>
-    <p class="lead">Se guardan en <code>docs/data/referencias.json</code> (a mano, o desde aquí con <code>python3 tools/docs.py serve</code>); <code>python3 tools/procedencia.py</code> comprueba el fichero. Si una comparte dominio con una colección de Procedencia o con una de sus alternativas, se enlazan entre sí.</p>
+    <p class="lead">Se guardan en <code>docs/data/referencias.json</code> (a mano, o desde aquí con <code>python3 tools/docs.py serve</code>); <code>python3 tools/procedencia.py</code> comprueba el fichero. Cada una puede llevar «Qué podemos coger»: los items concretos del pack (nombre real, enlace y para qué parte del juego) con una marca en los que ya usamos; el buscador también mira ahí. Si una comparte dominio con una colección de Procedencia o con una de sus alternativas, se enlazan entre sí.</p>
     ${EDITABLE ? `<form class="rf-form" id="rf-form"><b class="ancho">Añadir referencia</b>
       <label class="ancho">Enlace<input name="url" type="url" required placeholder="https://…"></label>
       <label>Título (opcional)<input name="titulo"></label>
