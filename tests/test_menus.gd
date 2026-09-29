@@ -332,11 +332,6 @@ func _init() -> void:
 		await frames(W)
 		check(m.sound_on == was, "... y otra vez, como estaba")
 	await each(BACKS, "ajustes · sonido", func(): m.options.show("title", "sound"), func(): return m.phase == "settings" and m.options.settings_page == "", "vuelve a los ajustes")
-	var assets := func() -> void:
-		m.options.settings_from = "title"
-		m.options.show_assets("loot", 0)
-	await each(ACCEPTS, "recursos", assets, func(): return m.phase == "assets" and m.options.assets_index == 1, "SIGUIENTE: la pieza siguiente")
-	await each(BACKS, "recursos", assets, func(): return m.phase == "settings", "vuelve a los ajustes")
 
 	# --- La historia (el cuento del principio) ----------------------------------------------------
 	var tale := func() -> void: m.briefing.show_prologue(0)

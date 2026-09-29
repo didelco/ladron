@@ -123,5 +123,5 @@ window.RESUMEN = {
    }
   }
  ],
- "version": "0.1.315"
+ "version": "0.1.318"
 };

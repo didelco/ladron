@@ -537,40 +537,5 @@
 		"section": "finales",
 		"text": "",
 		"title": "El final de la historia"
-	},
-	{
-		"file": "capturas/assets_piezas.webp",
-		"id": "assets_piezas",
-		"section": "assets",
-		"text": "",
-		"title": "Assets: piezas"
-	},
-	{
-		"file": "capturas/assets_props.webp",
-		"id": "assets_props",
-		"section": "assets",
-		"text": "",
-		"title": "Assets: objetos"
-	},
-	{
-		"file": "capturas/assets_people.webp",
-		"id": "assets_people",
-		"section": "assets",
-		"text": "",
-		"title": "Assets: personajes"
-	},
-	{
-		"file": "capturas/assets_sounds.webp",
-		"id": "assets_sounds",
-		"section": "assets",
-		"text": "",
-		"title": "Assets: sonidos"
-	},
-	{
-		"file": "capturas/assets_map.webp",
-		"id": "assets_map",
-		"section": "assets",
-		"text": "",
-		"title": "Assets: mapa"
 	}
 ]

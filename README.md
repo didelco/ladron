@@ -18,7 +18,7 @@ scenes/  lo visual: main (`Game`, el nodo raíz: estado, pantallas hasta la noch
          camera_rig (seguir, alejar, temblar), hands (asientos, teclas y mandos por jugador,
          vibración, glifos), megaphone_run (la megafonía en juego), house_run (la casa de la
          banda: salas a la vista, espantapájaros, banco de pruebas y juegos del dojo),
-         settings_screens (ajustes y assets), challenge_screens (retos y editor), brief_screens
+         settings_screens (ajustes), challenge_screens (retos y editor), brief_screens
          (prólogo y ficha de la noche), preview_stand (la peana de las piezas) y launch_args
          (las opciones `--menu=…` y compañía). Otros scripts de escena ya eran así: plan_talk,
          tour, end_pages, menu_stage, city_stage.
@@ -283,7 +283,7 @@ quiera.
 
 Con mando, como en la mayoría de juegos: stick izquierdo o cruceta para moverse, A (✕) la acción, B (○) para rodar
 y soltar un minijuego, X (□) o clic del stick para ponerse a gatas, View para el mapa y Start para la
-pausa; Y (△) suelta una bomba de humo. En los menús A acepta, B vuelve, LB/RB cambian de pestaña y Start
+pausa; Y (△) suelta una bomba de humo. En los menús A acepta, B vuelve, LB/RB pasan las páginas de la previa y Start
 salta la historia y la previa. Así A y B significan lo mismo jugando que en los menús: A hace, B se aparta. Con el
 teclado, igual (cada mitad es un mando): `E` y `.` aceptan, como la acción; `Espacio` y `Enter` vuelven, como rodar, y
 `Esc` también; ninguna tecla acepta en una pantalla y vuelve en otra (`logic/menu_keys.gd`). Por los menús se mueve cada
