@@ -3902,7 +3902,7 @@ window.TEXTOS = [
   "group": "Otros",
   "at": [
    "scenes/hands.gd:199",
-   "scenes/tour.gd:669"
+   "scenes/tour.gd:654"
   ],
   "via": []
  },
@@ -5560,7 +5560,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/tour.gd:144"
+   "scenes/tour.gd:158"
   ],
   "via": []
  },
@@ -5642,8 +5642,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/tour.gd:303",
-   "scenes/tour.gd:380"
+   "scenes/tour.gd:283",
+   "scenes/tour.gd:360"
   ],
   "via": []
  },
@@ -10844,9 +10844,9 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:147",
-   "scenes/tour.gd:170",
-   "scenes/tour.gd:172"
+   "scenes/tour.gd:161",
+   "scenes/tour.gd:184",
+   "scenes/tour.gd:186"
   ],
   "via": []
  },
@@ -10857,8 +10857,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:147",
-   "scenes/tour.gd:172"
+   "scenes/tour.gd:161",
+   "scenes/tour.gd:186"
   ],
   "via": []
  },
@@ -10869,9 +10869,9 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:147",
-   "scenes/tour.gd:170",
-   "scenes/tour.gd:172"
+   "scenes/tour.gd:161",
+   "scenes/tour.gd:184",
+   "scenes/tour.gd:186"
   ],
   "via": []
  },
@@ -10882,7 +10882,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:290"
+   "scenes/tour.gd:270"
   ],
   "via": []
  },
@@ -10893,7 +10893,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:290"
+   "scenes/tour.gd:270"
   ],
   "via": []
  },
@@ -10904,7 +10904,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:290"
+   "scenes/tour.gd:270"
   ],
   "via": []
  },
@@ -10915,7 +10915,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:179"
+   "scenes/tour.gd:193"
   ],
   "via": []
  },
@@ -10926,7 +10926,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:182"
+   "scenes/tour.gd:196"
   ],
   "via": []
  },
@@ -10937,8 +10937,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:303",
-   "scenes/tour.gd:380"
+   "scenes/tour.gd:283",
+   "scenes/tour.gd:360"
   ],
   "via": []
  },
@@ -14899,7 +14899,7 @@ window.TEXTOS = [
   "group": "Otros",
   "at": [
    "scenes/main.gd:583",
-   "scenes/tour.gd:165",
+   "scenes/tour.gd:179",
    "logic/practice.gd:404"
   ],
   "via": []
@@ -14911,7 +14911,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:167"
+   "scenes/tour.gd:181"
   ],
   "via": []
  },
@@ -14922,7 +14922,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:170"
+   "scenes/tour.gd:184"
   ],
   "via": []
  },
@@ -15678,6 +15678,28 @@ window.TEXTOS = [
   "via": [
    "HIDEOUT_GAME_WHY_…"
   ]
+ },
+ {
+  "key": "TOUR_NEXT_STOP",
+  "es": "SIGUIENTE",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/tour.gd:765"
+  ],
+  "via": []
+ },
+ {
+  "key": "TOUR_BAR_HIDEOUT",
+  "es": "CASITA",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/tour.gd:761"
+  ],
+  "via": []
  },
  {
   "key": "TOUR_PIECE_HEAD",

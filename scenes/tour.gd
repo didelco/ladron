@@ -35,16 +35,17 @@ const SIGN := Color("#fff0d6")
 const SIGN_DIM := Color("#b9a9d8")
 const SIGN_SHUT := Color("#8a7fa3")
 
-## Picking a stop of the town by the way you push (the arrows, WASD, the cross
-## or the stick): the stops within this many degrees of that way are the
-## candidates, the nearest wins; none there, the most in line (no more than
-## MAX_OFF off), or nothing.
-## The arrows over the town: cream, this far (px) from the stop picked.
-const ARROW := Color(1.0, 0.94, 0.84)
-const ARROW_R := 150.0
-const CONE := 60.0
-const MAX_OFF := 75.0
-const DIR_VECTORS := {"left": Vector2(-1, 0), "right": Vector2(1, 0), "up": Vector2(0, -1), "down": Vector2(0, 1)}
+## The bar of stops in front of the town (the hideout, then the museums 1 to 5,
+## in the order of the story): the height of a card and the gap between them,
+## and the room under it for the keys at the bottom.
+const CARD_H := 92.0
+const CARD_GAP := 14.0
+const BAR_LIFT := 168.0
+## The mouse must move this far before it picks anything by hovering.
+const HOVER_MOVE := 12.0
+## How close (px) it has to be to a stop of the map behind.
+const HIT_STOP := 120.0
+
 var stage: CityStage
 var state := "city"
 var players := 1
@@ -60,15 +61,18 @@ var _title: Label
 var _subtitle: Label
 var _hints: HBoxContainer
 var _pad := false
-## the stick, per pad: where it is, whether it is pushed (it moves once per
-## push, and not again until it is let back), and the pad whose push waits
-## for the next frame (its two axes come as two events)
-var _sticks := {}
-var _stick_on := {}
-var _stick_push := -100
-var _stick_vec := Vector2.ZERO
-## over the town: the way each direction leads from the stop picked
-var _arrows: Control
+## the stick, per pad: where it was last frame, to move once a push
+var _stick := {}
+## the bar of stops over the town, and where each card of it is (stop -> Rect2)
+var _bar: Control
+var _cards := {}
+## the stop the story asks for next: the one the town opens on
+var _next := -1
+## what the mouse is over, and how far it has travelled since a key or a pad
+## last spoke: hovering only picks once it really moves, so a mouse at rest
+## never takes the pick from the pad
+var _hover := -1
+var _travel := 0.0
 ## the rooms of the museum inside, as Story has them: heist numbers
 var _nights: Array[int] = []
 ## under each room reached, its stars
@@ -118,11 +122,20 @@ func _init() -> void:
 	_hints.add_theme_constant_override("separation", 28)
 	_hints.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(_hints)
-	_arrows = Control.new()
-	_arrows.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_arrows.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_arrows.draw.connect(_draw_arrows)
-	_root.add_child(_arrows)
+	_bar = Control.new()
+	_bar.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_bar.draw.connect(_draw_bar)
+	_root.add_child(_bar)
+
+
+## The stop the story asks for next: the museum of the next heist to do, or
+## the hideout when the whole story is done and nothing is pending.
+static func next_stop(n: int) -> int:
+	var reached := Story.unlocked(n)
+	if reached >= Story.count() and Story.star_mask(Story.count(), n) != 0:
+		return CityStage.HIDEOUT
+	return Story.museum_of(reached)
 
 
 ## The town for a gang of `n`, as far as it has got: museum `pick` picked.
@@ -130,6 +143,7 @@ func _init() -> void:
 func open_city(n: int, pick: int, fresh := -1) -> void:
 	players = n
 	reached = Story.unlocked(n)
+	_next = next_stop(n)
 	stage.build(Story.museum_of(reached), pick)
 	_show_city()
 	if fresh >= 0:
@@ -185,57 +199,23 @@ func _pick_museum(m: int) -> void:
 	_sign_stars.visible = stage.is_open(m)
 
 
-## Which of `stops` (id -> where on the screen) lies the way `dir` says
-## from `from`, both on the screen's plane (y down). One way (an arrow): of
-## those within CONE degrees of it the nearest; none there, the most in line
-## unless it is MAX_OFF degrees off or worse. Two ways at once (dir the sum:
-## a diagonal): the most in line. -1 for none.
-static func toward(from: Vector2, dir: Vector2, stops: Dictionary) -> int:
-	if dir.length() < 0.01:
-		return -1
-	var diagonal := absf(dir.x) > 0.01 and absf(dir.y) > 0.01
-	var near := -1
-	var near_d := INF
-	var line := -1
-	var line_a := INF
-	var line_d := INF
-	for id in stops:
-		var v: Vector2 = stops[id] - from
-		var d := v.length()
-		if d < 0.5:
-			continue
-		var a := rad_to_deg(absf(v.angle_to(dir)))
-		if a > MAX_OFF:
-			continue
-		if a < line_a - 0.01 or (absf(a - line_a) <= 0.01 and d < line_d):
-			line = id
-			line_a = a
-			line_d = d
-		if a <= CONE and d < near_d:
-			near = id
-			near_d = d
-	if diagonal or near < 0:
-		return line
-	return near
+## The stops in the order of the story, as the bar has them: the hideout, then
+## the museums 1 to 5.
+static func bar_items() -> Array[int]:
+	return [CityStage.HIDEOUT, 0, 1, 2, 3, 4]
 
 
-## The other stops that can be picked (open ones), where they are on the screen.
-func _stops_open() -> Dictionary:
-	var stops := {}
-	for m in [CityStage.HIDEOUT, 0, 1, 2, 3, 4]:
-		if m != stage.picked and stage.is_open(m):
-			stops[m] = stage.stop_on_screen(m)
-	return stops
-
-
-## Move the pick the way `v` points on the screen (x right, y down; an arrow
-## is one of DIR_VECTORS, the stick any angle), among the open stops.
-func step(v: Vector2) -> void:
-	var to := toward(stage.stop_on_screen(stage.picked), v, _stops_open())
-	if to < 0:
-		return
-	_nav()
-	_pick_museum(to)
+## Along the bar (dir -1 or 1) to the next stop that is open, shut ones
+## skipped. At either end it stays.
+func step_bar(dir: int) -> void:
+	var items := bar_items()
+	var at := items.find(stage.picked) + dir
+	while at >= 0 and at < items.size():
+		if stage.is_open(items[at]):
+			_nav()
+			_pick_museum(items[at])
+			return
+		at += dir
 
 
 func _enter_museum() -> void:
@@ -471,28 +451,27 @@ func intent(event: InputEvent) -> String:
 		if not Pads.real(event.device):
 			return ""
 		# Once a push: past half way it moves, and not again until it is let
-		# back under a third. Where it goes is decided next frame (_process),
-		# when both axes have come.
-		var v: Vector2 = _sticks.get(event.device, Vector2.ZERO)
-		if event.axis == JOY_AXIS_LEFT_X:
-			v.x = event.axis_value
-		else:
-			v.y = event.axis_value
-		_sticks[event.device] = v
-		var was: bool = _stick_on.get(event.device, false)
-		var now := v.length() > 0.5 or (was and v.length() > 0.33)
-		_stick_on[event.device] = now
-		if now and not was:
+		# back under a third.
+		var key := "%d:%d" % [event.device, event.axis]
+		var was: int = _stick.get(key, 0)
+		var now := 0
+		if absf(event.axis_value) > 0.5:
+			now = 1 if event.axis_value > 0 else -1
+		elif absf(event.axis_value) > 0.33:
+			now = was
+		_stick[key] = now
+		if now != 0 and now != was:
 			_pad = true
-			_stick_push = event.device
-			_stick_vec = Vector2.ZERO
-		if _stick_push == event.device and v.length() > _stick_vec.length():
-			_stick_vec = v
+			if event.axis == JOY_AXIS_LEFT_X:
+				return "right" if now > 0 else "left"
+			return "down" if now > 0 else "up"
 	return ""
 
 
 ## What main forwards while the tour is up.
 func input(event: InputEvent) -> void:
+	if event is InputEventKey or event is InputEventJoypadButton or event is InputEventJoypadMotion:
+		_travel = 0.0
 	var what := intent(event)
 	if what == "":
 		return
@@ -505,7 +484,9 @@ func act(what: String) -> void:
 	match state:
 		"city":
 			match what:
-				"left", "up", "right", "down": step(DIR_VECTORS[what])
+				# Along the bar, whatever the map behind looks like.
+				"left", "prev": step_bar(-1)
+				"right", "next": step_bar(1)
 				"accept": _enter_museum()
 				"back":
 					_sound("back")
@@ -535,7 +516,7 @@ func _on_mouse(event: InputEvent) -> void:
 		return
 	var at: Vector2 = event.position
 	var best := -1
-	var near := 110.0
+	var near := HIT_STOP
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and state in ["city", "museum", "plan"]:
 		act("back")
 		return
@@ -544,24 +525,35 @@ func _on_mouse(event: InputEvent) -> void:
 			if talk:
 				talk.mouse(event)
 		"city":
-			for m in stage._museums.size():
-				var d := at.distance_to(stage.stop_point(m))
-				if d < near:
-					near = d
-					best = m
-			if best < 0:
+			if event is InputEventMouseMotion:
+				_travel += event.relative.length()
+			# The bar first (it is the way), then the map behind.
+			var target := -1
+			for m in _cards:
+				if _cards[m].grow(6.0).has_point(at):
+					target = m
+			if target < 0:
+				for m in stage._museums.size():
+					var d := at.distance_to(stage.stop_point(m))
+					if d < near:
+						near = d
+						target = m
+			_hover = target
+			_root.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if target >= 0 and stage.is_open(target) else Control.CURSOR_ARROW
+			if target < 0:
 				return
 			if event is InputEventMouseButton:
-				if event.button_index == MOUSE_BUTTON_LEFT:
-					if best == stage.picked:
-						_enter_museum()
-					elif stage.is_open(best):
-						_pick_museum(best)
-				elif event.button_index == MOUSE_BUTTON_RIGHT:
-					act("back")
-			elif best != stage.picked and stage.is_open(best):
+				if event.button_index != MOUSE_BUTTON_LEFT:
+					return
+				# A click on a stop that is open picks it and goes in at once.
+				if target != stage.picked and stage.is_open(target):
+					_nav()
+					_pick_museum(target)
+				if stage.is_open(target):
+					_enter_museum()
+			elif target != stage.picked and stage.is_open(target) and _travel > HOVER_MOVE:
 				_nav()
-				_pick_museum(best)
+				_pick_museum(target)
 		"museum":
 			# Only near a room reached: the rest are just windows.
 			near = 70.0
@@ -591,16 +583,9 @@ func _on_mouse(event: InputEvent) -> void:
 
 func _process(_dt: float) -> void:
 	var view := _root.get_viewport_rect().size
-	if _stick_push != -100:
-		var v := _stick_vec
-		_stick_push = -100
-		_hints_for_device()
-		if state == "city":
-			step(v)
-		else:
-			act(("right" if v.x > 0 else "left") if absf(v.x) > absf(v.y) else ("down" if v.y > 0 else "up"))
-	_arrows.visible = state == "city"
-	_arrows.queue_redraw()
+	_bar.visible = state == "city"
+	_place_bar(view)
+	_bar.queue_redraw()
 	# Wider than the town is built for (CityStage.WIDEST), its sides fade
 	# into the sky, over the safe margin; close in on a museum, nothing fades.
 	var edges := _view.material as ShaderMaterial
@@ -626,7 +611,7 @@ func _process(_dt: float) -> void:
 		_sign.size = _sign.get_combined_minimum_size()
 		var goal := at - Vector2(_sign.size.x * 0.5, _sign.size.y + 6)
 		goal.x = clampf(goal.x, 16, view.x - _sign.size.x - 16)
-		goal.y = clampf(goal.y, 90, view.y - _sign.size.y - 70)
+		goal.y = clampf(goal.y, 90, view.y - _sign.size.y - (BAR_LIFT + 8 if state == "city" else 70))
 		_sign.position = goal if _sign.position == Vector2.ZERO else _sign.position.lerp(goal, 0.3)
 
 
@@ -693,28 +678,91 @@ static func _arcade(l: Label) -> void:
 		l.remove_theme_font_override("font")
 
 
-## Over the town, from the stop picked: a ring on each stop a push can reach
-## and an arrow towards it, on the way it lies on the screen, so what each
-## direction does is seen before it is pressed.
-func _draw_arrows() -> void:
+## Lay the cards of the bar out along the bottom, centred, in the order of
+## the story (bar_items), as wide as the screen lets them be.
+func _place_bar(view: Vector2) -> void:
+	_cards.clear()
 	if state != "city":
 		return
-	var from := stage.stop_point(stage.picked)
-	var here := stage.stop_on_screen(stage.picked)
-	var stops := _stops_open()
-	var seen := {}
-	for d in DIR_VECTORS:
-		var to := toward(here, DIR_VECTORS[d], stops)
-		if to < 0 or seen.has(to):
-			continue
-		seen[to] = true
-		var at := stage.stop_point(to)
-		var dir := (at - from).normalized()
-		var base := from + dir * minf(ARROW_R, from.distance_to(at) * 0.4)
-		var side := dir.orthogonal() * 18.0
-		_arrows.draw_arc(at, 36.0, 0.0, TAU, 40, Color(ARROW, 0.8), 4.0, true)
-		_arrows.draw_colored_polygon(PackedVector2Array([base + dir * 34.0, base + side, base - side]), ARROW)
-		_arrows.draw_polyline(PackedVector2Array([base + dir * 34.0, base + side, base - side, base + dir * 34.0]), Color("#1a1024"), 4.0, true)
+	var items := bar_items()
+	var w := clampf((view.x - 80.0 - CARD_GAP * (items.size() - 1)) / items.size(), 84.0, 150.0)
+	var total := w * items.size() + CARD_GAP * (items.size() - 1)
+	var x := view.x * 0.5 - total * 0.5
+	var y := view.y - BAR_LIFT
+	for m in items:
+		_cards[m] = Rect2(x, y, w, CARD_H)
+		x += w + CARD_GAP
+
+
+func _card_style(kind: String, colour: Color) -> StyleBoxFlat:
+	var st := StyleBoxFlat.new()
+	st.bg_color = Hud.GLASS_LIT if kind == "picked" else Hud.GLASS
+	st.set_corner_radius_all(18)
+	st.anti_aliasing = true
+	st.border_color = Hud.GLOW if kind == "picked" else colour
+	st.set_border_width_all(5 if kind == "picked" else 3 if kind == "hover" else 2)
+	if kind == "picked":
+		st.shadow_color = Color(Hud.GLOW, 0.5)
+		st.shadow_size = 14
+	return st
+
+
+## Text with a dark edge, centred on x, its baseline at y.
+func _bar_text(font: Font, x: float, y: float, words: String, size: int, colour: Color) -> void:
+	var ext := font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, size)
+	var at := Vector2(x - ext.x * 0.5, y)
+	_bar.draw_string_outline(font, at, words, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 8, Color("#1a1024"))
+	_bar.draw_string(font, at, words, HORIZONTAL_ALIGNMENT_LEFT, -1, size, colour)
+
+
+## The bar over the town, in the order of the story: the hideout and the five
+## museums as cards (a disc in the museum's colour with its number, its
+## stars), the one picked lit and raised, the shut ones dim with a padlock,
+## the next to do tagged SIGUIENTE; and a line from the one picked to its
+## place on the map behind.
+func _draw_bar() -> void:
+	if state != "city" or _cards.is_empty():
+		return
+	var font := _bar.get_theme_default_font()
+	var pulse := 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.006)
+	var at := stage.stop_point(stage.picked)
+	var top: Rect2 = _cards[stage.picked]
+	_bar.draw_line(Vector2(top.get_center().x, top.position.y), at, Color(Hud.GLOW, 0.55), 3.0, true)
+	_bar.draw_arc(at, 34.0 + 6.0 * pulse, 0.0, TAU, 40, Color(Hud.GLOW, 0.9), 4.0, true)
+	for m in _cards:
+		var r: Rect2 = _cards[m]
+		var open := stage.is_open(m)
+		var picked: bool = m == stage.picked
+		var colour := SIGN_SHUT
+		if m == CityStage.HIDEOUT:
+			colour = Color("#e2262f").lightened(0.3)
+		elif open:
+			colour = Color(Story.MUSEUMS[m].colour)
+		if picked:
+			r = r.grow_individual(6, 10, 6, 0)
+		var kind := "picked" if picked else "hover" if m == _hover and open else "normal"
+		_bar.draw_style_box(_card_style(kind, Color(colour, 0.9 if open else 0.35)), r)
+		var c := Vector2(r.get_center().x, r.position.y + 34.0)
+		var alpha := 1.0 if open else 0.45
+		_bar.draw_circle(c, 23.0, Color(colour, alpha))
+		if m == CityStage.HIDEOUT:
+			# A little house.
+			var cream := Color(SIGN, alpha)
+			_bar.draw_colored_polygon(PackedVector2Array([c + Vector2(-15, -2), c + Vector2(0, -15), c + Vector2(15, -2)]), cream)
+			_bar.draw_rect(Rect2(c + Vector2(-10, -2), Vector2(20, 14)), cream)
+			_bar.draw_rect(Rect2(c + Vector2(-3, 4), Vector2(6, 8)), Color("#1a1024"))
+		elif open:
+			_bar_text(Hud.ARCADE, c.x, c.y + 10, str(m + 1), 24, SIGN)
+		else:
+			# A padlock.
+			var dark := Color("#1a1024")
+			_bar.draw_arc(c + Vector2(0, -3), 7.0, PI, TAU, 12, dark, 3.0, true)
+			_bar.draw_rect(Rect2(c + Vector2(-9, -3), Vector2(18, 14)), dark)
+		var words := Text.t("TOUR_BAR_HIDEOUT") if m == CityStage.HIDEOUT else (StarSlots.museum_line(m, players) if open else "")
+		if words != "":
+			_bar_text(font, r.get_center().x, r.end.y - 12, words, 17, SIGN)
+		if m == _next:
+			_bar_text(Hud.ARCADE, r.get_center().x, r.position.y - 14.0, Text.t("TOUR_NEXT_STOP"), 14, Color(Hud.GLOW, 0.65 + 0.35 * pulse))
 
 
 func _nav() -> void:

@@ -327,7 +327,7 @@ var tour_hurry := false
 ## The town, in 3D (Tour): museum m picked, or the one story_pick is in.
 ## fresh: a museum just opened by a big job, to show it opening.
 func _show_city(m := -1, fresh := -1) -> void:
-	_open_tour().open_city(players, m if m >= 0 else Story.museum_of(story_pick), fresh)
+	_open_tour().open_city(players, m if m >= 0 else Tour.next_stop(players), fresh)
 
 
 ## Inside heist n's museum, its room picked: back from a heist.
