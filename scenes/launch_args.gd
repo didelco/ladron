@@ -70,8 +70,8 @@ func _menu(arg: String) -> void:
 			host._new_round(1)
 			host._start_countdown(0.0)
 		"generative": host._show_generative_menu()
-		"challenges": host._show_challenge_menu()
-		"editor": host._show_editor(MapFile.generated(4242, "small"))
+		"challenges": host.challenges.show_menu()
+		"editor": host.challenges.show_editor(MapFile.generated(4242, "small"))
 		"settings": host.options.show("title")
 		"pads": host.options.show("title", "pads")
 		"input": host.hands.show_join("generative")
@@ -128,7 +128,7 @@ func _intro() -> void:
 	if "--intro" in OS.get_cmdline_user_args():
 		var which := "generative" if "--gen" in OS.get_cmdline_user_args() else "story"
 		if "--challenge" in OS.get_cmdline_user_args() and not MapFile.list().is_empty():
-			host.challenge_map = MapFile.list()[0]
+			host.challenges.challenge_map = MapFile.list()[0]
 			which = "challenge"
 		host._start(which, 2 if "--two" in OS.get_cmdline_user_args() else 1)
 		host.get_tree().create_timer(1.5).timeout.connect(host._start_countdown)

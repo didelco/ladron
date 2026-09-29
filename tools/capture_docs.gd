@@ -130,7 +130,7 @@ func _save_json(rel: String, data: Variant) -> void:
 ## Out of whatever round is on: unpaused, map shut, no menu.
 func _reset() -> void:
 	paused = false
-	main.testing = null
+	main.challenges.testing = null
 	main._close_map()
 	for t in main.thieves:
 		t.game = null
@@ -200,21 +200,21 @@ func _shots() -> void:
 	await _shot("menu_generativo_dificultad", "menus", "Generativo: la dificultad", "Pulsar una tarjeta saca debajo un bocadillo con sus tres, cada una en su diorama quieto, como el de cuántos ladrones del título; la que hay, encendida.")
 	main.hud.close_bubble(true)
 	await _wait(0.5)
-	main._show_challenge_menu()
+	main.challenges.show_menu()
 	await _wait(1.5)
 	await _shot("menu_retos", "menus", "Retos", "Los robos de la historia y los mapas hechos a mano, con el plano del elegido.")
 	var maps := MapFile.list()
 	if not maps.is_empty():
-		main._show_challenge_map(maps[0])
+		main.challenges.show_map(maps[0])
 		await _wait(1.5)
 		await _shot("menu_reto_mapa", "menus", "Un reto elegido", maps[0].name if "name" in maps[0] else "")
-	main._show_night_map(1)
+	main.challenges.show_night_map(1)
 	await _wait(1.5)
 	await _shot("menu_reto_noche", "menus", "Retos: un robo de la historia", "Para retocar su museo en el editor.")
-	main._show_editor(MapFile.generated(4242, "small"))
+	main.challenges.show_editor(MapFile.generated(4242, "small"))
 	await _wait(1.5)
 	await _shot("menu_editor", "menus", "Editor de mapas")
-	main._drop_editor()
+	main.challenges.drop_editor()
 	main.hands.show_join("generative", 3)
 	await _wait(1.5)
 	await _shot("menu_elegir_mandos", "menus", "Elegir mandos", "Cada ladrón pulsa en su mando o en su mitad del teclado.")
@@ -354,7 +354,7 @@ func _shots() -> void:
 	await _play("generative", 1, 1, 3.0)
 	await _shot("juego_generativo", "juego", "Generativo: un museo nuevo")
 	if not maps.is_empty():
-		main.challenge_map = maps[0]
+		main.challenges.challenge_map = maps[0]
 		await _play("challenge", 1, 1, 3.0)
 		await _shot("juego_reto", "juego", "Un reto hecho a mano")
 	await _play("story", 6, 1, 2.0)
@@ -647,7 +647,7 @@ func _objects() -> void:
 		main.players = 1
 		var seats: Array[String] = ["any"]
 		main.seats = seats
-		main.challenge_map = m
+		main.challenges.challenge_map = m
 		main._new_round(1)
 		main._start_playing()
 		await _wait(0.4)

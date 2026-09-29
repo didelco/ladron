@@ -235,11 +235,11 @@ func _init() -> void:
 
 	# --- Los retos ----------------------------------------------------------------------------
 	var challenges := func() -> void:
-		m.challenge_at = ""
-		m._show_challenge_menu()
+		m.challenges.challenge_at = ""
+		m.challenges.show_menu()
 	await each(ACCEPTS, "retos", challenges, func(): return m.phase == "challenge", "abre el primero de la lista")
 	await each(BACKS, "retos", challenges, func(): return m.phase == "title", "vuelve al título")
-	await each(BACKS, "un reto", func(): m._show_night_map(1), func(): return m.phase == "menu", "vuelve a la lista")
+	await each(BACKS, "un reto", func(): m.challenges.show_night_map(1), func(): return m.phase == "menu", "vuelve a la lista")
 
 	# --- Los ajustes ----------------------------------------------------------------------------
 	var settings := func() -> void: m.options.show("title")

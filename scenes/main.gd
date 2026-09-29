@@ -66,6 +66,7 @@ var rig := CameraRig.new(self)
 var hands := Hands.new(self)
 var loudspeaker := MegaphoneRun.new(self)
 var loop := NightLoop.new(self)
+var challenges := ChallengeScreens.new(self)
 
 ## "story", "generative" or "challenge"
 var mode := "story"
@@ -203,14 +204,14 @@ func _show_cover() -> void:
 func _show_title(pick := "") -> void:
 	hud.backdrop(Hud.SPOTS.title)
 	phase = "title"
-	testing = null
+	challenges.testing = null
 	podium.drop()
 	var on := pick if pick != "" else "story"
 	hud.show_menu([
 		{"cards": [
 			{"title": Text.t("MENU_GENERATIVE"), "text": Text.t("MENU_GENERATIVE_TEXT"), "stage": MenuStage.make("generative"), "call": _pick_players.bind("generative"), "colour": Hud.C.gold, "id": "generative", "focus": on == "generative"},
 			{"title": Text.t("MENU_STORY"), "text": Text.t("MENU_STORY_TEXT"), "stage": MenuStage.make("story"), "call": _pick_players.bind("story"), "colour": Hud.C.safe, "id": "story", "focus": on == "story"},
-			{"title": Text.t("MENU_CHALLENGE"), "text": Text.t("MENU_CHALLENGE_TEXT"), "stage": MenuStage.make("museum:large"), "call": _show_challenge_menu, "colour": Hud.C.green},
+			{"title": Text.t("MENU_CHALLENGE"), "text": Text.t("MENU_CHALLENGE_TEXT"), "stage": MenuStage.make("museum:large"), "call": challenges.show_menu, "colour": Hud.C.green},
 		], "width": 270, "arrows": true},
 		{"gap": 40},
 		{"buttons": [
@@ -251,256 +252,13 @@ func _players_picked(which: String, n: int) -> void:
 
 # --- Challenges ------------------------------------------------------------------------
 
-## The challenges: museums made by hand (MapFile), the game's own and the
-## player's — and the story's nights, to touch up. The map picked, the line
-## the list is on, a delete waiting for its second press, the editor while it
-## is open, and the nights' museums as they build them (_night_as_map).
-var challenge_map: MapFile
-var challenge_at := ""
-var challenge_delete := false
-var editor: MapEditor
-var _night_maps := {}
-
-
-## The maps as a list of names — the story's nights, then the challenges — and
-## beside it the one the list is on: its plan and what kind of night it is.
-## Pressing a line opens it; a new map opens the editor.
-func _show_challenge_menu() -> void:
-	hud.backdrop(Hud.SPOTS.challenge)
-	phase = "menu"
-	challenge_delete = false
-	podium.drop()
-	var lines: Array = [{"head": Text.t("MENU_STORY")}]
-	for n in range(1, Story.count() + 1):
-		var edited := MapFile.for_night(n) != null
-		lines.append({"text": _night_name(n) + (" *" if edited else ""), "colour": Hud.C.green if edited else Hud.C.text,
-			"call": _land_night.bind(n), "open": _show_night_map.bind(n), "selected": challenge_at == "night:%d" % n})
-	lines.append({"head": Text.t("CHALLENGE_MAPS_HEAD")})
-	var maps := MapFile.list()
-	if maps.is_empty():
-		lines.append({"head": Text.t("CHALLENGE_EMPTY")})
-	for m in maps:
-		lines.append({"text": m.name.to_upper(), "colour": Hud.C.gold if m.built_in else Hud.C.green,
-			"call": _land_map.bind(m), "open": _show_challenge_map.bind(m), "selected": challenge_at == "map:" + m.path})
-	# The plan's room: as big as the biggest museum's, so none jumps about.
-	var room := MapEditor.picture(MapFile.blank(Museum.SIZES.large.w, Museum.SIZES.large.h), 8)
-	var small := MapFile.blank(Museum.SIZES.small.w, Museum.SIZES.small.h)
-	hud.show_menu([
-		{"title": Text.t("MENU_CHALLENGE"), "size": 40},
-		{"text": Text.t("CHALLENGE_TEXT"), "colour": Hud.C.dim},
-		{"columns": [
-			{"items": [{"list": lines, "width": 380, "height": 450}]},
-			{"items": [
-				{"text": "", "id": "pick_name", "size": 24},
-				{"text": "", "id": "pick_info", "size": 16, "colour": Hud.C.dim},
-				{"picture": room, "id": "pick_plan", "height": 330},
-				{"text": Text.t("CHALLENGE_HINT"), "size": 14, "colour": Hud.C.dim},
-			], "width": 560},
-		], "separation": 30},
-		{"buttons": [
-			{"text": Text.t("CHALLENGE_NEW"), "call": _show_editor.bind(small), "colour": Hud.C.green},
-			{"text": Text.t("MENU_BACK"), "call": _show_title, "colour": Hud.C.dim},
-		], "row": true, "small": true},
-	])
-
-
-## The list lands on a story night: its museum, beside it.
-func _land_night(n: int) -> void:
-	challenge_at = "night:%d" % n
-	var m := _night_as_map(n)
-	hud.set_text("pick_name", _night_name(n), Hud.C.safe)
-	hud.set_text("pick_info", _night_info(n, m), Hud.C.dim)
-	hud.set_picture("pick_plan", MapEditor.picture(m, 8))
-
-
-## The list lands on a challenge: its plan, beside it.
-func _land_map(m: MapFile) -> void:
-	challenge_at = "map:" + m.path
-	hud.set_text("pick_name", m.name.to_upper(), Hud.C.gold if m.built_in else Hud.C.green)
-	hud.set_text("pick_info", Text.t("CHALLENGE_BUILT_IN" if m.built_in else "CHALLENGE_MINE") + " · " + _challenge_info(m), Hud.C.dim)
-	hud.set_picture("pick_plan", MapEditor.picture(m, 8))
-
-
-## A night's name in the list: its number and its piece.
-func _night_name(n: int) -> String:
-	return Text.t("MENU_NIGHT_PIECE") % [n, String(Story.level(n).loot.name).to_upper()]
-
-
-## Under a night's name: its museum, whether it has been touched up, its guards.
-func _night_info(n: int, m: MapFile) -> String:
-	var edited := MapFile.for_night(n) != null
-	var guards := m.guards.size()
-	return "%s · %s · %s" % [Story.museum(Story.museum_of(n)).name, Text.t("CHALLENGE_NIGHT_EDITED" if edited else "CHALLENGE_NIGHT_BUILT"),
-		Text.t("TIP_GUARDS_ONE") if guards == 1 else Text.t("TIP_GUARDS_MANY") % guards]
-
-
-## A story night's museum as a map: the one saved for it, or the one the
-## night builds (for one thief, the way it plays), kept for the next time.
-func _night_as_map(n: int) -> MapFile:
-	var saved := MapFile.for_night(n)
-	if saved:
-		saved.name = _night_name(n)
-		return saved
-	if not _night_maps.has(n):
-		var was := [mode, players, level, saved_map]
-		mode = "story"
-		players = 1
-		level = n
-		saved_map = null
-		MuseumView.palette = Story.palette(n)
-		MuseumView.exhibits = {}
-		Sim.custom = Story.tuning(n)
-		var seed_ := _story_seed(n)
-		_lay_out(n, seed_)
-		var at: Array[Vector2i] = []
-		for g in guards:
-			at.append(Vector2i(floori(g.x), floori(g.y)))
-		var m := MapFile.from_museum(n, seed_, at)
-		m.name = _night_name(n)
-		_night_maps[n] = m
-		mode = was[0]
-		players = was[1]
-		level = was[2]
-		saved_map = was[3]
-	return (_night_maps[n] as MapFile).copy()
-
-
-## One story night: its plan, then edit it or, touched up, put it back as the
-## night builds it.
-func _show_night_map(n: int) -> void:
-	hud.backdrop(Hud.SPOTS.challenge)
-	phase = "challenge"
-	challenge_at = "night:%d" % n
-	var m := _night_as_map(n)
-	var edited := MapFile.for_night(n) != null
-	var row: Array = [{"text": Text.t("CHALLENGE_EDIT"), "call": _show_editor.bind(m), "colour": Hud.C.gold}]
-	if edited:
-		row.append({"text": Text.t("CHALLENGE_RESTORE_SURE" if challenge_delete else "CHALLENGE_RESTORE"), "call": _restore_night.bind(n), "colour": Hud.C.alert})
-	row.append({"text": Text.t("MENU_BACK"), "call": _show_challenge_menu, "colour": Hud.C.dim})
-	hud.show_menu([
-		{"title": _night_name(n), "size": 36, "colour": Hud.C.safe},
-		{"text": _night_info(n, m), "colour": Hud.C.dim, "size": 17},
-		{"picture": MapEditor.picture(m, 8), "height": 300},
-		{"text": Text.t("CHALLENGE_NIGHT_TEXT"), "colour": Hud.C.dim, "size": 14, "wrap": true, "width": 640},
-		{"buttons": row, "row": true, "small": true},
-	], "night:%d" % n)
-
-
-## Twice to put a night back as it builds itself: the first press only asks.
-func _restore_night(n: int) -> void:
-	if not challenge_delete:
-		challenge_delete = true
-		_show_night_map(n)
-		return
-	var saved := MapFile.for_night(n)
-	if saved:
-		MapFile.remove(saved)
-	challenge_delete = false
-	_show_night_map(n)
-
-
-## A map's line on its card: its size, difficulty and guards, or that it
-## cannot be played yet.
-func _challenge_info(m: MapFile) -> String:
-	if not m.check().is_empty():
-		return Text.t("CHALLENGE_UNPLAYABLE")
-	return Text.t("CHALLENGE_INFO") % [Heist.first_upper(Text.t(SIZE_NAMES[m.size_name()]).to_lower()),
-		Text.t(DIFFICULTY_NAMES[m.difficulty]).to_lower(), m.guards_tonight()]
-
-
-## One map: its plan, then play it with one to four thieves, edit it, or
-## (the player's own) delete it.
-func _show_challenge_map(m: MapFile) -> void:
-	hud.backdrop(Hud.SPOTS.challenge)
-	phase = "challenge"
-	challenge_map = m
-	var items: Array = [
-		{"title": m.name.to_upper(), "size": 36, "colour": Hud.C.gold if m.built_in else Hud.C.green},
-		{"text": Text.t("CHALLENGE_BUILT_IN" if m.built_in else "CHALLENGE_MINE") + " · " + _challenge_info(m), "colour": Hud.C.dim, "size": 17},
-		{"picture": MapEditor.picture(m, 8), "height": 260},
-	]
-	if m.check().is_empty():
-		items.append({"cards": [
-			{"title": Text.t("MENU_PLAY_1"), "stage": MenuStage.make("players:1"), "call": _start.bind("challenge", 1), "colour": COLOURS.thief, "title_size": 12},
-			{"title": Text.t("MENU_PLAY_2"), "stage": MenuStage.make("players:2"), "call": _start.bind("challenge", 2), "colour": COLOURS.thief2, "title_size": 12},
-			{"title": Text.t("MENU_PLAY_3"), "stage": MenuStage.make("players:3"), "call": _start.bind("challenge", 3), "colour": COLOURS.thief3, "title_size": 12},
-			{"title": Text.t("MENU_PLAY_4"), "stage": MenuStage.make("players:4"), "call": _start.bind("challenge", 4), "colour": COLOURS.thief4, "title_size": 12},
-		], "width": 140})
-	var row: Array = [{"text": Text.t("CHALLENGE_EDIT"), "call": _show_editor.bind(m), "colour": Hud.C.gold}]
-	if not m.built_in:
-		row.append({"text": Text.t("CHALLENGE_DELETE_SURE" if challenge_delete else "CHALLENGE_DELETE"), "call": _delete_challenge.bind(m), "colour": Hud.C.alert})
-	row.append({"text": Text.t("MENU_BACK"), "call": _show_challenge_menu, "colour": Hud.C.dim})
-	items.append({"buttons": row, "row": true, "small": true})
-	hud.show_menu(items, "map:" + m.path)
-
-
-## Twice to delete: the first press only asks.
-func _delete_challenge(m: MapFile) -> void:
-	if not challenge_delete:
-		challenge_delete = true
-		_show_challenge_map(m)
-		return
-	MapFile.remove(m)
-	_show_challenge_menu()
-
-
-## The map editor (MapEditor), over everything; back to the challenges when
-## it closes.
-func _show_editor(m: MapFile) -> void:
-	phase = "editor"
-	challenge_delete = false
-	podium.drop()
-	editor = MapEditor.new()
-	add_child(editor)
-	# It fades in over the menus (never over the game behind them), which go
-	# once it covers them.
-	var coming := editor
-	Hud.fade_layer(editor, 1.0).tween_callback(func() -> void:
-		if editor == coming:
-			hud.put_away())
-	editor.ui_sound.connect(func(kind: String) -> void: sfx.ui(kind, 0.6))
-	editor.closed.connect(func() -> void:
-		_drop_editor()
-		_show_challenge_menu())
-	editor.preview.connect(_editor_preview)
-	editor.play.connect(func(map: MapFile) -> void:
-		testing = map.copy()
-		testing_dirty = editor.dirty
-		_drop_editor()
-		if map.night > 0:
-			story_test = map
-			story_pick = map.night
-			_start("story", 1)
-			return
-		challenge_map = map
-		_start("challenge", 1))
-	editor.open(m)
-
-
-## A map tried from the editor (PROBAR): every way out of the game goes
-## back to editing it, not to the menus. And whether it had changes unsaved.
-var testing: MapFile
-var testing_dirty := false
-## A story night's museum being tried or looked round from the editor: the
-## night plays it instead of the one saved for it.
-var story_test: MapFile
-
-
-func _back_to_editor() -> void:
-	get_tree().paused = false
-	var m := testing
-	testing = null
-	story_test = null
-	_show_editor(m)
-	editor.dirty = testing_dirty
-
 
 ## Out of a game to where it was started from: the editor, if it was a try.
 func _leave_game(to: Callable) -> void:
 	mega_voice.stop()
 	house.dojo_end()
-	if testing:
-		_back_to_editor()
+	if challenges.testing:
+		challenges.back_to_editor()
 	else:
 		to.call()
 
@@ -509,40 +267,7 @@ func _leave_game(to: Callable) -> void:
 func _leave_text() -> String:
 	if mode == Practice.MODE:
 		return Text.t("PRACTICE_LEAVE")
-	return Text.t("EDITOR_BACK_TO_EDITOR" if testing else "MENU_TO_MENU")
-
-
-## The editor goes: the menus straight back up behind it, whole, and it
-## fades away over them, deaf to every key and click as it does.
-func _drop_editor() -> void:
-	hud.visible = true
-	hud.cover_now()
-	var old := editor
-	editor = null
-	old.set_process_input(false)
-	old.set_process_unhandled_input(false)
-	for c in old.get_children():
-		c.propagate_call("set", ["mouse_filter", Control.MOUSE_FILTER_IGNORE])
-		c.propagate_call("set", ["focus_mode", Control.FOCUS_NONE])
-	Hud.fade_layer(old, 0.0).tween_callback(old.queue_free)
-
-
-## The map being edited, built in the game's world behind the editor, for
-## its camera to fly round.
-func _editor_preview(m: MapFile) -> void:
-	players = 1
-	seats = ["any"]
-	pads_lost.clear()
-	if m.night > 0:
-		mode = "story"
-		story_test = m
-		_new_round(m.night)
-		story_test = null
-	else:
-		mode = "challenge"
-		challenge_map = m
-		_new_round(1)
-	editor.start_preview(world)
+	return Text.t("EDITOR_BACK_TO_EDITOR" if challenges.testing else "MENU_TO_MENU")
 
 
 ## Out of the game, from the title.
@@ -863,8 +588,8 @@ func _cctv_museum() -> String:
 		return Text.t("HIDEOUT_NAME").to_upper()
 	if mode == "story":
 		return String(Story.museum(Story.museum_of(level)).name).to_upper()
-	if mode == "challenge" and challenge_map and challenge_map.name != "":
-		return challenge_map.name.to_upper()
+	if mode == "challenge" and challenges.challenge_map and challenges.challenge_map.name != "":
+		return challenges.challenge_map.name.to_upper()
 	return Text.t("HUD_CCTV_MUSEUM")
 
 
@@ -917,7 +642,7 @@ func _brief_back() -> void:
 	elif mode == "story":
 		_show_museum_tour(level)
 	elif mode == "challenge":
-		_leave_game(_show_challenge_map.bind(challenge_map))
+		_leave_game(challenges.show_map.bind(challenges.challenge_map))
 	else:
 		_show_generative_menu()
 
@@ -1003,9 +728,9 @@ func _show_end() -> void:
 		if mode == "story" and Story.is_boss(level) and level < Story.count():
 			boss = true
 			next = Text.t("END_NEXT_MUSEUM")
-			if not testing:
+			if not challenges.testing:
 				go = _leave_game.bind(_show_city.bind(Story.museum_of(level + 1), Story.museum_of(level + 1)))
-		if mode == "story" and not testing:
+		if mode == "story" and not challenges.testing:
 			# The stars this go won, kept with the best (not when only looking).
 			HeistStats.rate(level, players, true, not just_looking)
 			if not just_looking:
@@ -1016,7 +741,7 @@ func _show_end() -> void:
 				return
 	var ways: Array = [
 		{"buttons": [{"text": next, "call": go, "colour": colour}], "big": true},
-		{"buttons": [{"text": Text.t("EDITOR_BACK_TO_EDITOR") if testing else Text.t("END_TO_MENU"), "call": _leave_game.bind(_way_out()), "colour": Hud.C.dim}], "small": true},
+		{"buttons": [{"text": Text.t("EDITOR_BACK_TO_EDITOR") if challenges.testing else Text.t("END_TO_MENU"), "call": _leave_game.bind(_way_out()), "colour": Hud.C.dim}], "small": true},
 	]
 	if phase == "escaped":
 		hud.show_menu([{"newspaper": _front_page(boss)}] + ways)
@@ -1027,7 +752,7 @@ func _show_end() -> void:
 
 ## Out of a night's end, its button or back: to the mode's menu.
 func _way_out() -> Callable:
-	return {"story": _show_city, "challenge": _show_challenge_menu,
+	return {"story": _show_city, "challenge": challenges.show_menu,
 		Practice.MODE: _show_city.bind(CityStage.HIDEOUT)}.get(mode, _show_title)
 
 
@@ -1131,7 +856,7 @@ func _show_ending() -> void:
 ## picked, or the same one again, its plan coming straight back out (told
 ## already, so straight to looking round it); elsewhere, the plan.
 func _again() -> void:
-	if mode == "story" and not testing:
+	if mode == "story" and not challenges.testing:
 		var caught := phase != "escaped"
 		var n := mini(level + 1, Story.count()) if not caught else level
 		_show_museum_tour(n)
@@ -1255,7 +980,7 @@ func _back() -> void:
 		"menu": _show_title()
 		"pick": hud.close_bubble(true)
 		"generative": _show_title("generative")
-		"challenge": _show_challenge_menu()
+		"challenge": challenges.show_menu()
 		"prologue": _prologue_back()
 		"ending": _show_title()
 		"brief": _brief_back()
@@ -1333,7 +1058,7 @@ func _lay_out(n: int, map_seed: int) -> int:
 	if mode == "story":
 		piece = Story.level(n).loot
 	elif mode == "challenge":
-		piece = challenge_map.loot_piece()
+		piece = challenges.challenge_map.loot_piece()
 	elif mode == Practice.MODE:
 		piece = saved_map.loot_piece()
 	Heist.plan_job(level, piece, players, saved_map.job() if saved_map else {})
@@ -1401,14 +1126,6 @@ func _story_seed(n: int) -> int:
 	return base
 
 
-## A story night's museum as touched up by hand, if it has been (the one
-## being tried from the editor first); else null.
-func _night_map(n: int) -> MapFile:
-	if story_test and story_test.night == n:
-		return story_test
-	return MapFile.for_night(n)
-
-
 func _new_round(n: int) -> void:
 	_close_map()
 	if mode == "story":
@@ -1422,12 +1139,12 @@ func _new_round(n: int) -> void:
 		MuseumView.palette = Story.palette(n)
 		Sim.custom = Story.tuning(n)
 		# Touched up by hand: that museum, as it was saved.
-		saved_map = _night_map(n)
+		saved_map = challenges.night_map(n)
 		_lay_out(n, saved_map.seed if saved_map else _story_seed(n))
 	elif mode == "challenge":
-		Sim.custom = challenge_map.tuning()
-		saved_map = challenge_map
-		_lay_out(n, challenge_map.seed + n)
+		Sim.custom = challenges.challenge_map.tuning()
+		saved_map = challenges.challenge_map
+		_lay_out(n, challenges.challenge_map.seed + n)
 	elif mode == Practice.MODE:
 		Sim.custom = Practice.tuning()
 		saved_map = Practice.map(players)

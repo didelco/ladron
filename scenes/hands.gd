@@ -159,7 +159,7 @@ func unjoin() -> void:
 		if join_for == "story":
 			host._show_title("story")
 		elif join_for == "challenge":
-			host._show_challenge_map(host.challenge_map)
+			host.challenges.show_map(host.challenges.challenge_map)
 		else:
 			host._show_generative_menu()
 		return
