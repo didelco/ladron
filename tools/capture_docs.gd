@@ -221,7 +221,7 @@ func _shots() -> void:
 
 	# Settings.
 	for page in ["", "sound", "screen", "pads"]:
-		main._show_settings("title", page)
+		main.options.show("title", page)
 		await _wait(1.2)
 		await _shot("ajustes_" + (page if page != "" else "inicio"), "ajustes",
 			{"": "Ajustes", "sound": "Ajustes: sonido", "screen": "Ajustes: pantalla", "pads": "Ajustes: mandos y controles"}[page])
@@ -470,9 +470,9 @@ func _on_sky(stage: CityStage) -> Image:
 func _assets() -> void:
 	print("docs: assets")
 	var out := {"piezas": [], "objetos": [], "paginas": []}
-	var loot: Array = main._asset_loot()
+	var loot: Array = main.options.asset_loot()
 	for i in loot.size():
-		main._show_assets("loot", i)
+		main.options.show_assets("loot", i)
 		await _wait(0.9)
 		var l: Dictionary = loot[i]
 		var file := "assets/piezas/%02d.webp" % (i + 1)
@@ -482,15 +482,15 @@ func _assets() -> void:
 		if i == 0:
 			await _shot("assets_piezas", "assets", "Assets: piezas")
 	for i in Props.KINDS.size():
-		main._show_assets("props", i)
+		main.options.show_assets("props", i)
 		await _wait(0.9)
 		var file := "assets/objetos/%s.webp" % Props.KINDS[i]
 		main.podium.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
 		out.objetos.append({"file": file, "kind": Props.KINDS[i], "name": Props.name_of(Props.KINDS[i])})
 	for tab in ["props", "people", "sounds", "map"]:
-		main._show_assets(tab, 0)
+		main.options.show_assets(tab, 0)
 		await _wait(1.5)
-		await _shot("assets_" + tab, "assets", "Assets: " + Text.t(main.ASSET_TABS[tab]).to_lower())
+		await _shot("assets_" + tab, "assets", "Assets: " + Text.t(main.options.ASSET_TABS[tab]).to_lower())
 	_save_json("data/assets.json", out)
 
 

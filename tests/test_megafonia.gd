@@ -517,13 +517,13 @@ func _init() -> void:
 	var modes := {"both": [true, true], "text": [true, false], "sound": [false, true], "off": [false, false]}
 	var n_mode := 0
 	for md in Settings.MEGAPHONE_MODES:
-		main._set_megaphone_mode("both")
+		main.options.set_megaphone_mode("both")
 		hud.megaphone("")
 		main.mega_voice.stop(true)
 		Megaphone.forget()
 		main._start_megaphone(7)
 		HeistStats.time = 3.0
-		main._set_megaphone_mode(md)
+		main.options.set_megaphone_mode(md)
 		main._mega("alarm")
 		# Sin saltar en el tiempo: el aviso en cola caduca si se espera demasiado.
 		main._megaphone_tick(0.0)
@@ -535,7 +535,7 @@ func _init() -> void:
 			check(shown == modes[md][0], "modo «%s»: el cartel %s" % [md, "sale" if modes[md][0] else "no sale"])
 			check(not main.mega.said.is_empty(), "modo «%s»: la lógica sigue (dice una frase)" % md)
 	# Con el modo «solo sonido» la frase cuenta para el enfriamiento aunque no salga nada.
-	main._set_megaphone_mode("sound")
+	main.options.set_megaphone_mode("sound")
 	hud.megaphone("")
 	Megaphone.forget()
 	main._start_megaphone(7)
@@ -545,32 +545,32 @@ func _init() -> void:
 	var said_sound: int = main.mega.said.size()
 	check(hud._mega_text.text == "" and said_sound >= 1 and main.mega._last_at >= 0.0, "«solo sonido»: sin cartel, y la frase cuenta para el enfriamiento")
 	# Cambiar de modo en marcha: sin cartel lo quita, sin sonido corta la voz.
-	main._set_megaphone_mode("both")
+	main.options.set_megaphone_mode("both")
 	hud.megaphone("hola")
 	main.mega_voice.current = "MEGA_X"
-	main._set_megaphone_mode("sound")
+	main.options.set_megaphone_mode("sound")
 	check(hud._mega_text.text == "" and main.mega_voice.current == "MEGA_X", "de «ambos» a «solo sonido»: el cartel se va y la voz sigue")
-	main._set_megaphone_mode("text")
+	main.options.set_megaphone_mode("text")
 	check(main.mega_voice.current == "", "de «solo sonido» a «solo cartel»: la voz se corta")
 	hud.megaphone("hola")
-	main._set_megaphone_mode("off")
+	main.options.set_megaphone_mode("off")
 	check(hud._mega_text.text == "", "a «no»: el cartel se va")
 	# El ajuste: cicla por los cuatro, adelante y atrás.
 	check(Settings.DEFAULTS.megaphone_mode == "both", "el ajuste existe, en «cartel y sonido» por defecto")
-	main._set_megaphone_mode("both")
+	main.options.set_megaphone_mode("both")
 	var cycle := []
 	for i in 5:
 		cycle.append(main.megaphone_mode)
-		main._step_setting(0, "megaphone")
+		main.options.step(0, "megaphone")
 	check(cycle == ["both", "text", "sound", "off", "both"], "el aceptar cicla por los cuatro modos: %s" % [cycle])
-	main._set_megaphone_mode("both")  # el bucle acabó en «text»
-	main._step_setting(-1, "megaphone")
+	main.options.set_megaphone_mode("both")  # el bucle acabó en «text»
+	main.options.step(-1, "megaphone")
 	check(main.megaphone_mode == "off", "← va hacia atrás (de «ambos» a «no»)")
 	for md in Settings.MEGAPHONE_MODES:
 		main.megaphone_mode = md
-		var label: String = main._setting_text("megaphone")
+		var label: String = main.options.text_of("megaphone")
 		check(label.begins_with(Text.t("SETTINGS_MEGAPHONE").split("%")[0]) and label != "megaphone" and not "SETTINGS_" in label, "la fila en «%s»: %s" % [md, label])
-	check(main._setting_text("megaphone_voice") == "megaphone_voice", "ya no hay una fila aparte para la voz")
+	check(main.options.text_of("megaphone_voice") == "megaphone_voice", "ya no hay una fila aparte para la voz")
 	main.megaphone_mode = "both"
 	# A real roll into a real wall: the loudspeaker remarks on it (sometimes: always, here).
 	Megaphone.forget()

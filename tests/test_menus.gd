@@ -143,7 +143,7 @@ func _init() -> void:
 		await frames(W)
 		var i := row.find(root.gui_get_focus_owner())
 		return -99 if i < 0 else i - mid
-	var column := func() -> void: m._show_settings("title")
+	var column := func() -> void: m.options.show("title")
 	var cards := func() -> void:
 		m.players = 1
 		m._show_title()
@@ -211,7 +211,7 @@ func _init() -> void:
 	await each(BACKS, "ajustes desde la pausa", func():
 		await pause.call()
 		await frames(W)
-		m._show_settings("paused"), func(): return m.phase == "paused", "vuelve a la pausa")
+		m.options.show("paused"), func(): return m.phase == "paused", "vuelve a la pausa")
 
 	# --- Jugando: rodar no es atrás, la acción no es aceptar -------------------------------
 	var play := func() -> void:
@@ -242,12 +242,12 @@ func _init() -> void:
 	await each(BACKS, "un reto", func(): m._show_night_map(1), func(): return m.phase == "menu", "vuelve a la lista")
 
 	# --- Los ajustes ----------------------------------------------------------------------------
-	var settings := func() -> void: m._show_settings("title")
-	await each(ACCEPTS, "ajustes", settings, func(): return m.phase == "settings" and m.settings_page == "sound", "entra en la primera página (sonido)")
+	var settings := func() -> void: m.options.show("title")
+	await each(ACCEPTS, "ajustes", settings, func(): return m.phase == "settings" and m.options.settings_page == "sound", "entra en la primera página (sonido)")
 	await each(BACKS, "ajustes", settings, func(): return m.phase == "title", "vuelve al título")
 	# Un ajuste cambia una vez por pulsación, no dos (el botón la toma al soltar).
 	for k in ACCEPTS:
-		m._show_settings("title", "sound")
+		m.options.show("title", "sound")
 		await frames(W)
 		var was: bool = m.sound_on
 		await hit(k)
@@ -256,11 +256,11 @@ func _init() -> void:
 		await hit(k)
 		await frames(W)
 		check(m.sound_on == was, "... y otra vez, como estaba")
-	await each(BACKS, "ajustes · sonido", func(): m._show_settings("title", "sound"), func(): return m.phase == "settings" and m.settings_page == "", "vuelve a los ajustes")
+	await each(BACKS, "ajustes · sonido", func(): m.options.show("title", "sound"), func(): return m.phase == "settings" and m.options.settings_page == "", "vuelve a los ajustes")
 	var assets := func() -> void:
-		m.settings_from = "title"
-		m._show_assets("loot", 0)
-	await each(ACCEPTS, "recursos", assets, func(): return m.phase == "assets" and m.assets_index == 1, "SIGUIENTE: la pieza siguiente")
+		m.options.settings_from = "title"
+		m.options.show_assets("loot", 0)
+	await each(ACCEPTS, "recursos", assets, func(): return m.phase == "assets" and m.options.assets_index == 1, "SIGUIENTE: la pieza siguiente")
 	await each(BACKS, "recursos", assets, func(): return m.phase == "settings", "vuelve a los ajustes")
 
 	# --- La historia (el cuento del principio) ----------------------------------------------------

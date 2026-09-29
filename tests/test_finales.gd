@@ -133,9 +133,9 @@ func _init() -> void:
 	check(paused and hud.cctv_on(), "en pausa se ve el monitor")
 	check(buttons(hud).size() == 3, "reanudar, ajustes, salir")
 	check(Hud.cctv_caps("la sala de los fósiles") == "LA SALA DE LOS FOSILES", "el monitor escribe en mayúsculas sin tildes")
-	m._show_settings("paused")
+	m.options.show("paused")
 	check(hud.cctv_on(), "los ajustes desde la pausa lo mantienen")
-	m._settings_back()
+	m.options.back()
 	m._start_playing()
 	check(not paused, "reanudar quita la pausa")
 	await create_timer(0.5).timeout

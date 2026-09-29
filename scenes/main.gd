@@ -93,6 +93,7 @@ const BACKGROUND := Color("#0a0918")
 var launch := LaunchArgs.new(self)
 var house := HouseRun.new(self)
 var podium := PreviewStand.new(self)
+var options := SettingsScreens.new(self)
 
 ## "story", "generative" or "challenge"
 var mode := "story"
@@ -118,10 +119,6 @@ var vsync := true
 ## percent, 0..100 in steps of ten
 var music_volume := 100
 var effects_volume := 100
-## where the settings screen goes back to: "title" or "paused"
-var settings_from := "title"
-## the settings page on show: "" for the main one, or "sound", "screen", "pads"
-var settings_page := ""
 ## the window's size (Settings.WINDOW_SIZES index, -1 auto) and the UI's
 var window := -1
 var ui_scale := 100
@@ -197,9 +194,6 @@ var guard_steps: Array = []
 ## each alarm panel's lamp and its glow (two for a gang of four)
 var panel_mats: Array[StandardMaterial3D] = []
 var panel_glows: Array[OmniLight3D] = []
-## the assets screen: which tab, and which item of it
-var assets_tab := "loot"
-var assets_index := 0
 ## the page of the prologue and of the briefing before a night on screen
 var prologue_page := 0
 var brief_page := 0
@@ -242,7 +236,7 @@ func _ready() -> void:
 	hud = Hud.new()
 	add_child(hud)
 	hud.ui_sound.connect(func(kind: String) -> void: sfx.ui(kind, 0.6))
-	_load_settings()
+	options.load_all()
 	_build_environment()
 	# A museum behind the title screen, so it is not a black void.
 	_new_round(1)
@@ -283,7 +277,7 @@ func _show_title(pick := "") -> void:
 		], "width": 270, "arrows": true},
 		{"gap": 40},
 		{"buttons": [
-			{"text": Text.t("MENU_SETTINGS"), "glyph": "settings", "call": _show_settings.bind("title"), "colour": Hud.C.dim},
+			{"text": Text.t("MENU_SETTINGS"), "glyph": "settings", "call": options.show.bind("title"), "colour": Hud.C.dim},
 			{"text": Text.t("MENU_QUIT"), "glyph": "quit", "call": _quit, "colour": Hud.C.dim},
 		], "row": true, "small": true, "width": 260},
 	], "title")
@@ -616,7 +610,7 @@ func _editor_preview(m: MapFile) -> void:
 
 ## Out of the game, from the title.
 func _quit() -> void:
-	_save_settings()
+	options.save()
 	get_tree().quit()
 
 
@@ -823,7 +817,7 @@ func _set_setting(which: String, k: String) -> void:
 		Sim.difficulty = k
 	else:
 		size = k
-	_save_settings()
+	options.save()
 	_show_generative_menu(which)
 
 
@@ -1003,326 +997,6 @@ func _dots(at: int, count: int) -> String:
 	return " ".join(out)
 
 
-## Sound and music, their volumes, the screen and the IA panel. Opens from
-## the title and from the pause. Each line is a setting (Hud._stepper): accept
-## or a click moves it on, ← and → move it down and up; each change is saved.
-func _show_settings(from: String, page := "") -> void:
-	if from == "title":
-		hud.backdrop(Hud.SPOTS.settings)
-	podium.drop()
-	settings_from = from
-	settings_page = page
-	phase = "settings"
-	var keys: Array = {
-		"": ["megaphone", "ia"],
-		"sound": ["sound", "music", "music_volume", "effects_volume"],
-		"screen": ["fullscreen", "window", "ui_scale", "quality", "render_scale", "vsync"],
-		"pads": ["rumble", "rumble_strength", "deadzone"],
-	}[page]
-	var rows: Array = []
-	if page == "":
-		rows.append({"text": Text.t("SETTINGS_SOUND_PAGE"), "call": _show_settings.bind(from, "sound")})
-		rows.append({"text": Text.t("SETTINGS_SCREEN_PAGE"), "call": _show_settings.bind(from, "screen")})
-		rows.append({"text": Text.t("SETTINGS_PADS_PAGE"), "call": _show_settings.bind(from, "pads")})
-		rows.append({"text": Text.t("SETTINGS_ASSETS_PAGE"), "call": _show_assets.bind("loot", 0)})
-	for k in keys:
-		rows.append({"text": _setting_text(k), "step": _step_setting.bind(k)})
-	rows.append({"text": Text.t("MENU_BACK"), "call": _settings_back, "colour": Hud.C.dim})
-	var title := Text.t({"": "MENU_SETTINGS", "sound": "SETTINGS_SOUND_TITLE", "screen": "SETTINGS_SCREEN_TITLE", "pads": "SETTINGS_PADS_TITLE"}[page])
-	var items: Array = [{"title": title, "size": 48}, {"buttons": rows}]
-	match page:
-		"sound":
-			items.append({"text": Text.t("SETTINGS_SOUND_HELP"), "size": 16, "colour": Hud.C.dim})
-		"pads":
-			var pads := Input.get_connected_joypads()
-			var names: Array = pads.map(func(d): return Pads.describe(d))
-			items.append({"text": (Text.t("SETTINGS_PADS_LIST") % " · ".join(names)) if not pads.is_empty() else Text.t("SETTINGS_NO_PADS"), "size": 16, "colour": Hud.C.gold})
-			items.append(_controls_table())
-			items.append({"text": Text.t("CONTROLS_MORE"), "size": 15, "colour": Hud.C.dim})
-	hud.show_menu(items, "settings:" + page)
-
-
-## What does what, for the controls page: an action a row, and its key for
-## each keyboard half and its pad button across. A row's text is its cells
-## split by "|"; one with a single key for both keyboards (M, P, N) spans them.
-func _controls_table() -> Dictionary:
-	var rows: Array = [
-		["", Text.t("CONTROLS_P1"), Text.t("CONTROLS_P2"), Text.t("CONTROLS_PAD")],
-		["", Text.t("CONTROLS_P1_WHERE"), Text.t("CONTROLS_P2_WHERE"), Text.t("CONTROLS_PAD_WHERE")],
-	]
-	# The main action first, then the way out, then the rest. P2's keys by
-	# what they say on this keyboard ({slash}: "-" on a Spanish one).
-	for key in ["CONTROLS_MOVE", "CONTROLS_PUSH", "CONTROLS_ROLL", "CONTROLS_CROUCH", "CONTROLS_SLOW", "CONTROLS_MAP", "CONTROLS_PAUSE", "CONTROLS_MUTE"]:
-		var line := Text.t(key).replace("{slash}", _key_label(KEY_SLASH)).replace("{period}", _key_label(KEY_PERIOD))
-		var cells: Array = Array(line.split("|"))
-		if cells.size() == 3:
-			cells[1] = {"text": cells[1], "span": 2}
-		rows.append(cells)
-	return {"table": rows, "widths": [200, 170, 170, 240], "heads": 2}
-
-
-func _setting_text(key: String) -> String:
-	var yes := func(on: bool) -> String: return Text.t("SETTINGS_YES") if on else Text.t("SETTINGS_NO")
-	match key:
-		"sound": return Text.t("SETTINGS_SOUND") % yes.call(sound_on)
-		"music": return Text.t("SETTINGS_MUSIC") % yes.call(music_on)
-		"music_volume": return Text.t("SETTINGS_MUSIC_VOLUME") % _volume_bar(music_volume)
-		"effects_volume": return Text.t("SETTINGS_EFFECTS_VOLUME") % _volume_bar(effects_volume)
-		"fullscreen": return Text.t("SETTINGS_FULLSCREEN") % yes.call(fullscreen)
-		"vsync": return Text.t("SETTINGS_VSYNC") % yes.call(vsync)
-		"window":
-			var w := Settings.window_size(window)
-			return Text.t("SETTINGS_WINDOW_AUTO" if window < 0 else "SETTINGS_WINDOW") % [w.x, w.y]
-		"ui_scale": return Text.t("SETTINGS_UI_SCALE") % ui_scale
-		"quality": return Text.t("SETTINGS_QUALITY") % Text.t("SETTINGS_QUALITY_LOW" if Quality.is_low() else "SETTINGS_QUALITY_HIGH")
-		"render_scale": return Text.t("SETTINGS_RENDER_SCALE") % Quality.scale
-		"ia": return Text.t("SETTINGS_IA") % yes.call(show_ia)
-		"megaphone": return Text.t("SETTINGS_MEGAPHONE") % Text.t("SETTINGS_MEGAPHONE_" + megaphone_mode.to_upper())
-		"rumble": return Text.t("SETTINGS_RUMBLE") % yes.call(rumble)
-		"rumble_strength": return Text.t("SETTINGS_RUMBLE_STRENGTH") % _volume_bar(rumble_strength)
-		"deadzone": return Text.t("SETTINGS_DEADZONE") % deadzone
-	return key
-
-
-## |||||····· 50%: a bar a step, in glyphs the arcade font has (it has no
-## blocks, and the fallback's come out as hairlines).
-func _volume_bar(percent: int) -> String:
-	var on: int = percent / Settings.VOLUME_STEP
-	return "%s%s %d%%" % ["|".repeat(on), "·".repeat(100 / Settings.VOLUME_STEP - on), percent]
-
-
-## One setting changed from its button: a yes/no flips whichever way; a
-## volume goes down or up a step with ← and → (stopping at the ends), and up
-## with accept (E, A), round from 100 back to 0. Applied, saved, and the button's
-## new text returned.
-func _step_setting(dir: int, key: String) -> String:
-	match key:
-		"sound": _set_sound(not sound_on)
-		"music": _toggle_music()
-		"ia": _toggle_ia()
-		"megaphone":
-			# Both, notice only, voice only, off, round again.
-			var modes := Settings.MEGAPHONE_MODES
-			_set_megaphone_mode(modes[posmod(modes.find(megaphone_mode) + (1 if dir >= 0 else -1), modes.size())])
-		"fullscreen", "vsync":
-			set(key, not get(key))
-			Settings.apply_display(fullscreen, vsync, window, key == "fullscreen")
-		"window":
-			# Auto, then each size that fits, round again.
-			var count := Settings.fitting_sizes().size()
-			window = posmod(window + 1 + (1 if dir >= 0 else -1), count + 1) - 1
-			Settings.apply_display(fullscreen, vsync, window)
-		"ui_scale":
-			ui_scale = Settings.UI_SCALE_MIN if dir == 0 and ui_scale >= Settings.UI_SCALE_MAX else clampi(ui_scale + (10 if dir >= 0 else -10), Settings.UI_SCALE_MIN, Settings.UI_SCALE_MAX)
-			_apply_ui_scale()
-		"quality", "render_scale":
-			_step_quality(key)
-		"rumble":
-			rumble = not rumble
-			# Feel it straight away.
-			if key == "rumble" and rumble:
-				_rumble(0.4, 0.4, 0.2)
-		"rumble_strength":
-			rumble_strength = 0 if dir == 0 and rumble_strength >= 100 else Settings.volume(rumble_strength + (Settings.VOLUME_STEP if dir >= 0 else -Settings.VOLUME_STEP))
-			_rumble(0.4, 0.4, 0.2)
-		"deadzone":
-			deadzone = 20 if dir == 0 and deadzone >= 80 else clampi(deadzone + (10 if dir >= 0 else -10), 20, 80)
-		"music_volume", "effects_volume":
-			var v: int = get(key)
-			if dir == 0:
-				v = 0 if v >= 100 else v + Settings.VOLUME_STEP
-			else:
-				v = Settings.volume(v + dir * Settings.VOLUME_STEP)
-			set(key, v)
-			sfx.set_volumes(music_volume / 100.0, effects_volume / 100.0)
-	_save_settings()
-	return _setting_text(key)
-
-
-## Graphics quality flips; the 3D render scale goes to the next on offer.
-func _step_quality(key: String) -> void:
-	if key == "quality":
-		Quality.set_state("high" if Quality.is_low() else "low", Quality.scale)
-	else:
-		Quality.set_state(Quality.level, Quality.next_scale(Quality.scale))
-	_apply_quality()
-
-
-## Quality and render scale, applied to the night and to every 3D viewport.
-func _apply_quality() -> void:
-	if world_env:
-		Quality.apply_environment(world_env)
-	if moon_light:
-		Quality.apply_light(moon_light)
-	Quality.apply_tree(get_tree())
-
-
-func _set_sound(on: bool) -> void:
-	sound_on = on
-	AudioServer.set_bus_mute(0, not on)
-	_save_settings()
-
-
-func _toggle_music() -> void:
-	music_on = not music_on
-	sfx.set_music(music_on)
-
-
-## The loudspeaker's mode changed, in the settings or while playing (from the
-## pause): the notice on screen goes away without a notice mode, the voice is
-## cut off without a voice mode.
-func _set_megaphone_mode(m: String) -> void:
-	megaphone_mode = m
-	if not Settings.megaphone_text(m):
-		hud.megaphone("")
-	if not Settings.megaphone_sound(m):
-		mega_voice.stop()
-
-
-func _toggle_ia() -> void:
-	show_ia = not show_ia
-
-
-## What was saved last time, applied: sound, music and volumes, the screen,
-## and the generative mode's last difficulty and size.
-func _load_settings() -> void:
-	var s := Settings.read()
-	sound_on = s.sound
-	music_on = s.music
-	show_ia = s.ia
-	megaphone_mode = s.megaphone_mode
-	Sim.difficulty = s.difficulty
-	size = s.size
-	fullscreen = s.fullscreen
-	vsync = s.vsync
-	window = s.window
-	ui_scale = s.ui_scale
-	Quality.set_state(s.quality, s.render_scale)
-	music_volume = s.music_volume
-	effects_volume = s.effects_volume
-	rumble = s.rumble
-	rumble_strength = s.rumble_strength
-	deadzone = s.deadzone
-
-	AudioServer.set_bus_mute(0, not sound_on)
-	sfx.set_music(music_on)
-	sfx.set_volumes(music_volume / 100.0, effects_volume / 100.0)
-	Settings.apply_display(fullscreen, vsync, window)
-	_apply_ui_scale()
-	Quality.apply_tree(get_tree())
-
-
-## Menus and HUD drawn bigger or smaller, whatever the window's size: the
-## 2D is laid out for 1280×720 and scaled to the window, times this.
-func _apply_ui_scale() -> void:
-	get_window().content_scale_factor = ui_scale / 100.0
-
-
-func _save_settings() -> void:
-	Settings.write({
-		"sound": sound_on, "music": music_on, "ia": show_ia, "megaphone_mode": megaphone_mode,
-		"difficulty": Sim.difficulty, "size": size,
-		"fullscreen": fullscreen, "vsync": vsync, "window": window, "ui_scale": ui_scale,
-		"quality": Quality.level, "render_scale": Quality.scale,
-		"music_volume": music_volume, "effects_volume": effects_volume,
-		"rumble": rumble, "rumble_strength": rumble_strength,
-		"deadzone": deadzone,
-	})
-
-
-## Everything the game is made of, to look at: the pieces, the characters,
-## the things that fall over, the sounds and the map's marks. Opens from the
-## settings; a tab a page, ← → (or the buttons) along the pieces and props.
-const ASSET_TABS := {"loot": "ASSETS_TAB_LOOT", "people": "ASSETS_TAB_PEOPLE", "props": "ASSETS_TAB_PROPS", "sounds": "ASSETS_TAB_SOUNDS", "map": "ASSETS_TAB_MAP"}
-
-
-func _asset_loot() -> Array:
-	var out: Array = []
-	var names := {}
-	for n in range(1, Story.count() + 1):
-		out.append(Story.level(n).loot)
-		names[Story.level(n).loot.name] = true
-	# And one of each shape the generative heists make up (LootGen).
-	for l in LootGen.samples():
-		if not names.has(l.name):
-			out.append(l)
-	return out
-
-
-func _show_assets(tab: String, index: int) -> void:
-	if settings_from != "paused":
-		hud.backdrop(Hud.SPOTS.settings)
-	phase = "assets"
-	assets_tab = tab
-	var tabs: Array = []
-	for k in ASSET_TABS:
-		tabs.append({"text": Text.t(ASSET_TABS[k]), "call": _show_assets.bind(k, 0), "colour": Hud.C.gold if k == tab else Hud.C.dim, "selected": k == tab})
-	var items: Array = [{"title": Text.t("ASSETS_TITLE"), "size": 44}, {"buttons": tabs, "row": true, "small": true, "width": 190, "focus": ASSET_TABS.keys().find(tab)}, {"gap": 8}]
-	var count := 0
-	match tab:
-		"loot":
-			var list := _asset_loot()
-			count = list.size()
-			index = posmod(index, count)
-			var loot: Dictionary = list[index]
-			podium.build(loot)
-			items.append({"picture": podium.preview.get_texture(), "smooth": true, "height": 260})
-			items.append({"title": loot.name.to_upper(), "size": 26, "colour": Color(loot.colour)})
-			items.append({"text": "%s · %s" % [loot.blurb, loot.shape], "colour": Hud.C.gold})
-		"props":
-			var kinds: Array = Props.KINDS
-			count = kinds.size()
-			index = posmod(index, count)
-			podium.build()
-			podium.put_node(PropsView.model(kinds[index]), Color("#b8a888"), 2.0, 0.6)
-			items.append({"picture": podium.preview.get_texture(), "smooth": true, "height": 260})
-			items.append({"title": Props.name_of(kinds[index]).to_upper(), "size": 26})
-			items.append({"text": Text.t("ASSETS_FALL_METAL" if kinds[index] in ["bin", "armour"] else "ASSETS_FALL_DRY"), "colour": Hud.C.gold})
-		"people":
-			podium.drop()
-			var cards: Array = []
-			for c in [["players:1", "ASSETS_PEOPLE_THIEF"], ["players:2", "ASSETS_PEOPLE_TWO"], ["guards:easy", "ASSETS_PEOPLE_SLEEPY"], ["guards:hard", "ASSETS_PEOPLE_THREE"]]:
-				cards.append({"title": Text.t(c[1]), "stage": MenuStage.make(c[0]), "static": true, "animate": true})
-			items.append({"cards": cards.slice(0, 2), "width": 300})
-			items.append({"cards": cards.slice(2), "width": 300})
-		"sounds":
-			podium.drop()
-			# One sound at a time, like the pieces: its name and a button to hear it.
-			var names: Array = sfx.sound_names()
-			count = names.size()
-			index = posmod(index, count)
-			items.append({"gap": 60})
-			items.append({"title": names[index].to_upper(), "size": 40})
-			items.append({"gap": 30})
-			items.append({"buttons": [{"text": Text.t("ASSETS_LISTEN"), "call": sfx.ui.bind(names[index], 1.0)}], "big": true, "focus": 0})
-			items.append({"gap": 40})
-		"map":
-			podium.drop()
-			items.append({"text": Text.t("ASSETS_MAP_TEXT"), "colour": Hud.C.dim})
-			items.append({"legend": ["thief", "gem", "exit", "guard"], "thieves": _thief_colours(), "loot": Color("#74c0fc")})
-			items.append({"legend": ["prop", "route", "panel"]})
-			items.append({"text": Text.t("ASSETS_MAP_MARKS"), "colour": Hud.C.gold})
-	assets_index = index
-	if count > 1:
-		items.append({"text": "%d / %d" % [index + 1, count], "colour": Hud.C.dim, "size": 14})
-		items.append({"buttons": [
-			{"text": Text.t("MENU_PREVIOUS"), "call": _show_assets.bind(tab, index - 1), "colour": Hud.C.dim},
-			{"text": Text.t("MENU_NEXT"), "call": _show_assets.bind(tab, index + 1)},
-		# On the sounds, accept plays the one on screen; elsewhere it moves on.
-		], "row": true, "focus": -1 if tab == "sounds" else 1})
-	items.append({"buttons": [{"text": Text.t("MENU_BACK"), "call": _show_settings.bind(settings_from), "colour": Hud.C.dim}], "small": true})
-	hud.show_menu(items, "assets:" + tab)
-
-
-func _settings_back() -> void:
-	if settings_page != "":
-		_show_settings(settings_from)
-	elif settings_from == "paused":
-		_pause()
-	else:
-		_show_title()
-
-
 ## A real pause: the tree stops, knocked-over props hang in mid-air, until
 ## SEGUIR (or Esc, or P) or the way out to the title.
 func _pause() -> void:
@@ -1340,7 +1014,7 @@ func _pause() -> void:
 		{"title": Text.t("MENU_PAUSE"), "size": 56}] + lost + [
 		{"buttons": [
 			{"text": Text.t("MENU_RESUME"), "call": _start_playing},
-			{"text": Text.t("MENU_SETTINGS"), "call": _show_settings.bind("paused")},
+			{"text": Text.t("MENU_SETTINGS"), "call": options.show.bind("paused")},
 			{"text": _leave_text(), "call": _quit_to_title},
 		]},
 	], "paused")
@@ -1673,9 +1347,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	var key: Key = event.keycode if event is InputEventKey and event.pressed and not event.echo else KEY_NONE
 	if key == KEY_N:
-		_set_sound(not sound_on)
+		options.set_sound(not sound_on)
 		if phase == "settings":
-			_show_settings(settings_from, settings_page)
+			options.show(options.settings_from, options.settings_page)
 		return
 	# A bubble (how many thieves, the generative's difficulty or size): its
 	# own keys for the left-hand player (A and D along it) and 1 to 4
@@ -1718,7 +1392,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				if to >= 0 and to < _brief_pages().size():
 					_show_brief(to)
 			else:
-				_show_assets(assets_tab, assets_index + step)
+				options.show_assets(options.assets_tab, options.assets_index + step)
 
 
 ## What a press does on the screen that is up: MenuKeys says what it means
@@ -1768,8 +1442,8 @@ func _back() -> void:
 		"ending": _show_title()
 		"brief": _brief_back()
 		"paused": _start_playing()
-		"settings": _settings_back()
-		"assets": _show_settings(settings_from)
+		"settings": options.back()
+		"assets": options.show(options.settings_from)
 		"caught", "escaped": _leave_game(_way_out())
 
 
