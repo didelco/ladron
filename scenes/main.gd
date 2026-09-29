@@ -92,6 +92,7 @@ const BACKGROUND := Color("#0a0918")
 ## way in (see the README, scenes/).
 var launch := LaunchArgs.new(self)
 var house := HouseRun.new(self)
+var podium := PreviewStand.new(self)
 
 ## "story", "generative" or "challenge"
 var mode := "story"
@@ -196,17 +197,12 @@ var guard_steps: Array = []
 ## each alarm panel's lamp and its glow (two for a gang of four)
 var panel_mats: Array[StandardMaterial3D] = []
 var panel_glows: Array[OmniLight3D] = []
-## the piece turning on its own stand, on the loot screen
-var preview: SubViewport
-var preview_cam: Camera3D
 ## the assets screen: which tab, and which item of it
 var assets_tab := "loot"
 var assets_index := 0
-var preview_pivot: Node3D
 ## the page of the prologue and of the briefing before a night on screen
 var prologue_page := 0
 var brief_page := 0
-var preview_spot: OmniLight3D
 
 
 func _ready() -> void:
@@ -277,7 +273,7 @@ func _show_title(pick := "") -> void:
 	hud.backdrop(Hud.SPOTS.title)
 	phase = "title"
 	testing = null
-	_drop_preview()
+	podium.drop()
 	var on := pick if pick != "" else "story"
 	hud.show_menu([
 		{"cards": [
@@ -342,7 +338,7 @@ func _show_challenge_menu() -> void:
 	hud.backdrop(Hud.SPOTS.challenge)
 	phase = "menu"
 	challenge_delete = false
-	_drop_preview()
+	podium.drop()
 	var lines: Array = [{"head": Text.t("MENU_STORY")}]
 	for n in range(1, Story.count() + 1):
 		var edited := MapFile.for_night(n) != null
@@ -522,7 +518,7 @@ func _delete_challenge(m: MapFile) -> void:
 func _show_editor(m: MapFile) -> void:
 	phase = "editor"
 	challenge_delete = false
-	_drop_preview()
+	podium.drop()
 	editor = MapEditor.new()
 	add_child(editor)
 	# It fades in over the menus (never over the game behind them), which go
@@ -674,7 +670,7 @@ func _open_tour() -> Tour:
 	_close_tour()
 	mode = "story"
 	phase = "tour"
-	_drop_preview()
+	podium.drop()
 	hud.hide_panel()
 	tour = Tour.new()
 	tour.stage.hurry = tour_hurry
@@ -722,7 +718,7 @@ func _tour_practice() -> void:
 ## sheet, what getting the piece out takes, the goals for its stars, and
 ## whether it has been told before.
 func _plan_data() -> Dictionary:
-	_build_preview()
+	podium.build()
 	var beats := PlanBeats.build(level, players, guards)
 	return {
 		"n": level,
@@ -732,7 +728,7 @@ func _plan_data() -> Dictionary:
 		"marks": PlanBeats.marks(beats, guards),
 		"takes": Briefing.takes(),
 		"sheet": {"name": Heist.first_upper(Heist.loot.name), "blurb": Heist.loot.blurb,
-			"story": Heist.loot.get("story", ""), "photo": preview.get_texture()},
+			"story": Heist.loot.get("story", ""), "photo": podium.preview.get_texture()},
 		"goals": StarSlots.goals(level, players),
 		"told": _told(level),
 	}
@@ -1013,7 +1009,7 @@ func _dots(at: int, count: int) -> String:
 func _show_settings(from: String, page := "") -> void:
 	if from == "title":
 		hud.backdrop(Hud.SPOTS.settings)
-	_drop_preview()
+	podium.drop()
 	settings_from = from
 	settings_page = page
 	phase = "settings"
@@ -1269,28 +1265,28 @@ func _show_assets(tab: String, index: int) -> void:
 			count = list.size()
 			index = posmod(index, count)
 			var loot: Dictionary = list[index]
-			_build_preview(loot)
-			items.append({"picture": preview.get_texture(), "smooth": true, "height": 260})
+			podium.build(loot)
+			items.append({"picture": podium.preview.get_texture(), "smooth": true, "height": 260})
 			items.append({"title": loot.name.to_upper(), "size": 26, "colour": Color(loot.colour)})
 			items.append({"text": "%s · %s" % [loot.blurb, loot.shape], "colour": Hud.C.gold})
 		"props":
 			var kinds: Array = Props.KINDS
 			count = kinds.size()
 			index = posmod(index, count)
-			_build_preview()
-			_preview_node(PropsView.model(kinds[index]), Color("#b8a888"), 2.0, 0.6)
-			items.append({"picture": preview.get_texture(), "smooth": true, "height": 260})
+			podium.build()
+			podium.put_node(PropsView.model(kinds[index]), Color("#b8a888"), 2.0, 0.6)
+			items.append({"picture": podium.preview.get_texture(), "smooth": true, "height": 260})
 			items.append({"title": Props.name_of(kinds[index]).to_upper(), "size": 26})
 			items.append({"text": Text.t("ASSETS_FALL_METAL" if kinds[index] in ["bin", "armour"] else "ASSETS_FALL_DRY"), "colour": Hud.C.gold})
 		"people":
-			_drop_preview()
+			podium.drop()
 			var cards: Array = []
 			for c in [["players:1", "ASSETS_PEOPLE_THIEF"], ["players:2", "ASSETS_PEOPLE_TWO"], ["guards:easy", "ASSETS_PEOPLE_SLEEPY"], ["guards:hard", "ASSETS_PEOPLE_THREE"]]:
 				cards.append({"title": Text.t(c[1]), "stage": MenuStage.make(c[0]), "static": true, "animate": true})
 			items.append({"cards": cards.slice(0, 2), "width": 300})
 			items.append({"cards": cards.slice(2), "width": 300})
 		"sounds":
-			_drop_preview()
+			podium.drop()
 			# One sound at a time, like the pieces: its name and a button to hear it.
 			var names: Array = sfx.sound_names()
 			count = names.size()
@@ -1301,7 +1297,7 @@ func _show_assets(tab: String, index: int) -> void:
 			items.append({"buttons": [{"text": Text.t("ASSETS_LISTEN"), "call": sfx.ui.bind(names[index], 1.0)}], "big": true, "focus": 0})
 			items.append({"gap": 40})
 		"map":
-			_drop_preview()
+			podium.drop()
 			items.append({"text": Text.t("ASSETS_MAP_TEXT"), "colour": Hud.C.dim})
 			items.append({"legend": ["thief", "gem", "exit", "guard"], "thieves": _thief_colours(), "loot": Color("#74c0fc")})
 			items.append({"legend": ["prop", "route", "panel"]})
@@ -1316,17 +1312,6 @@ func _show_assets(tab: String, index: int) -> void:
 		], "row": true, "focus": -1 if tab == "sounds" else 1})
 	items.append({"buttons": [{"text": Text.t("MENU_BACK"), "call": _show_settings.bind(settings_from), "colour": Hud.C.dim}], "small": true})
 	hud.show_menu(items, "assets:" + tab)
-
-
-## Put any model on the preview's stand, lit in this colour, framed to span.
-func _preview_node(node: Node3D, light: Color, span: float, lift: float) -> void:
-	for c in preview_pivot.get_children():
-		c.queue_free()
-	preview_spot.light_color = light
-	preview_cam.size = span
-	preview_cam.position = preview_cam.basis.z * 10.0 + Vector3(0, lift, 0)
-	node.position.y = -0.1
-	preview_pivot.add_child(node)
 
 
 func _settings_back() -> void:
@@ -1462,10 +1447,10 @@ func _news_items() -> Array:
 ## job this is, its name, what it is like and its tale.
 func _story_items() -> Array:
 	# Rebuilt each time: the last round's piece may still be on the stand.
-	_build_preview()
+	podium.build()
 	return [
 		{"card": {"name": Heist.first_upper(Heist.loot.name), "blurb": Heist.loot.blurb,
-			"story": Heist.loot.get("story", ""), "photo": preview.get_texture()}},
+			"story": Heist.loot.get("story", ""), "photo": podium.preview.get_texture()}},
 		{"gap": 16},
 	]
 
@@ -1485,13 +1470,13 @@ func _plan_items() -> Array:
 		{"legend": keys.slice(3), "thieves": colours, "loot": legend_loot},
 	]
 	# Rebuilt each time: the last round's piece may still be on the stand.
-	_build_preview()
+	podium.build()
 	var piece: Array = [
 		{"text": Heist.first_upper(Heist.loot.name), "size": 26, "colour": Color(Heist.loot.colour), "wrap": true, "width": 330, "align": "left"},
 		{"text": Briefing.takes(), "size": 15, "colour": Hud.C.dim, "wrap": true, "width": 330, "align": "left"},
 	]
 	var right: Array = [{"columns": [
-		{"items": [{"picture": preview.get_texture(), "smooth": true, "height": 120}], "middle": true},
+		{"items": [{"picture": podium.preview.get_texture(), "smooth": true, "height": 120}], "middle": true},
 		{"items": piece, "separation": 4, "middle": true},
 	], "separation": 12}]
 	right.append({"gap": 4})
@@ -1502,65 +1487,6 @@ func _plan_items() -> Array:
 		{"items": left, "separation": 6, "middle": true},
 		{"items": right, "width": 540, "separation": 8, "middle": true},
 	], "separation": 36}]
-
-
-func _build_preview(loot: Dictionary = Heist.loot) -> void:
-	_drop_preview()
-	preview = SubViewport.new()
-	preview.size = Vector2i(480, 300)
-	preview.own_world_3d = true
-	preview.transparent_bg = true
-	Quality.setup_viewport(preview)
-	add_child(preview)
-	# Axonometric, like every picture in the menus.
-	var cam := Camera3D.new()
-	cam.projection = Camera3D.PROJECTION_ORTHOGONAL
-	cam.rotation_degrees = Vector3(-35.264, 45, 0)
-	cam.position = cam.basis.z * 10.0 + Vector3(0, 0.08, 0)
-	cam.size = 0.62
-	preview.add_child(cam)
-	preview_cam = cam
-	var sun := DirectionalLight3D.new()
-	sun.rotation_degrees = Vector3(-40, 30, 0)
-	preview.add_child(sun)
-	preview_spot = OmniLight3D.new()
-	preview_spot.position = Vector3(0, 0.8, 0.4)
-	preview_spot.light_energy = 1.5
-	preview.add_child(preview_spot)
-	# A velvet stand under it.
-	var stand := MeshInstance3D.new()
-	var c := CylinderMesh.new()
-	c.top_radius = 0.22
-	c.bottom_radius = 0.25
-	c.height = 0.08
-	stand.mesh = c
-	stand.material_override = MenuStage._material(MenuStage.VELVET)
-	stand.position = Vector3(0, -0.12, 0)
-	preview.add_child(stand)
-	preview_pivot = Node3D.new()
-	preview_pivot.position = Vector3(0, 0.1, 0)
-	preview.add_child(preview_pivot)
-	_preview_piece(loot)
-
-
-## Swap the piece on the stand, keeping the stand, the camera and the picture.
-func _preview_piece(loot: Dictionary) -> void:
-	for c in preview_pivot.get_children():
-		c.queue_free()
-	preview_spot.light_color = Color(loot.colour)
-	var piece := LootModels.build(loot.shape, Color(loot.colour))
-	piece.position.y = -0.1
-	preview_pivot.add_child(piece)
-
-
-func _drop_preview() -> void:
-	if preview:
-		# Gone once the menu showing it has faded out, not before.
-		var old := preview
-		get_tree().create_timer(Hud.FADE_S + Hud.SWAP_S).timeout.connect(old.queue_free)
-		preview = null
-		preview_pivot = null
-		preview_spot = null
 
 
 ## How many headlines the paper picks from (END_HEAD_n), and the longest
@@ -1622,9 +1548,9 @@ func _end_pick() -> int:
 ## photo and, beside it, the night in a few big figures. After a museum's
 ## big job (boss), the museum is the news.
 func _front_page(boss: bool) -> Dictionary:
-	_build_preview()
+	podium.build()
 	# Wide, for the page: the same piece, with more room either side.
-	preview.size = Vector2i(int(300 * EndPages.PAPER_PHOTO.x / EndPages.PAPER_PHOTO.y), 300)
+	podium.preview.size = Vector2i(int(300 * EndPages.PAPER_PHOTO.x / EndPages.PAPER_PHOTO.y), 300)
 	var name := String(Heist.loot.get("name", ""))
 	var headline := Text.t("END_HEAD_%d" % (_end_pick() % END_HEADS + 1))
 	if "%s" in headline:
@@ -1637,7 +1563,7 @@ func _front_page(boss: bool) -> Dictionary:
 	var page := {
 		"name": Text.t("END_PAPER_NAME"),
 		"headline": headline,
-		"photo": preview.get_texture(),
+		"photo": podium.preview.get_texture(),
 		"figures": _figures(),
 	}
 	# In the story, the stars this go won (HeistStats.rate), the new ones
@@ -1854,13 +1780,13 @@ func _start_countdown(wait := 0.0) -> void:
 	# At home there is no count: the band is there and can move, the camera
 	# coming in on it while the town fades away.
 	if mode == Practice.MODE:
-		_drop_preview()
+		podium.drop()
 		_start_playing()
 		if wait > 0.0:
 			_intro_camera(wait)
 		return
 	phase = "countdown"
-	_drop_preview()
+	podium.drop()
 	hud.hide_panel()
 	hud.countdown(_count_beep, _start_playing, wait)
 	_intro_camera(wait + Hud.COUNT_S * Hud.COUNT.size())
@@ -1877,7 +1803,7 @@ func _start_playing() -> void:
 	# not a roll until it is let go (Sim.step_thief rolls on the press).
 	for t in thieves:
 		t.roll_key = true
-	_drop_preview()
+	podium.drop()
 	hud.hide_panel()
 
 
@@ -2289,8 +2215,8 @@ func _give_pad(i: int, device: int) -> void:
 # --- The loop ------------------------------------------------------------------------
 
 func _physics_process(dt: float) -> void:
-	if preview_pivot:
-		preview_pivot.rotate_y(dt * 0.9)
+	if podium.preview_pivot:
+		podium.preview_pivot.rotate_y(dt * 0.9)
 	_music_mood()
 	if props_view and not thieves.is_empty():
 		var at: Array[Vector3] = []

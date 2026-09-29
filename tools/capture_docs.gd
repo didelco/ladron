@@ -476,7 +476,7 @@ func _assets() -> void:
 		await _wait(0.9)
 		var l: Dictionary = loot[i]
 		var file := "assets/piezas/%02d.webp" % (i + 1)
-		main.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
+		main.podium.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
 		out.piezas.append({"file": file, "name": l.name, "blurb": l.get("blurb", ""), "shape": l.get("shape", ""), "colour": l.get("colour", ""),
 			"night": i + 1 if i < Story.count() else 0})
 		if i == 0:
@@ -485,7 +485,7 @@ func _assets() -> void:
 		main._show_assets("props", i)
 		await _wait(0.9)
 		var file := "assets/objetos/%s.webp" % Props.KINDS[i]
-		main.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
+		main.podium.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
 		out.objetos.append({"file": file, "kind": Props.KINDS[i], "name": Props.name_of(Props.KINDS[i])})
 	for tab in ["props", "people", "sounds", "map"]:
 		main._show_assets(tab, 0)
