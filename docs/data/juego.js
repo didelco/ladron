@@ -251,7 +251,7 @@ window.JUEGO = {
    ],
    "file": "scenes/city_stage.gd",
    "name": "LOCK",
-   "note": "The town's colours, new with it: all here, to change in one place."
+   "note": "seconds the ninja star round the museum picked takes to turn once"
   },
   {
    "colours": [
@@ -296,6 +296,236 @@ window.JUEGO = {
    "file": "scenes/city_stage.gd",
    "name": "ROUTE_DIM",
    "note": "The padlock over a shut museum: light, to stand out over the town."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#b07a4a",
+     "key": "stone"
+    },
+    {
+     "hex": "#a06c3f",
+     "key": "stone2"
+    },
+    {
+     "hex": "#5a3a20",
+     "key": "joint"
+    },
+    {
+     "hex": "#d8b48a",
+     "key": "paper"
+    },
+    {
+     "hex": "#e6c99f",
+     "key": "paper2"
+    },
+    {
+     "hex": "#9a6a44",
+     "key": "wainscot"
+    },
+    {
+     "hex": "#f0e0c0",
+     "key": "cap"
+    },
+    {
+     "hex": "#c9974f",
+     "key": "trim"
+    },
+    {
+     "hex": "#6b4526",
+     "key": "skirt"
+    }
+   ],
+   "file": "scenes/den_view.gd",
+   "name": "HOME",
+   "note": "Walls and trim: warm plaster over a stained wainscot (wall.gdshader)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffc98a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/den_view.gd",
+   "name": "LAMP",
+   "note": "The lamps' warm white, and the paper lanterns' of the dojo."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffb060",
+     "key": ""
+    }
+   ],
+   "file": "scenes/den_view.gd",
+   "name": "LANTERN",
+   "note": "The lamps' warm white, and the paper lanterns' of the dojo."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#a0693a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/den_view.gd",
+   "name": "WOOD",
+   "note": "Kenney's pieces drawn this much bigger than Den says (the ninjas are chubby)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffe2bd",
+     "key": ""
+    }
+   ],
+   "file": "scenes/den_view.gd",
+   "name": "LIGHT_BATH",
+   "note": "the bathroom's lamps: from a cold white (#fff0dc, 1.1 and 0.8) to a warm one"
+  },
+  {
+   "colours": [
+    {
+     "hex": "#b8b07c",
+     "key": ""
+    }
+   ],
+   "file": "scenes/den_view.gd",
+   "name": "STRAW",
+   "note": "the dojo's straw mats: #c8c08a -> a shade less bright"
+  },
+  {
+   "colours": [
+    {
+     "hex": "#000000",
+     "key": ""
+    }
+   ],
+   "file": "scenes/den_view.gd",
+   "name": "VEIL_COLOUR",
+   "note": "A room nobody is in, and no open door lets be seen, is dark: a veil over it (this dark, of 1) and none of its contents drawn (Den.visible_rooms). A room nobody sees is nearly black: 95 % opaque, so that its shape is guessed at and little more (the walls' tops, a faint floor). Pure black and unshaded, so no light or shine of the rooms next door gets through as stains; and never 1.0, or even the shape would be lost."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#8a5a34",
+     "key": ""
+    }
+   ],
+   "file": "scenes/den_view.gd",
+   "name": "DOJO_WOOD",
+   "note": "How far the dojo's wall dressing stands off the wall, and how thick it is."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#3b2614",
+     "key": ""
+    }
+   ],
+   "file": "scenes/den_view.gd",
+   "name": "DOJO_WOOD_DARK",
+   "note": "How far the dojo's wall dressing stands off the wall, and how thick it is."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#6b4526",
+     "key": ""
+    }
+   ],
+   "file": "scenes/den_view.gd",
+   "name": "DOJO_RAIL",
+   "note": "How far the dojo's wall dressing stands off the wall, and how thick it is."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffcc73",
+     "key": ""
+    }
+   ],
+   "file": "scenes/den_view.gd",
+   "name": "CONE_WARM",
+   "note": "Warm and red for a scarecrow's cone of torchlight."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ff261a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/den_view.gd",
+   "name": "CONE_RED",
+   "note": "Warm and red for a scarecrow's cone of torchlight."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2a160d",
+     "key": ""
+    }
+   ],
+   "file": "scenes/dojo_games_view.gd",
+   "name": "INK",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#f1dfbd",
+     "key": ""
+    }
+   ],
+   "file": "scenes/dojo_games_view.gd",
+   "name": "CREAM",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffcf3a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/dojo_games_view.gd",
+   "name": "GOLD",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ff3b3b",
+     "key": ""
+    }
+   ],
+   "file": "scenes/dojo_games_view.gd",
+   "name": "RED",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#7be07b",
+     "key": ""
+    }
+   ],
+   "file": "scenes/dojo_games_view.gd",
+   "name": "GREEN",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#35211a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/dojo_games_view.gd",
+   "name": "PANEL",
+   "note": ""
   },
   {
    "colours": [
@@ -794,6 +1024,28 @@ window.JUEGO = {
    "file": "scenes/hud.gd",
    "name": "MAP_GUARD",
    "note": "Pixels a tile: the plan fills about MAP_WIDTH whatever the museum's size, so the icons (a fixed size in pixels) read the same on every map."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#a7a1a6",
+     "key": ""
+    }
+   ],
+   "file": "scenes/hud.gd",
+   "name": "MAP_FOG",
+   "note": "The band's house on the map: a room nobody sees is «unexplored» (a flat, dim tone, nothing of what is in it), a shut door is wood in the wall."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#9c6a3c",
+     "key": ""
+    }
+   ],
+   "file": "scenes/hud.gd",
+   "name": "MAP_DOOR",
+   "note": "The band's house on the map: a room nobody sees is «unexplored» (a flat, dim tone, nothing of what is in it), a shut door is wood in the wall."
   },
   {
    "colours": [
@@ -1498,6 +1750,814 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#b08a64",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "P_DIM",
+   "note": "A window lit that is not a room: a dim, dull light behind its bars, so the rooms' (warm and bright, nothing in them) stand out."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#e6d2a8",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "SANDSTONE",
+   "note": "A window lit that is not a room: a dim, dull light behind its bars, so the rooms' (warm and bright, nothing in them) stand out."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#b89c72",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "SANDSTONE_DARK",
+   "note": "A window lit that is not a room: a dim, dull light behind its bars, so the rooms' (warm and bright, nothing in them) stand out."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#8e8a95",
+     "key": "0"
+    },
+    {
+     "hex": "#a3a0aa",
+     "key": "1"
+    },
+    {
+     "hex": "#7a7683",
+     "key": "2"
+    },
+    {
+     "hex": "#96919c",
+     "key": "3"
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "GRANITE",
+   "note": "A window lit that is not a room: a dim, dull light behind its bars, so the rooms' (warm and bright, nothing in them) stand out."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#5f5b68",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "GRANITE_EDGE",
+   "note": "A window lit that is not a room: a dim, dull light behind its bars, so the rooms' (warm and bright, nothing in them) stand out."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#d8c9a8",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "SCULPTURE",
+   "note": "A window lit that is not a room: a dim, dull light behind its bars, so the rooms' (warm and bright, nothing in them) stand out."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#a8977a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "SCULPTURE_DARK",
+   "note": "A window lit that is not a room: a dim, dull light behind its bars, so the rooms' (warm and bright, nothing in them) stand out."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#f7f2ea",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "MARBLE",
+   "note": "With the dome it stands taller than the rest: the camera, from close, looks this much higher at it and sees this much (as MuseumBuilding.view)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#c8bca8",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "MARBLE_DARK",
+   "note": "With the dome it stands taller than the rest: the camera, from close, looks this much higher at it and sees this much (as MuseumBuilding.view)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ecdfc8",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "STUCCO",
+   "note": "With the dome it stands taller than the rest: the camera, from close, looks this much higher at it and sees this much (as MuseumBuilding.view)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#8e6a5c",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "ROOF",
+   "note": "With the dome it stands taller than the rest: the camera, from close, looks this much higher at it and sees this much (as MuseumBuilding.view)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#e4dccd",
+     "key": "0"
+    },
+    {
+     "hex": "#d6ccba",
+     "key": "1"
+    },
+    {
+     "hex": "#ece6da",
+     "key": "2"
+    },
+    {
+     "hex": "#cbbfab",
+     "key": "3"
+    },
+    {
+     "hex": "#ddd3c2",
+     "key": "4"
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "GRAVEL",
+   "note": "With the dome it stands taller than the rest: the camera, from close, looks this much higher at it and sees this much (as MuseumBuilding.view)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#b3a794",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "GRAVEL_EDGE",
+   "note": "With the dome it stands taller than the rest: the camera, from close, looks this much higher at it and sees this much (as MuseumBuilding.view)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2c5638",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "CYPRESS",
+   "note": "With the dome it stands taller than the rest: the camera, from close, looks this much higher at it and sees this much (as MuseumBuilding.view)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#3d7444",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "HEDGE",
+   "note": "With the dome it stands taller than the rest: the camera, from close, looks this much higher at it and sees this much (as MuseumBuilding.view)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ff7424",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "CONE",
+   "note": "With the dome it stands taller than the rest: the camera, from close, looks this much higher at it and sees this much (as MuseumBuilding.view)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ecd3a0",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "M_SAND",
+   "note": "How deep the cobbled yard before it."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#b7976a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "M_SAND_DARK",
+   "note": "How deep the cobbled yard before it."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#c9ab78",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "M_JOINT",
+   "note": "How deep the cobbled yard before it."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ecd9ae",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "M_TRIM",
+   "note": "How deep the cobbled yard before it."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#e0c290",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "M_TOWER_STONE",
+   "note": "How deep the cobbled yard before it."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#8a4e3e",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "M_TILE",
+   "note": "How deep the cobbled yard before it."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2b2530",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "M_IRON",
+   "note": "How deep the cobbled yard before it."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2a2030",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "M_LEAD",
+   "note": "How deep the cobbled yard before it."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#e0304a",
+     "key": "0"
+    },
+    {
+     "hex": "#3f6fe0",
+     "key": "1"
+    },
+    {
+     "hex": "#f2c24a",
+     "key": "2"
+    },
+    {
+     "hex": "#3fae6a",
+     "key": "3"
+    },
+    {
+     "hex": "#9a55e0",
+     "key": "4"
+    },
+    {
+     "hex": "#f07a2a",
+     "key": "5"
+    },
+    {
+     "hex": "#44c4d8",
+     "key": "6"
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "M_STAINED",
+   "note": "The stained glass: warm and cold panes between the lead."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#8f8478",
+     "key": "0"
+    },
+    {
+     "hex": "#a09484",
+     "key": "1"
+    },
+    {
+     "hex": "#7c7268",
+     "key": "2"
+    },
+    {
+     "hex": "#978a7b",
+     "key": "3"
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "M_COBBLE",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#5e554c",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "M_COBBLE_EDGE",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#3a3028",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "M_MOAT",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#a9b2c4",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "M_STEEL",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ff9a3a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "M_FLAME",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffd23a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "M_DUCK",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#c98a3e",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "M_CROQUETTE",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#e9ebf1",
+     "key": "0"
+    },
+    {
+     "hex": "#dde0e8",
+     "key": "1"
+    },
+    {
+     "hex": "#e6e8ef",
+     "key": "2"
+    },
+    {
+     "hex": "#d9dce5",
+     "key": "3"
+    },
+    {
+     "hex": "#eef0f4",
+     "key": "4"
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "C_SKIN",
+   "note": "How far apart the skin's ribs are."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#c4c8d4",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "C_RIB_TINT",
+   "note": "How far apart the skin's ribs are."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#353142",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "C_MULLION",
+   "note": "How far apart the skin's ribs are."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#b9b6c0",
+     "key": "0"
+    },
+    {
+     "hex": "#c3c0c9",
+     "key": "1"
+    },
+    {
+     "hex": "#aeabb6",
+     "key": "2"
+    },
+    {
+     "hex": "#bdbac4",
+     "key": "3"
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "C_CONCRETE",
+   "note": "How far apart the skin's ribs are."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#8d8998",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "C_GROUND",
+   "note": "How far apart the skin's ribs are."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#8e8e9c",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "C_METAL",
+   "note": "How far apart the skin's ribs are."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffd23a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "C_DUCK",
+   "note": "How far apart the skin's ribs are."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ff8a1e",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "C_BEAK",
+   "note": "How far apart the skin's ribs are."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffdf4a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "C_BANANA",
+   "note": "How far apart the skin's ribs are."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#5a4630",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "C_BANANA_TIP",
+   "note": "How far apart the skin's ribs are."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#f2f2f6",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "C_WHITE",
+   "note": "How far apart the skin's ribs are."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#3a3048",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "C_JOINT_OFF",
+   "note": "A joint's glow: lit (a room's, or the town's view), dim (not a room yet: dark glass, barely warm), picked."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#34313e",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_CORE",
+   "note": "Its colours."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#1b1c2c",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_GLASS",
+   "note": "Its colours."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#4b4858",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_MULLION",
+   "note": "Its colours."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ece8f0",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_WHITE",
+   "note": "Its colours."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#d2ccdb",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_PLANTER_COLOUR",
+   "note": "Its colours."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#c89160",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_WOOD",
+   "note": "Its colours."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#7c5234",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_WOOD_DARK",
+   "note": "Its colours."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffd9a0",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_WOOD_GLOW",
+   "note": "Its colours."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#5f8f3e",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_MOSS",
+   "note": "Its colours."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#3b6a40",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_GRASS",
+   "note": "Its colours."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#f3f0f6",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_PAVING",
+   "note": "Its colours."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#c8c1d2",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_JOINTS",
+   "note": "Its colours."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#cfc9d9",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_KERB_COLOUR",
+   "note": "Its colours."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2e4288",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_SOLAR",
+   "note": "A room's hole lit (its back and the lamp under its ceiling), more when picked."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#dc3328",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_LADYBIRD",
+   "note": "A room's hole lit (its back and the lamp under its ceiling), more when picked."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#241f2b",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_BLACK",
+   "note": "A room's hole lit (its back and the lamp under its ceiling), more when picked."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#dba35a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_SHELL",
+   "note": "A room's hole lit (its back and the lamp under its ceiling), more when picked."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#9c6a36",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_SHELL_DARK",
+   "note": "A room's hole lit (its back and the lamp under its ceiling), more when picked."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#bfc47e",
+     "key": ""
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_SNAIL",
+   "note": "A room's hole lit (its back and the lamp under its ceiling), more when picked."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#e27cb2",
+     "key": "0"
+    },
+    {
+     "hex": "#f2d34a",
+     "key": "1"
+    },
+    {
+     "hex": "#f4f0f6",
+     "key": "2"
+    },
+    {
+     "hex": "#a07cf0",
+     "key": "3"
+    }
+   ],
+   "file": "scenes/museum_building.gd",
+   "name": "N_FLOWERS",
+   "note": "How much lighter its leaves than the town's: the green has to stand out on the dark tower."
+  },
+  {
+   "colours": [
+    {
      "hex": "#ffb45a",
      "key": ""
     }
@@ -1954,6 +3014,17 @@ window.JUEGO = {
    "file": "scenes/tour.gd",
    "name": "SIGN_SHUT",
    "note": "The words over the scene, all here to change in one place."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#4a4260",
+     "key": ""
+    }
+   ],
+   "file": "scenes/town_builder.gd",
+   "name": "TERRACE_WALL",
+   "note": "The plinth under a terrace: the colour of its retaining wall."
   },
   {
    "colours": [
@@ -2637,12 +3708,12 @@ window.JUEGO = {
    "heist3": {
     "stage": "lesson:heist3",
     "text": "LESSON_HEIST3_TEXT",
-    "title": "LESSON_HEIST3_TITLE"
+    "title": "LESSON_HEIST2_TITLE"
    },
    "heist4": {
     "stage": "lesson:heist4",
     "text": "LESSON_HEIST4_TEXT",
-    "title": "LESSON_HEIST4_TITLE"
+    "title": "LESSON_HEIST2_TITLE"
    },
    "lights": {
     "stage": "lesson:lights",
@@ -3587,8 +4658,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 17,
-    "heading": "Ladronzuelo · tu primer robo en el Museo de la Prehistoria",
-    "heading_gang": "Ladronzuelos · vuestro primer robo en el Museo de la Prehistoria",
     "hideouts": {
      "sarcophagus": 1
     },
@@ -3614,8 +4683,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 17,
-    "heading": "Ladronzuelo · tu segundo robo en el Museo de la Prehistoria",
-    "heading_gang": "Ladronzuelos · vuestro segundo robo en el Museo de la Prehistoria",
     "hideouts": {
      "egg": 2
     },
@@ -3641,8 +4708,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 17,
-    "heading": "Ladronzuelo · tu tercer robo en el Museo de la Prehistoria",
-    "heading_gang": "Ladronzuelos · vuestro tercer robo en el Museo de la Prehistoria",
     "hideouts": {
      "egg": 2
     },
@@ -3665,8 +4730,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 17,
-    "heading": "Ladronzuelo · tu cuarto robo en el Museo de la Prehistoria",
-    "heading_gang": "Ladronzuelos · vuestro cuarto robo en el Museo de la Prehistoria",
     "hideouts": {
      "egg": 1,
      "mammoth": 1
@@ -3694,10 +4757,8 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 25,
-    "heading": "Ladronzuelo · tu gran golpe en el Museo de la Prehistoria",
-    "heading_gang": "Ladronzuelos · vuestro gran golpe en el Museo de la Prehistoria",
     "hideouts": {
-     "egg": 2
+     "egg": 3
     },
     "icons": [
      "dinosaur"
@@ -3722,8 +4783,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 17,
-    "heading": "Ratero · tu primer robo en el Museo de Ciencias Naturales",
-    "heading_gang": "Rateros · vuestro primer robo en el Museo de Ciencias Naturales",
     "hideouts": {
      "log": 1,
      "shell": 1
@@ -3748,8 +4807,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 17,
-    "heading": "Ratero · tu segundo robo en el Museo de Ciencias Naturales",
-    "heading_gang": "Rateros · vuestro segundo robo en el Museo de Ciencias Naturales",
     "hideouts": {
      "shell": 2
     },
@@ -3775,8 +4832,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 17,
-    "heading": "Ratero · tu tercer robo en el Museo de Ciencias Naturales",
-    "heading_gang": "Rateros · vuestro tercer robo en el Museo de Ciencias Naturales",
     "hideouts": {
      "shell": 2
     },
@@ -3802,8 +4857,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 0,
     "h": 25,
-    "heading": "Ratero · tu cuarto robo en el Museo de Ciencias Naturales",
-    "heading_gang": "Rateros · vuestro cuarto robo en el Museo de Ciencias Naturales",
     "hideouts": {
      "log": 1,
      "shell": 1
@@ -3828,8 +4881,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Ratero · tu gran golpe en el Museo de Ciencias Naturales",
-    "heading_gang": "Rateros · vuestro gran golpe en el Museo de Ciencias Naturales",
     "hideouts": {
      "log": 1,
      "shell": 1
@@ -3855,8 +4906,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Ladrón de guante blanco · tu primer robo en la Villa de las Antigüedades",
-    "heading_gang": "Ladrones de guante blanco · vuestro primer robo en la Villa de las Antigüedades",
     "hideouts": {
      "legionary": 1,
      "sarcophagus": 1
@@ -3881,8 +4930,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Ladrón de guante blanco · tu segundo robo en la Villa de las Antigüedades",
-    "heading_gang": "Ladrones de guante blanco · vuestro segundo robo en la Villa de las Antigüedades",
     "hideouts": {
      "legionary": 2,
      "sarcophagus": 1
@@ -3907,8 +4954,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Ladrón de guante blanco · tu tercer robo en la Villa de las Antigüedades",
-    "heading_gang": "Ladrones de guante blanco · vuestro tercer robo en la Villa de las Antigüedades",
     "hideouts": {
      "legionary": 2
     },
@@ -3932,8 +4977,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Ladrón de guante blanco · tu cuarto robo en la Villa de las Antigüedades",
-    "heading_gang": "Ladrones de guante blanco · vuestro cuarto robo en la Villa de las Antigüedades",
     "hideouts": {
      "legionary": 1,
      "sarcophagus": 1
@@ -3958,8 +5001,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Ladrón de guante blanco · tu gran golpe en la Villa de las Antigüedades",
-    "heading_gang": "Ladrones de guante blanco · vuestro gran golpe en la Villa de las Antigüedades",
     "hideouts": {
      "legionary": 1,
      "trojan_horse": 1
@@ -3987,8 +5028,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Maestro ladrón · tu primer robo en el Museo del Castillo",
-    "heading_gang": "Maestros ladrones · vuestro primer robo en el Museo del Castillo",
     "hideouts": {
      "armour": 2,
      "chest": 1
@@ -4017,8 +5056,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Maestro ladrón · tu segundo robo en el Museo del Castillo",
-    "heading_gang": "Maestros ladrones · vuestro segundo robo en el Museo del Castillo",
     "hideouts": {
      "armour": 1,
      "confessional": 1
@@ -4046,8 +5083,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Maestro ladrón · tu tercer robo en el Museo del Castillo",
-    "heading_gang": "Maestros ladrones · vuestro tercer robo en el Museo del Castillo",
     "hideouts": {
      "armour": 1,
      "chest": 1
@@ -4074,8 +5109,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 1,
     "h": 25,
-    "heading": "Maestro ladrón · tu cuarto robo en el Museo del Castillo",
-    "heading_gang": "Maestros ladrones · vuestro cuarto robo en el Museo del Castillo",
     "hideouts": {
      "chest": 1,
      "confessional": 1
@@ -4102,8 +5135,6 @@ window.JUEGO = {
     "arcades": [],
     "game_level": 2,
     "h": 25,
-    "heading": "Maestro ladrón · tu gran golpe en el Museo del Castillo",
-    "heading_gang": "Maestros ladrones · vuestro gran golpe en el Museo del Castillo",
     "hideouts": {
      "armour": 1,
      "chest": 1
@@ -4136,8 +5167,6 @@ window.JUEGO = {
     ],
     "game_level": 2,
     "h": 35,
-    "heading": "Leyenda de la noche · tu primer robo en el Museo de Arte Contemporáneo",
-    "heading_gang": "Leyendas de la noche · vuestro primer robo en el Museo de Arte Contemporáneo",
     "hideouts": {
      "box": 1,
      "car": 2,
@@ -4170,8 +5199,6 @@ window.JUEGO = {
     ],
     "game_level": 2,
     "h": 35,
-    "heading": "Leyenda de la noche · tu segundo robo en el Museo de Arte Contemporáneo",
-    "heading_gang": "Leyendas de la noche · vuestro segundo robo en el Museo de Arte Contemporáneo",
     "hideouts": {
      "box": 1,
      "car": 2,
@@ -4205,8 +5232,6 @@ window.JUEGO = {
     ],
     "game_level": 2,
     "h": 35,
-    "heading": "Leyenda de la noche · tu tercer robo en el Museo de Arte Contemporáneo",
-    "heading_gang": "Leyendas de la noche · vuestro tercer robo en el Museo de Arte Contemporáneo",
     "hideouts": {
      "box": 2,
      "car": 1,
@@ -4235,8 +5260,6 @@ window.JUEGO = {
     ],
     "game_level": 2,
     "h": 35,
-    "heading": "Leyenda de la noche · tu cuarto robo en el Museo de Arte Contemporáneo",
-    "heading_gang": "Leyendas de la noche · vuestro cuarto robo en el Museo de Arte Contemporáneo",
     "hideouts": {
      "box": 2,
      "car": 1,
@@ -4268,8 +5291,6 @@ window.JUEGO = {
     ],
     "game_level": 2,
     "h": 35,
-    "heading": "Leyenda de la noche · tu último gran golpe",
-    "heading_gang": "Leyendas de la noche · vuestro último gran golpe",
     "hideouts": {
      "box": 2,
      "car": 2,
@@ -4925,6 +5946,48 @@ window.JUEGO = {
    "title": "Elegir mandos"
   },
   {
+   "file": "capturas/ciudad_mapa.webp",
+   "id": "ciudad_mapa",
+   "section": "ciudad",
+   "text": "Toda la ciudad de la historia desde arriba, con el ángulo del juego y todos los museos abiertos: el río con sus meandros y sus dos puentes, los cuatro barrios, la loma de rocas al norte, el bosque alrededor y los cinco museos unidos por la ruta desde el escondite.",
+   "title": "La ciudad entera"
+  },
+  {
+   "file": "capturas/ciudad_museo_1.webp",
+   "id": "ciudad_museo_1",
+   "section": "ciudad",
+   "text": "Su edificio en la ciudad, con las manzanas de alrededor, desde el ángulo del juego y con todas sus salas abiertas.",
+   "title": "Museo 1: El Museo de la Prehistoria"
+  },
+  {
+   "file": "capturas/ciudad_museo_2.webp",
+   "id": "ciudad_museo_2",
+   "section": "ciudad",
+   "text": "Su edificio en la ciudad, con las manzanas de alrededor, desde el ángulo del juego y con todas sus salas abiertas.",
+   "title": "Museo 2: El Museo de Ciencias Naturales"
+  },
+  {
+   "file": "capturas/ciudad_museo_3.webp",
+   "id": "ciudad_museo_3",
+   "section": "ciudad",
+   "text": "Su edificio en la ciudad, con las manzanas de alrededor, desde el ángulo del juego y con todas sus salas abiertas.",
+   "title": "Museo 3: La Villa de las Antigüedades"
+  },
+  {
+   "file": "capturas/ciudad_museo_4.webp",
+   "id": "ciudad_museo_4",
+   "section": "ciudad",
+   "text": "Su edificio en la ciudad, con las manzanas de alrededor, desde el ángulo del juego y con todas sus salas abiertas.",
+   "title": "Museo 4: El Museo del Castillo"
+  },
+  {
+   "file": "capturas/ciudad_museo_5.webp",
+   "id": "ciudad_museo_5",
+   "section": "ciudad",
+   "text": "Su edificio en la ciudad, con las manzanas de alrededor, desde el ángulo del juego y con todas sus salas abiertas.",
+   "title": "Museo 5: El Museo de Arte Contemporáneo"
+  },
+  {
    "file": "capturas/ajustes_inicio.webp",
    "id": "ajustes_inicio",
    "section": "ajustes",
@@ -5345,6 +6408,111 @@ window.JUEGO = {
    "title": "Assets: mapa"
   }
  ],
+ "ciudad": {
+  "map": "ciudad_mapa",
+  "museums": [
+   {
+    "at": {
+     "n": 1,
+     "x": 0.469,
+     "y": 0.56
+    },
+    "colour": "#d08a3a",
+    "n": 1,
+    "name": "MUSEUM_1_NAME",
+    "nights": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "shot": "ciudad_museo_1",
+    "theme": "prehistoria",
+    "tour": "menu_museo_1"
+   },
+   {
+    "at": {
+     "n": 2,
+     "x": 0.445,
+     "y": 0.404
+    },
+    "colour": "#5cc85c",
+    "n": 2,
+    "name": "MUSEUM_2_NAME",
+    "nights": [
+     6,
+     7,
+     8,
+     9,
+     10
+    ],
+    "shot": "ciudad_museo_2",
+    "theme": "naturaleza",
+    "tour": "menu_museo_2"
+   },
+   {
+    "at": {
+     "n": 3,
+     "x": 0.345,
+     "y": 0.363
+    },
+    "colour": "#e8b53a",
+    "n": 3,
+    "name": "MUSEUM_3_NAME",
+    "nights": [
+     11,
+     12,
+     13,
+     14,
+     15
+    ],
+    "shot": "ciudad_museo_3",
+    "theme": "antiguo",
+    "tour": "menu_museo_3"
+   },
+   {
+    "at": {
+     "n": 4,
+     "x": 0.535,
+     "y": 0.359
+    },
+    "colour": "#d0263e",
+    "n": 4,
+    "name": "MUSEUM_4_NAME",
+    "nights": [
+     16,
+     17,
+     18,
+     19,
+     20
+    ],
+    "shot": "ciudad_museo_4",
+    "theme": "edad_media",
+    "tour": "menu_museo_4"
+   },
+   {
+    "at": {
+     "n": 5,
+     "x": 0.603,
+     "y": 0.497
+    },
+    "colour": "#ff4f9a",
+    "n": 5,
+    "name": "MUSEUM_5_NAME",
+    "nights": [
+     21,
+     22,
+     23,
+     24,
+     25
+    ],
+    "shot": "ciudad_museo_5",
+    "theme": "moderna",
+    "tour": "menu_museo_5"
+   }
+  ]
+ },
  "assets": {
   "objetos": [
    {
@@ -7757,8 +8925,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "28-09-2026 23:43",
-  "commit": "77771ba",
-  "rama": "worktree-agent-a508788799b2f7da5"
+  "fecha": "29-09-2026 19:05",
+  "commit": "76463cd",
+  "rama": "mira-si-toda-la-rama-esta-limp"
  }
 };

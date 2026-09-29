@@ -26,7 +26,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:436"
+   "scenes/main.gd:453",
+   "scenes/main.gd:514"
   ],
   "via": []
  },
@@ -37,7 +38,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:436"
+   "scenes/main.gd:453"
   ],
   "via": []
  },
@@ -48,7 +49,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:435"
+   "scenes/main.gd:452"
   ],
   "via": []
  },
@@ -59,19 +60,20 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:435"
+   "scenes/main.gd:452"
   ],
   "via": []
  },
  {
   "key": "MENU_SETTINGS",
-  "es": "SETTINGS",
+  "es": "AJUSTES",
   "broken": false,
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:441",
-   "scenes/main.gd:1452"
+   "scenes/main.gd:458",
+   "scenes/main.gd:1203",
+   "scenes/main.gd:1501"
   ],
   "via": []
  },
@@ -82,7 +84,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:442"
+   "scenes/main.gd:459"
   ],
   "via": []
  },
@@ -93,14 +95,14 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:526",
-   "scenes/main.gd:602",
-   "scenes/main.gd:655",
-   "scenes/main.gd:937",
-   "scenes/main.gd:1120",
-   "scenes/main.gd:1171",
-   "scenes/main.gd:1412",
-   "scenes/main.gd:1518"
+   "scenes/main.gd:543",
+   "scenes/main.gd:620",
+   "scenes/main.gd:673",
+   "scenes/main.gd:968",
+   "scenes/main.gd:1151",
+   "scenes/main.gd:1202",
+   "scenes/main.gd:1460",
+   "scenes/main.gd:1569"
   ],
   "via": []
  },
@@ -111,7 +113,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1120"
+   "scenes/main.gd:1151"
   ],
   "via": []
  },
@@ -122,10 +124,10 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1121",
-   "scenes/main.gd:1409",
-   "scenes/plan_talk.gd:210",
-   "scenes/plan_talk.gd:219"
+   "scenes/main.gd:1152",
+   "scenes/main.gd:1457",
+   "scenes/plan_talk.gd:213",
+   "scenes/plan_talk.gd:223"
   ],
   "via": []
  },
@@ -136,7 +138,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1123"
+   "scenes/main.gd:1154"
   ],
   "via": []
  },
@@ -147,7 +149,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1408"
+   "scenes/main.gd:1456"
   ],
   "via": []
  },
@@ -158,7 +160,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:550",
+   "scenes/main.gd:567",
    "logic/text.gd:9"
   ],
   "via": []
@@ -170,7 +172,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:927"
+   "scenes/main.gd:958"
   ],
   "via": []
  },
@@ -181,7 +183,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:929"
+   "scenes/main.gd:960"
   ],
   "via": []
  },
@@ -192,7 +194,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:931"
+   "scenes/main.gd:962"
   ],
   "via": []
  },
@@ -203,7 +205,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:956"
+   "scenes/main.gd:987"
   ],
   "via": []
  },
@@ -214,7 +216,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:956"
+   "scenes/main.gd:987"
   ],
   "via": []
  },
@@ -225,7 +227,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:936"
+   "scenes/main.gd:967"
   ],
   "via": []
  },
@@ -308,7 +310,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:647"
+   "scenes/main.gd:665"
   ],
   "via": []
  },
@@ -319,7 +321,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:648"
+   "scenes/main.gd:666"
   ],
   "via": []
  },
@@ -330,7 +332,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:649"
+   "scenes/main.gd:667"
   ],
   "via": []
  },
@@ -341,7 +343,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1449"
+   "scenes/main.gd:1498"
   ],
   "via": []
  },
@@ -352,7 +354,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1451"
+   "scenes/main.gd:1500"
   ],
   "via": []
  },
@@ -363,8 +365,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:731",
-   "scenes/main.gd:1814"
+   "scenes/main.gd:753",
+   "scenes/main.gd:1851"
   ],
   "via": []
  },
@@ -375,7 +377,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1019"
+   "scenes/main.gd:1050"
   ],
   "via": []
  },
@@ -386,7 +388,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1015"
+   "scenes/main.gd:1046",
+   "scenes/main.gd:2342"
   ],
   "via": []
  },
@@ -397,7 +400,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1015"
+   "scenes/main.gd:1046"
   ],
   "via": []
  },
@@ -408,7 +411,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1021"
+   "scenes/main.gd:1052"
   ],
   "via": []
  },
@@ -419,7 +422,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1022"
+   "scenes/main.gd:1053"
   ],
   "via": []
  },
@@ -430,7 +433,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1022"
+   "scenes/main.gd:1053"
   ],
   "via": []
  },
@@ -441,7 +444,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1028"
+   "scenes/main.gd:1059"
   ],
   "via": []
  },
@@ -452,7 +455,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1029"
+   "scenes/main.gd:1060"
   ],
   "via": []
  },
@@ -463,7 +466,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1030"
+   "scenes/main.gd:1061"
   ],
   "via": []
  },
@@ -474,18 +477,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1032"
-  ],
-  "via": []
- },
- {
-  "key": "SETTINGS_TITLE",
-  "es": "SETTINGS",
-  "broken": false,
-  "extra": [],
-  "group": "Ajustes y controles",
-  "at": [
-   "scenes/main.gd:1172"
+   "scenes/main.gd:1063"
   ],
   "via": []
  },
@@ -496,7 +488,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1172"
+   "scenes/main.gd:1203"
   ],
   "via": []
  },
@@ -507,7 +499,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1172"
+   "scenes/main.gd:1203"
   ],
   "via": []
  },
@@ -518,7 +510,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1172"
+   "scenes/main.gd:1203"
   ],
   "via": []
  },
@@ -529,7 +521,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1165"
+   "scenes/main.gd:1196"
   ],
   "via": []
  },
@@ -540,7 +532,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1166"
+   "scenes/main.gd:1197"
   ],
   "via": []
  },
@@ -551,7 +543,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1167"
+   "scenes/main.gd:1198"
   ],
   "via": []
  },
@@ -562,7 +554,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1168"
+   "scenes/main.gd:1199"
   ],
   "via": []
  },
@@ -573,7 +565,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1206"
+   "scenes/main.gd:1237"
   ],
   "via": []
  },
@@ -584,7 +576,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1206"
+   "scenes/main.gd:1237"
   ],
   "via": []
  },
@@ -595,7 +587,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1208"
+   "scenes/main.gd:1239"
   ],
   "via": []
  },
@@ -606,7 +598,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1209"
+   "scenes/main.gd:1240"
   ],
   "via": []
  },
@@ -617,7 +609,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1210"
+   "scenes/main.gd:1241"
   ],
   "via": []
  },
@@ -628,7 +620,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1211"
+   "scenes/main.gd:1242"
   ],
   "via": []
  },
@@ -639,7 +631,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1212"
+   "scenes/main.gd:1243"
   ],
   "via": []
  },
@@ -650,7 +642,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1213"
+   "scenes/main.gd:1244"
   ],
   "via": []
  },
@@ -661,7 +653,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1216"
+   "scenes/main.gd:1247"
   ],
   "via": []
  },
@@ -672,7 +664,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1216"
+   "scenes/main.gd:1247"
   ],
   "via": []
  },
@@ -683,7 +675,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1217"
+   "scenes/main.gd:1248"
   ],
   "via": []
  },
@@ -694,7 +686,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1218"
+   "scenes/main.gd:1249"
   ],
   "via": []
  },
@@ -705,7 +697,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1219"
+   "scenes/main.gd:1251"
   ],
   "via": []
  },
@@ -716,7 +708,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1220"
+   "scenes/main.gd:1252"
   ],
   "via": []
  },
@@ -727,7 +719,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1221"
+   "scenes/main.gd:1253"
   ],
   "via": []
  },
@@ -738,7 +730,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1176"
+   "scenes/main.gd:1207"
   ],
   "via": []
  },
@@ -749,7 +741,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1180"
+   "scenes/main.gd:1211"
   ],
   "via": []
  },
@@ -760,7 +752,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1180"
+   "scenes/main.gd:1211"
   ],
   "via": []
  },
@@ -782,7 +774,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1444"
+   "scenes/main.gd:1493"
   ],
   "via": []
  },
@@ -793,7 +785,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1446"
+   "scenes/main.gd:1495"
   ],
   "via": []
  },
@@ -804,7 +796,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1474"
+   "scenes/main.gd:1523"
   ],
   "via": []
  },
@@ -815,7 +807,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:1844"
+   "scenes/hud.gd:1979"
   ],
   "via": []
  },
@@ -826,7 +818,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1483"
+   "scenes/main.gd:1534"
   ],
   "via": []
  },
@@ -837,7 +829,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:1784"
+   "scenes/hud.gd:1919"
   ],
   "via": []
  },
@@ -848,7 +840,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2356"
+   "scenes/main.gd:2726"
   ],
   "via": []
  },
@@ -859,7 +851,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1191"
+   "scenes/main.gd:1222"
   ],
   "via": []
  },
@@ -870,7 +862,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1191"
+   "scenes/main.gd:1222"
   ],
   "via": []
  },
@@ -881,7 +873,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1191"
+   "scenes/main.gd:1222"
   ],
   "via": []
  },
@@ -892,7 +884,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1192"
+   "scenes/main.gd:1223"
   ],
   "via": []
  },
@@ -903,7 +895,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1192"
+   "scenes/main.gd:1223"
   ],
   "via": []
  },
@@ -914,7 +906,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1192"
+   "scenes/main.gd:1223"
   ],
   "via": []
  },
@@ -925,7 +917,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1196"
+   "scenes/main.gd:1227"
   ],
   "via": []
  },
@@ -936,7 +928,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1196"
+   "scenes/main.gd:1227"
   ],
   "via": []
  },
@@ -947,7 +939,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1196"
+   "scenes/main.gd:1227"
   ],
   "via": []
  },
@@ -958,7 +950,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1196"
+   "scenes/main.gd:1227"
   ],
   "via": []
  },
@@ -969,7 +961,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1196"
+   "scenes/main.gd:1227"
   ],
   "via": []
  },
@@ -980,7 +972,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1196"
+   "scenes/main.gd:1227"
   ],
   "via": []
  },
@@ -991,7 +983,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1196"
+   "scenes/main.gd:1227"
   ],
   "via": []
  },
@@ -1002,7 +994,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1196"
+   "scenes/main.gd:1227"
   ],
   "via": []
  },
@@ -1013,7 +1005,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1182"
+   "scenes/main.gd:1213"
   ],
   "via": []
  },
@@ -1024,7 +1016,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1359"
+   "scenes/main.gd:1407"
   ],
   "via": []
  },
@@ -1035,7 +1027,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1335"
+   "scenes/main.gd:1383"
   ],
   "via": []
  },
@@ -1046,7 +1038,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1335"
+   "scenes/main.gd:1383"
   ],
   "via": []
  },
@@ -1057,7 +1049,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1335"
+   "scenes/main.gd:1383"
   ],
   "via": []
  },
@@ -1068,7 +1060,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1335"
+   "scenes/main.gd:1383"
   ],
   "via": []
  },
@@ -1079,7 +1071,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1335"
+   "scenes/main.gd:1383"
   ],
   "via": []
  },
@@ -1090,7 +1082,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1379"
+   "scenes/main.gd:1427"
   ],
   "via": []
  },
@@ -1101,7 +1093,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1379"
+   "scenes/main.gd:1427"
   ],
   "via": []
  },
@@ -1112,7 +1104,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1383"
+   "scenes/main.gd:1431"
   ],
   "via": []
  },
@@ -1123,7 +1115,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1383"
+   "scenes/main.gd:1431"
   ],
   "via": []
  },
@@ -1134,7 +1126,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1383"
+   "scenes/main.gd:1431"
   ],
   "via": []
  },
@@ -1145,7 +1137,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1383"
+   "scenes/main.gd:1431"
   ],
   "via": []
  },
@@ -1156,7 +1148,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1396"
+   "scenes/main.gd:1444"
   ],
   "via": []
  },
@@ -1167,7 +1159,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1400"
+   "scenes/main.gd:1448"
   ],
   "via": []
  },
@@ -1178,7 +1170,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1403"
+   "scenes/main.gd:1451"
   ],
   "via": []
  },
@@ -1189,7 +1181,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:1115"
+   "scenes/main.gd:1146"
   ],
   "via": []
  },
@@ -1200,7 +1192,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:1812"
+   "scenes/main.gd:1849"
   ],
   "via": []
  },
@@ -1233,7 +1225,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1507"
+   "scenes/main.gd:1558",
+   "scenes/plan_talk.gd:465"
   ],
   "via": []
  },
@@ -1244,7 +1237,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1507"
+   "scenes/main.gd:1558"
   ],
   "via": []
  },
@@ -1255,7 +1248,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1507"
+   "scenes/main.gd:1558"
   ],
   "via": []
  },
@@ -1266,7 +1259,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1519"
+   "scenes/main.gd:1570"
   ],
   "via": []
  },
@@ -1277,7 +1270,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1519"
+   "scenes/main.gd:1570"
   ],
   "via": []
  },
@@ -1288,207 +1281,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1522"
-  ],
-  "via": []
- },
- {
-  "key": "BRIEF_JOB_ONE",
-  "es": "%s · tu %s robo en %s",
-  "broken": false,
-  "extra": [],
-  "group": "Menús",
-  "at": [],
-  "via": []
- },
- {
-  "key": "BRIEF_JOB_MANY",
-  "es": "%s · vuestro %s robo en %s",
-  "broken": false,
-  "extra": [],
-  "group": "Menús",
-  "at": [],
-  "via": []
- },
- {
-  "key": "BRIEF_JOB_LAST_ONE",
-  "es": "%s · tu último gran golpe",
-  "broken": false,
-  "extra": [],
-  "group": "Menús",
-  "at": [],
-  "via": []
- },
- {
-  "key": "BRIEF_JOB_LAST_MANY",
-  "es": "%s · vuestro último gran golpe",
-  "broken": false,
-  "extra": [],
-  "group": "Menús",
-  "at": [],
-  "via": []
- },
- {
-  "key": "BRIEF_JOB_BOSS_ONE",
-  "es": "%s · tu gran golpe en %s",
-  "broken": false,
-  "extra": [],
-  "group": "Menús",
-  "at": [],
-  "via": []
- },
- {
-  "key": "BRIEF_JOB_BOSS_MANY",
-  "es": "%s · vuestro gran golpe en %s",
-  "broken": false,
-  "extra": [],
-  "group": "Menús",
-  "at": [],
-  "via": []
- },
- {
-  "key": "RANK_1_ONE",
-  "es": "Ladronzuelo",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": []
- },
- {
-  "key": "RANK_1_MANY",
-  "es": "Ladronzuelos",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": []
- },
- {
-  "key": "RANK_2_ONE",
-  "es": "Ratero",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": []
- },
- {
-  "key": "RANK_2_MANY",
-  "es": "Rateros",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": []
- },
- {
-  "key": "RANK_3_ONE",
-  "es": "Ladrón de guante blanco",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": []
- },
- {
-  "key": "RANK_3_MANY",
-  "es": "Ladrones de guante blanco",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": []
- },
- {
-  "key": "RANK_4_ONE",
-  "es": "Maestro ladrón",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": []
- },
- {
-  "key": "RANK_4_MANY",
-  "es": "Maestros ladrones",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": []
- },
- {
-  "key": "RANK_5_ONE",
-  "es": "Leyenda de la noche",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": []
- },
- {
-  "key": "RANK_5_MANY",
-  "es": "Leyendas de la noche",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": []
- },
- {
-  "key": "ORDINAL_1",
-  "es": "primer",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_2",
-  "es": "segundo",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_3",
-  "es": "tercer",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "ORDINAL_4",
-  "es": "cuarto",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [],
-  "via": [
-   "ORDINAL_%d"
-  ]
- },
- {
-  "key": "BRIEF_LEVEL",
-  "es": "NIVEL %02d",
-  "broken": false,
-  "extra": [],
-  "group": "Menús",
-  "at": [
-   "scenes/main.gd:1609",
-   "scenes/main.gd:1610"
+   "scenes/main.gd:1573"
   ],
   "via": []
  },
@@ -1499,7 +1292,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1546"
+   "scenes/main.gd:1597"
   ],
   "via": []
  },
@@ -1510,7 +1303,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1547"
+   "scenes/main.gd:1598"
   ],
   "via": []
  },
@@ -1690,7 +1483,9 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "logic/story.gd:166"
+   "logic/story.gd:166",
+   "logic/story.gd:168",
+   "logic/story.gd:170"
   ],
   "via": []
  },
@@ -1702,17 +1497,6 @@ window.TEXTOS = [
   "group": "Historia",
   "at": [
    "logic/story.gd:167"
-  ],
-  "via": []
- },
- {
-  "key": "LESSON_HEIST3_TITLE",
-  "es": "EL GOLPE EN EQUIPO",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:168"
   ],
   "via": []
  },
@@ -3109,17 +2893,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1684"
+   "scenes/main.gd:1721"
   ],
-  "via": []
- },
- {
-  "key": "END_HOME",
-  "es": "%s vuelve a casa.",
-  "broken": false,
-  "extra": [],
-  "group": "Juego",
-  "at": [],
   "via": []
  },
  {
@@ -3129,7 +2904,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1689"
+   "scenes/main.gd:1726"
   ],
   "via": []
  },
@@ -3140,7 +2915,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1693"
+   "scenes/main.gd:1730"
   ],
   "via": []
  },
@@ -3151,7 +2926,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1689"
+   "scenes/main.gd:1726"
   ],
   "via": []
  },
@@ -3162,7 +2937,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1707"
+   "scenes/main.gd:1744"
   ],
   "via": []
  },
@@ -3173,7 +2948,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1743"
+   "scenes/main.gd:1781"
   ],
   "via": []
  },
@@ -3184,7 +2959,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1736"
+   "scenes/main.gd:1774"
   ],
   "via": [
    "END_HEAD_%d"
@@ -3241,7 +3016,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1739"
+   "scenes/main.gd:1777"
   ],
   "via": []
  },
@@ -3252,7 +3027,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1763"
+   "scenes/main.gd:1801"
   ],
   "via": []
  },
@@ -3263,7 +3038,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1766"
+   "scenes/main.gd:1804"
   ],
   "via": []
  },
@@ -3274,7 +3049,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1766"
+   "scenes/main.gd:1804"
   ],
   "via": []
  },
@@ -3411,7 +3186,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1752"
+   "scenes/main.gd:1790"
   ],
   "via": []
  },
@@ -3422,7 +3197,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1752"
+   "scenes/main.gd:1790"
   ],
   "via": []
  },
@@ -3433,7 +3208,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1752"
+   "scenes/main.gd:1790"
   ],
   "via": []
  },
@@ -3444,7 +3219,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1741"
+   "scenes/main.gd:1779"
   ],
   "via": []
  },
@@ -3455,7 +3230,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1789"
+   "scenes/main.gd:1831"
   ],
   "via": []
  },
@@ -3466,46 +3241,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1788"
+   "scenes/main.gd:1830"
   ],
-  "via": []
- },
- {
-  "key": "END_FILE_AGAIN",
-  "es": "¿REINCIDENTE?",
-  "broken": false,
-  "extra": [],
-  "group": "Juego",
-  "at": [
-   "scenes/main.gd:1796"
-  ],
-  "via": []
- },
- {
-  "key": "END_FILE_YES_NO_1",
-  "es": "SÍ|MUCHO",
-  "broken": false,
-  "extra": [],
-  "group": "Juego",
-  "at": [],
-  "via": []
- },
- {
-  "key": "END_FILE_YES_NO_2",
-  "es": "SÍ|MUCHÍSIMO",
-  "broken": false,
-  "extra": [],
-  "group": "Juego",
-  "at": [],
-  "via": []
- },
- {
-  "key": "END_FILE_YES_NO_3",
-  "es": "SÍ|SIEMPRE",
-  "broken": false,
-  "extra": [],
-  "group": "Juego",
-  "at": [],
   "via": []
  },
  {
@@ -3515,7 +3252,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1797"
+   "scenes/main.gd:1834"
   ],
   "via": []
  },
@@ -3526,7 +3263,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1798"
+   "scenes/main.gd:1835"
   ],
   "via": []
  },
@@ -3537,7 +3274,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1790"
+   "scenes/main.gd:1832"
   ],
   "via": []
  },
@@ -3548,84 +3285,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1790"
-  ],
-  "via": []
- },
- {
-  "key": "END_FILE_ALIAS",
-  "es": "ALIAS",
-  "broken": false,
-  "extra": [],
-  "group": "Juego",
-  "at": [
-   "scenes/main.gd:1792",
-   "scenes/main.gd:1804"
-  ],
-  "via": []
- },
- {
-  "key": "END_FILE_ALIAS_1",
-  "es": "El Calcetín Turquesa.",
-  "broken": false,
-  "extra": [],
-  "group": "Juego",
-  "at": [],
-  "via": []
- },
- {
-  "key": "END_FILE_ALIAS_2",
-  "es": "Ninja de Puntillas.",
-  "broken": false,
-  "extra": [],
-  "group": "Juego",
-  "at": [],
-  "via": []
- },
- {
-  "key": "END_FILE_ALIAS_3",
-  "es": "El Rey de la Voltereta.",
-  "broken": false,
-  "extra": [],
-  "group": "Juego",
-  "at": [],
-  "via": []
- },
- {
-  "key": "END_FILE_ALIAS_4",
-  "es": "Manos de Mantequilla.",
-  "broken": false,
-  "extra": [],
-  "group": "Juego",
-  "at": [],
-  "via": []
- },
- {
-  "key": "END_FILE_ALIAS_5",
-  "es": "El Silencioso (a veces).",
-  "broken": false,
-  "extra": [],
-  "group": "Juego",
-  "at": [],
-  "via": []
- },
- {
-  "key": "END_FILE_ALIAS_6",
-  "es": "Don Casi-Lo-Consigo.",
-  "broken": false,
-  "extra": [],
-  "group": "Juego",
-  "at": [],
-  "via": []
- },
- {
-  "key": "END_FILE_ALIAS_MANY",
-  "es": "La Banda del Calcetín (%d sospechosos).",
-  "broken": false,
-  "extra": [],
-  "group": "Juego",
-  "at": [
-   "scenes/main.gd:1792"
+   "scenes/main.gd:1832"
   ],
   "via": []
  },
@@ -3636,7 +3296,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1793"
+   "scenes/main.gd:1833"
   ],
   "via": []
  },
@@ -3687,7 +3347,7 @@ window.TEXTOS = [
  },
  {
   "key": "END_FILE_BY_ONE",
-  "es": "PILLADO POR",
+  "es": "Lo pilló %s",
   "broken": false,
   "extra": [],
   "group": "Juego",
@@ -3696,7 +3356,7 @@ window.TEXTOS = [
  },
  {
   "key": "END_FILE_BY_MANY",
-  "es": "PILLADOS POR",
+  "es": "Los pilló %s",
   "broken": false,
   "extra": [],
   "group": "Juego",
@@ -3705,7 +3365,7 @@ window.TEXTOS = [
  },
  {
   "key": "END_FILE_BY_GUARD_1",
-  "es": "El guardia %s, que no estaba tan dormido.",
+  "es": "el guardia %s, que no estaba tan dormido.",
   "broken": false,
   "extra": [],
   "group": "Juego",
@@ -3714,7 +3374,7 @@ window.TEXTOS = [
  },
  {
   "key": "END_FILE_BY_GUARD_2",
-  "es": "El guardia %s, con un bocadillo en la otra mano.",
+  "es": "el guardia %s, con un bocadillo en la otra mano.",
   "broken": false,
   "extra": [],
   "group": "Juego",
@@ -3723,7 +3383,7 @@ window.TEXTOS = [
  },
  {
   "key": "END_FILE_BY_GUARD_3",
-  "es": "El guardia %s, en zapatillas de estar por casa.",
+  "es": "el guardia %s, en zapatillas de estar por casa.",
   "broken": false,
   "extra": [],
   "group": "Juego",
@@ -3732,7 +3392,7 @@ window.TEXTOS = [
  },
  {
   "key": "END_FILE_BY_GUARD_4",
-  "es": "El guardia %s, que dice que ya lo sabía.",
+  "es": "el guardia %s, que dice que ya lo sabía.",
   "broken": false,
   "extra": [],
   "group": "Juego",
@@ -3741,12 +3401,12 @@ window.TEXTOS = [
  },
  {
   "key": "END_FILE_BY_NOBODY",
-  "es": "Un guardia con muy buena vista.",
+  "es": "un guardia con muy buena vista.",
   "broken": false,
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1794"
+   "scenes/main.gd:1827"
   ],
   "via": []
  },
@@ -3847,7 +3507,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:1893"
+   "scenes/hud.gd:2030"
   ],
   "via": []
  },
@@ -3858,7 +3518,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2452"
+   "scenes/hud.gd:2622"
   ],
   "via": []
  },
@@ -3869,7 +3529,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2599"
+   "scenes/main.gd:2997"
   ],
   "via": []
  },
@@ -3880,7 +3540,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2601"
+   "scenes/main.gd:2999"
   ],
   "via": []
  },
@@ -3891,7 +3551,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2604"
+   "scenes/main.gd:3002"
   ],
   "via": []
  },
@@ -3902,7 +3562,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2221"
+   "scenes/hud.gd:2391"
   ],
   "via": []
  },
@@ -3913,7 +3573,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2223"
+   "scenes/hud.gd:2393"
   ],
   "via": []
  },
@@ -3924,7 +3584,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2616"
+   "scenes/main.gd:3026"
   ],
   "via": []
  },
@@ -3935,7 +3595,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2615"
+   "scenes/main.gd:3025"
   ],
   "via": []
  },
@@ -3957,7 +3617,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2612"
+   "scenes/main.gd:3022"
   ],
   "via": []
  },
@@ -3968,7 +3628,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2614"
+   "scenes/main.gd:3024"
   ],
   "via": []
  },
@@ -3979,7 +3639,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2606"
+   "scenes/main.gd:3004"
   ],
   "via": []
  },
@@ -3990,7 +3650,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2613"
+   "scenes/main.gd:3023"
   ],
   "via": []
  },
@@ -4001,7 +3661,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2608"
+   "scenes/main.gd:3006"
   ],
   "via": []
  },
@@ -4012,7 +3672,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2611"
+   "scenes/main.gd:3021"
   ],
   "via": []
  },
@@ -4023,7 +3683,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2611"
+   "scenes/main.gd:3021"
   ],
   "via": []
  },
@@ -4034,7 +3694,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2611"
+   "scenes/main.gd:3021"
   ],
   "via": []
  },
@@ -4151,7 +3811,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:2191"
+   "scenes/main.gd:2561"
   ],
   "via": []
  },
@@ -4162,8 +3822,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:2194",
-   "scenes/tour.gd:573"
+   "scenes/main.gd:2564",
+   "scenes/tour.gd:715"
   ],
   "via": []
  },
@@ -4174,7 +3834,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:2193"
+   "scenes/main.gd:2563"
   ],
   "via": []
  },
@@ -4185,7 +3845,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2749"
+   "scenes/main.gd:3179"
   ],
   "via": []
  },
@@ -4196,7 +3856,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2598"
+   "scenes/main.gd:2996"
   ],
   "via": []
  },
@@ -4207,7 +3867,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2598"
+   "scenes/main.gd:2996"
   ],
   "via": []
  },
@@ -4251,7 +3911,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2860"
+   "scenes/main.gd:3316"
   ],
   "via": []
  },
@@ -4295,7 +3955,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2895"
+   "scenes/main.gd:3355"
   ],
   "via": []
  },
@@ -4306,7 +3966,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2895"
+   "scenes/main.gd:3355"
   ],
   "via": []
  },
@@ -4317,7 +3977,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3306"
+   "scenes/main.gd:3928"
   ],
   "via": []
  },
@@ -4328,7 +3988,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3368"
+   "scenes/main.gd:3990"
   ],
   "via": []
  },
@@ -4339,7 +3999,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2091"
+   "scenes/hud.gd:2252"
   ],
   "via": []
  },
@@ -4350,7 +4010,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2091"
+   "scenes/hud.gd:2252"
   ],
   "via": []
  },
@@ -4361,7 +4021,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2091"
+   "scenes/hud.gd:2252"
   ],
   "via": []
  },
@@ -4372,7 +4032,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2091"
+   "scenes/hud.gd:2252"
   ],
   "via": []
  },
@@ -4383,7 +4043,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2092"
+   "scenes/hud.gd:2253"
   ],
   "via": []
  },
@@ -4394,7 +4054,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2092"
+   "scenes/hud.gd:2253"
   ],
   "via": []
  },
@@ -4405,7 +4065,29 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2092"
+   "scenes/hud.gd:2253"
+  ],
+  "via": []
+ },
+ {
+  "key": "LEGEND_DOOR",
+  "es": "puerta cerrada",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [
+   "scenes/hud.gd:2254"
+  ],
+  "via": []
+ },
+ {
+  "key": "LEGEND_FOG",
+  "es": "sin ver",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [
+   "scenes/hud.gd:2254"
   ],
   "via": []
  },
@@ -4416,7 +4098,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2418"
+   "scenes/main.gd:2790"
   ],
   "via": []
  },
@@ -4427,7 +4109,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2418"
+   "scenes/main.gd:2790"
   ],
   "via": []
  },
@@ -4438,7 +4120,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2774"
+   "scenes/main.gd:3207"
   ],
   "via": []
  },
@@ -4449,7 +4131,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2806"
+   "scenes/main.gd:3243"
   ],
   "via": []
  },
@@ -4460,7 +4142,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2822"
+   "scenes/main.gd:3260"
   ],
   "via": []
  },
@@ -4471,7 +4153,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2481"
+   "scenes/main.gd:2862"
   ],
   "via": []
  },
@@ -4482,7 +4164,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2806"
+   "scenes/main.gd:3243"
   ],
   "via": []
  },
@@ -4493,7 +4175,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2500"
+   "scenes/main.gd:2883"
   ],
   "via": []
  },
@@ -4504,7 +4186,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2500"
+   "scenes/main.gd:2883"
   ],
   "via": []
  },
@@ -4515,7 +4197,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2837"
+   "scenes/main.gd:3287"
   ],
   "via": []
  },
@@ -4526,7 +4208,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2774"
+   "scenes/main.gd:3207"
   ],
   "via": []
  },
@@ -4537,7 +4219,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2863"
+   "scenes/main.gd:3321"
   ],
   "via": []
  },
@@ -4548,7 +4230,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2870"
+   "scenes/main.gd:3329"
   ],
   "via": []
  },
@@ -4559,7 +4241,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2870"
+   "scenes/main.gd:3329"
   ],
   "via": []
  },
@@ -4570,7 +4252,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2872"
+   "scenes/main.gd:3332"
   ],
   "via": []
  },
@@ -4581,7 +4263,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2891"
+   "scenes/main.gd:3351"
   ],
   "via": []
  },
@@ -4592,7 +4274,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2891"
+   "scenes/main.gd:3351"
   ],
   "via": []
  },
@@ -4603,7 +4285,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2891"
+   "scenes/main.gd:3351"
   ],
   "via": []
  },
@@ -4614,7 +4296,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2896"
+   "scenes/main.gd:3356"
   ],
   "via": []
  },
@@ -4625,7 +4307,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2899"
+   "scenes/main.gd:3360"
   ],
   "via": []
  },
@@ -4636,7 +4318,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2913"
+   "scenes/main.gd:3376"
   ],
   "via": []
  },
@@ -4647,7 +4329,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2911"
+   "scenes/main.gd:3373"
   ],
   "via": []
  },
@@ -4658,7 +4340,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2911"
+   "scenes/main.gd:3373"
   ],
   "via": []
  },
@@ -4669,7 +4351,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2903"
+   "scenes/main.gd:3364"
   ],
   "via": []
  },
@@ -4680,7 +4362,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2955"
+   "scenes/main.gd:3419"
   ],
   "via": []
  },
@@ -4709,7 +4391,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2995"
+   "scenes/main.gd:3523"
   ],
   "via": []
  },
@@ -4775,7 +4457,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3889"
+   "scenes/main.gd:4515"
   ],
   "via": []
  },
@@ -4786,7 +4468,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3889"
+   "scenes/main.gd:4515"
   ],
   "via": []
  },
@@ -4797,7 +4479,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3896"
+   "scenes/main.gd:4522"
   ],
   "via": []
  },
@@ -4808,7 +4490,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3896"
+   "scenes/main.gd:4522"
   ],
   "via": []
  },
@@ -5172,7 +4854,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1467",
+   "scenes/main.gd:1516",
    "logic/museum.gd:261"
   ],
   "via": []
@@ -5196,7 +4878,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1473",
+   "scenes/main.gd:1522",
    "logic/museum.gd:641"
   ],
   "via": []
@@ -5743,7 +5425,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:462"
+   "scenes/main.gd:479"
   ],
   "via": []
  },
@@ -5754,18 +5436,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:650"
-  ],
-  "via": []
- },
- {
-  "key": "LESSON_HEIST4_TITLE",
-  "es": "EL GOLPE EN EQUIPO",
-  "broken": false,
-  "extra": [],
-  "group": "Historia",
-  "at": [
-   "logic/story.gd:170"
+   "scenes/main.gd:668"
   ],
   "via": []
  },
@@ -5799,7 +5470,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2599"
+   "scenes/main.gd:2997"
   ],
   "via": []
  },
@@ -5810,7 +5481,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/tour.gd:120"
+   "scenes/tour.gd:149"
   ],
   "via": []
  },
@@ -5892,8 +5563,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/tour.gd:220",
-   "scenes/tour.gd:297"
+   "scenes/tour.gd:327",
+   "scenes/tour.gd:404"
   ],
   "via": []
  },
@@ -6014,7 +5685,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:437"
+   "scenes/main.gd:454",
+   "scenes/main.gd:530"
   ],
   "via": []
  },
@@ -6025,18 +5697,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:437"
-  ],
-  "via": []
- },
- {
-  "key": "CHALLENGE_TITLE",
-  "es": "RETOS",
-  "broken": false,
-  "extra": [],
-  "group": "Menús",
-  "at": [
-   "scenes/main.gd:513"
+   "scenes/main.gd:454"
   ],
   "via": []
  },
@@ -6047,7 +5708,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:514"
+   "scenes/main.gd:531"
   ],
   "via": []
  },
@@ -6058,7 +5719,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:525"
+   "scenes/main.gd:542"
   ],
   "via": []
  },
@@ -6069,8 +5730,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:599",
-   "scenes/main.gd:652"
+   "scenes/main.gd:617",
+   "scenes/main.gd:670"
   ],
   "via": []
  },
@@ -6081,7 +5742,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:654"
+   "scenes/main.gd:672"
   ],
   "via": []
  },
@@ -6092,7 +5753,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:654"
+   "scenes/main.gd:672"
   ],
   "via": []
  },
@@ -6103,8 +5764,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:544",
-   "scenes/main.gd:642"
+   "scenes/main.gd:561",
+   "scenes/main.gd:660"
   ],
   "via": []
  },
@@ -6115,8 +5776,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:544",
-   "scenes/main.gd:642"
+   "scenes/main.gd:561",
+   "scenes/main.gd:660"
   ],
   "via": []
  },
@@ -6127,7 +5788,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:629"
+   "scenes/main.gd:647"
   ],
   "via": []
  },
@@ -6138,7 +5799,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:630"
+   "scenes/main.gd:648"
   ],
   "via": []
  },
@@ -6149,7 +5810,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:505"
+   "scenes/main.gd:522"
   ],
   "via": []
  },
@@ -6163,24 +5824,13 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "CHALLENGE_STORY_HEAD",
-  "es": "HISTORIA",
-  "broken": false,
-  "extra": [],
-  "group": "Menús",
-  "at": [
-   "scenes/main.gd:497"
-  ],
-  "via": []
- },
- {
   "key": "CHALLENGE_MAPS_HEAD",
   "es": "RETOS",
   "broken": false,
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:502"
+   "scenes/main.gd:519"
   ],
   "via": []
  },
@@ -6191,7 +5841,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:521"
+   "scenes/main.gd:538"
   ],
   "via": []
  },
@@ -6202,7 +5852,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:556"
+   "scenes/main.gd:574"
   ],
   "via": []
  },
@@ -6213,18 +5863,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:556"
-  ],
-  "via": []
- },
- {
-  "key": "CHALLENGE_GUARDS",
-  "es": "%d guardias",
-  "broken": false,
-  "extra": [],
-  "group": "Menús",
-  "at": [
-   "scenes/main.gd:557"
+   "scenes/main.gd:574"
   ],
   "via": []
  },
@@ -6235,7 +5874,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:607"
+   "scenes/main.gd:625"
   ],
   "via": []
  },
@@ -6246,7 +5885,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:601"
+   "scenes/main.gd:619"
   ],
   "via": []
  },
@@ -6257,7 +5896,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:601"
+   "scenes/main.gd:619"
   ],
   "via": []
  },
@@ -6294,15 +5933,6 @@ window.TEXTOS = [
    "scenes/map_editor.gd:810",
    "scenes/map_editor.gd:1134"
   ],
-  "via": []
- },
- {
-  "key": "EDITOR_TOOLS",
-  "es": "HERRAMIENTAS",
-  "broken": false,
-  "extra": [],
-  "group": "Editor de mapas",
-  "at": [],
   "via": []
  },
  {
@@ -6480,28 +6110,6 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "EDITOR_T_DINOSAUR",
-  "es": "DINOSAURIO",
-  "broken": false,
-  "extra": [],
-  "group": "Editor de mapas",
-  "at": [
-   "scenes/map_editor.gd:109"
-  ],
-  "via": []
- },
- {
-  "key": "EDITOR_T_SARCOPHAGUS",
-  "es": "SARCOFAGO",
-  "broken": false,
-  "extra": [],
-  "group": "Editor de mapas",
-  "at": [
-   "scenes/map_editor.gd:119"
-  ],
-  "via": []
- },
- {
   "key": "EDITOR_T_CORRIDOR",
   "es": "PASILLO",
   "broken": false,
@@ -6562,15 +6170,6 @@ window.TEXTOS = [
  {
   "key": "EDITOR_GUARDS_AUTO",
   "es": "AUTO (%d)",
-  "broken": false,
-  "extra": [],
-  "group": "Editor de mapas",
-  "at": [],
-  "via": []
- },
- {
-  "key": "EDITOR_MAP",
-  "es": "EL MAPA",
   "broken": false,
   "extra": [],
   "group": "Editor de mapas",
@@ -6751,8 +6350,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/main.gd:731",
-   "scenes/main.gd:1707"
+   "scenes/main.gd:753",
+   "scenes/main.gd:1744"
   ],
   "via": []
  },
@@ -6977,15 +6576,6 @@ window.TEXTOS = [
   "via": [
    "EDITOR_HINT_…"
   ]
- },
- {
-  "key": "EDITOR_TAB_EDIT",
-  "es": "EDITAR",
-  "broken": false,
-  "extra": [],
-  "group": "Editor de mapas",
-  "at": [],
-  "via": []
  },
  {
   "key": "EDITOR_TAB_OPTIONS",
@@ -7521,10 +7111,10 @@ window.TEXTOS = [
   "broken": false,
   "extra": [],
   "group": "Editor de mapas",
-  "at": [],
-  "via": [
-   "EDITOR_TOOL_…"
-  ]
+  "at": [
+   "scenes/map_editor.gd:109"
+  ],
+  "via": []
  },
  {
   "key": "EDITOR_TOOL_BIG_SARCOPHAGUS",
@@ -7532,10 +7122,10 @@ window.TEXTOS = [
   "broken": false,
   "extra": [],
   "group": "Editor de mapas",
-  "at": [],
-  "via": [
-   "EDITOR_TOOL_…"
-  ]
+  "at": [
+   "scenes/map_editor.gd:119"
+  ],
+  "via": []
  },
  {
   "key": "EDITOR_TOOL_BIG_BEAR",
@@ -9718,8 +9308,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1591",
-   "scenes/plan_talk.gd:594"
+   "scenes/main.gd:1641",
+   "scenes/plan_talk.gd:625"
   ],
   "via": []
  },
@@ -9804,17 +9394,6 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "BRIEF_DIFFICULTY",
-  "es": "%s · %s",
-  "broken": false,
-  "extra": [],
-  "group": "Menús",
-  "at": [
-   "scenes/main.gd:1609"
-  ],
-  "via": []
- },
- {
   "key": "TIP_GUARDS_NONE",
   "es": "Sin guardias: practica sin prisa.",
   "broken": false,
@@ -9833,6 +9412,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
+   "scenes/main.gd:575",
    "logic/briefing.gd:145"
   ],
   "via": []
@@ -9844,6 +9424,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
+   "scenes/main.gd:575",
    "logic/briefing.gd:145"
   ],
   "via": []
@@ -11019,7 +10600,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2851"
+   "scenes/main.gd:3302"
   ],
   "via": []
  },
@@ -11041,7 +10622,9 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:123"
+   "scenes/tour.gd:152",
+   "scenes/tour.gd:175",
+   "scenes/tour.gd:177"
   ],
   "via": []
  },
@@ -11052,7 +10635,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:123"
+   "scenes/tour.gd:152",
+   "scenes/tour.gd:177"
   ],
   "via": []
  },
@@ -11063,7 +10647,9 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:123"
+   "scenes/tour.gd:152",
+   "scenes/tour.gd:175",
+   "scenes/tour.gd:177"
   ],
   "via": []
  },
@@ -11074,7 +10660,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:207"
+   "scenes/tour.gd:314"
   ],
   "via": []
  },
@@ -11085,7 +10671,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:207"
+   "scenes/tour.gd:314"
   ],
   "via": []
  },
@@ -11096,7 +10682,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:207"
+   "scenes/tour.gd:314"
   ],
   "via": []
  },
@@ -11107,7 +10693,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:146"
+   "scenes/tour.gd:184"
   ],
   "via": []
  },
@@ -11118,7 +10704,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:149"
+   "scenes/tour.gd:187"
   ],
   "via": []
  },
@@ -11129,8 +10715,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/tour.gd:220",
-   "scenes/tour.gd:297"
+   "scenes/tour.gd:327",
+   "scenes/tour.gd:404"
   ],
   "via": []
  },
@@ -11150,8 +10736,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/plan_talk.gd:211",
-   "scenes/plan_talk.gd:220"
+   "scenes/plan_talk.gd:214",
+   "scenes/plan_talk.gd:224"
   ],
   "via": []
  },
@@ -11162,8 +10748,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/plan_talk.gd:211",
-   "scenes/plan_talk.gd:220"
+   "scenes/plan_talk.gd:214",
+   "scenes/plan_talk.gd:224"
   ],
   "via": []
  },
@@ -11174,8 +10760,9 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/plan_talk.gd:211",
-   "scenes/plan_talk.gd:584"
+   "scenes/plan_talk.gd:214",
+   "scenes/plan_talk.gd:613",
+   "scenes/plan_talk.gd:615"
   ],
   "via": []
  },
@@ -11186,7 +10773,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/plan_talk.gd:584"
+   "scenes/plan_talk.gd:613",
+   "scenes/plan_talk.gd:615"
   ],
   "via": []
  },
@@ -11197,7 +10785,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/plan_talk.gd:584"
+   "scenes/plan_talk.gd:615"
   ],
   "via": []
  },
@@ -11208,7 +10796,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/plan_talk.gd:762"
+   "scenes/plan_talk.gd:795"
   ],
   "via": []
  },
@@ -11219,9 +10807,10 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/plan_talk.gd:573",
-   "scenes/plan_talk.gd:584",
-   "scenes/plan_talk.gd:762"
+   "scenes/plan_talk.gd:594",
+   "scenes/plan_talk.gd:613",
+   "scenes/plan_talk.gd:615",
+   "scenes/plan_talk.gd:795"
   ],
   "via": []
  },
@@ -11232,18 +10821,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/plan_talk.gd:614"
-  ],
-  "via": []
- },
- {
-  "key": "TOUR_NEWS_HEAD",
-  "es": "LO NUEVO",
-  "broken": false,
-  "extra": [],
-  "group": "Otros",
-  "at": [
-   "scenes/plan_talk.gd:444"
+   "scenes/plan_talk.gd:645",
+   "scenes/plan_talk.gd:820"
   ],
   "via": []
  },
@@ -11292,6 +10871,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
+   "scenes/plan_talk.gd:804",
    "logic/plan_beats.gd:149"
   ],
   "via": []
@@ -11414,12 +10994,4060 @@ window.TEXTOS = [
   "via": []
  },
  {
-  "key": "TOUR_PIECE_HEAD",
-  "es": "LA PIEZA",
+  "key": "MEGA_START_01",
+  "es": "Se abre el museo. Se ruega cerrar el museo después.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_START_02",
+  "es": "Buenas noches. Los cuadros duermen: no los despierten.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_START_03",
+  "es": "Bienvenidos. Hoy la sopa del abuelo Paco es de fideos.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_START_04",
+  "es": "Atención: el museo está lleno de cosas. Como siempre.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_START_05",
+  "es": "Aviso: hoy es martes. Mañana también habrá martes.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_LIGHTS_ON_01",
+  "es": "Se hizo la luz. Y la luz dijo: «hola».",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_LIGHTS_ON_02",
+  "es": "Aviso: alguien ha encendido las luces. Qué cosas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_LIGHTS_ON_03",
+  "es": "Las bombillas ya están despiertas. Buenos días, bombillas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_LIGHTS_ON_04",
+  "es": "Luces encendidas. Se ruega poner cara de no haber sido nadie.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_LIGHTS_OFF_01",
+  "es": "Se apagó la luz. Las polillas protestan.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_LIGHTS_OFF_02",
+  "es": "Aviso: sala a oscuras. Los cuadros tienen miedo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_LIGHTS_OFF_03",
+  "es": "Luces apagadas. Se ruega no tropezar con la oscuridad.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_LIGHTS_OFF_04",
+  "es": "Ha vuelto la oscuridad. Lo sentimos mucho.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ALARM_01",
+  "es": "¡Ring! Esa es la alarma. La de la vitrina, seguro.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ALARM_02",
+  "es": "Atención: suena una alarma muy educada.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ALARM_03",
+  "es": "Aviso: la vitrina está chillando. Otra vez.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ALARM_04",
+  "es": "Se ruega mantener la calma. O huir. Lo que salga antes.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ALARM_05",
+  "es": "Ese pitido no es un pájaro. Es la alarma.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_KNOCKED_01",
+  "es": "Se ha oído un ¡PLONK! Se ruega no mirar.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_KNOCKED_02",
+  "es": "Aviso: algo se ha caído. Seguro que ya estaba roto.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_KNOCKED_03",
+  "es": "Atención: las cosas tiradas se quedan tiradas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_KNOCKED_04",
+  "es": "Un objeto ha decidido tumbarse. Respetemos su descanso.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_KNOCKED_05",
+  "es": "Ruido misterioso en la sala. Seguro que son las polillas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SNEEZE_01",
+  "es": "¡Salud! Dice el museo entero.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SNEEZE_02",
+  "es": "Aviso: alguien tiene un estornudo con muchas ganas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SNEEZE_03",
+  "es": "Se ruega estornudar en silencio. Gracias.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SNEEZE_04",
+  "es": "Ese ¡ACHÍS! ha movido las nubes.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_STOLEN_01",
+  "es": "Se ha perdido una vitrina muy vacía. Se ofrece premio.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_STOLEN_02",
+  "es": "Aviso: hay un hueco donde había una cosa.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_STOLEN_03",
+  "es": "Atención: la vitrina dice que no ha visto nada.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_STOLEN_04",
+  "es": "Ojo: alguien sale corriendo con cara de nada.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_STOLEN_05",
+  "es": "Se ruega a quien tenga la pieza que la devuelva. O no.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_PIECE_01",
+  "es": "Se ruega no mirar %s con cara de querer llevárselo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_PIECE_02",
+  "es": "Aviso: %s tiene mucha vergüenza cuando lo miran.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_PIECE_03",
+  "es": "Alguien mira la vitrina con cara sospechosa.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_PIECE_04",
+  "es": "Atención: %s no está en venta. Ni regalado.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_PIECE_05",
+  "es": "La vitrina vigila que nadie se acerque demasiado.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_PIECE_06",
+  "es": "Aviso: %s ha pedido que le den un poco de aire.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SEEN_01",
+  "es": "¡Guardia con prisa! Se ruega apartarse del guardia.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SEEN_02",
+  "es": "Aviso: hay un guardia corriendo. Él no sabe por qué.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SEEN_03",
+  "es": "Atención: se persigue a alguien con mucha educación.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SEEN_04",
+  "es": "Se ruega no correr por el museo. Ya, ya lo sabemos.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SEEN_05",
+  "es": "Cuidado: un guardia ha encontrado algo interesante. Un bulto.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SUSPECT_01",
+  "es": "Un guardia ha dicho «hmm». Mala señal.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SUSPECT_02",
+  "es": "Aviso: un guardia mira una sombra con desconfianza.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SUSPECT_03",
+  "es": "Atención: alguien huele a calcetín sospechoso.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SUSPECT_04",
+  "es": "El guardia sospecha. Pero no sabe de qué.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SUSPECT_05",
+  "es": "Aviso a los guardias: dejen de mirar las paredes tanto.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HIDE_01",
+  "es": "Aviso: esa armadura respira un poco.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HIDE_02",
+  "es": "Se ruega no hablar con las macetas. No contestan.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HIDE_03",
+  "es": "Atención: ese rincón tiene muy buen escondite. Digo, decoración.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HIDE_04",
+  "es": "Aquí no hay nadie. Solo cosas muy quietas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_DIZZY_01",
+  "es": "Aviso: hay alguien dando vueltas como un calcetín en la lavadora.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_DIZZY_02",
+  "es": "Hay un bulto mareado en la sala. Se le ofrece agua.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_DIZZY_03",
+  "es": "El suelo gira, pero solo para alguien.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_DIZZY_04",
+  "es": "Se ruega no dar volteretas sin permiso del museo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SMOKE_01",
+  "es": "Aviso: nube de humo con muy mal olor a fresa.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SMOKE_02",
+  "es": "Atención: hay una nube. No es de las de llover.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SMOKE_03",
+  "es": "Se ruega no respirar la niebla. Ni creerla.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_PANEL_01",
+  "es": "Aviso: se han cortado unos cables. Nos da igual.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_PANEL_02",
+  "es": "Atención: la alarma se ha quedado sin ganas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_PANEL_03",
+  "es": "Los cables descansan. Se ruega no molestarlos.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_NEAR_EXIT_01",
+  "es": "Aviso: la puerta está abierta. Es que hace calor.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_NEAR_EXIT_02",
+  "es": "Atención: la salida está aquí mismo. Como siempre.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_NEAR_EXIT_03",
+  "es": "Se ruega salir despacio. O deprisa. Pero salir.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_NEAR_EXIT_04",
+  "es": "Aviso: la puerta quiere despedirse de alguien.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_IDLE_01",
+  "es": "Aviso: alguien lleva mucho rato quieto. ¿Es una estatua nueva?",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_IDLE_02",
+  "es": "Atención: se ruega moverse. Los cuadros se aburren.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_IDLE_03",
+  "es": "Quieto como una estatua. Qué bien lo hace.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_IDLE_04",
+  "es": "Aviso: se ha perdido una sombra. Está de pie.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_IDLE_05",
+  "es": "Se ruega no dormirse de pie. El conserje ya lo hace.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_IDLE_06",
+  "es": "Si nadie hace nada, el museo hace un poco de ruido.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_WAITING_01",
+  "es": "Aviso: alguien ya ha salido. Faltan los demás.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_WAITING_02",
+  "es": "Atención: fuera hay alguien esperando con cara de prisa.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_WAITING_03",
+  "es": "La puerta espera a los que faltan.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_CALM_01",
+  "es": "Se ruega no dar de comer a los cuadros.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_CALM_02",
+  "es": "Aviso: hoy hay sopa de letras en la cafetería.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_CALM_03",
+  "es": "Atención: se busca un paraguas con complejo de bastón.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_CALM_04",
+  "es": "Recordatorio: las estatuas no pagan entrada.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_CALM_05",
+  "es": "Aviso: la escalera está de mal humor. Sube poco.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_CALM_06",
+  "es": "Se ruega no saludar a los maniquíes. Se lo creen.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_CALM_07",
+  "es": "Atención: alguien ha dejado un bocadillo en el siglo pasado.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_CALM_08",
+  "es": "Aviso: el reloj del museo va bien. Pero atrasa.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_CALM_09",
+  "es": "Se ha encontrado un guante. Le falta la mano.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_CALM_10",
+  "es": "Atención: prohibido estornudar sobre las momias.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_CALM_11",
+  "es": "Aviso: la fuente tiene hipo. Es normal.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_CALM_12",
+  "es": "Se ruega hablar bajito. Las paredes tienen orejas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_CALM_13",
+  "es": "Aviso: el ascensor no sube. Ni siquiera lo intenta.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_CALM_14",
+  "es": "Atención: el tercer cuadro de la izquierda guiña un ojo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_TEAM_01",
+  "es": "Aviso: las sombras en grupo pagan entrada de grupo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_TEAM_02",
+  "es": "Atención: dos bultos caben en un mismo susto.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_TEAM_03",
+  "es": "Se ruega repartirse los sustos por igual.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_TEAM_04",
+  "es": "Aviso: mejor juntos. Los calcetines siempre van a pares.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_TEAM_05",
+  "es": "Atención: cuando uno corre, el otro mira. Es la norma.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_1_01",
+  "es": "Prohibido silbar cerca del dinosaurio.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_1_02",
+  "es": "Cuidado: el suelo de la sala 3 canta.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_1_03",
+  "es": "Se ruega no pisar la moqueta sospechosa.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_1_04",
+  "es": "Aviso: el mamut estornuda cuando le tosen.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_1_05",
+  "es": "Atención: el fósil de la entrada muerde. Un poco.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_1_06",
+  "es": "Se ruega no dar de comer al diplodocus. Ya come.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_1_07",
+  "es": "Aviso: las huellas del suelo se mueven solas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_1_08",
+  "es": "Atención: ese hueso no es de nadie. Ni de perros.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_2_01",
+  "es": "El conserje duerme de pie.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_2_02",
+  "es": "Se buscan disfraces de macetas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_2_03",
+  "es": "Aviso: las hormigas de cristal no se tocan.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_2_04",
+  "es": "Atención: el cactus grande se cree un guardia.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_2_05",
+  "es": "Se ruega no pisar las flores. Se ofenden.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_2_06",
+  "es": "Aviso: hay un pez en la sala 4. Nadie sabe cómo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_2_07",
+  "es": "Atención: el guardia de la jungla ronca bajito.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_2_08",
+  "es": "Se ruega no regar al helecho de la esquina.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_3_01",
+  "es": "Los pasillos serán encerados por sorpresa.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_3_02",
+  "es": "Se ha perdido una llave con forma de plátano.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_3_03",
+  "es": "Aviso: la momia de la sala 2 no quiere visitas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_3_04",
+  "es": "Atención: el cartel de «no tocar» toca a todos.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_3_05",
+  "es": "Se ruega no resbalar sobre los mármoles brillantes.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_3_06",
+  "es": "Aviso: el sarcófago abre solo. Es muy educado.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_3_07",
+  "es": "Atención: los gatos de piedra maúllan los jueves.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_3_08",
+  "es": "Cuidado con las baldosas que suenan a pito.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_4_01",
+  "es": "Aviso: el puente del castillo sube solo cuando quiere.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_4_02",
+  "es": "Se ruega no rascar las armaduras. Tienen cosquillas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_4_03",
+  "es": "Atención: las antorchas se apagan por timidez.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_4_04",
+  "es": "Cuidado: una puerta secreta se cree secreta.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_4_05",
+  "es": "Se busca una llave con forma de tenedor.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_4_06",
+  "es": "Aviso: el caballero de la sala 2 mira mal.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_4_07",
+  "es": "Atención: el eco de la torre contesta con retraso.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_4_08",
+  "es": "Se ruega no tocar el cuadro del rey. Es pegajoso.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_5_01",
+  "es": "Aviso: los cuadros no se rascan solos.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_5_02",
+  "es": "Atención: el ascensor de cristal sube a los sustos.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_5_03",
+  "es": "Se ruega no confundir la obra con la basura.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_5_04",
+  "es": "Aviso: el cuadro rojo es un cuadro rojo. Nada más.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_5_05",
+  "es": "Atención: la escultura de globos se desinfla a las diez.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_5_06",
+  "es": "Se ruega no apretar el botón de «no apretar».",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_5_07",
+  "es": "Aviso: el barón bosteza en la última planta.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_HINT_5_08",
+  "es": "Atención: el suelo de cristal se cree un espejo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "SETTINGS_MEGAPHONE",
+  "es": "MEGAFONÍA: %s",
+  "broken": false,
+  "extra": [],
+  "group": "Ajustes y controles",
+  "at": [
+   "scenes/main.gd:1250"
+  ],
+  "via": []
+ },
+ {
+  "key": "SETTINGS_MEGAPHONE_BOTH",
+  "es": "CARTEL Y SONIDO",
+  "broken": false,
+  "extra": [],
+  "group": "Ajustes y controles",
+  "at": [],
+  "via": [
+   "SETTINGS_MEGAPHONE_…"
+  ]
+ },
+ {
+  "key": "SETTINGS_MEGAPHONE_TEXT",
+  "es": "SOLO CARTEL",
+  "broken": false,
+  "extra": [],
+  "group": "Ajustes y controles",
+  "at": [],
+  "via": [
+   "SETTINGS_MEGAPHONE_…"
+  ]
+ },
+ {
+  "key": "SETTINGS_MEGAPHONE_SOUND",
+  "es": "SOLO SONIDO",
+  "broken": false,
+  "extra": [],
+  "group": "Ajustes y controles",
+  "at": [],
+  "via": [
+   "SETTINGS_MEGAPHONE_…"
+  ]
+ },
+ {
+  "key": "SETTINGS_MEGAPHONE_OFF",
+  "es": "NO",
+  "broken": false,
+  "extra": [],
+  "group": "Ajustes y controles",
+  "at": [],
+  "via": [
+   "SETTINGS_MEGAPHONE_…"
+  ]
+ },
+ {
+  "key": "MEGA_LABEL",
+  "es": "MEGAFONÍA",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_SOMETHING",
+  "es": "esa cosa tan valiosa",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [
+   "logic/megaphone.gd:385"
+  ],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_01",
+  "es": "Algo acaba de rodar. Se ruega aplaudir con las orejas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_02",
+  "es": "Aviso: alguien juega a ser una croqueta.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_03",
+  "es": "Hay un bulto rodando. Cuidado, que no frena.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_04",
+  "es": "Atención: el suelo ha recibido una visita muy redonda.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_05",
+  "es": "Vaya, un bulto con ruedas. Nadie las vio venir.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_AGAIN_01",
+  "es": "Otra voltereta. Ahí hay alguien con el suelo enamorado.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_AGAIN_02",
+  "es": "Sigue rodando. Nadie le ha dicho que hay paredes.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_AGAIN_03",
+  "es": "Otra vez rodando. Las piernas piden vacaciones.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_AGAIN_04",
+  "es": "Aviso: la croqueta vuelve a rodar, y con más ganas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_AGAIN_05",
+  "es": "Atención: rodar es gratis, pero marea.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_AGAIN_06",
+  "es": "Este museo no es un tobogán. Aunque lo parece.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_STREAK_01",
+  "es": "Ahí hay alguien que no camina: rueda por sistema.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_STREAK_02",
+  "es": "Tres volteretas seguidas. Se ruega un juez de gimnasia.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_STREAK_03",
+  "es": "Aviso: se busca a alguien que use los pies.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_STREAK_04",
+  "es": "Van tres vueltas. El museo empieza a marearse solo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_STREAK_05",
+  "es": "Alguien se ha tragado una rueda de repuesto.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_STREAK_06",
+  "es": "Rodar, rodar, rodar. Y luego dicen que no hay ejercicio.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_01",
+  "es": "Hay quien usa la cabeza para hacer agujeros en la pared.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_02",
+  "es": "¡PLAF! La pared gana otra vez. Siempre gana.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_03",
+  "es": "Aviso: la pared no se aparta. Ya se ha probado.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_04",
+  "es": "Alguien ha saludado a la pared. No contesta.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_05",
+  "es": "La pared dice que aquello no era una puerta.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_06",
+  "es": "Atención: hay un bulto pegado al muro. Como un imán.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_07",
+  "es": "Una pared y algo redondo se han conocido. Fue un choque.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_08",
+  "es": "Se busca un freno para bultos rodantes. Llamen a la pared.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_09",
+  "es": "Algo ha llamado a la pared con la frente.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_10",
+  "es": "¡PLAF! Alguien le ha pedido perdón a la pared.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_11",
+  "es": "El muro ha recibido una visita muy redonda y muy rápida.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_AGAIN_01",
+  "es": "Otra vez la pared. Ya son casi familia.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_AGAIN_02",
+  "es": "La pared pregunta si va a venir todos los días.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_AGAIN_03",
+  "es": "La pared y ese bulto: una historia de mucho golpe.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_AGAIN_04",
+  "es": "Aviso: la pared sigue en el mismo sitio. Como siempre.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_AGAIN_05",
+  "es": "Rodar sin mirar. Qué idea tan redonda y tan mala.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_AGAIN_06",
+  "es": "Por si acaso: las paredes no se mueven. Ya se ha visto.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_WALL_AGAIN_07",
+  "es": "Alguien practica un deporte nuevo: chocar contra el museo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_CASE_01",
+  "es": "Algo ha rodado contra una vitrina. Cristal, uno. Bulto, cero.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_CASE_02",
+  "es": "Aviso: las vitrinas no son almohadas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_CASE_03",
+  "es": "La vitrina ha sonado. Lo que chocó, también.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_CASE_04",
+  "es": "Atención: chocar con el cristal no lo abre. Ya lo hemos probado.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_CASE_05",
+  "es": "La vitrina ni se ha inmutado. Lo otro, sí.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_CASE_06",
+  "es": "Se ruega no confundir el cristal con un colchón.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_CASE_07",
+  "es": "Se ruega no dar besos al cristal. Deja marca.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_CASE_08",
+  "es": "La vitrina dice que eso no era un abrazo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_CASE_AGAIN_01",
+  "es": "Otra vez contra el cristal. Ya hay huellas de frente.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_CASE_AGAIN_02",
+  "es": "La vitrina cree que alguien le tiene cariño.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_CASE_AGAIN_03",
+  "es": "Otro choque con el cristal. Menudo aficionado.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_CASE_AGAIN_04",
+  "es": "Aviso: el cristal no aprende, pero quien choca tampoco.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ROLL_CASE_AGAIN_05",
+  "es": "Alguien y la vitrina ya se saludan por su nombre.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CRASH_STREAK_01",
+  "es": "Tercer choque. Aquí ya no se rueda: se demuele.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CRASH_STREAK_02",
+  "es": "Van tres choques. El museo pide un casco para alguien.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CRASH_STREAK_03",
+  "es": "Aviso: se regalan cascos. Uno, para el de ahí.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CRASH_STREAK_04",
+  "es": "Tres golpes seguidos. Las paredes piden un descanso.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CRASH_STREAK_05",
+  "es": "A este paso, alguien tendrá la cabeza cuadrada.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CRASH_STREAK_06",
+  "es": "Choque, choque, choque. Eso es un ritmo, no un plan.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_BIN_01",
+  "es": "Papelera por el suelo. Estaba vacía, pero muy dramática.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_BIN_02",
+  "es": "¡CLONC! La papelera hace música sin permiso.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_BIN_03",
+  "es": "Papelera al suelo. Nadie la tiraba tanto desde el lunes.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_BIN_04",
+  "es": "Ese ruido de lata era una papelera. Ya está tranquila.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_BIN_05",
+  "es": "Papelera tumbada. Se ruega no mirar dentro.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_BUST_01",
+  "es": "El busto ha perdido el equilibrio. Y la vergüenza.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_BUST_02",
+  "es": "Aviso: un busto mira el suelo. Por primera vez.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_BUST_03",
+  "es": "Un busto en el suelo. Era famoso, pero se le pasó.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_BUST_04",
+  "es": "¡PLONK! Un señor de piedra se ha tumbado a dormir.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_BUST_05",
+  "es": "Hay un busto tumbado. Se ruega no pisarle la nariz.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_ARMOUR_01",
+  "es": "¡CLANG! La armadura se ha desarmado de la risa.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_ARMOUR_02",
+  "es": "Aviso: una armadura descansa en el suelo. Se ha caído entera.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_ARMOUR_03",
+  "es": "Esa armadura llevaba siglos de pie. Merecía sentarse.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_ARMOUR_04",
+  "es": "Hay piezas de caballero por el suelo. Falta el caballero.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_ARMOUR_05",
+  "es": "Una armadura menos en la sala y un montón de latas más.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_PANEL_01",
+  "es": "El cartel se ha caído. Ahora sí que todos lo miran.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_PANEL_02",
+  "es": "Aviso: un panel informativo ya no informa. Está tumbado.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_PANEL_03",
+  "es": "Se cayó el panel de las normas. Ya no hay normas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_PANEL_04",
+  "es": "¡PLAF! El cartel del museo se va a echar una siesta.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_PANEL_05",
+  "es": "Panel al suelo. Se ruega leerlo en horizontal.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_AGAIN_01",
+  "es": "Otra cosa tirada. El museo empieza a parecer un trastero.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_AGAIN_02",
+  "es": "Ya van varias. ¿Podemos pedir que las cosas se agarren?",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_AGAIN_03",
+  "es": "Todo cae si se mira con ganas. Alguien lo sabe.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_AGAIN_04",
+  "es": "Otra cosa tumbada. Aquí las cosas duermen muy poco.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_AGAIN_05",
+  "es": "Se ruega no empujar más. El museo ya está mareado.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_AGAIN_06",
+  "es": "Aviso: derribar cosas no es un deporte. Todavía.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_AGAIN_07",
+  "es": "Hoy en el museo llueven cosas. Y sin nubes.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_STREAK_01",
+  "es": "Tres cosas caídas. O es un visitante o es un terremoto.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_STREAK_02",
+  "es": "Este museo no se cae: lo tiran. Uno a uno.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_STREAK_03",
+  "es": "Atención: se necesita una escoba. Y algo de calma.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_STREAK_04",
+  "es": "Van tres cosas al suelo. Solo falta tirar el techo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_STREAK_05",
+  "es": "Alguien reorganiza el museo por el suelo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_KNOCK_STREAK_06",
+  "es": "Tres golpes seguidos. Esto ya es un baile.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_ARMOUR_01",
+  "es": "Esa armadura tiene un huésped. Y le va muy justa.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_ARMOUR_02",
+  "es": "Aviso: la armadura respira fuerte. Y huele a calcetín.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_ARMOUR_03",
+  "es": "Nunca hubo una armadura tan ajustada. Ni tan nerviosa.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_ARMOUR_04",
+  "es": "Un caballero vacío ha dejado de estar vacío.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_ARMOUR_05",
+  "es": "Atención: la armadura tiene cosquillas por dentro.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_ARMOUR_06",
+  "es": "Esa armadura antes estaba más delgada. Se dice.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_ARMOUR_AGAIN_01",
+  "es": "Otra vez dentro de la armadura. Es su nuevo piso.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_ARMOUR_AGAIN_02",
+  "es": "La armadura tiene inquilino. Paga en calcetines.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_ARMOUR_AGAIN_03",
+  "es": "La armadura vuelve a tener un huésped. Se ha mudado.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_ARMOUR_AGAIN_04",
+  "es": "Esa armadura ya casi no se acuerda de estar vacía.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_OTHER_01",
+  "es": "Aquí no hay nadie. Solo un rincón con mucho volumen.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_OTHER_02",
+  "es": "Ese escondite de pronto tiene un huésped. Qué sorpresa.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_OTHER_03",
+  "es": "Se ruega no llamar a la puerta del escondite. Tiene visita.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_OTHER_04",
+  "es": "Algo ha desaparecido. Se sospecha del escondite.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_OTHER_05",
+  "es": "Atención: ese objeto ahora pesa un poco más.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_OTHER_06",
+  "es": "Nada que ver aquí. Solo un objeto muy nervioso.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_OTHER_AGAIN_01",
+  "es": "Otra vez escondido. Eso ya es una costumbre.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_OTHER_AGAIN_02",
+  "es": "El escondite ya tiene guardado el sitio de alguien.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_OTHER_AGAIN_03",
+  "es": "Escondite ocupado. Cartel: «Vuelvo en cinco minutos».",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_OTHER_AGAIN_04",
+  "es": "Quien se esconde tanto acabará en un cajón.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_SEEN_01",
+  "es": "Esconderse mirando al guardia es muy valiente. Y poco útil.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_SEEN_02",
+  "es": "Un truco de magia: desaparecer delante de todos. Sale mal.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_SEEN_03",
+  "es": "Se ruega esconderse cuando nadie mire. Es lo tradicional.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_SEEN_04",
+  "es": "Ese escondite ya no es secreto. Lo sabe hasta el guardia.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_HIDE_SEEN_05",
+  "es": "Aviso: los buenos escondites no se estrenan con público.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEEZE_01",
+  "es": "¡Achís! Un escondite acaba de estornudar. Qué raro.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEEZE_02",
+  "es": "Aviso: las macetas no estornudan. Casi nunca.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEEZE_03",
+  "es": "Salud. Se ruega no estornudar en misiones secretas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEEZE_04",
+  "es": "Atención: el polvo ha ganado esta batalla.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEEZE_05",
+  "es": "Alguien ha dicho «achís». El museo contesta: «Salud».",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEEZE_06",
+  "es": "Cuanto más se esconde, más polvo. Ley del estornudo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEEZE_07",
+  "es": "Ese rincón ha hecho «achís». Los rincones no hacen eso.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEEZE_08",
+  "es": "Se oyó un estornudo donde no vive nadie.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEEZE_AGAIN_01",
+  "es": "Otro estornudo. Ahí dentro hacen falta pañuelos.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEEZE_AGAIN_02",
+  "es": "Se ruega un pañuelo. O dos.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEEZE_AGAIN_03",
+  "es": "La alergia es más lista que el escondite.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEEZE_AGAIN_04",
+  "es": "Achís otra vez. Los escondites también se resfrían.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEEZE_AGAIN_05",
+  "es": "Aviso: se vende polvo a mitad de precio. Ahí ya tienen.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_01",
+  "es": "Humo en la sala. Se ruega no aplaudir hasta que salga.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_02",
+  "es": "Aviso: alguien ha cocinado una nube. Sin receta.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_03",
+  "es": "¡PUF! Ha salido una nube. No es de las del tiempo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_04",
+  "es": "Se oye un pequeño ¡PUF! Todo normal. Nada de miedo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_05",
+  "es": "Esa nube no estaba antes. Que alguien avise al tiempo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_06",
+  "es": "Nube instalada en la sala. No ha pedido permiso.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_LAST_01",
+  "es": "Se acabó el humo. Ahora toca ser valiente o correr.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_LAST_02",
+  "es": "Última bomba de humo gastada. A partir de ahora, a pulmón.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_LAST_03",
+  "es": "Sin bombas de humo. Solo quedan las ganas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_LAST_04",
+  "es": "Ya no queda humo. Alguien suspira muy fuerte.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_LAST_05",
+  "es": "Ya no queda humo. Se ruega no soplar para fingir.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_EMPTY_01",
+  "es": "Alguien pulsa y pulsa. Ya no sale humo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_EMPTY_02",
+  "es": "Sin humo. Se ruega no golpear la bolsa.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_EMPTY_03",
+  "es": "Aviso: de las bombas vacías solo sale silencio.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_EMPTY_04",
+  "es": "Nada de humo. Ni un vaho. Ni un suspiro.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_EMPTY_05",
+  "es": "Alguien sopla como si tuviera nube. No tiene.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SMOKE_EMPTY_06",
+  "es": "Sin bombas. Se prohíbe hacer «puf» con la boca.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PANEL_01",
+  "es": "Un cable menos. Un museo más tranquilo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PANEL_02",
+  "es": "El panel ha dejado de gritar. Bien hecho, o eso creemos.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PANEL_03",
+  "es": "Alguien ha jugado con los cables. Sin manual, como siempre.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PANEL_04",
+  "es": "Aviso: el panel está cortado. Se ruega no llorar por la corriente.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PANEL_05",
+  "es": "Clic, chispa y silencio. Así se apaga una alarma.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CASE_01",
+  "es": "Alguien está abriendo la vitrina. Con mucha educación.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CASE_02",
+  "es": "Aviso: alguien habla con la cerradura.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CASE_03",
+  "es": "Esa vitrina lleva siglos cerrada. No le hace gracia.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CASE_04",
+  "es": "Se ruega no soplar en la cerradura. Es muy tímida.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CASE_05",
+  "es": "Atención: manos misteriosas sobre el cristal. Se ruega no mirar.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CASE_06",
+  "es": "Clic, clac. La vitrina cree que le hacen cosquillas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SWITCH_STREAK_01",
+  "es": "¿Luz o no luz? Alguien no se decide.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SWITCH_STREAK_02",
+  "es": "Tanta luz y tanta oscuridad. Esto ya es una discoteca.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SWITCH_STREAK_03",
+  "es": "Aviso: los interruptores no son un juguete. Un poco sí.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SWITCH_STREAK_04",
+  "es": "Enciende, apaga, enciende. Las bombillas piden un descanso.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SWITCH_STREAK_05",
+  "es": "Alguien quiere ser un faro. A ratos.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PLINTH_01",
+  "es": "Hay una estatua nueva. Es muy joven y parpadea.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PLINTH_02",
+  "es": "Alguien se ha subido al pedestal. Se ruega aplaudir en silencio.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PLINTH_03",
+  "es": "Atención: nueva obra de arte, «Sombra de puntillas».",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PLINTH_04",
+  "es": "Esa estatua respira. Los artistas lo llaman realismo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PLINTH_05",
+  "es": "Aviso: esa estatua no estaba ayer. Sospechosamente nueva.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PLINTH_FALL_01",
+  "es": "La estatua nueva ha perdido el equilibrio. Y la pose.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PLINTH_FALL_02",
+  "es": "¡PATAPLÚM! El arte contemporáneo ha aterrizado.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PLINTH_FALL_03",
+  "es": "Aviso: una estatua se ha caído y no era de piedra.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PLINTH_FALL_04",
+  "es": "Alguien no sabe estar sobre un pie. Ni sobre dos, casi.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PLINTH_FALL_05",
+  "es": "Un pedestal menos ocupado y un bulto más mareado.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ARCADE_01",
+  "es": "Alguien juega a la máquina. Todo lo demás puede esperar.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ARCADE_02",
+  "es": "Aviso: la máquina de marcianos tiene un nuevo campeón.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ARCADE_03",
+  "es": "Pong en pleno robo. Qué mente tan tranquila.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ARCADE_04",
+  "es": "Se ruega no pedir la revancha ahora mismo.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_ARCADE_05",
+  "es": "Atención: ha empezado una partida. La vitrina puede esperar.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PHEW_01",
+  "es": "Uf. Qué susto tan bien resuelto.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PHEW_02",
+  "es": "Aviso: ha faltado un pelo. Un pelo de calcetín.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PHEW_03",
+  "es": "Un guardia casi ve algo. Casi es lo mejor.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PHEW_04",
+  "es": "¡Por los pelos! Se ruega un caramelo para el susto.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_PHEW_05",
+  "es": "Peligro pasado. Se puede respirar. Con calma.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CRAWL_01",
+  "es": "Algo va a cuatro patas. El museo lo considera un gato.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CRAWL_02",
+  "es": "Aviso: hay un gato enorme por la sala. Maúlla poco.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CRAWL_03",
+  "es": "Ir a gatas es de sabios. Y de rodillas sucias.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CRAWL_04",
+  "es": "¿Se ha perdido una moneda? Alguien la busca.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_CRAWL_05",
+  "es": "Se ruega no acariciar lo que va a gatas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_RUN_01",
+  "es": "Alguien corre como si llegara tarde al cole.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_RUN_02",
+  "es": "Aviso: hay prisa. Nadie sabe por qué.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_RUN_03",
+  "es": "Se prohíbe correr en el museo. Alguien no lo lee.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_RUN_04",
+  "es": "Unos pies llevan prisa. Y el resto va detrás.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_RUN_05",
+  "es": "Menuda carrera. Pero aquí no hay medalla.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEAK_01",
+  "es": "Alguien anda con mucho cuidado. Parece que pisa huevos.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEAK_02",
+  "es": "Aviso: alguien camina de puntillas. Se admiran los dedos.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEAK_03",
+  "es": "Alguien anda tan despacio que el reloj se aburre.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEAK_04",
+  "es": "Qué elegancia al andar. El suelo ni se entera.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "MEGA_ACT_SNEAK_05",
+  "es": "Paso a paso, sin hacer ruido. Como un gato con pantuflas.",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_NAME",
+  "es": "El Escondite del Calcetín",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/main.gd:1529",
+   "scenes/tour.gd:170",
+   "logic/practice.gd:401"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_LINE",
+  "es": "Nuestra casa: el salón, los trofeos, el dojo y el aseo",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/tour.gd:172"
+  ],
+  "via": []
+ },
+ {
+  "key": "TOUR_HINT_PRACTICE",
+  "es": "ENTRAR",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/tour.gd:175"
+  ],
+  "via": []
+ },
+ {
+  "key": "PRACTICE_LEAVE",
+  "es": "< A LA CIUDAD",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/main.gd:752"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ROOM_SALON",
+  "es": "SALÓN",
   "broken": false,
   "extra": [],
   "group": "Otros",
   "at": [],
+  "via": [
+   "HIDEOUT_ROOM_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_ROOM_TROFEOS",
+  "es": "TROFEOS",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/den_view.gd:501"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ROOM_DOJO",
+  "es": "DOJO",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/den_view.gd:685"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ROOM_ASEO",
+  "es": "ASEO",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_ROOM_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_DOOR_SIGN",
+  "es": "A LA CIUDAD",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/den_view.gd:436"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_DOOR_OPEN",
+  "es": "ABRIR",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/main.gd:3027"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_DOOR_CLOSE",
+  "es": "CERRAR",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/main.gd:3027"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_HINT",
+  "es": "Sal por la puerta de casa, o con la pausa. El mapa, con M o View",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/main.gd:4510"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_SOCK",
+  "es": "el calcetín de práctica",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:404"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_SOCK_BLURB",
+  "es": "No se abre: es para practicar.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:404"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_POSTER_1",
+  "es": "SE BUSCA:\\nEL BARÓN",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/den_view.gd:358"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_POSTER_2",
+  "es": "NINJA\\nKARMA",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/den_view.gd:359"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_POSTER_3",
+  "es": "NO SE\\nTOCA EL\\nQUESO",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/den_view.gd:360"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ITEM_CASE",
+  "es": "la vitrina de práctica",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:45"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ITEM_DUMMY",
+  "es": "el espantapájaros del pasillo",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:46"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ITEM_DUMMY_BACK",
+  "es": "el espantapájaros de los escondites",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:48"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ITEM_PEDESTAL",
+  "es": "el pedestal",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:50"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ITEM_BINS",
+  "es": "las papeleras",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:51"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ITEM_ARMOUR",
+  "es": "las armaduras",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:53"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ITEM_BUST",
+  "es": "el busto",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:55"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ITEM_CRATE",
+  "es": "la caja para esconderse",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:56"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ITEM_LOCKER",
+  "es": "la taquilla para esconderse",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:57"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ITEM_MAZE_A",
+  "es": "el primer espantapájaros del laberinto",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:62"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ITEM_MAZE_B",
+  "es": "el segundo espantapájaros del laberinto",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:64"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ARCADE_PLAY",
+  "es": "JUGAR",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/main.gd:3024"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ITEM_BENCH",
+  "es": "los atriles de las pruebas",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:58"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_ITEM_BENCH_ALARM",
+  "es": "la vitrina con alarma y su panel",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:60"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_BENCH_KIND",
+  "es": "PRUEBA",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/den_view.gd:989"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_BENCH_LEVEL",
+  "es": "NIVEL",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/den_view.gd:991"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_BENCH_COUNT",
+  "es": "VITRINAS ABIERTAS",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/den_view.gd:987"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_BENCH_KIND_HOLD",
+  "es": "QUIETO",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:86"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_BENCH_KIND_LOCKPICK",
+  "es": "GANZÚA",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:87"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_BENCH_KIND_SQUEEZE",
+  "es": "APRETAR",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:88"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_BENCH_KIND_WIRES",
+  "es": "CABLES",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:89"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_BENCH_KIND_STEADY",
+  "es": "PULSO",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/practice.gd:90"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_BENCH_LEVEL_0",
+  "es": "FÁCIL",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_BENCH_LEVEL_%d"
+  ]
+ },
+ {
+  "key": "HIDEOUT_BENCH_LEVEL_1",
+  "es": "MEDIA",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_BENCH_LEVEL_%d"
+  ]
+ },
+ {
+  "key": "HIDEOUT_BENCH_LEVEL_2",
+  "es": "DIFÍCIL",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_BENCH_LEVEL_%d"
+  ]
+ },
+ {
+  "key": "HIDEOUT_BENCH_OPEN",
+  "es": "ABRIR LA VITRINA",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/main.gd:3020"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_BENCH_HOLD",
+  "es": "QUIETO…",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/main.gd:3008"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_BENCH_PANEL",
+  "es": "CORTAR EL PANEL",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/main.gd:3017"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_BENCH_NEED_PANEL",
+  "es": "CORTA ANTES EL PANEL",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/main.gd:3016"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_BENCH_CHANGE_KIND",
+  "es": "CAMBIAR PRUEBA",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/main.gd:3018"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_BENCH_CHANGE_LEVEL",
+  "es": "CAMBIAR DIFICULTAD",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/main.gd:3019"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_ATRAPA",
+  "es": "PILLA EL CALCETÍN",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:321",
+   "logic/dojo_games.gd:19",
+   "logic/practice.gd:68"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_ATRAPA_BLURB",
+  "es": "Un calcetín dorado sale corriendo. ¡Atrápalo antes de que se enfríe!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_games.gd:19"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_BOLOS",
+  "es": "BOLOS",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_games.gd:20",
+   "logic/practice.gd:70"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_BOLOS_BLURB",
+  "es": "La bola eres tú. Rueda contra los bolos y que no quede ni uno en pie.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_games.gd:20"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_PEDESTAL",
+  "es": "EQUILIBRIO",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_games.gd:21",
+   "logic/practice.gd:69"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_PEDESTAL_BLURB",
+  "es": "Aguanta la pose en el pedestal, aunque te dé la risa.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_games.gd:21"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_AGUANTA",
+  "es": "AGUANTA ESCONDIDO",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_games.gd:22",
+   "logic/practice.gd:71"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_AGUANTA_BLURB",
+  "es": "Escóndete, no estornudes y que el espantapájaros se aburra.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "logic/dojo_games.gd:22"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_START",
+  "es": "EMPEZAR JUEGO",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/main.gd:3013"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_LEAVE",
+  "es": "DEJAR EL JUEGO",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_LEAVE_KEY",
+  "es": "TAB: DEJAR EL JUEGO",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/main.gd:3010"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_READY",
+  "es": "¿LISTOS?",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:310"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_LEVEL",
+  "es": "NIVEL %d",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:384"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_COUNT",
+  "es": "%d/%d",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:388"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_BEST",
+  "es": "MEJOR %d",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/den_view.gd:1145",
+   "scenes/dojo_games_view.gd:390"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_BEST_NONE",
+  "es": "MEJOR --",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/den_view.gd:1145",
+   "scenes/dojo_games_view.gd:390"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_EXTRA",
+  "es": "HORA EXTRA",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:386"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_LOST_ATRAPA",
+  "es": "¡SE FUE EL CALCETÍN!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_GAME_LOST_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_GAME_LOST_BOLOS",
+  "es": "¡SE QUEDÓ UN BOLO EN PIE!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_GAME_LOST_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_GAME_LOST_PEDESTAL",
+  "es": "¡AL SUELO, COMO UN SACO!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_GAME_LOST_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_GAME_LOST_AGUANTA",
+  "es": "¡AQUÍ HAY UN NINJA!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_GAME_LOST_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_GAME_WON",
+  "es": "¡GANASTE!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:430"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_WON_LINE",
+  "es": "Diez niveles y ni un calcetín roto.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:432"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_REACHED",
+  "es": "Llegaste al nivel %d",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:434"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_NEW_RECORD",
+  "es": "¡NUEVO RÉCORD!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:436"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_AGAIN",
+  "es": "OTRA VEZ",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:439"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_GO_ON",
+  "es": "SEGUIR (HORA EXTRA)",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:439"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_EXIT",
+  "es": "SALIR",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:439"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_MVP",
+  "es": "El calcetinero de la banda: %s",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:438"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_ALARM",
+  "es": "¡TE VIERON! -2 s",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:102"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_STRIKE",
+  "es": "¡PLENO!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:100"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_ROLL",
+  "es": "¡RUEDA!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:318"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_CLIMB",
+  "es": "¡SUBE AL PEDESTAL!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:319",
+   "scenes/dojo_games_view.gd:406"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_HIDE",
+  "es": "¡ESCÓNDETE!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:320",
+   "scenes/dojo_games_view.gd:404"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_HOLD",
+  "es": "¡AGUANTA!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_SNEEZE",
+  "es": "¡AGUANTA EL ESTORNUDO!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/dojo_games_view.gd:369"
+  ],
+  "via": []
+ },
+ {
+  "key": "HIDEOUT_GAME_WHY_TIME",
+  "es": "Se acabó el tiempo.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_GAME_WHY_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_GAME_WHY_FALL",
+  "es": "Te caíste del pedestal.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_GAME_WHY_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_GAME_WHY_DOWN",
+  "es": "Bajaste antes de tiempo.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_GAME_WHY_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_GAME_WHY_LATE",
+  "es": "Llegaste tarde.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_GAME_WHY_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_GAME_WHY_SEEN",
+  "es": "La linterna te vio.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_GAME_WHY_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_GAME_WHY_LEFT",
+  "es": "Saliste del escondite.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_GAME_WHY_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_GAME_WHY_SNEEZE",
+  "es": "¡ACHÚS!",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": [
+   "HIDEOUT_GAME_WHY_…"
+  ]
+ },
+ {
+  "key": "HIDEOUT_GAME_DOOR",
+  "es": "La puerta no se abre sola.",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "TOUR_PREV",
+  "es": "< ANTERIOR",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/tour.gd:129"
+  ],
+  "via": []
+ },
+ {
+  "key": "TOUR_NEXT",
+  "es": "SIGUIENTE >",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [
+   "scenes/tour.gd:130"
+  ],
   "via": []
  }
 ];

@@ -11,6 +11,7 @@
 | `assets/models/ciudad/comercial/` (City Kit Commercial 2.1: edificios y rascacielos de la ciudad) | [Kenney](https://kenney.nl/assets/city-kit-commercial) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `assets/models/ciudad/suburbios/` (City Kit Suburban 2.0: casas, árboles y vallas) | [Kenney](https://kenney.nl/assets/city-kit-suburban) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `assets/models/ciudad/calles/` (City Kit Roads 2.1: calles, cruces y farolas) | [Kenney](https://kenney.nl/assets/city-kit-roads) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `assets/models/casa/` (Furniture Kit 2.0: sofás, cocina, baño y demás muebles de la casa de la banda) | [Kenney](https://kenney.nl/assets/furniture-kit) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 
 **Atribución obligatoria** (CC BY 3.0): *Black bear* por Poly by Google, con licencia Creative
 Commons Attribution 3.0. Los modelos se descargaron de [Poly Pizza](https://poly.pizza).

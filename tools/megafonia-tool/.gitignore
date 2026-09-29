@@ -1,0 +1,8 @@
+.venv/
+cache/
+out/
+samples/
+models/
+__pycache__/
+# Las IR se bajan y preparan con src/descarga_ir.py (licencias en el README)
+ir/*.wav

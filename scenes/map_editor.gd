@@ -106,7 +106,7 @@ const TEMPLATES := [
 		"#.#.#.#.#",
 		"#.......#",
 		"####.####"]},
-	{"key": "EDITOR_T_DINOSAUR", "gallery": true, "rows": [
+	{"key": "EDITOR_TOOL_BIG_DINOSAUR", "gallery": true, "rows": [
 		"#####.#####",
 		"#.........#",
 		"#....DD...#",
@@ -116,7 +116,7 @@ const TEMPLATES := [
 		"#o.......o#",
 		"#.........#",
 		"#####.#####"]},
-	{"key": "EDITOR_T_SARCOPHAGUS", "gallery": true, "rows": [
+	{"key": "EDITOR_TOOL_BIG_SARCOPHAGUS", "gallery": true, "rows": [
 		"####.####",
 		"#.......#",
 		"#o.SSS.o#",

@@ -628,7 +628,7 @@ window.CODIGO = {
     "line": 156
    },
    "LESSONS": {
-    "value": "{ \"heist\": {\"title\": \"LESSON_HEIST_TITLE\", \"stage\": \"lesson:heist\", \"text\": \"LESSON_HEIST_TEXT\"}, # The same first lesson for a gang, with the gang's own jobs. \"heist2\": {\"title\": \"LESSON_HEIST2_TITLE\", \"stage\": \"lesson:heist2\", \"text\": \"LESSON_HEIST2_TEXT\"}, \"heist3\": {\"title\": \"LESSON_HEIST3_TITLE\", \"stage\": \"lesson:heist3\", \"text\": \"LESSON_HEIST3_TEXT\"}, \"heist4\": {\"title\": \"LESSON_HEIST4_TITLE…",
+    "value": "{ \"heist\": {\"title\": \"LESSON_HEIST_TITLE\", \"stage\": \"lesson:heist\", \"text\": \"LESSON_HEIST_TEXT\"}, # The same first lesson for a gang, with the gang's own jobs. \"heist2\": {\"title\": \"LESSON_HEIST2_TITLE\", \"stage\": \"lesson:heist2\", \"text\": \"LESSON_HEIST2_TEXT\"}, \"heist3\": {\"title\": \"LESSON_HEIST2_TITLE\", \"stage\": \"lesson:heist3\", \"text\": \"LESSON_HEIST3_TEXT\"}, \"heist4\": {\"title\": \"LESSON_HEIST2_TITLE…",
     "note": "What each night teaches, one thing a night, the night built around it: a title, a line on how it works and its own little scene acting it out (LessonStage). The words here, like the pieces' and the tale's, are keys into Text.",
     "line": 162
    },

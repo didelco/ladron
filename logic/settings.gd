@@ -11,6 +11,9 @@ const DEFAULTS := {
 	"sound": true,
 	"music": true,
 	"ia": false,
+	# the museum's loudspeaker (Megaphone: one-line notices; MegaVoice: their
+	# voice), one of MEGAPHONE_MODES
+	"megaphone_mode": "both",
 	"difficulty": "medium",
 	"size": "small",
 	"fullscreen": false,
@@ -35,6 +38,9 @@ const DEFAULTS := {
 	"input_mode": "keys",
 }
 const VOLUME_STEP := 10
+## The loudspeaker's modes, in the order the setting cycles through them:
+## notice and voice, the notice only, the voice only, neither.
+const MEGAPHONE_MODES := ["both", "text", "sound", "off"]
 ## Window sizes on offer (16:9); only those that fit the screen are used.
 const WINDOW_SIZES := [Vector2i(1280, 720), Vector2i(1600, 900), Vector2i(1920, 1080), Vector2i(2560, 1440), Vector2i(3200, 1800), Vector2i(3840, 2160)]
 const UI_SCALE_MIN := 70
@@ -63,6 +69,14 @@ static func read() -> Dictionary:
 		var v: Variant = cfg.get_value(SECTION, k, DEFAULTS[k])
 		if typeof(v) == typeof(DEFAULTS[k]):
 			out[k] = v
+	# Older files kept two yes/no settings, "megaphone" and "megaphone_voice".
+	if not cfg.has_section_key(SECTION, "megaphone_mode") and cfg.has_section_key(SECTION, "megaphone"):
+		var old_on: Variant = cfg.get_value(SECTION, "megaphone")
+		var old_voice: Variant = cfg.get_value(SECTION, "megaphone_voice", true)
+		if old_on is bool:
+			out.megaphone_mode = "off" if not old_on else ("text" if old_voice is bool and not old_voice else "both")
+	if not out.megaphone_mode in MEGAPHONE_MODES:
+		out.megaphone_mode = DEFAULTS.megaphone_mode
 	if not out.difficulty in ["easy", "medium", "hard"]:
 		out.difficulty = DEFAULTS.difficulty
 	if not out.input_mode in ["keys", "mixed", "pads"]:
@@ -142,3 +156,13 @@ static func apply_display(fullscreen: bool, vsync: bool, window := -1, resize :=
 		DisplayServer.window_set_size(size)
 		DisplayServer.window_set_position(room.position + (room.size - size) / 2)
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if vsync else DisplayServer.VSYNC_DISABLED)
+
+
+## The loudspeaker's notice shows on screen in this mode.
+static func megaphone_text(mode: String) -> bool:
+	return mode == "both" or mode == "text"
+
+
+## ...and its voice is heard.
+static func megaphone_sound(mode: String) -> bool:
+	return mode == "both" or mode == "sound"

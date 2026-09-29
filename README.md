@@ -81,6 +81,7 @@ caparazón, caballo de Troya, mamut y tronco) salieron de `art/temas/escondites.
    modelos con esqueleto más adelante), luces, conos de visión, suelo y muros.
 5. ✅ **Juego completo**: atraco por niveles (pieza, alarma, puerta de salida), pantallas de título,
    misión, pausa y final, HUD con flecha al objetivo y el grito en grande, sonido sintetizado.
+   La megafonía del museo (Megaphone) también habla: cada frase MEGA_* suena desde `audio/megafonia/<clave en minúsculas>.ogg` (`MegaVoice`, ajuste «Megafonía»: cartel y sonido, solo cartel, solo sonido o no; guardado como `megaphone_mode`, y los ajustes viejos `megaphone` y `megaphone_voice` se migran); los audios se generan con `tools/megafonia-tool` (ver su README) y, tras copiarlos, `godot --headless --import` los importa. Sin ficheros, el juego calla y sigue.
 6. **Exportar** a Windows, macOS y Linux, y decidir cómo va Laya para jugadores.
 
 ## Pruebas
@@ -98,7 +99,13 @@ godot --headless --script tests/test_collection.gd # qué hay en cada vitrina: l
 godot --headless --script tests/test_fronts.gd    # piezas con frente (recreativa, trono, Anubis, la nevera...): nunca contra una pared
 godot --headless --script tests/test_controles.gd # teclas y botones: partida, menús y elegir sitio
 godot --headless --script tests/test_menus.gd     # aceptar (E, ., A) y atrás (Esc, Espacio, Enter, B) iguales en todas las pantallas con menú
+godot --headless --script tests/test_ciudad_nav.gd # moverse por la ciudad: parada por dirección (una tecla o dos a la vez, ventana de 0,1 s), siguiente/anterior por la ruta y los dos botones de los lados
 godot --headless --script tests/test_siguiente.gd # sobre el plano, solo SIGUIENTE: el encargo, lo nuevo y las reglas de cada noche, cada cosa desde su sitio
+godot --headless --script tests/test_megafonia.gd # megafonía del museo (Megaphone): avisos de una frase por suceso y por lo que hace el ladrón (voltereta y pared, papelera, escondite...), muy escasos (calla los primeros 20-60 s, 40 s entre avisos y 15 s los de peligro, tope de 2 a 5 por robo), comentarios pronto pero solo a veces (probabilidad por acción), escalado por repetición y rachas, ninguna frase repetida ni en el robo siguiente, sin guardias en el robo 1, claves del CSV y ajuste
+godot --headless --script tests/test_megafonia_voz.gd # voz de la megafonía (MegaVoice): ruta desde la clave, sin fichero calla, modos del ajuste (cartel y sonido, solo cartel, solo sonido, no), migración de los ajustes viejos y práctica, salir la corta, un .ogg por frase (aviso mientras la carpeta esté vacía)
+godot --headless --script tests/test_textos.gd # textos: ninguna clave que pide el código (literales, tablas y las armadas con prefijo o número) se queda sin texto en la traducción cargada, filas del CSV bien formadas y sin repetir, y los %s/%d de cada Text.t("…") % … cuadran con lo que se pasa (si falla por la traducción: godot --headless --import)
+godot --headless --script tests/test_dojo_juegos.gd # los cuatro juegos del dojo (lógica y vista): niveles, eventos, récords por banda, panel de fin
+godot --headless --script tests/test_escondite.gd # El Escondite del Calcetín: la casa de la banda (orientación de cada mueble auditada, recreativa jugable, dojo grande con zonas, pasillos de dos, espantapájaros y alarma roja solo en el dojo, banco de vitrinas con rearme, cuatro salas alcanzables, puertas que bloquean o dejan pasar y que no se cierran con alguien en el umbral, salas a oscuras según lo visible por puertas abiertas con 1 a 4 ladrones, dojo según lo desbloqueado, 25 puestos de trofeos que se llenan con el botín por tamaño de banda, sin cuenta atrás al entrar, salir por pausa y por la puerta, música; carteles de los juegos del dojo que bloquean, empiezan y abortan (pausa, Tab) sin tocar más que `[dojo]`; sin guardias ni guardado)
 godot --headless --script tests/test_smoke.gd     # bomba de humo: dos por ladrón, tapa la vista, despista al que persigue
 godot --headless --script tests/test_brain.gd    # decisiones reales de Laya (necesita el cerebro)
 ```
@@ -117,13 +124,15 @@ sonidos) y todos los textos, con la historia en orden. Todo sale del propio jueg
 ```bash
 python3 tools/docs.py build          # lo regenera todo (abre una ventana del juego unos minutos)
 python3 tools/docs.py build --fast   # solo datos, textos y paleta propuesta
+python3 tools/docs.py build city     # solo la ciudad: el mapa entero y cada museo
 python3 tools/docs.py serve          # http://localhost:8765: además, los textos se editan ahí
 ```
 
 Editar un texto en el visor lo cambia en `locale/texts.csv` (solo esa fila) y Godot lo reimporta.
 
 Además de pantallas, objetos, sonidos y textos, la web explica la historia (con el paso del progreso
-guardado de 20 noches), lo que sale antes de un robo, los minijuegos, los escondites y la colección:
+guardado de 20 noches), la ciudad (el mapa entero, que en el juego nunca cabe en la pantalla, con un
+marcador por museo, y cada museo en su manzana), lo que sale antes de un robo, los minijuegos, los escondites y la colección:
 los valores, listas y textos salen del código (`docs/data/codigo.js`, `juego.js`) y lo que significan
 está escrito a mano en `docs/mecanicas.js`. `python3 tools/docs.py build palette` regenera sin Godot
 la **paleta propuesta** (`tools/palette.py`): el inventario de colores del código y de los `.glb`, y una
@@ -159,7 +168,11 @@ En el título se elige el modo:
   la quinta, el **gran golpe** del museo, con algo especial (un guardián que ve lejos, un guardia
   pegado a la pieza, tres guardias, la sala del trono, el gran final); al hacerlo se abre el
   siguiente museo. Primero se elige cuántos ladrones; luego, en el mapa de la ciudad, un museo y
-  dentro una de sus salas. El progreso se guarda aparte para cada número de jugadores y se puede
+  dentro una de sus salas. En la ciudad las flechas, WASD, la cruceta y el stick eligen la parada abierta
+  (museos y casita) que queda en esa dirección **de la pantalla**, y con dos teclas a la vez (arriba y
+  derecha...) la que queda en esa diagonal (`Tour.toward`; las pulsaciones a menos de 0,1 s son una sola).
+  LB/RB y los botones `< ANTERIOR` y `SIGUIENTE >` de los lados de la pantalla (con el ratón o tocando)
+  recorren la ruta —la casita, los museos 1 a 5—, saltando los cerrados; en los extremos se atenúan. El progreso se guarda aparte para cada número de jugadores y se puede
   rejugar cualquier robo ya alcanzado; una partida de la historia de 20 noches se conserva
   (museo hecho, museo hecho; las noches del museo a medias, salas hechas).
 - **Generativo**: un museo nuevo cada vez, con dificultad (fácil, media, difícil) y tamaño a elegir.
@@ -236,6 +249,43 @@ otro tanto levantarse.
 Para grabar o probar sin pulsar teclas: `godot -- --autostart` salta directamente a la partida
 (`-- --autostart --two` con dos ladrones), y `-- --intro` enseña el comienzo de la historia con la
 cuenta atrás (`--two` para dos, `--gen` para el modo generativo, `--challenge` para el primer reto). `-- --menu=story` (o `map`, `museum`, `generative`, `settings`) abre ese menú directamente.
+
+**El Escondite del Calcetín**: en la ciudad, en una manzana de la orilla de abajo, a la derecha junto al último museo y lejos del primero, está la casa de la banda (`CityStage.HIDEOUT_SPOT`). Se
+elige con las flechas como un museo y se entra sin plano ni briefing. No es un nivel sino un lugar (`Den`, el
+plano en datos; `DenView`, su dibujo; `Practice`, el modo "practica") con cuatro salas que se recorren
+andando: el **salón** (sofás con cojines, alfombras, tele con altavoz, cocina con nevera y barra con taburetes, estantes de libros, mesitas con lámpara, planta, ventanas con cortinas, pósters, zapatero y perchero junto a la puerta de casa y una **recreativa** —el mismo mueble y el mismo pong de los museos, `Arcades.find_home`— contra la pared norte: delante de ella la acción es `JUGAR` (`HIDEOUT_ARCADE_PLAY`), sin estrellas ni progreso ni efecto en las puertas), la
+**sala de trofeos** (un museo pequeño de la banda, `Den.stands`: 25 puestos vacíos desde el principio, cinco por
+museo, cada sección con su rótulo y su alfombra en el color del museo; tres nichos en la pared y dos vitrinas en
+el suelo por sección, con su placa —número del robo, «?» y, al robarla, sus ★—; un puesto se llena con la pieza
+real, con un foco suave, cuando el robo se hizo con la pieza cogida, la estrella «botín», `Den.filled`, por
+tamaño de banda; el calcetín del museo completado sobre su rótulo; bancos, cuadros, felpudos y una mesita con lámpara), el **dojo** (un
+pequeño museo de práctica de 37 × 13 casillas, unas 2,6 veces el de antes, con muros de papel de arroz —zócalo de madera, listones *shoji*, remate,
+postes y ventanitas altas— y cinco zonas de fácil a difícil, `Den.DOJO_PLAN` y `Den.DOJO_ZONES`: la **exposición**, con pilares,
+vitrinas bajas y el banco de vitrinas; el **pasillo** de dos casillas con un cruce; los **escondites**, una sala con armaduras, caja y taquilla; el
+**laberinto** de tres vaivenes de dos casillas; y el **patio** con papeleras y cajas; escondites, patio y laberinto se enlazan en anillo con el pasillo.
+Sin guardias: hay **espantapájaros** de guardia con una linterna pegada, que ven con la regla de los guardias y sus propios números
+—`Practice.scarecrow_sees`, alcance 5,5 y ±24°—; si ven a un ladrón (no escondido) **todo el dojo se pone rojo con una sirena 3 s**
+(`Practice.alert_step`, enfriamiento de 1,5 s) y no pasa nada más. Según la noche a la que ha llegado la banda, `Practice.ITEMS`: la vitrina
+—«heist», noche 1—, el espantapájaros del pasillo —«guard», 2—, el de los escondites —«torch», 4—, pedestal y atriles de pruebas —«games», 6—,
+papeleras, armaduras, busto, caja y taquilla —«props», 8—, los dos espantapájaros del laberinto —«case_alarm», 11, y «two», 13— y la vitrina con
+alarma y su panel —«two», 13—. **Banco de vitrinas** (`Practice.bench_*`): vitrinas de práctica que se abren de verdad con las pruebas enseñadas
+(quieto 3 s, ganzúa, apretar, cables, pulso) al nivel elegido en los atriles, se cierran y se rearman solas a los ~4 s y cuentan las abiertas en un cartel;
+la de alarma exige cortar antes su panel. **Juegos del dojo** (`DojoGames`, cuatro carteles de `Practice.ITEMS` con `game` y `sign`, que bloquean su casilla; junto a uno, la acción es EMPEZAR JUEGO; Tab o la pausa lo dejan; al acabar, panel con OTRA VEZ / SEGUIR (hora extra) / SALIR): PILLA EL CALCETÍN (`atrapa`, «games», noche 6, junto a la entrada de la exposición), EQUILIBRIO (`pedestal`, «games», junto a la peana), BOLOS (`bolos`, «props», noche 8, patio; la bola eres tú, hay que rodar contra los bolos) y AGUANTA ESCONDIDO (`aguanta`, «torch», noche 4, escondites; trae su propia caja donde meterse y una linterna que barre, `Practice.LANTERN_AT`). Diez niveles cada uno y luego hora extra; solo se guarda el mejor nivel por tamaño de banda, en la sección `[dojo]` del progreso. Sin estrellas, progreso de museo, ruido ni megafonía) y el **aseo** (bañera con cortina, lavabo, váter y una ducha de esquina con la abertura hacia dentro; solo estético, `Den.BATH_GAG`
+espera una idea). Cada mueble tiene su frente en datos (`Den.FRONT`, `Den.yaw_for`, `Den.audit`): se dice a qué lado mira y el giro sale del modelo. Las salas se unen por **puertas** (`Den.DOORS`: id, casillas y las dos salas que unen), que se abren y se
+cierran con el botón de acción junto a ellas (`ABRIR`/`CERRAR`; unas hojas correderas que se esconden en el muro en
+0,3 s, con su ruido): cerrada es muro para los pies (`Den.apply_doors` la pone en `Museum.grid`), y no se puede cerrar con
+alguien en el umbral ni tocándolo (`Den.DOOR_CLEAR`). Se aparece en el salón y todas empiezan cerradas, y **solo se ven las
+salas abiertas**: una sala se ve si hay alguien de la banda dentro o si se llega a ella desde una sala vista por puertas
+abiertas (`Den.visible_rooms`, la unión de lo que ve cada ladrón); las demás se ven a oscuras (un velo casi negro con el
+suelo y los muros apenas insinuados, con fundido de 0,3 s) y sin lo que hay dentro (muebles, puestos, luces, carteles,
+cosas que tirar y maniquíes: `DenView.set_visible_rooms`, `Main._home_sight`). La cámara no cambia. El estado de las
+puertas no se guarda: cada visita empieza igual. Aspecto doméstico y cálido, de luz suave (todas las constantes en
+`DenView.LIGHT_*`) (`DenView`, `Main._set_mood`), sin cuenta atrás (al acabar el fundido desde la ciudad
+ya se anda) y sin HUD de robo (solo el nombre de la sala al entrar y una ayuda de cómo salir) y con música propia, lo-fi y lenta, sintetizada como la
+demás (`Sfx.home`: funde con la del museo en 1,5 s y respeta el ajuste de música). No da estrellas, no abre
+robos y no guarda nada. Se sale por la pausa (`< A LA CIUDAD`) o cruzando la puerta del salón (cualquiera de
+la banda saca a toda la banda), y se vuelve a la ciudad con la casita elegida. `-- --menu=practica` entra
+directamente (`--gang=N` para más ladrones). Muebles: Furniture Kit de Kenney (CC0), en `assets/models/casa/`.
 
 ## El cerebro
 

@@ -165,9 +165,9 @@ const LESSONS := {
 	# The same first lesson for a gang, with the gang's own jobs.
 	"heist2": {"title": "LESSON_HEIST2_TITLE", "stage": "lesson:heist2",
 		"text": "LESSON_HEIST2_TEXT"},
-	"heist3": {"title": "LESSON_HEIST3_TITLE", "stage": "lesson:heist3",
+	"heist3": {"title": "LESSON_HEIST2_TITLE", "stage": "lesson:heist3",
 		"text": "LESSON_HEIST3_TEXT"},
-	"heist4": {"title": "LESSON_HEIST4_TITLE", "stage": "lesson:heist4",
+	"heist4": {"title": "LESSON_HEIST2_TITLE", "stage": "lesson:heist4",
 		"text": "LESSON_HEIST4_TEXT"},
 	"guard": {"title": "LESSON_GUARD_TITLE", "stage": "lesson:guard",
 		"text": "LESSON_GUARD_TEXT"},
@@ -474,21 +474,6 @@ static func _star_masks(players: int) -> Array[int]:
 
 
 # --- Museums ---------------------------------------------------------------------
-
-## Over the piece before night n: the gang's rank, a step up each museum,
-## and which job this is in words — "Ladronzuelo · tu segundo robo en el
-## Museo de la Prehistoria"; a museum's last, its big job.
-static func heading(n: int, players := 1) -> String:
-	var many := "_MANY" if players > 1 else "_ONE"
-	var m := museum_of(n)
-	var rank := Text.t("RANK_%d%s" % [m + 1, many])
-	var place := museum_in(m)
-	if n >= count():
-		return Text.t("BRIEF_JOB_LAST" + many) % rank
-	if is_boss(n):
-		return Text.t("BRIEF_JOB_BOSS" + many) % [rank, place]
-	return Text.t("BRIEF_JOB" + many) % [rank, Text.t("ORDINAL_%d" % room_of(n)), place]
-
 
 ## The museum (0-based, MUSEUMS) night n is in.
 static func museum_of(n: int) -> int:

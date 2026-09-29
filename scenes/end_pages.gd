@@ -162,7 +162,7 @@ static func newspaper(d: Dictionary) -> Control:
 	return _loose(paper)
 
 
-## The job sheet before a heist: {"heading", "name", "blurb", "story",
+## The job sheet before a heist: {"name", "blurb", "story",
 ## "photo": Texture2D (the piece turning, live)}: the polaroid on the left,
 ## the words on the right, the sheet a hair askew, dropping in. k: how big,
 ## everything in it (the story's own page before a heist is CARD_BIG).
@@ -199,7 +199,6 @@ static func piece_card(d: Dictionary, k := 1.0) -> Control:
 	words.alignment = BoxContainer.ALIGNMENT_CENTER
 	words.custom_minimum_size.x = text_w
 	row.add_child(words)
-	_line(d.get("heading", ""), int(15 * k), PAPER_INK_SOFT, words)
 	var name := _line(d.get("name", ""), int(38 * k), PAPER_INK, words, HEADLINE)
 	name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	name.custom_minimum_size.x = text_w
@@ -258,8 +257,7 @@ static func _polaroid(photo: Texture2D, k := 1.0) -> Control:
 
 
 ## The police file: {"photo": Texture2D (MUGSHOT_PHOTO),
-## "number", "letterhead", "stamp", "rows": [[label, value], ...], "tick":
-## [question, "YES|NO"], "notes": [label, what was written], "prints"}: the sheet, only
+## "number", "letterhead", "stamp", "rows": [[label, value], ...], "notes": [label, what was written], "prints"}: the sheet, only
 ## its top showing (SHEET_SHOWN), the photos flashing as they come up and
 ## the stamp coming down after.
 static func mugshot(d: Dictionary) -> Control:
@@ -320,12 +318,6 @@ static func mugshot(d: Dictionary) -> Control:
 	form.add_child(fields)
 	for r in d.get("rows", []):
 		_field(fields, r[0], r[1])
-	var tick: Array = d.get("tick", [])
-	if tick.size() == 2:
-		var gap := Control.new()
-		gap.custom_minimum_size.y = 4
-		fields.add_child(gap)
-		_tick(fields, tick[0], tick[1])
 	# The rest of the form, running off the bottom: blank lines to fill in
 	# and a box for the prints.
 	var rest := HBoxContainer.new()
@@ -350,14 +342,14 @@ static func mugshot(d: Dictionary) -> Control:
 	stamp.add_theme_stylebox_override("normal", _box(Color(0, 0, 0, 0), STAMP, 4, 8, 10))
 	stamp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	sheet.add_child(stamp)
-	# At the right of the form filled in, where its lines are short: clear of
-	# the faces, the number and what is written.
+	# On the blank lines at the foot, clear of the faces, the number and the
+	# crime, which can run to three lines.
 	var place := func() -> void:
 		stamp.pivot_offset = stamp.size / 2
-		var at := fields.get_global_transform() * fields.size
+		var at := blank.get_global_transform() * blank.size
 		stamp.position = sheet.get_global_transform().affine_inverse() * at - stamp.size * Vector2(1.0, 0.95)
 	stamp.resized.connect(place)
-	fields.item_rect_changed.connect(place)
+	blank.item_rect_changed.connect(place)
 	_stamp_down(stamp, -8)
 	return holder
 
@@ -471,29 +463,6 @@ static func _field(parent: Node, label: String, value: String) -> void:
 	v.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	v.custom_minimum_size.x = 200
 	_rule(box, 1, SHEET_LINE)
-
-
-## A question with two boxes, the first ticked: "¿REINCIDENTE? [X] SÍ [ ] NO".
-static func _tick(parent: Node, question: String, answers: String) -> void:
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 8)
-	parent.add_child(row)
-	var q := _line(question, 8, SHEET_INK_SOFT, row, Hud.ARCADE)
-	q.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	var words := answers.split("|")
-	for i in words.size():
-		var box := Control.new()
-		box.custom_minimum_size = Vector2(16, 16)
-		box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		var ticked := i == 0
-		box.draw.connect(func() -> void:
-			box.draw_rect(Rect2(Vector2.ZERO, box.size), SHEET_INK, false, 1.5)
-			if ticked:
-				box.draw_line(Vector2(3, 3), box.size - Vector2(3, 3), SHEET_INK, 2.5)
-				box.draw_line(Vector2(box.size.x - 3, 3), Vector2(3, box.size.y - 3), SHEET_INK, 2.5))
-		row.add_child(box)
-		var w := _line(words[i], 14, SHEET_INK, row)
-		w.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
 
 ## A box for the fingerprints, with one in it: grey ridges round a whorl.

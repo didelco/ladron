@@ -13,6 +13,11 @@ extends Node3D
 ## drone, a tiptoeing pizzicato bass, a music box echoing down the halls,
 ## wind. The tense one is a pulse of low strings, timpani and a trembling
 ## high cluster. The game sets the tension and the layers crossfade.
+##
+## The band's house has a music of its own (HOME_BPM): slow and warm, a lo-fi
+## piece in C major, made the same way on a worker thread of its own. Inside
+## the house (home) it fades in over the two above, which fade out; out of
+## it, the other way about.
 
 const RATE := 22050
 const BPM := 90.0
@@ -25,8 +30,17 @@ const LOUD_REF := 14.0
 const MAX_GAIN := 2.0
 ## the music bus sits a little under the effects, at full volume
 const MUSIC_DB := -5.0
+## The house's music: slow, and a little quieter than the museum's (it is the
+## same bus), and how long the change between the two takes.
+const HOME_BPM := 72.0
+const HOUSE_GAIN := 0.9
+const HOUSE_FADE_S := 1.5
 
 var _streams := {}
+## el volumen de la música bus sin bajar, y lo que la baja la megafonía
+var _music_db := MUSIC_DB
+var _duck_db := 0.0
+var _duck_tween: Tween
 ## Players for world sounds, reused: footsteps alone start several a
 ## second. The least recently started first.
 var _voices: Array[AudioStreamPlayer3D] = []
@@ -38,6 +52,13 @@ var _calm: AudioStreamPlayer
 var _tense: AudioStreamPlayer
 var _music_task := -1
 var _music_data: Array = []
+## the house's music: its player, the task that writes it and what it wrote
+var _house: AudioStreamPlayer
+var _house_task := -1
+var _house_wav: AudioStreamWAV
+## 0 the museums' music .. 1 the house's, eased towards the target
+var _house_mix := 0.0
+var _house_target := 0.0
 ## 0 calm .. 1 chase, eased towards the target
 var _tension := 0.0
 var _target := 0.0
@@ -51,6 +72,8 @@ func _ready() -> void:
 	_streams.bump = _mix(_noise(0.045, 220.0, 0.7), _thump(0.09, 120.0, 60.0, 0.7))
 	_streams.shelf = _mix(_noise(0.3, 2600.0, 0.6), _bells([[1350.0, 0.0], [1720.0, 0.05], [2240.0, 0.11]], 0.35, 0.12))
 	_streams.alarm = _electric_bell(0.75)
+	# The dojo's alarm when a scarecrow's torch finds somebody: a siren.
+	_streams.siren = _siren(3.0)
 	_streams.shout = _mix(_tones([[420.0, 0.0, 0.16], [300.0, 0.18, 0.28]], "saw", 0.4, 0.72, 6.0), _noise(0.4, 1800.0, 0.12))
 	_streams.whisper = _noise(0.35, 3200.0, 0.15)
 	_streams.lights = _mix(_noise(0.06, 400.0, 0.9), _buzz(0.55, 0.09))
@@ -98,6 +121,9 @@ func _ready() -> void:
 	_streams.roll = _mix(_noise(0.35, 500.0, 0.3), _thump(0.3, 70.0, 50.0, 0.15))
 	_streams.roll_bump = _mix(_mix(_thump(0.32, 95.0, 38.0, 1.0), _noise(0.09, 320.0, 1.0)),
 		_debris(0.35, 8, 2200.0, 0.3, 0.7))
+	# A door of the band's house sliding: wood on its runner, a dull rumble and
+	# a soft knock as it starts.
+	_streams.door = _mix(_mix(_noise(0.26, 380.0, 0.22), _thump(0.1, 130.0, 65.0, 0.45)), _thump(0.05, 200.0, 110.0, 0.3))
 	# A guard's boot on the marble: heavier and lower than a thief's step.
 	_streams.boot = _mix(_thump(0.14, 150.0, 70.0, 0.55), _noise(0.09, 520.0, 0.55))
 	# Minigames (Minigame): a pin setting in the lock is a bright little
@@ -116,6 +142,7 @@ func _ready() -> void:
 	for k in _streams.keys():
 		_streams[k] = _wav(_streams[k])
 	_music_task = WorkerThreadPool.add_task(_render_music)
+	_house_task = WorkerThreadPool.add_task(_render_house)
 
 
 ## Two buses with reverb, one for the music and one for sounds in the museum,
@@ -143,6 +170,12 @@ func _buses() -> void:
 		AudioServer.add_bus()
 		AudioServer.set_bus_name(AudioServer.bus_count - 1, "Effects")
 		AudioServer.set_bus_send(AudioServer.bus_count - 1, "Master")
+	# La voz de la megafonía (MegaVoice): sin reverb (el audio ya la trae),
+	# con el volumen de los efectos.
+	if AudioServer.get_bus_index("Voice") < 0:
+		AudioServer.add_bus()
+		AudioServer.set_bus_name(AudioServer.bus_count - 1, "Voice")
+		AudioServer.set_bus_send(AudioServer.bus_count - 1, "Master")
 	child_entered_tree.connect(_route)
 
 
@@ -156,9 +189,23 @@ func _route(node: Node) -> void:
 ## The music and the effects volumes, 0..1 each. Squared, so the steps sound
 ## even: halfway is clearly half as loud, not a barely quieter -6 dB.
 func set_volumes(music: float, effects: float) -> void:
-	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Music"), MUSIC_DB + _db(music))
-	for bus in ["World", "Effects"]:
+	_music_db = MUSIC_DB + _db(music)
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Music"), _music_db + _duck_db)
+	for bus in ["World", "Effects", "Voice"]:
 		AudioServer.set_bus_volume_db(AudioServer.get_bus_index(bus), _db(effects))
+
+
+## La música baja `db` (negativo) mientras habla la megafonía; 0.0 la devuelve.
+func duck(db: float) -> void:
+	if _duck_tween:
+		_duck_tween.kill()
+	_duck_tween = create_tween()
+	_duck_tween.tween_method(_set_duck, _duck_db, db, 0.3)
+
+
+func _set_duck(db: float) -> void:
+	_duck_db = db
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Music"), _music_db + _duck_db)
 
 
 func _db(level: float) -> float:
@@ -176,7 +223,7 @@ func at(sound: String, pos: Vector3, volume := 1.0, unit := 6.0) -> void:
 	p.unit_size = unit
 	p.position = pos
 	# No two footsteps quite alike.
-	p.pitch_scale = randf_range(0.85, 1.15) if sound in ["step", "bump", "boot", "roll", "roll_bump"] else (randf_range(0.93, 1.07) if sound in ["bin", "bust", "panel", "armour", "kick_metal", "kick_dry"] else 1.0)
+	p.pitch_scale = randf_range(0.85, 1.15) if sound in ["step", "bump", "boot", "roll", "roll_bump"] else (randf_range(0.93, 1.07) if sound in ["bin", "bust", "panel", "armour", "kick_metal", "kick_dry", "door"] else 1.0)
 	p.play()
 
 
@@ -234,6 +281,16 @@ func mood(tension: float, level: float) -> void:
 	_level = level
 
 
+## In the house (true) or out of it: which of the two musics is heard.
+func home(on: bool) -> void:
+	_house_target = 1.0 if on else 0.0
+
+
+## Which is heard: 0 the museums', 1 the house's.
+func house_mix() -> float:
+	return _house_mix
+
+
 func set_music(on: bool) -> void:
 	AudioServer.set_bus_mute(AudioServer.get_bus_index("Music"), not on)
 
@@ -243,12 +300,26 @@ func _process(dt: float) -> void:
 		WorkerThreadPool.wait_for_task_completion(_music_task)
 		_music_task = -1
 		_start_music()
+	if _house_task >= 0 and WorkerThreadPool.is_task_completed(_house_task):
+		WorkerThreadPool.wait_for_task_completion(_house_task)
+		_house_task = -1
+		_house = AudioStreamPlayer.new()
+		_house.stream = _house_wav
+		_house.bus = "Music"
+		_house.volume_db = -80.0
+		add_child(_house)
+		_house.play()
+	# A second and a half from one music to the other.
+	_house_mix = move_toward(_house_mix, _house_target, dt / HOUSE_FADE_S)
+	if _house:
+		_house.volume_db = linear_to_db(maxf(0.001, _level * _house_mix * HOUSE_GAIN))
 	if _calm == null:
 		return
 	# Tension comes on fast and goes slowly.
 	_tension = move_toward(_tension, _target, dt * (1.2 if _target > _tension else 0.2))
-	_calm.volume_db = linear_to_db(maxf(0.001, _level * (1.0 - 0.55 * _tension)))
-	_tense.volume_db = linear_to_db(maxf(0.001, _level * _tension))
+	var museum := 1.0 - _house_mix
+	_calm.volume_db = linear_to_db(maxf(0.001, _level * (1.0 - 0.55 * _tension) * museum))
+	_tense.volume_db = linear_to_db(maxf(0.001, _level * _tension * museum))
 
 
 ## Closing while the music is still being written: wait for the worker, or
@@ -257,6 +328,9 @@ func _exit_tree() -> void:
 	if _music_task >= 0:
 		WorkerThreadPool.wait_for_task_completion(_music_task)
 		_music_task = -1
+	if _house_task >= 0:
+		WorkerThreadPool.wait_for_task_completion(_house_task)
+		_house_task = -1
 
 
 func _start_music() -> void:
@@ -423,6 +497,154 @@ func _timpani(buf: PackedFloat32Array, start: int, gain: float) -> void:
 		buf[(start + i) % n] += sin(TAU * phase) * env * gain
 
 
+# --- The house's music --------------------------------------------------------------
+
+## The chords of the house's eight bars, as MIDI notes: a bass note and four
+## above. C major, gently: Fmaj7, Em7, Dm7, G7 / Cmaj7, Am7, Dm7, G7sus4.
+const HOUSE_CHORDS := [
+	[41, [53, 57, 60, 64]], [40, [52, 55, 59, 62]], [38, [50, 53, 57, 60]], [43, [55, 59, 62, 65]],
+	[36, [52, 55, 59, 64]], [45, [57, 60, 64, 67]], [38, [50, 53, 57, 60]], [43, [55, 60, 62, 65]],
+]
+## The little tune's notes (C pentatonic, MIDI).
+const HOUSE_TUNE := [72, 74, 76, 79, 81, 84]
+
+
+static func _mtof(midi: float) -> float:
+	return 440.0 * pow(2.0, (midi - 69.0) / 12.0)
+
+
+## A lo-fi piece for the house, rendered once: an electric piano comping soft
+## chords, a round bass, a lazy beat with a swing to it, a little tune now
+## and then and the crackle of a record. Eight bars that loop.
+func _render_house() -> void:
+	var beat := 60.0 / HOME_BPM
+	var bars := 8
+	var n := int(bars * 4 * beat * RATE)
+	var buf := PackedFloat32Array()
+	buf.resize(n)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 11
+	var at := func(b: float) -> int: return int(b * beat * RATE)
+	# The swing: the off-beat eighths a little late.
+	var swing := func(b: float) -> float: return b + (0.14 if fmod(b, 1.0) >= 0.4 else 0.0)
+	for bar in bars:
+		var chord: Array = HOUSE_CHORDS[bar]
+		var base := bar * 4.0
+		# The piano: a rolled chord on the one, a shorter one on the "and" of two.
+		for hit in [[0.0, 1.7, 0.075], [1.5, 0.9, 0.05]]:
+			var start: int = at.call(swing.call(base + hit[0]))
+			for k in 4:
+				_keys(buf, start + int(k * 0.018 * RATE), _mtof(chord[1][k]), hit[1] * beat, hit[2])
+		# The bass: the root, and its fifth on the three-and.
+		_soft_bass(buf, at.call(base), _mtof(chord[0]), 1.3 * beat, 0.24)
+		_soft_bass(buf, at.call(swing.call(base + 2.5)), _mtof(chord[0] + (7 if bar % 2 == 0 else 0)), 0.8 * beat, 0.17)
+		# The beat: kick on the one and the three-and, snare on two and four,
+		# a hat on every eighth, the off-beats softer.
+		_kick(buf, at.call(base), 0.32)
+		_kick(buf, at.call(swing.call(base + 2.5)), 0.24)
+		_snare(buf, at.call(base + 1.0), 0.16, rng)
+		_snare(buf, at.call(base + 3.0), 0.16, rng)
+		for e in 8:
+			var b: float = base + e * 0.5
+			_hat(buf, at.call(swing.call(b)), 0.045 if e % 2 == 0 else 0.028, rng)
+	# A little tune every two bars: three or four notes of the pentatonic
+	# scale, each with its echo.
+	for phrase in bars / 2:
+		var start_b: float = phrase * 8.0 + 1.0 + rng.randi_range(0, 2)
+		var b := start_b
+		for k in rng.randi_range(3, 4):
+			var note: int = HOUSE_TUNE[rng.randi_range(0, HOUSE_TUNE.size() - 1)]
+			var s: int = at.call(swing.call(b))
+			for echo in [[0, 0.055], [int(beat * 0.75 * RATE), 0.024], [int(beat * 1.5 * RATE), 0.01]]:
+				_tine(buf, s + echo[0], _mtof(note), echo[1])
+			b += [0.5, 1.0, 1.5][rng.randi_range(0, 2)]
+	# The record: a soft hiss and the odd pop.
+	var pop := 0
+	for i in n:
+		buf[i] += (rng.randf() * 2.0 - 1.0) * 0.0035
+		if rng.randf() < 1.0 / 9000.0:
+			pop = 60
+		if pop > 0:
+			buf[i] += (rng.randf() * 2.0 - 1.0) * 0.05 * pop / 60.0
+			pop -= 1
+	# Level it, so it sits alongside the museum's music.
+	var peak := 0.0
+	for i in n:
+		peak = maxf(peak, absf(buf[i]))
+	var k := 0.62 / maxf(peak, 0.001)
+	for i in n:
+		buf[i] *= k
+	_house_wav = _wav(buf)
+	_house_wav.loop_mode = AudioStreamWAV.LOOP_FORWARD
+	_house_wav.loop_begin = 0
+	_house_wav.loop_end = n
+
+
+## An electric piano's note: a tine with a soft bell on top, falling away.
+func _keys(buf: PackedFloat32Array, start: int, f: float, seconds: float, gain: float) -> void:
+	var n := buf.size()
+	var len := int(seconds * RATE)
+	for i in len:
+		var t := float(i) / RATE
+		var env := minf(1.0, t / 0.008) * exp(-t * 2.4) * minf(1.0, (seconds - t) / 0.12)
+		var th := TAU * f * t
+		var v := sin(th + 1.1 * exp(-t * 7.0) * sin(th)) + 0.16 * sin(2.0 * th) * exp(-t * 3.0)
+		buf[(start + i) % n] += v * env * gain
+
+
+## A round bass: a sine with a whisper of its octave.
+func _soft_bass(buf: PackedFloat32Array, start: int, f: float, seconds: float, gain: float) -> void:
+	var n := buf.size()
+	var len := int(seconds * RATE)
+	for i in len:
+		var t := float(i) / RATE
+		var env := minf(1.0, t / 0.01) * exp(-t * 2.2) * minf(1.0, (seconds - t) / 0.08)
+		buf[(start + i) % n] += (sin(TAU * f * t) + 0.25 * sin(TAU * 2.0 * f * t)) * env * gain
+
+
+## A music-box tine for the tune.
+func _tine(buf: PackedFloat32Array, start: int, f: float, gain: float) -> void:
+	var n := buf.size()
+	var len := int(1.1 * RATE)
+	for i in len:
+		var t := float(i) / RATE
+		var env := minf(1.0, t / 0.003) * exp(-t * 4.5)
+		buf[(start + i) % n] += (sin(TAU * f * t) + 0.2 * sin(TAU * 3.0 * f * t) * exp(-t * 6.0)) * env * gain
+
+
+func _kick(buf: PackedFloat32Array, start: int, gain: float) -> void:
+	var n := buf.size()
+	var len := int(0.32 * RATE)
+	var phase := 0.0
+	for i in len:
+		var t := float(i) / RATE
+		phase += (48.0 + 70.0 * exp(-t * 26.0)) / RATE
+		buf[(start + i) % n] += sin(TAU * phase) * minf(1.0, t / 0.002) * exp(-t * 11.0) * gain
+
+
+func _snare(buf: PackedFloat32Array, start: int, gain: float, rng: RandomNumberGenerator) -> void:
+	var n := buf.size()
+	var len := int(0.2 * RATE)
+	var y := 0.0
+	var a := 1.0 - exp(-TAU * 2600.0 / RATE)
+	for i in len:
+		var t := float(i) / RATE
+		y += a * (rng.randf() * 2.0 - 1.0 - y)
+		buf[(start + i) % n] += (y * 1.6 * exp(-t * 20.0) + sin(TAU * 185.0 * t) * 0.5 * exp(-t * 30.0)) * gain
+
+
+func _hat(buf: PackedFloat32Array, start: int, gain: float, rng: RandomNumberGenerator) -> void:
+	var n := buf.size()
+	var len := int(0.05 * RATE)
+	var y := 0.0
+	var a := 1.0 - exp(-TAU * 7000.0 / RATE)
+	for i in len:
+		var t := float(i) / RATE
+		var x := rng.randf() * 2.0 - 1.0
+		y += a * (x - y)
+		buf[(start + i) % n] += (x - y) * exp(-t * 90.0) * gain
+
+
 # --- Effects -----------------------------------------------------------------------
 
 ## A burst of low-passed noise with a fast attack and an exponential tail.
@@ -505,6 +727,20 @@ func _electric_bell(seconds: float) -> PackedFloat32Array:
 		var hammer := exp(-strike * 5.0)
 		var v := sin(TAU * 1150.0 * t) + 0.6 * sin(TAU * 2650.0 * t) + 0.3 * sin(TAU * 3910.0 * t)
 		out[i] = v * hammer * (1.0 - t / seconds) * 0.28
+	return out
+
+
+## A siren going up and down twice a second, softened at the ends.
+func _siren(seconds: float) -> PackedFloat32Array:
+	var n := int(seconds * RATE)
+	var out := PackedFloat32Array()
+	out.resize(n)
+	var phase := 0.0
+	for i in n:
+		var t := float(i) / RATE
+		phase += (760.0 + 240.0 * sin(TAU * 1.6 * t)) / RATE
+		var v := sin(TAU * phase) + 0.35 * sin(TAU * phase * 2.0)
+		out[i] = v * minf(1.0, t / 0.05) * minf(1.0, (seconds - t) / 0.25) * 0.16
 	return out
 
 

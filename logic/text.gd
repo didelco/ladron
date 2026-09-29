@@ -15,6 +15,10 @@ const FOLDER := "res://locale/texts.%s.translation"
 
 static var _loaded := false
 
+## Keys asked for that have no words (they would show raw on screen): the
+## tests (test_textos) look here after playing through the screens.
+static var missing := {}
+
 
 ## Load the language and switch to it: before anything builds any text. Also
 ## done by itself on the first t(), so scripts without the game (the tests)
@@ -35,7 +39,19 @@ static func setup() -> void:
 static func t(key: String) -> String:
 	if not _loaded:
 		setup()
-	return String(TranslationServer.translate(key))
+	var words := String(TranslationServer.translate(key))
+	if words == key and key.length() > 3 and key == key.to_upper() and not " " in key:
+		if not missing.has(key):
+			push_warning("Text: sin texto para la clave %s" % key)
+		missing[key] = true
+	return words
+
+
+## Whether a key has words (for looking up variants that may not exist).
+static func has(key: String) -> bool:
+	if not _loaded:
+		setup()
+	return String(TranslationServer.translate(key)) != key
 
 
 ## A copy of a dictionary with these fields (keys into Text) in words.

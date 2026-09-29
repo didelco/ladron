@@ -274,7 +274,7 @@ static func minigames() -> bool:
 ## The minigame this thief would start with the action key where it stands:
 ## {kind, what, steps}, or empty if there is none to start.
 static func game_for(p: Thief) -> Dictionary:
-	if not minigames() or p.out or p.game or p.posing or p.hiding or p.rolling or p.dizzy > 0.0:
+	if not Sim.feature("case") or not minigames() or p.out or p.game or p.posing or p.hiding or p.rolling or p.dizzy > 0.0:
 		return {}
 	if not taken and Museum.dist(p.x, p.y, at.x + 0.5, at.y + 0.5) <= REACH:
 		return {"kind": "lockpick", "what": "case", "steps": Minigame.pins_for(float(loot.seconds))}
@@ -403,6 +403,11 @@ static func step(thieves: Array[Thief], dt: float, now: float, noises: Array[Sou
 				panel_by = p.id
 			elif at_panel2(p):
 				panel2_by = p.id
+	# A sealed case (the practice room): nothing works it.
+	if not taken and not Sim.feature("case"):
+		progress = 0.0
+		by = ""
+		return ""
 	if not taken and minigames():
 		return _step_picking(thieves, now, noises)
 	if not taken:

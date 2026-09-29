@@ -3,7 +3,7 @@
 
     python3 tools/docs.py build           # capturas, assets, datos y textos (abre una ventana del juego)
     python3 tools/docs.py build --fast    # solo datos y textos, sin capturas ni renders
-    python3 tools/docs.py build objects   # solo unas partes: shots, assets, models, objects, sounds, data
+    python3 tools/docs.py build objects   # solo unas partes: shots, city, assets, models, objects, sounds, data
     python3 tools/docs.py build palette   # solo la auditoría de colores (tools/palette.py, sin Godot)
     python3 tools/docs.py serve           # http://localhost:8765, con los textos editables
     python3 tools/docs.py texts           # solo textos y ESTILO.md (rápido, sin Godot)
@@ -49,7 +49,7 @@ GODOT = os.environ.get("GODOT", "/Applications/Godot.app/Contents/MacOS/Godot")
 VERSIONS = os.path.join(DOCS, "versiones")
 MANIFEST = os.path.join(VERSIONS, "versiones.json")
 # Las partes de `build` que hace Godot (tools/capture_docs.gd); el resto, Python.
-GODOT_PARTS = ["shots", "assets", "models", "objects", "sounds", "data"]
+GODOT_PARTS = ["shots", "city", "assets", "models", "objects", "sounds", "data"]
 PY_PARTS = ["palette", "versions"]
 PORT = int(os.environ.get("PORT", "8765"))
 
@@ -57,7 +57,7 @@ PORT = int(os.environ.get("PORT", "8765"))
 GROUPS = [
     ("Historia", ["STORY_", "PROLOGUE_", "ENDING_", "NIGHT_", "MUSEUM_", "LESSON_"]),
     ("Menús", ["MENU_", "JOIN_", "SEAT_", "CHALLENGE_", "BRIEF_", "PLAN_", "NEWS_", "TIP_"]),
-    ("Juego", ["HUD_", "LOG_", "END_", "GAME_", "GUARD_", "MIND_", "ZONE_", "PROP_", "PIECE_", "LEGEND_", "BRAIN_"]),
+    ("Juego", ["HUD_", "LOG_", "END_", "GAME_", "GUARD_", "MIND_", "ZONE_", "PROP_", "PIECE_", "LEGEND_", "BRAIN_", "MEGA_"]),
     ("Descripciones", ["DESC_"]),
     ("Generador", ["GEN_", "GALLERY_", "THEME_"]),
     ("Ajustes y controles", ["SETTINGS_", "CONTROLS_", "ASSETS_"]),
@@ -266,6 +266,7 @@ def build(fast, only=()):
         "historia": load_json("historia.json", {}),
         "catalogo": load_json("catalogo.json", {}),
         "capturas": load_json("capturas.json", []),
+        "ciudad": load_json("ciudad.json", {}),
         "assets": load_json("assets.json", {}),
         "modelos": load_json("modelos.json", []),
         "objetos": load_json("objetos.json", []),

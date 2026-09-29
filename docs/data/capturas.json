@@ -112,6 +112,48 @@
 		"title": "Elegir mandos"
 	},
 	{
+		"file": "capturas/ciudad_mapa.webp",
+		"id": "ciudad_mapa",
+		"section": "ciudad",
+		"text": "Toda la ciudad de la historia desde arriba, con el ángulo del juego y todos los museos abiertos: el río con sus meandros y sus dos puentes, los cuatro barrios, la loma de rocas al norte, el bosque alrededor y los cinco museos unidos por la ruta desde el escondite.",
+		"title": "La ciudad entera"
+	},
+	{
+		"file": "capturas/ciudad_museo_1.webp",
+		"id": "ciudad_museo_1",
+		"section": "ciudad",
+		"text": "Su edificio en la ciudad, con las manzanas de alrededor, desde el ángulo del juego y con todas sus salas abiertas.",
+		"title": "Museo 1: El Museo de la Prehistoria"
+	},
+	{
+		"file": "capturas/ciudad_museo_2.webp",
+		"id": "ciudad_museo_2",
+		"section": "ciudad",
+		"text": "Su edificio en la ciudad, con las manzanas de alrededor, desde el ángulo del juego y con todas sus salas abiertas.",
+		"title": "Museo 2: El Museo de Ciencias Naturales"
+	},
+	{
+		"file": "capturas/ciudad_museo_3.webp",
+		"id": "ciudad_museo_3",
+		"section": "ciudad",
+		"text": "Su edificio en la ciudad, con las manzanas de alrededor, desde el ángulo del juego y con todas sus salas abiertas.",
+		"title": "Museo 3: La Villa de las Antigüedades"
+	},
+	{
+		"file": "capturas/ciudad_museo_4.webp",
+		"id": "ciudad_museo_4",
+		"section": "ciudad",
+		"text": "Su edificio en la ciudad, con las manzanas de alrededor, desde el ángulo del juego y con todas sus salas abiertas.",
+		"title": "Museo 4: El Museo del Castillo"
+	},
+	{
+		"file": "capturas/ciudad_museo_5.webp",
+		"id": "ciudad_museo_5",
+		"section": "ciudad",
+		"text": "Su edificio en la ciudad, con las manzanas de alrededor, desde el ángulo del juego y con todas sus salas abiertas.",
+		"title": "Museo 5: El Museo de Arte Contemporáneo"
+	},
+	{
 		"file": "capturas/ajustes_inicio.webp",
 		"id": "ajustes_inicio",
 		"section": "ajustes",

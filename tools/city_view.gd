@@ -156,6 +156,8 @@ func _plan(stage: CityStage) -> void:
 	for m in Story.MUSEUMS.size():
 		var p: Vector2 = px.call(stage.on_plane(stage._look_at(m)))
 		img.fill_rect(Rect2i(Vector2i(p) - Vector2i(6, 6), Vector2i(12, 12)), Color(Story.MUSEUMS[m].colour))
+	var hp: Vector2 = px.call(stage.on_plane(stage.town.transform * stage.hideout_spot))
+	img.fill_rect(Rect2i(Vector2i(hp) - Vector2i(8, 8), Vector2i(16, 16)), Color("#e2262f"))
 	img.save_png(out + "/plan.png")
 	print("saved %s/plan.png" % out)
 

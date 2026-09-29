@@ -101,6 +101,16 @@ func build() -> void:
 		_bodies[p.id] = parts
 
 
+## Draw only the bodies (props, their papers, what fell apart) where `shown`
+## (a Callable taking the x and y in tiles, answering a bool) says so: the
+## band's house hides what is in a dark room (DenView.shows_at).
+func show_where(shown: Callable) -> void:
+	for b in _loose:
+		var body := b as Node3D
+		if is_instance_valid(body):
+			body.visible = shown.call(body.global_position.x + Museum.w / 2.0, body.global_position.z + Museum.h / 2.0)
+
+
 ## One shoving body per thief, following them.
 func set_thieves(count: int) -> void:
 	for m in _movers:

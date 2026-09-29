@@ -371,7 +371,8 @@ func _ready() -> void:
 	_gang.add_theme_constant_override("separation", 14)
 	_gang.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_gang)
-	_play = [_log, _job, _arrow, _alarm, _gang]
+	_build_megaphone()
+	_play = [_log, _job, _arrow, _alarm, _gang, _mega]
 
 	# The model's reasoning, for whoever wants to watch it think: a card per
 	# guard with its plan and the probabilities Laya gave each option.
@@ -389,6 +390,140 @@ func _ready() -> void:
 	_ia_box = VBoxContainer.new()
 	_ia.add_child(_ia_box)
 	_ia.visible = false
+
+
+# --- The band's house -----------------------------------------------------------
+
+## In the house (Den) there is no alarm to watch: the marks at the top stay
+## away, and instead the name of each room comes up as one walks into it.
+var home := false
+var _room: Label
+var _room_tween: Tween
+
+
+func set_home(on: bool) -> void:
+	home = on
+	if not on and _room:
+		_room.modulate.a = 0.0
+
+
+## A room's name, large in the top middle for a moment.
+func room_name(text: String) -> void:
+	if _room == null:
+		_room = _label(38, Color("#ffe3b0"), self, true)
+		_room.add_theme_constant_override("outline_size", 12)
+		_room.add_theme_color_override("font_outline_color", Color("#5a3a22"))
+		_room.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_room.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_room.modulate.a = 0.0
+	var view := get_viewport().get_visible_rect().size
+	_room.text = text
+	_room.size = Vector2(view.x, 60)
+	_room.position = Vector2(0, view.y * 0.2)
+	if _room_tween:
+		_room_tween.kill()
+	_room.modulate.a = 0.0
+	_room_tween = create_tween()
+	_room_tween.tween_property(_room, "modulate:a", 1.0, 0.3)
+	_room_tween.tween_interval(1.6)
+	_room_tween.tween_property(_room, "modulate:a", 0.0, 0.9)
+
+
+# --- The loudspeaker ------------------------------------------------------------
+
+## How long a notice stays up, and how long it takes to come in and to go.
+const MEGA_S := 5.5
+const MEGA_IN_S := 0.25
+const MEGA_OUT_S := 0.7
+## Cuánto se queda el rótulo si la voz dura más (MegaVoice.MAX_HOLD_S es su tope)
+const MEGA_VOICE_TAIL_S := 0.5
+## Below the alarm marks at the top centre; as wide as the screen allows.
+const MEGA_TOP := 78.0
+const MEGA_MAX_W := 760.0
+const MEGA_SIDE := 24.0
+var _mega: Control
+var _mega_box: PanelContainer
+var _mega_text: Label
+var _mega_left := 0.0
+## cuánto dura el rótulo que está puesto (MEGA_S, o más si habla)
+var _mega_total := MEGA_S
+
+
+func _build_megaphone() -> void:
+	_mega = Control.new()
+	_mega.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_mega.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_mega)
+	_mega_box = PanelContainer.new()
+	_mega_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var style := StyleBoxFlat.new()
+	style.bg_color = GLASS
+	style.border_color = BRASS
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(10)
+	style.content_margin_left = 14
+	style.content_margin_right = 16
+	style.content_margin_top = 8
+	style.content_margin_bottom = 8
+	_mega_box.add_theme_stylebox_override("panel", style)
+	_mega.add_child(_mega_box)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_mega_box.add_child(row)
+	# A little loudspeaker: the box, the horn and two waves.
+	var icon := Control.new()
+	icon.custom_minimum_size = Vector2(30, 24)
+	icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon.draw.connect(func() -> void:
+		icon.draw_rect(Rect2(0, 8, 6, 8), BRASS)
+		icon.draw_colored_polygon(PackedVector2Array([Vector2(6, 8), Vector2(14, 2), Vector2(14, 22), Vector2(6, 16)]), BRASS)
+		icon.draw_arc(Vector2(15, 12), 6, -0.9, 0.9, 8, GLOW_TEXT, 2.0)
+		icon.draw_arc(Vector2(15, 12), 11, -0.9, 0.9, 10, GLOW_TEXT, 2.0))
+	row.add_child(icon)
+	_mega_text = _label(17, GLOW_TEXT, row)
+	_mega_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_mega_text.custom_minimum_size.x = 100.0
+	_mega_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_mega_text.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_mega_text.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_mega_box.modulate.a = 0.0
+	_mega.visible = false
+
+
+## A notice from the museum's loudspeaker, for a few seconds at the top;
+## "" puts it away. It never takes a click or stops the game.
+func megaphone(text: String, voice_s := 0.0) -> void:
+	_mega_text.text = text
+	_mega_total = maxf(MEGA_S, voice_s + MEGA_VOICE_TAIL_S + MEGA_OUT_S)
+	_mega_left = _mega_total if text != "" else 0.0
+	_mega_box.modulate.a = 0.0
+	if text == "":
+		return
+	_mega.visible = true
+	_place_megaphone()
+
+
+func _place_megaphone() -> void:
+	var view := get_viewport().get_visible_rect().size
+	_mega_box.custom_minimum_size.x = minf(MEGA_MAX_W, view.x - MEGA_SIDE * 2.0)
+	_mega_box.reset_size()
+	_mega_box.position = Vector2((view.x - _mega_box.size.x) / 2.0, MEGA_TOP)
+
+
+func _draw_megaphone(dt: float) -> void:
+	if _mega_left <= 0.0:
+		return
+	_mega_left -= dt
+	var t := _mega_total - _mega_left
+	var a := minf(t / MEGA_IN_S, 1.0)
+	if _mega_left < MEGA_OUT_S:
+		a = maxf(_mega_left / MEGA_OUT_S, 0.0)
+	_mega_box.modulate.a = a
+	_place_megaphone()
+	if _mega_left <= 0.0:
+		_mega_box.modulate.a = 0.0
 
 
 ## The kunai's outline: a long point ahead, a short one behind.
@@ -1886,7 +2021,9 @@ func show_map(plan: Image, thief_colours: Array = []) -> void:
 	for c in _map_legend.get_children():
 		c.queue_free()
 	var keys := ["thief", "gem", "exit", "prop"]
-	if Heist.team and not Heist.taken:
+	if home_map:
+		keys = ["thief", "exit", "door", "fog"]
+	if Heist.team and not Heist.taken and not home_map:
 		keys.append("panel")
 	legend_row(_map_legend, keys, thief_colours, Color(Heist.loot.colour))
 	var hint := _label(12, C.dim, _map_legend)
@@ -1928,6 +2065,7 @@ static func live_map(thieves: Array[Thief], colours: Array) -> Image:
 ## starts (a red cross).
 static func plan_map(guards: Array[Guard], colours: Array) -> Image:
 	var none: Array[Thief] = []
+	home_map = false
 	return _draw_map(none, [], guards, colours)
 
 
@@ -1941,6 +2079,14 @@ const MAP_PROP := Color("#c4906a")
 const MAP_ROUTE := Color("#5a3a22")
 const MAP_WALL := Color("#4a2f22")
 const MAP_GUARD := Color("#c42a3c")
+## The band's house on the map: a room nobody sees is «unexplored» (a flat,
+## dim tone, nothing of what is in it), a shut door is wood in the wall.
+const MAP_FOG := Color("#a7a1a6")
+const MAP_DOOR := Color("#9c6a3c")
+## Set by Main before drawing (it knows the house): whether the plan is the
+## band's house, and which of its rooms are dark.
+static var home_map := false
+static var dark_rooms: Array[String] = []
 
 ## The alarm panel as a pixel mask: '#' orange, 'w' the dark mark.
 const ICON_PANEL := [
@@ -1965,8 +2111,20 @@ static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard
 			if Museum.is_outside(x, y):
 				continue
 			var t := Museum.grid[y * Museum.w + x]
-			img.fill_rect(Rect2i(x * s, y * s, s, s), MAP_WALL if t == Tiles.WALL else (MAP_CASE if t == Tiles.COVER else MAP_FLOOR))
+			var tone: Color = MAP_WALL if t == Tiles.WALL else (MAP_CASE if t == Tiles.COVER else MAP_FLOOR)
+			# In the house, a dark room is only its shape: no furniture.
+			if home_map and t != Tiles.WALL and dark_rooms.has(Den.tile_room(Vector2i(x, y))):
+				tone = MAP_FOG
+			img.fill_rect(Rect2i(x * s, y * s, s, s), tone)
+	if home_map:
+		# The doors: floor when open, wood in the wall when shut.
+		for d in Den.DOORS:
+			var r := Den.door_rect(d.id)
+			var tone: Color = MAP_FLOOR if Den.is_open(d.id) else MAP_DOOR
+			img.fill_rect(Rect2i(r.position.x * s, r.position.y * s, r.size.x * s, r.size.y * s), tone)
 	for p in Props.list:
+		if home_map and dark_rooms.has(Den.tile_room(p.tile)):
+			continue
 		if not p.fallen:
 			img.fill_rect(Rect2i(p.tile.x * s, p.tile.y * s, s, s), MAP_PROP)
 	var at := func(p: Vector2) -> Vector2i: return Vector2i(int(p.x * s), int(p.y * s))
@@ -1981,7 +2139,7 @@ static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard
 	# The door, in green, and its sign just inside it.
 	var door: Vector2i = Heist.exit + Heist.exit_face
 	img.fill_rect(Rect2i(door.x * s, door.y * s, s, s), C.green)
-	if Heist.team and not Heist.taken:
+	if Heist.team and not Heist.taken and not home_map:
 		_stamp(img, ICON_PANEL, at.call(mid.call(Heist.panel)), 4, {"#": Color("#ff922b"), "w": MAP_INK})
 		if Heist.panel2.x >= 0:
 			_stamp(img, ICON_PANEL, at.call(mid.call(Heist.panel2)), 4, {"#": Color("#ff922b"), "w": MAP_INK})
@@ -1990,7 +2148,10 @@ static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard
 	var gem := func(p: Vector2, r: int) -> void:
 		var c: Vector2i = (at.call(p) as Vector2i).clamp(Vector2i(r * 2, r * 2), img.get_size() - Vector2i(r * 2, r * 2))
 		_diamond(img, c, r, Color(Heist.loot.colour))
-	if not Heist.taken:
+	# (In the house there is no piece to steal: the dojo's case is sealed.)
+	if home_map:
+		pass
+	elif not Heist.taken:
 		gem.call(mid.call(Heist.at), 20)
 	elif Heist.dropped != Vector2.INF:
 		gem.call(Heist.dropped, 16)
@@ -2090,6 +2251,7 @@ static func _kunai(img: Image, c: Vector2i, dir: Vector2, k: float, colour: Colo
 const LEGEND := {
 	"thief": "LEGEND_THIEF", "gem": "LEGEND_GEM", "exit": "LEGEND_EXIT", "guard": "LEGEND_GUARD",
 	"prop": "LEGEND_PROP", "route": "LEGEND_ROUTE", "panel": "LEGEND_PANEL",
+	"door": "LEGEND_DOOR", "fog": "LEGEND_FOG",
 }
 
 
@@ -2113,6 +2275,12 @@ static func legend_icon(key: String, colour := Color.WHITE) -> ImageTexture:
 			for k in 3:
 				img.fill_rect(Rect2i(10 + k * 17, 15, 10, 10), Color("#e8d6b4"))
 		"exit": _kunai(img, c, Vector2.RIGHT, 1.2, C.green)
+		"door":
+			img.fill_rect(Rect2i(c.x - 12, c.y - 12, 24, 24), MAP_INK)
+			img.fill_rect(Rect2i(c.x - 10, c.y - 10, 20, 20), MAP_DOOR)
+		"fog":
+			img.fill_rect(Rect2i(c.x - 12, c.y - 12, 24, 24), MAP_INK)
+			img.fill_rect(Rect2i(c.x - 10, c.y - 10, 20, 20), MAP_FOG)
 	return ImageTexture.create_from_image(img)
 
 
@@ -2214,6 +2382,8 @@ func update_play(log_lines: Array[String], job: Dictionary, way: Dictionary, obj
 	# What happened lately: bottom left.
 	_log.position = Vector2(24, view.y - 20 - _log.get_minimum_size().y)
 	_draw_alarm(alarm, view)
+	if home:
+		_alarm.visible = false
 	_gang.position = Vector2(view.x / 2 - _gang.get_combined_minimum_size().x / 2, view.y - PORTRAIT - 22)
 	# What one thief can do, or is doing, goes over its head (Prompt); here
 	# only what the whole gang should know.
@@ -2506,6 +2676,7 @@ func _process(dt: float) -> void:
 		if is_instance_valid(t):
 			t.rotation = sin(_clock * 1.3 + i) * 0.025
 			t.scale = Vector2.ONE * (1.0 + sin(_clock * 2.1 + i) * 0.025)
+	_draw_megaphone(dt)
 	if _count_wait > 0.0:
 		_count_wait -= dt
 		_count.visible = _count_wait <= 0.0

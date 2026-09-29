@@ -13,6 +13,9 @@ const MODEL := "temas/moderna/recreativa"
 
 ## The tiles with a machine on them.
 static var list: Array[Vector2i] = []
+## The way a machine's screen looks, where it is not the free floor beside it
+## (front_of): the band's house sets its own (Den.ARCADE_FRONT).
+static var fronts := {}
 
 
 ## Find tonight's machines: where the museum's collection has one (Collection,
@@ -21,6 +24,14 @@ static var list: Array[Vector2i] = []
 static func find() -> void:
 	Collection.ensure()
 	list = Collection.tiles_of(MODEL)
+	fronts = {}
+
+
+## The band's house: its machine in the lounge and nothing else (there is no
+## collection there). Playing it is the same pong; nothing is won or kept.
+static func find_home() -> void:
+	list = [Den.ARCADE_AT]
+	fronts = {Den.ARCADE_AT: Den.ARCADE_FRONT}
 
 
 ## The machine thief p stands in front of (on the side its screen faces,
@@ -31,7 +42,7 @@ static func within_reach(p: Thief, thieves: Array[Thief]) -> Vector2i:
 	if not Heist.minigames() or p.out or p.game or p.posing or p.hiding or p.rolling or p.dizzy > 0.0:
 		return Vector2i(-1, -1)
 	for t in list:
-		var front := MuseumView.front_of(t)
+		var front: Vector2i = fronts.get(t, MuseumView.front_of(t))
 		var middle := Vector2(t) + Vector2(0.5, 0.5)
 		var off := Vector2(p.x, p.y) - middle
 		if off.dot(Vector2(front)) < 0.3:

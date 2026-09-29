@@ -462,7 +462,7 @@ func _news_card(b: Dictionary) -> Control:
 	var box := _frame()
 	var col: VBoxContainer = box.get_child(0)
 	col.add_theme_constant_override("separation", 10)
-	var head := _text(col, Text.t("TOUR_NEWS_HEAD"), 22, CARD_TITLE, true)
+	var head := _text(col, Text.t("BRIEF_TAB_NEWS"), 22, CARD_TITLE, true)
 	head.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var title := _text(col, b.title, 36, CARD_TEXT, true)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -594,8 +594,8 @@ func _explore_ui() -> void:
 		_start = _pill(Text.t("TOUR_START"), GO, GO_LIT, GO_EDGE, GO_INK, 20)
 		_start.pressed.connect(func() -> void: go.emit())
 		_start.mouse_entered.connect(func() -> void:
-			cursor = marks.size()
-			_explore_hints())
+			if mode == "explore" and cursor != marks.size():
+				_pick(marks.size()))
 		add_child(_start)
 	_start.visible = true
 	if _list == null:

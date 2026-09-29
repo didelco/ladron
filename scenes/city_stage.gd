@@ -43,7 +43,12 @@ const YAW := 20.0
 ## the next two up in the high town, one above the other; across it to the
 ## fourth; and over the second bridge to the last, by the water again.
 const MUSEUM_SPOTS := [Vector2(-12, -7.5), Vector2(-7, 13), Vector2(-20, 32), Vector2(15, 13), Vector2(20, -7.5)]
-const HIDEOUT_SPOT := Vector2(-21, -8)
+const HIDEOUT_SPOT := Vector2(24, -16)
+## The hideout is one more thing to pick in the town, after the museums
+## (not -1: that is "none" for Main).
+const HIDEOUT := 5
+## how high its sign and ring go over the little house
+const HIDEOUT_TOP := 2.5
 ## The river runs across the screen this steeply (up for each one across).
 const RIVER_TILT := 0.45
 ## The districts: two on the near bank, two on the high one, each its grid
@@ -140,6 +145,8 @@ var _museums: Array[Node3D] = []
 var _builder: TownBuilder
 var _lots: Array = []
 var _hideout_lot: Array = []
+## where the hideout's house stands (its block's corner), on the town's plan
+var hideout_spot := Vector3.ZERO
 ## where each museum stands, on the town's plan (known before it is built)
 var _spots: Array[Vector3] = []
 ## all the camera can ever see and the safe margin round it (sight), on the
@@ -276,12 +283,15 @@ func build(open_to: int, pick: int) -> void:
 		builder.museums.append(Vector2(c.x, c.z))
 		_spots.append(c + Vector3(0, 0.09, 0))
 	_hideout_lot = spot.call(HIDEOUT_SPOT)
+	var hd: TownBuilder.District = builder.districts[_hideout_lot[0]]
+	var hh := TownBuilder.block_size() * 0.5 - 0.9
+	hideout_spot = builder.block_top(_hideout_lot[0], _hideout_lot[1]) + hd.basis() * Vector3(hh, 0.09, hh)
+	_spots.append(hideout_spot)
 	# Only what the camera can ever see, and a safe margin round it.
 	_keep = sight(WIDEST, SAFE)
 	if cut:
 		builder.seen = _in_sight
 	builder.build()
-	_hideout()
 	_route(open_to)
 	for m in Story.MUSEUMS.size():
 		var lot := Node3D.new()
@@ -303,6 +313,7 @@ func build(open_to: int, pick: int) -> void:
 		lock.visible = m > open_to
 		lot.add_child(lock)
 		_locks.append(lock)
+	_hideout()
 	_star = MeshInstance3D.new()
 	var hole := TownBuilder.block_size() * 0.68
 	_star.mesh = shuriken(hole, hole + 0.45, hole + 2.0)
@@ -323,6 +334,11 @@ func build(open_to: int, pick: int) -> void:
 	_place_camera()
 
 
+## Whether m is the hideout (not a museum: nothing to go into).
+func is_hideout(m: int) -> bool:
+	return m == HIDEOUT
+
+
 ## Whether museum m can be gone into.
 func is_open(m: int) -> bool:
 	return m >= 0 and m < _open.size() and _open[m]
@@ -338,6 +354,14 @@ func pick(m: int) -> void:
 func museum_on_screen(m: int) -> Vector2:
 	var lot := _museums[m]
 	return _cam.unproject_position(lot.global_position + Vector3(0, _roof_height(m) + 3.0, 0))
+
+
+## Where stop m (a museum, or the hideout) stands on the screen's plane,
+## as a screen point would (x across, y down), whichever way the camera
+## looks now: for choosing the stop that lies in a direction (Tour.toward).
+func stop_on_screen(m: int) -> Vector2:
+	var p := on_plane(town.transform * _museums[m].position)
+	return Vector2(p.x, -p.y)
 
 
 ## Where a point of the town (or anything) is on screen.
@@ -588,13 +612,24 @@ func _process(dt: float) -> void:
 ## The gang's hideout: a little house with a sock hung out as a flag, on
 ## its block's corner nearest the museums.
 func _hideout() -> void:
-	var g := Node3D.new()
-	var h := TownBuilder.block_size() * 0.5 - 0.9
 	var district: TownBuilder.District = _builder.districts[_hideout_lot[0]]
-	g.position = _builder.block_top(_hideout_lot[0], _hideout_lot[1]) + district.basis() * Vector3(h, 0.09, h)
-	g.rotation.y = district.angle
+	var lot := Node3D.new()
+	lot.position = hideout_spot
+	lot.rotation.y = district.angle
+	town.add_child(lot)
+	_museums.append(lot)
+	_open.append(true)
+	var shell := Node3D.new()
+	lot.add_child(shell)
+	_shells.append(shell)
+	var g := Node3D.new()
 	g.scale = Vector3.ONE * 1.2
-	_scenery.add_child(g)
+	shell.add_child(g)
+	# never shown: keeps the museums' arrays in step (see _process)
+	var lock := Node3D.new()
+	lock.visible = false
+	lot.add_child(lock)
+	_locks.append(lock)
 	_rounded(g, 1.4, 1.1, 0.8, 0.08, Color("#4a3a2a"), Vector3(0, 0.4, 0))
 	var roof := PrismMesh.new()
 	roof.size = Vector3(1.6, 0.6, 1.2)
@@ -645,6 +680,8 @@ func _dashes(a: Vector3, b: Vector3, colour: Color, lit: bool) -> void:
 
 ## How tall a museum is, for its sign and its padlock.
 func _roof_height(m: int) -> float:
+	if m == HIDEOUT:
+		return HIDEOUT_TOP
 	return _body(m).top
 
 

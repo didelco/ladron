@@ -77,6 +77,14 @@ func walk(m, n: int, players: int) -> void:
 	var on_mark: String = await accept_hint.call()
 	check(on_start == Text.t("TOUR_START") and on_mark == Text.t("TOUR_HINT_SEE"),
 		what + ": aceptar, en la ayuda, dice lo que hace: '%s' en ¡A ROBAR!, '%s' en una chincheta" % [on_start, on_mark])
+	# The mouse onto the start button, from a mark with rules: its rules go out.
+	var ruled: int = talk.marks.find_custom(func(k): return not (k.rules as Array).is_empty())
+	if ruled >= 0:
+		talk._pick(ruled)
+		talk._start.mouse_entered.emit()
+		var lit: Array = talk._rule_lines.filter(func(l): return l.text.begins_with("▶"))
+		check(talk.cursor == talk.marks.size() and lit.is_empty() and await accept_hint.call() == Text.t("TOUR_START"),
+			what + ": el ratón sobre ¡A ROBAR! lo elige y apaga las reglas de la chincheta de antes (%d encendidas)" % lit.size())
 	m._close_tour()
 	await frames()
 

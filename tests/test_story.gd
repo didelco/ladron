@@ -42,11 +42,6 @@ func _init() -> void:
 		looks[str(Story.MUSEUMS[m].palette.paper) + str(Story.MUSEUMS[m].palette.stone)] = true
 	check(looks.size() == Story.MUSEUMS.size(), "cada museo con sus colores de pared y suelo")
 
-	# The heading: the rank, and which job in which museum; the big job, so.
-	check(Story.heading(2) == "Ladronzuelo · tu segundo robo en el Museo de la Prehistoria", "cabecera: «%s»" % Story.heading(2))
-	check(Story.heading(10, 2).begins_with(Text.t("RANK_2_MANY")) and Story.heading(10, 2).contains("gran golpe"), "cabecera de un gran golpe: «%s»" % Story.heading(10, 2))
-	check(Story.heading(25).contains(Text.t("RANK_5_ONE")), "cabecera del último: «%s»" % Story.heading(25))
-
 	# A theme a museum: every gallery, and only its own big pieces.
 	for m in Story.MUSEUMS.size():
 		var n := Story.nights_in(m)[-1]

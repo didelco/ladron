@@ -51,7 +51,7 @@ static func rule_at(line: String, guards: Array[Guard]) -> String:
 	var said := func(keys: Array) -> bool:
 		for k in keys:
 			for tail in ["", "_ONE", "_MANY"]:
-				if Text.t(k + tail) == line:
+				if Text.has(k + tail) and Text.t(k + tail) == line:
 					return true
 		return false
 	if said.call(["BRIEF_TEAM_ONE_LOCK", "BRIEF_TEAM_TWO_LOCKS", "BRIEF_TEAM_TWO_PANELS"]):

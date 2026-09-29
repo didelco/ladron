@@ -5,7 +5,7 @@ MENU_STORY,HISTORIA
 MENU_STORY_TEXT,"Cinco museos, veinticinco robos"
 MENU_GENERATIVE,GENERATIVO
 MENU_GENERATIVE_TEXT,Un museo nuevo cada vez
-MENU_SETTINGS,SETTINGS
+MENU_SETTINGS,AJUSTES
 MENU_QUIT,SALIR
 MENU_BACK,< VOLVER
 MENU_PREV,< ATRÁS
@@ -41,7 +41,6 @@ SEAT_KB_LEFT,Teclado · WASD
 SEAT_KB_RIGHT,Teclado · flechas
 SEAT_ANY,Teclado y mandos
 SEAT_PAD,Mando %d · %s
-SETTINGS_TITLE,SETTINGS
 SETTINGS_SOUND_TITLE,SONIDO
 SETTINGS_SCREEN_TITLE,PANTALLA
 SETTINGS_PADS_TITLE,CONTROLES
@@ -130,27 +129,6 @@ BRIEF_TAB_PLAN,EL PLAN
 BRIEF_NEXT_TAB,%s >
 BRIEF_START,▶ EMPEZAR
 BRIEF_SKIP,SALTAR Y JUGAR >>
-BRIEF_JOB_ONE,%s · tu %s robo en %s
-BRIEF_JOB_MANY,%s · vuestro %s robo en %s
-BRIEF_JOB_LAST_ONE,%s · tu último gran golpe
-BRIEF_JOB_LAST_MANY,%s · vuestro último gran golpe
-BRIEF_JOB_BOSS_ONE,%s · tu gran golpe en %s
-BRIEF_JOB_BOSS_MANY,%s · vuestro gran golpe en %s
-RANK_1_ONE,Ladronzuelo
-RANK_1_MANY,Ladronzuelos
-RANK_2_ONE,Ratero
-RANK_2_MANY,Rateros
-RANK_3_ONE,Ladrón de guante blanco
-RANK_3_MANY,Ladrones de guante blanco
-RANK_4_ONE,Maestro ladrón
-RANK_4_MANY,Maestros ladrones
-RANK_5_ONE,Leyenda de la noche
-RANK_5_MANY,Leyendas de la noche
-ORDINAL_1,primer
-ORDINAL_2,segundo
-ORDINAL_3,tercer
-ORDINAL_4,cuarto
-BRIEF_LEVEL,NIVEL %02d
 BRIEF_NEWS_TITLE,ESTA NOCHE
 BRIEF_NEWS_TEXT,Algo ha cambiado en el museo
 BRIEF_TEAM_ONE_LOCK,Uno sujeta la alarma naranja; el otro abre la vitrina.
@@ -170,7 +148,6 @@ LESSON_HEIST_TITLE,EL GOLPE
 LESSON_HEIST_TEXT,"Quieto junto a la vitrina hasta que se abra, y sal por la flecha verde."
 LESSON_HEIST2_TITLE,EL GOLPE EN EQUIPO
 LESSON_HEIST2_TEXT,Uno sujeta la alarma naranja; el otro abre la vitrina. Salid los dos.
-LESSON_HEIST3_TITLE,EL GOLPE EN EQUIPO
 LESSON_HEIST3_TEXT,Uno sujeta la alarma; dos abren las dos cerraduras a la vez. Salid todos.
 LESSON_GUARD_TITLE,EL GUARDIA
 LESSON_GUARD_TEXT,"Si su linterna te pilla, va a por ti. Espera tras una pared a que pase."
@@ -298,7 +275,6 @@ NIGHT_25_VERB,ABRIENDO LA CAJA FUERTE
 NIGHT_25_TALE,"Es el tesoro del Barón y su gran truco: con él hizo bostezar a los directores de los museos hasta que firmaron. Sin el diamante, se le acaba el truco. Está arriba del todo de la torre, con los cuatro guardias más despiertos de la ciudad."
 NIGHT_25_TIP,El gran final: mira el mapa y planea la ruta antes de moverte.
 END_AGAIN,▶ OTRA VEZ
-END_HOME,%s vuelve a casa.
 END_NEXT_NIGHT,▶ SIGUIENTE SALA
 END_NEXT_MUSEUM,▶ AL SIGUIENTE MUSEO
 END_NEXT_HEIST,▶ SIGUIENTE GOLPE
@@ -333,35 +309,23 @@ END_STAR_FAST,RAPIDEZ
 END_HEAD_MUSEUM,¡NO QUEDA NADA EN %s!
 END_FILE_LETTERHEAD,Comisaría del Pueblo · Ficha de detenido
 END_FILE_NUMBER,Nº %04d
-END_FILE_AGAIN,¿REINCIDENTE?
-END_FILE_YES_NO_1,SÍ|MUCHO
-END_FILE_YES_NO_2,SÍ|MUCHÍSIMO
-END_FILE_YES_NO_3,SÍ|SIEMPRE
 END_FILE_NOTES,OBSERVACIONES
 END_FILE_PRINTS,HUELLAS (de chocolate)
 END_FILE_STAMP_ONE,¡PILLADO!
 END_FILE_STAMP_MANY,¡PILLADOS LOS %d!
-END_FILE_ALIAS,ALIAS
-END_FILE_ALIAS_1,El Calcetín Turquesa.
-END_FILE_ALIAS_2,Ninja de Puntillas.
-END_FILE_ALIAS_3,El Rey de la Voltereta.
-END_FILE_ALIAS_4,Manos de Mantequilla.
-END_FILE_ALIAS_5,El Silencioso (a veces).
-END_FILE_ALIAS_6,Don Casi-Lo-Consigo.
-END_FILE_ALIAS_MANY,La Banda del Calcetín (%d sospechosos).
 END_FILE_CRIME,DELITO
 END_FILE_CRIME_TRY_1,Intentar llevarse %s. Sin pedir permiso.
 END_FILE_CRIME_TRY_2,Mirar muy fijamente %s.
 END_FILE_CRIME_TRY_3,Rondar muy sospechosamente %s.
 END_FILE_CRIME_ALMOST_1,Llevarse %s... casi.
 END_FILE_CRIME_ALMOST_2,Salir corriendo con %s bajo el brazo.
-END_FILE_BY_ONE,PILLADO POR
-END_FILE_BY_MANY,PILLADOS POR
-END_FILE_BY_GUARD_1,"El guardia %s, que no estaba tan dormido."
-END_FILE_BY_GUARD_2,"El guardia %s, con un bocadillo en la otra mano."
-END_FILE_BY_GUARD_3,"El guardia %s, en zapatillas de estar por casa."
-END_FILE_BY_GUARD_4,"El guardia %s, que dice que ya lo sabía."
-END_FILE_BY_NOBODY,Un guardia con muy buena vista.
+END_FILE_BY_ONE,Lo pilló %s
+END_FILE_BY_MANY,Los pilló %s
+END_FILE_BY_GUARD_1,"el guardia %s, que no estaba tan dormido."
+END_FILE_BY_GUARD_2,"el guardia %s, con un bocadillo en la otra mano."
+END_FILE_BY_GUARD_3,"el guardia %s, en zapatillas de estar por casa."
+END_FILE_BY_GUARD_4,"el guardia %s, que dice que ya lo sabía."
+END_FILE_BY_NOBODY,un guardia con muy buena vista.
 END_FILE_NOTE_1,Asegura que es una estatua. No cuela.
 END_FILE_NOTE_2,Dice que solo pasaba por aquí. A las tres de la madrugada.
 END_FILE_NOTE_3,Pide llamar a su abogado: un pato de goma.
@@ -424,6 +388,8 @@ LEGEND_GUARD,guardia
 LEGEND_PROP,se puede tirar
 LEGEND_ROUTE,ruta
 LEGEND_PANEL,alarma
+LEGEND_DOOR,puerta cerrada
+LEGEND_FOG,sin ver
 LOG_CRASH_EVERYWHERE,¡Menudo estruendo! %s se ha oído en todo el museo
 LOG_KNOCKED,¡Has tirado %s!
 LOG_ROLL_WALL,¡Pum! Te has estampado contra la pared
@@ -551,7 +517,6 @@ GALLERY_GLOBE_ROOM,la sala de globos terráqueos
 GALLERY_GLOBE_ROOM_OF,de la sala de globos terráqueos
 MENU_HOW_MANY,¿CUÁNTOS LADRONES?
 MENU_PLAY_4,▶ 4 LADRONES
-LESSON_HEIST4_TITLE,EL GOLPE EN EQUIPO
 LESSON_HEIST4_TEXT,Dos sujetan las dos alarmas; dos abren las cerraduras a la vez. Salid todos.
 BRIEF_TEAM_TWO_PANELS,Dos sujetan las alarmas naranjas; los otros dos abren a la vez.
 HUD_JOB_WAIT_PANELS,¡HAY QUE SUJETAR LOS DOS CUADROS DE ALARMA!
@@ -576,7 +541,6 @@ MUSEUM_5_NAME,El Museo de Arte Contemporáneo
 MUSEUM_5_TEXT,"Arte de hoy en una torre de cristal. Arriba del todo, el despacho del Barón"
 MENU_CHALLENGE,RETOS
 MENU_CHALLENGE_TEXT,Mapas hechos a mano y tu editor
-CHALLENGE_TITLE,RETOS
 CHALLENGE_TEXT,"Elige un mapa o un robo de la historia, o dibuja el tuyo"
 CHALLENGE_NEW,+ NUEVO MAPA
 CHALLENGE_EDIT,EDITAR
@@ -588,19 +552,16 @@ CHALLENGE_UNPLAYABLE,Sin terminar: ábrelo en el editor
 CHALLENGE_INFO,%s · %s · %d guardias
 CHALLENGE_EMPTY,Aún no hay mapas: crea uno.
 CHALLENGE_PAGE,Página %d de %d
-CHALLENGE_STORY_HEAD,HISTORIA
 CHALLENGE_MAPS_HEAD,RETOS
 CHALLENGE_HINT,"A, E o clic: abrir"
 CHALLENGE_NIGHT_EDITED,retocado a mano
 CHALLENGE_NIGHT_BUILT,como lo genera el juego
-CHALLENGE_GUARDS,%d guardias
 CHALLENGE_NIGHT_TEXT,"Retócalo en el editor y guárdalo: el robo jugará este museo, con su pieza, sus guardias y su dificultad de siempre."
 CHALLENGE_RESTORE,VOLVER AL ORIGINAL
 CHALLENGE_RESTORE_SURE,¿SEGURO? VOLVER AL ORIGINAL
 EDITOR_TITLE,EDITOR
 EDITOR_NAME,Nombre del mapa
 EDITOR_UNTITLED,Mi museo
-EDITOR_TOOLS,HERRAMIENTAS
 EDITOR_TOOL_FLOOR,SUELO
 EDITOR_TOOL_WALL,MURO / SUELO
 EDITOR_TOOL_CASE,VITRINA AL AZAR
@@ -617,8 +578,6 @@ EDITOR_T_CASES,VITRINAS
 EDITOR_T_BUSTS,PEDESTALES
 EDITOR_T_COLUMNS,COLUMNAS
 EDITOR_T_SHELVES,ESTANTES
-EDITOR_T_DINOSAUR,DINOSAURIO
-EDITOR_T_SARCOPHAGUS,SARCOFAGO
 EDITOR_T_CORRIDOR,PASILLO
 EDITOR_TURN,GIRAR SALA (R)
 EDITOR_NIGHT,LA NOCHE
@@ -626,7 +585,6 @@ EDITOR_SIZE,TAMAÑO: %s
 EDITOR_DIFFICULTY,DIFICULTAD: %s
 EDITOR_GUARDS,GUARDIAS: %s
 EDITOR_GUARDS_AUTO,AUTO (%d)
-EDITOR_MAP,EL MAPA
 EDITOR_RANDOM,GENERAR MAPA ALEATORIO
 EDITOR_RANDOM_DONE,Un museo nuevo del generador: retócalo a tu gusto.
 EDITOR_CLEAR,VACIAR
@@ -663,7 +621,6 @@ EDITOR_HINT_GUARD,"Clic: poner o quitar un guardia (hasta cinco). Sin ninguno, s
 EDITOR_HINT_PROP,"Clic: pone este objeto; otra vez en el mismo sitio, lo quita. Sin ninguno, los pone el juego."
 EDITOR_HINT_ROOM,"Arrastra un rectángulo: una sala, con su luz y su nombre. Clic derecho: quitarla."
 EDITOR_HINT_STAMP,Clic: poner la sala (lo de debajo se va) · R: girarla · Clic derecho: borrar
-EDITOR_TAB_EDIT,EDITAR
 EDITOR_TAB_OPTIONS,OPCIONES DEL MAPA
 EDITOR_KIND_WALL,MURO / SUELO
 EDITOR_KIND_MAIN,PERSONAJES
@@ -922,7 +879,6 @@ STAR_GOAL_TAKEN_MANY,Robad la pieza
 STAR_GOAL_UNSEEN_ONE,Sin que te vean
 STAR_GOAL_UNSEEN_MANY,Sin que os vean
 STAR_GOAL_FAST,En menos de %s
-BRIEF_DIFFICULTY,%s · %s
 TIP_GUARDS_NONE,Sin guardias: practica sin prisa.
 TIP_GUARDS_ONE,Un guardia
 TIP_GUARDS_MANY,%d guardias
@@ -1053,7 +1009,6 @@ TOUR_HINT_SEE,VER
 TOUR_HINT_CLOSE,CERRAR
 TOUR_START,¡A ROBAR!
 TOUR_GOALS,ESTRELLAS
-TOUR_NEWS_HEAD,LO NUEVO
 TOUR_MARK_START_ONE,Entras por aquí.
 TOUR_MARK_START_MANY,Entráis por aquí.
 TOUR_MARK_EXIT_ONE,"Con la pieza, sales por aquí."
@@ -1070,4 +1025,431 @@ TOUR_MARK_GUARD_ROUND,Hace su ronda por las salas.
 TOUR_MARK_GUARD_POST,Vigila quieto desde aquí.
 TOUR_MARK_PANEL_ONE,"La alarma naranja: sujétala para abrir la vitrina."
 TOUR_MARK_PANEL_MANY,"La alarma naranja: uno la sujeta, otro abre la vitrina."
-TOUR_PIECE_HEAD,LA PIEZA
+MEGA_START_01,Se abre el museo. Se ruega cerrar el museo después.
+MEGA_START_02,Buenas noches. Los cuadros duermen: no los despierten.
+MEGA_START_03,Bienvenidos. Hoy la sopa del abuelo Paco es de fideos.
+MEGA_START_04,Atención: el museo está lleno de cosas. Como siempre.
+MEGA_START_05,Aviso: hoy es martes. Mañana también habrá martes.
+MEGA_LIGHTS_ON_01,Se hizo la luz. Y la luz dijo: «hola».
+MEGA_LIGHTS_ON_02,Aviso: alguien ha encendido las luces. Qué cosas.
+MEGA_LIGHTS_ON_03,"Las bombillas ya están despiertas. Buenos días, bombillas."
+MEGA_LIGHTS_ON_04,Luces encendidas. Se ruega poner cara de no haber sido nadie.
+MEGA_LIGHTS_OFF_01,Se apagó la luz. Las polillas protestan.
+MEGA_LIGHTS_OFF_02,Aviso: sala a oscuras. Los cuadros tienen miedo.
+MEGA_LIGHTS_OFF_03,Luces apagadas. Se ruega no tropezar con la oscuridad.
+MEGA_LIGHTS_OFF_04,Ha vuelto la oscuridad. Lo sentimos mucho.
+MEGA_ALARM_01,"¡Ring! Esa es la alarma. La de la vitrina, seguro."
+MEGA_ALARM_02,Atención: suena una alarma muy educada.
+MEGA_ALARM_03,Aviso: la vitrina está chillando. Otra vez.
+MEGA_ALARM_04,Se ruega mantener la calma. O huir. Lo que salga antes.
+MEGA_ALARM_05,Ese pitido no es un pájaro. Es la alarma.
+MEGA_KNOCKED_01,Se ha oído un ¡PLONK! Se ruega no mirar.
+MEGA_KNOCKED_02,Aviso: algo se ha caído. Seguro que ya estaba roto.
+MEGA_KNOCKED_03,Atención: las cosas tiradas se quedan tiradas.
+MEGA_KNOCKED_04,Un objeto ha decidido tumbarse. Respetemos su descanso.
+MEGA_KNOCKED_05,Ruido misterioso en la sala. Seguro que son las polillas.
+MEGA_SNEEZE_01,¡Salud! Dice el museo entero.
+MEGA_SNEEZE_02,Aviso: alguien tiene un estornudo con muchas ganas.
+MEGA_SNEEZE_03,Se ruega estornudar en silencio. Gracias.
+MEGA_SNEEZE_04,Ese ¡ACHÍS! ha movido las nubes.
+MEGA_STOLEN_01,Se ha perdido una vitrina muy vacía. Se ofrece premio.
+MEGA_STOLEN_02,Aviso: hay un hueco donde había una cosa.
+MEGA_STOLEN_03,Atención: la vitrina dice que no ha visto nada.
+MEGA_STOLEN_04,Ojo: alguien sale corriendo con cara de nada.
+MEGA_STOLEN_05,Se ruega a quien tenga la pieza que la devuelva. O no.
+MEGA_PIECE_01,Se ruega no mirar %s con cara de querer llevárselo.
+MEGA_PIECE_02,Aviso: %s tiene mucha vergüenza cuando lo miran.
+MEGA_PIECE_03,Alguien mira la vitrina con cara sospechosa.
+MEGA_PIECE_04,Atención: %s no está en venta. Ni regalado.
+MEGA_PIECE_05,La vitrina vigila que nadie se acerque demasiado.
+MEGA_PIECE_06,Aviso: %s ha pedido que le den un poco de aire.
+MEGA_SEEN_01,¡Guardia con prisa! Se ruega apartarse del guardia.
+MEGA_SEEN_02,Aviso: hay un guardia corriendo. Él no sabe por qué.
+MEGA_SEEN_03,Atención: se persigue a alguien con mucha educación.
+MEGA_SEEN_04,"Se ruega no correr por el museo. Ya, ya lo sabemos."
+MEGA_SEEN_05,Cuidado: un guardia ha encontrado algo interesante. Un bulto.
+MEGA_SUSPECT_01,Un guardia ha dicho «hmm». Mala señal.
+MEGA_SUSPECT_02,Aviso: un guardia mira una sombra con desconfianza.
+MEGA_SUSPECT_03,Atención: alguien huele a calcetín sospechoso.
+MEGA_SUSPECT_04,El guardia sospecha. Pero no sabe de qué.
+MEGA_SUSPECT_05,Aviso a los guardias: dejen de mirar las paredes tanto.
+MEGA_HIDE_01,Aviso: esa armadura respira un poco.
+MEGA_HIDE_02,Se ruega no hablar con las macetas. No contestan.
+MEGA_HIDE_03,"Atención: ese rincón tiene muy buen escondite. Digo, decoración."
+MEGA_HIDE_04,Aquí no hay nadie. Solo cosas muy quietas.
+MEGA_DIZZY_01,Aviso: hay alguien dando vueltas como un calcetín en la lavadora.
+MEGA_DIZZY_02,Hay un bulto mareado en la sala. Se le ofrece agua.
+MEGA_DIZZY_03,"El suelo gira, pero solo para alguien."
+MEGA_DIZZY_04,Se ruega no dar volteretas sin permiso del museo.
+MEGA_SMOKE_01,Aviso: nube de humo con muy mal olor a fresa.
+MEGA_SMOKE_02,Atención: hay una nube. No es de las de llover.
+MEGA_SMOKE_03,Se ruega no respirar la niebla. Ni creerla.
+MEGA_PANEL_01,Aviso: se han cortado unos cables. Nos da igual.
+MEGA_PANEL_02,Atención: la alarma se ha quedado sin ganas.
+MEGA_PANEL_03,Los cables descansan. Se ruega no molestarlos.
+MEGA_NEAR_EXIT_01,Aviso: la puerta está abierta. Es que hace calor.
+MEGA_NEAR_EXIT_02,Atención: la salida está aquí mismo. Como siempre.
+MEGA_NEAR_EXIT_03,Se ruega salir despacio. O deprisa. Pero salir.
+MEGA_NEAR_EXIT_04,Aviso: la puerta quiere despedirse de alguien.
+MEGA_IDLE_01,Aviso: alguien lleva mucho rato quieto. ¿Es una estatua nueva?
+MEGA_IDLE_02,Atención: se ruega moverse. Los cuadros se aburren.
+MEGA_IDLE_03,Quieto como una estatua. Qué bien lo hace.
+MEGA_IDLE_04,Aviso: se ha perdido una sombra. Está de pie.
+MEGA_IDLE_05,Se ruega no dormirse de pie. El conserje ya lo hace.
+MEGA_IDLE_06,"Si nadie hace nada, el museo hace un poco de ruido."
+MEGA_WAITING_01,Aviso: alguien ya ha salido. Faltan los demás.
+MEGA_WAITING_02,Atención: fuera hay alguien esperando con cara de prisa.
+MEGA_WAITING_03,La puerta espera a los que faltan.
+MEGA_CALM_01,Se ruega no dar de comer a los cuadros.
+MEGA_CALM_02,Aviso: hoy hay sopa de letras en la cafetería.
+MEGA_CALM_03,Atención: se busca un paraguas con complejo de bastón.
+MEGA_CALM_04,Recordatorio: las estatuas no pagan entrada.
+MEGA_CALM_05,Aviso: la escalera está de mal humor. Sube poco.
+MEGA_CALM_06,Se ruega no saludar a los maniquíes. Se lo creen.
+MEGA_CALM_07,Atención: alguien ha dejado un bocadillo en el siglo pasado.
+MEGA_CALM_08,Aviso: el reloj del museo va bien. Pero atrasa.
+MEGA_CALM_09,Se ha encontrado un guante. Le falta la mano.
+MEGA_CALM_10,Atención: prohibido estornudar sobre las momias.
+MEGA_CALM_11,Aviso: la fuente tiene hipo. Es normal.
+MEGA_CALM_12,Se ruega hablar bajito. Las paredes tienen orejas.
+MEGA_CALM_13,Aviso: el ascensor no sube. Ni siquiera lo intenta.
+MEGA_CALM_14,Atención: el tercer cuadro de la izquierda guiña un ojo.
+MEGA_TEAM_01,Aviso: las sombras en grupo pagan entrada de grupo.
+MEGA_TEAM_02,Atención: dos bultos caben en un mismo susto.
+MEGA_TEAM_03,Se ruega repartirse los sustos por igual.
+MEGA_TEAM_04,Aviso: mejor juntos. Los calcetines siempre van a pares.
+MEGA_TEAM_05,"Atención: cuando uno corre, el otro mira. Es la norma."
+MEGA_HINT_1_01,Prohibido silbar cerca del dinosaurio.
+MEGA_HINT_1_02,Cuidado: el suelo de la sala 3 canta.
+MEGA_HINT_1_03,Se ruega no pisar la moqueta sospechosa.
+MEGA_HINT_1_04,Aviso: el mamut estornuda cuando le tosen.
+MEGA_HINT_1_05,Atención: el fósil de la entrada muerde. Un poco.
+MEGA_HINT_1_06,Se ruega no dar de comer al diplodocus. Ya come.
+MEGA_HINT_1_07,Aviso: las huellas del suelo se mueven solas.
+MEGA_HINT_1_08,Atención: ese hueso no es de nadie. Ni de perros.
+MEGA_HINT_2_01,El conserje duerme de pie.
+MEGA_HINT_2_02,Se buscan disfraces de macetas.
+MEGA_HINT_2_03,Aviso: las hormigas de cristal no se tocan.
+MEGA_HINT_2_04,Atención: el cactus grande se cree un guardia.
+MEGA_HINT_2_05,Se ruega no pisar las flores. Se ofenden.
+MEGA_HINT_2_06,Aviso: hay un pez en la sala 4. Nadie sabe cómo.
+MEGA_HINT_2_07,Atención: el guardia de la jungla ronca bajito.
+MEGA_HINT_2_08,Se ruega no regar al helecho de la esquina.
+MEGA_HINT_3_01,Los pasillos serán encerados por sorpresa.
+MEGA_HINT_3_02,Se ha perdido una llave con forma de plátano.
+MEGA_HINT_3_03,Aviso: la momia de la sala 2 no quiere visitas.
+MEGA_HINT_3_04,Atención: el cartel de «no tocar» toca a todos.
+MEGA_HINT_3_05,Se ruega no resbalar sobre los mármoles brillantes.
+MEGA_HINT_3_06,Aviso: el sarcófago abre solo. Es muy educado.
+MEGA_HINT_3_07,Atención: los gatos de piedra maúllan los jueves.
+MEGA_HINT_3_08,Cuidado con las baldosas que suenan a pito.
+MEGA_HINT_4_01,Aviso: el puente del castillo sube solo cuando quiere.
+MEGA_HINT_4_02,Se ruega no rascar las armaduras. Tienen cosquillas.
+MEGA_HINT_4_03,Atención: las antorchas se apagan por timidez.
+MEGA_HINT_4_04,Cuidado: una puerta secreta se cree secreta.
+MEGA_HINT_4_05,Se busca una llave con forma de tenedor.
+MEGA_HINT_4_06,Aviso: el caballero de la sala 2 mira mal.
+MEGA_HINT_4_07,Atención: el eco de la torre contesta con retraso.
+MEGA_HINT_4_08,Se ruega no tocar el cuadro del rey. Es pegajoso.
+MEGA_HINT_5_01,Aviso: los cuadros no se rascan solos.
+MEGA_HINT_5_02,Atención: el ascensor de cristal sube a los sustos.
+MEGA_HINT_5_03,Se ruega no confundir la obra con la basura.
+MEGA_HINT_5_04,Aviso: el cuadro rojo es un cuadro rojo. Nada más.
+MEGA_HINT_5_05,Atención: la escultura de globos se desinfla a las diez.
+MEGA_HINT_5_06,Se ruega no apretar el botón de «no apretar».
+MEGA_HINT_5_07,Aviso: el barón bosteza en la última planta.
+MEGA_HINT_5_08,Atención: el suelo de cristal se cree un espejo.
+SETTINGS_MEGAPHONE,MEGAFONÍA: %s
+SETTINGS_MEGAPHONE_BOTH,CARTEL Y SONIDO
+SETTINGS_MEGAPHONE_TEXT,SOLO CARTEL
+SETTINGS_MEGAPHONE_SOUND,SOLO SONIDO
+SETTINGS_MEGAPHONE_OFF,NO
+MEGA_LABEL,MEGAFONÍA
+MEGA_SOMETHING,esa cosa tan valiosa
+MEGA_ACT_ROLL_01,Algo acaba de rodar. Se ruega aplaudir con las orejas.
+MEGA_ACT_ROLL_02,Aviso: alguien juega a ser una croqueta.
+MEGA_ACT_ROLL_03,"Hay un bulto rodando. Cuidado, que no frena."
+MEGA_ACT_ROLL_04,Atención: el suelo ha recibido una visita muy redonda.
+MEGA_ACT_ROLL_05,"Vaya, un bulto con ruedas. Nadie las vio venir."
+MEGA_ACT_ROLL_AGAIN_01,Otra voltereta. Ahí hay alguien con el suelo enamorado.
+MEGA_ACT_ROLL_AGAIN_02,Sigue rodando. Nadie le ha dicho que hay paredes.
+MEGA_ACT_ROLL_AGAIN_03,Otra vez rodando. Las piernas piden vacaciones.
+MEGA_ACT_ROLL_AGAIN_04,"Aviso: la croqueta vuelve a rodar, y con más ganas."
+MEGA_ACT_ROLL_AGAIN_05,"Atención: rodar es gratis, pero marea."
+MEGA_ACT_ROLL_AGAIN_06,Este museo no es un tobogán. Aunque lo parece.
+MEGA_ACT_ROLL_STREAK_01,Ahí hay alguien que no camina: rueda por sistema.
+MEGA_ACT_ROLL_STREAK_02,Tres volteretas seguidas. Se ruega un juez de gimnasia.
+MEGA_ACT_ROLL_STREAK_03,Aviso: se busca a alguien que use los pies.
+MEGA_ACT_ROLL_STREAK_04,Van tres vueltas. El museo empieza a marearse solo.
+MEGA_ACT_ROLL_STREAK_05,Alguien se ha tragado una rueda de repuesto.
+MEGA_ACT_ROLL_STREAK_06,"Rodar, rodar, rodar. Y luego dicen que no hay ejercicio."
+MEGA_ACT_ROLL_WALL_01,Hay quien usa la cabeza para hacer agujeros en la pared.
+MEGA_ACT_ROLL_WALL_02,¡PLAF! La pared gana otra vez. Siempre gana.
+MEGA_ACT_ROLL_WALL_03,Aviso: la pared no se aparta. Ya se ha probado.
+MEGA_ACT_ROLL_WALL_04,Alguien ha saludado a la pared. No contesta.
+MEGA_ACT_ROLL_WALL_05,La pared dice que aquello no era una puerta.
+MEGA_ACT_ROLL_WALL_06,Atención: hay un bulto pegado al muro. Como un imán.
+MEGA_ACT_ROLL_WALL_07,Una pared y algo redondo se han conocido. Fue un choque.
+MEGA_ACT_ROLL_WALL_08,Se busca un freno para bultos rodantes. Llamen a la pared.
+MEGA_ACT_ROLL_WALL_09,Algo ha llamado a la pared con la frente.
+MEGA_ACT_ROLL_WALL_10,¡PLAF! Alguien le ha pedido perdón a la pared.
+MEGA_ACT_ROLL_WALL_11,El muro ha recibido una visita muy redonda y muy rápida.
+MEGA_ACT_ROLL_WALL_AGAIN_01,Otra vez la pared. Ya son casi familia.
+MEGA_ACT_ROLL_WALL_AGAIN_02,La pared pregunta si va a venir todos los días.
+MEGA_ACT_ROLL_WALL_AGAIN_03,La pared y ese bulto: una historia de mucho golpe.
+MEGA_ACT_ROLL_WALL_AGAIN_04,Aviso: la pared sigue en el mismo sitio. Como siempre.
+MEGA_ACT_ROLL_WALL_AGAIN_05,Rodar sin mirar. Qué idea tan redonda y tan mala.
+MEGA_ACT_ROLL_WALL_AGAIN_06,Por si acaso: las paredes no se mueven. Ya se ha visto.
+MEGA_ACT_ROLL_WALL_AGAIN_07,Alguien practica un deporte nuevo: chocar contra el museo.
+MEGA_ACT_ROLL_CASE_01,"Algo ha rodado contra una vitrina. Cristal, uno. Bulto, cero."
+MEGA_ACT_ROLL_CASE_02,Aviso: las vitrinas no son almohadas.
+MEGA_ACT_ROLL_CASE_03,"La vitrina ha sonado. Lo que chocó, también."
+MEGA_ACT_ROLL_CASE_04,Atención: chocar con el cristal no lo abre. Ya lo hemos probado.
+MEGA_ACT_ROLL_CASE_05,"La vitrina ni se ha inmutado. Lo otro, sí."
+MEGA_ACT_ROLL_CASE_06,Se ruega no confundir el cristal con un colchón.
+MEGA_ACT_ROLL_CASE_07,Se ruega no dar besos al cristal. Deja marca.
+MEGA_ACT_ROLL_CASE_08,La vitrina dice que eso no era un abrazo.
+MEGA_ACT_ROLL_CASE_AGAIN_01,Otra vez contra el cristal. Ya hay huellas de frente.
+MEGA_ACT_ROLL_CASE_AGAIN_02,La vitrina cree que alguien le tiene cariño.
+MEGA_ACT_ROLL_CASE_AGAIN_03,Otro choque con el cristal. Menudo aficionado.
+MEGA_ACT_ROLL_CASE_AGAIN_04,"Aviso: el cristal no aprende, pero quien choca tampoco."
+MEGA_ACT_ROLL_CASE_AGAIN_05,Alguien y la vitrina ya se saludan por su nombre.
+MEGA_ACT_CRASH_STREAK_01,Tercer choque. Aquí ya no se rueda: se demuele.
+MEGA_ACT_CRASH_STREAK_02,Van tres choques. El museo pide un casco para alguien.
+MEGA_ACT_CRASH_STREAK_03,"Aviso: se regalan cascos. Uno, para el de ahí."
+MEGA_ACT_CRASH_STREAK_04,Tres golpes seguidos. Las paredes piden un descanso.
+MEGA_ACT_CRASH_STREAK_05,"A este paso, alguien tendrá la cabeza cuadrada."
+MEGA_ACT_CRASH_STREAK_06,"Choque, choque, choque. Eso es un ritmo, no un plan."
+MEGA_ACT_KNOCK_BIN_01,"Papelera por el suelo. Estaba vacía, pero muy dramática."
+MEGA_ACT_KNOCK_BIN_02,¡CLONC! La papelera hace música sin permiso.
+MEGA_ACT_KNOCK_BIN_03,Papelera al suelo. Nadie la tiraba tanto desde el lunes.
+MEGA_ACT_KNOCK_BIN_04,Ese ruido de lata era una papelera. Ya está tranquila.
+MEGA_ACT_KNOCK_BIN_05,Papelera tumbada. Se ruega no mirar dentro.
+MEGA_ACT_KNOCK_BUST_01,El busto ha perdido el equilibrio. Y la vergüenza.
+MEGA_ACT_KNOCK_BUST_02,Aviso: un busto mira el suelo. Por primera vez.
+MEGA_ACT_KNOCK_BUST_03,"Un busto en el suelo. Era famoso, pero se le pasó."
+MEGA_ACT_KNOCK_BUST_04,¡PLONK! Un señor de piedra se ha tumbado a dormir.
+MEGA_ACT_KNOCK_BUST_05,Hay un busto tumbado. Se ruega no pisarle la nariz.
+MEGA_ACT_KNOCK_ARMOUR_01,¡CLANG! La armadura se ha desarmado de la risa.
+MEGA_ACT_KNOCK_ARMOUR_02,Aviso: una armadura descansa en el suelo. Se ha caído entera.
+MEGA_ACT_KNOCK_ARMOUR_03,Esa armadura llevaba siglos de pie. Merecía sentarse.
+MEGA_ACT_KNOCK_ARMOUR_04,Hay piezas de caballero por el suelo. Falta el caballero.
+MEGA_ACT_KNOCK_ARMOUR_05,Una armadura menos en la sala y un montón de latas más.
+MEGA_ACT_KNOCK_PANEL_01,El cartel se ha caído. Ahora sí que todos lo miran.
+MEGA_ACT_KNOCK_PANEL_02,Aviso: un panel informativo ya no informa. Está tumbado.
+MEGA_ACT_KNOCK_PANEL_03,Se cayó el panel de las normas. Ya no hay normas.
+MEGA_ACT_KNOCK_PANEL_04,¡PLAF! El cartel del museo se va a echar una siesta.
+MEGA_ACT_KNOCK_PANEL_05,Panel al suelo. Se ruega leerlo en horizontal.
+MEGA_ACT_KNOCK_AGAIN_01,Otra cosa tirada. El museo empieza a parecer un trastero.
+MEGA_ACT_KNOCK_AGAIN_02,Ya van varias. ¿Podemos pedir que las cosas se agarren?
+MEGA_ACT_KNOCK_AGAIN_03,Todo cae si se mira con ganas. Alguien lo sabe.
+MEGA_ACT_KNOCK_AGAIN_04,Otra cosa tumbada. Aquí las cosas duermen muy poco.
+MEGA_ACT_KNOCK_AGAIN_05,Se ruega no empujar más. El museo ya está mareado.
+MEGA_ACT_KNOCK_AGAIN_06,Aviso: derribar cosas no es un deporte. Todavía.
+MEGA_ACT_KNOCK_AGAIN_07,Hoy en el museo llueven cosas. Y sin nubes.
+MEGA_ACT_KNOCK_STREAK_01,Tres cosas caídas. O es un visitante o es un terremoto.
+MEGA_ACT_KNOCK_STREAK_02,Este museo no se cae: lo tiran. Uno a uno.
+MEGA_ACT_KNOCK_STREAK_03,Atención: se necesita una escoba. Y algo de calma.
+MEGA_ACT_KNOCK_STREAK_04,Van tres cosas al suelo. Solo falta tirar el techo.
+MEGA_ACT_KNOCK_STREAK_05,Alguien reorganiza el museo por el suelo.
+MEGA_ACT_KNOCK_STREAK_06,Tres golpes seguidos. Esto ya es un baile.
+MEGA_ACT_HIDE_ARMOUR_01,Esa armadura tiene un huésped. Y le va muy justa.
+MEGA_ACT_HIDE_ARMOUR_02,Aviso: la armadura respira fuerte. Y huele a calcetín.
+MEGA_ACT_HIDE_ARMOUR_03,Nunca hubo una armadura tan ajustada. Ni tan nerviosa.
+MEGA_ACT_HIDE_ARMOUR_04,Un caballero vacío ha dejado de estar vacío.
+MEGA_ACT_HIDE_ARMOUR_05,Atención: la armadura tiene cosquillas por dentro.
+MEGA_ACT_HIDE_ARMOUR_06,Esa armadura antes estaba más delgada. Se dice.
+MEGA_ACT_HIDE_ARMOUR_AGAIN_01,Otra vez dentro de la armadura. Es su nuevo piso.
+MEGA_ACT_HIDE_ARMOUR_AGAIN_02,La armadura tiene inquilino. Paga en calcetines.
+MEGA_ACT_HIDE_ARMOUR_AGAIN_03,La armadura vuelve a tener un huésped. Se ha mudado.
+MEGA_ACT_HIDE_ARMOUR_AGAIN_04,Esa armadura ya casi no se acuerda de estar vacía.
+MEGA_ACT_HIDE_OTHER_01,Aquí no hay nadie. Solo un rincón con mucho volumen.
+MEGA_ACT_HIDE_OTHER_02,Ese escondite de pronto tiene un huésped. Qué sorpresa.
+MEGA_ACT_HIDE_OTHER_03,Se ruega no llamar a la puerta del escondite. Tiene visita.
+MEGA_ACT_HIDE_OTHER_04,Algo ha desaparecido. Se sospecha del escondite.
+MEGA_ACT_HIDE_OTHER_05,Atención: ese objeto ahora pesa un poco más.
+MEGA_ACT_HIDE_OTHER_06,Nada que ver aquí. Solo un objeto muy nervioso.
+MEGA_ACT_HIDE_OTHER_AGAIN_01,Otra vez escondido. Eso ya es una costumbre.
+MEGA_ACT_HIDE_OTHER_AGAIN_02,El escondite ya tiene guardado el sitio de alguien.
+MEGA_ACT_HIDE_OTHER_AGAIN_03,Escondite ocupado. Cartel: «Vuelvo en cinco minutos».
+MEGA_ACT_HIDE_OTHER_AGAIN_04,Quien se esconde tanto acabará en un cajón.
+MEGA_ACT_HIDE_SEEN_01,Esconderse mirando al guardia es muy valiente. Y poco útil.
+MEGA_ACT_HIDE_SEEN_02,Un truco de magia: desaparecer delante de todos. Sale mal.
+MEGA_ACT_HIDE_SEEN_03,Se ruega esconderse cuando nadie mire. Es lo tradicional.
+MEGA_ACT_HIDE_SEEN_04,Ese escondite ya no es secreto. Lo sabe hasta el guardia.
+MEGA_ACT_HIDE_SEEN_05,Aviso: los buenos escondites no se estrenan con público.
+MEGA_ACT_SNEEZE_01,¡Achís! Un escondite acaba de estornudar. Qué raro.
+MEGA_ACT_SNEEZE_02,Aviso: las macetas no estornudan. Casi nunca.
+MEGA_ACT_SNEEZE_03,Salud. Se ruega no estornudar en misiones secretas.
+MEGA_ACT_SNEEZE_04,Atención: el polvo ha ganado esta batalla.
+MEGA_ACT_SNEEZE_05,Alguien ha dicho «achís». El museo contesta: «Salud».
+MEGA_ACT_SNEEZE_06,"Cuanto más se esconde, más polvo. Ley del estornudo."
+MEGA_ACT_SNEEZE_07,Ese rincón ha hecho «achís». Los rincones no hacen eso.
+MEGA_ACT_SNEEZE_08,Se oyó un estornudo donde no vive nadie.
+MEGA_ACT_SNEEZE_AGAIN_01,Otro estornudo. Ahí dentro hacen falta pañuelos.
+MEGA_ACT_SNEEZE_AGAIN_02,Se ruega un pañuelo. O dos.
+MEGA_ACT_SNEEZE_AGAIN_03,La alergia es más lista que el escondite.
+MEGA_ACT_SNEEZE_AGAIN_04,Achís otra vez. Los escondites también se resfrían.
+MEGA_ACT_SNEEZE_AGAIN_05,Aviso: se vende polvo a mitad de precio. Ahí ya tienen.
+MEGA_ACT_SMOKE_01,Humo en la sala. Se ruega no aplaudir hasta que salga.
+MEGA_ACT_SMOKE_02,Aviso: alguien ha cocinado una nube. Sin receta.
+MEGA_ACT_SMOKE_03,¡PUF! Ha salido una nube. No es de las del tiempo.
+MEGA_ACT_SMOKE_04,Se oye un pequeño ¡PUF! Todo normal. Nada de miedo.
+MEGA_ACT_SMOKE_05,Esa nube no estaba antes. Que alguien avise al tiempo.
+MEGA_ACT_SMOKE_06,Nube instalada en la sala. No ha pedido permiso.
+MEGA_ACT_SMOKE_LAST_01,Se acabó el humo. Ahora toca ser valiente o correr.
+MEGA_ACT_SMOKE_LAST_02,"Última bomba de humo gastada. A partir de ahora, a pulmón."
+MEGA_ACT_SMOKE_LAST_03,Sin bombas de humo. Solo quedan las ganas.
+MEGA_ACT_SMOKE_LAST_04,Ya no queda humo. Alguien suspira muy fuerte.
+MEGA_ACT_SMOKE_LAST_05,Ya no queda humo. Se ruega no soplar para fingir.
+MEGA_ACT_SMOKE_EMPTY_01,Alguien pulsa y pulsa. Ya no sale humo.
+MEGA_ACT_SMOKE_EMPTY_02,Sin humo. Se ruega no golpear la bolsa.
+MEGA_ACT_SMOKE_EMPTY_03,Aviso: de las bombas vacías solo sale silencio.
+MEGA_ACT_SMOKE_EMPTY_04,Nada de humo. Ni un vaho. Ni un suspiro.
+MEGA_ACT_SMOKE_EMPTY_05,Alguien sopla como si tuviera nube. No tiene.
+MEGA_ACT_SMOKE_EMPTY_06,Sin bombas. Se prohíbe hacer «puf» con la boca.
+MEGA_ACT_PANEL_01,Un cable menos. Un museo más tranquilo.
+MEGA_ACT_PANEL_02,"El panel ha dejado de gritar. Bien hecho, o eso creemos."
+MEGA_ACT_PANEL_03,"Alguien ha jugado con los cables. Sin manual, como siempre."
+MEGA_ACT_PANEL_04,Aviso: el panel está cortado. Se ruega no llorar por la corriente.
+MEGA_ACT_PANEL_05,"Clic, chispa y silencio. Así se apaga una alarma."
+MEGA_ACT_CASE_01,Alguien está abriendo la vitrina. Con mucha educación.
+MEGA_ACT_CASE_02,Aviso: alguien habla con la cerradura.
+MEGA_ACT_CASE_03,Esa vitrina lleva siglos cerrada. No le hace gracia.
+MEGA_ACT_CASE_04,Se ruega no soplar en la cerradura. Es muy tímida.
+MEGA_ACT_CASE_05,Atención: manos misteriosas sobre el cristal. Se ruega no mirar.
+MEGA_ACT_CASE_06,"Clic, clac. La vitrina cree que le hacen cosquillas."
+MEGA_ACT_SWITCH_STREAK_01,¿Luz o no luz? Alguien no se decide.
+MEGA_ACT_SWITCH_STREAK_02,Tanta luz y tanta oscuridad. Esto ya es una discoteca.
+MEGA_ACT_SWITCH_STREAK_03,Aviso: los interruptores no son un juguete. Un poco sí.
+MEGA_ACT_SWITCH_STREAK_04,"Enciende, apaga, enciende. Las bombillas piden un descanso."
+MEGA_ACT_SWITCH_STREAK_05,Alguien quiere ser un faro. A ratos.
+MEGA_ACT_PLINTH_01,Hay una estatua nueva. Es muy joven y parpadea.
+MEGA_ACT_PLINTH_02,Alguien se ha subido al pedestal. Se ruega aplaudir en silencio.
+MEGA_ACT_PLINTH_03,"Atención: nueva obra de arte, «Sombra de puntillas»."
+MEGA_ACT_PLINTH_04,Esa estatua respira. Los artistas lo llaman realismo.
+MEGA_ACT_PLINTH_05,Aviso: esa estatua no estaba ayer. Sospechosamente nueva.
+MEGA_ACT_PLINTH_FALL_01,La estatua nueva ha perdido el equilibrio. Y la pose.
+MEGA_ACT_PLINTH_FALL_02,¡PATAPLÚM! El arte contemporáneo ha aterrizado.
+MEGA_ACT_PLINTH_FALL_03,Aviso: una estatua se ha caído y no era de piedra.
+MEGA_ACT_PLINTH_FALL_04,"Alguien no sabe estar sobre un pie. Ni sobre dos, casi."
+MEGA_ACT_PLINTH_FALL_05,Un pedestal menos ocupado y un bulto más mareado.
+MEGA_ACT_ARCADE_01,Alguien juega a la máquina. Todo lo demás puede esperar.
+MEGA_ACT_ARCADE_02,Aviso: la máquina de marcianos tiene un nuevo campeón.
+MEGA_ACT_ARCADE_03,Pong en pleno robo. Qué mente tan tranquila.
+MEGA_ACT_ARCADE_04,Se ruega no pedir la revancha ahora mismo.
+MEGA_ACT_ARCADE_05,Atención: ha empezado una partida. La vitrina puede esperar.
+MEGA_ACT_PHEW_01,Uf. Qué susto tan bien resuelto.
+MEGA_ACT_PHEW_02,Aviso: ha faltado un pelo. Un pelo de calcetín.
+MEGA_ACT_PHEW_03,Un guardia casi ve algo. Casi es lo mejor.
+MEGA_ACT_PHEW_04,¡Por los pelos! Se ruega un caramelo para el susto.
+MEGA_ACT_PHEW_05,Peligro pasado. Se puede respirar. Con calma.
+MEGA_ACT_CRAWL_01,Algo va a cuatro patas. El museo lo considera un gato.
+MEGA_ACT_CRAWL_02,Aviso: hay un gato enorme por la sala. Maúlla poco.
+MEGA_ACT_CRAWL_03,Ir a gatas es de sabios. Y de rodillas sucias.
+MEGA_ACT_CRAWL_04,¿Se ha perdido una moneda? Alguien la busca.
+MEGA_ACT_CRAWL_05,Se ruega no acariciar lo que va a gatas.
+MEGA_ACT_RUN_01,Alguien corre como si llegara tarde al cole.
+MEGA_ACT_RUN_02,Aviso: hay prisa. Nadie sabe por qué.
+MEGA_ACT_RUN_03,Se prohíbe correr en el museo. Alguien no lo lee.
+MEGA_ACT_RUN_04,Unos pies llevan prisa. Y el resto va detrás.
+MEGA_ACT_RUN_05,Menuda carrera. Pero aquí no hay medalla.
+MEGA_ACT_SNEAK_01,Alguien anda con mucho cuidado. Parece que pisa huevos.
+MEGA_ACT_SNEAK_02,Aviso: alguien camina de puntillas. Se admiran los dedos.
+MEGA_ACT_SNEAK_03,Alguien anda tan despacio que el reloj se aburre.
+MEGA_ACT_SNEAK_04,Qué elegancia al andar. El suelo ni se entera.
+MEGA_ACT_SNEAK_05,"Paso a paso, sin hacer ruido. Como un gato con pantuflas."
+HIDEOUT_NAME,El Escondite del Calcetín
+HIDEOUT_LINE,"Nuestra casa: el salón, los trofeos, el dojo y el aseo"
+TOUR_HINT_PRACTICE,ENTRAR
+PRACTICE_LEAVE,< A LA CIUDAD
+HIDEOUT_ROOM_SALON,SALÓN
+HIDEOUT_ROOM_TROFEOS,TROFEOS
+HIDEOUT_ROOM_DOJO,DOJO
+HIDEOUT_ROOM_ASEO,ASEO
+HIDEOUT_DOOR_SIGN,A LA CIUDAD
+HIDEOUT_DOOR_OPEN,ABRIR
+HIDEOUT_DOOR_CLOSE,CERRAR
+HIDEOUT_HINT,"Sal por la puerta de casa, o con la pausa. El mapa, con M o View"
+HIDEOUT_SOCK,el calcetín de práctica
+HIDEOUT_SOCK_BLURB,No se abre: es para practicar.
+HIDEOUT_POSTER_1,"SE BUSCA:\nEL BARÓN"
+HIDEOUT_POSTER_2,"NINJA\nKARMA"
+HIDEOUT_POSTER_3,"NO SE\nTOCA EL\nQUESO"
+HIDEOUT_ITEM_CASE,la vitrina de práctica
+HIDEOUT_ITEM_DUMMY,el espantapájaros del pasillo
+HIDEOUT_ITEM_DUMMY_BACK,el espantapájaros de los escondites
+HIDEOUT_ITEM_PEDESTAL,el pedestal
+HIDEOUT_ITEM_BINS,las papeleras
+HIDEOUT_ITEM_ARMOUR,las armaduras
+HIDEOUT_ITEM_BUST,el busto
+HIDEOUT_ITEM_CRATE,la caja para esconderse
+HIDEOUT_ITEM_LOCKER,la taquilla para esconderse
+HIDEOUT_ITEM_MAZE_A,el primer espantapájaros del laberinto
+HIDEOUT_ITEM_MAZE_B,el segundo espantapájaros del laberinto
+HIDEOUT_ARCADE_PLAY,JUGAR
+HIDEOUT_ITEM_BENCH,los atriles de las pruebas
+HIDEOUT_ITEM_BENCH_ALARM,la vitrina con alarma y su panel
+HIDEOUT_BENCH_KIND,PRUEBA
+HIDEOUT_BENCH_LEVEL,NIVEL
+HIDEOUT_BENCH_COUNT,VITRINAS ABIERTAS
+HIDEOUT_BENCH_KIND_HOLD,QUIETO
+HIDEOUT_BENCH_KIND_LOCKPICK,GANZÚA
+HIDEOUT_BENCH_KIND_SQUEEZE,APRETAR
+HIDEOUT_BENCH_KIND_WIRES,CABLES
+HIDEOUT_BENCH_KIND_STEADY,PULSO
+HIDEOUT_BENCH_LEVEL_0,FÁCIL
+HIDEOUT_BENCH_LEVEL_1,MEDIA
+HIDEOUT_BENCH_LEVEL_2,DIFÍCIL
+HIDEOUT_BENCH_OPEN,ABRIR LA VITRINA
+HIDEOUT_BENCH_HOLD,QUIETO…
+HIDEOUT_BENCH_PANEL,CORTAR EL PANEL
+HIDEOUT_BENCH_NEED_PANEL,CORTA ANTES EL PANEL
+HIDEOUT_BENCH_CHANGE_KIND,CAMBIAR PRUEBA
+HIDEOUT_BENCH_CHANGE_LEVEL,CAMBIAR DIFICULTAD
+HIDEOUT_GAME_ATRAPA,PILLA EL CALCETÍN
+HIDEOUT_GAME_ATRAPA_BLURB,Un calcetín dorado sale corriendo. ¡Atrápalo antes de que se enfríe!
+HIDEOUT_GAME_BOLOS,BOLOS
+HIDEOUT_GAME_BOLOS_BLURB,La bola eres tú. Rueda contra los bolos y que no quede ni uno en pie.
+HIDEOUT_GAME_PEDESTAL,EQUILIBRIO
+HIDEOUT_GAME_PEDESTAL_BLURB,"Aguanta la pose en el pedestal, aunque te dé la risa."
+HIDEOUT_GAME_AGUANTA,AGUANTA ESCONDIDO
+HIDEOUT_GAME_AGUANTA_BLURB,"Escóndete, no estornudes y que el espantapájaros se aburra."
+HIDEOUT_GAME_START,EMPEZAR JUEGO
+HIDEOUT_GAME_LEAVE,DEJAR EL JUEGO
+HIDEOUT_GAME_LEAVE_KEY,TAB: DEJAR EL JUEGO
+HIDEOUT_GAME_READY,¿LISTOS?
+HIDEOUT_GAME_LEVEL,NIVEL %d
+HIDEOUT_GAME_COUNT,%d/%d
+HIDEOUT_GAME_BEST,MEJOR %d
+HIDEOUT_GAME_BEST_NONE,MEJOR --
+HIDEOUT_GAME_EXTRA,HORA EXTRA
+HIDEOUT_GAME_LOST_ATRAPA,¡SE FUE EL CALCETÍN!
+HIDEOUT_GAME_LOST_BOLOS,¡SE QUEDÓ UN BOLO EN PIE!
+HIDEOUT_GAME_LOST_PEDESTAL,"¡AL SUELO, COMO UN SACO!"
+HIDEOUT_GAME_LOST_AGUANTA,¡AQUÍ HAY UN NINJA!
+HIDEOUT_GAME_WON,¡GANASTE!
+HIDEOUT_GAME_WON_LINE,Diez niveles y ni un calcetín roto.
+HIDEOUT_GAME_REACHED,Llegaste al nivel %d
+HIDEOUT_GAME_NEW_RECORD,¡NUEVO RÉCORD!
+HIDEOUT_GAME_AGAIN,OTRA VEZ
+HIDEOUT_GAME_GO_ON,SEGUIR (HORA EXTRA)
+HIDEOUT_GAME_EXIT,SALIR
+HIDEOUT_GAME_MVP,El calcetinero de la banda: %s
+HIDEOUT_GAME_ALARM,¡TE VIERON! -2 s
+HIDEOUT_GAME_STRIKE,¡PLENO!
+HIDEOUT_GAME_ROLL,¡RUEDA!
+HIDEOUT_GAME_CLIMB,¡SUBE AL PEDESTAL!
+HIDEOUT_GAME_HIDE,¡ESCÓNDETE!
+HIDEOUT_GAME_HOLD,¡AGUANTA!
+HIDEOUT_GAME_SNEEZE,¡AGUANTA EL ESTORNUDO!
+HIDEOUT_GAME_WHY_TIME,Se acabó el tiempo.
+HIDEOUT_GAME_WHY_FALL,Te caíste del pedestal.
+HIDEOUT_GAME_WHY_DOWN,Bajaste antes de tiempo.
+HIDEOUT_GAME_WHY_LATE,Llegaste tarde.
+HIDEOUT_GAME_WHY_SEEN,La linterna te vio.
+HIDEOUT_GAME_WHY_LEFT,Saliste del escondite.
+HIDEOUT_GAME_WHY_SNEEZE,¡ACHÚS!
+HIDEOUT_GAME_DOOR,La puerta no se abre sola.
+TOUR_PREV,< ANTERIOR
+TOUR_NEXT,SIGUIENTE >

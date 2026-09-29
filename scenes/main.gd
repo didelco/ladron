@@ -97,6 +97,15 @@ var players := 1
 var sound_on := true
 var music_on := true
 var show_ia := false
+## the museum's loudspeaker (Megaphone) and how it is switched on: one of
+## Settings.MEGAPHONE_MODES ("both", "text", "sound", "off")
+var megaphone_mode := "both"
+var mega: Megaphone
+## the loudspeaker's voice (MegaVoice)
+var mega_voice: MegaVoice
+var mega_still := 0.0
+var mega_suspicion := 0
+var mega_exit_said := false
 var fullscreen := false
 var vsync := true
 ## percent, 0..100 in steps of ten
@@ -226,6 +235,8 @@ func _ready() -> void:
 	brain.failed.connect(_on_brain_failed)
 	sfx = Sfx.new()
 	add_child(sfx)
+	mega_voice = MegaVoice.new(sfx)
+	add_child(mega_voice)
 	hud = Hud.new()
 	add_child(hud)
 	hud.ui_sound.connect(func(kind: String) -> void: sfx.ui(kind, 0.6))
@@ -274,6 +285,12 @@ func _ready() -> void:
 							fresh = clampi(int(a.substr(9)) - 1, 0, Story.MUSEUMS.size() - 1)
 					_show_city(fresh, fresh)
 				"museum": _show_museum_tour(story_pick)
+				# The hideout's practice room, straight in (--gang=N, --two).
+				"practica":
+					mode = Practice.MODE
+					pads_lost.clear()
+					_new_round(1)
+					_start_countdown(0.0)
 				"generative": _show_generative_menu()
 				"challenges": _show_challenge_menu()
 				"editor": _show_editor(MapFile.generated(4242, "small"))
@@ -494,7 +511,7 @@ func _show_challenge_menu() -> void:
 	phase = "menu"
 	challenge_delete = false
 	_drop_preview()
-	var lines: Array = [{"head": Text.t("CHALLENGE_STORY_HEAD")}]
+	var lines: Array = [{"head": Text.t("MENU_STORY")}]
 	for n in range(1, Story.count() + 1):
 		var edited := MapFile.for_night(n) != null
 		lines.append({"text": _night_name(n) + (" *" if edited else ""), "colour": Hud.C.green if edited else Hud.C.text,
@@ -510,7 +527,7 @@ func _show_challenge_menu() -> void:
 	var room := MapEditor.picture(MapFile.blank(Museum.SIZES.large.w, Museum.SIZES.large.h), 8)
 	var small := MapFile.blank(Museum.SIZES.small.w, Museum.SIZES.small.h)
 	hud.show_menu([
-		{"title": Text.t("CHALLENGE_TITLE"), "size": 40},
+		{"title": Text.t("MENU_CHALLENGE"), "size": 40},
 		{"text": Text.t("CHALLENGE_TEXT"), "colour": Hud.C.dim},
 		{"columns": [
 			{"items": [{"list": lines, "width": 380, "height": 450}]},
@@ -553,8 +570,9 @@ func _night_name(n: int) -> String:
 ## Under a night's name: its museum, whether it has been touched up, its guards.
 func _night_info(n: int, m: MapFile) -> String:
 	var edited := MapFile.for_night(n) != null
+	var guards := m.guards.size()
 	return "%s · %s · %s" % [Story.museum(Story.museum_of(n)).name, Text.t("CHALLENGE_NIGHT_EDITED" if edited else "CHALLENGE_NIGHT_BUILT"),
-		Text.t("CHALLENGE_GUARDS") % m.guards.size()]
+		Text.t("TIP_GUARDS_ONE") if guards == 1 else Text.t("TIP_GUARDS_MANY") % guards]
 
 
 ## A story night's museum as a map: the one saved for it, or the one the
@@ -720,6 +738,8 @@ func _back_to_editor() -> void:
 
 ## Out of a game to where it was started from: the editor, if it was a try.
 func _leave_game(to: Callable) -> void:
+	mega_voice.stop()
+	_dojo_end()
 	if testing:
 		_back_to_editor()
 	else:
@@ -728,6 +748,8 @@ func _leave_game(to: Callable) -> void:
 
 ## The words on that way out.
 func _leave_text() -> String:
+	if mode == Practice.MODE:
+		return Text.t("PRACTICE_LEAVE")
 	return Text.t("EDITOR_BACK_TO_EDITOR" if testing else "MENU_TO_MENU")
 
 
@@ -830,6 +852,7 @@ func _open_tour() -> Tour:
 		_show_title("story"))
 	tour.room_chosen.connect(_tour_room)
 	tour.go.connect(_tour_go)
+	tour.practice.connect(_tour_practice)
 	tour.told.connect(_remember_told)
 	tour.sound.connect(func(kind: String) -> void: sfx.ui(kind, 0.6))
 	get_viewport().disable_3d = true
@@ -853,6 +876,15 @@ func _tour_room(n: int) -> void:
 	tour.show_plan(_plan_data())
 
 
+## The hideout picked in the town: the practice room, straight in. No plan,
+## no briefing; the town fades into the room and the count begins.
+func _tour_practice() -> void:
+	mode = Practice.MODE
+	pads_lost.clear()
+	_new_round(1)
+	_tour_go(0)
+
+
 ## What the tour needs to tell the plan of the heist laid out: its picture,
 ## the beats told over it and the marks to look round (PlanBeats), the job
 ## sheet, what getting the piece out takes, the goals for its stars, and
@@ -864,11 +896,10 @@ func _plan_data() -> Dictionary:
 		"n": level,
 		"image": Hud.plan_map(guards, _thief_colours().slice(0, thieves.size())),
 		"tile_px": float(clampi(int(Hud.MAP_WIDTH / Museum.w), 8, 32)),
-		"heading": Story.heading(level, players),
 		"beats": beats,
 		"marks": PlanBeats.marks(beats, guards),
 		"takes": Briefing.takes(),
-		"sheet": {"heading": Story.heading(level, players), "name": Heist.first_upper(Heist.loot.name), "blurb": Heist.loot.blurb,
+		"sheet": {"name": Heist.first_upper(Heist.loot.name), "blurb": Heist.loot.blurb,
 			"story": Heist.loot.get("story", ""), "photo": preview.get_texture()},
 		"goals": StarSlots.goals(level, players),
 		"told": _told(level),
@@ -1155,7 +1186,7 @@ func _show_settings(from: String, page := "") -> void:
 	settings_page = page
 	phase = "settings"
 	var keys: Array = {
-		"": ["ia"],
+		"": ["megaphone", "ia"],
 		"sound": ["sound", "music", "music_volume", "effects_volume"],
 		"screen": ["fullscreen", "window", "ui_scale", "vsync"],
 		"pads": ["rumble", "rumble_strength", "deadzone"],
@@ -1169,7 +1200,7 @@ func _show_settings(from: String, page := "") -> void:
 	for k in keys:
 		rows.append({"text": _setting_text(k), "step": _step_setting.bind(k)})
 	rows.append({"text": Text.t("MENU_BACK"), "call": _settings_back, "colour": Hud.C.dim})
-	var title := Text.t({"": "SETTINGS_TITLE", "sound": "SETTINGS_SOUND_TITLE", "screen": "SETTINGS_SCREEN_TITLE", "pads": "SETTINGS_PADS_TITLE"}[page])
+	var title := Text.t({"": "MENU_SETTINGS", "sound": "SETTINGS_SOUND_TITLE", "screen": "SETTINGS_SCREEN_TITLE", "pads": "SETTINGS_PADS_TITLE"}[page])
 	var items: Array = [{"title": title, "size": 48}, {"buttons": rows}]
 	match page:
 		"sound":
@@ -1216,6 +1247,7 @@ func _setting_text(key: String) -> String:
 			return Text.t("SETTINGS_WINDOW_AUTO" if window < 0 else "SETTINGS_WINDOW") % [w.x, w.y]
 		"ui_scale": return Text.t("SETTINGS_UI_SCALE") % ui_scale
 		"ia": return Text.t("SETTINGS_IA") % yes.call(show_ia)
+		"megaphone": return Text.t("SETTINGS_MEGAPHONE") % Text.t("SETTINGS_MEGAPHONE_" + megaphone_mode.to_upper())
 		"rumble": return Text.t("SETTINGS_RUMBLE") % yes.call(rumble)
 		"rumble_strength": return Text.t("SETTINGS_RUMBLE_STRENGTH") % _volume_bar(rumble_strength)
 		"deadzone": return Text.t("SETTINGS_DEADZONE") % deadzone
@@ -1238,6 +1270,10 @@ func _step_setting(dir: int, key: String) -> String:
 		"sound": _set_sound(not sound_on)
 		"music": _toggle_music()
 		"ia": _toggle_ia()
+		"megaphone":
+			# Both, notice only, voice only, off, round again.
+			var modes := Settings.MEGAPHONE_MODES
+			_set_megaphone_mode(modes[posmod(modes.find(megaphone_mode) + (1 if dir >= 0 else -1), modes.size())])
 		"fullscreen", "vsync":
 			set(key, not get(key))
 			Settings.apply_display(fullscreen, vsync, window, key == "fullscreen")
@@ -1282,6 +1318,17 @@ func _toggle_music() -> void:
 	sfx.set_music(music_on)
 
 
+## The loudspeaker's mode changed, in the settings or while playing (from the
+## pause): the notice on screen goes away without a notice mode, the voice is
+## cut off without a voice mode.
+func _set_megaphone_mode(m: String) -> void:
+	megaphone_mode = m
+	if not Settings.megaphone_text(m):
+		hud.megaphone("")
+	if not Settings.megaphone_sound(m):
+		mega_voice.stop()
+
+
 func _toggle_ia() -> void:
 	show_ia = not show_ia
 
@@ -1293,6 +1340,7 @@ func _load_settings() -> void:
 	sound_on = s.sound
 	music_on = s.music
 	show_ia = s.ia
+	megaphone_mode = s.megaphone_mode
 	Sim.difficulty = s.difficulty
 	size = s.size
 	fullscreen = s.fullscreen
@@ -1320,7 +1368,7 @@ func _apply_ui_scale() -> void:
 
 func _save_settings() -> void:
 	Settings.write({
-		"sound": sound_on, "music": music_on, "ia": show_ia,
+		"sound": sound_on, "music": music_on, "ia": show_ia, "megaphone_mode": megaphone_mode,
 		"difficulty": Sim.difficulty, "size": size,
 		"fullscreen": fullscreen, "vsync": vsync, "window": window, "ui_scale": ui_scale,
 		"music_volume": music_volume, "effects_volume": effects_volume,
@@ -1436,6 +1484,7 @@ func _settings_back() -> void:
 ## A real pause: the tree stops, knocked-over props hang in mid-air, until
 ## SEGUIR (or Esc, or P) or the way out to the title.
 func _pause() -> void:
+	_dojo_end()
 	_close_map()
 	phase = "paused"
 	get_tree().paused = true
@@ -1458,7 +1507,7 @@ func _pause() -> void:
 func _quit_to_title() -> void:
 	get_tree().paused = false
 	hud.cctv(false)
-	_leave_game(_show_title)
+	_leave_game(_way_out() if mode == Practice.MODE else _show_title)
 
 
 ## Over the pause's monitor: the camera of the room the first thief is in,
@@ -1476,6 +1525,8 @@ func _camera_caption() -> String:
 
 ## Under it: the museum, by name when it has one.
 func _cctv_museum() -> String:
+	if mode == Practice.MODE:
+		return Text.t("HIDEOUT_NAME").to_upper()
 	if mode == "story":
 		return String(Story.museum(Story.museum_of(level)).name).to_upper()
 	if mode == "challenge" and challenge_map and challenge_map.name != "":
@@ -1556,7 +1607,7 @@ func _story_items() -> Array:
 	# Rebuilt each time: the last round's piece may still be on the stand.
 	_build_preview()
 	return [
-		{"card": {"heading": _brief_heading(), "name": Heist.first_upper(Heist.loot.name), "blurb": Heist.loot.blurb,
+		{"card": {"name": Heist.first_upper(Heist.loot.name), "blurb": Heist.loot.blurb,
 			"story": Heist.loot.get("story", ""), "photo": preview.get_texture()}},
 		{"gap": 16},
 	]
@@ -1579,7 +1630,6 @@ func _plan_items() -> Array:
 	# Rebuilt each time: the last round's piece may still be on the stand.
 	_build_preview()
 	var piece: Array = [
-		{"text": _brief_heading(), "size": 15, "colour": Hud.C.dim, "align": "left"},
 		{"text": Heist.first_upper(Heist.loot.name), "size": 26, "colour": Color(Heist.loot.colour), "wrap": true, "width": 330, "align": "left"},
 		{"text": Briefing.takes(), "size": 15, "colour": Hud.C.dim, "wrap": true, "width": 330, "align": "left"},
 	]
@@ -1595,19 +1645,6 @@ func _plan_items() -> Array:
 		{"items": left, "separation": 6, "middle": true},
 		{"items": right, "width": 540, "separation": 8, "middle": true},
 	], "separation": 36}]
-
-
-## Over the piece: which night, or which level and how hard, or which map.
-func _brief_heading() -> String:
-	match mode:
-		"story":
-			return Story.heading(level, players)
-		"challenge":
-			if challenge_map and challenge_map.name != "":
-				return challenge_map.name.to_upper()
-	if mode == "generative":
-		return Text.t("BRIEF_DIFFICULTY") % [Text.t("BRIEF_LEVEL") % level, Text.t(DIFFICULTY_NAMES[Sim.difficulty])]
-	return Text.t("BRIEF_LEVEL") % level
 
 
 func _build_preview(loot: Dictionary = Heist.loot) -> void:
@@ -1715,7 +1752,8 @@ func _show_end() -> void:
 
 ## Out of a night's end, its button or back: to the mode's menu.
 func _way_out() -> Callable:
-	return {"story": _show_city, "challenge": _show_challenge_menu}.get(mode, _show_title)
+	return {"story": _show_city, "challenge": _show_challenge_menu,
+		Practice.MODE: _show_city.bind(CityStage.HIDEOUT)}.get(mode, _show_title)
 
 
 ## Which headline the paper picks: the same heist, the same page.
@@ -1770,7 +1808,8 @@ func _figures() -> Array:
 
 
 ## The police file: always the same sheet and photo, only the number
-## changing, what was taken (or nearly) and who did the catching. A gang
+## changing, the crime (what was taken, or nearly, and who did the catching
+## in one field), the notes. A gang
 ## caught is the same file: the stamp says how many.
 func _police_file() -> Dictionary:
 	files_opened += 1
@@ -1783,17 +1822,15 @@ func _police_file() -> Dictionary:
 	rand.seed = hash([files_opened, level, name])
 	var pick := func(key: String) -> String:
 		return Text.t("%s_%d" % [key, rand.randi_range(1, FILE_JOKES[key])])
+	# One field, the crime and who caught it in a few words: two draws.
+	var crime: String = pick.call("END_FILE_CRIME_ALMOST" if Heist.taken else "END_FILE_CRIME_TRY") % name
+	var guard: String = pick.call("END_FILE_BY_GUARD") % caught_by if caught_by != "" else Text.t("END_FILE_BY_NOBODY")
 	return {
 		"photo": load(EndPages.MUGSHOT_PHOTO),
 		"number": Text.t("END_FILE_NUMBER") % files_opened,
 		"letterhead": Text.t("END_FILE_LETTERHEAD"),
 		"stamp": Text.t("END_FILE_STAMP_MANY") % n if n > 1 else Text.t("END_FILE_STAMP_ONE"),
-		"rows": [
-			[Text.t("END_FILE_ALIAS"), Text.t("END_FILE_ALIAS_MANY") % n if n > 1 else pick.call("END_FILE_ALIAS")],
-			[Text.t("END_FILE_CRIME"), pick.call("END_FILE_CRIME_ALMOST" if Heist.taken else "END_FILE_CRIME_TRY") % name],
-			[Text.t("END_FILE_BY" + many), pick.call("END_FILE_BY_GUARD") % caught_by if caught_by != "" else Text.t("END_FILE_BY_NOBODY")],
-		],
-		"tick": [Text.t("END_FILE_AGAIN"), pick.call("END_FILE_YES_NO")],
+		"rows": [[Text.t("END_FILE_CRIME"), "%s %s" % [crime, Text.t("END_FILE_BY" + many) % guard]]],
 		"notes": [Text.t("END_FILE_NOTES"), pick.call("END_FILE_NOTE_MANY" if n > 1 else "END_FILE_NOTE")],
 		"prints": Text.t("END_FILE_PRINTS"),
 	}
@@ -1801,8 +1838,8 @@ func _police_file() -> Dictionary:
 
 ## How many versions of each joke on the police file there are in Text
 ## (END_FILE_<KEY>_1 .. _N).
-const FILE_JOKES := {"END_FILE_ALIAS": 6, "END_FILE_CRIME_TRY": 3, "END_FILE_CRIME_ALMOST": 2,
-	"END_FILE_BY_GUARD": 4, "END_FILE_YES_NO": 3, "END_FILE_NOTE": 6, "END_FILE_NOTE_MANY": 3}
+const FILE_JOKES := {"END_FILE_CRIME_TRY": 3, "END_FILE_CRIME_ALMOST": 2,
+	"END_FILE_BY_GUARD": 4, "END_FILE_NOTE": 6, "END_FILE_NOTE_MANY": 3}
 
 
 func _show_ending() -> void:
@@ -1846,6 +1883,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	# The night just over, frozen: nothing counts until its page is up.
 	if phase == "over":
+		return
+	# A game of the dojo on: Tab leaves it, and at its end the panel takes the keys.
+	if _dojo_game != null and phase == "playing" and _dojo_input(event):
+		get_viewport().set_input_as_handled()
 		return
 	var key: Key = event.keycode if event is InputEventKey and event.pressed and not event.echo else KEY_NONE
 	if key == KEY_N:
@@ -1953,6 +1994,14 @@ func _back() -> void:
 ## wait: from a menu, the count waits for it to fade away (Hud.FADE_S), the
 ## camera already coming in on the gang.
 func _start_countdown(wait := 0.0) -> void:
+	# At home there is no count: the band is there and can move, the camera
+	# coming in on it while the town fades away.
+	if mode == Practice.MODE:
+		_drop_preview()
+		_start_playing()
+		if wait > 0.0:
+			_intro_camera(wait)
+		return
 	phase = "countdown"
 	_drop_preview()
 	hud.hide_panel()
@@ -2005,7 +2054,13 @@ func _lay_out(n: int, map_seed: int) -> int:
 	guards = Sim.new_guards(Sim.guard_count(Museum.size_name))
 	if saved_map:
 		Sim.place_guards(guards, saved_map.guards)
-	var piece: Dictionary = Story.level(n).loot if mode == "story" else (challenge_map.loot_piece() if mode == "challenge" else {})
+	var piece: Dictionary = {}
+	if mode == "story":
+		piece = Story.level(n).loot
+	elif mode == "challenge":
+		piece = challenge_map.loot_piece()
+	elif mode == Practice.MODE:
+		piece = saved_map.loot_piece()
 	Heist.plan_job(level, piece, players, saved_map.job() if saved_map else {})
 	# Things to knock over: never on the tiles the job needs clear.
 	var stand := Heist.route[0]
@@ -2049,6 +2104,8 @@ func _lay_out(n: int, map_seed: int) -> int:
 	# decided once (Collection), for the view and the arcade machines alike.
 	Collection.lay_out()
 	Arcades.find()
+	if mode == Practice.MODE:
+		Arcades.find_home()
 	return Sim.assign_posts(guards)
 
 
@@ -2096,6 +2153,10 @@ func _new_round(n: int) -> void:
 		Sim.custom = challenge_map.tuning()
 		saved_map = challenge_map
 		_lay_out(n, challenge_map.seed + n)
+	elif mode == Practice.MODE:
+		Sim.custom = Practice.tuning()
+		saved_map = Practice.map(players)
+		_lay_out(n, saved_map.seed)
 	else:
 		Sim.custom = {}
 		_lay_out(n, randi() % 1000000000)
@@ -2115,7 +2176,316 @@ func _new_round(n: int) -> void:
 	Sim.light_events.clear()
 	_build_world()
 	_snap_camera()
+	_start_megaphone(n)
 	hud.set_gang(_thief_colours().slice(0, thieves.size()), _thief_darks().slice(0, thieves.size()), Heist.loot)
+	hud.set_home(mode == Practice.MODE)
+	home_room = ""
+	home_leaving = false
+	# In the house: the doors as at the start (all shut, the lounge in sight).
+	_home_sight(true)
+
+
+## In the band's house: the room the first thief is in (to say its name as
+## one walks in) and whether the way out has been taken.
+var home_room := ""
+var home_leaving := false
+## The house as drawn (null out of it): the doors and the dark rooms are its.
+var den_view: DenView
+
+
+## In the house: the rooms in sight (Den.visible_rooms: those with one of the
+## band in, and those seen through the doors that are open) drawn and the
+## rest dark, and what stands in the dark hidden: the dojo's things that
+## fall (Props), the dummies and the sealed case's sock. snap: no fading
+## (as a round begins). Nothing to do out of the house.
+func _home_sight(snap := false) -> void:
+	if mode != Practice.MODE or den_view == null or not is_instance_valid(den_view):
+		return
+	var rooms: Array[String] = []
+	for p in thieves:
+		if not p.out:
+			rooms.append_array(Den.rooms_at(p.x, p.y))
+	if not rooms.is_empty():
+		den_view.set_visible_rooms(Den.visible_rooms(Den.open_doors(), rooms), snap)
+	if props_view != null and is_instance_valid(props_view):
+		props_view.show_where(den_view.shows_at)
+	for d in mannequins:
+		d.visible = den_view.shows_at(d.position.x + Museum.w / 2.0, d.position.z + Museum.h / 2.0)
+
+
+## The scarecrows look for the band (Practice.scarecrow_sees, the guards' rule
+## with their own numbers): one sees a thief and the whole dojo goes red with
+## a siren for a few seconds (DenView.set_alert), then not again for a moment.
+## Only the dojo: nobody is caught, nothing is counted, no megaphone speaks.
+func _scarecrow_tick(dt: float) -> void:
+	if scarecrow_list.is_empty() or den_view == null or not is_instance_valid(den_view):
+		return
+	var seen := false
+	for p in thieves:
+		if p.out:
+			continue
+		for sc in scarecrow_list:
+			if Practice.scarecrow_sees(sc, Vector2(p.x, p.y), p.hiding or p.posing, p.posture < Sim.DOWN):
+				seen = true
+	var was: bool = scarecrow_alert.active
+	scarecrow_alert = Practice.alert_step(scarecrow_alert, dt, seen)
+	if scarecrow_alert.active != was:
+		den_view.set_alert(scarecrow_alert.active)
+		if scarecrow_alert.active and den_view.shows("dojo"):
+			var r := Den.rect("dojo")
+			sfx.at("siren", _to_world(r.position.x + r.size.x / 2.0, r.position.y + r.size.y / 2.0, 1.0), 0.5, 14.0)
+
+
+## The bench of practice cases (Practice.bench_*): a lectern turns to the next
+## test or level; a case is opened by the test picked, standing still or with
+## the same minigame as in a heist; the panel is cut with the suction cup. All
+## of it a game and nothing else: no stars, no progress, no noise, no megaphone.
+func _bench_act(t: Thief, i: int, what: Dictionary, keys: Dictionary) -> void:
+	var input := _game_input(i, keys)
+	match what.what:
+		"kind":
+			Practice.bench_cycle_kind(bench, players)
+			sfx.ui("nav")
+		"level":
+			Practice.bench_cycle_level(bench)
+			sfx.ui("nav")
+		"need_panel":
+			sfx.ui("back")
+		"panel":
+			t.game = Minigame.make("steady", "bench", 4 + int(bench.level) * 2, input, 0, int(bench.level))
+			bench_target[t.id] = what
+			t.moving = false
+			t.speed = 0.0
+			t.sprinting = false
+		_:
+			var game := Practice.bench_game(bench.kind, int(bench.level), input)
+			var c: Vector2i = Practice.bench_cases(players)[what.i].at
+			t.dir = atan2(c.y + 0.5 - t.y, c.x + 0.5 - t.x)
+			if game == null:
+				bench_hold[t.id] = {"i": what.i, "t": 0.0}
+			else:
+				t.game = game
+				bench_target[t.id] = what
+				t.moving = false
+				t.speed = 0.0
+				t.sprinting = false
+	if den_view != null and is_instance_valid(den_view):
+		den_view.set_bench(bench)
+
+
+func _bench_open(c: int) -> void:
+	Practice.bench_open(bench, c)
+	sfx.ui("stolen")
+	var at: Vector2i = Practice.bench_cases(players)[c].at
+	Fx.sparkle(world, _to_world(at.x + 0.5, at.y + 0.5, 1.05), Color("#e2262f"))
+
+
+func _bench_tick(dt: float) -> void:
+	var before := bench.duplicate(true)
+	Practice.bench_step(bench, dt)
+	for p in thieves:
+		if bench_hold.has(p.id):
+			var h: Dictionary = bench_hold[p.id]
+			var still: bool = not p.out and not p.moving and p.speed < 0.2 and Practice.bench_case_at(Vector2(p.x, p.y), players) == int(h.i) and bench.cases[h.i].state == "closed"
+			h.t = Practice.bench_hold_step(float(h.t), still, dt)
+			if not still:
+				bench_hold.erase(p.id)
+			elif h.t >= Practice.BENCH_HOLD_S:
+				bench_hold.erase(p.id)
+				_bench_open(int(h.i))
+		if bench_target.has(p.id):
+			if p.game == null:
+				bench_target.erase(p.id)
+			elif p.game.what == "bench" and p.game.done:
+				var what: Dictionary = bench_target[p.id]
+				bench_target.erase(p.id)
+				p.game = null
+				if what.what == "panel":
+					bench.panel_off = true
+					sfx.ui("ok")
+				else:
+					_bench_open(int(what.i))
+	if bench != before and den_view != null and is_instance_valid(den_view):
+		den_view.set_bench(bench)
+
+
+# --- The dojo's games -----------------------------------------------------------------------
+## The sign posts of the house (Practice.ITEMS with `game`) start the dojo's games
+## (DojoGames): a game on the band's own field, stepped here with the band's
+## bodies, seen by DojoGamesView. Nothing in it counts for the story: only the
+## best level of each size of band is kept (DojoGames.settle, section [dojo]).
+## Tab or the pause leave a game; at its end the panel takes the keys.
+var _dojo_game: DojoGame
+var _dojo_view: DojoGamesView
+## the lantern's scarecrow of AGUANTA ESCONDIDO (a guard's coat on its cross)
+var _dojo_lantern: Figure
+## thief index -> fell off the pedestal this frame (the balance minigame's word)
+var _dojo_fell := {}
+## seconds after leaving a game in which no sign post starts another
+var _dojo_lock := 0.0
+
+
+## Begin a game (its sign post's id) for the band, from where the first thief stands.
+func _dojo_start(id: String) -> void:
+	if _dojo_view == null or not is_instance_valid(_dojo_view) or thieves.is_empty() or _dojo_game != null:
+		return
+	var field := DojoField.from_den(saved_map if saved_map != null else Practice.map(players))
+	field.set_scarecrows(Practice.scarecrows(players))
+	var start := DojoField.tile_of(Vector2(thieves[0].x, thieves[0].y))
+	var game := DojoGames.make(id, players, randi(), field, start)
+	if game == null:
+		return
+	# Sight is the scarecrows' own (Practice), not the field's.
+	game.seen = func(sc: Dictionary, pos: Vector2, hidden: bool) -> bool:
+		return Practice.scarecrow_sees({"at": sc.tile, "dir": sc.facing}, pos, hidden)
+	for i in thieves.size():
+		game.names.append(Text.t("JOIN_PLAYER") % (i + 1))
+	if game is PedestalGame:
+		(game as PedestalGame).set_pedestals(Practice.plinth_tiles(players))
+	elif game is HideGame:
+		(game as HideGame).set_hideouts(Practice.hide_tiles(players))
+		(game as HideGame).set_lantern(Practice.LANTERN_AT, Practice.LANTERN_DIR)
+		_dojo_lantern_show(true, Practice.LANTERN_DIR)
+	_dojo_game = game
+	_dojo_fell.clear()
+	game.start()
+	sfx.ui("go")
+
+
+## The lantern's scarecrow, up or down, looking where `angle` says.
+func _dojo_lantern_show(on: bool, angle: float) -> void:
+	if den_view != null and is_instance_valid(den_view):
+		den_view.set_lantern(on, angle)
+	if on and _dojo_lantern == null:
+		_dojo_lantern = Figure.make("guard", COLOURS.guard, COLOURS.guard_dark)
+		world.add_child(_dojo_lantern)
+	if _dojo_lantern != null:
+		_dojo_lantern.visible = on
+		var at := Practice.LANTERN_AT
+		_dojo_lantern.set_state(_to_world(at.x + 0.5, at.y + 0.5), angle, 0.0, 0.0)
+
+
+## Leave the game, from wherever, with nothing kept; the view and the lantern go.
+func _dojo_end() -> void:
+	if _dojo_game == null:
+		return
+	_dojo_game.abort()
+	_dojo_game = null
+	if _dojo_view != null and is_instance_valid(_dojo_view):
+		_dojo_view.show_view({})
+	_dojo_lantern_show(false, 0.0)
+	_dojo_lock = 0.5
+
+
+## Keys for a game on: Tab leaves it; at its end accept picks (again, on, out),
+## back leaves, and the arrows move along the panel. True if taken.
+func _dojo_input(event: InputEvent) -> bool:
+	if _dojo_view == null or not is_instance_valid(_dojo_view):
+		return false
+	if not _dojo_game.finished():
+		if event is InputEventKey and MenuKeys.of(event) == "skip":
+			sfx.ui("back")
+			_dojo_end()
+			return true
+		return false
+	var what := MenuKeys.of(event)
+	if what == "accept":
+		match _dojo_view.accept():
+			"again":
+				_dojo_fell.clear()
+				_dojo_game.start()
+				sfx.ui("go")
+			"go_on":
+				_dojo_game.continue_extra()
+				sfx.ui("go")
+			_:
+				sfx.ui("back")
+				_dojo_end()
+		return true
+	if what == "back":
+		sfx.ui("back")
+		_dojo_end()
+		return true
+	for a in ["ui_up", "ui_left", "ui_down", "ui_right"]:
+		if event.is_action_pressed(a, false):
+			sfx.ui("nav", 0.6)
+			_dojo_view.move(-1 if a in ["ui_up", "ui_left"] else 1)
+			return true
+	return false
+
+
+## A frame of the game on: the band's bodies in, its events out (sounds, the
+## red of the alarm, the records), the picture and the doors it shuts.
+func _dojo_tick(dt: float, keys: Dictionary) -> void:
+	var bodies: Array[Dictionary] = []
+	for i in thieves.size():
+		var p := thieves[i]
+		var input := _game_input(i, keys)
+		bodies.append({"id": i, "pos": Vector2(p.x, p.y), "rolling": p.rolling, "speed": p.speed, "out": p.out,
+			"hidden": p.hiding or p.posing, "posing": p.posing, "push": float(input.right) - float(input.left),
+			"hold": input.action, "fell": _dojo_fell.get(i, false),
+			"lean": (p.game as BalanceGame).lean if p.game is BalanceGame else 0.0})
+	_dojo_fell.clear()
+	var was_finished := _dojo_game.finished()
+	var events := _dojo_game.step(dt, bodies)
+	if DojoGames.settle(_dojo_game, events) or (_dojo_game.finished() and not was_finished):
+		if den_view != null and is_instance_valid(den_view):
+			den_view.refresh_signs()
+	for e in events:
+		if e.e == "alarm" and den_view != null and is_instance_valid(den_view):
+			var was: bool = scarecrow_alert.active
+			scarecrow_alert = Practice.alert_step(scarecrow_alert, 0.0, true)
+			if scarecrow_alert.active and not was:
+				den_view.set_alert(true)
+	var view := _dojo_game.view()
+	for id in view.get("gates_closed", []):
+		if not Den.door(String(id)).is_empty() and Den.is_open(String(id)):
+			Den.set_open(String(id), false)
+			Den.apply_doors()
+			if den_view != null and is_instance_valid(den_view):
+				den_view.set_door(String(id), false)
+	if _dojo_game is HideGame:
+		_dojo_lantern_show(true, (_dojo_game as HideGame).lantern_angle)
+	if _dojo_view != null and is_instance_valid(_dojo_view):
+		_dojo_view.react(events, sfx, world)
+		_dojo_view.show_view(view)
+
+
+## Whether something at a spot of the plan (tiles) is drawn: everywhere but
+## in one of the house's dark rooms.
+func _home_shows(x: float, y: float) -> bool:
+	return mode != Practice.MODE or den_view == null or not is_instance_valid(den_view) or den_view.shows_at(x, y)
+
+
+## Where the band stands, in tiles, for what needs to know who is in the way.
+func _band_points() -> Array:
+	var out: Array = []
+	for p in thieves:
+		if not p.out:
+			out.append(Vector2(p.x, p.y))
+	return out
+
+
+## The house's own goings-on each tick (true: the band has left). Crossing the
+## front door with any of the band takes them all out, the way the pause does
+## (the town is one screen); walking into a room names it; the bombs are
+## never short.
+func _home_tick() -> bool:
+	if home_leaving or thieves.is_empty():
+		return home_leaving
+	for p in thieves:
+		if not p.out and Den.at_door(p.x, p.y):
+			home_leaving = true
+			_quit_to_title()
+			return true
+	var room := Den.room_at(thieves[0].x, thieves[0].y)
+	if room != "" and room != home_room:
+		home_room = room
+		hud.room_name(Text.t("HIDEOUT_ROOM_" + room.to_upper()))
+	for p in thieves:
+		Smoke.left[p.id] = Smoke.PER_THIEF
+	_home_sight()
+	return false
 
 
 ## The physics frame _pressed_keys last ran on: a gap means play (re)started.
@@ -2386,6 +2756,8 @@ func _music_mood() -> void:
 			elif g.alert:
 				tension = maxf(tension, 0.55)
 	sfx.mood(tension, 0.8 if in_game else 0.5)
+	# The band's house has music of its own, and the museums' fades out.
+	sfx.home(mode == Practice.MODE and phase in ["playing", "countdown", "paused"])
 
 
 ## Noises the physics made since the last frame, for the next tick.
@@ -2416,6 +2788,9 @@ func _prop_fell(p: Props.Prop, strength := 0.6) -> void:
 	_rumble(0.3 + 0.5 * strength, 0.4 * strength, 0.15 + 0.2 * strength, Vector2(p.x, p.y))
 	_shake((0.45 if p.kind in ["bust", "armour"] else 0.25) * (0.6 + 0.8 * strength))
 	_log((Text.t("LOG_CRASH_EVERYWHERE") % Heist.first_upper(Props.name_of(p.kind))) if Props.heard_everywhere(loud) else Text.t("LOG_KNOCKED") % Props.name_of(p.kind))
+	_mega("knocked")
+	if phase == "playing":
+		_act("knock_" + p.kind)
 
 
 ## Something already down, sent rolling or rustling by a thief's feet: a
@@ -2458,6 +2833,12 @@ func _game_sounds(p: Thief) -> void:
 ## In a hideout, with the minigames on, a sneeze comes on after a while
 ## (SneezeGame): it is held in until the thief gets out, whichever way.
 func _sneeze_coming(p: Thief, i: int, keys: Dictionary, dt: float) -> void:
+	# In a game of the dojo the sneeze is the game's own (HideGame).
+	if _dojo_game != null:
+		if p.game is SneezeGame:
+			p.game = null
+		p.hidden_for = 0.0
+		return
 	if not p.hiding:
 		p.hidden_for = 0.0
 		if p.game is SneezeGame:
@@ -2479,6 +2860,8 @@ func _sneeze(p: Thief, noises: Array[SoundEvent]) -> void:
 	_rumble(0.5, 0.7, 0.25, Vector2(p.x, p.y))
 	_shake(0.25)
 	_log(Text.t("LOG_SNEEZE"))
+	_mega("sneeze")
+	_act("sneeze", thieves.find(p))
 
 
 ## A frame of a thief wriggling into a hideout (Hideouts.squeeze): in once
@@ -2498,6 +2881,8 @@ func _hid(p: Thief, spot: Hideouts.Spot) -> void:
 	HeistStats.add("hides")
 	sfx.at("roll", _to_world(p.x, p.y), 0.3, 2.0)
 	_log(Text.t("LOG_HIDE_BLOWN") if p.hide_blown else Text.t("LOG_HIDE_IN") % Hideouts.name_of(spot.kind))
+	_mega("hide")
+	_act("hide_seen" if p.hide_blown else ("hide_armour" if spot.kind == "armour" else "hide_other"), thieves.find(p))
 
 
 ## Each thief's minigame box, beside it on screen.
@@ -2559,11 +2944,24 @@ func _draw_prompts(dt: float) -> void:
 ## these there is (the bubble says the same, _prompt_rows): a minigame at
 ## the case or the alarm panel ("job"), a pedestal ("plinth"), a hideout
 ## ("hide"), an arcade machine ("arcade"), a room's switch ("switch"), a
-## prop to push over ("push"). {do, at}, or empty for nothing.
+## prop to push over ("push"). In the band's house, a door next to one
+## ("door": open it, or shut it if no one is in its way) comes before all but
+## the job. {do, at}, or empty for nothing.
 func _action_for(t: Thief) -> Dictionary:
 	var job := Heist.game_for(t)
 	if not job.is_empty():
 		return {"do": "job", "at": job}
+	if mode == Practice.MODE:
+		var door := Den.door_near(Vector2i(int(floor(t.x)), int(floor(t.y))))
+		if door != "" and Den.can_toggle(door, _band_points()):
+			return {"do": "door", "at": door}
+		var bench_act := Practice.bench_action(Vector2(t.x, t.y), bench, players)
+		if not bench_act.is_empty():
+			return {"do": "bench", "at": bench_act}
+		if _dojo_game == null and _dojo_lock <= 0.0:
+			var sign_game := Practice.game_at(Vector2(t.x, t.y), players)
+			if sign_game != "":
+				return {"do": "game", "id": sign_game}
 	var plinth = Plinths.within_reach(t, thieves)
 	if plinth != null:
 		return {"do": "plinth", "at": plinth}
@@ -2606,14 +3004,27 @@ func _prompt_rows(i: int) -> Array:
 		return [row.call("move", Text.t("HUD_PLINTH_DOWN"))]
 	if p.hiding:
 		return [row.call("move", Text.t("HUD_HIDE_OUT"))]
+	if bench_hold.has(p.id):
+		return [{"verb": Text.t("HIDEOUT_BENCH_HOLD"), "progress": float(bench_hold[p.id].t) / Practice.BENCH_HOLD_S}]
+	if _dojo_game != null:
+		return [] if _dojo_game.finished() else [{"verb": Text.t("HIDEOUT_GAME_LEAVE_KEY")}]
 	var act := _action_for(p)
 	match act.get("do", ""):
+		"game": return [row.call("action", "%s: %s" % [Text.t("HIDEOUT_GAME_START"), Text.t(DojoGames.info(act.id).name_key)])]
+		"bench":
+			match act.at.what:
+				"need_panel": return [{"verb": Text.t("HIDEOUT_BENCH_NEED_PANEL")}]
+				"panel": return [row.call("action", Text.t("HIDEOUT_BENCH_PANEL"))]
+				"kind": return [row.call("action", Text.t("HIDEOUT_BENCH_CHANGE_KIND"))]
+				"level": return [row.call("action", Text.t("HIDEOUT_BENCH_CHANGE_LEVEL"))]
+				_: return [row.call("action", Text.t("HIDEOUT_BENCH_OPEN"))]
 		"job": return [row.call("action", Text.t({"lockpick": "HUD_GAME_PICK_HINT", "steady": "HUD_GAME_STEADY_HINT"}.get(act.at.kind, "HUD_GAME_WIRES_HINT")))]
 		"plinth": return [row.call("action", Text.t("HUD_PLINTH_HINT"))]
 		"hide": return [row.call("action", Text.t("HUD_HIDE_HINT") % Hideouts.name_of(act.at.kind).to_upper())]
-		"arcade": return [row.call("action", Text.t("HUD_ARCADE_HINT"))]
+		"arcade": return [row.call("action", Text.t("HIDEOUT_ARCADE_PLAY" if mode == Practice.MODE else "HUD_ARCADE_HINT"))]
 		"switch": return [row.call("action", Text.t("HUD_SWITCH_HINT"))]
 		"push": return [row.call("action", Text.t("HUD_PUSH_HINT") % Props.name_of(act.at.kind).to_upper())]
+		"door": return [row.call("action", Text.t("HIDEOUT_DOOR_CLOSE" if Den.is_open(act.at) else "HIDEOUT_DOOR_OPEN"))]
 	return []
 
 
@@ -2675,10 +3086,22 @@ func _guard_footsteps() -> void:
 func _toggle_map() -> void:
 	map_open = not map_open
 	if map_open:
-		hud.show_map(Hud.live_map(thieves, _thief_colours()), _thief_colours().slice(0, thieves.size()))
+		hud.show_map(_live_map(), _thief_colours().slice(0, thieves.size()))
 		sfx.ui("pick")
 	else:
 		hud.hide_map()
+
+
+## The map as drawn now. In the house it knows the house: which rooms are
+## dark (unexplored) and that there is no piece to mark.
+func _live_map() -> Image:
+	Hud.home_map = mode == Practice.MODE
+	Hud.dark_rooms.clear()
+	if Hud.home_map and den_view != null and is_instance_valid(den_view):
+		for id in Den.ORDER:
+			if not den_view.shows(id):
+				Hud.dark_rooms.append(id)
+	return Hud.live_map(thieves, _thief_colours())
 
 
 func _close_map() -> void:
@@ -2696,6 +3119,12 @@ func _thief_colours() -> Array:
 
 func _tick(dt: float) -> void:
 	HeistStats.time += dt
+	if mode == Practice.MODE:
+		_dojo_lock = maxf(0.0, _dojo_lock - dt)
+		_scarecrow_tick(dt)
+		_bench_tick(dt)
+	if mode == Practice.MODE and _home_tick():
+		return
 	var now := Sim.now_ms()
 	# Reading the map, nobody moves (the pads are still read, to keep their
 	# held-button bookkeeping); every few frames it is redrawn.
@@ -2708,7 +3137,7 @@ func _tick(dt: float) -> void:
 		hud.push_map(push)
 		keys = {}
 		if Engine.get_physics_frames() % 6 == 0:
-			hud.update_map(Hud.live_map(thieves, _thief_colours()))
+			hud.update_map(_live_map())
 	var noises: Array[SoundEvent] = []
 	# Hands at a lock or a panel (Minigame) shake as the guards grow alarmed.
 	var suspicion := 0
@@ -2741,12 +3170,15 @@ func _tick(dt: float) -> void:
 					_sneeze(p, noises)
 				"fail":
 					# Lost its balance: down it comes, and the guards hear it.
+					_dojo_fell[i] = true
 					Plinths.fall(p, (p.game as BalanceGame).lean, noises)
 					p.game = null
 					sfx.noise("roll_bump", _to_world(p.x, p.y), Hearing.LOUDNESS["tumble"])
 					_rumble(0.5, 0.7, 0.25, Vector2(p.x, p.y))
 					_shake(0.3)
 					_log(Text.t("LOG_PLINTH_FELL"))
+					_mega("dizzy")
+					_act("plinth_fall", i)
 				_:
 					_game_sounds(p)
 					if p.game.kind == "squeeze":
@@ -2764,6 +3196,7 @@ func _tick(dt: float) -> void:
 		# Off in a ball: a rush over the floor (the guards hear nothing of it).
 		if step.roll == "start":
 			HeistStats.add("rolls")
+			_act("roll", i)
 			sfx.at("roll", _to_world(p.x, p.y), 0.7, 3.0)
 		# Rolled into a wall: the thump, a puff of plaster, and it hurts.
 		if step.bumped == "roll":
@@ -2772,6 +3205,7 @@ func _tick(dt: float) -> void:
 			_rumble(0.6, 0.9, 0.3, Vector2(p.x, p.y))
 			var case := Museum.is_cover(p.x + cos(p.dir) * (Sim.BODY + 0.1), p.y + sin(p.dir) * (Sim.BODY + 0.1))
 			_log(Text.t("LOG_ROLL_CASE" if case else "LOG_ROLL_WALL"))
+			_act("roll_case" if case else "roll_wall", i)
 		if noise and not p.out:
 			noises.append(noise)
 			var what := "step" if noise.kind in ["walk", "sprint", "rustle"] else (noise.kind if noise.kind in ["shelf", "roll_bump"] else "bump")
@@ -2796,9 +3230,12 @@ func _tick(dt: float) -> void:
 		match act.get("do", ""):
 			"job":
 				Heist.start_game(t, act.at, _game_input(i, keys))
+				if act.at.what == "case":
+					_act("case", i)
 				sfx.at("pick", _to_world(t.x, t.y), 0.5, 2.0)
 			"plinth":
 				Plinths.climb(t, act.at, guards)
+				_act("plinth", i)
 				# With minigames the pose is held on one foot (Minigame "balance").
 				if Heist.minigames():
 					t.game = Minigame.make("balance", "plinth", 1, _game_input(i, keys))
@@ -2817,13 +3254,26 @@ func _tick(dt: float) -> void:
 				var arcade: Vector2i = act.at
 				t.game = Minigame.make("arcade", "arcade", 1, _game_input(i, keys))
 				t.arcade = arcade
+				_act("arcade", i)
 				t.dir = atan2(arcade.y + 0.5 - t.y, arcade.x + 0.5 - t.x)
 				sfx.at("pong_score", _to_world(t.x, t.y, 1.0), 0.4, 2.0)
 				_log(Text.t("LOG_ARCADE"))
+			"bench":
+				_bench_act(t, i, act.at, keys)
+			"game":
+				_dojo_start(String(act.id))
 			"switch":
 				Sim.flip_switch(act.at, t, guards, now, noises)
 			"push":
 				Props.push(act.at, t, now, noises)
+			"door":
+				# Open or shut (it was checked no one is in the way): the plan
+				# follows, the leaves slide, and what is seen is worked out again.
+				if Den.toggle_door(act.at, _band_points()):
+					if den_view != null and is_instance_valid(den_view):
+						den_view.set_door(act.at, Den.is_open(act.at))
+					sfx.at("door", _to_world(t.x, t.y, 0.5), 0.6, 4.0)
+					_home_sight()
 		push_held[i] = pressed
 	for p in Props.knocked:
 		props_view.shove(p)
@@ -2841,6 +3291,7 @@ func _tick(dt: float) -> void:
 		if pressed and not smoke_held[i]:
 			if Smoke.drop(thieves[i], now, noises) == null and not thieves[i].out:
 				sfx.ui("back", 0.5)
+				_act("smoke_empty", i)
 		smoke_held[i] = pressed
 	Smoke.step(now)
 	for c in Smoke.fresh:
@@ -2849,7 +3300,12 @@ func _tick(dt: float) -> void:
 		sfx.at("smoke", _to_world(c.x, c.y, 0.5), 0.9, 6.0)
 		_rumble(0.3, 0.5, 0.3, Vector2(c.x, c.y))
 		_log(Text.t("LOG_SMOKE"))
+		_mega("smoke")
+		var by := thieves.find_custom(func(t): return t.id == c.by)
+		_act("smoke_last" if by >= 0 and Smoke.count(thieves[by]) == 0 else "smoke", by)
 	Smoke.clear_fresh()
+	if _dojo_game != null:
+		_dojo_tick(dt, keys)
 
 	# The job: working the case (and its alarm), carrying, dropping, the door.
 	var before_alarms := noises.size()
@@ -2858,9 +3314,12 @@ func _tick(dt: float) -> void:
 	if [Heist.panel_off, Heist.panel2_off] != cut_before:
 		sfx.ui("ok")
 		_log(Text.t("LOG_PANEL_CUT"))
+		_mega("panel")
+		_act("panel")
 	if noises.size() > before_alarms:
 		if Heist.progress < 0.1:
 			_log(Text.t("LOG_CASE_ALARM"))
+			_mega("alarm")
 		sfx.at("alarm", _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5), 0.8)
 	match took:
 		"stolen":
@@ -2868,6 +3327,7 @@ func _tick(dt: float) -> void:
 			Fx.sparkle(world, _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5, 1.05), Color(Heist.loot.colour))
 			_punch_in()
 			_log(Text.t("LOG_GOT_IT_TEAM" if thieves.size() > 1 else "LOG_GOT_IT") % Heist.loot.name)
+			_mega("stolen")
 		"dropped":
 			_log(Text.t("LOG_DROPPED") % Heist.first_upper(Heist.loot.name))
 		"picked":
@@ -2894,6 +3354,7 @@ func _tick(dt: float) -> void:
 			var d := Museum.dist(ear.x, ear.y, s.x, s.y)
 			hud.shout(Text.t(SHOUTS[randi() % SHOUTS.size()]), Text.t("HUD_SHOUT_FAR" if d > 9 else "HUD_SHOUT_NEAR") % [s.from, heard], angle)
 			_log(Text.t("LOG_SHOUT") % [s.from, heard])
+			_mega("seen")
 	for w in Sim.warn_partners(guards, now):
 		sfx.at("whisper", _to_world(w.x, w.y), 0.6)
 		_log(Text.t("LOG_WARN") % [w.from, w.to])
@@ -2908,9 +3369,12 @@ func _tick(dt: float) -> void:
 		sfx.at("lights", _to_world(r.switch_at.x + 0.5, r.switch_at.y + 0.5), 0.8)
 		if e.thief:
 			HeistStats.add("lights")
+			_act("switch")
 			_log(Text.t("LOG_YOU_LIGHTS_ON" if e.on else "LOG_YOU_LIGHTS_OFF") % label)
+			_mega("lights_on" if e.on else "lights_off")
 		else:
 			_log(Text.t("LOG_LIGHTS") % [e.by, label])
+			_mega("lights_on" if e.on else "lights_off")
 	Sim.light_events.clear()
 
 	if now - last_spread > 500:
@@ -2953,6 +3417,8 @@ func _tick(dt: float) -> void:
 				p.speed = 0
 				if thieves.size() > 1 and not thieves.all(func(o): return o.safe):
 					_log(Text.t("LOG_OUT_WAITING") % ("P%d" % (thieves.find(p) + 1)))
+					_mega("waiting")
+	_megaphone_tick(dt)
 	# No clock: take as long as you like. The whole gang out of the door
 	# with the piece wins; one of you caught ends the night.
 	# The night stops there (phase "over"), a moment (Hud.HOLD_S) to see it
@@ -2964,8 +3430,70 @@ func _tick(dt: float) -> void:
 		_night_over("escaped")
 
 
+## A new round: the loudspeaker starts from nothing, and welcomes the gang.
+func _start_megaphone(n: int) -> void:
+	mega = Megaphone.new(n if mode == "story" else 0, guards.size(), thieves.size(), Heist.loot.name, randi())
+	mega_still = 0.0
+	mega_suspicion = 0
+	mega_exit_said = false
+	hud.megaphone("")
+	mega_voice.stop(true)
+	_mega("start")
+
+
+## A thief (who, or -1) did something the loudspeaker may remark on, some
+## of the time (Megaphone.act): a roll, a crash, a bin over...
+func _act(what: String, who := -1) -> void:
+	if megaphone_mode != "off" and mega and mode != "practica" and phase == "playing":
+		mega.act(what, HeistStats.time, who)
+
+
+## Something happened the loudspeaker may have a word about.
+func _mega(kind: String) -> void:
+	if megaphone_mode != "off" and mega and mode != "practica":
+		mega.say(kind, HeistStats.time)
+
+
+## Every tick: what the guards' suspicion and the door say, how long the
+## gang has stood still, and the notice that comes of it, if any.
+func _megaphone_tick(dt: float) -> void:
+	if megaphone_mode == "off" or mega == null or mode == "practica":
+		return
+	var suspicion := 0
+	for g in guards:
+		suspicion = maxi(suspicion, g.suspicion)
+	if suspicion > mega_suspicion and suspicion < 3:
+		mega.say("suspect", HeistStats.time)
+	if mega_suspicion >= 2 and suspicion == 0:
+		_act("phew")
+	mega_suspicion = suspicion
+	for i in thieves.size():
+		var p := thieves[i]
+		var going := p.speed > 0.05 and not p.out and not p.rolling and p.dizzy <= 0.0 and not p.hiding
+		mega.hold("crawl", going and p.crouched and p.posture > 0.5, dt, HeistStats.time, i)
+		mega.hold("run", going and p.sprinting, dt, HeistStats.time, i)
+		mega.hold("sneak", going and p.slow, dt, HeistStats.time, i)
+	var moving := false
+	for p in thieves:
+		if not p.out and (p.speed > 0.05 or p.game != null or p.hiding or p.posing):
+			moving = true
+	mega_still = 0.0 if moving else mega_still + dt
+	if Heist.taken and not mega_exit_said:
+		for p in thieves:
+			if not p.out and Museum.dist(p.x, p.y, Heist.exit.x + 0.5, Heist.exit.y + 0.5) < 6.0:
+				mega_exit_said = true
+				mega.say("near_exit", HeistStats.time)
+	var tense := suspicion > 0 or guards.any(func(g): return g.alert or g.sees_player)
+	var told := mega.tick(HeistStats.time, mega_still, tense)
+	if not told.is_empty():
+		var secs := mega_voice.speak(told.key, megaphone_mode, mode)
+		if Settings.megaphone_text(megaphone_mode):
+			hud.megaphone(told.text, MegaVoice.hold_for(secs))
+
+
 func _night_over(how: String) -> void:
 	phase = "over"
+	mega_voice.stop()
 	_close_map()
 	get_tree().create_timer(Hud.HOLD_S).timeout.connect(func() -> void:
 		if phase == "over":
@@ -3074,7 +3602,7 @@ func _build_environment() -> void:
 	# Moonlight through the high windows: cold and faint, from one side. It
 	# shades the tops of walls and cases apart from their faces, and draws the
 	# rim round the figures in the dark (Figure's materials).
-	var moon := DirectionalLight3D.new()
+	moon = DirectionalLight3D.new()
 	moon.rotation_degrees = Vector3(-55, 30, 0)
 	moon.light_color = MOON_COLOUR
 	moon.light_energy = MOON_ENERGY
@@ -3097,6 +3625,51 @@ func _build_environment() -> void:
 	ear.make_current()
 
 
+## The practice ground's scarecrows (see _build_world), and the alarm they
+## share (Practice.alert_step).
+var mannequins: Array[Figure] = []
+var scarecrow_list: Array = []
+var scarecrow_alert := Practice.alert_new()
+## The bench of practice cases (Practice.bench_new), who is standing still at
+## one (thief id -> {i, t}) and what each game running on the bench is for
+## (thief id -> the action it began from).
+var bench := Practice.bench_new()
+var bench_hold := {}
+var bench_target := {}
+
+## The "moon" light, and whether the world is in the band's house's mood
+## (warm and soft, DenView.mood) instead of the museums' night.
+var moon: DirectionalLight3D
+var mood_home := false
+
+
+## The house or the museums' night: the Environment and the moon changed only
+## when the round moves from one to the other.
+func _set_mood(home: bool) -> void:
+	if world_env == null or home == mood_home:
+		return
+	mood_home = home
+	if home:
+		DenView.mood(world_env, moon)
+		return
+	world_env.background_color = BACKGROUND
+	world_env.ambient_light_color = AMBIENT_COLOUR
+	world_env.ambient_light_energy = AMBIENT_ENERGY
+	world_env.tonemap_exposure = 1.25
+	world_env.tonemap_white = 6.0
+	world_env.adjustment_saturation = 1.12
+	world_env.adjustment_contrast = 1.08
+	world_env.glow_intensity = 0.7
+	world_env.glow_hdr_threshold = 1.0
+	world_env.volumetric_fog_density = FOG_DENSITY
+	world_env.volumetric_fog_albedo = Color("#c4c8ec")
+	world_env.ssr_enabled = true
+	world_env.ssil_enabled = true
+	moon.light_color = MOON_COLOUR
+	moon.light_energy = MOON_ENERGY
+	moon.shadow_opacity = 0.85
+
+
 func _build_world() -> void:
 	if world:
 		world.queue_free()
@@ -3113,9 +3686,32 @@ func _build_world() -> void:
 	lit_washes.clear()
 
 	# Floor, walls, cases and emergency lights: built once, never touched again.
-	var view := MuseumView.new()
+	# The band's house is built by its own view (DenView), a MuseumView all the same.
+	var view: MuseumView
+	if mode == Practice.MODE:
+		DenView.players = players
+		view = DenView.new()
+	else:
+		view = MuseumView.new()
+	_set_mood(mode == Practice.MODE)
+	# The house begins with every door shut (the lounge is where the band is),
+	# on the plan too; the view draws them as they are.
+	den_view = null
+	if mode == Practice.MODE:
+		Den.reset_doors()
+		Den.apply_doors()
 	view.build()
 	world.add_child(view)
+	if mode == Practice.MODE:
+		den_view = view as DenView
+	# (The world is new: what the last one held of a game went with it.)
+	_dojo_game = null
+	_dojo_lantern = null
+	_dojo_view = null
+	if mode == Practice.MODE:
+		_dojo_view = DojoGamesView.new()
+		world.add_child(_dojo_view)
+		_dojo_view.setup(camera)
 	Fx.dust_field(world)
 	props_view = PropsView.new()
 	world.add_child(props_view)
@@ -3155,6 +3751,23 @@ func _build_world() -> void:
 		l.light_volumetric_fog_energy = ROOM_FOG
 		world.add_child(l)
 		room_lights.append(l)
+	# The practice ground has no guards, only scarecrows in a guard's coat
+	# (Practice.scarecrows) where the lessons put them, each with a torch:
+	# standing still, to sneak round. DenView dresses them with their cross.
+	mannequins.clear()
+	scarecrow_list.clear()
+	scarecrow_alert = Practice.alert_new()
+	bench = Practice.bench_new()
+	bench_hold.clear()
+	bench_target.clear()
+	if mode == Practice.MODE:
+		for sc in Practice.scarecrows(players):
+			var dummy := Figure.make("guard", COLOURS.guard, COLOURS.guard_dark)
+			world.add_child(dummy)
+			dummy.set_state(_to_world(sc.at.x + 0.5, sc.at.y + 0.5), sc.dir, 0.0, 0.0)
+			dummy.set_meta("dir", sc.dir)
+			mannequins.append(dummy)
+			scarecrow_list.append(sc)
 	for g in guards:
 		var f := Figure.make("guard", COLOURS.guard, COLOURS.guard_dark)
 		world.add_child(f)
@@ -3262,22 +3875,31 @@ func _build_job() -> void:
 	world.add_child(sack_node)
 	# The star of the collection gets a spotlight from the ceiling: a cone of
 	# warm white straight down on its case, its beam showing in the dust.
-	loot_spot = SpotLight3D.new()
-	loot_spot.position = _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5, 4.2)
-	loot_spot.rotation = Vector3(-PI / 2, 0, 0)
-	loot_spot.light_color = Color("#fff0d6")
-	loot_spot.light_energy = 14.0
-	loot_spot.spot_range = 6.0
-	loot_spot.spot_angle = 17.0
-	loot_spot.spot_angle_attenuation = 0.6
-	loot_spot.shadow_enabled = true
-	loot_spot.light_volumetric_fog_energy = 6.0
-	world.add_child(loot_spot)
+	# (The band's house has neither the spotlight nor the door of a heist:
+	# its own front door is DenView's.)
+	var home := mode == Practice.MODE
+	loot_spot = null
+	if not home:
+		loot_spot = SpotLight3D.new()
+		loot_spot.position = _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5, 4.2)
+		loot_spot.rotation = Vector3(-PI / 2, 0, 0)
+		loot_spot.light_color = Color("#fff0d6")
+		loot_spot.light_energy = 14.0
+		loot_spot.spot_range = 6.0
+		loot_spot.spot_angle = 17.0
+		loot_spot.spot_angle_attenuation = 0.6
+		loot_spot.shadow_enabled = true
+		loot_spot.light_volumetric_fog_energy = 6.0
+		world.add_child(loot_spot)
 	var glow := OmniLight3D.new()
 	glow.light_color = colour
 	glow.light_energy = 1.2
 	glow.omni_range = 2.5
 	loot_node.add_child(glow)
+	if home:
+		panel_mats.clear()
+		panel_glows.clear()
+		return
 
 	var door := Node3D.new()
 	door.position = _to_world(Heist.exit.x + 0.5 + Heist.exit_face.x * 0.5, Heist.exit.y + 0.5 + Heist.exit_face.y * 0.5)
@@ -3438,6 +4060,8 @@ func _draw_frame(dt: float) -> void:
 		var power := Sim.torch_power()
 		torch.light_energy = 0.0 if Museum.is_lit(g.x, g.y) else (TORCH_ENERGY_ALERT if g.alert else TORCH_ENERGY) * power * power
 		_draw_cone(g, cones[i])
+	for d in mannequins:
+		d.set_state(d.position, float(d.get_meta("dir", PI)), 0.0, dt)
 	_draw_room_lights()
 	_draw_loot()
 	_follow_camera(dt)
@@ -3472,7 +4096,7 @@ func _draw_loot() -> void:
 	_draw_panel()
 	var t := Time.get_ticks_msec() / 1000.0
 	# The piece shows only on its case; taken, it is in the sack.
-	loot_node.visible = not Heist.taken
+	loot_node.visible = not Heist.taken and _home_shows(Heist.at.x + 0.5, Heist.at.y + 0.5)
 	loot_node.position = _to_world(Heist.at.x + 0.5, Heist.at.y + 0.5, 1.05 + sin(t * 2.0) * 0.05)
 	loot_node.rotation.y = t * 1.2
 	sack_node.visible = false
@@ -3868,7 +4492,7 @@ func _draw_hud(dt: float) -> void:
 		if not p.out and (ref.out or Museum.dist(p.x, p.y, goal.x, goal.y) < Museum.dist(ref.x, ref.y, goal.x, goal.y)):
 			ref = p
 	var way := {}
-	if phase == "playing" and not ref.out and Museum.dist(ref.x, ref.y, goal.x, goal.y) > 1.5:
+	if phase == "playing" and Sim.feature("case") and not ref.out and Museum.dist(ref.x, ref.y, goal.x, goal.y) > 1.5:
 		var from := camera.unproject_position(_to_world(ref.x, ref.y))
 		var to := camera.unproject_position(_to_world(goal.x, goal.y, 1.0))
 		way = {"from": from, "goal": to}
@@ -3882,6 +4506,8 @@ func _draw_hud(dt: float) -> void:
 	var told: Array[String] = []
 	if show_ia:
 		told = log_lines
+	if mode == Practice.MODE:
+		told = [Text.t("HIDEOUT_HINT")]
 	if not hud.menu_open():
 		hud.update_play(told, job, way, COLOURS.switch_on if Heist.carrier != "" else Color(Heist.loot.colour), alarm)
 	var cards: Array = []

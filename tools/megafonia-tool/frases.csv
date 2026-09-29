@@ -1,0 +1,11 @@
+id,texto,preset,voz,velocidad,chime
+cierre_15,"Atención, por favor. El museo cerrará sus puertas en 15 minutos.",sala,em_santa,0.9,true
+cierre_hora,"Señoras y señores, el museo cierra hoy a las 21:30. Gracias por su visita.",sala,em_santa,0.9,true
+alarma_robo,"Atención. Se ha detectado un acceso no autorizado.",alarma,em_santa,0.95,false
+alarma_educada,"Atención: suena una alarma muy educada.",alarma,em_santa,0.95,false
+cuadros_duermen,"Buenas noches. Los cuadros duermen: no los despierten.",sala,em_santa,0.9,true
+no_dar_de_comer,"Se ruega no dar de comer a los cuadros.",sala,em_santa,0.9,true
+hueco_cosa,"Aviso: hay un hueco donde había una cosa.",sala,em_santa,0.9,true
+guardia_corriendo,"Aviso: hay un guardia corriendo. Él no sabe por qué.",pasillo,em_santa,0.9,false
+salida_aqui,"Atención: la salida está aquí mismo. Como siempre.",pasillo,em_santa,0.9,false
+sala_a_oscuras,"Aviso: sala a oscuras. Los cuadros tienen miedo.",pasillo,em_santa,0.9,false

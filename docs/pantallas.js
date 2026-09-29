@@ -57,11 +57,19 @@ window.PANTALLAS = [
             text: "Toda la previa de la historia es una sola escena en 3D (Tour, CityStage), como el plan de un robo en una película. Empieza en la ciudad de noche, en axonometría y mucho más grande que la pantalla (TownBuilder, con los kits de ciudad de Kenney, CC0). Un río la cruza en diagonal haciendo meandros y la parte en cuatro barrios, dos a cada orilla, cada uno con su trama de calles girada a su manera: cruces y pasos de cebra, manzanas de tiendas, casas con jardín, parques, farolas, rascacielos al fondo de la parte alta. Entre los barrios y a lo largo del agua, bosque con casas y chalets sueltos, cada uno a su aire (alguno con la piscina encendida). La orilla de arriba está más alta, subiendo por un talud con árboles, y al norte se alza una loma de rocas grandes que los barrios rodean; solo dos puentes en rampa la unen con la de abajo, y unas carreteras enlazan los barrios de cada orilla. Por la orilla de abajo corre un paseo con farolas y bancos, y junto al agua hay una zona deportiva (fútbol, baloncesto y tenis) con sus focos. De noche la luz es barata: cada farola, casa encendida, piscina y foco deja un charco de luz en el suelo, un quad que se suma a lo que hay debajo, todos en un solo MultiMesh; las ventanas y las farolas brillan por su cuenta. Entre ellos, los cinco museos (MuseumBuilding): edificios de museo con escalinata, columnas, frontón y cúpula, cada uno en su color, con sus estandartes y su nombre en el friso, unidos por la ruta encendida desde el escondite de la banda. No caben todos: la cámara mira al museo elegido, con alguno más a la vista, y al pasar a otro se desliza por la ciudad hasta él (CityStage.FOLLOW_S). Van en zigzag a un lado y otro del río: el primero junto al agua, puente arriba los dos siguientes en la parte alta, el cuarto al otro lado, y por el segundo puente el último, otra vez junto al agua. La ruta encendida va por las calles y los puentes. Los cerrados, apagados y con candado. Sobre el elegido, su nombre, las salas robadas y sus estrellas. La primera vez, antes, el prólogo.",
             shots: ["menu_historia_ciudad"],
             options: [
-              { label: "Flechas, WASD, stick o cruceta", text: "Cambian de museo; a uno cerrado no se llega." },
+              { label: "Flechas, WASD, stick o cruceta", text: "Eligen la parada abierta (museo o casita) que queda en esa dirección de la pantalla; con dos teclas a la vez (arriba y derecha...), la de esa diagonal. Las pulsaciones a menos de 0,1 s cuentan como una. A un museo cerrado no se llega. Al lado del último museo, a la derecha y lejos del primero, la casita de la banda (El Escondite del Calcetín)." },
+              { label: "< ANTERIOR / SIGUIENTE > (o LB / RB)", text: "Dos botones grandes a los lados de la pantalla, a media altura, para el ratón o el dedo: la parada anterior o siguiente de la ruta (la casita, luego los museos 1 a 5, sin los cerrados). En el primero o el último se atenúan y no hacen nada. No toman el foco; solo se ven en la ciudad." },
               { key: "TOUR_HINT_ENTER", text: "A, E o el punto: zoom de cámara hasta la fachada del museo; la ciudad alrededor se oscurece un poco.", to: "museo" },
               { key: "TOUR_HINT_BACK", text: "B, Esc, Espacio o Enter.", to: "historia" },
             ],
             children: [
+              {
+                id: "escondite", title: "«El Escondite del Calcetín»", fn: "_tour_practice", phase: "playing",
+                text: "La casa de la banda, en la orilla de abajo, a la derecha junto al último museo y lejos del primero: se elige con las flechas y, al aceptar, la ciudad se funde en la casa, sin plano ni briefing y sin cuenta atrás: al acabar el fundido ya se anda (Den, DenView, Practice). Cuatro salas unidas por puertas (Den.DOORS) por las que se anda con la cámara del juego; se abren y cierran con la acción junto a ellas (ABRIR/CERRAR; correderas, 0,3 s; cerrada es muro y no se cierra con alguien en el umbral), empiezan cerradas y solo se ven las salas con alguien dentro o vistas a través de una puerta abierta: las demás, a oscuras y sin lo que hay dentro (DenView, Den.visible_rooms). Las salas: el salón (sofás, tele, cocina, barra, ventanas con cortinas, pósters y una recreativa que se juega; aquí se aparece y está la puerta de casa), la sala de trofeos (un museo pequeño: 25 puestos vacíos, cinco por museo con su rótulo y su color, que se llenan con la pieza real al robarla, con las estrellas en la placa), el dojo (37 × 13 casillas de tatami con muros de papel de arroz y cinco zonas: exposición con el banco de vitrinas, pasillo de dos casillas con cruce, escondites, laberinto de tres vaivenes y patio; espantapájaros de guardia con linterna que ponen todo el dojo en rojo con una sirena 3 s si ven a alguien, y vitrinas de práctica que se abren con las pruebas enseñadas y se rearman; lo demás según lo desbloqueado, Practice.ITEMS) y el aseo (bañera con cortina, lavabo, váter y ducha de esquina; solo estético). Estética doméstica y cálida, de luz suave, sin HUD de robo, con el nombre de la sala al entrar y música propia, lenta y lo-fi. Cuatro carteles de juego (PILLA EL CALCETÍN, EQUILIBRIO, BOLOS y AGUANTA ESCONDIDO, según la noche alcanzada; Practice.ITEMS, DojoGames) empiezan una partida de diez niveles y hora extra; se dejan con Tab o la pausa y solo guardan el mejor nivel. No da estrellas, no abre robos y no guarda nada más. Se sale por la pausa o cruzando la puerta del salón.",
+                options: [
+                  { key: "PRACTICE_LEAVE", text: "Desde la pausa, o cruzando la puerta de casa: vuelve a la ciudad, con la casita elegida.", to: "ciudad" },
+                ],
+              },
               {
                 id: "museo", title: "«Un museo y sus salas»", fn: "_show_museum_tour", phase: "tour",
                 text: "El edificio del museo de cerca: cada sala es una ventana de su fachada (1 y 2 a la izquierda, 3 y 4 a la derecha; el gran golpe, la ventana alta del centro, con la corona en la cúpula), encendida y con su pieza a contraluz; las cerradas, a oscuras y con candado. Bajo cada ventana, su número y sus estrellas. La elegida brilla más, con el marco dorado y un aro de luz. Se abre en la siguiente sala sin hacer; tras un robo se vuelve aquí con la siguiente elegida.",
@@ -140,11 +148,11 @@ window.PANTALLAS = [
         ],
       },
       {
-        id: "retos", title: "CHALLENGE_TITLE", fn: "_show_challenge_menu", phase: "menu",
+        id: "retos", title: "MENU_CHALLENGE", fn: "_show_challenge_menu", phase: "menu",
         text: "Una lista de nombres (los robos de la historia y los mapas hechos a mano) con el plano del elegido a la derecha.",
         shots: ["menu_retos"],
         options: [
-          { key: "CHALLENGE_STORY_HEAD", text: "Los veinticinco robos; «*» si están retocados a mano.", to: "reto_noche" },
+          { key: "MENU_STORY", text: "Los veinticinco robos; «*» si están retocados a mano.", to: "reto_noche" },
           { key: "CHALLENGE_MAPS_HEAD", text: "Los mapas de serie (maps/) y los tuyos (user://maps).", to: "reto" },
           { key: "CHALLENGE_NEW", to: "editor" },
           { key: "MENU_BACK", to: "titulo" },
@@ -179,7 +187,7 @@ window.PANTALLAS = [
             text: "Pintar muros y suelo, poner vitrinas, piezas grandes, la entrada, la pieza, la salida, guardias y objetos; vista 2D y 3D. Solo deja jugar mapas cerrados con pieza y salida alcanzables.",
             shots: ["menu_editor"],
             options: [
-              { key: "EDITOR_TAB_EDIT", text: "Las herramientas de pintar y poner." },
+              { key: "CHALLENGE_EDIT", text: "Las herramientas de pintar y poner." },
               { key: "EDITOR_TAB_OPTIONS", text: "Tamaño, dificultad, guardias, suelo y paredes." },
               { key: "EDITOR_PLAY", text: "Lo juega tal cual; al acabar, vuelve al editor.", to: "juego" },
               { key: "EDITOR_SAVE", text: "Con pestañas para el mapa, la pieza y su historia." },
@@ -189,10 +197,11 @@ window.PANTALLAS = [
         ],
       },
       {
-        id: "ajustes", title: "SETTINGS_TITLE", fn: "_show_settings", phase: "settings",
+        id: "ajustes", title: "MENU_SETTINGS", fn: "_show_settings", phase: "settings",
         text: "Desde el título o desde la pausa. Cada línea es un ajuste: A, E, el punto o clic lo cambia, ← y → lo bajan y suben. Cada cambio se guarda en user://settings.cfg.",
         shots: ["ajustes_inicio"],
         options: [
+          { key: "SETTINGS_MEGAPHONE", text: "La megafonía del museo, con cuatro valores que cambian en este orden: CARTEL Y SONIDO (por defecto: rótulo y voz), SOLO CARTEL (rótulo, sin voz), SOLO SONIDO (voz, sin rótulo; la frase sin audio no se ve ni suena) y NO." },
           { key: "SETTINGS_IA", text: "Enseña lo que piensa cada guardia (Laya o las reglas de reserva)." },
           { key: "SETTINGS_SOUND_PAGE", to: "ajustes_sonido" },
           { key: "SETTINGS_SCREEN_PAGE", to: "ajustes_pantalla" },
@@ -280,6 +289,7 @@ window.PANTALLAS = [
         shots: ["juego_robo_01", "juego_robo_04_linterna", "juego_robo_08_objetos", "juego_robo_13_dos", "juego_robo_16_luces", "juego_robo_25_final", "juego_generativo", "juego_reto"],
         options: [
           { key: "HUD_HELP", text: "La ayuda de teclas, siempre abajo a la izquierda." },
+          { key: "SETTINGS_MEGAPHONE", text: "La megafonía del museo: un rótulo arriba, bajo la alarma, con un aviso de una frase (Megaphone, MEGA_*). Habla poco, para que sea algo especial: no dice nada hasta pasados 20 a 60 s de robo (40 a 90 s en el robo 1; solo un peligro puede romper el silencio, y no antes de 20 s), luego al menos 40 s entre avisos (15 s los de peligro) y de 2 a 5 por robo según dure. El saludo sale al acabar la espera. Sale con sucesos del robo (luces, alarma, la pieza cogida, la salida) y, a veces, comenta lo que haces: rodar y chocar con la pared, tirar una papelera o un busto, esconderte en una armadura, estornudar, quedarte sin humo, abrir la vitrina; a los 1-2 s, con una probabilidad por acción, otra frase si lo repites y una de racha a la tercera. Nunca habla de ladrones, ninjas ni de la banda: comenta lo que nota (un bulto, alguien, una pared) como si no viera a nadie. Ninguna frase se repite ni en el robo siguiente. En el robo 1 casi calla y no habla de guardias. Muchos son absurdos, y algunos dan pistas de lo que enseña cada museo. Se ajusta en los ajustes (MEGAFONÍA: cartel y sonido, solo cartel, solo sonido o no; cambiarlo en la pausa surte efecto al momento, y con solo sonido la lógica corre igual: mismos tiempos y enfriamientos, sin dibujar el rótulo). Cada frase también suena con voz (MegaVoice): res://audio/megafonia/<clave en minúsculas>.ogg, mono y con el efecto ya puesto, generado con tools/megafonia-tool; una sola voz a la vez, baja un poco la música mientras habla, se pausa con la partida y se corta al salir de la ronda; si el rótulo es más corto que la voz, se alarga (hasta unos 8 s), y si falta el fichero queda solo el texto. No suena en la práctica." },
           { label: "Robar", text: "Quieto junto a la vitrina hasta que se abre (desde el robo 6, el segundo museo, con minijuego)." },
           { label: "Salir por la flecha verde", text: "Con la pieza, toda la banda.", to: "fin_escapado" },
           { label: "Que te pillen", to: "fin_pillado" },
@@ -323,7 +333,7 @@ window.PANTALLAS = [
       },
       {
         id: "fin_pillado", title: "END_FILE_STAMP_ONE", fn: "_show_end", phase: "caught",
-        text: "Si pillan a uno, se acaba la noche. La ficha policial: un folio blanco que se sale por abajo, con las dos fotos de siempre (la cabeza del ninja de frente y de perfil, en blanco y negro, ante la regla de alturas), el número, el delito, quién te pilló y el sello rojo. Los botones, a su lado.", shots: ["final_pillado"],
+        text: "Si pillan a uno, se acaba la noche. La ficha policial: un folio blanco que se sale por abajo, con las dos fotos de siempre (la cabeza del ninja de frente y de perfil, en blanco y negro, ante la regla de alturas), el número, un solo campo de delito (lo que intentaste y quién te pilló), las observaciones del agente, las huellas y el sello rojo. Los botones, a su lado.", shots: ["final_pillado"],
         options: [{ key: "END_AGAIN", to: "previa" }, { key: "END_TO_MENU" }],
       },
       {

@@ -2,7 +2,7 @@ extends SceneTree
 ## The documentation's pictures and data, taken from the game itself (docs/).
 ##
 ##   godot --path . --script tools/capture_docs.gd            # everything
-##   godot --path . --script tools/capture_docs.gd -- shots   # only: shots, assets, models, objects, sounds, data
+##   godot --path . --script tools/capture_docs.gd -- shots   # only: shots, city, assets, models, objects, sounds, data
 ##
 ## It opens the game in a window of its own, with settings and progress of
 ## its own (user://docs/), so the player's are never touched: every screen,
@@ -63,6 +63,8 @@ func _run() -> void:
 		_data()
 	if _wants("shots"):
 		await _shots()
+	if _wants("city"):
+		await _city()
 	if _wants("assets"):
 		await _assets()
 	if _wants("sounds"):
@@ -71,7 +73,7 @@ func _run() -> void:
 		await _models()
 	if _wants("objects"):
 		await _objects()
-	if _wants("shots") or _wants("assets"):
+	if _wants("shots") or _wants("city") or _wants("assets"):
 		_save_shots()
 	print("docs: hecho")
 	quit()
@@ -105,7 +107,7 @@ func _save_shots() -> void:
 		taken[s.id] = true
 	var before: Variant = JSON.parse_string(FileAccess.get_file_as_string(_path("data/capturas.json")))
 	var out: Array = []
-	var order := ["menus", "ajustes", "previas", "juego", "finales", "assets"]
+	var order := ["menus", "ciudad", "ajustes", "previas", "juego", "finales", "assets"]
 	if before is Array:
 		for s in before:
 			if not taken.has(s.id) and FileAccess.file_exists(_path(s.file)):
@@ -377,6 +379,88 @@ func _shots() -> void:
 	await _shot("final_historia", "finales", "El final de la historia")
 	_reset()
 	main._show_title()
+
+
+# --- The town ------------------------------------------------------------------------
+
+const CITY_SIZE := Vector2i(2400, 1600)
+const CITY_MUSEUM_SIZE := Vector2i(1600, 1000)
+
+## The story's town (CityStage) seen whole from above at the game's angle,
+## all of it built (not only what the game's camera can see) and every
+## museum open, with where each museum is on the picture; and each museum's
+## building on its own block, closer, at the same angle. No star, no signs.
+func _city() -> void:
+	print("docs: ciudad")
+	var stage := CityStage.new()
+	stage.size = CITY_SIZE
+	stage.hurry = true
+	stage.cut = false
+	stage.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	root.add_child(stage)
+	stage.build(Story.MUSEUMS.size() - 1, 0)
+	stage.set_process(false)
+	stage._star.visible = false
+	stage._star_light.visible = false
+	# The land as far as the woods go, on the screen's plane: the picture is
+	# just that big.
+	var edge := TownBuilder.REACH + 6.0
+	var lo := Vector2(INF, INF)
+	var hi := -lo
+	for c in [Vector2(-1, -1), Vector2(1, -1), Vector2(1, 1), Vector2(-1, 1)]:
+		var p := stage.on_plane(stage.town.transform * Vector3(c.x * edge, 0, c.y * edge))
+		lo = Vector2(minf(lo.x, p.x), minf(lo.y, p.y))
+		hi = Vector2(maxf(hi.x, p.x), maxf(hi.y, p.y))
+	var mid := (lo + hi) * 0.5
+	var aspect := float(CITY_SIZE.x) / CITY_SIZE.y
+	var span := maxf(hi.y - lo.y, (hi.x - lo.x) / aspect)
+	var b := CityStage.city_basis()
+	var ground := b.x * mid.x + b.y * mid.y
+	stage.focus = ground
+	stage.view = span
+	stage._place_camera()
+	await _wait(1.0)
+	var file := "capturas/ciudad_mapa.webp"
+	_on_sky(stage).save_webp(_path(file), true, 0.85)
+	shots.append({"id": "ciudad_mapa", "section": "ciudad", "title": "La ciudad entera", "file": file,
+		"text": "Toda la ciudad de la historia desde arriba, con el ángulo del juego y todos los museos abiertos: el río con sus meandros y sus dos puentes, los cuatro barrios, la loma de rocas al norte, el bosque alrededor y los cinco museos unidos por la ruta desde el escondite."})
+	var c0 := stage.on_plane(stage.camera().position)
+	var marks: Array = []
+	for m in Story.MUSEUMS.size():
+		var p := stage.on_plane(stage._museums[m].global_position)
+		marks.append({"n": m + 1, "x": snappedf(0.5 + (p.x - c0.x) / (span * aspect), 0.001), "y": snappedf(0.5 - (p.y - c0.y) / span, 0.001)})
+	# Each museum, closer: its building and the blocks round it.
+	var museums: Array = []
+	stage.size = CITY_MUSEUM_SIZE
+	for m in Story.MUSEUMS.size():
+		# As the game frames it from close (Tour), a little further back.
+		stage.focus = stage._front_of(m)
+		stage.view = stage._view_of(m) * 1.6
+		stage._place_camera()
+		await _wait(0.6)
+		var id := "ciudad_museo_%d" % (m + 1)
+		var f := "capturas/%s.webp" % id
+		_on_sky(stage).save_webp(_path(f), true, 0.85)
+		var name := Text.t(Story.MUSEUMS[m].name)
+		shots.append({"id": id, "section": "ciudad", "title": "Museo %d: %s" % [m + 1, name], "file": f,
+			"text": "Su edificio en la ciudad, con las manzanas de alrededor, desde el ángulo del juego y con todas sus salas abiertas."})
+		museums.append({"n": m + 1, "name": Story.MUSEUMS[m].name, "theme": Story.MUSEUMS[m].theme, "colour": Story.MUSEUMS[m].colour,
+			"shot": id, "tour": "menu_museo_%d" % (m + 1), "nights": Story.nights_in(m), "at": marks[m]})
+	_save_json("data/ciudad.json", {"map": "ciudad_mapa", "museums": museums})
+	stage.queue_free()
+	await process_frame
+
+
+## The stage's picture over the night sky (it draws no sky of its own: in
+## the game, Tour does).
+func _on_sky(stage: CityStage) -> Image:
+	var shot := stage.get_texture().get_image()
+	shot.convert(Image.FORMAT_RGBA8)
+	var img := Image.create(shot.get_width(), shot.get_height(), false, Image.FORMAT_RGBA8)
+	img.fill(CityStage.SKY)
+	img.blend_rect(shot, Rect2i(Vector2i.ZERO, shot.get_size()), Vector2i.ZERO)
+	img.convert(Image.FORMAT_RGB8)
+	return img
 
 
 # --- Assets --------------------------------------------------------------------------
@@ -703,8 +787,7 @@ func _minigames() -> Array:
 
 
 ## Each story night as it is laid out, for a lone thief: what its plan
-## screen says (Briefing.tips) and has (the pages), the heading over the
-## piece (Story.heading), the minigames' level, and what the museum has to
+## screen says (Briefing.tips) and has (the pages), the minigames' level, and what the museum has to
 ## hide in, pose on and play (Hideouts, Plinths, Arcades).
 func _nights_laid_out() -> Array:
 	var out: Array = []
@@ -731,7 +814,7 @@ func _nights_laid_out() -> Array:
 			if Themes.is_unique(b.kind) and not b.kind in icons:
 				icons.append(b.kind)
 		var tuning := Story.tuning(n)
-		out.append({"n": n, "heading": Story.heading(n, 1), "heading_gang": Story.heading(n, 2), "pages": main._brief_pages(),
+		out.append({"n": n, "pages": main._brief_pages(),
 			"tips": Briefing.tips(main.guards, n), "game_level": tuning.game_level, "lockpick": tuning.lockpick,
 			"minigames": Heist.minigames(), "hideouts": hides, "plinths": Plinths.list.size(), "arcades": games, "icons": icons,
 			"size": Museum.size_name, "w": Museum.w, "h": Museum.h})
