@@ -79,8 +79,8 @@ func _init() -> void:
 	var t: Tour = m.tour
 	check(m.phase == "tour" and t.state == "city", "después, la ciudad")
 	check(t.stage.is_open(0) and not t.stage.is_open(1), "solo el primer museo abierto")
-	t.act("up")
-	check(t.stage.picked == 0, "las flechas no llevan a un museo cerrado (el segundo está arriba)")
+	t.act("right")
+	check(t.stage.picked == 0, "las flechas no llevan a un museo cerrado (el segundo va a la derecha en la barra)")
 	t.stage.pick(1)
 	t._enter_museum()
 	check(t.state == "city", "un museo cerrado no se acepta")
@@ -97,8 +97,7 @@ func _init() -> void:
 	stick.device = -1
 	stick.axis = JOY_AXIS_LEFT_X
 	stick.axis_value = 0.9
-	check(t.intent(stick) == "" and t._stick_vec.x > 0.5, "el stick mueve (lo decide el fotograma siguiente, con sus dos ejes)")
-	t._stick_push = -100
+	check(t.intent(stick) == "right", "el stick mueve")
 	check(t.intent(stick) == "", "... una vez por empujón")
 
 	# Into the museum: its first room, the rest shut.
@@ -135,11 +134,11 @@ func _init() -> void:
 	await frames()
 	t = m.tour
 	check(t.stage.picked == 1 and t.stage.is_open(1) and not t.stage.is_open(2), "robo 8: el segundo museo elegido, el tercero cerrado")
+	t.act("right")
+	check(t.stage.picked == 1, "a la derecha en la barra, el tercero cerrado: se queda")
 	t.act("left")
-	check(t.stage.picked == 1, "a la izquierda, el tercero cerrado: se queda")
-	t.act("down")
-	check(t.stage.picked == 0, "hacia abajo, el primero")
-	t.act("up")
+	check(t.stage.picked == 0, "a la izquierda, el primero")
+	t.act("right")
 	t.act("accept")
 	await frames()
 	check(t.state == "museum" and t._nights[t.stage.room] == 8, "dentro, la siguiente sala sin hacer (robo 8)")
