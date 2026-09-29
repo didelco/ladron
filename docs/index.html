@@ -1333,19 +1333,14 @@ function historia() {
   $("#p-historia").innerHTML = `<h1>Historia</h1>
     <div class="sub">Todo el texto de la historia, en el orden en que lo lee el jugador${EDITABLE ? " · pulsa un texto para cambiarlo" : ""}</div>
     <p class="lead">La Banda del Calcetín rescata las obras de los cinco museos de los que se ha adueñado el Barón Von Bostezo: 25 robos, cinco por museo, de fácil a difícil. Cada museo es de un tema; sus cuatro primeras salas son robos normales y la quinta, su gran golpe, tiene algo especial. Algunos robos enseñan algo nuevo (la lección de la previa); los demás lo practican.</p>
-    <div class="indice"><ul><li><a href="#historia/prologo">Prólogo</a></li>${museos.map(m => `<li><a href="#historia/museo${m.n}">${esc(tx(m.name))}</a></li>`).join("")}<li><a href="#historia/final">Final</a></li><li><a href="#historia/progreso">El progreso guardado</a></li><li><a href="#previa">Antes de un robo</a></li></ul></div>
+    <div class="indice"><ul><li><a href="#historia/prologo">Prólogo</a></li>${museos.map(m => `<li><a href="#historia/museo${m.n}">${esc(tx(m.name))}</a></li>`).join("")}<li><a href="#historia/final">Final</a></li><li><a href="#previa">Antes de un robo</a></li></ul></div>
     <h2 id="historia-prologo">Prólogo</h2>
     <p style="white-space:pre-wrap">${t(h.prologue)}</p>
     ${museos.map(m => `<h2 id="historia-museo${m.n}"><span class="punto" style="background:${m.colour}"></span>${t(m.name)}</h2>
       <p class="lead">${t(m.text)}</p>
       ${(m.nights_list || []).map(n => noche(noches[n - 1], lecciones)).join("")}`).join("")}
     <h2 id="historia-final">Final</h2>
-    <p style="white-space:pre-wrap">${t(h.ending)}</p>
-    <h2 id="historia-progreso">El progreso guardado</h2>
-    <p>El progreso se guarda aparte para cada tamaño de banda (1, 2, 3 o 4 ladrones), como el robo más lejano alcanzado (<code>robo_&lt;banda&gt;</code> en <code>user://progress.cfg</code>); se puede rejugar cualquier robo ya alcanzado. Tras un gran golpe se abre el siguiente museo.</p>
-    <p><b>Las estrellas</b> (<code>Story.stars</code>, estilo Overcooked): cada robo de la historia da hasta tres: ★ robar la pieza (escaparse con ella), ★ sin que te vean (ningún guardia ve a nadie de la banda en todo el robo) y ★ rápido (escaparse en menos del objetivo de tiempo del robo, su <code>par</code>: el mínimo de un experto medido con un bot sobre la simulación, × 1,75, redondeado a 5 s; una banda tiene algo más, <code>Story.GANG_PAR</code>). Cada estrella se gana por separado y ya no se pierde: se guarda la mejor marca de cada robo para cada tamaño de banda (<code>stars</code> / <code>robo_&lt;banda&gt;</code> en el mismo <code>progress.cfg</code>). Las del intento salen en el periódico, las nuevas en rojo. No bloquean nada: el siguiente museo se abre con el gran golpe, como siempre.</p>
-    <p>Una partida de la historia anterior, la de <b>20 noches en cinco museos de cuatro noches</b> (<code>unlocked_&lt;banda&gt;</code>, y antes de las bandas solo <code>unlocked</code>, la del ladrón solo), se lee con <code>Story.from_old</code> y no se pierde nada: cada museo hecho allí es un museo hecho aquí, y las noches hechas en el museo a medias son salas hechas en el suyo.</p>
-    ${tw(`<table class="tabla"><tr><th>Noche alcanzada (historia de 20)</th>${(h.from_old || []).map(([a]) => `<td class="num">${a}</td>`).join("")}</tr><tr><th>Robo alcanzado (historia de 25)</th>${(h.from_old || []).map(([, b]) => `<td class="num"><a href="#historia/museo${Math.floor((b - 1) / (h.rooms || 5)) + 1}">${b}</a></td>`).join("")}</tr></table>`)}`;
+    <p style="white-space:pre-wrap">${t(h.ending)}</p>`;
 }
 function noche(n, lecciones) {
   if (!n) return "";
