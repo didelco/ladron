@@ -441,7 +441,7 @@ func _front_door() -> void:
 	sign.outline_modulate = Color("#3a2414")
 	sign.outline_size = 14
 	sign.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	sign.position = to_world(d[0] + d[2] / 2.0, d[1] - 3.0, 0.9)
+	sign.position = to_world(d[0] + d[2] / 2.0, d[1] - 1.2, 1.9)
 	add_child(sign)
 	# A patch of light from outside on the floor in front of it.
 	var glow := MeshInstance3D.new()
@@ -498,16 +498,16 @@ func _trophies() -> void:
 		_museum_stand(st, Color(Story.MUSEUMS[st.museum].colour))
 	# The total, over the bench in the middle.
 	var sum := Label3D.new()
-	sum.text = "%s\n★ %d/%d\n%d/%d" % [Text.t("HIDEOUT_ROOM_TROFEOS"), total, most, taken, Story.count()]
+	sum.text = "★ %d/%d\n%d/%d %s" % [total, most, taken, Story.count(), Text.t("HIDEOUT_ROOM_TROFEOS")]
 	sum.font = Hud.ARCADE
 	sum.font_size = 30
-	sum.pixel_size = 0.0055
+	sum.pixel_size = 0.0068
 	sum.line_spacing = 10.0
 	sum.modulate = Color("#ffe28a")
 	sum.outline_size = 10
 	sum.outline_modulate = Color("#2a1810")
 	sum.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	sum.position = to_world(10.0, 6.4, 1.25)
+	sum.position = to_world(10.0, 7.7, 0.9)
 	add_child(sum)
 
 
@@ -685,7 +685,7 @@ func _dojo() -> void:
 	board.text = "%s\n%d/%d" % [Text.t("HIDEOUT_ROOM_DOJO"), open, Practice.ITEMS.size()]
 	board.font = Hud.ARCADE
 	board.font_size = 26
-	board.pixel_size = 0.0055
+	board.pixel_size = 0.0075
 	board.line_spacing = 10.0
 	board.modulate = Color("#e8f0c0")
 	board.outline_size = 8
@@ -969,7 +969,7 @@ func _board(at: Vector3, size: int, colour: Color) -> Label3D:
 	var l := Label3D.new()
 	l.font = Hud.ARCADE
 	l.font_size = size
-	l.pixel_size = 0.0055
+	l.pixel_size = 0.0078
 	l.line_spacing = 8.0
 	l.modulate = colour
 	l.outline_size = 8
@@ -1142,7 +1142,7 @@ func refresh_signs() -> void:
 		if not _sign_boards.has(sg.id):
 			continue
 		var best := DojoGames.best(sg.id, players)
-		(_sign_boards[sg.id] as Label3D).text = "%s\n%s" % [Text.t(sg.text), Text.t("HIDEOUT_GAME_BEST") % best if best > 0 else Text.t("HIDEOUT_GAME_BEST_NONE")]
+		(_sign_boards[sg.id] as Label3D).text = Text.t(sg.text) if best <= 0 else "%s\n%s" % [Text.t(sg.text), Text.t("HIDEOUT_GAME_BEST") % best]
 
 
 ## The lantern's scarecrow (AGUANTA ESCONDIDO): standing on its post while the

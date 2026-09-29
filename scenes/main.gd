@@ -1355,7 +1355,7 @@ func _draw_hud(dt: float) -> void:
 	var told: Array[String] = []
 	if show_ia:
 		told = log_lines
-	if mode == Practice.MODE:
+	if mode == Practice.MODE and house.home_room == "salon":
 		told = [Text.t("HIDEOUT_HINT")]
 	if not hud.menu_open():
 		hud.update_play(told, job, way, COLOURS.switch_on if Heist.carrier != "" else Color(Heist.loot.colour), alarm)
