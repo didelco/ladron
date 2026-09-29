@@ -2490,7 +2490,7 @@ func set_gang(colours: Array, darks: Array, loot: Dictionary) -> void:
 		view.size = Vector2i(PORTRAIT, PORTRAIT) * 2
 		view.own_world_3d = true
 		view.transparent_bg = true
-		view.msaa_3d = Viewport.MSAA_4X
+		Quality.setup_viewport(view)
 		var env := Environment.new()
 		env.background_mode = Environment.BG_CLEAR_COLOR
 		env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR

@@ -46,10 +46,12 @@ static func burst(parent: Node, at: Vector3, radius := 2.5, seconds := 6.0) -> S
 func _ready() -> void:
 	_build_flash()
 	_build_ring()
-	_build_sparks()
 	_build_fog()
-	_build_puffs()
-	_build_floor_layer()
+	# Low quality: no particles, just the cloud and its pop.
+	if Quality.smoke_particles():
+		_build_sparks()
+		_build_puffs()
+		_build_floor_layer()
 
 
 func _process(dt: float) -> void:

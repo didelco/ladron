@@ -66,12 +66,14 @@ Se movió a `../megafonia-tool` (repo propio, con sus modelos, cachés y `.venv`
 **Estado (hechos leídos del repo).** `project.godot` no define `rendering_method`, así que Godot 4.7 usa **Forward+** (exige Vulkan 1.2 o Metal). El look nocturno (`scenes/main.gd:3550-3620`) usa niebla volumétrica, SSAO, SSIL, SSR (48 pasos), glow HDR, tonemapper ACES y una luz direccional con sombras en 2 splits a 35 m; hay 2 shaders propios (`scenes/floor.gdshader`, `scenes/wall.gdshader`), MSAA 4x en los SubViewports 3D de menús, mapa de ciudad y HUD, y `GPUParticles3D` (humo, `fx.gd` con `GPUParticlesCollisionBox3D`, que no existe en Compatibility). `logic/settings.gd` no tiene ningún ajuste de calidad gráfica.
 **Estimación (sin medir).** Mínimo razonable: GPU con Vulkan 1.2 o Metal (Intel UHD 620/Iris Xe justos, AMD GCN, NVIDIA GTX 900+), Windows 10, macOS 10.13+/11+, 4 GB de RAM. No arranca en Intel HD 4000/4400/5500 (2012–2015) ni en Macs sin Metal; en Macs 2012–2015 con Metal iría justo. CPU y memoria no son el problema.
 
-### [COMP-1] Ajuste de calidad Alta/Baja — A · M
+### [COMP-1] Ajuste de calidad Alta/Baja — A · M — HECHO
+**Hecho.** `logic/quality.gd` (`Quality`), claves `quality` y `render_scale` en `Settings`, página de ajustes de pantalla, `tests/test_calidad.gd`. Baja apaga SSR, SSIL, SSAO y niebla volumétrica, MSAA 2x, sombras de la luna en un corte a 20 m y sin partículas de humo (la nube sigue ocultando). Alta es lo de siempre y es el valor por defecto. Falta medir los FPS en una máquina justa (COMP-3).
 **Qué hacer.** Añadir la opción a `Settings.DEFAULTS` y al menú de pantalla. En Baja: apagar SSR, SSIL, niebla volumétrica y SSAO; MSAA a 2x o 0; acortar la distancia de sombras; quitar las partículas de humo. Tocar `main.gd:3550-3620` y los `_setup` de los viewports (`menu_stage.gd`, `city_stage.gd`, HUD).
 **Se pierde en Baja.** Brillos del suelo pulido, luz rebotada, haces de linterna visibles, contacto en las esquinas.
 **Hecho cuando.** Existe la opción, se guarda, y una noche grande a 2 jugadores gana FPS medibles.
 
-### [COMP-2] Escala de render 3D — A · S
+### [COMP-2] Escala de render 3D — A · S — HECHO
+**Hecho.** Ajuste ESCALA 3D (100, 85, 70 %) en la página de pantalla: `scaling_3d_scale` en la ventana y en los SubViewports 3D (menús, ciudad, plano, minijuegos, retratos del HUD, previa).
 `scaling_3d_scale` al 0,67–0,75 como opción. Casi gratis; el suelo queda algo más blando.
 
 ### [COMP-3] Medir en una máquina o VM de gama baja — M · S
