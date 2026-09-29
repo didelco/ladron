@@ -382,6 +382,7 @@ details.fam .dentro { padding: 0 10px 10px; }
     <section class="pagina" id="p-propuesta"></section>
     <section class="pagina" id="p-versiones"></section>
     <section class="pagina" id="p-textos"></section>
+    <section class="pagina" id="p-megafonia"></section>
   </main>
 </div>
 <div class="caja" id="caja"><button class="ir izq" data-ir="-1" aria-label="Anterior">‹</button><img alt=""><p></p><button class="ir der" data-ir="1" aria-label="Siguiente">›</button></div>
@@ -463,7 +464,7 @@ function nav(pag, sel) {
   $("#nav").innerHTML = `<div class="marca"><a href="#inicio"><img src="logo.webp" alt="Ninja Karma" width="640" height="428"></a><small>Documentación del juego</small></div>
     ${grupo("pantallas", "Pantallas", ORDEN.length, `${enlace("inicio", "Resumen")}${enlace("capturas", "Capturas")}<div class="arbol">${arbol(P, sel)}</div>`)}
     ${grupo("juego", "El juego", ENTIDADES.length + 6, enlace("historia", "Historia") + enlace("ciudad", "Ciudad") + enlace("previa", "Antes de un robo") + enlace("minijuegos", "Minijuegos") + enlace("escondites", "Escondites") + enlace("coleccion", "Colección") + ENTIDADES.map(([k, txt]) => enlace(k, txt)).join(""))}
-    ${grupo("referencia", "Referencia", 5, enlace("estilo", "Estilo") + enlace("paleta", "Paleta") + enlace("propuesta", "Paleta propuesta") + enlace("versiones", "Versiones") + enlace("textos", "Textos"))}
+    ${grupo("referencia", "Referencia", 6, enlace("estilo", "Estilo") + enlace("paleta", "Paleta") + enlace("propuesta", "Paleta propuesta") + enlace("versiones", "Versiones") + enlace("textos", "Textos") + enlace("megafonia", "Megafonía"))}
     <div class="meta">${esc(g.fecha || "—")} · ${esc(g.commit || "—")}${EDITABLE ? " · edición activa" : ""}</div>`;
 }
 let ACTUAL = [null, null];
@@ -897,6 +898,51 @@ function filas() {
   }).join("") + (lista.length > 600 ? `<tr><td colspan="2" class="estado">…y ${lista.length - 600} más: afina la búsqueda.</td></tr>` : "");
 }
 
+// --- Megafonía: las frases MEGA_* por tipo de aviso (los POOLS de logic/megaphone.gd) ---------
+const MEGA_TIPOS = {
+  start: "Arranque del robo", lights_on: "Se encienden las luces", lights_off: "Se apagan las luces", alarm: "Alarma",
+  knocked: "Un guardia, noqueado", sneeze: "Estornudo", stolen: "Pieza robada", piece: "La pieza (con hueco para su nombre)",
+  seen: "Te ven", suspect: "Sospechan", hide: "Escondite", dizzy: "Mareo", smoke: "Humo", panel: "Panel de luces",
+  near_exit: "Cerca de la salida", idle: "Ladrón quieto", waiting: "Esperando", calm: "Ocurrencias en calma", team: "Equipo",
+  act_roll: "Voltereta", act_roll_again: "Voltereta (otra vez)", act_roll_streak: "Voltereta (racha)",
+  act_roll_wall: "Voltereta contra una pared", act_roll_wall_again: "Voltereta contra una pared (otra vez)",
+  act_roll_case: "Voltereta contra una vitrina", act_roll_case_again: "Voltereta contra una vitrina (otra vez)",
+  act_crash_streak: "Choques seguidos",
+  act_knock_bin: "Golpe a una papelera", act_knock_bust: "Golpe a un busto", act_knock_armour: "Golpe a una armadura",
+  act_knock_panel: "Golpe a un panel", act_knock_again: "Golpe (otra vez)", act_knock_streak: "Golpes seguidos",
+  act_hide_armour: "Escondido en una armadura", act_hide_armour_again: "Escondido en una armadura (otra vez)",
+  act_hide_other: "Escondido en otro sitio", act_hide_other_again: "Escondido en otro sitio (otra vez)", act_hide_seen: "Escondido, pero visto",
+  act_sneeze: "Estornudo (reacción)", act_sneeze_again: "Estornudo (otra vez)",
+  act_smoke: "Bomba de humo", act_smoke_last: "Última bomba de humo", act_smoke_empty: "Sin bombas de humo",
+  act_panel: "Panel de luces (reacción)", act_case: "Vitrina", act_switch_streak: "Interruptores seguidos",
+  act_plinth: "Pedestal", act_plinth_fall: "Pedestal que cae", act_arcade: "Recreativa", act_phew: "Uf, por poco",
+  act_crawl: "A gatas", act_run: "Corriendo", act_sneak: "De puntillas",
+};
+function megatipo(pool) {
+  if (/^hint_[0-9]$/.test(pool)) return "Pistas del museo " + pool.slice(5);
+  return MEGA_TIPOS[pool] || pool || "Sueltas";
+}
+function megafonia() {
+  const M = TX.filter(x => x.group === "Megafonía");
+  const tipos = [];
+  for (const x of M) { let g = tipos.find(g => g.pool === x.pool); if (!g) tipos.push(g = { pool: x.pool, lista: [] }); g.lista.push(x); }
+  const bloque = (titulo, f) => {
+    const gs = tipos.filter(g => f(g.pool));
+    if (!gs.length) return "";
+    return `<h2>${titulo}</h2>` + gs.map(g => `<h3 id="megafonia-${esc(g.pool)}">${esc(megatipo(g.pool))} <span class="estado"><code>${esc(g.pool || "—")}</code> · ${g.lista.filter(x => x.audio).length}/${g.lista.length} con voz</span></h3>
+      <table class="tabla textos"><thead><tr><th>Clave</th><th>Texto</th><th>Voz</th></tr></thead><tbody>${g.lista.map(x =>
+        `<tr><td class="k">${esc(x.key)}</td><td class="v" data-key="${esc(x.key)}">${marcas(x.es)}</td><td class="num">${x.audio ? "sí" : `<span class="estado">sin voz</span>`}</td></tr>`).join("")}</tbody></table>`).join("");
+  };
+  const sinVoz = M.filter(x => !x.audio).length;
+  $("#p-megafonia").innerHTML = `<h1>Megafonía</h1>
+    <div class="sub">Las ${M.length} frases <code>MEGA_*</code> de <code>locale/texts.csv</code>, por tipo de aviso (los <code>POOLS</code> de <code>logic/megaphone.gd</code>) · ${M.length - sinVoz} con voz, ${sinVoz} sin ella</div>
+    <p class="lead">${EDITABLE ? "<b>Edición activa</b>: pulsa una frase para cambiarla; se guarda en <code>locale/texts.csv</code>." : "Solo lectura: para editar, <code>python3 tools/docs.py serve</code> y abre <code>http://localhost:8765</code>."}</p>
+    <div class="aviso"><b>La voz sale de este texto.</b> Cada frase suena con <code>audio/megafonia/&lt;clave en minúsculas&gt;.ogg</code>, que genera la herramienta <code>megafonia-tool</code> (carpeta hermana <code>../megafonia-tool</code>, fuera de este repositorio). Tras cambiar una frase, el audio antiguo sigue diciendo la frase vieja: hay que regenerar la voz con <code>./regenerar_juego.sh</code> desde esa carpeta. La columna «Voz» solo dice si el fichero existe, no si está al día con el texto.</div>
+    ${bloque("Sucesos del robo", p => !/^(act_|hint_)/.test(p))}
+    ${bloque("Pistas de los museos", p => /^hint_/.test(p))}
+    ${bloque("Reacciones a lo que haces", p => /^act_/.test(p))}`;
+}
+
 // --- Mecánicas: lo que se lee del código, con lo que significa (docs/mecanicas.js) ------
 const MEC = window.MECANICAS || {};
 const COD = window.CODIGO || {};
@@ -1304,7 +1350,7 @@ document.addEventListener("keydown", e => {
 });
 
 function pintar() {
-  inicio(); capturas(); estilo(); paleta(); objetos(); personajes(); sonidos(); historia(); ciudad(); textos();
+  inicio(); capturas(); estilo(); paleta(); objetos(); personajes(); sonidos(); historia(); ciudad(); textos(); megafonia();
   previa(); minijuegos(); escondites(); coleccion(); propuesta(); versiones();
   document.body.classList.toggle("editable", EDITABLE);
 }

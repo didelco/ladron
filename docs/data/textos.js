@@ -26,8 +26,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:453",
-   "scenes/main.gd:514"
+   "scenes/challenge_screens.gd:42",
+   "scenes/main.gd:218"
   ],
   "via": []
  },
@@ -38,7 +38,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:453"
+   "scenes/main.gd:218"
   ],
   "via": []
  },
@@ -49,7 +49,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:452"
+   "scenes/main.gd:217"
   ],
   "via": []
  },
@@ -60,7 +60,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:452"
+   "scenes/main.gd:217"
   ],
   "via": []
  },
@@ -71,9 +71,9 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:458",
-   "scenes/main.gd:1203",
-   "scenes/main.gd:1501"
+   "scenes/main.gd:223",
+   "scenes/main.gd:525",
+   "scenes/settings_screens.gd:55"
   ],
   "via": []
  },
@@ -84,7 +84,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:459"
+   "scenes/main.gd:224"
   ],
   "via": []
  },
@@ -95,14 +95,14 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:543",
-   "scenes/main.gd:620",
-   "scenes/main.gd:673",
-   "scenes/main.gd:968",
-   "scenes/main.gd:1151",
-   "scenes/main.gd:1202",
-   "scenes/main.gd:1460",
-   "scenes/main.gd:1569"
+   "scenes/brief_screens.gd:31",
+   "scenes/brief_screens.gd:90",
+   "scenes/challenge_screens.gd:71",
+   "scenes/challenge_screens.gd:148",
+   "scenes/challenge_screens.gd:201",
+   "scenes/main.gd:457",
+   "scenes/settings_screens.gd:54",
+   "scenes/settings_screens.gd:331"
   ],
   "via": []
  },
@@ -113,7 +113,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1151"
+   "scenes/brief_screens.gd:31"
   ],
   "via": []
  },
@@ -124,10 +124,10 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1152",
-   "scenes/main.gd:1457",
+   "scenes/brief_screens.gd:32",
    "scenes/plan_talk.gd:213",
-   "scenes/plan_talk.gd:223"
+   "scenes/plan_talk.gd:223",
+   "scenes/settings_screens.gd:328"
   ],
   "via": []
  },
@@ -138,7 +138,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1154"
+   "scenes/brief_screens.gd:34"
   ],
   "via": []
  },
@@ -149,7 +149,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1456"
+   "scenes/settings_screens.gd:327"
   ],
   "via": []
  },
@@ -160,7 +160,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:567",
+   "scenes/challenge_screens.gd:95",
    "logic/text.gd:9"
   ],
   "via": []
@@ -172,7 +172,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:958"
+   "scenes/main.gd:447"
   ],
   "via": []
  },
@@ -183,7 +183,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:960"
+   "scenes/main.gd:449"
   ],
   "via": []
  },
@@ -194,7 +194,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:962"
+   "scenes/main.gd:451"
   ],
   "via": []
  },
@@ -205,7 +205,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:987"
+   "scenes/main.gd:476"
   ],
   "via": []
  },
@@ -216,7 +216,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:987"
+   "scenes/main.gd:476"
   ],
   "via": []
  },
@@ -227,7 +227,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:967"
+   "scenes/main.gd:456"
   ],
   "via": []
  },
@@ -238,7 +238,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:22",
+   "scenes/main.gd:30",
    "scenes/map_editor.gd:136"
   ],
   "via": []
@@ -250,7 +250,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:22",
+   "scenes/main.gd:30",
    "scenes/map_editor.gd:136"
   ],
   "via": []
@@ -262,7 +262,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:22",
+   "scenes/main.gd:30",
    "scenes/map_editor.gd:136"
   ],
   "via": []
@@ -274,7 +274,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:21",
+   "scenes/main.gd:29",
    "scenes/map_editor.gd:135"
   ],
   "via": []
@@ -286,7 +286,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:21",
+   "scenes/main.gd:29",
    "scenes/map_editor.gd:135"
   ],
   "via": []
@@ -298,7 +298,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:21",
+   "scenes/main.gd:29",
    "scenes/map_editor.gd:135"
   ],
   "via": []
@@ -310,7 +310,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:665"
+   "scenes/challenge_screens.gd:193"
   ],
   "via": []
  },
@@ -321,7 +321,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:666"
+   "scenes/challenge_screens.gd:194"
   ],
   "via": []
  },
@@ -332,7 +332,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:667"
+   "scenes/challenge_screens.gd:195"
   ],
   "via": []
  },
@@ -343,7 +343,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1498"
+   "scenes/main.gd:522"
   ],
   "via": []
  },
@@ -354,7 +354,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1500"
+   "scenes/main.gd:524"
   ],
   "via": []
  },
@@ -365,8 +365,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:753",
-   "scenes/main.gd:1851"
+   "scenes/main.gd:275",
+   "scenes/main.gd:703"
   ],
   "via": []
  },
@@ -377,7 +377,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1050"
+   "scenes/hands.gd:82"
   ],
   "via": []
  },
@@ -388,8 +388,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1046",
-   "scenes/main.gd:2342"
+   "scenes/hands.gd:78",
+   "scenes/house_run.gd:181"
   ],
   "via": []
  },
@@ -400,7 +400,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1046"
+   "scenes/hands.gd:78"
   ],
   "via": []
  },
@@ -411,7 +411,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1052"
+   "scenes/hands.gd:84"
   ],
   "via": []
  },
@@ -422,7 +422,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1053"
+   "scenes/hands.gd:85"
   ],
   "via": []
  },
@@ -433,7 +433,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1053"
+   "scenes/hands.gd:85"
   ],
   "via": []
  },
@@ -444,7 +444,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1059"
+   "scenes/hands.gd:91"
   ],
   "via": []
  },
@@ -455,7 +455,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1060"
+   "scenes/hands.gd:92"
   ],
   "via": []
  },
@@ -466,7 +466,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1061"
+   "scenes/hands.gd:93"
   ],
   "via": []
  },
@@ -477,7 +477,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1063"
+   "scenes/hands.gd:95"
   ],
   "via": []
  },
@@ -488,7 +488,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1203"
+   "scenes/settings_screens.gd:55"
   ],
   "via": []
  },
@@ -499,7 +499,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1203"
+   "scenes/settings_screens.gd:55"
   ],
   "via": []
  },
@@ -510,7 +510,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1203"
+   "scenes/settings_screens.gd:55"
   ],
   "via": []
  },
@@ -521,7 +521,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1196"
+   "scenes/settings_screens.gd:48"
   ],
   "via": []
  },
@@ -532,7 +532,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1197"
+   "scenes/settings_screens.gd:49"
   ],
   "via": []
  },
@@ -543,7 +543,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1198"
+   "scenes/settings_screens.gd:50"
   ],
   "via": []
  },
@@ -554,7 +554,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1199"
+   "scenes/settings_screens.gd:51"
   ],
   "via": []
  },
@@ -565,7 +565,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1237"
+   "scenes/settings_screens.gd:89"
   ],
   "via": []
  },
@@ -576,7 +576,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1237"
+   "scenes/settings_screens.gd:89"
   ],
   "via": []
  },
@@ -587,7 +587,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1239"
+   "scenes/settings_screens.gd:91"
   ],
   "via": []
  },
@@ -598,7 +598,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1240"
+   "scenes/settings_screens.gd:92"
   ],
   "via": []
  },
@@ -609,7 +609,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1241"
+   "scenes/settings_screens.gd:93"
   ],
   "via": []
  },
@@ -620,7 +620,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1242"
+   "scenes/settings_screens.gd:94"
   ],
   "via": []
  },
@@ -631,7 +631,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1243"
+   "scenes/settings_screens.gd:95"
   ],
   "via": []
  },
@@ -642,7 +642,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1244"
+   "scenes/settings_screens.gd:96"
   ],
   "via": []
  },
@@ -653,7 +653,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1247"
+   "scenes/settings_screens.gd:99"
   ],
   "via": []
  },
@@ -664,7 +664,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1247"
+   "scenes/settings_screens.gd:99"
   ],
   "via": []
  },
@@ -675,7 +675,51 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1248"
+   "scenes/settings_screens.gd:100"
+  ],
+  "via": []
+ },
+ {
+  "key": "SETTINGS_QUALITY",
+  "es": "CALIDAD GRÁFICA: %s",
+  "broken": false,
+  "extra": [],
+  "group": "Ajustes y controles",
+  "at": [
+   "scenes/settings_screens.gd:101"
+  ],
+  "via": []
+ },
+ {
+  "key": "SETTINGS_QUALITY_HIGH",
+  "es": "ALTA",
+  "broken": false,
+  "extra": [],
+  "group": "Ajustes y controles",
+  "at": [
+   "scenes/settings_screens.gd:101"
+  ],
+  "via": []
+ },
+ {
+  "key": "SETTINGS_QUALITY_LOW",
+  "es": "BAJA",
+  "broken": false,
+  "extra": [],
+  "group": "Ajustes y controles",
+  "at": [
+   "scenes/settings_screens.gd:101"
+  ],
+  "via": []
+ },
+ {
+  "key": "SETTINGS_RENDER_SCALE",
+  "es": "ESCALA 3D: %d%%",
+  "broken": false,
+  "extra": [],
+  "group": "Ajustes y controles",
+  "at": [
+   "scenes/settings_screens.gd:102"
   ],
   "via": []
  },
@@ -686,7 +730,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1249"
+   "scenes/settings_screens.gd:103"
   ],
   "via": []
  },
@@ -697,7 +741,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1251"
+   "scenes/settings_screens.gd:105"
   ],
   "via": []
  },
@@ -708,7 +752,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1252"
+   "scenes/settings_screens.gd:106"
   ],
   "via": []
  },
@@ -719,7 +763,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1253"
+   "scenes/settings_screens.gd:107"
   ],
   "via": []
  },
@@ -730,7 +774,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1207"
+   "scenes/settings_screens.gd:59"
   ],
   "via": []
  },
@@ -741,7 +785,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1211"
+   "scenes/settings_screens.gd:63"
   ],
   "via": []
  },
@@ -752,7 +796,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1211"
+   "scenes/settings_screens.gd:63"
   ],
   "via": []
  },
@@ -763,7 +807,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "logic/pads.gd:47"
+   "logic/pads.gd:70"
   ],
   "via": []
  },
@@ -774,7 +818,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1493"
+   "scenes/main.gd:517"
   ],
   "via": []
  },
@@ -785,7 +829,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1495"
+   "scenes/main.gd:519"
   ],
   "via": []
  },
@@ -796,7 +840,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1523"
+   "scenes/main.gd:547"
   ],
   "via": []
  },
@@ -818,7 +862,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1534"
+   "scenes/main.gd:558"
   ],
   "via": []
  },
@@ -840,7 +884,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2726"
+   "scenes/hands.gd:354"
   ],
   "via": []
  },
@@ -851,7 +895,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1222"
+   "scenes/settings_screens.gd:74"
   ],
   "via": []
  },
@@ -862,7 +906,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1222"
+   "scenes/settings_screens.gd:74"
   ],
   "via": []
  },
@@ -873,7 +917,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1222"
+   "scenes/settings_screens.gd:74"
   ],
   "via": []
  },
@@ -884,7 +928,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1223"
+   "scenes/settings_screens.gd:75"
   ],
   "via": []
  },
@@ -895,7 +939,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1223"
+   "scenes/settings_screens.gd:75"
   ],
   "via": []
  },
@@ -906,7 +950,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1223"
+   "scenes/settings_screens.gd:75"
   ],
   "via": []
  },
@@ -917,7 +961,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1227"
+   "scenes/settings_screens.gd:79"
   ],
   "via": []
  },
@@ -928,7 +972,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1227"
+   "scenes/settings_screens.gd:79"
   ],
   "via": []
  },
@@ -939,7 +983,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1227"
+   "scenes/settings_screens.gd:79"
   ],
   "via": []
  },
@@ -950,7 +994,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1227"
+   "scenes/settings_screens.gd:79"
   ],
   "via": []
  },
@@ -961,7 +1005,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1227"
+   "scenes/settings_screens.gd:79"
   ],
   "via": []
  },
@@ -972,7 +1016,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1227"
+   "scenes/settings_screens.gd:79"
   ],
   "via": []
  },
@@ -983,7 +1027,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1227"
+   "scenes/settings_screens.gd:79"
   ],
   "via": []
  },
@@ -994,7 +1038,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1227"
+   "scenes/settings_screens.gd:79"
   ],
   "via": []
  },
@@ -1005,7 +1049,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1213"
+   "scenes/settings_screens.gd:65"
   ],
   "via": []
  },
@@ -1016,7 +1060,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1407"
+   "scenes/settings_screens.gd:278"
   ],
   "via": []
  },
@@ -1027,7 +1071,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1383"
+   "scenes/settings_screens.gd:11"
   ],
   "via": []
  },
@@ -1038,7 +1082,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1383"
+   "scenes/settings_screens.gd:11"
   ],
   "via": []
  },
@@ -1049,7 +1093,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1383"
+   "scenes/settings_screens.gd:11"
   ],
   "via": []
  },
@@ -1060,7 +1104,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1383"
+   "scenes/settings_screens.gd:11"
   ],
   "via": []
  },
@@ -1071,7 +1115,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1383"
+   "scenes/settings_screens.gd:11"
   ],
   "via": []
  },
@@ -1082,7 +1126,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1427"
+   "scenes/settings_screens.gd:298"
   ],
   "via": []
  },
@@ -1093,7 +1137,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1427"
+   "scenes/settings_screens.gd:298"
   ],
   "via": []
  },
@@ -1104,7 +1148,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1431"
+   "scenes/settings_screens.gd:302"
   ],
   "via": []
  },
@@ -1115,7 +1159,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1431"
+   "scenes/settings_screens.gd:302"
   ],
   "via": []
  },
@@ -1126,7 +1170,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1431"
+   "scenes/settings_screens.gd:302"
   ],
   "via": []
  },
@@ -1137,7 +1181,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1431"
+   "scenes/settings_screens.gd:302"
   ],
   "via": []
  },
@@ -1148,7 +1192,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1444"
+   "scenes/settings_screens.gd:315"
   ],
   "via": []
  },
@@ -1159,7 +1203,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1448"
+   "scenes/settings_screens.gd:319"
   ],
   "via": []
  },
@@ -1170,7 +1214,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1451"
+   "scenes/settings_screens.gd:322"
   ],
   "via": []
  },
@@ -1181,7 +1225,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:1146"
+   "scenes/brief_screens.gd:26"
   ],
   "via": []
  },
@@ -1192,7 +1236,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Historia",
   "at": [
-   "scenes/main.gd:1849"
+   "scenes/main.gd:701"
   ],
   "via": []
  },
@@ -1225,7 +1269,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1558",
+   "scenes/brief_screens.gd:79",
    "scenes/plan_talk.gd:465"
   ],
   "via": []
@@ -1237,7 +1281,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1558"
+   "scenes/brief_screens.gd:79"
   ],
   "via": []
  },
@@ -1248,7 +1292,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1558"
+   "scenes/brief_screens.gd:79"
   ],
   "via": []
  },
@@ -1259,7 +1303,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1570"
+   "scenes/brief_screens.gd:91"
   ],
   "via": []
  },
@@ -1270,7 +1314,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1570"
+   "scenes/brief_screens.gd:91"
   ],
   "via": []
  },
@@ -1281,7 +1325,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1573"
+   "scenes/brief_screens.gd:94"
   ],
   "via": []
  },
@@ -1292,7 +1336,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1597"
+   "scenes/brief_screens.gd:118"
   ],
   "via": []
  },
@@ -1303,7 +1347,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1598"
+   "scenes/brief_screens.gd:119"
   ],
   "via": []
  },
@@ -2893,7 +2937,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1721"
+   "scenes/main.gd:573"
   ],
   "via": []
  },
@@ -2904,7 +2948,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1726"
+   "scenes/main.gd:578"
   ],
   "via": []
  },
@@ -2915,7 +2959,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1730"
+   "scenes/main.gd:582"
   ],
   "via": []
  },
@@ -2926,7 +2970,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1726"
+   "scenes/main.gd:578"
   ],
   "via": []
  },
@@ -2937,7 +2981,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1744"
+   "scenes/main.gd:596"
   ],
   "via": []
  },
@@ -2948,7 +2992,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1781"
+   "scenes/main.gd:633"
   ],
   "via": []
  },
@@ -2959,7 +3003,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1774"
+   "scenes/main.gd:626"
   ],
   "via": [
    "END_HEAD_%d"
@@ -3016,7 +3060,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1777"
+   "scenes/main.gd:629"
   ],
   "via": []
  },
@@ -3027,7 +3071,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1801"
+   "scenes/main.gd:653"
   ],
   "via": []
  },
@@ -3038,7 +3082,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1804"
+   "scenes/main.gd:656"
   ],
   "via": []
  },
@@ -3049,7 +3093,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1804"
+   "scenes/main.gd:656"
   ],
   "via": []
  },
@@ -3186,7 +3230,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1790"
+   "scenes/main.gd:642"
   ],
   "via": []
  },
@@ -3197,7 +3241,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1790"
+   "scenes/main.gd:642"
   ],
   "via": []
  },
@@ -3208,7 +3252,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1790"
+   "scenes/main.gd:642"
   ],
   "via": []
  },
@@ -3219,7 +3263,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1779"
+   "scenes/main.gd:631"
   ],
   "via": []
  },
@@ -3230,7 +3274,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1831"
+   "scenes/main.gd:683"
   ],
   "via": []
  },
@@ -3241,7 +3285,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1830"
+   "scenes/main.gd:682"
   ],
   "via": []
  },
@@ -3252,7 +3296,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1834"
+   "scenes/main.gd:686"
   ],
   "via": []
  },
@@ -3263,7 +3307,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1835"
+   "scenes/main.gd:687"
   ],
   "via": []
  },
@@ -3274,7 +3318,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1832"
+   "scenes/main.gd:684"
   ],
   "via": []
  },
@@ -3285,7 +3329,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1832"
+   "scenes/main.gd:684"
   ],
   "via": []
  },
@@ -3296,7 +3340,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1833"
+   "scenes/main.gd:685"
   ],
   "via": []
  },
@@ -3406,7 +3450,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1827"
+   "scenes/main.gd:679"
   ],
   "via": []
  },
@@ -3529,7 +3573,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2997"
+   "scenes/main.gd:1217"
   ],
   "via": []
  },
@@ -3540,7 +3584,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2999"
+   "scenes/main.gd:1219"
   ],
   "via": []
  },
@@ -3551,7 +3595,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3002"
+   "scenes/main.gd:1222"
   ],
   "via": []
  },
@@ -3584,7 +3628,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3026"
+   "scenes/main.gd:1246"
   ],
   "via": []
  },
@@ -3595,7 +3639,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3025"
+   "scenes/main.gd:1245"
   ],
   "via": []
  },
@@ -3617,7 +3661,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3022"
+   "scenes/main.gd:1242"
   ],
   "via": []
  },
@@ -3628,7 +3672,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3024"
+   "scenes/main.gd:1244"
   ],
   "via": []
  },
@@ -3639,7 +3683,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3004"
+   "scenes/main.gd:1224"
   ],
   "via": []
  },
@@ -3650,7 +3694,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3023"
+   "scenes/main.gd:1243"
   ],
   "via": []
  },
@@ -3661,7 +3705,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3006"
+   "scenes/main.gd:1226"
   ],
   "via": []
  },
@@ -3672,7 +3716,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3021"
+   "scenes/main.gd:1241"
   ],
   "via": []
  },
@@ -3683,7 +3727,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3021"
+   "scenes/main.gd:1241"
   ],
   "via": []
  },
@@ -3694,7 +3738,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3021"
+   "scenes/main.gd:1241"
   ],
   "via": []
  },
@@ -3811,7 +3855,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:2561"
+   "scenes/hands.gd:196"
   ],
   "via": []
  },
@@ -3822,7 +3866,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:2564",
+   "scenes/hands.gd:199",
    "scenes/tour.gd:715"
   ],
   "via": []
@@ -3834,7 +3878,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:2563"
+   "scenes/hands.gd:198"
   ],
   "via": []
  },
@@ -3845,7 +3889,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3179"
+   "scenes/night_loop.gd:275"
   ],
   "via": []
  },
@@ -3856,7 +3900,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2996"
+   "scenes/main.gd:1216"
   ],
   "via": []
  },
@@ -3867,7 +3911,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2996"
+   "scenes/main.gd:1216"
   ],
   "via": []
  },
@@ -3911,7 +3955,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3316"
+   "scenes/night_loop.gd:396"
   ],
   "via": []
  },
@@ -3922,7 +3966,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:24"
+   "scenes/main.gd:32"
   ],
   "via": []
  },
@@ -3933,7 +3977,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:24"
+   "scenes/main.gd:32"
   ],
   "via": []
  },
@@ -3944,7 +3988,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:24"
+   "scenes/main.gd:32"
   ],
   "via": []
  },
@@ -3955,7 +3999,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3355"
+   "scenes/night_loop.gd:446"
   ],
   "via": []
  },
@@ -3966,7 +4010,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3355"
+   "scenes/night_loop.gd:446"
   ],
   "via": []
  },
@@ -3977,7 +4021,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3928"
+   "scenes/scenery.gd:384"
   ],
   "via": []
  },
@@ -3988,7 +4032,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3990"
+   "scenes/scenery.gd:444"
   ],
   "via": []
  },
@@ -4098,7 +4142,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2790"
+   "scenes/night_loop.gd:44"
   ],
   "via": []
  },
@@ -4109,7 +4153,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2790"
+   "scenes/night_loop.gd:44"
   ],
   "via": []
  },
@@ -4120,7 +4164,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3207"
+   "scenes/night_loop.gd:240"
   ],
   "via": []
  },
@@ -4131,7 +4175,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3243"
+   "scenes/night_loop.gd:331"
   ],
   "via": []
  },
@@ -4142,7 +4186,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3260"
+   "scenes/night_loop.gd:348"
   ],
   "via": []
  },
@@ -4153,7 +4197,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2862"
+   "scenes/night_loop.gd:108"
   ],
   "via": []
  },
@@ -4164,7 +4208,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3243"
+   "scenes/night_loop.gd:331"
   ],
   "via": []
  },
@@ -4175,7 +4219,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2883"
+   "scenes/night_loop.gd:129"
   ],
   "via": []
  },
@@ -4186,7 +4230,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2883"
+   "scenes/night_loop.gd:129"
   ],
   "via": []
  },
@@ -4197,7 +4241,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3287"
+   "scenes/night_loop.gd:313"
   ],
   "via": []
  },
@@ -4208,7 +4252,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3207"
+   "scenes/night_loop.gd:240"
   ],
   "via": []
  },
@@ -4219,7 +4263,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3321"
+   "scenes/night_loop.gd:401"
   ],
   "via": []
  },
@@ -4230,7 +4274,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3329"
+   "scenes/night_loop.gd:409"
   ],
   "via": []
  },
@@ -4241,7 +4285,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3329"
+   "scenes/night_loop.gd:409"
   ],
   "via": []
  },
@@ -4252,7 +4296,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3332"
+   "scenes/night_loop.gd:412"
   ],
   "via": []
  },
@@ -4263,7 +4307,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3351"
+   "scenes/night_loop.gd:442"
   ],
   "via": []
  },
@@ -4274,7 +4318,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3351"
+   "scenes/night_loop.gd:442"
   ],
   "via": []
  },
@@ -4285,7 +4329,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3351"
+   "scenes/night_loop.gd:442"
   ],
   "via": []
  },
@@ -4296,7 +4340,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3356"
+   "scenes/night_loop.gd:447"
   ],
   "via": []
  },
@@ -4307,7 +4351,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3360"
+   "scenes/night_loop.gd:432"
   ],
   "via": []
  },
@@ -4318,7 +4362,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3376"
+   "scenes/night_loop.gd:467"
   ],
   "via": []
  },
@@ -4329,7 +4373,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3373"
+   "scenes/night_loop.gd:464"
   ],
   "via": []
  },
@@ -4340,7 +4384,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3373"
+   "scenes/night_loop.gd:464"
   ],
   "via": []
  },
@@ -4351,7 +4395,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3364"
+   "scenes/night_loop.gd:455"
   ],
   "via": []
  },
@@ -4362,7 +4406,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3419"
+   "scenes/night_loop.gd:518"
   ],
   "via": []
  },
@@ -4391,7 +4435,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3523"
+   "scenes/main.gd:1296"
   ],
   "via": []
  },
@@ -4457,7 +4501,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:4515"
+   "scenes/main.gd:1364"
   ],
   "via": []
  },
@@ -4468,7 +4512,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:4515"
+   "scenes/main.gd:1364"
   ],
   "via": []
  },
@@ -4479,7 +4523,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:4522"
+   "scenes/main.gd:1371"
   ],
   "via": []
  },
@@ -4490,7 +4534,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:4522"
+   "scenes/main.gd:1371"
   ],
   "via": []
  },
@@ -4854,8 +4898,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1516",
-   "logic/museum.gd:261"
+   "scenes/main.gd:540",
+   "logic/museum.gd:260"
   ],
   "via": []
  },
@@ -4866,8 +4910,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/museum.gd:549",
-   "logic/museum.gd:550"
+   "logic/museum.gd:548",
+   "logic/museum.gd:549"
   ],
   "via": []
  },
@@ -4878,8 +4922,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1522",
-   "logic/museum.gd:641"
+   "scenes/main.gd:546",
+   "logic/museum.gd:640"
   ],
   "via": []
  },
@@ -4934,7 +4978,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/museum.gd:657"
+   "logic/museum.gd:656"
   ],
   "via": []
  },
@@ -5425,7 +5469,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:479"
+   "scenes/main.gd:244"
   ],
   "via": []
  },
@@ -5436,7 +5480,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:668"
+   "scenes/challenge_screens.gd:196"
   ],
   "via": []
  },
@@ -5470,7 +5514,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:2997"
+   "scenes/main.gd:1217"
   ],
   "via": []
  },
@@ -5685,8 +5729,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:454",
-   "scenes/main.gd:530"
+   "scenes/challenge_screens.gd:58",
+   "scenes/main.gd:219"
   ],
   "via": []
  },
@@ -5697,7 +5741,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:454"
+   "scenes/main.gd:219"
   ],
   "via": []
  },
@@ -5708,7 +5752,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:531"
+   "scenes/challenge_screens.gd:59"
   ],
   "via": []
  },
@@ -5719,7 +5763,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:542"
+   "scenes/challenge_screens.gd:70"
   ],
   "via": []
  },
@@ -5730,8 +5774,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:617",
-   "scenes/main.gd:670"
+   "scenes/challenge_screens.gd:145",
+   "scenes/challenge_screens.gd:198"
   ],
   "via": []
  },
@@ -5742,7 +5786,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:672"
+   "scenes/challenge_screens.gd:200"
   ],
   "via": []
  },
@@ -5753,7 +5797,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:672"
+   "scenes/challenge_screens.gd:200"
   ],
   "via": []
  },
@@ -5764,8 +5808,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:561",
-   "scenes/main.gd:660"
+   "scenes/challenge_screens.gd:89",
+   "scenes/challenge_screens.gd:188"
   ],
   "via": []
  },
@@ -5776,8 +5820,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:561",
-   "scenes/main.gd:660"
+   "scenes/challenge_screens.gd:89",
+   "scenes/challenge_screens.gd:188"
   ],
   "via": []
  },
@@ -5788,7 +5832,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:647"
+   "scenes/challenge_screens.gd:175"
   ],
   "via": []
  },
@@ -5799,7 +5843,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:648"
+   "scenes/challenge_screens.gd:176"
   ],
   "via": []
  },
@@ -5810,7 +5854,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:522"
+   "scenes/challenge_screens.gd:50"
   ],
   "via": []
  },
@@ -5830,7 +5874,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:519"
+   "scenes/challenge_screens.gd:47"
   ],
   "via": []
  },
@@ -5841,7 +5885,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:538"
+   "scenes/challenge_screens.gd:66"
   ],
   "via": []
  },
@@ -5852,7 +5896,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:574"
+   "scenes/challenge_screens.gd:102"
   ],
   "via": []
  },
@@ -5863,7 +5907,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:574"
+   "scenes/challenge_screens.gd:102"
   ],
   "via": []
  },
@@ -5874,7 +5918,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:625"
+   "scenes/challenge_screens.gd:153"
   ],
   "via": []
  },
@@ -5885,7 +5929,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:619"
+   "scenes/challenge_screens.gd:147"
   ],
   "via": []
  },
@@ -5896,7 +5940,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:619"
+   "scenes/challenge_screens.gd:147"
   ],
   "via": []
  },
@@ -6350,8 +6394,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/main.gd:753",
-   "scenes/main.gd:1744"
+   "scenes/main.gd:275",
+   "scenes/main.gd:596"
   ],
   "via": []
  },
@@ -9308,7 +9352,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:1641",
+   "scenes/brief_screens.gd:162",
    "scenes/plan_talk.gd:625"
   ],
   "via": []
@@ -9412,7 +9456,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:575",
+   "scenes/challenge_screens.gd:103",
    "logic/briefing.gd:145"
   ],
   "via": []
@@ -9424,7 +9468,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Menús",
   "at": [
-   "scenes/main.gd:575",
+   "scenes/challenge_screens.gd:103",
    "logic/briefing.gd:145"
   ],
   "via": []
@@ -10600,7 +10644,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:3302"
+   "scenes/night_loop.gd:382"
   ],
   "via": []
  },
@@ -10998,1206 +11042,1474 @@ window.TEXTOS = [
   "es": "Se abre el museo. Se ruega cerrar el museo después.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "start",
+  "audio": true
  },
  {
   "key": "MEGA_START_02",
   "es": "Buenas noches. Los cuadros duermen: no los despierten.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "start",
+  "audio": true
  },
  {
   "key": "MEGA_START_03",
   "es": "Bienvenidos. Hoy la sopa del abuelo Paco es de fideos.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "start",
+  "audio": true
  },
  {
   "key": "MEGA_START_04",
   "es": "Atención: el museo está lleno de cosas. Como siempre.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "start",
+  "audio": true
  },
  {
   "key": "MEGA_START_05",
   "es": "Aviso: hoy es martes. Mañana también habrá martes.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "start",
+  "audio": true
  },
  {
   "key": "MEGA_LIGHTS_ON_01",
   "es": "Se hizo la luz. Y la luz dijo: «hola».",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "lights_on",
+  "audio": true
  },
  {
   "key": "MEGA_LIGHTS_ON_02",
   "es": "Aviso: alguien ha encendido las luces. Qué cosas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "lights_on",
+  "audio": true
  },
  {
   "key": "MEGA_LIGHTS_ON_03",
   "es": "Las bombillas ya están despiertas. Buenos días, bombillas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "lights_on",
+  "audio": true
  },
  {
   "key": "MEGA_LIGHTS_ON_04",
   "es": "Luces encendidas. Se ruega poner cara de no haber sido nadie.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "lights_on",
+  "audio": true
  },
  {
   "key": "MEGA_LIGHTS_OFF_01",
   "es": "Se apagó la luz. Las polillas protestan.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "lights_off",
+  "audio": true
  },
  {
   "key": "MEGA_LIGHTS_OFF_02",
   "es": "Aviso: sala a oscuras. Los cuadros tienen miedo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "lights_off",
+  "audio": true
  },
  {
   "key": "MEGA_LIGHTS_OFF_03",
   "es": "Luces apagadas. Se ruega no tropezar con la oscuridad.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "lights_off",
+  "audio": true
  },
  {
   "key": "MEGA_LIGHTS_OFF_04",
   "es": "Ha vuelto la oscuridad. Lo sentimos mucho.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "lights_off",
+  "audio": true
  },
  {
   "key": "MEGA_ALARM_01",
   "es": "¡Ring! Esa es la alarma. La de la vitrina, seguro.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "alarm",
+  "audio": true
  },
  {
   "key": "MEGA_ALARM_02",
   "es": "Atención: suena una alarma muy educada.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "alarm",
+  "audio": true
  },
  {
   "key": "MEGA_ALARM_03",
   "es": "Aviso: la vitrina está chillando. Otra vez.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "alarm",
+  "audio": true
  },
  {
   "key": "MEGA_ALARM_04",
   "es": "Se ruega mantener la calma. O huir. Lo que salga antes.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "alarm",
+  "audio": true
  },
  {
   "key": "MEGA_ALARM_05",
   "es": "Ese pitido no es un pájaro. Es la alarma.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "alarm",
+  "audio": true
  },
  {
   "key": "MEGA_KNOCKED_01",
   "es": "Se ha oído un ¡PLONK! Se ruega no mirar.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "knocked",
+  "audio": true
  },
  {
   "key": "MEGA_KNOCKED_02",
   "es": "Aviso: algo se ha caído. Seguro que ya estaba roto.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "knocked",
+  "audio": true
  },
  {
   "key": "MEGA_KNOCKED_03",
   "es": "Atención: las cosas tiradas se quedan tiradas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "knocked",
+  "audio": true
  },
  {
   "key": "MEGA_KNOCKED_04",
   "es": "Un objeto ha decidido tumbarse. Respetemos su descanso.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "knocked",
+  "audio": true
  },
  {
   "key": "MEGA_KNOCKED_05",
   "es": "Ruido misterioso en la sala. Seguro que son las polillas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "knocked",
+  "audio": true
  },
  {
   "key": "MEGA_SNEEZE_01",
   "es": "¡Salud! Dice el museo entero.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "sneeze",
+  "audio": true
  },
  {
   "key": "MEGA_SNEEZE_02",
   "es": "Aviso: alguien tiene un estornudo con muchas ganas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "sneeze",
+  "audio": true
  },
  {
   "key": "MEGA_SNEEZE_03",
   "es": "Se ruega estornudar en silencio. Gracias.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "sneeze",
+  "audio": true
  },
  {
   "key": "MEGA_SNEEZE_04",
   "es": "Ese ¡ACHÍS! ha movido las nubes.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "sneeze",
+  "audio": true
  },
  {
   "key": "MEGA_STOLEN_01",
   "es": "Se ha perdido una vitrina muy vacía. Se ofrece premio.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "stolen",
+  "audio": true
  },
  {
   "key": "MEGA_STOLEN_02",
   "es": "Aviso: hay un hueco donde había una cosa.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "stolen",
+  "audio": true
  },
  {
   "key": "MEGA_STOLEN_03",
   "es": "Atención: la vitrina dice que no ha visto nada.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "stolen",
+  "audio": true
  },
  {
   "key": "MEGA_STOLEN_04",
   "es": "Ojo: alguien sale corriendo con cara de nada.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "stolen",
+  "audio": true
  },
  {
   "key": "MEGA_STOLEN_05",
   "es": "Se ruega a quien tenga la pieza que la devuelva. O no.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "stolen",
+  "audio": true
  },
  {
   "key": "MEGA_PIECE_01",
   "es": "Se ruega no mirar %s con cara de querer llevárselo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "piece",
+  "audio": false
  },
  {
   "key": "MEGA_PIECE_02",
   "es": "Aviso: %s tiene mucha vergüenza cuando lo miran.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "piece",
+  "audio": false
  },
  {
   "key": "MEGA_PIECE_03",
   "es": "Alguien mira la vitrina con cara sospechosa.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "piece",
+  "audio": true
  },
  {
   "key": "MEGA_PIECE_04",
   "es": "Atención: %s no está en venta. Ni regalado.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "piece",
+  "audio": false
  },
  {
   "key": "MEGA_PIECE_05",
   "es": "La vitrina vigila que nadie se acerque demasiado.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "piece",
+  "audio": true
  },
  {
   "key": "MEGA_PIECE_06",
   "es": "Aviso: %s ha pedido que le den un poco de aire.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "piece",
+  "audio": false
  },
  {
   "key": "MEGA_SEEN_01",
   "es": "¡Guardia con prisa! Se ruega apartarse del guardia.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "seen",
+  "audio": true
  },
  {
   "key": "MEGA_SEEN_02",
   "es": "Aviso: hay un guardia corriendo. Él no sabe por qué.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "seen",
+  "audio": true
  },
  {
   "key": "MEGA_SEEN_03",
   "es": "Atención: se persigue a alguien con mucha educación.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "seen",
+  "audio": true
  },
  {
   "key": "MEGA_SEEN_04",
   "es": "Se ruega no correr por el museo. Ya, ya lo sabemos.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "seen",
+  "audio": true
  },
  {
   "key": "MEGA_SEEN_05",
   "es": "Cuidado: un guardia ha encontrado algo interesante. Un bulto.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "seen",
+  "audio": true
  },
  {
   "key": "MEGA_SUSPECT_01",
   "es": "Un guardia ha dicho «hmm». Mala señal.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "suspect",
+  "audio": true
  },
  {
   "key": "MEGA_SUSPECT_02",
   "es": "Aviso: un guardia mira una sombra con desconfianza.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "suspect",
+  "audio": true
  },
  {
   "key": "MEGA_SUSPECT_03",
   "es": "Atención: alguien huele a calcetín sospechoso.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "suspect",
+  "audio": true
  },
  {
   "key": "MEGA_SUSPECT_04",
   "es": "El guardia sospecha. Pero no sabe de qué.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "suspect",
+  "audio": true
  },
  {
   "key": "MEGA_SUSPECT_05",
   "es": "Aviso a los guardias: dejen de mirar las paredes tanto.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "suspect",
+  "audio": true
  },
  {
   "key": "MEGA_HIDE_01",
   "es": "Aviso: esa armadura respira un poco.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hide",
+  "audio": true
  },
  {
   "key": "MEGA_HIDE_02",
   "es": "Se ruega no hablar con las macetas. No contestan.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hide",
+  "audio": true
  },
  {
   "key": "MEGA_HIDE_03",
   "es": "Atención: ese rincón tiene muy buen escondite. Digo, decoración.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hide",
+  "audio": true
  },
  {
   "key": "MEGA_HIDE_04",
   "es": "Aquí no hay nadie. Solo cosas muy quietas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hide",
+  "audio": true
  },
  {
   "key": "MEGA_DIZZY_01",
   "es": "Aviso: hay alguien dando vueltas como un calcetín en la lavadora.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "dizzy",
+  "audio": true
  },
  {
   "key": "MEGA_DIZZY_02",
   "es": "Hay un bulto mareado en la sala. Se le ofrece agua.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "dizzy",
+  "audio": true
  },
  {
   "key": "MEGA_DIZZY_03",
   "es": "El suelo gira, pero solo para alguien.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "dizzy",
+  "audio": true
  },
  {
   "key": "MEGA_DIZZY_04",
   "es": "Se ruega no dar volteretas sin permiso del museo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "dizzy",
+  "audio": true
  },
  {
   "key": "MEGA_SMOKE_01",
   "es": "Aviso: nube de humo con muy mal olor a fresa.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "smoke",
+  "audio": true
  },
  {
   "key": "MEGA_SMOKE_02",
   "es": "Atención: hay una nube. No es de las de llover.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "smoke",
+  "audio": true
  },
  {
   "key": "MEGA_SMOKE_03",
   "es": "Se ruega no respirar la niebla. Ni creerla.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "smoke",
+  "audio": true
  },
  {
   "key": "MEGA_PANEL_01",
   "es": "Aviso: se han cortado unos cables. Nos da igual.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "panel",
+  "audio": true
  },
  {
   "key": "MEGA_PANEL_02",
   "es": "Atención: la alarma se ha quedado sin ganas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "panel",
+  "audio": true
  },
  {
   "key": "MEGA_PANEL_03",
   "es": "Los cables descansan. Se ruega no molestarlos.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "panel",
+  "audio": true
  },
  {
   "key": "MEGA_NEAR_EXIT_01",
   "es": "Aviso: la puerta está abierta. Es que hace calor.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "near_exit",
+  "audio": true
  },
  {
   "key": "MEGA_NEAR_EXIT_02",
   "es": "Atención: la salida está aquí mismo. Como siempre.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "near_exit",
+  "audio": true
  },
  {
   "key": "MEGA_NEAR_EXIT_03",
   "es": "Se ruega salir despacio. O deprisa. Pero salir.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "near_exit",
+  "audio": true
  },
  {
   "key": "MEGA_NEAR_EXIT_04",
   "es": "Aviso: la puerta quiere despedirse de alguien.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "near_exit",
+  "audio": true
  },
  {
   "key": "MEGA_IDLE_01",
   "es": "Aviso: alguien lleva mucho rato quieto. ¿Es una estatua nueva?",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "idle",
+  "audio": true
  },
  {
   "key": "MEGA_IDLE_02",
   "es": "Atención: se ruega moverse. Los cuadros se aburren.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "idle",
+  "audio": true
  },
  {
   "key": "MEGA_IDLE_03",
   "es": "Quieto como una estatua. Qué bien lo hace.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "idle",
+  "audio": true
  },
  {
   "key": "MEGA_IDLE_04",
   "es": "Aviso: se ha perdido una sombra. Está de pie.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "idle",
+  "audio": true
  },
  {
   "key": "MEGA_IDLE_05",
   "es": "Se ruega no dormirse de pie. El conserje ya lo hace.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "idle",
+  "audio": true
  },
  {
   "key": "MEGA_IDLE_06",
   "es": "Si nadie hace nada, el museo hace un poco de ruido.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "idle",
+  "audio": true
  },
  {
   "key": "MEGA_WAITING_01",
   "es": "Aviso: alguien ya ha salido. Faltan los demás.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "waiting",
+  "audio": true
  },
  {
   "key": "MEGA_WAITING_02",
   "es": "Atención: fuera hay alguien esperando con cara de prisa.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "waiting",
+  "audio": true
  },
  {
   "key": "MEGA_WAITING_03",
   "es": "La puerta espera a los que faltan.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "waiting",
+  "audio": true
  },
  {
   "key": "MEGA_CALM_01",
   "es": "Se ruega no dar de comer a los cuadros.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "calm",
+  "audio": true
  },
  {
   "key": "MEGA_CALM_02",
   "es": "Aviso: hoy hay sopa de letras en la cafetería.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "calm",
+  "audio": true
  },
  {
   "key": "MEGA_CALM_03",
   "es": "Atención: se busca un paraguas con complejo de bastón.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "calm",
+  "audio": true
  },
  {
   "key": "MEGA_CALM_04",
   "es": "Recordatorio: las estatuas no pagan entrada.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "calm",
+  "audio": true
  },
  {
   "key": "MEGA_CALM_05",
   "es": "Aviso: la escalera está de mal humor. Sube poco.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "calm",
+  "audio": true
  },
  {
   "key": "MEGA_CALM_06",
   "es": "Se ruega no saludar a los maniquíes. Se lo creen.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "calm",
+  "audio": true
  },
  {
   "key": "MEGA_CALM_07",
   "es": "Atención: alguien ha dejado un bocadillo en el siglo pasado.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "calm",
+  "audio": true
  },
  {
   "key": "MEGA_CALM_08",
   "es": "Aviso: el reloj del museo va bien. Pero atrasa.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "calm",
+  "audio": true
  },
  {
   "key": "MEGA_CALM_09",
   "es": "Se ha encontrado un guante. Le falta la mano.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "calm",
+  "audio": true
  },
  {
   "key": "MEGA_CALM_10",
   "es": "Atención: prohibido estornudar sobre las momias.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "calm",
+  "audio": true
  },
  {
   "key": "MEGA_CALM_11",
   "es": "Aviso: la fuente tiene hipo. Es normal.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "calm",
+  "audio": true
  },
  {
   "key": "MEGA_CALM_12",
   "es": "Se ruega hablar bajito. Las paredes tienen orejas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "calm",
+  "audio": true
  },
  {
   "key": "MEGA_CALM_13",
   "es": "Aviso: el ascensor no sube. Ni siquiera lo intenta.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "calm",
+  "audio": true
  },
  {
   "key": "MEGA_CALM_14",
   "es": "Atención: el tercer cuadro de la izquierda guiña un ojo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "calm",
+  "audio": true
  },
  {
   "key": "MEGA_TEAM_01",
   "es": "Aviso: las sombras en grupo pagan entrada de grupo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "team",
+  "audio": true
  },
  {
   "key": "MEGA_TEAM_02",
   "es": "Atención: dos bultos caben en un mismo susto.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "team",
+  "audio": true
  },
  {
   "key": "MEGA_TEAM_03",
   "es": "Se ruega repartirse los sustos por igual.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "team",
+  "audio": true
  },
  {
   "key": "MEGA_TEAM_04",
   "es": "Aviso: mejor juntos. Los calcetines siempre van a pares.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "team",
+  "audio": true
  },
  {
   "key": "MEGA_TEAM_05",
   "es": "Atención: cuando uno corre, el otro mira. Es la norma.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "team",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_1_01",
   "es": "Prohibido silbar cerca del dinosaurio.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_1",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_1_02",
   "es": "Cuidado: el suelo de la sala 3 canta.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_1",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_1_03",
   "es": "Se ruega no pisar la moqueta sospechosa.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_1",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_1_04",
   "es": "Aviso: el mamut estornuda cuando le tosen.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_1",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_1_05",
   "es": "Atención: el fósil de la entrada muerde. Un poco.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_1",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_1_06",
   "es": "Se ruega no dar de comer al diplodocus. Ya come.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_1",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_1_07",
   "es": "Aviso: las huellas del suelo se mueven solas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_1",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_1_08",
   "es": "Atención: ese hueso no es de nadie. Ni de perros.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_1",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_2_01",
   "es": "El conserje duerme de pie.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_2",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_2_02",
   "es": "Se buscan disfraces de macetas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_2",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_2_03",
   "es": "Aviso: las hormigas de cristal no se tocan.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_2",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_2_04",
   "es": "Atención: el cactus grande se cree un guardia.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_2",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_2_05",
   "es": "Se ruega no pisar las flores. Se ofenden.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_2",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_2_06",
   "es": "Aviso: hay un pez en la sala 4. Nadie sabe cómo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_2",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_2_07",
   "es": "Atención: el guardia de la jungla ronca bajito.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_2",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_2_08",
   "es": "Se ruega no regar al helecho de la esquina.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_2",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_3_01",
   "es": "Los pasillos serán encerados por sorpresa.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_3",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_3_02",
   "es": "Se ha perdido una llave con forma de plátano.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_3",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_3_03",
   "es": "Aviso: la momia de la sala 2 no quiere visitas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_3",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_3_04",
   "es": "Atención: el cartel de «no tocar» toca a todos.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_3",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_3_05",
   "es": "Se ruega no resbalar sobre los mármoles brillantes.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_3",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_3_06",
   "es": "Aviso: el sarcófago abre solo. Es muy educado.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_3",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_3_07",
   "es": "Atención: los gatos de piedra maúllan los jueves.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_3",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_3_08",
   "es": "Cuidado con las baldosas que suenan a pito.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_3",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_4_01",
   "es": "Aviso: el puente del castillo sube solo cuando quiere.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_4",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_4_02",
   "es": "Se ruega no rascar las armaduras. Tienen cosquillas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_4",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_4_03",
   "es": "Atención: las antorchas se apagan por timidez.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_4",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_4_04",
   "es": "Cuidado: una puerta secreta se cree secreta.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_4",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_4_05",
   "es": "Se busca una llave con forma de tenedor.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_4",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_4_06",
   "es": "Aviso: el caballero de la sala 2 mira mal.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_4",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_4_07",
   "es": "Atención: el eco de la torre contesta con retraso.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_4",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_4_08",
   "es": "Se ruega no tocar el cuadro del rey. Es pegajoso.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_4",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_5_01",
   "es": "Aviso: los cuadros no se rascan solos.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_5",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_5_02",
   "es": "Atención: el ascensor de cristal sube a los sustos.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_5",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_5_03",
   "es": "Se ruega no confundir la obra con la basura.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_5",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_5_04",
   "es": "Aviso: el cuadro rojo es un cuadro rojo. Nada más.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_5",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_5_05",
   "es": "Atención: la escultura de globos se desinfla a las diez.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_5",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_5_06",
   "es": "Se ruega no apretar el botón de «no apretar».",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_5",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_5_07",
   "es": "Aviso: el barón bosteza en la última planta.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_5",
+  "audio": true
  },
  {
   "key": "MEGA_HINT_5_08",
   "es": "Atención: el suelo de cristal se cree un espejo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "hint_5",
+  "audio": true
  },
  {
   "key": "SETTINGS_MEGAPHONE",
@@ -12206,7 +12518,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Ajustes y controles",
   "at": [
-   "scenes/main.gd:1250"
+   "scenes/settings_screens.gd:104"
   ],
   "via": []
  },
@@ -12259,1757 +12571,2147 @@ window.TEXTOS = [
   "es": "MEGAFONÍA",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "",
+  "audio": false
  },
  {
   "key": "MEGA_SOMETHING",
   "es": "esa cosa tan valiosa",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [
    "logic/megaphone.gd:385"
   ],
-  "via": []
+  "via": [],
+  "pool": "",
+  "audio": false
  },
  {
   "key": "MEGA_ACT_ROLL_01",
   "es": "Algo acaba de rodar. Se ruega aplaudir con las orejas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_02",
   "es": "Aviso: alguien juega a ser una croqueta.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_03",
   "es": "Hay un bulto rodando. Cuidado, que no frena.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_04",
   "es": "Atención: el suelo ha recibido una visita muy redonda.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_05",
   "es": "Vaya, un bulto con ruedas. Nadie las vio venir.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_AGAIN_01",
   "es": "Otra voltereta. Ahí hay alguien con el suelo enamorado.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_AGAIN_02",
   "es": "Sigue rodando. Nadie le ha dicho que hay paredes.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_AGAIN_03",
   "es": "Otra vez rodando. Las piernas piden vacaciones.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_AGAIN_04",
   "es": "Aviso: la croqueta vuelve a rodar, y con más ganas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_AGAIN_05",
   "es": "Atención: rodar es gratis, pero marea.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_AGAIN_06",
   "es": "Este museo no es un tobogán. Aunque lo parece.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_STREAK_01",
   "es": "Ahí hay alguien que no camina: rueda por sistema.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_STREAK_02",
   "es": "Tres volteretas seguidas. Se ruega un juez de gimnasia.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_STREAK_03",
   "es": "Aviso: se busca a alguien que use los pies.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_STREAK_04",
   "es": "Van tres vueltas. El museo empieza a marearse solo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_STREAK_05",
   "es": "Alguien se ha tragado una rueda de repuesto.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_STREAK_06",
   "es": "Rodar, rodar, rodar. Y luego dicen que no hay ejercicio.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_01",
   "es": "Hay quien usa la cabeza para hacer agujeros en la pared.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_02",
   "es": "¡PLAF! La pared gana otra vez. Siempre gana.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_03",
   "es": "Aviso: la pared no se aparta. Ya se ha probado.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_04",
   "es": "Alguien ha saludado a la pared. No contesta.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_05",
   "es": "La pared dice que aquello no era una puerta.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_06",
   "es": "Atención: hay un bulto pegado al muro. Como un imán.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_07",
   "es": "Una pared y algo redondo se han conocido. Fue un choque.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_08",
   "es": "Se busca un freno para bultos rodantes. Llamen a la pared.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_09",
   "es": "Algo ha llamado a la pared con la frente.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_10",
   "es": "¡PLAF! Alguien le ha pedido perdón a la pared.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_11",
   "es": "El muro ha recibido una visita muy redonda y muy rápida.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_AGAIN_01",
   "es": "Otra vez la pared. Ya son casi familia.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_AGAIN_02",
   "es": "La pared pregunta si va a venir todos los días.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_AGAIN_03",
   "es": "La pared y ese bulto: una historia de mucho golpe.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_AGAIN_04",
   "es": "Aviso: la pared sigue en el mismo sitio. Como siempre.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_AGAIN_05",
   "es": "Rodar sin mirar. Qué idea tan redonda y tan mala.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_AGAIN_06",
   "es": "Por si acaso: las paredes no se mueven. Ya se ha visto.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_WALL_AGAIN_07",
   "es": "Alguien practica un deporte nuevo: chocar contra el museo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_wall_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_CASE_01",
   "es": "Algo ha rodado contra una vitrina. Cristal, uno. Bulto, cero.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_case",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_CASE_02",
   "es": "Aviso: las vitrinas no son almohadas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_case",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_CASE_03",
   "es": "La vitrina ha sonado. Lo que chocó, también.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_case",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_CASE_04",
   "es": "Atención: chocar con el cristal no lo abre. Ya lo hemos probado.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_case",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_CASE_05",
   "es": "La vitrina ni se ha inmutado. Lo otro, sí.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_case",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_CASE_06",
   "es": "Se ruega no confundir el cristal con un colchón.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_case",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_CASE_07",
   "es": "Se ruega no dar besos al cristal. Deja marca.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_case",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_CASE_08",
   "es": "La vitrina dice que eso no era un abrazo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_case",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_CASE_AGAIN_01",
   "es": "Otra vez contra el cristal. Ya hay huellas de frente.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_case_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_CASE_AGAIN_02",
   "es": "La vitrina cree que alguien le tiene cariño.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_case_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_CASE_AGAIN_03",
   "es": "Otro choque con el cristal. Menudo aficionado.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_case_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_CASE_AGAIN_04",
   "es": "Aviso: el cristal no aprende, pero quien choca tampoco.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_case_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ROLL_CASE_AGAIN_05",
   "es": "Alguien y la vitrina ya se saludan por su nombre.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_roll_case_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CRASH_STREAK_01",
   "es": "Tercer choque. Aquí ya no se rueda: se demuele.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_crash_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CRASH_STREAK_02",
   "es": "Van tres choques. El museo pide un casco para alguien.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_crash_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CRASH_STREAK_03",
   "es": "Aviso: se regalan cascos. Uno, para el de ahí.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_crash_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CRASH_STREAK_04",
   "es": "Tres golpes seguidos. Las paredes piden un descanso.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_crash_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CRASH_STREAK_05",
   "es": "A este paso, alguien tendrá la cabeza cuadrada.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_crash_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CRASH_STREAK_06",
   "es": "Choque, choque, choque. Eso es un ritmo, no un plan.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_crash_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_BIN_01",
   "es": "Papelera por el suelo. Estaba vacía, pero muy dramática.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_bin",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_BIN_02",
   "es": "¡CLONC! La papelera hace música sin permiso.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_bin",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_BIN_03",
   "es": "Papelera al suelo. Nadie la tiraba tanto desde el lunes.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_bin",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_BIN_04",
   "es": "Ese ruido de lata era una papelera. Ya está tranquila.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_bin",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_BIN_05",
   "es": "Papelera tumbada. Se ruega no mirar dentro.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_bin",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_BUST_01",
   "es": "El busto ha perdido el equilibrio. Y la vergüenza.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_bust",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_BUST_02",
   "es": "Aviso: un busto mira el suelo. Por primera vez.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_bust",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_BUST_03",
   "es": "Un busto en el suelo. Era famoso, pero se le pasó.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_bust",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_BUST_04",
   "es": "¡PLONK! Un señor de piedra se ha tumbado a dormir.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_bust",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_BUST_05",
   "es": "Hay un busto tumbado. Se ruega no pisarle la nariz.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_bust",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_ARMOUR_01",
   "es": "¡CLANG! La armadura se ha desarmado de la risa.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_armour",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_ARMOUR_02",
   "es": "Aviso: una armadura descansa en el suelo. Se ha caído entera.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_armour",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_ARMOUR_03",
   "es": "Esa armadura llevaba siglos de pie. Merecía sentarse.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_armour",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_ARMOUR_04",
   "es": "Hay piezas de caballero por el suelo. Falta el caballero.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_armour",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_ARMOUR_05",
   "es": "Una armadura menos en la sala y un montón de latas más.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_armour",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_PANEL_01",
   "es": "El cartel se ha caído. Ahora sí que todos lo miran.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_panel",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_PANEL_02",
   "es": "Aviso: un panel informativo ya no informa. Está tumbado.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_panel",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_PANEL_03",
   "es": "Se cayó el panel de las normas. Ya no hay normas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_panel",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_PANEL_04",
   "es": "¡PLAF! El cartel del museo se va a echar una siesta.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_panel",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_PANEL_05",
   "es": "Panel al suelo. Se ruega leerlo en horizontal.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_panel",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_AGAIN_01",
   "es": "Otra cosa tirada. El museo empieza a parecer un trastero.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_AGAIN_02",
   "es": "Ya van varias. ¿Podemos pedir que las cosas se agarren?",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_AGAIN_03",
   "es": "Todo cae si se mira con ganas. Alguien lo sabe.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_AGAIN_04",
   "es": "Otra cosa tumbada. Aquí las cosas duermen muy poco.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_AGAIN_05",
   "es": "Se ruega no empujar más. El museo ya está mareado.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_AGAIN_06",
   "es": "Aviso: derribar cosas no es un deporte. Todavía.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_AGAIN_07",
   "es": "Hoy en el museo llueven cosas. Y sin nubes.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_STREAK_01",
   "es": "Tres cosas caídas. O es un visitante o es un terremoto.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_STREAK_02",
   "es": "Este museo no se cae: lo tiran. Uno a uno.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_STREAK_03",
   "es": "Atención: se necesita una escoba. Y algo de calma.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_STREAK_04",
   "es": "Van tres cosas al suelo. Solo falta tirar el techo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_STREAK_05",
   "es": "Alguien reorganiza el museo por el suelo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_KNOCK_STREAK_06",
   "es": "Tres golpes seguidos. Esto ya es un baile.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_knock_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_ARMOUR_01",
   "es": "Esa armadura tiene un huésped. Y le va muy justa.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_armour",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_ARMOUR_02",
   "es": "Aviso: la armadura respira fuerte. Y huele a calcetín.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_armour",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_ARMOUR_03",
   "es": "Nunca hubo una armadura tan ajustada. Ni tan nerviosa.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_armour",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_ARMOUR_04",
   "es": "Un caballero vacío ha dejado de estar vacío.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_armour",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_ARMOUR_05",
   "es": "Atención: la armadura tiene cosquillas por dentro.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_armour",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_ARMOUR_06",
   "es": "Esa armadura antes estaba más delgada. Se dice.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_armour",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_ARMOUR_AGAIN_01",
   "es": "Otra vez dentro de la armadura. Es su nuevo piso.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_armour_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_ARMOUR_AGAIN_02",
   "es": "La armadura tiene inquilino. Paga en calcetines.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_armour_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_ARMOUR_AGAIN_03",
   "es": "La armadura vuelve a tener un huésped. Se ha mudado.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_armour_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_ARMOUR_AGAIN_04",
   "es": "Esa armadura ya casi no se acuerda de estar vacía.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_armour_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_OTHER_01",
   "es": "Aquí no hay nadie. Solo un rincón con mucho volumen.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_other",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_OTHER_02",
   "es": "Ese escondite de pronto tiene un huésped. Qué sorpresa.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_other",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_OTHER_03",
   "es": "Se ruega no llamar a la puerta del escondite. Tiene visita.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_other",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_OTHER_04",
   "es": "Algo ha desaparecido. Se sospecha del escondite.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_other",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_OTHER_05",
   "es": "Atención: ese objeto ahora pesa un poco más.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_other",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_OTHER_06",
   "es": "Nada que ver aquí. Solo un objeto muy nervioso.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_other",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_OTHER_AGAIN_01",
   "es": "Otra vez escondido. Eso ya es una costumbre.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_other_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_OTHER_AGAIN_02",
   "es": "El escondite ya tiene guardado el sitio de alguien.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_other_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_OTHER_AGAIN_03",
   "es": "Escondite ocupado. Cartel: «Vuelvo en cinco minutos».",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_other_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_OTHER_AGAIN_04",
   "es": "Quien se esconde tanto acabará en un cajón.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_other_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_SEEN_01",
   "es": "Esconderse mirando al guardia es muy valiente. Y poco útil.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_seen",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_SEEN_02",
   "es": "Un truco de magia: desaparecer delante de todos. Sale mal.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_seen",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_SEEN_03",
   "es": "Se ruega esconderse cuando nadie mire. Es lo tradicional.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_seen",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_SEEN_04",
   "es": "Ese escondite ya no es secreto. Lo sabe hasta el guardia.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_seen",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_HIDE_SEEN_05",
   "es": "Aviso: los buenos escondites no se estrenan con público.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_hide_seen",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEEZE_01",
   "es": "¡Achís! Un escondite acaba de estornudar. Qué raro.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneeze",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEEZE_02",
   "es": "Aviso: las macetas no estornudan. Casi nunca.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneeze",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEEZE_03",
   "es": "Salud. Se ruega no estornudar en misiones secretas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneeze",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEEZE_04",
   "es": "Atención: el polvo ha ganado esta batalla.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneeze",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEEZE_05",
   "es": "Alguien ha dicho «achís». El museo contesta: «Salud».",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneeze",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEEZE_06",
   "es": "Cuanto más se esconde, más polvo. Ley del estornudo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneeze",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEEZE_07",
   "es": "Ese rincón ha hecho «achís». Los rincones no hacen eso.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneeze",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEEZE_08",
   "es": "Se oyó un estornudo donde no vive nadie.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneeze",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEEZE_AGAIN_01",
   "es": "Otro estornudo. Ahí dentro hacen falta pañuelos.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneeze_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEEZE_AGAIN_02",
   "es": "Se ruega un pañuelo. O dos.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneeze_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEEZE_AGAIN_03",
   "es": "La alergia es más lista que el escondite.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneeze_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEEZE_AGAIN_04",
   "es": "Achís otra vez. Los escondites también se resfrían.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneeze_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEEZE_AGAIN_05",
   "es": "Aviso: se vende polvo a mitad de precio. Ahí ya tienen.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneeze_again",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_01",
   "es": "Humo en la sala. Se ruega no aplaudir hasta que salga.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_02",
   "es": "Aviso: alguien ha cocinado una nube. Sin receta.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_03",
   "es": "¡PUF! Ha salido una nube. No es de las del tiempo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_04",
   "es": "Se oye un pequeño ¡PUF! Todo normal. Nada de miedo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_05",
   "es": "Esa nube no estaba antes. Que alguien avise al tiempo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_06",
   "es": "Nube instalada en la sala. No ha pedido permiso.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_LAST_01",
   "es": "Se acabó el humo. Ahora toca ser valiente o correr.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke_last",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_LAST_02",
   "es": "Última bomba de humo gastada. A partir de ahora, a pulmón.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke_last",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_LAST_03",
   "es": "Sin bombas de humo. Solo quedan las ganas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke_last",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_LAST_04",
   "es": "Ya no queda humo. Alguien suspira muy fuerte.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke_last",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_LAST_05",
   "es": "Ya no queda humo. Se ruega no soplar para fingir.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke_last",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_EMPTY_01",
   "es": "Alguien pulsa y pulsa. Ya no sale humo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke_empty",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_EMPTY_02",
   "es": "Sin humo. Se ruega no golpear la bolsa.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke_empty",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_EMPTY_03",
   "es": "Aviso: de las bombas vacías solo sale silencio.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke_empty",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_EMPTY_04",
   "es": "Nada de humo. Ni un vaho. Ni un suspiro.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke_empty",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_EMPTY_05",
   "es": "Alguien sopla como si tuviera nube. No tiene.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke_empty",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SMOKE_EMPTY_06",
   "es": "Sin bombas. Se prohíbe hacer «puf» con la boca.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_smoke_empty",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PANEL_01",
   "es": "Un cable menos. Un museo más tranquilo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_panel",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PANEL_02",
   "es": "El panel ha dejado de gritar. Bien hecho, o eso creemos.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_panel",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PANEL_03",
   "es": "Alguien ha jugado con los cables. Sin manual, como siempre.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_panel",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PANEL_04",
   "es": "Aviso: el panel está cortado. Se ruega no llorar por la corriente.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_panel",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PANEL_05",
   "es": "Clic, chispa y silencio. Así se apaga una alarma.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_panel",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CASE_01",
   "es": "Alguien está abriendo la vitrina. Con mucha educación.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_case",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CASE_02",
   "es": "Aviso: alguien habla con la cerradura.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_case",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CASE_03",
   "es": "Esa vitrina lleva siglos cerrada. No le hace gracia.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_case",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CASE_04",
   "es": "Se ruega no soplar en la cerradura. Es muy tímida.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_case",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CASE_05",
   "es": "Atención: manos misteriosas sobre el cristal. Se ruega no mirar.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_case",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CASE_06",
   "es": "Clic, clac. La vitrina cree que le hacen cosquillas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_case",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SWITCH_STREAK_01",
   "es": "¿Luz o no luz? Alguien no se decide.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_switch_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SWITCH_STREAK_02",
   "es": "Tanta luz y tanta oscuridad. Esto ya es una discoteca.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_switch_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SWITCH_STREAK_03",
   "es": "Aviso: los interruptores no son un juguete. Un poco sí.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_switch_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SWITCH_STREAK_04",
   "es": "Enciende, apaga, enciende. Las bombillas piden un descanso.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_switch_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SWITCH_STREAK_05",
   "es": "Alguien quiere ser un faro. A ratos.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_switch_streak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PLINTH_01",
   "es": "Hay una estatua nueva. Es muy joven y parpadea.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_plinth",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PLINTH_02",
   "es": "Alguien se ha subido al pedestal. Se ruega aplaudir en silencio.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_plinth",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PLINTH_03",
   "es": "Atención: nueva obra de arte, «Sombra de puntillas».",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_plinth",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PLINTH_04",
   "es": "Esa estatua respira. Los artistas lo llaman realismo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_plinth",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PLINTH_05",
   "es": "Aviso: esa estatua no estaba ayer. Sospechosamente nueva.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_plinth",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PLINTH_FALL_01",
   "es": "La estatua nueva ha perdido el equilibrio. Y la pose.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_plinth_fall",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PLINTH_FALL_02",
   "es": "¡PATAPLÚM! El arte contemporáneo ha aterrizado.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_plinth_fall",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PLINTH_FALL_03",
   "es": "Aviso: una estatua se ha caído y no era de piedra.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_plinth_fall",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PLINTH_FALL_04",
   "es": "Alguien no sabe estar sobre un pie. Ni sobre dos, casi.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_plinth_fall",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PLINTH_FALL_05",
   "es": "Un pedestal menos ocupado y un bulto más mareado.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_plinth_fall",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ARCADE_01",
   "es": "Alguien juega a la máquina. Todo lo demás puede esperar.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_arcade",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ARCADE_02",
   "es": "Aviso: la máquina de marcianos tiene un nuevo campeón.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_arcade",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ARCADE_03",
   "es": "Pong en pleno robo. Qué mente tan tranquila.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_arcade",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ARCADE_04",
   "es": "Se ruega no pedir la revancha ahora mismo.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_arcade",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_ARCADE_05",
   "es": "Atención: ha empezado una partida. La vitrina puede esperar.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_arcade",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PHEW_01",
   "es": "Uf. Qué susto tan bien resuelto.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_phew",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PHEW_02",
   "es": "Aviso: ha faltado un pelo. Un pelo de calcetín.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_phew",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PHEW_03",
   "es": "Un guardia casi ve algo. Casi es lo mejor.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_phew",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PHEW_04",
   "es": "¡Por los pelos! Se ruega un caramelo para el susto.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_phew",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_PHEW_05",
   "es": "Peligro pasado. Se puede respirar. Con calma.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_phew",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CRAWL_01",
   "es": "Algo va a cuatro patas. El museo lo considera un gato.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_crawl",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CRAWL_02",
   "es": "Aviso: hay un gato enorme por la sala. Maúlla poco.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_crawl",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CRAWL_03",
   "es": "Ir a gatas es de sabios. Y de rodillas sucias.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_crawl",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CRAWL_04",
   "es": "¿Se ha perdido una moneda? Alguien la busca.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_crawl",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_CRAWL_05",
   "es": "Se ruega no acariciar lo que va a gatas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_crawl",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_RUN_01",
   "es": "Alguien corre como si llegara tarde al cole.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_run",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_RUN_02",
   "es": "Aviso: hay prisa. Nadie sabe por qué.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_run",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_RUN_03",
   "es": "Se prohíbe correr en el museo. Alguien no lo lee.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_run",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_RUN_04",
   "es": "Unos pies llevan prisa. Y el resto va detrás.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_run",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_RUN_05",
   "es": "Menuda carrera. Pero aquí no hay medalla.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_run",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEAK_01",
   "es": "Alguien anda con mucho cuidado. Parece que pisa huevos.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEAK_02",
   "es": "Aviso: alguien camina de puntillas. Se admiran los dedos.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEAK_03",
   "es": "Alguien anda tan despacio que el reloj se aburre.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEAK_04",
   "es": "Qué elegancia al andar. El suelo ni se entera.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneak",
+  "audio": true
  },
  {
   "key": "MEGA_ACT_SNEAK_05",
   "es": "Paso a paso, sin hacer ruido. Como un gato con pantuflas.",
   "broken": false,
   "extra": [],
-  "group": "Juego",
+  "group": "Megafonía",
   "at": [],
-  "via": []
+  "via": [],
+  "pool": "act_sneak",
+  "audio": true
  },
  {
   "key": "HIDEOUT_NAME",
@@ -14018,7 +14720,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1529",
+   "scenes/main.gd:553",
    "scenes/tour.gd:170",
    "logic/practice.gd:401"
   ],
@@ -14053,7 +14755,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:752"
+   "scenes/main.gd:274"
   ],
   "via": []
  },
@@ -14119,7 +14821,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:3027"
+   "scenes/main.gd:1247"
   ],
   "via": []
  },
@@ -14130,7 +14832,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:3027"
+   "scenes/main.gd:1247"
   ],
   "via": []
  },
@@ -14141,7 +14843,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:4510"
+   "scenes/main.gd:1359"
   ],
   "via": []
  },
@@ -14328,7 +15030,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:3024"
+   "scenes/main.gd:1244"
   ],
   "via": []
  },
@@ -14482,7 +15184,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:3020"
+   "scenes/main.gd:1240"
   ],
   "via": []
  },
@@ -14493,7 +15195,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:3008"
+   "scenes/main.gd:1228"
   ],
   "via": []
  },
@@ -14504,7 +15206,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:3017"
+   "scenes/main.gd:1237"
   ],
   "via": []
  },
@@ -14515,7 +15217,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:3016"
+   "scenes/main.gd:1236"
   ],
   "via": []
  },
@@ -14526,7 +15228,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:3018"
+   "scenes/main.gd:1238"
   ],
   "via": []
  },
@@ -14537,7 +15239,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:3019"
+   "scenes/main.gd:1239"
   ],
   "via": []
  },
@@ -14641,7 +15343,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:3013"
+   "scenes/main.gd:1233"
   ],
   "via": []
  },
@@ -14661,7 +15363,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:3010"
+   "scenes/main.gd:1230"
   ],
   "via": []
  },
@@ -15047,6 +15749,26 @@ window.TEXTOS = [
   "group": "Otros",
   "at": [
    "scenes/tour.gd:130"
+  ],
+  "via": []
+ },
+ {
+  "key": "TOUR_PIECE_HEAD",
+  "es": "LA PIEZA",
+  "broken": false,
+  "extra": [],
+  "group": "Otros",
+  "at": [],
+  "via": []
+ },
+ {
+  "key": "HUD_VERSION",
+  "es": "v%s",
+  "broken": false,
+  "extra": [],
+  "group": "Juego",
+  "at": [
+   "scenes/hud.gd:288"
   ],
   "via": []
  }

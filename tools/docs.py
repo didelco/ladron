@@ -57,7 +57,8 @@ PORT = int(os.environ.get("PORT", "8765"))
 GROUPS = [
     ("Historia", ["STORY_", "PROLOGUE_", "ENDING_", "NIGHT_", "MUSEUM_", "LESSON_"]),
     ("Menús", ["MENU_", "JOIN_", "SEAT_", "CHALLENGE_", "BRIEF_", "PLAN_", "NEWS_", "TIP_"]),
-    ("Juego", ["HUD_", "LOG_", "END_", "GAME_", "GUARD_", "MIND_", "ZONE_", "PROP_", "PIECE_", "LEGEND_", "BRAIN_", "MEGA_"]),
+    ("Juego", ["HUD_", "LOG_", "END_", "GAME_", "GUARD_", "MIND_", "ZONE_", "PROP_", "PIECE_", "LEGEND_", "BRAIN_"]),
+    ("Megafonía", ["MEGA_"]),
     ("Descripciones", ["DESC_"]),
     ("Generador", ["GEN_", "GALLERY_", "THEME_"]),
     ("Ajustes y controles", ["SETTINGS_", "CONTROLS_", "ASSETS_"]),
@@ -198,6 +199,11 @@ def build_texts():
     for x in t:
         x["group"] = group_of(x["key"])
         x.update(use[x["key"]])
+        if x["group"] == "Megafonía":
+            # MEGA_<TIPO>_<NN>: el tipo es el POOL de logic/megaphone.gd; el audio, el de megafonia-tool.
+            m = re.match(r"MEGA_(.+)_[0-9]+$", x["key"])
+            x["pool"] = m.group(1).lower() if m else ""
+            x["audio"] = os.path.exists(os.path.join(ROOT, "audio", "megafonia", x["key"].lower() + ".ogg"))
     write_js("textos.js", "TEXTOS", t)
     return t
 
