@@ -73,7 +73,7 @@ func _run() -> void:
 		await _models()
 	if _wants("objects"):
 		await _objects()
-	if _wants("shots") or _wants("city") or _wants("assets"):
+	if _wants("shots") or _wants("city"):
 		_save_shots()
 	print("docs: hecho")
 	quit()
@@ -465,33 +465,42 @@ func _on_sky(stage: CityStage) -> Image:
 
 # --- Assets --------------------------------------------------------------------------
 
-## The assets page, a picture of each piece and prop on its stand, and the
-## page itself for the characters and the map's marks.
+## A picture of each piece and prop on its stand (the podium, the same one the
+## game shows the loot on), for the assets page of the documentation.
 func _assets() -> void:
 	print("docs: assets")
 	var out := {"piezas": [], "objetos": [], "paginas": []}
-	var loot: Array = main.options.asset_loot()
+	var loot: Array = _asset_loot()
 	for i in loot.size():
-		main.options.show_assets("loot", i)
-		await _wait(0.9)
 		var l: Dictionary = loot[i]
+		main.podium.build(l)
+		await _wait(0.9)
 		var file := "assets/piezas/%02d.webp" % (i + 1)
 		main.podium.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
 		out.piezas.append({"file": file, "name": l.name, "blurb": l.get("blurb", ""), "shape": l.get("shape", ""), "colour": l.get("colour", ""),
 			"night": i + 1 if i < Story.count() else 0})
-		if i == 0:
-			await _shot("assets_piezas", "assets", "Assets: piezas")
 	for i in Props.KINDS.size():
-		main.options.show_assets("props", i)
+		main.podium.build()
+		main.podium.put_node(PropsView.model(Props.KINDS[i]), Color("#b8a888"), 2.0, 0.6)
 		await _wait(0.9)
 		var file := "assets/objetos/%s.webp" % Props.KINDS[i]
 		main.podium.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
 		out.objetos.append({"file": file, "kind": Props.KINDS[i], "name": Props.name_of(Props.KINDS[i])})
-	for tab in ["props", "people", "sounds", "map"]:
-		main.options.show_assets(tab, 0)
-		await _wait(1.5)
-		await _shot("assets_" + tab, "assets", "Assets: " + Text.t(main.options.ASSET_TABS[tab]).to_lower())
+	main.podium.drop()
 	_save_json("data/assets.json", out)
+
+
+## Every piece there is: each night's, and one of each shape the generative heists make up.
+func _asset_loot() -> Array:
+	var out: Array = []
+	var names := {}
+	for n in range(1, Story.count() + 1):
+		out.append(Story.level(n).loot)
+		names[Story.level(n).loot.name] = true
+	for l in LootGen.samples():
+		if not names.has(l.name):
+			out.append(l)
+	return out
 
 
 ## Each sound the game makes up, as a .wav.
