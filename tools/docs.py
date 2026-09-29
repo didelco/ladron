@@ -33,6 +33,11 @@ Referencias: docs/data/referencias.json (a mano, o desde la página «Referencia
 inspiración y recursos; se validan con `python3 tools/procedencia.py` y se vuelcan a docs/data/referencias.js.
 Con `serve`: POST /api/referencia {accion: "añadir"|"estado"|"borrar", …}; GET /api/referencias las lee.
 
+El visor (docs/index.html) lleva la navegación aparte, en docs/navegacion.js y docs/navegacion.css: los
+grupos de la barra lateral (GRUPOS: una página nueva se da de alta ahí), el buscador global (/ o Ctrl+K, con
+un índice que se construye al cargar desde los datos de docs/data/*.js), las migas, el índice «en esta
+página», el pie con anterior y siguiente, y el menú del móvil. No hay que regenerar nada para que salgan.
+
 `version` guarda a propósito una versión de una imagen importante (un hito: un
 cambio muy visible, o una muy antigua cuando algo ha ido cambiando poco a poco),
 en docs/versiones/<asunto>/<fecha>-<nombre>.webp, y la apunta en
