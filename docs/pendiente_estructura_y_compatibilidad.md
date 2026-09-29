@@ -10,13 +10,12 @@ Prioridad: **A** alta, **M** media, **B** baja. Tamaño: **S** menos de una hora
 
 ## Estructura
 
-### [EST-1] Trocear `scenes/main.gd` y `_tick()` — A · L
-**Contexto.** `main.gd` tiene 4.524 líneas, 182 funciones y unas 127 variables de miembro. `_tick()` ocupa 314 líneas, `_ready()` 159, `_build_world()` 154, `_build_environment()` 102 y `_build_job()` 91. Le siguen `museum_building.gd` (2.899), `hud.gd` (2.704), `town_builder.gd` (2.490) y `map_editor.gd` (2.002). Ya hay extracciones que sirven de patrón: `plan_talk.gd`, `tour.gd`, `end_pages.gd`, `menu_stage.gd`, `city_stage.gd`.
-**Qué hacer.**
-- Partir `_tick()` en fases: entrada, simulación, guardias, cámara, HUD.
-- Extraer de `main.gd` el bucle del robo, la persecución y la construcción del mundo como controladores hijos con una interfaz estrecha. La sección «The dojo's games» (`_dojo_start`, `_dojo_tick`, `_dojo_input`, `_dojo_end`) es un candidato claro.
-- Fijar un límite blando (p. ej. 1.500 líneas por fichero, 80 por función) y vigilarlo con un script o test que avise.
-**Hecho cuando.** `main.gd` baja de 2.500 líneas, `_tick()` de 100, y los 29 tests siguen en verde.
+### [EST-1] Trocear `scenes/main.gd` y `_tick()` — HECHO
+`main.gd` pasa de **4.552 a 1.373 líneas**; `_tick()` de 313 a **36** (ahora `NightLoop.tick`, en fases con nombre: `_read_keys`, `_move_thieves`, `_props_and_actions`, `_smoke`, `_job`, `_guards`, `_light_events`, `_think`, `_sight_and_capture`, `_exits`); `_ready` de 157 a 47, `_build_world` de 150 a 12 (`Scenery.build` y sus fases), `_build_environment` de 84 a 15 y `_build_job` de 89 a 55. Ninguna función de `main.gd` pasa de 50 líneas.
+
+Controladores nuevos en `scenes/` (clase con `host: Game`, `main.gd` los posee como `var`): `LaunchArgs` (`launch`), `HouseRun` (`house`: dojo, espantapájaros, banco, salas a la vista), `PreviewStand` (`podium`), `SettingsScreens` (`options`), `NightEnv` (`nightenv`), `Scenery` (`scenery`), `CameraRig` (`rig`), `Hands` (`hands`: asientos, teclas, mandos, vibración, glifos), `MegaphoneRun` (`loudspeaker`), `NightLoop` (`loop`), `ChallengeScreens` (`challenges`) y `BriefScreens` (`briefing`). `main.gd` toma `class_name Game`. Las pruebas y `tools/capture_docs.gd` se actualizaron a las rutas nuevas (`m.house.dojo_game`, `m.hands.seat_input`, `m.loop.tick`…); `test_textos` lee `SettingsScreens.ASSET_TABS`.
+
+Vigilancia: `python3 tools/tamanos.py [-v] [--estricto]` avisa de ficheros de más de 1.500 líneas y funciones de más de 80 (límite blando), con las excepciones de hoy apuntadas (`museum_building`, `hud`, `town_builder`, `map_editor` y 23 funciones; no deben crecer). Los 30 tests siguen en verde. Quedan fuera de este encargo esas excepciones, empezando por `hud.gd:_ready` y `Sim.step_guard`.
 
 ### [EST-2] `megafonia-tool` fuera del repo del juego — HECHO
 Se movió a `../megafonia-tool` (repo propio, con sus modelos, cachés y `.venv` fuera de git). `regenerar_juego.sh` usa `GODOT_DIR` (por defecto `../nosy-horesradish`). Si el `.venv` falla tras el traslado, recrearlo con `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`.
