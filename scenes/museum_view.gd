@@ -110,6 +110,8 @@ func build() -> void:
 	_paintings()
 	_emergency_lights()
 	_sconces()
+	_map_doors_build()
+	_map_columns_build()
 
 
 static func to_world(x: float, y: float, height := 0.0) -> Vector3:
@@ -363,7 +365,14 @@ func _walls() -> void:
 	var outer: Array[Vector2i] = []
 	for y in Museum.h:
 		for x in Museum.w:
-			if Museum.grid[y * Museum.w + x] != Tiles.WALL or Museum.is_outside(x, y):
+			# A challenge's own door (Museum.doors) never gets a solid mass
+			# here, whatever it is shut or open right now: the gap is real,
+			# always, and a leaf of its own fills it (_map_doors_build), the
+			# way Den's are never a wall in its plan either. Nor does a
+			# column (Museum.columns): it stands on its own, slender, drawn
+			# by _map_columns_build.
+			if Museum.grid[y * Museum.w + x] != Tiles.WALL or Museum.is_outside(x, y) \
+					or Museum.doors.has(Vector2i(x, y)) or Museum.columns.has(Vector2i(x, y)):
 				continue
 			var edge := false
 			for d in [Vector2i(0, -1), Vector2i(-1, 0), Vector2i(1, 0), Vector2i(-1, -1), Vector2i(1, -1)]:
@@ -904,6 +913,19 @@ static func _bounds(node: Node, xform: Transform3D) -> AABB:
 ## a triptych across three; a module may take two or three small ones side by
 ## side instead of one. A bare module between one and the next.
 func _paintings() -> void:
+	if not Museum.paintings.is_empty():
+		# Hung by hand in the editor (MapFile.paintings): exactly those, no
+		# automatic ones on top. Still checked against the wall as it is now
+		# (blocked, span, a column) in case it changed since they were placed.
+		var blocked := _blocked()
+		for entry in Museum.paintings:
+			var at: Vector2i = entry.at
+			var span: int = entry.span
+			if not _hung.has(at) and _free_wall(at.x, at.y, blocked) >= span:
+				_hang_painting(at.x, at.y, span)
+				for k in span:
+					_hung[Vector2i(at.x + k, at.y)] = true
+		return
 	var most := 6 + Museum.w * Museum.h / 120
 	var hung := 0
 	var blocked := _blocked()
@@ -916,20 +938,15 @@ func _paintings() -> void:
 			if run == 0 or _hash01(x, y, 23) < 0.72:
 				x += 1
 				continue
-			var room := Museum.room_at(x + 0.5, y + 1.5)
-			var theme := room.theme if room else Museum.only_theme
 			var pick := _hash01(x, y, 41)
 			var span := 3 if pick < 0.1 and run >= 3 else (2 if pick < 0.28 and run >= 2 else 1)
-			var frame := Node3D.new()
-			frame.position = to_world(x + span / 2.0, y + 1.0, 0.0)
-			add_child(frame)
-			var seed := x * 31 + y * 7
-			var kind := Themes.painting(theme, _hash01(x, y, 37))
-			if span == 3:
-				_painting(frame, seed, kind, TRIPTYCH)
-			elif span == 2:
-				_painting(frame, seed, kind, BIG_PAINTING)
-			elif pick < 0.46:
+			if span == 1 and pick < 0.46:
+				var room := Museum.room_at(x + 0.5, y + 1.5)
+				var theme := room.theme if room else Museum.only_theme
+				var seed := x * 31 + y * 7
+				var frame := Node3D.new()
+				frame.position = to_world(x + span / 2.0, y + 1.0, 0.0)
+				add_child(frame)
 				# Two small ones, or three, side by side on the one module.
 				var n := 2 if pick < 0.38 else 3
 				var size: Vector3 = SMALL_PAINTINGS[n]
@@ -937,20 +954,44 @@ func _paintings() -> void:
 					var at := _pivot(frame, Vector3((i - (n - 1) / 2.0) * size.x * 1.25, 0, 0))
 					_painting(at, seed + i * 13, Themes.painting(theme, _hash01(x + i, y, 37)), size)
 			else:
-				_painting(frame, seed, kind)
+				_hang_painting(x, y, span)
 			for k in span:
 				_hung[Vector2i(x + k, y)] = true
 			hung += span
 			x += span + 1
 
 
+## One painting (or a triptych/big one) at wall tile (x, y), span modules
+## wide: its theme's own kind, picked the same way whether it was hung here
+## by the automatic sweep or by hand in the editor.
+func _hang_painting(x: int, y: int, span: int) -> void:
+	var room := Museum.room_at(x + 0.5, y + 1.5)
+	var theme := room.theme if room else Museum.only_theme
+	var frame := Node3D.new()
+	frame.position = to_world(x + span / 2.0, y + 1.0, 0.0)
+	add_child(frame)
+	var seed := x * 31 + y * 7
+	var kind := Themes.painting(theme, _hash01(x, y, 37))
+	if span == 3:
+		_painting(frame, seed, kind, TRIPTYCH)
+	elif span == 2:
+		_painting(frame, seed, kind, BIG_PAINTING)
+	else:
+		_painting(frame, seed, kind)
+
+
 ## Paintings (m): width, height, and the height of their middle on the wall.
-const PAINTING := Vector3(0.7, 0.5, 0.8)
-const BIG_PAINTING := Vector3(1.12, 0.8, 0.72)
-## Three canvases in one long frame, across three modules.
-const TRIPTYCH := Vector3(2.6, 0.62, 0.78)
+## The height is picked so the canvas itself — fw - edge by fh - edge,
+## _painting's actual quad, not the frame's own outer size — comes out
+## true 4:3, so one drawn canvas (Canvases, 4:3) fits any of these with no
+## stretch: the frame's edge eats a different share at each size.
+const PAINTING := Vector3(0.7, 0.55, 0.8)
+const BIG_PAINTING := Vector3(1.12, 0.865, 0.72)
+## Three canvases in one long frame, across three modules; each panel comes
+## out 0.8 x 0.6 (4:3) from this size (see _painting: cw, fh - edge).
+const TRIPTYCH := Vector3(2.6, 0.7, 0.78)
 ## Two or three small ones on one module.
-const SMALL_PAINTINGS := {2: Vector3(0.36, 0.3, 0.82), 3: Vector3(0.25, 0.22, 0.84)}
+const SMALL_PAINTINGS := {2: Vector3(0.36, 0.284, 0.82), 3: Vector3(0.25, 0.1975, 0.84)}
 
 
 ## The floor in front of a wall with something on it or against it — a thing
@@ -978,7 +1019,7 @@ func _free_wall(x: int, y: int, blocked: Dictionary) -> int:
 		var front := Vector2i(t.x, y + 1)
 		if Museum.grid[y * Museum.w + t.x] != Tiles.WALL or Museum.is_outside(t.x, y) or \
 				Museum.grid[front.y * Museum.w + front.x] != Tiles.FLOOR or blocked.has(front) or \
-				Museum.room_at(t.x + 0.5, y + 1.5) != room:
+				Museum.room_at(t.x + 0.5, y + 1.5) != room or Museum.columns.has(t):
 			break
 		n += 1
 	return n
@@ -1014,12 +1055,15 @@ func _painting(parent: Node3D, seed: int, kind := "", size := PAINTING) -> void:
 	_mesh(parent, _box(Vector3(0.16 if fw > 0.5 else 0.08, 0.05 if fw > 0.5 else 0.03, 0.012)), C.bone, Vector3(0, cy - fh / 2 - (0.08 if fw > 0.5 else 0.05), 0.01))
 
 
-static func _canvas(seed: int, forced := -1) -> ImageTexture:
+static func _canvas(seed: int, forced := -1) -> Texture2D:
+	var r := func(k: int) -> float: return _hash01(seed, k, 71)
+	var kind := int(r.call(1) * 6) if forced < 0 else forced
+	var ready := Canvases.drawn(Canvases.OLD[kind])
+	if ready:
+		return ready
 	var w := 48
 	var h := 36
 	var img := Image.create(w, h, false, Image.FORMAT_RGB8)
-	var r := func(k: int) -> float: return _hash01(seed, k, 71)
-	var kind := int(r.call(1) * 6) if forced < 0 else forced
 	if kind == 3:
 		_pipe(img, r)
 		return ImageTexture.create_from_image(img)
@@ -1223,7 +1267,226 @@ func _sconces() -> void:
 		placed += 1
 
 
-# --- Helpers ---------------------------------------------------------------------
+# --- A challenge's own doors (Museum.doors), like Den's but one tile wide ---------
+
+## Its own leaf for every door the map has: a plain wood panel, closed by
+## default, that slides its own width into the wall it sits in when opened
+## (Den._doors does the same, two leaves to a wider gap; ours is always one
+## tile, so one leaf is enough). DenView never calls this: it draws its own
+## doors (Den.DOORS) its own way, over a plan built with every doorway open.
+var _map_door_nodes := {}
+
+func _map_doors_build() -> void:
+	for t in Museum.doors:
+		var horizontal := _wall_like(t + Vector2i(-1, 0)) and _wall_like(t + Vector2i(1, 0))
+		var root := _pivot(self, to_world(t.x + 0.5, t.y + 0.5), 0.0 if horizontal else PI / 2.0)
+		var leaf := Node3D.new()
+		root.add_child(leaf)
+		_mesh(leaf, _box(Vector3(0.94, WALL_HEIGHT * 0.88, 0.12)), Color("#7a4a28"), Vector3(0, WALL_HEIGHT * 0.44, 0))
+		_mesh(leaf, _box(Vector3(0.74, WALL_HEIGHT * 0.62, 0.14)), Color("#b98552"), Vector3(0, WALL_HEIGHT * 0.44, 0))
+		_mesh(leaf, _box(Vector3(0.06, 0.06, 0.16)), Color("#f0c46a"), Vector3(0.32, WALL_HEIGHT * 0.44, 0))
+		_map_door_nodes[t] = {"leaf": leaf, "open": 0.0, "goal": 0.0}
+		set_map_door(t, Museum.is_door_open(t), true)
+
+
+## A real wall (not another door) at this tile, for working out which way a
+## door's leaf should slide.
+func _wall_like(t: Vector2i) -> bool:
+	return t.x >= 0 and t.y >= 0 and t.x < Museum.w and t.y < Museum.h \
+		and Museum.grid[t.y * Museum.w + t.x] == Tiles.WALL and not Museum.doors.has(t)
+
+
+## Open or shut a challenge's own door as drawn: swinging, or at once (snap).
+func set_map_door(t: Vector2i, open: bool, snap := false) -> void:
+	if not _map_door_nodes.has(t):
+		return
+	var d: Dictionary = _map_door_nodes[t]
+	d.goal = 1.0 if open else 0.0
+	if snap:
+		d.open = d.goal
+		_pose_map_door(d)
+
+
+func _pose_map_door(d: Dictionary) -> void:
+	var k: float = d.open
+	k = k * k * (3.0 - 2.0 * k)
+	(d.leaf as Node3D).position.x = k
+
+
+## Only a plain MuseumView ticks its own doors: DenView overrides this for
+## its own (Den.DOOR_SECONDS) and never calls up to it.
+func _process(dt: float) -> void:
+	for t in _map_door_nodes:
+		var d: Dictionary = _map_door_nodes[t]
+		if d.open != d.goal:
+			d.open = move_toward(d.open, d.goal, dt / Den.DOOR_SECONDS)
+			_pose_map_door(d)
+
+
+# --- Exempt columns (Museum.columns, MapFile.columns) ----------------------------
+
+## A column stands exempt: not part of the wall it is marked on, only its own
+## slim shape in the middle of the tile, with the rest of the tile free —
+## lighter to look at than a solid wall block, and meant for a gallery's own
+## rows of them rather than for splitting up a room the way a wall does.
+##
+## One logical piece, four looks (COLUMN_*): which one a tile gets follows
+## its gallery's theme (Themes.column_style), the same way a pedestal does
+## (_pedestal) — never chosen tile by tile.
+##
+## Collision is the real thing now: the tile is still a plain wall in
+## Museum.grid (load_grid keeps it so, for anything that only asks "is this
+## a wall" — sight lines aside, see below), but Museum.blocks_move no longer
+## treats a column tile as a solid square; Sim._resolve instead pushes
+## bodies out of a small circle at the column's centre (Museum.COLUMN_R), so
+## a thief or guard can hug the tile's free corners and walk round it. Sight
+## gets the same narrow treatment: Museum.has_line_of_sight only lets a
+## column cut a look that actually passes within that circle, not the whole
+## tile — a glance past its edge is not blocked. See
+## docs/pendiente_general.md for what is still left (other, simpler
+## "is this a wall" checks — a thrown case's flight, the exit's outward
+## side, a guard's plain wall memory — keep treating a column tile as solid
+## end to end; narrowing all of those wasn't worth it for this pass).
+var _map_column_nodes := {}
+
+
+func _map_columns_build() -> void:
+	for t in Museum.columns:
+		var on_plan := t.x < Museum.w and t.y < Museum.h and Museum.grid.size() == Museum.w * Museum.h
+		var room := Museum.room_at(t.x + 0.5, t.y + 0.5) if on_plan else null
+		var gallery_theme: String = room.theme if room and room.theme != "" else Museum.only_theme
+		# Straight, not spun: a random yaw only reads as "the columns are
+		# fine on a plain drum, but "dorica"'s square plinth and abacus went
+		# diagonal to the room. Every column now sits aligned to the grid.
+		var root := _pivot(self, to_world(t.x + 0.5, t.y + 0.5), 0.0)
+		_column(root, Themes.column_style(gallery_theme))
+		_map_column_nodes[t] = root
+
+
+## The looks (Themes.COLUMN_STYLES, plus "moderno"/anything else's fallback),
+## each a base, a shaft and a capital, all well inside the tile (radius
+## under 0.5) so there is floor free all round it.
+func _column(parent: Node3D, style: String) -> void:
+	var drum := func(r: float, h: float, r2: float, sides: int, colour: Color, y: float) -> void:
+		var c := CylinderMesh.new()
+		c.bottom_radius = r
+		c.top_radius = r2
+		c.height = h
+		c.radial_segments = sides
+		c.rings = 1
+		_mesh(parent, c, colour, Vector3(0, y, 0))
+	# A notched cylinder in place of a plain drum: alternating in-out radius
+	# round the ring reads as real vertical grooves under toon shading
+	# (flutes for "dorica", shallower ones as ribs for "gotica"), without a
+	# shader — just more vertices, cheap at column scale.
+	var fluted := func(r0: float, r1: float, h: float, flutes: int, notch: float, colour: Color, y: float) -> void:
+		_mesh(parent, _fluted_shaft(r0, r1, h, flutes, notch), colour, Vector3(0, y, 0))
+	match style:
+		"dorica":
+			# Fluted white-and-cream stone, a wide square plinth, a round
+			# echinus under a square abacus (the ancient world's gallery).
+			# A touch of entasis: the shaft is wider at the foot than under
+			# the capital, instead of a dead-straight tube.
+			_mesh(parent, _box(Vector3(0.4, 0.06, 0.4)), Color("#cbb98a"), Vector3(0, 0.03, 0))
+			fluted.call(0.19, 0.155, WALL_HEIGHT - 0.16, 20, 0.22, Color("#e8ddc0"), 0.06 + (WALL_HEIGHT - 0.16) / 2)
+			drum.call(0.2, 0.07, 0.14, 16, Color("#cbb98a"), WALL_HEIGHT - 0.06)
+			_mesh(parent, _box(Vector3(0.36, 0.06, 0.36)), Color("#cbb98a"), Vector3(0, WALL_HEIGHT - 0.03, 0))
+		"gotica":
+			# A compound gothic pier, not a single drum: a slim central
+			# shaft with a ring of slender colonnettes fused round it (a
+			# cathedral's bundled pier), rising to a pointed cap. Cheap
+			# geometry — a handful of thin CylinderMesh, all still well
+			# inside the tile's radius (ring_r + col_r stays under 0.2).
+			var core_r := 0.09
+			var col_r := 0.05
+			var ring_r := 0.135
+			var cols := 6
+			var shaft_h := WALL_HEIGHT - 0.2
+			var shaft_y := 0.08 + shaft_h / 2
+			drum.call(0.2, 0.08, 0.19, 8, Color("#55505c"), 0.04)
+			drum.call(core_r, shaft_h, core_r, 10, Color("#807a86"), shaft_y)
+			for i in cols:
+				var a := TAU * i / cols
+				var c := CylinderMesh.new()
+				c.bottom_radius = col_r
+				c.top_radius = col_r
+				c.height = shaft_h
+				c.radial_segments = 8
+				c.rings = 1
+				_mesh(parent, c, Color("#948e99"), Vector3(cos(a) * ring_r, shaft_y, sin(a) * ring_r))
+			drum.call(0.17, 0.05, 0.02, 8, Color("#55505c"), WALL_HEIGHT - 0.05)
+		"madera":
+			# A round wooden post, bark-dark at the ends (nature's gallery,
+			# and the band's house, Den, if it ever stands one).
+			drum.call(0.21, 0.1, 0.19, 12, Color("#4a3018"), 0.05)
+			drum.call(0.16, WALL_HEIGHT - 0.2, 0.17, 12, Color("#7a5230"), 0.1 + (WALL_HEIGHT - 0.2) / 2)
+			drum.call(0.19, 0.08, 0.21, 12, Color("#4a3018"), WALL_HEIGHT - 0.04)
+		"piedra":
+			# A rough-squared megalith, in prehistory's own ochre-and-flint
+			# browns (Themes.ALL.prehistoria) — three uneven stone blocks
+			# stacked square, not a smooth drum: it belongs by the mammoth
+			# and the dinosaur, not next to a modern gallery's bare
+			# concrete tube. A slight side-to-side offset between blocks
+			# (not perfectly stacked) reads as roughly hewn, not milled.
+			var seg := (WALL_HEIGHT - 0.24) / 2.0
+			_mesh(parent, _box(Vector3(0.44, 0.08, 0.44)), Color("#5a4530"), Vector3(0, 0.04, 0))
+			_mesh(parent, _box(Vector3(0.34, seg, 0.36)), Color("#a37f52"), Vector3(0.02, 0.1 + seg / 2, -0.02))
+			_mesh(parent, _box(Vector3(0.3, 0.04, 0.32)), Color("#5a4530"), Vector3(0, 0.1 + seg + 0.02, 0))
+			_mesh(parent, _box(Vector3(0.3, seg, 0.26)), Color("#c39a63"), Vector3(-0.02, 0.14 + seg + seg / 2, 0.02))
+			_mesh(parent, _box(Vector3(0.36, 0.08, 0.38)), Color("#5a4530"), Vector3(0, WALL_HEIGHT - 0.04, 0))
+		"moderno":
+			# A bare concrete cylinder, nothing added: no plinth, no
+			# capital, just a smooth pale-grey tube top to bottom, the way
+			# a raw-concrete building (Ando-style) stands its columns bare
+			# next to the glass (the corridors, prehistory and the modern
+			# age's gallery, which have no style of their own to speak of).
+			drum.call(0.17, WALL_HEIGHT, 0.17, 20, Color("#d8d5cc"), WALL_HEIGHT / 2)
+		_:
+			# Fallback for an unknown style name: the same bare concrete
+			# tube as "moderno" (Themes.column_style never returns anything
+			# else today, but a column always has to look like something).
+			drum.call(0.17, WALL_HEIGHT, 0.17, 20, Color("#d8d5cc"), WALL_HEIGHT / 2)
+
+
+## A cylinder-like shaft with a notched cross-section: flutes points round
+## the ring, alternating a full radius and radius * (1 - notch), extruded
+## from y = -h/2 to y = h/2 (same "centred, pass the centre's y" convention
+## every other piece here uses) with the top scaled to r1 and the bottom to
+## r0, so a taper (entasis) falls out for free when r0 != r1. Flat-shaded
+## (generate_normals off a triangle soup, not per-vertex smoothed) so the
+## grooves actually read as grooves under toon shading, not smear away.
+static func _fluted_shaft(r0: float, r1: float, h: float, flutes: int, notch: float) -> ArrayMesh:
+	var n := maxi(3, flutes) * 2
+	var bottom: Array[Vector3] = []
+	var top: Array[Vector3] = []
+	for i in n:
+		var a := TAU * i / n
+		var k := 1.0 if i % 2 == 0 else (1.0 - notch)
+		bottom.append(Vector3(cos(a) * r0 * k, -h / 2, sin(a) * r0 * k))
+		top.append(Vector3(cos(a) * r1 * k, h / 2, sin(a) * r1 * k))
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for i in n:
+		var j := (i + 1) % n
+		st.add_vertex(bottom[i])
+		st.add_vertex(bottom[j])
+		st.add_vertex(top[j])
+		st.add_vertex(bottom[i])
+		st.add_vertex(top[j])
+		st.add_vertex(top[i])
+	var bc := Vector3(0, -h / 2, 0)
+	var tc := Vector3(0, h / 2, 0)
+	for i in n:
+		var j := (i + 1) % n
+		st.add_vertex(bc)
+		st.add_vertex(bottom[j])
+		st.add_vertex(bottom[i])
+		st.add_vertex(tc)
+		st.add_vertex(top[i])
+		st.add_vertex(top[j])
+	st.generate_normals()
+	return st.commit()
+
 
 static func _box(size: Vector3) -> BoxMesh:
 	var b := BoxMesh.new()

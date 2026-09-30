@@ -1,15 +1,20 @@
 extends SceneTree
 ## The story's town (CityStage) seen whole, for working on it:
 ##
-##   godot --path . --script tools/city_view.gd -- <out dir> [plan] [screens] [count] [all]
+##   godot --path . --script tools/city_view.gd -- <out dir> [plan] [screens] [museos] [count] [all] [seed=N]
 ##
 ## plan: the whole town from above at the game's own angle (plan.png), with
 ## what the camera can ever see at each screen shape drawn over it (4:3,
 ## 16:10, 16:9, CityStage.WIDEST, 21:9, 32:9) and the safe margin (SAFE).
 ## screens: the town as the game shows it (Tour) in a window of each shape,
 ## looking at each museum (screen_<shape>_<museum>.png).
+## museos: each MuseumBuilding on its own, the game's usual look at it
+## (museo_<tema>.png) and a closer shot on its front for working on details
+## like columns or windows (museo_<tema>_detalle.png).
 ## count: what is built and what is left out as never seen, printed.
 ## all: build everything, as before the cut (to compare).
+## seed=N: the town's own seed (CityStage.town_seed); the game always uses 7,
+## this is only to compare variants of the same rules.
 
 const SHAPES := [[Vector2i(1024, 768), "4:3", Color("#ff5a5a")], [Vector2i(1280, 800), "16:10", Color("#ffa13a")],
 	[Vector2i(1920, 1080), "16:9", Color("#ffe14a")], [Vector2i(2160, 1080), "2:1", Color("#5aff7a")],
@@ -22,12 +27,17 @@ const PLAN_SIZE := Vector2i(2000, 1500)
 
 var out := ""
 var parts: Array = []
+var town_seed := 7
 
 
 func _initialize() -> void:
 	var args := Array(OS.get_cmdline_user_args())
 	out = args.pop_front() if not args.is_empty() else "build/city_view"
 	parts = args if not args.is_empty() else ["plan", "count"]
+	for p in parts.duplicate():
+		if String(p).begins_with("seed="):
+			town_seed = int(String(p).substr(5))
+			parts.erase(p)
 	DirAccess.make_dir_recursive_absolute(out)
 	_run.call_deferred()
 
@@ -38,6 +48,7 @@ func _stage(size: Vector2i) -> CityStage:
 	stage.hurry = true
 	stage.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	stage.cut = not "all" in parts
+	stage.town_seed = town_seed
 	root.add_child(stage)
 	return stage
 
@@ -89,6 +100,50 @@ func _run() -> void:
 				print("saved " + path)
 			tour.queue_free()
 			await process_frame
+	if "museos" in parts:
+		# Each MuseumBuilding on its own: the game's usual look at it, and a
+		# closer shot (half the camera's size, so ~4x closer) for working on
+		# details like columns or windows.
+		DirAccess.make_dir_recursive_absolute("user://city_view")
+		Settings.path = "user://city_view/settings.cfg"
+		Story.save = "user://city_view/progress.cfg"
+		var st := Settings.DEFAULTS.duplicate()
+		st.fullscreen = false
+		st.sound = false
+		st.music = false
+		Settings.write(st)
+		Story.unlock(Story.count(), 1)
+		root.size = Vector2i(1600, 900)
+		root.content_scale_size = Vector2i(1280, 720)
+		root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
+		root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_EXPAND
+		var tour := Tour.new()
+		root.add_child(tour)
+		tour.stage.hurry = true
+		tour.stage.cut = not "all" in parts
+		tour.open_city(1, 0)
+		for m in Story.MUSEUMS.size():
+			tour._pick_museum(m)
+			for i in 6:
+				await process_frame
+			var tema := String(Story.MUSEUMS[m].theme)
+			var full := tour.stage.view
+			await RenderingServer.frame_post_draw
+			var path := "%s/museo_%s.png" % [out, tema]
+			root.get_texture().get_image().save_png(path)
+			print("saved " + path)
+			# view drives the camera's size every frame (CityStage._process),
+			# so the zoom has to go through it, not the camera directly.
+			tour.stage.view = full * 0.25
+			for i in 3:
+				await process_frame
+			await RenderingServer.frame_post_draw
+			var close := "%s/museo_%s_detalle.png" % [out, tema]
+			root.get_texture().get_image().save_png(close)
+			print("saved " + close)
+			tour.stage.view = full
+		tour.queue_free()
+		await process_frame
 	quit()
 
 

@@ -124,6 +124,36 @@
 			"credito": "`assets/models/casa/` (Furniture Kit 2.0: sofás, cocina, baño y demás muebles de la casa de la banda)",
 			"notas": "No pide atribución, pero se da igual."
 		},
+		"kenney-castle-kit": {
+			"nombre": "Kenney Castle Kit 2.0",
+			"tipo": "externo",
+			"metodo": "Una pieza del kit (la catapulta), traída a art/castillo_kenney.blend y exportada con art/export.py como el resto del catálogo.",
+			"autor": "Kenney",
+			"licencia": "CC0-1.0",
+			"url": "https://kenney.nl/assets/castle-kit",
+			"credito": "`assets/models/castillo/siege-catapult.glb` (Castle Kit 2.0: la catapulta del patio del museo de la Edad Media)",
+			"notas": "No pide atribución, pero se da igual. Su License.txt está en assets/models/castillo/."
+		},
+		"gobkit-dino-pack": {
+			"nombre": "Gobkit Free Dinosaur Pack",
+			"tipo": "externo",
+			"metodo": "Dos piezas del pack (trex y triceratops), traídas a art/dinosaurios_gobkit.blend y exportadas con art/export.py; se descartó el «Icosphere» que traía cada .glb (un proxy de colisión del visor web de Gobkit, sin material, no geometría real).",
+			"autor": "Gobkit (gobkit.com / gobkit.itch.io)",
+			"licencia": "CC0-1.0",
+			"url": "https://gobkit.itch.io/gobkit-free-dinosaur-pack",
+			"credito": "`assets/models/dinosaurios/trex.glb`, `assets/models/dinosaurios/triceratops.glb` (los dos dinosaurios de la entrada del museo de la Prehistoria)",
+			"notas": "No pide atribución. Modelos con esqueleto y animaciones incluidas, pero aquí se usan solo de pie (la primera pose), sin reproducir ninguna acción."
+		},
+		"plewr-banana": {
+			"nombre": "3D Banana Model",
+			"tipo": "externo",
+			"metodo": "Traído a art/banana_plewr.blend; se descartó la malla de contorno duplicada (la técnica de silueta del autor, pensada solo para Blender) y se dejó un material simple para que el juego lo pinte con su propio color (C_BANANA).",
+			"autor": "Plewr",
+			"licencia": "CC0-1.0",
+			"url": "https://plewr.itch.io/3d-banana-model",
+			"credito": "`assets/models/moderno/banana.glb` (la escultura del museo Moderno)",
+			"notas": "No pide atribución."
+		},
 
 		"modelos-blender": {
 			"nombre": "Catálogo modelado en Blender",
@@ -137,7 +167,7 @@
 		"personajes-blender": {
 			"nombre": "Personajes (ninja y guardia)",
 			"tipo": "propio",
-			"metodo": "Modelados por script en Blender (art/characters/kit.py, ninja.py, guardia.py, rig.py: formas sencillas fundidas con remallado de vóxeles, esqueleto y acciones) y retocados a mano en art/personajes/*.blend (hoy piezas sueltas, con manos y caras rehechas por art/characters/mejorar_partes.py); el ninja de ahora lo rehace entero art/characters/ninja_v2.py (formas de campo de distancia remalladas en cuadriláteros con QuadriFlow, simétricas en x, con el mismo esqueleto y las mismas acciones); exportados con art/export.py. art/blockbench/ guarda copias .obj/.glb para abrirlos en Blockbench.",
+			"metodo": "Modelados por script en Blender (art/characters/kit.py, ninja.py, guardia.py, rig.py: formas sencillas fundidas con remallado de vóxeles, esqueleto y acciones) y retocados a mano en art/personajes/*.blend (hoy piezas sueltas, con manos y caras rehechas por art/characters/mejorar_partes.py); el ninja de ahora lo rehace entero art/characters/ninja_v2.py (formas de campo de distancia remalladas en cuadriláteros con QuadriFlow, simétricas en x, con el mismo esqueleto y las mismas acciones); exportados con art/export.py.",
 			"autor": "Chema, con Claude",
 			"licencia": "LicenseRef-Propia",
 			"url": "",
@@ -269,9 +299,12 @@
 		{"patron": ["assets/models/ciudad/suburbios/*"], "coleccion": "kenney-city-suburban"},
 		{"patron": ["assets/models/ciudad/calles/*"], "coleccion": "kenney-city-roads"},
 		{"patron": ["assets/models/casa/*"], "coleccion": "kenney-furniture"},
+		{"patron": ["assets/models/castillo/*"], "coleccion": "kenney-castle-kit"},
+		{"patron": ["assets/models/dinosaurios/*"], "coleccion": "gobkit-dino-pack"},
+		{"patron": ["assets/models/moderno/*"], "coleccion": "plewr-banana"},
 
 		{"patron": ["assets/models/globo_world.png"], "coleccion": "globo-mapamundi"},
-		{"patron": ["assets/models/guardia.glb", "assets/models/ninja.glb", "art/blockbench/*"], "coleccion": "personajes-blender"},
+		{"patron": ["assets/models/guardia.glb", "assets/models/ninja.glb"], "coleccion": "personajes-blender"},
 		{"patron": ["assets/models/*.glb", "assets/models/botin/*.glb", "assets/models/temas/*.glb"], "coleccion": "modelos-blender"},
 
 		{"patron": ["audio/megafonia/*"], "coleccion": "megafonia-tts"},

@@ -8,9 +8,24 @@ extends RefCounted
 const W := 48
 const H := 36
 const OLD := ["landscape", "portrait", "abstract", "pipe", "banana", "ice_cream"]
+## Hand-drawn paintings, one per kind, checked before generating one: if
+## art/cuadros.blend (or whoever draws them) has put a file here, it wins.
+const DRAWN_DIR := "res://assets/ui/cuadros/"
 
 
-static func paint(kind: String, seed: int) -> ImageTexture:
+## The hand-drawn painting for `kind`, or null if none has been drawn yet
+## (the caller falls back to generating one).
+static func drawn(kind: String) -> Texture2D:
+	var path := DRAWN_DIR + kind + ".png"
+	if not ResourceLoader.exists(path):
+		return null
+	return load(path) as Texture2D
+
+
+static func paint(kind: String, seed: int) -> Texture2D:
+	var ready := drawn(kind)
+	if ready:
+		return ready
 	if kind in OLD:
 		return MuseumView._canvas(seed, OLD.find(kind))
 	var img := Image.create(W, H, false, Image.FORMAT_RGB8)

@@ -2,7 +2,7 @@
 
     Blender -b -P art/export.py                        # todo
     Blender -b -P art/export.py -- vitrina anubis      # esas piezas
-    Blender -b -P art/export.py -- tema_antiguo        # un fichero entero
+    Blender -b -P art/export.py -- temas               # un fichero entero (temas, ciudad, museo...)
     Blender -b -P art/export.py -- --godot vitrina     # y que Godot las reimporte
     Blender -b -P art/export.py -- --salida /tmp/x     # a otra carpeta (para comparar)
 
