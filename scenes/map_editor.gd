@@ -63,8 +63,8 @@ const LOOT_SECONDS := [1.5, 2.0, 3.0, 4.0, 5.0, 6.0]
 ## MapFile.doors: opens and shuts on the night, not to be confused with
 ## `exit`, the way out), and a column (MapFile.columns: stands exempt, one
 ## tile, lighter than a wall — the same tool pattern as the door).
-const MAIN_TOOLS := ["spawn", "piece", "exit", "guard", "door", "column"]
-const TOOL_ICONS := {"spawn": "spawn", "piece": "piece", "exit": "exit_door", "guard": "guard", "door": "door", "column": "column"}
+const MAIN_TOOLS := ["spawn", "piece", "exit", "guard", "door", "column", "case"]
+const TOOL_ICONS := {"spawn": "spawn", "piece": "piece", "exit": "exit_door", "guard": "guard", "door": "door", "column": "column", "case": "type_case"}
 ## Ready-made rooms, as MapFile.stamp takes them: '#' wall, '.' floor, 'o'
 ## case, 'D' dinosaur, 'S' sarcophagus, 'O' bear, 'b' a bust. The gaps in the border
 ## are doors. gallery: its inside is a room with a light and a name.
@@ -166,6 +166,9 @@ var tool := "wall"
 ## the toolbar button lit (KINDS), and the one whose panel is open ("" none,
 ## "leave" for the unsaved changes)
 var kind := "construir"
+## "construir"'s own row ("") or its "salas" step-in (TEMPLATES and the
+## room tool), like guard_page/save_page but for a catalogue, not a panel.
+var building_page := ""
 var panel := ""
 ## wall/floor: what a drag paints, set by the first tile it starts on
 var paint := Tiles.WALL
@@ -711,6 +714,7 @@ func _tool_colour(t: String) -> Color:
 		"door": return DOOR
 		"column": return COLUMN
 		"prop": return PROP
+		"case": return PIECE
 		"room": return ROOM
 	return Hud.C.safe
 
@@ -738,20 +742,28 @@ func _fill_catalogue() -> void:
 	_tabs.visible = kind == "objects"
 	match kind:
 		"construir":
-			# Wall/floor, the characters, and the rooms, one block after
-			# another (a separator between), so the whole of what you build
-			# with shows at a glance.
-			_tool_buttons["wall"] = _item("wall", Text.t("EDITOR_TOOL_WALL"), _choose_tool.bind("construir", "wall"), Hud.C.safe)
-			var note := _label(Text.t("EDITOR_WALL_NOTE"), 13, Hud.C.dim, _catalogue)
-			note.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-			_catalogue.add_child(VSeparator.new())
-			for t in MAIN_TOOLS:
-				_tool_buttons[t] = _item(TOOL_ICONS[t], Text.t("EDITOR_TOOL_" + t.to_upper()), _choose_tool.bind("construir", t), _tool_colour(t))
-			_catalogue.add_child(VSeparator.new())
-			for i in TEMPLATES.size():
-				_template_buttons.append(_item(_template_picture(i), Text.t(TEMPLATES[i].key), _choose_template.bind(i), Hud.C.gold))
-			_item("turn", Text.t("EDITOR_TURN"), _turn, Hud.C.dim)
-			_tool_buttons["room"] = _item("room", Text.t("EDITOR_TOOL_ROOM"), _choose_tool.bind("construir", "room"), ROOM)
+			if building_page == "rooms":
+				# Its own row: the ready-made rooms (TEMPLATES), the turn
+				# they go down with, and the plain room tool — a step below
+				# the main row, reached through "salas" there.
+				_icon_button("undo", "EDITOR_BACK", _pick_building_page.bind(""), _catalogue, Hud.C.dim)
+				_catalogue.add_child(VSeparator.new())
+				for i in TEMPLATES.size():
+					_template_buttons.append(_item(_template_picture(i), Text.t(TEMPLATES[i].key), _choose_template.bind(i), Hud.C.gold))
+				_item("turn", Text.t("EDITOR_TURN"), _turn, Hud.C.dim)
+				_tool_buttons["room"] = _item("room", Text.t("EDITOR_TOOL_ROOM"), _choose_tool.bind("construir", "room"), ROOM)
+			else:
+				# Wall/floor and the characters (spawn, piece, exit, guard,
+				# door, column, case) all in the one row, then "salas" to
+				# step into its own.
+				_tool_buttons["wall"] = _item("wall", Text.t("EDITOR_TOOL_WALL"), _choose_tool.bind("construir", "wall"), Hud.C.safe)
+				var note := _label(Text.t("EDITOR_WALL_NOTE"), 13, Hud.C.dim, _catalogue)
+				note.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+				_catalogue.add_child(VSeparator.new())
+				for t in MAIN_TOOLS:
+					_tool_buttons[t] = _item(TOOL_ICONS[t], Text.t("EDITOR_TOOL_" + t.to_upper()), _choose_tool.bind("construir", t), _tool_colour(t))
+				_catalogue.add_child(VSeparator.new())
+				_item("rooms", Text.t("EDITOR_TOOL_ROOMS"), _pick_building_page.bind("rooms"), ROOM)
 		"objects":
 			for id in [""] + Themes.ids():
 				var tab := _button(Text.t("EDITOR_FILTER_ALL") if id == "" else Text.t("THEME_" + String(id).to_upper()), _pick_filter.bind(id), _tabs, Hud.C.gold)
@@ -773,13 +785,18 @@ func _fill_catalogue() -> void:
 				tab.set_meta("type", type)
 			for entry in Themes.catalogue():
 				var t: String = entry[0]
+				# The random case is its own tool now, up in "construir"
+				# next to the wall and the door — same level, not buried
+				# in a theme's tab.
+				if t == "case":
+					continue
 				var themes: Array = entry[1]
 				if filter != "" and not themes.has(filter):
 					continue
 				if filter_type != "" and entry[2] != filter_type:
 					continue
 				var id := t.replace(":", "_").replace("/", "_")
-				var name := Text.t("EDITOR_TOOL_CASE") if t == "case" else (Themes.label(t.substr(8)) if t.begins_with("exhibit:") else Text.t("EDITOR_TOOL_" + id.to_upper()))
+				var name := Themes.label(t.substr(8)) if t.begins_with("exhibit:") else Text.t("EDITOR_TOOL_" + id.to_upper())
 				_tool_buttons[t] = _item(load("res://assets/icons/objects/%s.png" % id), name, _choose_tool.bind("objects", t), _tool_colour(t))
 		"options":
 			_options()
@@ -807,6 +824,13 @@ func _pick_filter(id: String) -> void:
 
 func _pick_type(type: String) -> void:
 	filter_type = type
+	_fill_catalogue()
+	_refresh()
+
+
+## Step into "construir"'s own "salas" row, or back out of it ("").
+func _pick_building_page(page: String) -> void:
+	building_page = page
 	_fill_catalogue()
 	_refresh()
 
@@ -2441,6 +2465,10 @@ func _pick_up(t: Vector2i) -> void:
 		k = "objects"
 		filter = ""
 		filter_type = ""
+	else:
+		# wall or a MAIN_TOOLS character: its button lives in construir's
+		# own row, not the salas step-in.
+		building_page = ""
 	kind = k
 	_fill_catalogue()
 	_pick_tool(what)
