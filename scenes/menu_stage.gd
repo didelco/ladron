@@ -11,7 +11,8 @@ extends SubViewport
 ## Kinds: "story" (the museum at night, a thief on the path), "generative"
 ## (a floor plan that keeps redrawing itself, dice rolling over it),
 ## "players:1" / "players:2" (on a podium), "guards:easy|medium|hard",
-## "museum:small|medium|large", and "lesson:<what>", one scene per thing a
+## "museum:small|medium|large", "theme:<Themes id>|" (its own colours as
+## gems, "" for any theme mixed), and "lesson:<what>", one scene per thing a
 ## night teaches (LessonStage).
 
 const SIZE := Vector2i(420, 280)
@@ -46,6 +47,7 @@ const BACKDROP := {
 	"guards:medium": Color("#221a12"),
 	"guards:hard": Color("#2a1016"),
 	"museum": Color("#1a1422"),
+	"theme": Color("#1a1422"),
 	"lesson": Color("#1a1422"),
 }
 
@@ -145,6 +147,7 @@ func _build() -> void:
 		"seat": _players(0, int(arg))
 		"guards": _guards(arg)
 		"museum": _museum(arg)
+		"theme": _theme(arg)
 
 
 ## Point the camera so a span of this many units fills the card, looking at
@@ -342,6 +345,34 @@ func _museum(which: String) -> void:
 	_walls = Node3D.new()
 	_root.add_child(_walls)
 	_plan_blocks(plan, k, 0.2, 0.09)
+
+
+## A theme's own colours (Themes.ALL), a handful of gems glowing over the
+## island in the cloth colour its cases dress their pieces on; "" (any
+## theme, mixed) shows one gem of every theme's own colour instead.
+func _theme(which: String) -> void:
+	_frame(3.6, 0.4)
+	var cloth: Color
+	var cols: Array[Color] = []
+	if which == "":
+		cloth = Color("#241c30")
+		for id in Themes.ids():
+			cols.append(Color(Themes.ALL[id].colours[0]))
+	else:
+		var t: Dictionary = Themes.ALL[which]
+		cloth = Color(t.cloth)
+		for c in t.colours:
+			cols.append(Color(c))
+	_island(3.2, 2.4, cloth, WOOD)
+	for i in cols.size():
+		var x := (i - (cols.size() - 1) / 2.0) * 0.5
+		_rounded(_root, 0.2, 0.2, 0.05, 0.03, WOOD, Vector3(x, 0.02, 0))
+		var gem := SphereMesh.new()
+		gem.radius = 0.1
+		gem.height = 0.2
+		gem.radial_segments = 10
+		gem.rings = 5
+		_glow(_mesh(_root, gem, cols[i], Vector3(x, 0.2, 0)), cols[i], 0.7)
 
 
 # --- Animation --------------------------------------------------------------------

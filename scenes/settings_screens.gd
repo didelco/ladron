@@ -208,6 +208,7 @@ func load_all() -> void:
 	host.megaphone_mode = s.megaphone_mode
 	Sim.difficulty = s.difficulty
 	host.size = s.size
+	host.theme = s.theme
 	host.fullscreen = s.fullscreen
 	host.vsync = s.vsync
 	host.window = s.window
@@ -236,7 +237,7 @@ func apply_ui_scale() -> void:
 func save() -> void:
 	Settings.write({
 		"sound": host.sound_on, "music": host.music_on, "ia": host.show_ia, "megaphone_mode": host.megaphone_mode,
-		"difficulty": Sim.difficulty, "size": host.size,
+		"difficulty": Sim.difficulty, "size": host.size, "theme": host.theme,
 		"fullscreen": host.fullscreen, "vsync": host.vsync, "window": host.window, "ui_scale": host.ui_scale,
 		"quality": Quality.level, "render_scale": Quality.scale,
 		"music_volume": host.music_volume, "effects_volume": host.effects_volume,

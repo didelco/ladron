@@ -28,6 +28,9 @@ const THINK_EVERY_MS := 1100.0
 ## The words on screen are keys into Text (locale/texts.csv).
 const SIZE_NAMES := {"small": "MENU_SIZE_SMALL", "medium": "MENU_SIZE_MEDIUM", "large": "MENU_SIZE_LARGE"}
 const DIFFICULTY_NAMES := {"easy": "MENU_DIFFICULTY_EASY", "medium": "MENU_DIFFICULTY_MEDIUM", "hard": "MENU_DIFFICULTY_HARD"}
+## "" is any theme, mixed (Museum.only_theme's own "any" value).
+const THEME_NAMES := {"": "MENU_THEME_RANDOM", "antiguo": "MENU_THEME_ANCIENT", "edad_media": "MENU_THEME_MEDIEVAL",
+	"prehistoria": "MENU_THEME_PREHISTORY", "naturaleza": "MENU_THEME_NATURE", "moderna": "MENU_THEME_MODERN"}
 ## What a guard yells on spotting you.
 const SHOUTS := ["HUD_SHOUT_1", "HUD_SHOUT_2", "HUD_SHOUT_3"]
 
@@ -81,6 +84,8 @@ var mode := "story"
 ## the story night picked on its menu
 var story_pick := 1
 var size := "small"
+## the generative mode's museum theme (Themes), "" for any theme mixed
+var theme := ""
 ## one thief or two on the same keyboard
 var players := 1
 var sound_on := true
@@ -443,14 +448,15 @@ func _tour_go(_n: int) -> void:
 	_start_countdown(Hud.FADE_S)
 
 
-## The generative mode's settings: two big cards, the difficulty and the
-## museum's size, each showing the one in force (its diorama and its name),
-## framed like every other menu's; pressing one pops a bubble of its three
-## out of it (_pick_setting), like the title's how many thieves. Under them,
-## EMPEZAR, with the focus, plays with the thieves picked in the title's
-## bubble (_pick_players); back goes to that bubble, to change how many.
-## on: the card to come back to ("difficulty" or "size"), just set in its
-## bubble; "" starts on EMPEZAR.
+## The generative mode's settings: three big cards, the difficulty, the
+## museum's size and its theme, each showing the one in force (its diorama
+## and its name), framed like every other menu's; pressing one pops a bubble
+## of its choices out of it (_pick_setting), like the title's how many
+## thieves. Under them, EMPEZAR, with the focus, plays with the thieves
+## picked in the title's bubble (_pick_players); back goes to that bubble,
+## to change how many.
+## on: the card to come back to ("difficulty", "size" or "theme"), just set
+## in its bubble; "" starts on EMPEZAR.
 func _show_generative_menu(on := "") -> void:
 	hud.backdrop(Hud.SPOTS.generative)
 	phase = "generative"
@@ -461,7 +467,9 @@ func _show_generative_menu(on := "") -> void:
 				"call": _pick_setting.bind("difficulty"), "id": "difficulty", "focus": on == "difficulty"},
 			{"title": Text.t("MENU_SIZE"), "text": Text.t(SIZE_NAMES[size]), "stage": MenuStage.make("museum:" + size),
 				"call": _pick_setting.bind("size"), "id": "size", "focus": on == "size"},
-		], "width": 270},
+			{"title": Text.t("MENU_THEME"), "text": Text.t(THEME_NAMES[theme]), "stage": MenuStage.make("theme:" + theme),
+				"call": _pick_setting.bind("theme"), "id": "theme", "focus": on == "theme"},
+		], "width": 230},
 		{"gap": 24},
 		{"buttons": [
 			{"text": Text.t("MENU_START"), "call": _start.bind("generative", players)},
@@ -470,31 +478,52 @@ func _show_generative_menu(on := "") -> void:
 	], "generative")
 
 
-## The difficulty or the size, in a bubble out of its card (Hud.pop_bubble):
-## its three, each on its own diorama (still), starting on the one in force.
-## Picking keeps it (_set_setting); back (MenuKeys) or a click off it closes it,
-## back to the card, as it was.
+## The difficulty, the size or the theme, in a bubble out of its card
+## (Hud.pop_bubble): its choices, each on its own diorama (still), starting
+## on the one in force. Picking keeps it (_set_setting); back (MenuKeys) or
+## a click off it closes it, back to the card, as it was.
 func _pick_setting(which: String) -> void:
 	phase = "pick"
-	var hard := which == "difficulty"
-	var names: Dictionary = DIFFICULTY_NAMES if hard else SIZE_NAMES
+	var names: Dictionary
+	var stage_prefix: String
+	var current: String
+	var title_key: String
+	match which:
+		"difficulty":
+			names = DIFFICULTY_NAMES
+			stage_prefix = "guards:"
+			current = Sim.difficulty
+			title_key = "MENU_HOW_HARD"
+		"size":
+			names = SIZE_NAMES
+			stage_prefix = "museum:"
+			current = size
+			title_key = "MENU_HOW_BIG"
+		_:
+			names = THEME_NAMES
+			stage_prefix = "theme:"
+			current = theme
+			title_key = "MENU_HOW_THEME"
 	var colours := {"easy": Hud.C.green, "medium": Hud.C.gold, "hard": Hud.C.alert}
 	var choices: Array = []
 	for k: String in names:
-		choices.append({"title": Text.t(names[k]), "stage": MenuStage.make(("guards:" if hard else "museum:") + k),
-			"colour": colours[k] if hard else Hud.C.safe, "call": _set_setting.bind(which, k)})
-	var now := names.keys().find(Sim.difficulty if hard else size)
-	hud.pop_bubble(which, Text.t("MENU_HOW_HARD" if hard else "MENU_HOW_BIG"), choices, now,
+		choices.append({"title": Text.t(names[k]), "stage": MenuStage.make(stage_prefix + k),
+			"colour": colours.get(k, Hud.C.safe), "call": _set_setting.bind(which, k)})
+	var now := names.keys().find(current)
+	hud.pop_bubble(which, Text.t(title_key), choices, now,
 		func() -> void: phase = "generative")
 
 
-## A difficulty or a size picked in its bubble: kept in the settings, and
-## the menu again, its card showing it and with the focus.
+## A difficulty, a size or a theme picked in its bubble: kept in the
+## settings, and the menu again, its card showing it and with the focus.
 func _set_setting(which: String, k: String) -> void:
-	if which == "difficulty":
-		Sim.difficulty = k
-	else:
-		size = k
+	match which:
+		"difficulty":
+			Sim.difficulty = k
+		"size":
+			size = k
+		_:
+			theme = k
 	options.save()
 	_show_generative_menu(which)
 
@@ -1039,7 +1068,7 @@ func _new_round(n: int) -> void:
 		saved_map = Practice.map(players)
 		_lay_out(n, saved_map.seed)
 	else:
-		Sim.custom = {}
+		Sim.custom = {"theme": theme} if theme != "" else {}
 		_lay_out(n, randi() % 1000000000)
 	stride = [0.0, 0.0, 0.0, 0.0]
 	HeistStats.reset()
@@ -1068,6 +1097,10 @@ func _new_round(n: int) -> void:
 
 ## The house as drawn (null out of it): the doors and the dark rooms are its.
 var den_view: DenView
+## The museum as drawn, in a challenge or a story night (null in the band's
+## house): for a challenge's own doors (Museum.doors), to draw them opening
+## and shutting (MuseumView.set_map_door).
+var museum_view: MuseumView
 
 
 func _input(event: InputEvent) -> void:
@@ -1198,7 +1231,8 @@ func _draw_prompts(dt: float) -> void:
 ## ("hide"), an arcade machine ("arcade"), a room's switch ("switch"), a
 ## prop to push over ("push"). In the band's house, a door next to one
 ## ("door": open it, or shut it if no one is in its way) comes before all but
-## the job. While a trial is on in the house (HouseRun.trial_active) only what
+## the job; a challenge's own door ("map_door", Museum.doors) the same, in a
+## museum. While a trial is on in the house (HouseRun.trial_active) only what
 ## the trial itself needs is offered. {do, at}, or empty for nothing.
 func _action_for(t: Thief) -> Dictionary:
 	# A trial on in the house: only what it needs (HouseRun.trial_action).
@@ -1216,6 +1250,10 @@ func _action_for(t: Thief) -> Dictionary:
 			var start := Practice.start_at(Vector2(t.x, t.y), players)
 			if not start.is_empty():
 				return {"do": "trial", "id": start.id, "tier": start.tier}
+	elif not Museum.doors.is_empty():
+		var map_door := Museum.door_near(Vector2i(int(floor(t.x)), int(floor(t.y))))
+		if map_door != MapFile.NONE and Museum.can_toggle_door(map_door, house.band_points()):
+			return {"do": "map_door", "at": map_door}
 	var plinth = Plinths.within_reach(t, thieves)
 	if plinth != null:
 		return {"do": "plinth", "at": plinth}
@@ -1271,6 +1309,7 @@ func _prompt_rows(i: int) -> Array:
 		"switch": return [row.call("action", Text.t("HUD_SWITCH_HINT"))]
 		"push": return [row.call("action", Text.t("HUD_PUSH_HINT") % Props.name_of(act.at.kind).to_upper())]
 		"door": return [row.call("action", Text.t("HIDEOUT_DOOR_CLOSE" if Den.is_open(act.at) else "HIDEOUT_DOOR_OPEN"))]
+		"map_door": return [row.call("action", Text.t("HIDEOUT_DOOR_CLOSE" if Museum.is_door_open(act.at) else "HIDEOUT_DOOR_OPEN"))]
 	return []
 
 

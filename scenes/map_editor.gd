@@ -352,6 +352,13 @@ func _build() -> void:
 	_view_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_view_button.add_theme_constant_override("icon_max_width", 26)
 	_view_button.tooltip_text = Text.t("EDITOR_PREVIEW")
+	# Play, right beside it: the way to try the map for real (_ask_play).
+	_play_button = _button("", _ask_play, line, Hud.C.green, false, "play")
+	_play_button.custom_minimum_size = Vector2(52, 40)
+	_play_button.size_flags_horizontal = Control.SIZE_SHRINK_END
+	_play_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_play_button.add_theme_constant_override("icon_max_width", 26)
+	_play_button.tooltip_text = Text.t("EDITOR_PLAY")
 	_hint = _label("", 13, Hud.C.dim, top)
 	for l in [_status, _hint]:
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -380,7 +387,6 @@ func _build() -> void:
 	var acts := HBoxContainer.new()
 	acts.add_theme_constant_override("separation", 6)
 	left.add_child(acts)
-	_play_button = _icon_button("play", "EDITOR_PLAY", _ask_play, acts, Hud.C.green)
 	_icon_button("undo", "EDITOR_UNDO", _undo, acts, Hud.C.dim)
 	_save_button = _icon_button("save", "EDITOR_SAVE", _open.bind("save"), acts, Hud.C.green)
 	_exit_button = _icon_button("exit", "EDITOR_EXIT", _leave, acts, Hud.C.dim)

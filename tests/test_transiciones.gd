@@ -143,7 +143,7 @@ func _init() -> void:
 	await frames(3)
 	check(m.phase == "generative" and m.players == 1, "... y se puede cambiar a 1")
 
-	# --- The generative's settings: two cards, each with its bubble ------------------
+	# --- The generative's settings: three cards, each with its bubble ----------------
 	# (The size and difficulty picked are saved: put back as they were at the end.)
 	var size_was: String = m.size
 	var difficulty_was: String = Sim.difficulty
@@ -153,7 +153,7 @@ func _init() -> void:
 	await frames(Hud.SWAP_WAIT_FRAMES + 2)
 	var start_button := focused() as Button
 	check(start_button != null and start_button.text == Text.t("MENU_START"), "el generativo empieza con el foco en EMPEZAR")
-	check(hud._cards.size() == 2 and hud._cards.has("difficulty") and hud._cards.has("size"), "... y dos tarjetas: dificultad y tamaño")
+	check(hud._cards.size() == 3 and hud._cards.has("difficulty") and hud._cards.has("size") and hud._cards.has("theme"), "... y tres tarjetas: dificultad, tamaño y tema")
 	var rims: Array = hud._cards.values().map(func(c): return ((c as Button).get_theme_stylebox("normal") as StyleBoxFlat).border_color)
 	check(rims.all(func(r): return r == Hud.GLASS_EDGE), "... con el borde de siempre, sin colores de la elegida")
 	var hard_card: Button = hud._cards["difficulty"]
