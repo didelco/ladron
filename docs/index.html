@@ -714,7 +714,7 @@ function piezasComoObjetos() {
       detalle: () => `<div class="imgs una"><figure>${img(p.file, tx(l.name))}</figure></div>
         <div class="nom"><span class="punto" style="background:${l.colour}"></span>${t(l.name)}</div>
         ${campo("Descripción", t(l.blurb))}${campo("Mientras la coge", t(l.verb))}${campo("Cuento", t(l.story))}
-        <div><a class="tag" href="#historia/museo${n.museum}">robo ${n.n}</a><span class="tag">forma <code>${esc(l.shape)}</code></span><span class="tag">${l.seconds} s para cogerla</span></div>` });
+        <div><a class="tag" href="#historia/robo-${n.n}">robo ${n.n}</a><a class="tag" href="#ciudad/museo${n.museum}">su museo</a><span class="tag">forma <code>${esc(l.shape)}</code></span><span class="tag">${l.seconds} s para cogerla</span></div>` });
   }
   for (const p of gen) {
     const k = "GEN_" + p.shape.toUpperCase() + "_", ks = claves(k);
@@ -1082,6 +1082,13 @@ function historia() {
     <h2 id="historia-final">Final</h2>
     <p style="white-space:pre-wrap">${t(h.ending)}</p>`;
 }
+// Las capturas reales de un robo concreto: sus ids llevan «_robo_NN» o «_robo_NN_algo»
+// (previas: previa_robo_NN_pieza/nuevo/plano; juego: juego_robo_NN_algo). No todos los
+// robos tienen: es una muestra representativa, no las 25 noches capturadas.
+function shotsDeRobo(nn) {
+  return (J.capturas || []).filter(s => { const m = /_robo_0*(\d+)(?:_|$)/.exec(s.id); return m && +m[1] === nn; })
+    .sort((a, b) => (a.section === "previas" ? 0 : 1) - (b.section === "previas" ? 0 : 1));
+}
 function noche(n, lecciones) {
   if (!n) return "";
   const l = n.loot, les = lecciones[n.teach];
@@ -1089,6 +1096,21 @@ function noche(n, lecciones) {
   const tam = { small: "pequeño", medium: "mediano", large: "grande" }[n.size] || n.size;
   const p = ((J.assets || {}).piezas || [])[n.n - 1];
   const hd = ((J.historia || {}).played || [])[n.n - 1];
+  const museo = ((J.ciudad || {}).museums || []).find(cm => (cm.nights || []).includes(n.n));
+  const shots = shotsDeRobo(n.n);
+  let galeria = "";
+  if (shots.length) {
+    galeria = `<details class="mas"><summary>Capturas de este robo (${shots.length})</summary>
+      <div class="galeria" style="--min: 200px">${shots.map(figCorta).join("")}</div></details>`;
+  } else if (museo && SHOTS[museo.shot]) {
+    galeria = `<details class="mas"><summary>Sin capturas de este robo: el museo por fuera</summary>
+      <div class="galeria" style="--min: 200px">${figCorta({ ...SHOTS[museo.shot], title: "El museo, no este robo en concreto", text: "No hay ninguna captura de este robo; esta es la foto exterior de todo el museo (misma para sus cinco robos)." })}</div></details>`;
+  }
+  const enlaces = [
+    museo ? `<a href="#objetos/${museo.theme}">objetos de este museo</a>` : "",
+    `<a href="#personajes">guardias</a>`,
+    museo ? `<a href="#ciudad/museo${museo.n}">el museo en Ciudad</a>` : "",
+  ].filter(Boolean).join(" · ");
   return `<div class="noche" id="historia-robo-${n.n}"><div class="n">${String(n.n).padStart(2, "0")}</div><div>${p ? `<img class="mini" loading="lazy" src="${p.file}" alt="" data-img="${p.file}" data-cap="${esc(tx(l.name))}">` : ""}
     <div class="pz"><span class="punto" style="background:${l.colour}"></span>${t(l.name)} <a class="estado" href="#objetos/pieza-${n.n}">ficha de la pieza</a></div>
     <p><span class="etq">Descripción</span>${t(l.blurb)}</p>
@@ -1098,6 +1120,8 @@ function noche(n, lecciones) {
     ${les ? `<p><span class="etq">Enseña</span><b>${t(les.title)}</b>: ${t(les.text)}</p>` : ""}
     ${n.boss ? `<p><span class="etq">Gran golpe</span>${t(n.tip)}</p>` : ""}
     <div><span class="tag">museo ${tam}, forma ${n.shape}</span><span class="tag">${g}</span>${n.props ? '<span class="tag">objetos</span>' : ""}${n.lights ? '<span class="tag">luces</span>' : ""}${n.case_alarm ? '<span class="tag">vitrina con alarma</span>' : ""}<span class="tag">${n.alarms} alarma${n.alarms === 1 ? "" : "s"}</span><span class="tag">${n.n >= ((J.historia || {}).lockpick_night || 99) ? `ganzúa de ${Math.min(4, Math.max(1, Math.round(l.seconds - 2.5 + 1e-9)))} perno${Math.round(l.seconds - 2.5 + 1e-9) > 1 ? "s" : ""}` : `${l.seconds} s quieto para cogerla`}</span>${n.par ? `<span class="tag">★ rápido: en menos de ${Math.floor(n.par / 60)}:${String(n.par % 60).padStart(2, "0")}</span>` : ""}</div>
+    ${galeria}
+    <p class="estado">También: ${enlaces}</p>
   </div></div>`;
 }
 

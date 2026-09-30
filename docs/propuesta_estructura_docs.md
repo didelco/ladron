@@ -90,8 +90,22 @@ Cambios de nombre solo en la etiqueta (las direcciones no cambian): «Ciudad» �
 ## 5. Pendiente / ideas no hechas
 
 - Una página «Técnico» real (funciones, código, tests) si se quiere que sea navegable como el resto: hoy esos datos (`funciones.js`, `codigo.js`) solo se ven dentro de otras páginas.
-- Enlaces cruzados más ricos entre Sonidos, Megafonía y las fichas de objetos que los usan.
+- ~~Enlaces cruzados más ricos entre Sonidos, Megafonía y las fichas de objetos que los usan.~~ Sin tocar todavía (fuera del encargo de «contexto de un robo»); sigue pendiente.
 - Textos: agrupar por pantalla o por museo además de por prefijo, y paginar (hoy corta a 600 filas).
+
+### Hecho: contexto completo de un robo (Historia)
+
+`noche()` (en `historia()`, `docs/index.html`) ahora, por cada robo:
+- Muestra sus capturas reales (`docs/data/capturas.json`, emparejadas por `_robo_NN` en el `id`, tanto `previa_robo_NN_*` como `juego_robo_NN*`) en una `<details>` plegable con galería, para no alargar las 25 fichas.
+- Si el robo no tiene ninguna captura propia (12 de 25 hoy: la muestra es representativa, no las 25 noches), cae en la foto exterior del museo (`docs/data/ciudad.json`, `museums[].shot`) con un pie honesto («no es una foto de este robo en concreto»).
+- Añade una línea «También:» con enlaces a los objetos de decoración del tema del museo (`#objetos/<tema>`), a Personajes (`#personajes`, el ladrón y el guardia son genéricos, sin variante por museo) y a la ficha del museo en Ciudad (`#ciudad/museoN`).
+- La ficha de cada pieza en Objetos y piezas (`piezasComoObjetos()`) enlaza ahora directo a su robo (`#historia/robo-N`, antes iba solo a la sección del museo) y, nuevo, a su museo en Ciudad.
+- El buscador global indexa también los títulos y textos de las capturas de cada robo (`navegacion.js`, `construirIndice()`), así que buscar «linterna» encuentra el robo 4 aunque la palabra no esté en su cuento.
+
+**Huecos que quedan, no cerrados en esta sesión** (baratos de resolver en otra, si se quiere seguir el mismo criterio):
+- La imagen de cada pieza (`assets/piezas/NN.webp`) no tiene regla de procedencia en `assets/PROCEDENCIA.json` (son capturas propias del juego, no assets de terceros): comprobado que no aplica un enlace de licencia ahí, así que no se añadió.
+- La página Colección (`#coleccion`) no enlaza de vuelta a los robos concretos de cada tema (solo Ciudad lo hace); sería el mismo patrón que ya usa `ciudad()`.
+- Los guardias son un único modelo genérico en Personajes: si algún día hay variante por museo o por tema, la ficha de robo ya tiene el sitio (`#personajes`) para apuntar más fino.
 
 ## Actualización: Procedencia y Alternativas ya no son páginas
 

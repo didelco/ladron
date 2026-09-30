@@ -183,7 +183,7 @@ window.PROCEDENCIA = {
   "personajes-blender": {
    "nombre": "Personajes (ninja y guardia)",
    "tipo": "propio",
-   "metodo": "Modelados por script en Blender (art/characters/kit.py, ninja.py, guardia.py, rig.py: formas sencillas fundidas con remallado de vóxeles, esqueleto y acciones) y retocados a mano en art/personajes/*.blend (hoy piezas sueltas, con manos y caras rehechas por art/characters/mejorar_partes.py); exportados con art/export.py. art/blockbench/ guarda copias .obj/.glb para abrirlos en Blockbench.",
+   "metodo": "Modelados por script en Blender (art/characters/kit.py, ninja.py, guardia.py, rig.py: formas sencillas fundidas con remallado de vóxeles, esqueleto y acciones) y retocados a mano en art/personajes/*.blend (hoy piezas sueltas, con manos y caras rehechas por art/characters/mejorar_partes.py); el ninja de ahora lo rehace entero art/characters/ninja_v2.py (formas de campo de distancia remalladas en cuadriláteros con QuadriFlow, simétricas en x, con el mismo esqueleto y las mismas acciones); exportados con art/export.py. art/blockbench/ guarda copias .obj/.glb para abrirlos en Blockbench.",
    "autor": "Chema, con Claude",
    "licencia": "LicenseRef-Propia",
    "url": "",
@@ -286,7 +286,7 @@ window.PROCEDENCIA = {
    "notas": "El commit 0d385d7 los añadió sin dejar el generador.",
    "atribucion": false,
    "documentado": true,
-   "n": 28
+   "n": 29
   },
   "ui-ilustraciones": {
    "nombre": "Ilustraciones de portada, menús y museos",
@@ -346,7 +346,7 @@ window.PROCEDENCIA = {
    "notas": "",
    "atribucion": false,
    "documentado": true,
-   "n": 32
+   "n": 35
   }
  },
  "variantes": {},
@@ -371,10 +371,13 @@ window.PROCEDENCIA = {
   "art/catalogo.py": "codigo-de-arte",
   "art/characters/animar.py": "codigo-de-arte",
   "art/characters/armadura.py": "codigo-de-arte",
+  "art/characters/cordon.py": "codigo-de-arte",
   "art/characters/guardia.py": "codigo-de-arte",
   "art/characters/kit.py": "codigo-de-arte",
+  "art/characters/manos.py": "codigo-de-arte",
   "art/characters/mejorar_partes.py": "codigo-de-arte",
   "art/characters/ninja.py": "codigo-de-arte",
+  "art/characters/ninja_v2.py": "codigo-de-arte",
   "art/characters/rig.py": "codigo-de-arte",
   "art/characters/sheet.py": "codigo-de-arte",
   "art/claude_addon.py": "codigo-de-arte",
@@ -406,6 +409,7 @@ window.PROCEDENCIA = {
   "assets/icons/editor/actions.svg": "ui-iconos-editor",
   "assets/icons/editor/clear.svg": "ui-iconos-editor",
   "assets/icons/editor/difficulty.svg": "ui-iconos-editor",
+  "assets/icons/editor/door.svg": "ui-iconos-editor",
   "assets/icons/editor/exit.svg": "ui-iconos-editor",
   "assets/icons/editor/exit_door.svg": "ui-iconos-editor",
   "assets/icons/editor/guard.svg": "ui-iconos-editor",
@@ -1082,13 +1086,13 @@ window.PROCEDENCIA = {
   "scenes/wall.gdshader": "shaders-propios"
  },
  "por_licencia": {
-  "LicenseRef-Propia": 584,
+  "LicenseRef-Propia": 588,
   "LicenseRef-Sin-Documentar": 12,
   "OFL-1.1": 6,
   "CC-BY-3.0": 2,
   "CC0-1.0": 125
  },
  "sin_regla": [],
- "total": 729,
+ "total": 733,
  "sin_documentar": 12
 };

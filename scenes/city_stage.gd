@@ -175,6 +175,9 @@ var _tween: Tween
 var hurry := false
 ## only what can be seen is built (sight); the tools turn it off to compare
 var cut := true
+## the town's seed (TownBuilder): always 7 in the game; the tools may set
+## another to compare variants of the same rules.
+var town_seed := 7
 ## the plan out of its room (PlanSheet), and the veil behind it
 var sheet: PlanSheet
 var _veil: MeshInstance3D
@@ -245,7 +248,7 @@ func _init() -> void:
 ## The town as this gang has it: museums up to `open_to` (0-based) open,
 ## the one `pick` picked.
 func build(open_to: int, pick: int) -> void:
-	var builder := TownBuilder.new(_scenery)
+	var builder := TownBuilder.new(_scenery, town_seed)
 	_builder = builder
 	# The river runs across the screen, a little uphill; the high bank is
 	# the far one, up the screen.

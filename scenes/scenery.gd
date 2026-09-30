@@ -137,6 +137,7 @@ func _view() -> void:
 	# The house begins with every door shut (the lounge is where the band is),
 	# on the plan too; the view draws them as they are.
 	host.den_view = null
+	host.museum_view = null
 	if home:
 		Den.reset_doors()
 		Den.apply_doors()
@@ -144,6 +145,8 @@ func _view() -> void:
 	host.world.add_child(view)
 	if home:
 		host.den_view = view as DenView
+	else:
+		host.museum_view = view
 	# (The world is new: what the last one held of a game went with it.)
 	host.house.trial = null
 	host.house.trial_lantern = null

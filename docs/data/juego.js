@@ -1275,6 +1275,17 @@ window.JUEGO = {
   {
    "colours": [
     {
+     "hex": "#4dabf7",
+     "key": ""
+    }
+   ],
+   "file": "scenes/map_editor.gd",
+   "name": "DOOR",
+   "note": "The plan's colours: the paper map's (Hud), so the editor and the map you take out mid-job look like the same drawing."
+  },
+  {
+   "colours": [
+    {
      "hex": "#e8d6b4",
      "key": ""
     }
@@ -8954,8 +8965,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "30-09-2026 00:57",
-  "commit": "a029265",
-  "rama": "main"
+  "fecha": "30-09-2026 12:22",
+  "commit": "b1aade4",
+  "rama": "mira-si-toda-la-rama-esta-limp"
  }
 };

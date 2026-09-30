@@ -396,7 +396,8 @@ function construirIndice() {
   const pl = (hi.nights || []);
   for (const n of pl) {
     const l = n.loot, m = museoDe(n.n);
-    add("Historia", `Robo ${String(n.n).padStart(2, "0")} · ${tx(l.name)}`, m ? tx(m.name) : "", h + "historia/robo-" + n.n, [tx(l.blurb), tx(l.verb), tx(l.story), n.boss ? tx(n.tip) : ""].join(" "), 6);
+    const capturas = (J.capturas || []).filter(s => { const mm = /_robo_0*(\d+)(?:_|$)/.exec(s.id); return mm && +mm[1] === n.n; }).map(s => s.title + " " + (s.text || "")).join(" ");
+    add("Historia", `Robo ${String(n.n).padStart(2, "0")} · ${tx(l.name)}`, m ? tx(m.name) : "", h + "historia/robo-" + n.n, [tx(l.blurb), tx(l.verb), tx(l.story), n.boss ? tx(n.tip) : "", capturas].join(" "), 6);
   }
   for (const m of hi.museums || []) add("Historia", tx(m.name), "Museo " + m.n, h + "historia/museo" + m.n, tx(m.text), 8);
   add("Historia", "Prólogo", "La historia", h + "historia/prologo", tx(hi.prologue), 4);

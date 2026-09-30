@@ -297,11 +297,12 @@ func _init() -> void:
 		var ys: Array = row.starts.map(func(t): return t.y)
 		var spread: bool = (xs.max() - xs.min() >= 4) or (ys.max() - ys.min() >= 4)
 		check(spread, "%s: sus tres puntos van separados (%s)" % [row.id, row.starts])
-	# Walls between bays with doorways three wide; the rest is wall.
+	# Walls between bays with doorways three wide, except the middle row (the three
+	# games of skill), which shares one open room: no inside wall there at all.
 	for x in [34, 48]:
-		for y in [4, 5, 6, 13, 14, 15, 22, 23, 24]:
-			check(full.at(Vector2i(x, y)) == Tiles.FLOOR, "pasillo entre bahías en %d,%d" % [x, y])
-		for y in [1, 2, 3, 7, 8, 9, 10, 11, 12, 16, 17, 18, 19, 20, 21, 25, 28]:
+		for y in [4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 22, 23, 24]:
+			check(full.at(Vector2i(x, y)) == Tiles.FLOOR, "pasillo (o sala común) entre bahías en %d,%d" % [x, y])
+		for y in [1, 2, 3, 7, 8, 9, 18, 19, 20, 21, 25, 28]:
 			check(full.at(Vector2i(x, y)) == Tiles.WALL, "muro entre bahías en %d,%d" % [x, y])
 	for y in [9, 18]:
 		for x in [26, 27, 28, 40, 41, 42, 54, 55, 56]:

@@ -91,13 +91,15 @@ const NICHES := 3
 const BENCH := [9, 6, 2, 1]
 
 ## The dojo's inside walls, row by row (x from DOJO_X, y from DOJO_Y; "#" is
-## wall, "." floor). Nine bays in three rows and three columns, each with the
-## trial of its own (DOJO_ZONES; DojoTrials.TABLE) and its three start points, joined
-## by doorways three wide in the walls between them:
+## wall, "." floor). Nine bays (DOJO_ZONES; DojoTrials.TABLE), one per trial and its
+## three start points, in three rows: the top and bottom rows keep a bay to a room,
+## joined by doorways three wide in the walls between them; the middle row's three
+## (the games of skill, all a pedestal or a mark to stand on) share one open room,
+## its three bays' things all in sight of each other, with no inside wall at all:
 ##
 ##            x 21-34             x 35-48             x 49-61
 ##   y 1-9    GANZÚA  (vitrines)  CABLES  (alarm)     PULSO   (alarm)     alarm and cases
-##   y 10-18  CALCETÍN (pedestals) EQUILIBRIO (plinths) BOLOS  (circles)   games of skill
+##   y 10-18  CALCETÍN (pedestals) EQUILIBRIO (plinths) BOLOS  (circles)   games of skill (one room)
 ##   y 19-28  CIRCUITO (guards)   ESCONDITE (furniture) AGUANTA (armours)  stealth
 ##
 ## The trophy room's door lands in GANZÚA, the lounge's in CALCETÍN, and the bathroom's
@@ -114,14 +116,14 @@ const DOJO_PLAN := [
 	".............#.............#.............",
 	".............#.............#.............",
 	"#####...###########...###########...#####",
-	".............#.............#.............",
-	".............#.............#.............",
-	".............#.............#.............",
 	".........................................",
 	".........................................",
 	".........................................",
-	".............#.............#.............",
-	".............#.............#.............",
+	".........................................",
+	".........................................",
+	".........................................",
+	".........................................",
+	".........................................",
 	"#####...###########...###########...#####",
 	".............#.............#.............",
 	".............#.............#.............",

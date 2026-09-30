@@ -2056,6 +2056,8 @@ func show_map(plan: Image, thief_colours: Array = []) -> void:
 	var keys := ["thief", "gem", "exit", "prop"]
 	if home_map:
 		keys = ["thief", "exit", "door", "fog"]
+	elif not Museum.doors.is_empty():
+		keys.append("door")
 	if Heist.team and not Heist.taken and not home_map:
 		keys.append("panel")
 	legend_row(_map_legend, keys, thief_colours, Color(Heist.loot.colour))
@@ -2155,6 +2157,11 @@ static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard
 			var r := Den.door_rect(d.id)
 			var tone: Color = MAP_FLOOR if Den.is_open(d.id) else MAP_DOOR
 			img.fill_rect(Rect2i(r.position.x * s, r.position.y * s, r.size.x * s, r.size.y * s), tone)
+	# A challenge's own doors (Museum.doors): the same wood tone shut, floor
+	# open — wall and floor already say as much, this just makes it read as
+	# a door and not just a gap in the plan.
+	for d in Museum.doors:
+		img.fill_rect(Rect2i(d.x * s, d.y * s, s, s), MAP_FLOOR if Museum.is_door_open(d) else MAP_DOOR)
 	for p in Props.list:
 		if home_map and dark_rooms.has(Den.tile_room(p.tile)):
 			continue
