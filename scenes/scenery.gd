@@ -553,6 +553,14 @@ func pop_steal() -> void:
 func draw_room_lights() -> void:
 	var lit: Array = []
 	for r in Museum.rooms:
+		# switch_marks and lit_washes are built alongside Museum.rooms (_rooms,
+		# the same loop, id for id) and should always match it one for one; but
+		# should a room ever outrun them — Museum.rooms replaced without this
+		# world being rebuilt for it — skip it rather than reach past the end,
+		# same as a stale room id is waved off elsewhere (Sim.step_guard's own
+		# Museum.rooms[g.errand_room] guard).
+		if r.id >= switch_marks.size():
+			continue
 		var on := Museum.lights_left[r.id] > 0
 		switch_marks[r.id].material_override.albedo_color = Game.COLOURS.switch_on if on else Game.COLOURS.switch_off
 		lit_washes[r.id].visible = on
