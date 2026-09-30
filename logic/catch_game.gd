@@ -9,9 +9,10 @@ extends DojoGame
 ## foot from where the last one was (plus GATE_BONUS if a shut door stands in
 ## between, WATCH_BONUS if it can only be got by crossing a scarecrow's cone),
 ## never under the level's min_time. Each level asks more (LEVELS; a game
-## plays the stretch of its difficulty, DojoGames.TIERS):
+## plays the stretch of its difficulty, DojoTrials.TIERS):
 ##   dmin, dmax  how far from the last one, in steps on foot
-##   zones       where it may turn up (empty: anywhere)
+##   zones       where it may turn up (empty: anywhere): areas of the dojo, groups of its bays
+##               (DojoField.ALIASES: juegos, alarma, escondites, circuito)
 ##   base, slack the time
 ##   move        tiles a second it wanders at (0: still)
 ##   gate        behind a shut door, which does not open by itself
@@ -34,16 +35,16 @@ const GATE_BONUS := 1.5
 const WATCH_BONUS := 1.5
 const CATCH_R := 0.8
 const LEVELS := [
-	{"dmin": 5, "dmax": 8, "zones": ["tatami"], "base": 3.0, "slack": 2.2, "move": 0.0, "gate": false, "watch": false, "watch_n": 0, "maze": false, "ring": true, "min_time": 0.0},
-	{"dmin": 6, "dmax": 10, "zones": ["tatami"], "base": 2.8, "slack": 2.0, "move": 0.0, "gate": false, "watch": false, "watch_n": 0, "maze": false, "ring": true, "min_time": 0.0},
-	{"dmin": 8, "dmax": 13, "zones": ["tatami", "pasillo"], "base": 2.6, "slack": 1.8, "move": 0.0, "gate": false, "watch": false, "watch_n": 0, "maze": false, "ring": true, "min_time": 0.0},
-	{"dmin": 10, "dmax": 16, "zones": ["tatami", "pasillo", "exposicion"], "base": 2.4, "slack": 1.65, "move": 0.0, "gate": false, "watch": false, "watch_n": 0, "maze": false, "ring": true, "min_time": 0.0},
-	{"dmin": 12, "dmax": 18, "zones": ["tatami", "pasillo", "exposicion", "escondites", "patio"], "base": 2.2, "slack": 1.5, "move": 0.8, "gate": false, "watch": false, "watch_n": 0, "maze": false, "ring": true, "min_time": 0.0},
+	{"dmin": 5, "dmax": 8, "zones": ["juegos"], "base": 3.0, "slack": 2.2, "move": 0.0, "gate": false, "watch": false, "watch_n": 0, "maze": false, "ring": true, "min_time": 0.0},
+	{"dmin": 6, "dmax": 10, "zones": ["juegos"], "base": 2.8, "slack": 2.0, "move": 0.0, "gate": false, "watch": false, "watch_n": 0, "maze": false, "ring": true, "min_time": 0.0},
+	{"dmin": 8, "dmax": 13, "zones": ["juegos", "circuito"], "base": 2.6, "slack": 1.8, "move": 0.0, "gate": false, "watch": false, "watch_n": 0, "maze": false, "ring": true, "min_time": 0.0},
+	{"dmin": 10, "dmax": 16, "zones": ["juegos", "circuito", "alarma"], "base": 2.4, "slack": 1.65, "move": 0.0, "gate": false, "watch": false, "watch_n": 0, "maze": false, "ring": true, "min_time": 0.0},
+	{"dmin": 12, "dmax": 18, "zones": ["juegos", "circuito", "alarma", "escondites"], "base": 2.2, "slack": 1.5, "move": 0.8, "gate": false, "watch": false, "watch_n": 0, "maze": false, "ring": true, "min_time": 0.0},
 	{"dmin": 12, "dmax": 20, "zones": [], "base": 2.0, "slack": 1.45, "move": 0.0, "gate": true, "watch": false, "watch_n": 0, "maze": false, "ring": true, "min_time": 0.0},
-	{"dmin": 14, "dmax": 22, "zones": ["pasillo"], "base": 1.9, "slack": 1.4, "move": 0.0, "gate": false, "watch": true, "watch_n": 1, "maze": false, "ring": true, "min_time": 0.0},
-	{"dmin": 14, "dmax": 24, "zones": ["laberinto"], "base": 1.8, "slack": 1.3, "move": 0.0, "gate": false, "watch": true, "watch_n": 1, "maze": true, "ring": true, "min_time": 0.0},
+	{"dmin": 14, "dmax": 22, "zones": ["circuito"], "base": 1.9, "slack": 1.4, "move": 0.0, "gate": false, "watch": true, "watch_n": 1, "maze": false, "ring": true, "min_time": 0.0},
+	{"dmin": 14, "dmax": 24, "zones": ["circuito"], "base": 1.8, "slack": 1.3, "move": 0.0, "gate": false, "watch": true, "watch_n": 1, "maze": true, "ring": true, "min_time": 0.0},
 	{"dmin": 16, "dmax": 26, "zones": [], "base": 1.6, "slack": 1.25, "move": 1.4, "gate": false, "watch": true, "watch_n": 2, "maze": false, "ring": false, "min_time": 0.0},
-	{"dmin": 16, "dmax": 24, "zones": ["laberinto", "pasillo"], "base": 1.4, "slack": 1.15, "move": 1.8, "gate": true, "watch": true, "watch_n": 2, "maze": false, "ring": false, "min_time": 4.5},
+	{"dmin": 16, "dmax": 24, "zones": ["circuito"], "base": 1.4, "slack": 1.15, "move": 1.8, "gate": true, "watch": true, "watch_n": 2, "maze": false, "ring": false, "min_time": 4.5},
 ]
 
 ## the sock: {pos: Vector2, tile, left, max, ring, move, gate, watch, forced,

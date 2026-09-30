@@ -1,17 +1,19 @@
-class_name DojoGamesView
+class_name TrialView
 extends Node3D
-## The dojo's games as seen (DojoGame): the golden sock, the pins, the lit
-## pedestal or hideouts in the world, each with a column of light, and on top,
-## in 2D, the rings that empty, the arrows at the edge of the screen for what is
-## off it, the lantern's cone, the sneeze bars and the lean, the head-up display
-## (NIVEL n and the difficulty, the count, MEJOR, the time) and, at the end, the
-## panel (¡SE FUE EL CALCETÍN! / ¡GANASTE!, the level reached, ¡NUEVO RÉCORD!,
-## the MVP, and OTRA VEZ / SALIR).
+## The dojo's trials as seen (DojoTrial), all the same: the golden sock, the pins,
+## the lit pedestal, hideouts or station in the world, each with a column of light,
+## and on top, in 2D, the rings that empty, the arrows at the edge of the screen for
+## what is off it, the lantern's cone, the sneeze bars and the lean, the head-up display
+## (the name of the trial and its difficulty, how far it is, MEJOR, the clock and TAB:
+## SALIR: the same place and style for every trial) and, at the end, the panel: the
+## result (¡PRUEBA SUPERADA! / the trial's own failure), the mark, the best mark of
+## that difficulty and size of band, ¡NUEVO RÉCORD! and the choices (SEGUIR, OTRA VEZ,
+## SALIR) as the menus' buttons, one of them selected (TrialMenu).
 ##
-## Nothing here decides anything: show(view) is given DojoGame.view() every
-## frame, react(events) the events of step(). Whoever runs it (Main) reads the
-## keys on the panel: MenuKeys.of(event) -> "accept" is accept() (its id),
-## "back" is "exit", the arrows move(dir).
+## Nothing here decides anything: show_view(view) is given DojoTrial.view() every
+## frame, react(events) the events of step(). Whoever runs it (HouseRun) gives the
+## keys to `menu` (TrialMenu.input) and the mouse comes through the signals: `moved` when
+## the mouse selects another choice, `picked(id)` when it clicks one.
 
 const INK := Color("#2a160d")
 const CREAM := Color("#f1dfbd")
@@ -28,6 +30,12 @@ const SOUNDS := {"spawn": "pin", "tick": "tick", "catch": "stolen", "knock": "bi
 	"level": "go", "alarm": "siren", "lost": "caught", "won": "escaped", "sneeze": "sneeze", "tickle": "nav",
 	"in": "ok", "fall": "roll_bump", "ready": "nav"}
 
+## The choices at the end (the panel's selection; HouseRun gives it the keys)
+var menu := TrialMenu.new()
+## The mouse selected another choice / clicked one (its id)
+signal moved
+signal picked(id: String)
+
 var _camera: Camera3D
 var _layer: CanvasLayer
 var _ui: Control
@@ -35,8 +43,12 @@ var _view := {}
 var _t := 0.0
 var _nodes: Array[Node3D] = []
 var _column: Array[MeshInstance3D] = []
-var _selected := 0
 var _popups: Array[Dictionary] = []
+## the panel at the end (nodes, so its buttons are the menus' own) and its parts
+var _panel: Control
+var _buttons := {}
+var _help: Label
+var _panel_stamp := ""
 
 
 func setup(camera: Camera3D) -> void:
@@ -58,9 +70,8 @@ static func sound_for(event: Dictionary) -> String:
 	return String(SOUNDS.get(event.get("e", ""), ""))
 
 
-## Show the game as it is (DojoGame.view()); an empty or idle one hides it all.
+## Show the trial as it is (DojoTrial.view()); an empty or idle one hides it all.
 func show_view(view: Dictionary) -> void:
-	var was := String(_view.get("state", ""))
 	_view = view
 	var on: bool = not view.is_empty() and view.get("state", "idle") != "idle"
 	visible = on
@@ -68,10 +79,16 @@ func show_view(view: Dictionary) -> void:
 		_layer.visible = on
 	if not on:
 		_update_objects([])
+		_close_panel()
 		return
 	_update_objects(view.get("objects", []))
-	if String(view.state) != was:
-		_selected = 0
+	var at_end: bool = String(view.state) in ["won", "lost"]
+	var stamp := "%s:%d:%s:%s" % [view.id, int(view.tier), view.state, view.result.get("title", "")]
+	if at_end and (_panel == null or stamp != _panel_stamp):
+		_open_panel(view.result)
+		_panel_stamp = stamp
+	elif not at_end:
+		_close_panel()
 	if _ui != null:
 		_ui.queue_redraw()
 
@@ -101,28 +118,116 @@ func react(events: Array, sfx: Sfx = null, world: Node3D = null) -> void:
 
 # --- The panel at the end ---------------------------------------------------------------
 
-## The choices of the panel at the end, in order: "again", "exit".
-func menu() -> Array[String]:
-	return ["again", "exit"]
+## The labels of the choices.
+const CHOICES := {"next": "HIDEOUT_TRIAL_NEXT", "again": "HIDEOUT_GAME_AGAIN", "exit": "HIDEOUT_GAME_EXIT"}
 
 
-func selected() -> String:
-	var m := menu()
-	return m[clampi(_selected, 0, m.size() - 1)]
+## Whether the panel is up.
+func panel_open() -> bool:
+	return _panel != null
 
 
-func move(dir: int) -> void:
-	var m := menu()
-	_selected = wrapi(_selected + dir, 0, m.size())
-	if _ui != null:
-		_ui.queue_redraw()
+## The choices that are up, left to right.
+func choices() -> Array[String]:
+	return menu.options
 
 
-## The choice made ("again" or "exit"); "" if the game is not at its end.
-func accept() -> String:
-	if not (_view.get("state", "") in ["won", "lost"]):
-		return ""
-	return selected()
+## The panel of a result (DojoTrial.result()): opens with the choice that goes on selected.
+func _open_panel(r: Dictionary) -> void:
+	_close_panel()
+	var won: bool = r.won
+	menu.open(TrialMenu.options_for(won, r.has_next), TrialMenu.default_for(won, r.has_next))
+	_panel = Control.new()
+	_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_layer.add_child(_panel)
+	var box := PanelContainer.new()
+	var st := StyleBoxFlat.new()
+	st.bg_color = Color(PANEL, 0.94)
+	st.set_border_width_all(3)
+	st.border_color = GOLD
+	st.set_corner_radius_all(14)
+	st.set_content_margin_all(26)
+	box.add_theme_stylebox_override("panel", st)
+	box.set_anchors_preset(Control.PRESET_CENTER)
+	box.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	box.grow_vertical = Control.GROW_DIRECTION_BOTH
+	box.custom_minimum_size = Vector2(640, 0)
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_panel.add_child(box)
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", 12)
+	col.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(col)
+	_row(col, String(r.title), 26, GREEN if won else RED)
+	_row(col, String(r.line), 12, CREAM)
+	_row(col, String(r.score_line), 18, CREAM)
+	if String(r.best_line) != "":
+		_row(col, String(r.best_line), 12, GOLD)
+	if r.new_record:
+		_row(col, Text.t("HIDEOUT_GAME_NEW_RECORD"), 20, GOLD)
+	if String(r.mvp) != "":
+		_row(col, String(r.mvp), 12, CREAM)
+	var gap := Control.new()
+	gap.custom_minimum_size = Vector2(0, 6)
+	gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	col.add_child(gap)
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 18)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	col.add_child(row)
+	_buttons.clear()
+	for id in menu.options:
+		var b := Hud.pill_button(Text.t(CHOICES[id]), 16)
+		b.resized.connect(func() -> void: b.pivot_offset = b.size / 2)
+		b.mouse_entered.connect(_hover.bind(id))
+		b.pressed.connect(func() -> void: picked.emit(id))
+		row.add_child(b)
+		_buttons[id] = b
+	_help = _row(col, "", 10, Color(CREAM, 0.75))
+	refresh()
+
+
+func _row(parent: Control, text: String, size: int, colour: Color) -> Label:
+	var l := Label.new()
+	l.text = text
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.add_theme_font_override("font", Hud.ARCADE)
+	l.add_theme_font_size_override("font_size", size)
+	l.add_theme_color_override("font_color", colour)
+	l.add_theme_color_override("font_outline_color", INK)
+	l.add_theme_constant_override("outline_size", 4 if size >= 18 else 2)
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(l)
+	return l
+
+
+func _close_panel() -> void:
+	if _panel != null:
+		_panel.queue_free()
+		_panel = null
+	_buttons.clear()
+	_help = null
+	_panel_stamp = ""
+	menu.close()
+
+
+## The mouse is over a choice: it becomes the selected one.
+func _hover(id: String) -> void:
+	if menu.select(id):
+		refresh()
+		moved.emit()
+
+
+## The panel as the selection says: the lit button, and the help line for the keys
+## or the pad, whichever was last touched.
+func refresh() -> void:
+	for id in _buttons:
+		Hud.pill_lit(_buttons[id], id == menu.current())
+	if _help != null:
+		_help.text = Text.t("HIDEOUT_TRIAL_HELP_PAD" if menu.pad else "HIDEOUT_TRIAL_HELP_KEYS")
 
 
 # --- The world ---------------------------------------------------------------------------
@@ -219,7 +324,7 @@ func _build(n: Node3D, kind: String) -> void:
 			band.material_override = _flat(RED)
 			band.position.y = 0.62
 			n.add_child(band)
-		"pedestal":
+		"pedestal", "goal":
 			_add_ring(n, GREEN)
 		_:
 			_add_ring(n, GOLD)
@@ -297,16 +402,11 @@ func _draw_ui() -> void:
 		"ready":
 			_text(Text.t("HIDEOUT_GAME_READY"), Vector2(size.x * 0.5, size.y * 0.36), 44, GOLD, true)
 			_text(_goal_hint(), Vector2(size.x * 0.5, size.y * 0.36 + 64), 20, CREAM, true)
-		"won", "lost":
-			_draw_end(size)
 
 
+## What the "¿LISTOS?" says under it: the trial's own line (DojoTrials.TABLE `hint`).
 func _goal_hint() -> String:
-	match String(_view.get("id", "")):
-		"bolos": return Text.t("HIDEOUT_GAME_ROLL")
-		"pedestal": return Text.t("HIDEOUT_GAME_HOLD")
-		"aguanta": return Text.t("HIDEOUT_GAME_HIDE")
-	return Text.t("HIDEOUT_GAME_ATRAPA")
+	return Text.t(String(DojoTrials.info(String(_view.get("id", ""))).get("hint", "")))
 
 
 func _draw_world_marks(size: Vector2) -> void:
@@ -386,16 +486,13 @@ func _draw_lean(size: Vector2, lean: float, fall: float) -> void:
 	_ui.draw_rect(Rect2(Vector2(x - 4, at.y - 6), Vector2(8, 28)), GOLD if absf(lean) < 0.6 else RED)
 
 
+## The head-up display, the same for every trial: the name and difficulty, under it how
+## far it is and the best mark, the clock, and how to leave.
 func _draw_hud(size: Vector2) -> void:
 	var v := _view
 	var top := Vector2(size.x * 0.5, 14)
-	var title := Text.t("HIDEOUT_GAME_LEVEL") % int(v.level) + "  " + Text.t(DojoGames.TIERS[int(v.tier)].text)
-	_text(title, top, 26, CREAM, true)
-	var line := Text.t("HIDEOUT_GAME_COUNT") % [int(v.got), int(v.goal)]
-	var best: int = int(v.get("best", 0))
-	if best > 0:
-		line += "    " + Text.t("HIDEOUT_GAME_BEST") % best
-	_text(line, top + Vector2(0, 34), 16, GOLD, true)
+	_text(String(v.get("title", "")), top, 26, CREAM, true)
+	_text("    ".join(PackedStringArray(v.get("hud", []))), top + Vector2(0, 34), 16, GOLD, true)
 	var tm: Dictionary = v.get("timer", {})
 	if String(v.state) == "playing" and not tm.is_empty() and float(tm.get("max", 0.0)) > 0.0:
 		var frac := clampf(float(tm.left) / float(tm.max), 0.0, 1.0)
@@ -409,6 +506,8 @@ func _draw_hud(size: Vector2) -> void:
 		_text("%.1f" % float(tm.left), bar.position + Vector2(bar.size.x + 12, -6), 16, CREAM)
 		if String(v.id) == "aguanta" and String(v.get("phase", "")) == "enter":
 			_text(Text.t("HIDEOUT_GAME_HIDE"), Vector2(size.x * 0.5, 96), 18, GOLD, true)
+	if not (String(v.state) in ["won", "lost"]):
+		_text(Text.t("HIDEOUT_GAME_LEAVE_KEY"), Vector2(size.x * 0.5, size.y - 34), 14, Color(CREAM, 0.85), true)
 
 
 func _draw_popups(size: Vector2) -> void:
@@ -423,29 +522,3 @@ func _draw_popups(size: Vector2) -> void:
 		var at: Vector2 = Vector2(size.x * 0.5, size.y * 0.3) if p.centred else _screen(p.at) - Vector2(0, 30 + 40 * float(p.age))
 		_text(String(p.text), at, 24, Color(p.colour, a), true)
 	_popups = keep
-
-
-func _draw_end(size: Vector2) -> void:
-	var v := _view
-	var box := Rect2(size * 0.5 - Vector2(280, 190), Vector2(560, 380))
-	_ui.draw_rect(box, Color(PANEL, 0.94))
-	_ui.draw_rect(box, GOLD, false, 3.0)
-	var centre := size.x * 0.5
-	var won: bool = v.state == "won"
-	var title := Text.t("HIDEOUT_GAME_WON") if won else Text.t("HIDEOUT_GAME_LOST_" + String(v.id).to_upper())
-	_text(title, Vector2(centre, box.position.y + 24), 30, GREEN if won else RED, true)
-	var sub := Text.t("HIDEOUT_GAME_WON_LINE") if won else Text.t("HIDEOUT_GAME_WHY_" + String(v.get("why", "time")).to_upper())
-	_text(sub, Vector2(centre, box.position.y + 74), 14, CREAM, true)
-	_text(Text.t("HIDEOUT_GAME_REACHED") % int(v.reached), Vector2(centre, box.position.y + 108), 20, CREAM, true)
-	if v.get("new_record", false):
-		_text(Text.t("HIDEOUT_GAME_NEW_RECORD"), Vector2(centre, box.position.y + 148 + 3 * sin(_t * 8.0)), 24, GOLD, true)
-	if String(v.get("mvp_name", "")) != "":
-		_text(Text.t("HIDEOUT_GAME_MVP") % String(v.mvp_name), Vector2(centre, box.position.y + 190), 14, CREAM, true)
-	var labels := {"again": Text.t("HIDEOUT_GAME_AGAIN"), "exit": Text.t("HIDEOUT_GAME_EXIT")}
-	var m := menu()
-	for i in m.size():
-		var y := box.position.y + 240 + i * 42
-		var on := i == _selected
-		if on:
-			_ui.draw_rect(Rect2(Vector2(box.position.x + 60, y - 4), Vector2(box.size.x - 120, 36)), Color(GOLD, 0.25))
-		_text(("> " if on else "  ") + String(labels[m[i]]), Vector2(centre, y), 20, GOLD if on else CREAM, true)

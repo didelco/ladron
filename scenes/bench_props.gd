@@ -1,7 +1,7 @@
 class_name BenchProps
 extends RefCounted
-## The things of the dojo's bench, one kind for each test (Practice.BENCH_OBJECTS is
-## the table that says which), composed from primitives (or the house's models) in
+## The things of the dojo's tests, one kind for each (the `via` of its row of
+## DojoTrials.TABLE says which), composed from primitives (or the house's models) in
 ## the house's toon colours: an empty glass case (GANZÚA), a hideout (ESCONDITE), an
 ## alarm box on the wall with its wires hanging (CABLES) and another with a glass
 ## and a suction cup (PULSO). None holds a sock (that is PILLA EL CALCETÍN's).
@@ -15,16 +15,17 @@ const STEEL := Color("#5c6370")
 const WIRE_COLOURS := [Color("#e04b4b"), Color("#4b8fe0"), Color("#f0c53a"), Color("#4bc46a"), Color("#e08a2b"), Color("#b06ae0")]
 
 
-## Build the `object` (Practice.BENCH_OBJECTS) of difficulty `level` under `parent`.
+## Build the `object` (a `via` of Practice.VIAS) of difficulty `level` under `parent`;
+## `piece` is the furniture of a hideout (Hideouts.PIECES).
 ## Returns {lamp: MeshInstance3D, move: Node3D or null, shut: Vector3, done: Vector3,
 ## rot: bool}: `move` goes from `shut` to `done` (a rotation if `rot`, a position if
 ## not) as the case is done.
-static func build(view: MuseumView, object: String, parent: Node3D, level: int) -> Dictionary:
+static func build(view: MuseumView, object: String, parent: Node3D, level: int, piece := "") -> Dictionary:
 	match object:
 		"vitrine":
 			return _vitrine(view, parent)
 		"hideout":
-			return _hideout(view, parent, level)
+			return _hideout(view, parent, piece)
 		"alarm_wires":
 			return _alarm_wires(view, parent, level)
 	return _alarm_glass(view, parent, level)
@@ -82,8 +83,7 @@ static func _vitrine(view: MuseumView, parent: Node3D) -> Dictionary:
 ## ESCONDITE: a piece of furniture to hide in (Hideouts.PIECES: a fridge, a box, a
 ## chest, tighter each), with a lamp on its top. It is not one to hide in: it is
 ## for wriggling into, as in a heist.
-static func _hideout(view: MuseumView, parent: Node3D, level: int) -> Dictionary:
-	var kind := Practice.bench_piece(level)
+static func _hideout(view: MuseumView, parent: Node3D, kind: String) -> Dictionary:
 	var model := MuseumView.asset(Hideouts.PIECES[kind].model)
 	parent.add_child(model)
 	var top := view._bounds(model, Transform3D.IDENTITY)

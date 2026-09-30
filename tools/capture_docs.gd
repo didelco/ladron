@@ -220,11 +220,11 @@ func _shots() -> void:
 	await _shot("menu_elegir_mandos", "menus", "Elegir mandos", "Cada ladrón pulsa en su mando o en su mitad del teclado.")
 
 	# Settings.
-	for page in ["", "sound", "screen", "pads"]:
+	for page in ["", "sound", "screen", "pads", "options"]:
 		main.options.show("title", page)
 		await _wait(1.2)
 		await _shot("ajustes_" + (page if page != "" else "inicio"), "ajustes",
-			{"": "Ajustes", "sound": "Ajustes: sonido", "screen": "Ajustes: pantalla", "pads": "Ajustes: mandos y controles"}[page])
+			{"": "Ajustes", "sound": "Ajustes: sonido", "screen": "Ajustes: pantalla", "pads": "Ajustes: mandos y controles", "options": "Ajustes: opciones"}[page])
 
 	# Before a heist: the tale, the news (the lesson) and the plan; the
 	# lessons' nights and the museums' big jobs.
@@ -473,21 +473,31 @@ func _assets() -> void:
 	var loot: Array = _asset_loot()
 	for i in loot.size():
 		var l: Dictionary = loot[i]
-		main.podium.build(l)
-		await _wait(0.9)
 		var file := "assets/piezas/%02d.webp" % (i + 1)
-		main.podium.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
+		await _podium_shot(file, func() -> void: main.podium.build(l))
 		out.piezas.append({"file": file, "name": l.name, "blurb": l.get("blurb", ""), "shape": l.get("shape", ""), "colour": l.get("colour", ""),
 			"night": i + 1 if i < Story.count() else 0})
 	for i in Props.KINDS.size():
-		main.podium.build()
-		main.podium.put_node(PropsView.model(Props.KINDS[i]), Color("#b8a888"), 2.0, 0.6)
-		await _wait(0.9)
 		var file := "assets/objetos/%s.webp" % Props.KINDS[i]
-		main.podium.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
+		await _podium_shot(file, func() -> void:
+			main.podium.build()
+			main.podium.put_node(PropsView.model(Props.KINDS[i]), Color("#b8a888"), 2.0, 0.6))
 		out.objetos.append({"file": file, "kind": Props.KINDS[i], "name": Props.name_of(Props.KINDS[i])})
 	main.podium.drop()
 	_save_json("data/assets.json", out)
+
+
+## Put something on the podium (the same stand the game shows the loot on) and
+## save its picture. Something in the game now and then takes the podium away
+## meanwhile, so it is put again until the picture is there.
+func _podium_shot(file: String, put: Callable) -> void:
+	for attempt in 6:
+		put.call()
+		await _wait(0.9)
+		if main.podium.preview != null:
+			main.podium.preview.get_texture().get_image().save_webp(_path(file), true, 0.9)
+			return
+	push_error("docs: no hay manera de sacar " + file)
 
 
 ## Every piece there is: each night's, and one of each shape the generative heists make up.

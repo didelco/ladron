@@ -8,6 +8,13 @@ cara no se ve: los ojos asoman sobre la tela negra.
 Así se hizo el personaje. Ahora se retoca a mano en art/personajes/ninja.blend
 y sale con art/export.py (o el panel «Ladrón» de Blender): volver a ejecutar
 esto pisa esos retoques.
+
+Ahora art/personajes/ninja.blend es este personaje en piezas sueltas (un objeto por pieza, con su
+esqueleto y sus pesos) y es el que se edita: volver a ejecutar esto lo pisaría y lo dejaría en una
+sola malla. Las animaciones se rehacen sobre él con art/characters/animar.py.
+
+El ninja de hoy (muñeco de goma, simétrico) ya no sale de aquí: lo rehace entero, pieza a pieza,
+art/characters/ninja_v2.py. Esto queda como historia y por sus funciones.
 """
 import math
 import os

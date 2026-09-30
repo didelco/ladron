@@ -15,10 +15,17 @@ extends RefCounted
 const MIN_AWAY := 2.0
 ## A maze spot has a way at least this many times its straight line.
 const MAZE_RATIO := 1.6
-## The zone that stands for the whole dojo when Den does not name its zones,
-## and the zones that count as it when it does (the mats are the first room).
+## The zone that stands for the whole dojo when Den does not name its zones.
 const DEFAULT_ZONE := "tatami"
-const ALIASES := {"tatami": ["tatami", "exposicion"]}
+## The areas the games' levels talk of (`zones` of CatchGame and BowlingGame LEVELS), each a
+## group of the dojo's bays (Den.DOJO_ZONES, named by the trial that lives in each):
+## the games of skill, the alarm and cases, the stealth bays, and the guarded circuit.
+const ALIASES := {
+	"juegos": ["tatami", "atrapa", "pedestal", "bolos"],
+	"alarma": ["lockpick", "wires", "steady"],
+	"escondites": ["squeeze", "aguanta"],
+	"circuito": ["circuit"],
+}
 ## Spots avoided keep this far (a chessboard distance) from a new one.
 const AVOID := 3
 ## Tries a pick may take, from the exact ask to anything at all.
@@ -338,7 +345,7 @@ func _zone_ok(z: String, want: Array) -> bool:
 ## The spots where something may go, for something that was at `from`:
 ## [{tile, zone, gate, path, time_path, watchers, cross, forced}] in the reading
 ## order of the plan.
-##   zones  the zones allowed (empty: any); "tatami" is also the exposicion
+##   zones  the zones allowed (empty: any), or names of groups of them (ALIASES)
 ##   dmin, dmax  steps on foot from `from` (path) it may be
 ##   opts   maze: the way at least MAZE_RATIO times the straight line;
 ##          gate: only spots that a shut door cuts off from `from`

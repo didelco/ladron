@@ -35,16 +35,16 @@ const KEEP_APART := 3
 ## A pin takes this long to fall over (for the picture).
 const FALL_S := 0.7
 const LEVELS := [
-	{"n": 1, "cluster": false, "movers": 0, "move": 0.0, "dmin": 4, "dmax": 8, "zones": ["tatami"], "base": 4.0, "slack": 2.4, "gate": false, "maze": false},
-	{"n": 1, "cluster": false, "movers": 0, "move": 0.0, "dmin": 6, "dmax": 10, "zones": ["tatami"], "base": 3.8, "slack": 2.3, "gate": false, "maze": false},
-	{"n": 2, "cluster": false, "movers": 0, "move": 0.0, "dmin": 6, "dmax": 11, "zones": ["tatami", "pasillo"], "base": 3.8, "slack": 2.2, "gate": false, "maze": false},
-	{"n": 2, "cluster": false, "movers": 1, "move": 0.5, "dmin": 8, "dmax": 13, "zones": ["tatami", "pasillo", "exposicion"], "base": 3.6, "slack": 2.1, "gate": false, "maze": false},
-	{"n": 2, "cluster": true, "movers": 0, "move": 0.0, "dmin": 8, "dmax": 14, "zones": ["tatami", "pasillo", "exposicion", "escondites", "patio"], "base": 3.4, "slack": 2.0, "gate": false, "maze": false},
+	{"n": 1, "cluster": false, "movers": 0, "move": 0.0, "dmin": 4, "dmax": 8, "zones": ["juegos"], "base": 4.0, "slack": 2.4, "gate": false, "maze": false},
+	{"n": 1, "cluster": false, "movers": 0, "move": 0.0, "dmin": 6, "dmax": 10, "zones": ["juegos"], "base": 3.8, "slack": 2.3, "gate": false, "maze": false},
+	{"n": 2, "cluster": false, "movers": 0, "move": 0.0, "dmin": 6, "dmax": 11, "zones": ["juegos", "circuito"], "base": 3.8, "slack": 2.2, "gate": false, "maze": false},
+	{"n": 2, "cluster": false, "movers": 1, "move": 0.5, "dmin": 8, "dmax": 13, "zones": ["juegos", "circuito", "alarma"], "base": 3.6, "slack": 2.1, "gate": false, "maze": false},
+	{"n": 2, "cluster": true, "movers": 0, "move": 0.0, "dmin": 8, "dmax": 14, "zones": ["juegos", "circuito", "alarma", "escondites"], "base": 3.4, "slack": 2.0, "gate": false, "maze": false},
 	{"n": 3, "cluster": false, "movers": 1, "move": 0.6, "dmin": 10, "dmax": 16, "zones": [], "base": 3.4, "slack": 1.9, "gate": true, "maze": false},
-	{"n": 3, "cluster": true, "movers": 0, "move": 0.0, "dmin": 10, "dmax": 18, "zones": ["pasillo"], "base": 3.2, "slack": 1.8, "gate": false, "maze": false},
-	{"n": 3, "cluster": false, "movers": 2, "move": 0.8, "dmin": 12, "dmax": 20, "zones": ["laberinto"], "base": 3.0, "slack": 1.7, "gate": false, "maze": true},
+	{"n": 3, "cluster": true, "movers": 0, "move": 0.0, "dmin": 10, "dmax": 18, "zones": ["circuito"], "base": 3.2, "slack": 1.8, "gate": false, "maze": false},
+	{"n": 3, "cluster": false, "movers": 2, "move": 0.8, "dmin": 12, "dmax": 20, "zones": ["circuito"], "base": 3.0, "slack": 1.7, "gate": false, "maze": true},
 	{"n": 4, "cluster": true, "movers": 0, "move": 0.0, "dmin": 12, "dmax": 22, "zones": [], "base": 3.0, "slack": 1.6, "gate": false, "maze": false},
-	{"n": 4, "cluster": false, "movers": 2, "move": 1.2, "dmin": 14, "dmax": 24, "zones": ["laberinto", "pasillo"], "base": 2.8, "slack": 1.5, "gate": true, "maze": false},
+	{"n": 4, "cluster": false, "movers": 2, "move": 1.2, "dmin": 14, "dmax": 24, "zones": ["circuito"], "base": 2.8, "slack": 1.5, "gate": true, "maze": false},
 ]
 
 ## the pins of the round: {pos, tile, left, max, down, fell (seconds since it

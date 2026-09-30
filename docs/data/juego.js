@@ -528,72 +528,6 @@ window.JUEGO = {
   {
    "colours": [
     {
-     "hex": "#2a160d",
-     "key": ""
-    }
-   ],
-   "file": "scenes/dojo_games_view.gd",
-   "name": "INK",
-   "note": ""
-  },
-  {
-   "colours": [
-    {
-     "hex": "#f1dfbd",
-     "key": ""
-    }
-   ],
-   "file": "scenes/dojo_games_view.gd",
-   "name": "CREAM",
-   "note": ""
-  },
-  {
-   "colours": [
-    {
-     "hex": "#ffcf3a",
-     "key": ""
-    }
-   ],
-   "file": "scenes/dojo_games_view.gd",
-   "name": "GOLD",
-   "note": ""
-  },
-  {
-   "colours": [
-    {
-     "hex": "#ff3b3b",
-     "key": ""
-    }
-   ],
-   "file": "scenes/dojo_games_view.gd",
-   "name": "RED",
-   "note": ""
-  },
-  {
-   "colours": [
-    {
-     "hex": "#7be07b",
-     "key": ""
-    }
-   ],
-   "file": "scenes/dojo_games_view.gd",
-   "name": "GREEN",
-   "note": ""
-  },
-  {
-   "colours": [
-    {
-     "hex": "#35211a",
-     "key": ""
-    }
-   ],
-   "file": "scenes/dojo_games_view.gd",
-   "name": "PANEL",
-   "note": ""
-  },
-  {
-   "colours": [
-    {
      "hex": "#efe6d1",
      "key": ""
     }
@@ -3647,6 +3581,72 @@ window.JUEGO = {
    "file": "scenes/town_builder.gd",
    "name": "PLAIN",
    "note": "A street tile without its white lines (NIGHT_SHADER: own.a)."
+  },
+  {
+   "colours": [
+    {
+     "hex": "#2a160d",
+     "key": ""
+    }
+   ],
+   "file": "scenes/trial_view.gd",
+   "name": "INK",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#f1dfbd",
+     "key": ""
+    }
+   ],
+   "file": "scenes/trial_view.gd",
+   "name": "CREAM",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ffcf3a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/trial_view.gd",
+   "name": "GOLD",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#ff3b3b",
+     "key": ""
+    }
+   ],
+   "file": "scenes/trial_view.gd",
+   "name": "RED",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#7be07b",
+     "key": ""
+    }
+   ],
+   "file": "scenes/trial_view.gd",
+   "name": "GREEN",
+   "note": ""
+  },
+  {
+   "colours": [
+    {
+     "hex": "#35211a",
+     "key": ""
+    }
+   ],
+   "file": "scenes/trial_view.gd",
+   "name": "PANEL",
+   "note": ""
   }
  ],
  "historia": {
@@ -8954,8 +8954,8 @@ window.JUEGO = {
   }
  ],
  "generado": {
-  "fecha": "29-09-2026 23:56",
-  "commit": "2cd5783",
-  "rama": "mira-si-toda-la-rama-esta-limp"
+  "fecha": "30-09-2026 00:57",
+  "commit": "a029265",
+  "rama": "main"
  }
 };
