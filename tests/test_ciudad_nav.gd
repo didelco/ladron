@@ -274,7 +274,7 @@ func _run() -> void:
 	await frames()
 	var left := [false]
 	t.left.connect(func() -> void: left[0] = true)
-	t.input(key(KEY_SPACE))
+	t.input(key(KEY_ESCAPE))
 	check(left[0], "atrás sale de la ciudad")
 	t.queue_free()
 	await frames()

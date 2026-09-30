@@ -380,10 +380,24 @@ func _draw() -> void:
 		var dir := (edge - p).normalized()
 		if p.distance_to(edge) > r + 6.0:
 			draw_line(p + dir * (r + 2.0), edge, Color(LINE, LINE.a * _card.modulate.a), 3.0, true)
-	# The start button's ring when it is the one picked.
+	# The start button picked: its own rounded border lit, like every other
+	# mark picked (a ring, never a square box round it).
 	if mode == "explore" and cursor == marks.size() and _start:
-		var box := _start.get_global_rect().grow(8)
-		draw_rect(box, Color(RING, 0.6 + sin(_t * 5.0) * 0.3), false, 3.0)
+		var box := _start.get_global_rect().grow(6)
+		var st := StyleBoxFlat.new()
+		st.bg_color = Color(0, 0, 0, 0)
+		st.border_color = Color(RING, 0.6 + sin(_t * 5.0) * 0.3)
+		st.set_border_width_all(3)
+		st.set_corner_radius_all(32)
+		st.anti_aliasing = true
+		draw_style_box(st, box)
+	# The way in's sign beside ¡A ROBAR!, the same pin as on the plan
+	# (MARK_HEADS.start): where the button lands, its icon lands with it.
+	if _start and _start.visible:
+		var c := _start.get_global_rect().position + Vector2(-26, _start.size.y * 0.5)
+		draw_circle(c, 16.0, PIN)
+		draw_circle(c, 14.0, MARK_HEADS.start)
+		_sign("start", c, 14.0, PIN)
 
 
 ## Mark i's pin: a head in its kind's colour, with its sign on it, on a

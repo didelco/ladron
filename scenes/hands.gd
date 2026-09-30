@@ -95,13 +95,13 @@ func seat_label(seat: String) -> String:
 	return Text.t("SEAT_PAD") % [pad + 1, Input.get_joy_name(pad).left(18)]
 
 
-## A press on the player-select screen: it takes a seat; Esc frees the last
-## one, B (Space, Enter on the keyboard) its own — or goes back when none is
-## taken.
+## A press on the player-select screen: it takes a seat; Esc or Backspace
+## frees the last one, B (Space, Enter on the keyboard) its own — or goes
+## back when none is taken.
 func join_input(event: InputEvent) -> void:
 	var seat := ""
 	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_ESCAPE:
+		if event.keycode in [KEY_ESCAPE, KEY_BACKSPACE]:
 			unjoin()
 			return
 		if KB_BACK.has(event.keycode):

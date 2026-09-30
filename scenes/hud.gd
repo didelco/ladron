@@ -574,13 +574,19 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 ##                                                    the map, the piece (an id:
 ##                                                    set_picture changes it)
 ##   {"list": [{"text", "call"?, "open", "colour"?, "selected"?} or {"head": text}],
-##     "width"?, "height"?}                           lines to go down with the
+##     "width"?, "height"?, "right_id"?}                lines to go down with the
 ##                                                    arrows, in a box that scrolls:
 ##                                                    landing on one calls "call",
-##                                                    pressing it "open" (_list)
-##   {"buttons": [{"text", "call", "icon"?, "colour"?}], "row": bool, "focus"?: int}
-##                                                    text buttons, all one width
-##                                                    ("step" for "call": a setting, _stepper)
+##                                                    pressing it "open" (_list);
+##                                                    right_id: every line's
+##                                                    right arrow reaches a
+##                                                    button elsewhere with
+##                                                    that "id" (_resolve_right_links)
+##   {"buttons": [{"text", "call", "icon"?, "colour"?, "id"?}], "row": bool,
+##     "focus"?: int, "align"?: "left"}                 text buttons, all one width
+##                                                    ("step" for "call": a setting, _stepper);
+##                                                    id: for a list elsewhere to
+##                                                    reach right into it (right_id)
 ##   {"cards": [{"title", "text"?, "picture", "call", "colour"?, "selected"?,
 ##     "focus"?}], "width"?: int}                     big picture cards in a row
 ##   {"legend": [keys], "thieves": [Color], "loot": Color}
@@ -626,6 +632,7 @@ func show_menu(items: Array, screen := "") -> void:
 	_titles.clear()
 	for item in items:
 		_menu_item(item, _panel_box, st)
+	_resolve_right_links(st)
 	var rows := st.rows
 	var first := st.first
 	var focus_on := st.focus_on
@@ -740,6 +747,13 @@ class MenuState:
 	var rows: Array = []
 	var first: Button = null
 	var focus_on: Button = null
+	## Buttons an item gave an "id" ({"id": "..."}), to link to from elsewhere
+	## in the same menu (e.g. a list's "right_id").
+	var by_id := {}
+	## Lists whose lines should reach another control on the right (a button,
+	## by id, not yet built when the list was): {"id", "rows"}, resolved once
+	## everything is up (_resolve_right_links).
+	var pending_right: Array = []
 
 
 ## One item of a menu (show_menu), added to parent.
@@ -838,8 +852,10 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 			row.move_child(row.get_child(-1), 0)
 	elif item.has("buttons"):
 		var box: BoxContainer = HBoxContainer.new() if item.get("row", false) else VBoxContainer.new()
-		box.alignment = BoxContainer.ALIGNMENT_CENTER
+		box.alignment = BoxContainer.ALIGNMENT_BEGIN if item.get("align", "") == "left" else BoxContainer.ALIGNMENT_CENTER
 		box.add_theme_constant_override("separation", 24 if item.get("row", false) else 10)
+		if item.get("align", "") == "left":
+			box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		parent.add_child(box)
 		var line: Array = []
 		for bi in item.buttons.size():
@@ -848,6 +864,8 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 			# The one to start on, when it is not the first.
 			if item.get("focus", -1) == bi:
 				st.focus_on = button
+			if b.has("id"):
+				st.by_id[b.id] = button
 			if not b.has("icon"):
 				# big: the one thing to do next; small: the way back.
 				if item.get("big", false):
@@ -999,6 +1017,10 @@ func set_picture(id: String, picture: Texture2D) -> void:
 ## lines. The line "selected" is the one the menu opens on.
 func _list(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 	var width: int = item.get("width", 360)
+	# Its lines' rows, to reach right into another control once it is built
+	# (right_id, _resolve_right_links).
+	var right_id: String = item.get("right_id", "")
+	var my_rows: Array = []
 	var frame := PanelContainer.new()
 	var fs := _frame(BRASS, false, false, 18)
 	fs.set_content_margin_all(10)
@@ -1052,11 +1074,27 @@ func _list(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 		b.pressed.connect(e.open)
 		b.pressed.connect(func() -> void: ui_sound.emit("ok"))
 		box.add_child(b)
-		st.rows.append([b])
+		var row: Array = [b]
+		st.rows.append(row)
+		my_rows.append(row)
 		if st.first == null:
 			st.first = b
 		if e.get("selected", false):
 			st.focus_on = b
+	if right_id != "":
+		st.pending_right.append({"id": right_id, "rows": my_rows})
+
+
+## Once every item is up, a list's lines that asked for it (right_id) reach
+## right into the button they named (by its "id"), and it reaches left back
+## into the list — wired in, along with the rest, by _wire and _rewire.
+func _resolve_right_links(st: MenuState) -> void:
+	for req in st.pending_right:
+		if not st.by_id.has(req.id):
+			continue
+		var target: Control = st.by_id[req.id]
+		for row in req.rows:
+			(row as Array).append(target)
 
 
 ## The arrows go where the eye expects: left and right along a row (round
@@ -2097,11 +2135,14 @@ static func live_map(thieves: Array[Thief], colours: Array) -> Image:
 
 ## The plan on parchment, before the job: the same map, with the route in
 ## ink dots, where you come in (the thieves' icons) and where each guard
-## starts (a red cross).
-static func plan_map(guards: Array[Guard], colours: Array) -> Image:
+## starts (a red cross). pins: for the plan looked round pin by pin
+## (PlanTalk), whose chinchetas already mark the guards and the way in —
+## so the picture under them does not print its own, one on top of the
+## other.
+static func plan_map(guards: Array[Guard], colours: Array, pins := false) -> Image:
 	var none: Array[Thief] = []
 	home_map = false
-	return _draw_map(none, [], guards, colours)
+	return _draw_map(none, [], guards, colours, pins)
 
 
 ## Pixels a tile: the plan fills about MAP_WIDTH whatever the museum's size,
@@ -2135,7 +2176,7 @@ const ICON_PANEL := [
 ]
 
 
-static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard], start_colours: Array) -> Image:
+static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard], start_colours: Array, pins := false) -> Image:
 	var s := clampi(int(MAP_WIDTH / Museum.w), 8, 32)
 	var img := Image.create(Museum.w * s, Museum.h * s, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
@@ -2195,15 +2236,18 @@ static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard
 		gem.call(mid.call(Heist.at), 20)
 	elif Heist.dropped != Vector2.INF:
 		gem.call(Heist.dropped, 16)
-	for g in guards:
-		_square(img, at.call(Vector2(g.x, g.y)), 12, MAP_GUARD)
+	if not pins:
+		for g in guards:
+			_square(img, at.call(Vector2(g.x, g.y)), 12, MAP_GUARD)
 	# The way out: the kunai that points the way in play, green, through the
 	# door and pointing out.
 	_kunai(img, at.call(mid.call(Heist.exit) + Vector2(Heist.exit_face) * 0.3), Vector2(Heist.exit_face), 1.6, C.green)
-	# Where you come in: a dot for each thief who will, side by side.
-	for i in start_colours.size():
-		var off := Vector2((i - (start_colours.size() - 1) / 2.0) * 34.0 / s, 0)
-		_dot(img, at.call(mid.call(Heist.start) + off), 14, start_colours[i], MAP_INK)
+	# Where you come in: a dot for each thief who will, side by side. Not
+	# with the pins: the "start" chincheta already says as much.
+	if not pins:
+		for i in start_colours.size():
+			var off := Vector2((i - (start_colours.size() - 1) / 2.0) * 34.0 / s, 0)
+			_dot(img, at.call(mid.call(Heist.start) + off), 14, start_colours[i], MAP_INK)
 	for i in thieves.size():
 		var p := thieves[i]
 		if p.out:

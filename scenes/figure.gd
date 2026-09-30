@@ -145,6 +145,27 @@ func set_rim(amount: float) -> void:
 			m.rim = amount
 
 
+## A jump for joy without leaving the floor (the piece is yours,
+## NightLoop._job): up tall and thin for a blink, a little squash, and back.
+## Only the model moves: the figure's own scale is the game's (Scenery).
+const POP_STRETCH := Vector3(0.93, 1.15, 0.93)
+const POP_SQUASH := Vector3(1.05, 0.94, 1.05)
+var _pop_tween: Tween
+
+
+func pop() -> void:
+	if _model == null:
+		return
+	var rest: Vector3 = Vector3.ONE * SIZE[_kind]
+	if _pop_tween:
+		_pop_tween.kill()
+	_model.scale = rest
+	_pop_tween = create_tween()
+	_pop_tween.tween_property(_model, "scale", rest * POP_STRETCH, 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_pop_tween.tween_property(_model, "scale", rest * POP_SQUASH, 0.1).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_pop_tween.tween_property(_model, "scale", rest, 0.16).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
+
 ## Place and pose the figure for this frame. dir is the grid heading (radians
 ## from +x); posture 0 standing, 1 on all fours. pose "roll" curls a thief
 ## into a tumbling ball, "dizzy" lays it on its back with stars round its

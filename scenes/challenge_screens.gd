@@ -58,8 +58,11 @@ func show_menu() -> void:
 		{"title": Text.t("MENU_CHALLENGE"), "size": 40},
 		{"text": Text.t("CHALLENGE_TEXT"), "colour": Hud.C.dim},
 		{"columns": [
-			{"items": [{"list": lines, "width": 380, "height": 450}]},
+			# The challenges, in the middle; its line's right arrow reaches
+			# the new-map button, up top on the other side (right_id/id).
+			{"items": [{"list": lines, "width": 380, "height": 450, "right_id": "edit_map"}]},
 			{"items": [
+				{"buttons": [{"text": Text.t("CHALLENGE_NEW"), "id": "edit_map", "call": show_editor.bind(small), "colour": Hud.C.green}], "row": true, "small": true},
 				{"text": "", "id": "pick_name", "size": 24},
 				{"text": "", "id": "pick_info", "size": 16, "colour": Hud.C.dim},
 				{"picture": room, "id": "pick_plan", "height": 330},
@@ -67,9 +70,8 @@ func show_menu() -> void:
 			], "width": 560},
 		], "separation": 30},
 		{"buttons": [
-			{"text": Text.t("CHALLENGE_NEW"), "call": show_editor.bind(small), "colour": Hud.C.green},
 			{"text": Text.t("MENU_BACK"), "call": host._show_title, "colour": Hud.C.dim},
-		], "row": true, "small": true},
+		], "row": true, "small": true, "align": "left"},
 	])
 
 

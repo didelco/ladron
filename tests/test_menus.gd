@@ -1,17 +1,18 @@
 extends SceneTree
 ## Las teclas de los menús: aceptar y atrás significan lo mismo en todas las
-## pantallas y lo mismo que jugando (cada mitad del teclado es un mando).
-## Aceptar: E, el punto, A (la acción). Atrás: Esc, Espacio, Enter, B (rodar,
-## soltar). En cada pantalla con menú, cada una de esas teclas, pulsada de
-## verdad (Input.parse_input_event), hace lo que le toca: aceptar avanza,
-## atrás vuelve. Sobre la escena principal.
+## pantallas. Aceptar: E, el punto, Espacio, Enter y A (la acción). Atrás:
+## Esc, Retroceso, el botón derecho del ratón y B. En cada pantalla con
+## menú, cada una de esas teclas, pulsada de verdad (Input.parse_input_event),
+## hace lo que le toca: aceptar avanza, atrás vuelve. Jugando, Espacio y
+## Enter siguen rodando (MenuKeys no manda ahí: Hands lee las suyas, aparte).
+## Sobre la escena principal.
 const Support := preload("res://tests/support.gd")
 var qa := Support.new()
 var m
 var hud: Hud
 
-const ACCEPTS := [KEY_E, KEY_PERIOD, "A"]
-const BACKS := [KEY_ESCAPE, KEY_SPACE, KEY_ENTER, KEY_KP_ENTER, "B"]
+const ACCEPTS := [KEY_E, KEY_PERIOD, KEY_SPACE, KEY_ENTER, KEY_KP_ENTER, "A"]
+const BACKS := [KEY_ESCAPE, KEY_BACKSPACE, "B"]
 const W := Hud.SWAP_WAIT_FRAMES + 3
 
 
@@ -41,7 +42,7 @@ func hit(k) -> void:
 func name_of(k) -> String:
 	if k is String:
 		return k
-	return {KEY_E: "E", KEY_PERIOD: "punto", KEY_ESCAPE: "Esc", KEY_SPACE: "Espacio", KEY_ENTER: "Enter", KEY_KP_ENTER: "Enter del teclado numérico"}.get(k, str(k))
+	return {KEY_E: "E", KEY_PERIOD: "punto", KEY_ESCAPE: "Esc", KEY_SPACE: "Espacio", KEY_ENTER: "Enter", KEY_KP_ENTER: "Enter del teclado numérico", KEY_BACKSPACE: "Retroceso"}.get(k, str(k))
 
 
 func frames(n := 1) -> void:
@@ -93,24 +94,29 @@ func _init() -> void:
 	for k in BACKS:
 		var e: InputEvent = pad_event(JOY_BUTTON_B, true) if k is String else key_event(k, true)
 		check(MenuKeys.of(e) == "back" and Tour.new().intent(e) == "back", name_of(k) + " vuelve en los menús y en la ciudad")
-	# Jugando, las mismas teclas: aceptar es la acción, atrás (menos Esc) es rodar.
+	# Jugando, las teclas hacen lo suyo (Hands, aparte de MenuKeys): E y el
+	# punto son la acción, Espacio y Enter ruedan — aunque en los menús
+	# Espacio y Enter acepten (MENU_ACCEPT_KEYS), a Hands no le llega ese
+	# significado, y sigue rodando con ellas como siempre.
 	for k in MenuKeys.ACCEPT_KEYS:
 		Input.parse_input_event(key_event(k, true)); Input.flush_buffered_events()
 		var o: Array = m.hands.seat_input("kb_left" if k == KEY_E else "kb_right", false)
 		check(o[5] and not o[6], name_of(k) + " jugando es la acción (A)")
 		Input.parse_input_event(key_event(k, false)); Input.flush_buffered_events()
-	for k in MenuKeys.BACK_KEYS:
-		if k == KEY_ESCAPE:
-			continue
+	for k in MenuKeys.MENU_ACCEPT_KEYS:
 		Input.parse_input_event(key_event(k, true)); Input.flush_buffered_events()
 		var o: Array = m.hands.seat_input("kb_left" if k == KEY_SPACE else "kb_right", false)
-		check(o[6] and not o[5], name_of(k) + " jugando es rodar (B)")
+		check(o[6] and not o[5], name_of(k) + " jugando sigue rodando (B), aunque en los menús acepte")
 		Input.parse_input_event(key_event(k, false)); Input.flush_buffered_events()
 	# Moverse: las flechas (el de la derecha, cruceta y stick) y WASD (el de la izquierda).
 	for pair in [["ui_up", KEY_UP, KEY_W], ["ui_down", KEY_DOWN, KEY_S], ["ui_left", KEY_LEFT, KEY_A], ["ui_right", KEY_RIGHT, KEY_D]]:
 		var got: Array = in_map.call(pair[0])
 		check(pair[1] in got and pair[2] in got, "%s: la flecha y %s %s" % [pair[0], OS.get_keycode_string(pair[2]), str(got)])
 	# Un campo de texto (el editor) sigue escribiendo la E, el espacio y WASD.
+	# Al título primero: los toques de arriba, ahora que Espacio y Enter
+	# también aceptan, pueden haber paseado el foco por sus menús.
+	m._show_title()
+	await frames(W)
 	var field := LineEdit.new()
 	root.add_child(field)
 	field.grab_focus()
@@ -155,9 +161,9 @@ func _init() -> void:
 			"%s · %s mueve el foco como %s (%d, %d)" % [t[0], OS.get_keycode_string(t[4]), OS.get_keycode_string(t[3]), by_wasd, by_arrow])
 	var bubble_at := func(k: Key) -> int:
 		m.players = 1
-		m._show_title()
+		m._show_generative_menu()
 		await frames(W)
-		m._pick_players("generative")
+		m._pick_generative_players()
 		await frames(W)
 		var was: int = hud.bubble_focus()
 		await hit(k)
@@ -175,20 +181,20 @@ func _init() -> void:
 	await each(ACCEPTS, "título", title, func(): return m.phase == "pick" and hud.bubble_open(), "abre el bocadillo de la tarjeta")
 	await each(BACKS, "título", title, func(): return m.phase == "title" and not hud.bubble_open(), "atrás no hace nada")
 
-	# --- Cuántos ladrones: el bocadillo ------------------------------------------------
+	# --- Cuántos ladrones: el bocadillo (desde la tarjeta del generativo) --------------
 	var bubble := func() -> void:
 		m.players = 1
-		m._show_title()
+		m._show_generative_menu()
 		await frames(W)
-		m._pick_players("generative")
-	await each(ACCEPTS, "bocadillo", bubble, func(): return m.phase == "generative" and m.players == 1, "elige 1 y va al generativo")
-	await each(BACKS, "bocadillo", bubble, func(): return m.phase == "title" and not hud.bubble_open(), "lo cierra")
+		m._pick_generative_players()
+	await each(ACCEPTS, "bocadillo", bubble, func(): return m.phase == "generative" and m.players == 1, "elige 1 y vuelve al generativo")
+	await each(BACKS, "bocadillo", bubble, func(): return m.phase == "generative" and not hud.bubble_open(), "lo cierra")
 
 	# --- El generativo -------------------------------------------------------------------
 	var generative := func() -> void:
 		m.players = 1
 		m._show_generative_menu()
-	await each(BACKS, "generativo", generative, func(): return m.phase == "pick" and hud.bubble_open(), "vuelve al bocadillo")
+	await each(BACKS, "generativo", generative, func(): return m.phase == "title" and not hud.bubble_open(), "vuelve al título")
 	await each(ACCEPTS, "generativo", generative, func(): return m.phase == "brief" and m.mode == "generative", "EMPEZAR: a la previa")
 
 	# --- La previa (tiene una ronda ya) --------------------------------------------------

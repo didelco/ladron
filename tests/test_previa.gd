@@ -88,7 +88,7 @@ func _init() -> void:
 
 	# The controls, in the tour's own words.
 	check(t.intent(key(KEY_E)) == "accept" and t.intent(key(KEY_PERIOD)) == "accept", "E o el punto aceptan")
-	check(t.intent(key(KEY_SPACE)) == "back" and t.intent(key(KEY_ENTER)) == "back" and t.intent(key(KEY_ESCAPE)) == "back", "Espacio, Enter o Esc, atrás")
+	check(t.intent(key(KEY_SPACE)) == "accept" and t.intent(key(KEY_ENTER)) == "accept" and t.intent(key(KEY_ESCAPE)) == "back", "Espacio o Enter aceptan, Esc vuelve")
 	check(t.intent(key(KEY_TAB)) == "skip", "Tab salta")
 	check(t.intent(key(KEY_D)) == "right" and t.intent(key(KEY_UP)) == "up", "WASD y flechas mueven")
 	check(t.intent(pad(JOY_BUTTON_A)) == "accept" and t.intent(pad(JOY_BUTTON_B)) == "back" and t.intent(pad(JOY_BUTTON_START)) == "skip", "mando: A, B y Start")

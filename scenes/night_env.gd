@@ -1,9 +1,10 @@
 class_name NightEnv
 extends RefCounted
-## The night the museums are in: the Environment (cold blue ambient, ACES, glow, thin fog, contact
-## shadows, the polished floor's reflections), the moon, the camera and the ears, and the
-## warm soft mood of the band's house (DenView.mood). What Quality turns off in Baja is
-## turned off through Quality.apply_environment and Quality.apply_light.
+## The night the museums are in: the Environment (cold blue ambient, ACES, a colour grade, glow,
+## thin fog, contact shadows, the polished floor's reflections), the moon, the camera and the
+## ears, the lens over the screen (ScreenFx), and the warm soft mood of the band's house
+## (DenView.mood). What Quality turns off in Baja is turned off through
+## Quality.apply_environment and Quality.apply_light.
 
 ## Air thin enough not to veil the plan from 16 m up; the lights make up for it
 ## by scattering several times their share into it, so the beams still show.
@@ -28,17 +29,27 @@ var mood_home := false
 ## the Environment, for the fog to reach as far as the camera pulls back
 var world_env: Environment
 
+## the lens over the 3D (vignette, grain, fringe) and its alarm flash
+var screen: ScreenFx
+
+## The night's grade (a curve per channel, _grade): made once, handed back
+## to the Environment coming back from the house.
+static var _grade_lut: GradientTexture1D
+
 
 func _init(game: Game) -> void:
 	host = game
 
 
-## The environment, the moon, the camera and the ears, added to the game.
+## The environment, the moon, the camera and the ears, added to the game;
+## and the lens over the screen.
 func build() -> void:
 	world_env = _environment()
 	var we := WorldEnvironment.new()
 	we.environment = world_env
 	host.add_child(we)
+	screen = ScreenFx.new()
+	host.add_child(screen)
 	_moonlight()
 	host.camera = Camera3D.new()
 	host.camera.fov = 50
@@ -70,6 +81,7 @@ func _environment() -> Environment:
 	env.adjustment_enabled = true
 	env.adjustment_saturation = 1.12
 	env.adjustment_contrast = 1.08
+	env.adjustment_color_correction = grade()
 	# Bloom only on what is really bright (lamps, the lit exit, the piece, the
 	# floor under a torch): a halo round each, the dark left dark.
 	env.glow_enabled = true
@@ -107,6 +119,27 @@ func _environment() -> Environment:
 	return env
 
 
+## The night graded like a film: a curve per channel (a 1D LUT, which
+## Environment reads channel by channel), so the shadows lean teal (red down,
+## green and blue up a touch) and the brights warm (blue down, red up a touch):
+## the dark rooms cold, the torches, lamps and cases warm. The mids stay put,
+## and black and white stay black and white. Made here, not painted.
+static func grade() -> GradientTexture1D:
+	if _grade_lut:
+		return _grade_lut
+	var g := Gradient.new()
+	g.interpolation_mode = Gradient.GRADIENT_INTERPOLATE_CUBIC
+	g.set_color(0, Color(0, 0, 0))
+	g.set_color(1, Color(1.0, 0.995, 0.97))
+	g.add_point(0.2, Color(0.175, 0.205, 0.222))
+	g.add_point(0.5, Color(0.5, 0.505, 0.5))
+	g.add_point(0.8, Color(0.818, 0.8, 0.768))
+	_grade_lut = GradientTexture1D.new()
+	_grade_lut.gradient = g
+	_grade_lut.width = 256
+	return _grade_lut
+
+
 ## Moonlight through the high windows: cold and faint, from one side. It
 ## shades the tops of walls and cases apart from their faces, and draws the
 ## rim round the figures in the dark (Figure's materials).
@@ -134,7 +167,10 @@ func set_mood(home: bool) -> void:
 	mood_home = home
 	if home:
 		DenView.mood(world_env, moon)
+		# The house is warm all over: no night grade.
+		world_env.adjustment_color_correction = null
 		return
+	world_env.adjustment_color_correction = grade()
 	world_env.background_color = BACKGROUND
 	world_env.ambient_light_color = AMBIENT_COLOUR
 	world_env.ambient_light_energy = AMBIENT_ENERGY

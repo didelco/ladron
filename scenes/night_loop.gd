@@ -122,10 +122,11 @@ func squeeze(p: Thief, done: bool) -> void:
 			p.game = null
 
 
-## In: the lid's thud, and whether anyone saw it.
+## In: the lid's thud (and the dust it shakes off), and whether anyone saw it.
 func hid(p: Thief, spot: Hideouts.Spot) -> void:
 	HeistStats.add("hides")
 	host.sfx.at("roll", host._to_world(p.x, p.y), 0.3, 2.0)
+	Fx.puff(host.world, host._to_world(p.x, p.y))
 	host._log(Text.t("LOG_HIDE_BLOWN") if p.hide_blown else Text.t("LOG_HIDE_IN") % Hideouts.name_of(spot.kind))
 	host.loudspeaker.say("hide")
 	host.loudspeaker.act("hide_seen" if p.hide_blown else ("hide_armour" if spot.kind == "armour" else "hide_other"), host.thieves.find(p))
@@ -240,6 +241,7 @@ func _move_thieves(dt: float, keys: Dictionary, noises: Array[SoundEvent]) -> vo
 			HeistStats.add("bumps")
 			Fx.puff(host.world, host._to_world(p.x + cos(p.dir) * Sim.BODY, p.y + sin(p.dir) * Sim.BODY), false)
 			host.hands.rumble(0.6, 0.9, 0.3, Vector2(p.x, p.y))
+			host.rig.shake(0.12)
 			var case := Museum.is_cover(p.x + cos(p.dir) * (Sim.BODY + 0.1), p.y + sin(p.dir) * (Sim.BODY + 0.1))
 			host._log(Text.t("LOG_ROLL_CASE" if case else "LOG_ROLL_WALL"))
 			host.loudspeaker.act("roll_case" if case else "roll_wall", i)
@@ -419,6 +421,7 @@ func _job(dt: float, now: float, noises: Array[SoundEvent]) -> void:
 			host.sfx.ui("stolen")
 			Fx.sparkle(host.world, host._to_world(Heist.at.x + 0.5, Heist.at.y + 0.5, 1.05), Color(Heist.loot.colour))
 			host.rig.punch_in()
+			host.scenery.pop_steal()
 			host._log(Text.t("LOG_GOT_IT_TEAM" if host.thieves.size() > 1 else "LOG_GOT_IT") % Heist.loot.name)
 			host.loudspeaker.say("stolen")
 		"dropped":
@@ -452,12 +455,14 @@ func _guards(dt: float, now: float, noises: Array[SoundEvent]) -> void:
 		host._log(Text.t("LOG_WARN") % [w.from, w.to])
 
 
-## A guard sees a thief for the first time: the yell, the sting, the shake, the words.
+## A guard sees a thief for the first time: the yell, the sting, the shake, the
+## red flash round the screen, the words.
 func _first_yell(s: Dictionary) -> void:
 	HeistStats.add("seen")
 	host.sfx.ui("sting", 0.7)
 	host.hands.rumble(0.4, 0.8, 0.4)
 	host.rig.shake(0.6)
+	host.nightenv.screen.flash()
 	var heard_by: Array = s.heard_by
 	var heard: String = (Text.t("LOG_HEARD_BY") % Text.t("LOG_AND").join(heard_by)) if not heard_by.is_empty() else Text.t("LOG_NOBODY_HEARD")
 	var ear := host.thieves[0]
@@ -520,6 +525,7 @@ func _sight_and_capture() -> void:
 			p.out = true
 			p.speed = 0
 			host.sfx.ui("caught")
+			host.rig.shake(0.15)
 			if host.caught_thief < 0:
 				host.caught_thief = host.thieves.find(p)
 				host.caught_by = nearest_guard(p)
