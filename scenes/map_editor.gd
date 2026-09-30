@@ -757,8 +757,6 @@ func _fill_catalogue() -> void:
 				# door, column, case) all in the one row, then "salas" to
 				# step into its own.
 				_tool_buttons["wall"] = _item("wall", Text.t("EDITOR_TOOL_WALL"), _choose_tool.bind("construir", "wall"), Hud.C.safe)
-				var note := _label(Text.t("EDITOR_WALL_NOTE"), 13, Hud.C.dim, _catalogue)
-				note.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 				_catalogue.add_child(VSeparator.new())
 				for t in MAIN_TOOLS:
 					_tool_buttons[t] = _item(TOOL_ICONS[t], Text.t("EDITOR_TOOL_" + t.to_upper()), _choose_tool.bind("construir", t), _tool_colour(t))
