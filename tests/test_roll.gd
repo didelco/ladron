@@ -7,13 +7,12 @@ extends SceneTree
 
 const DT := 1.0 / 60.0
 
-var failures: Array[String] = []
+const Support := preload("res://tests/support.gd")
+var qa := Support.new("  ")
 
 
 func check(ok: bool, what: String) -> void:
-	print(("  ok   " if ok else "  FALLO ") + what)
-	if not ok:
-		failures.append(what)
+	qa.check(ok, what)
 
 
 ## An open tile with between min_run and max_run floor tiles east of it, then a wall.
@@ -190,9 +189,4 @@ func _init() -> void:
 	check(hurt.t > 3.2 and hurt.t < 3.8, "unos 3,5 s en el suelo")
 	check(not b.stars and Roll.pose(b) == "" and not b.crouched and b.posture == 0.0, "y se levanta sin estrellas")
 
-	print("")
-	if failures.is_empty():
-		print("TODO BIEN")
-	else:
-		print("%d FALLOS" % failures.size())
-	quit(1 if failures.size() > 0 else 0)
+	quit(qa.summary())

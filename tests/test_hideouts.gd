@@ -8,13 +8,12 @@ extends SceneTree
 const DT := 1.0 / 60.0
 const KEY := {Vector2i(1, 0): "d", Vector2i(-1, 0): "a", Vector2i(0, 1): "s", Vector2i(0, -1): "w"}
 
-var failures: Array[String] = []
+const Support := preload("res://tests/support.gd")
+var qa := Support.new("  ")
 
 
 func check(ok: bool, what: String) -> void:
-	print(("  ok   " if ok else "  FALLO ") + what)
-	if not ok:
-		failures.append(what)
+	qa.check(ok, what)
 
 
 ## Send the guard that knows away, looking the other way, and let it be:
@@ -378,5 +377,4 @@ func _init() -> void:
 	check(Hideouts.squeeze(q, gone, alone, true) == "in" and q.hiding, "hecho: dentro")
 	check(q.hide_blown == saw_it, "aunque ya no mire al terminar, si lo vio colarse lo sabe")
 
-	print("OK: escondites" if failures.is_empty() else "FALLOS: %d" % failures.size())
-	quit(0 if failures.is_empty() else 1)
+	quit(qa.summary())

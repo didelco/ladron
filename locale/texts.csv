@@ -19,8 +19,10 @@ MENU_NIGHT_PIECE,ROBO %d · %s
 MENU_GENERATIVE_TITLE,MODO GENERATIVO
 MENU_DIFFICULTY,DIFICULTAD
 MENU_SIZE,TAMAÑO
+MENU_THEME,TEMA
 MENU_HOW_HARD,¿QUÉ DIFICULTAD?
 MENU_HOW_BIG,¿QUÉ TAMAÑO DE MUSEO?
+MENU_HOW_THEME,¿QUÉ TEMA DE MUSEO?
 MENU_START,EMPEZAR
 MENU_DIFFICULTY_EASY,FÁCIL
 MENU_DIFFICULTY_MEDIUM,MEDIA
@@ -28,6 +30,12 @@ MENU_DIFFICULTY_HARD,DIFÍCIL
 MENU_SIZE_SMALL,CHICO
 MENU_SIZE_MEDIUM,MEDIANO
 MENU_SIZE_LARGE,GRANDE
+MENU_THEME_RANDOM,AL AZAR
+MENU_THEME_ANCIENT,MUNDO ANTIGUO
+MENU_THEME_MEDIEVAL,EDAD MEDIA
+MENU_THEME_PREHISTORY,PREHISTORIA
+MENU_THEME_NATURE,NATURALEZA
+MENU_THEME_MODERN,EDAD MODERNA
 MENU_PLAY_1,▶ 1 LADRÓN
 MENU_PLAY_2,▶ 2 LADRONES
 MENU_PLAY_3,▶ 3 LADRONES
@@ -37,9 +45,9 @@ MENU_TO_MENU,< MENÚ
 JOIN_TITLE,¿QUIÉN JUEGA?
 JOIN_PLAYER,JUGADOR %d
 JOIN_PRESS,Pulsa un botón
-JOIN_HOW,"Cada uno pulsa un botón de su mando, o una tecla de su lado del teclado (WASD o flechas: dos como mucho; el resto, con mando)"
+JOIN_HOW,Pulsa mando o teclado para unirte
 JOIN_READY,¡LISTOS!
-JOIN_UNDO,"Esc: quitar al último · B, Espacio o Enter: quitarte · sin nadie, volver"
+JOIN_UNDO,Esc: quitar al último · tu tecla: salir
 SEAT_KB_LEFT,Teclado · WASD
 SEAT_KB_RIGHT,Teclado · flechas
 SEAT_ANY,Teclado y mandos
@@ -76,7 +84,7 @@ SETTINGS_PADS_LIST,Mandos: %s
 SETTINGS_NO_PADS,No hay mandos conectados
 SETTINGS_PAD_IGNORED,no es un mando: se ignora
 PAD_LOST,FALTA EL MANDO DEL JUGADOR %d
-PAD_LOST_HOW,PULSA UN BOTÓN EN UN MANDO LIBRE (O VUELVE A ENCENDER EL SUYO)
+PAD_LOST_HOW,PULSA UN BOTÓN EN OTRO MANDO O ENCIENDE EL TUYO
 HUD_CCTV_CAM,CAM %d · %s
 HUD_CCTV_REC,REC %s
 HUD_CCTV_MUSEUM,MUSEO VON BOSTEZO
@@ -565,6 +573,50 @@ EDITOR_TOOL_SPAWN,ENTRADA
 EDITOR_TOOL_PIECE,VITRINA DEL ROBO
 EDITOR_TOOL_EXIT,SALIDA
 EDITOR_TOOL_GUARD,GUARDIA
+EDITOR_GUARD_FACING,MIRA HACIA
+EDITOR_GUARD_N,NORTE
+EDITOR_GUARD_NE,NORESTE
+EDITOR_GUARD_E,ESTE
+EDITOR_GUARD_SE,SURESTE
+EDITOR_GUARD_S,SUR
+EDITOR_GUARD_SO,SUROESTE
+EDITOR_GUARD_O,OESTE
+EDITOR_GUARD_NO,NOROESTE
+EDITOR_GUARD_REMOVE,QUITAR GUARDIA
+EDITOR_GUARD_ARCHETYPE,ARQUETIPO
+EDITOR_GUARD_ARCH_STANDARD,ESTÁNDAR
+EDITOR_GUARD_ARCH_WATCHER,VIGÍA
+EDITOR_GUARD_ARCH_HOUND,SABUESO
+EDITOR_GUARD_ARCH_SLEEPY,DORMILÓN
+EDITOR_GUARD_ARCH_VETERAN,VETERANO
+EDITOR_GUARD_NO_TRAITS,Un guardia como cualquier otro: nada que lo distinga.
+EDITOR_GUARD_STAT_VIEW,VISTA
+EDITOR_GUARD_VIEW_0,CEGATO
+EDITOR_GUARD_VIEW_1,POCA VISTA
+EDITOR_GUARD_VIEW_2,VISTA NORMAL
+EDITOR_GUARD_VIEW_3,BUENA VISTA
+EDITOR_GUARD_VIEW_4,VISTA DE LINCE
+EDITOR_GUARD_STAT_HEARING,OÍDO
+EDITOR_GUARD_HEARING_0,SORDO
+EDITOR_GUARD_HEARING_1,DURO DE OÍDO
+EDITOR_GUARD_HEARING_2,OÍDO NORMAL
+EDITOR_GUARD_HEARING_3,OÍDO FINO
+EDITOR_GUARD_HEARING_4,OÍDO DE SABUESO
+EDITOR_GUARD_STAT_SPEED,AGILIDAD
+EDITOR_GUARD_SPEED_0,CANSADO
+EDITOR_GUARD_SPEED_1,LENTO
+EDITOR_GUARD_SPEED_2,PASO NORMAL
+EDITOR_GUARD_SPEED_3,ÁGIL
+EDITOR_GUARD_SPEED_4,VELOZ
+EDITOR_GUARD_STANCE,CÓMO SE MUEVE
+EDITOR_GUARD_STANCE_ROUND,EN RONDA
+EDITOR_GUARD_STANCE_POST,GUARDIA FIJA
+EDITOR_GUARD_WATCH,QUÉ VIGILA
+EDITOR_GUARD_WATCH_NONE,NADA EN CONCRETO
+EDITOR_GUARD_WATCH_ROOM,ESTA SALA
+EDITOR_GUARD_WATCH_PIECE,LA PIEZA
+EDITOR_TOOL_DOOR,PUERTA
+EDITOR_TOOL_COLUMN,COLUMNA
 EDITOR_TOOL_PROP,OBJETO
 EDITOR_TOOL_ROOM,MARCAR SALA
 EDITOR_ROOMS,SALAS HECHAS
@@ -604,18 +656,19 @@ EDITOR_ERR_PIECE,Falta una vitrina para la pieza a la que se pueda llegar.
 EDITOR_ERR_EXIT,"Falta la salida: suelo junto al muro exterior, lejos de la entrada."
 EDITOR_ERR_GUARD,Hay un guardia fuera del suelo al que se llega.
 EDITOR_ERR_GUARDS,"Demasiados guardias: cinco, como mucho."
+EDITOR_ERR_DOOR,"Una puerta no está en un tramo recto de muro (dos lados opuestos con muro, los otros dos sin él)."
 EDITOR_ERR_BIG,Una pieza grande no está sobre vitrinas.
-EDITOR_HINT_FLOOR,Clic: suelo (arrastra para pintar seguido) · Clic derecho: borrar · Ctrl+Z: deshacer
-EDITOR_HINT_WALL,"Clic: muro ↔ suelo (arrastra para seguir pintando lo mismo) · Clic derecho: borrar · Ctrl+Z: deshacer"
+EDITOR_HINT_FLOOR,Clic: suelo (arrastra: sigue) · Clic derecho: borrar · Ctrl+Z: deshacer
+EDITOR_HINT_WALL,Clic: muro ↔ suelo (arrastra: sigue) · Clic derecho: borrar · Ctrl+Z: deshacer
 EDITOR_HINT_CASE,Clic: vitrina. Tapan a quien se agacha detrás; en una va la pieza.
-EDITOR_HINT_OUT,Clic: exterior (sin edificio). Entre el exterior y el suelo tiene que haber muro.
+EDITOR_HINT_OUT,"Clic: exterior (sin edificio). Necesita muro junto al suelo."
 EDITOR_HINT_SPAWN,Clic: por dónde entran los ladrones.
 EDITOR_HINT_PIECE,"Clic: la vitrina con la pieza. Sin marcar, la elige el juego."
-EDITOR_HINT_EXIT,"Clic: la puerta de salida, en el muro exterior. Sin marcar, la elige el juego."
-EDITOR_HINT_GUARD,"Clic: poner o quitar un guardia (hasta cinco). Sin ninguno, salen en su ronda."
-EDITOR_HINT_PROP,"Clic: pone este objeto; otra vez en el mismo sitio, lo quita. Sin ninguno, los pone el juego."
-EDITOR_HINT_ROOM,"Arrastra un rectángulo: una sala, con su luz y su nombre. Clic derecho: quitarla."
-EDITOR_HINT_STAMP,Clic: poner la sala (lo de debajo se va) · R: girarla · Clic derecho: borrar
+EDITOR_HINT_EXIT,"Clic: salida, en el muro exterior. Sin marcar, la elige el juego."
+EDITOR_HINT_GUARD,"Clic: pon un guardia (máx. 5) o edita uno puesto. Clic derecho: lo quita. Sin ninguno, salen solos."
+EDITOR_HINT_PROP,"Clic: pone este objeto; otra vez, lo quita. Sin ninguno, los pone el juego."
+EDITOR_HINT_ROOM,"Arrastra: una sala, con su luz y su nombre. Clic derecho: quitarla."
+EDITOR_HINT_STAMP,Clic: pon la sala (borra lo de debajo) · R: girarla · Clic derecho: borrar
 EDITOR_TAB_OPTIONS,OPCIONES DEL MAPA
 EDITOR_KIND_WALL,MURO / SUELO
 EDITOR_KIND_MAIN,PERSONAJES
@@ -679,8 +732,8 @@ EDITOR_TOOL_EXHIBIT_CONFESSIONAL,CONFESIONARIO
 EDITOR_TOOL_EXHIBIT_CHEST,BAÚL
 EDITOR_TOOL_EXHIBIT_EGG,HUEVO DE DINOSAURIO
 EDITOR_TOOL_EXHIBIT_SHELL,CAPARAZÓN
-EDITOR_HINT_EXHIBIT,"Clic: esta pieza en una vitrina (en el suelo, pone la vitrina); otra vez, la quita. Clic derecho: borrar."
-EDITOR_HINT_BIG,"Clic: la pieza grande, sobre sus vitrinas · R: girarla · Clic derecho: borrar"
+EDITOR_HINT_EXHIBIT,"Clic: vitrina de la pieza (en suelo, la crea) · Clic derecho: borrar."
+EDITOR_HINT_BIG,"Clic: pieza grande, sobre sus vitrinas · R: girarla · Clic derecho: borrar"
 EDITOR_KIND_HEIST,EL ROBO
 EDITOR_LOOT_WHAT,QUE SE ROBA
 EDITOR_LOOT_RANDOM,AL AZAR (LO ELIGE EL JUEGO)
@@ -734,8 +787,8 @@ EDITOR_SHAPE_ORNITHOPTER,ORNITOPTERO
 EDITOR_SHAPE_BANANA,PLATANO
 EDITOR_SHAPE_BUCKET,CUBO DE FREGONA
 EDITOR_PLAN,VER EL PLANO
-EDITOR_PAD_HELP,Cruceta: mover · A: poner (mantén para pintar) · X: borrar · B: deshacer · Y: coger lo de la casilla · LB/RB: objeto · LT/RT: categoría · Start: botones · View: 3D
-EDITOR_PAD_HELP_3D,Stick izq.: mover · Stick der.: girar la cámara · A: poner · X: borrar · B: deshacer · Y: coger · LB/RB: objeto · LT/RT: categoría · View: al plano
+EDITOR_PAD_HELP,Cruceta: mover · A: poner (mantén: pinta) · X: borrar · B: deshacer · Y: coger · LB/RB: objeto · LT/RT: categoría · Start: botones · View: 3D
+EDITOR_PAD_HELP_3D,Stick izq.: mover · Stick der.: girar cámara · A: poner · X: borrar · B: deshacer · Y: coger · LB/RB: objeto · LT/RT: categoría · View: al plano
 EDITOR_3D_HELP,3D: botón derecho arrastrando gira · rueda acerca · Esc: al plano
 EDITOR_3D_WAITS,"Arregla lo que sale en rojo: en cuanto se pueda jugar, el museo se vuelve a construir."
 GEN_OWNER_1_WHO,la abuela Remedios

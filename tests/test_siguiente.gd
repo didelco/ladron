@@ -5,10 +5,10 @@ extends SceneTree
 ## que va), sin ir a buscarlas; no pasa por la entrada ni la salida ni por
 ## lo de siempre, que se eligen al explorar; y acaba en el plano para
 ## explorar con ¡A ROBAR! elegido. Con uno y con dos ladrones.
-var fails := 0
+const Support := preload("res://tests/support.gd")
+var qa := Support.new()
 func check(ok: bool, what: String) -> void:
-	print(("ok   " if ok else "FALLO ") + what)
-	if not ok: fails += 1
+	qa.check(ok, what)
 
 
 func frames(n := 4) -> void:
@@ -138,5 +138,4 @@ func _init() -> void:
 	check(m.phase == "countdown", "y un SIGUIENTE más: ¡a robar!")
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
-	print("FALLOS: %d" % fails if fails else "OK: SIGUIENTE sobre el plano")
-	quit(1 if fails else 0)
+	quit(qa.summary())

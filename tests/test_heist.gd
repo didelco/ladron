@@ -3,13 +3,12 @@ extends SceneTree
 ## wall, stealing it standing still (with its alarm), and getting out.
 ##   godot --headless --script tests/test_heist.gd
 
-var failures: Array[String] = []
+const Support := preload("res://tests/support.gd")
+var qa := Support.new("  ")
 
 
 func check(ok: bool, what: String) -> void:
-	print(("  ok   " if ok else "  FALLO ") + what)
-	if not ok:
-		failures.append(what)
+	qa.check(ok, what)
 
 
 ## A story night laid out as the game does it (Main._lay_out), without the
@@ -397,9 +396,4 @@ func _init() -> void:
 	print("       reglas por pantalla (cuántas: veces): %s" % counts)
 	Sim.custom = {"lockpick": false}
 
-	if failures.is_empty():
-		print("OK: el golpe funciona")
-		quit(0)
-	else:
-		printerr("%d fallos" % failures.size())
-		quit(1)
+	quit(qa.summary())

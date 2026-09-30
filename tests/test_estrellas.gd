@@ -6,13 +6,12 @@ extends SceneTree
 ## lo que el periódico enseña.
 ##   godot --headless --script tests/test_estrellas.gd
 
-var failures: Array[String] = []
+const Support := preload("res://tests/support.gd")
+var qa := Support.new("  ")
 
 
 func check(ok: bool, what: String) -> void:
-	print(("  ok   " if ok else "  FALLO ") + what)
-	if not ok:
-		failures.append(what)
+	qa.check(ok, what)
 
 
 ## Story night n laid out alone as the game does it (Main._lay_out and
@@ -179,9 +178,4 @@ func _init() -> void:
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
 	Story.save = Story.SAVE
-	if failures.is_empty():
-		print("OK: las estrellas")
-		quit(0)
-	else:
-		printerr("%d fallos" % failures.size())
-		quit(1)
+	quit(qa.summary())

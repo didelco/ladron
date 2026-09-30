@@ -5,7 +5,8 @@ extends SceneTree
 ## soltar). En cada pantalla con menú, cada una de esas teclas, pulsada de
 ## verdad (Input.parse_input_event), hace lo que le toca: aceptar avanza,
 ## atrás vuelve. Sobre la escena principal.
-var fails := 0
+const Support := preload("res://tests/support.gd")
+var qa := Support.new()
 var m
 var hud: Hud
 
@@ -15,8 +16,7 @@ const W := Hud.SWAP_WAIT_FRAMES + 3
 
 
 func check(ok: bool, what: String) -> void:
-	print(("ok   " if ok else "FALLO ") + what)
-	if not ok: fails += 1
+	qa.check(ok, what)
 
 
 func key_event(k: Key, down: bool) -> InputEventKey:
@@ -403,5 +403,4 @@ func _init() -> void:
 		check(m.phase == "generative", "quién juega · %s sin nadie sentado: vuelve (fase %s)" % [name_of(k), m.phase])
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
-	print("FALLOS: %d" % fails)
-	quit(1 if fails else 0)
+	quit(qa.summary())

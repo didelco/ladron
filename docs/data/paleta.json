@@ -1274,6 +1274,17 @@
 	{
 		"colours": [
 			{
+				"hex": "#4dabf7",
+				"key": ""
+			}
+		],
+		"file": "scenes/map_editor.gd",
+		"name": "DOOR",
+		"note": "The plan's colours: the paper map's (Hud), so the editor and the map you take out mid-job look like the same drawing."
+	},
+	{
+		"colours": [
+			{
 				"hex": "#e8d6b4",
 				"key": ""
 			}

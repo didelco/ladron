@@ -6,13 +6,12 @@ extends SceneTree
 
 const DT := 1.0 / 60.0
 
-var failures: Array[String] = []
+const Support := preload("res://tests/support.gd")
+var qa := Support.new("  ")
 
 
 func check(ok: bool, what: String) -> void:
-	print(("  ok   " if ok else "  FALLO ") + what)
-	if not ok:
-		failures.append(what)
+	qa.check(ok, what)
 
 
 ## An empty walled room to test in.
@@ -119,9 +118,4 @@ func _init() -> void:
 	var k2 := walk(crawler, {"d": true, "lalt": true}, 1.0)
 	check(not crawler.slow and absf(k2.distance - Sim.CROUCH_SPEED) < 0.05, "a gatas, la tecla de andar lento no cambia nada")
 
-	if failures.is_empty():
-		print("OK: andar lento y a gatas")
-		quit(0)
-	else:
-		printerr("%d fallos" % failures.size())
-		quit(1)
+	quit(qa.summary())

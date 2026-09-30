@@ -6,13 +6,13 @@ extends SceneTree
 ## cae sola en el siguiente pendiente; aceptar entra; el ratón, por encima de
 ## una tarjeta la elige y el clic entra.
 ##   godot --headless --script tests/test_ciudad_nav.gd
-var fails := 0
+const Support := preload("res://tests/support.gd")
+var qa := Support.new()
 var sounds: Array[String] = []
 
 
 func check(ok: bool, what: String) -> void:
-	print(("ok   " if ok else "FALLO ") + what)
-	if not ok: fails += 1
+	qa.check(ok, what)
 
 
 func frames(n := 4) -> void:
@@ -410,5 +410,4 @@ func _run() -> void:
 	root.size = Vector2i(1280, 720)
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
-	print("FALLOS: %d" % fails if fails else "OK: moverse por la ciudad")
-	quit(1 if fails else 0)
+	quit(qa.summary())

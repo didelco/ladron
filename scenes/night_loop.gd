@@ -367,6 +367,14 @@ func _do_action(t: Thief, i: int, act: Dictionary, keys: Dictionary, now: float,
 					host.den_view.set_door(act.at, Den.is_open(act.at))
 				host.sfx.at("door", host._to_world(t.x, t.y, 0.5), 0.6, 4.0)
 				host.house.home_sight()
+		"map_door":
+			# A challenge's own door, the same idea outside the house: the
+			# grid follows (Museum.apply_doors), so a guard's sight and
+			# everyone's feet see a wall or not, gratis.
+			if Museum.toggle_door(act.at, host.house.band_points()):
+				if host.museum_view != null and is_instance_valid(host.museum_view):
+					host.museum_view.set_map_door(act.at, Museum.is_door_open(act.at))
+				host.sfx.at("door", host._to_world(t.x, t.y, 0.5), 0.6, 4.0)
 
 
 ## Smoke bombs: F (P2 the comma), or Y on the pad, at your feet.
@@ -427,6 +435,13 @@ func _guards(dt: float, now: float, noises: Array[SoundEvent]) -> void:
 		saw_before[g.id] = g.sees_player
 	for g in host.guards:
 		Sim.step_guard(g, host.thieves, noises, now, dt)
+	Sim.close_doors_behind(host.guards, host.thieves)
+	# A guard's own use of a door (Sim.step_guard, close_doors_behind) does
+	# not go through the "map_door" action below, so its leaf is kept in
+	# sync here instead — same set_map_door the player's own toggle calls.
+	if host.museum_view != null and is_instance_valid(host.museum_view):
+		for t in Museum.doors:
+			host.museum_view.set_map_door(t, Museum.is_door_open(t))
 	guard_footsteps()
 	for s in Sim.call_for_backup(saw_before, host.guards, now):
 		host.sfx.at("shout", host._to_world(s.x, s.y), 1.0 if s.first else 0.5)

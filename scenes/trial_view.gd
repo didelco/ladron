@@ -145,7 +145,7 @@ func _open_panel(r: Dictionary) -> void:
 	var st := StyleBoxFlat.new()
 	st.bg_color = Color(PANEL, 0.94)
 	st.set_border_width_all(3)
-	st.border_color = GOLD
+	st.border_color = _tier_colour(int(r.get("tier", 0)))
 	st.set_corner_radius_all(14)
 	st.set_content_margin_all(26)
 	box.add_theme_stylebox_override("panel", st)
@@ -374,6 +374,13 @@ func _pop(text: String, at: Vector2, colour: Color, centred := false) -> void:
 
 # --- The screen ---------------------------------------------------------------------------
 
+## A difficulty's own colour (DojoTrials.TIERS: green easy, orange medium, red
+## hard), lightened a touch for text over the dark HUD and panel.
+func _tier_colour(tier: int) -> Color:
+	var c: Color = DojoTrials.TIERS[clampi(tier, 0, DojoTrials.TIERS.size() - 1)].color
+	return c.lightened(0.25)
+
+
 func _text(s: String, pos: Vector2, size: int, colour: Color, centred := false, width := 0.0) -> void:
 	var font: Font = Hud.ARCADE
 	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
@@ -491,7 +498,7 @@ func _draw_lean(size: Vector2, lean: float, fall: float) -> void:
 func _draw_hud(size: Vector2) -> void:
 	var v := _view
 	var top := Vector2(size.x * 0.5, 14)
-	_text(String(v.get("title", "")), top, 26, CREAM, true)
+	_text(String(v.get("title", "")), top, 26, _tier_colour(int(v.get("tier", 0))), true)
 	_text("    ".join(PackedStringArray(v.get("hud", []))), top + Vector2(0, 34), 16, GOLD, true)
 	var tm: Dictionary = v.get("timer", {})
 	if String(v.state) == "playing" and not tm.is_empty() and float(tm.get("max", 0.0)) > 0.0:

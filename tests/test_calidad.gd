@@ -4,13 +4,13 @@ extends SceneTree
 ## SSAO, la niebla volumétrica y el humo, acorta las sombras y baja el MSAA, y
 ## Alta lo deja como estaba. Sobre la escena principal.
 ## godot --headless --script tests/test_calidad.gd
-var fails := 0
+const Support := preload("res://tests/support.gd")
+var qa := Support.new()
 var m
 
 
 func check(ok: bool, what: String) -> void:
-	print(("ok   " if ok else "FALLO ") + what)
-	if not ok: fails += 1
+	qa.check(ok, what)
 
 
 func frames(n := 1) -> void:
@@ -126,5 +126,4 @@ func _init() -> void:
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.path))
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
-	print("FALLOS: %d" % fails)
-	quit(1 if fails else 0)
+	quit(qa.summary())

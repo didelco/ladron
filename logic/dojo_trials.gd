@@ -41,11 +41,14 @@ extends RefCounted
 const SECTION := "dojo"
 const MAX_LEVEL := 99
 ## The difficulties. A game begun at one starts at `from` and is won by doing `to`
-## (the ten levels of the games); the other trials read the index.
+## (the ten levels of the games); the other trials read the index. `color` is the
+## difficulty's own colour, the same in the nine bays' pedestals, vitrines and
+## circles, on their boards and on the trial's result panel (green, orange, red):
+## one code, everywhere a difficulty is picked or shown.
 const TIERS := [
-	{"id": "easy", "from": 1, "to": 3, "text": "HIDEOUT_TIER_EASY"},
-	{"id": "medium", "from": 4, "to": 6, "text": "HIDEOUT_TIER_MEDIUM"},
-	{"id": "hard", "from": 7, "to": 10, "text": "HIDEOUT_TIER_HARD"},
+	{"id": "easy", "from": 1, "to": 3, "text": "HIDEOUT_TIER_EASY", "color": Color("#3f8f4f")},
+	{"id": "medium", "from": 4, "to": 6, "text": "HIDEOUT_TIER_MEDIUM", "color": Color("#e0a030")},
+	{"id": "hard", "from": 7, "to": 10, "text": "HIDEOUT_TIER_HARD", "color": Color("#c1272d")},
 ]
 static var TABLE: Array = [
 	{"id": "atrapa", "kind": "game", "cls": CatchGame, "name": "HIDEOUT_TRIAL_NAME_ATRAPA", "start_text": "HIDEOUT_TRIAL_START_ATRAPA",

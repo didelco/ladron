@@ -82,7 +82,10 @@ func _environment() -> Environment:
 	env.set_glow_level(5, 0.5)
 	# A little dust in the air, so a torch is a beam you can see coming and a lit
 	# room glows. Thin and unlit by the ambient, or the whole plan turns to milk.
-	env.volumetric_fog_enabled = true
+	# Not turned on here: Quality.apply_environment does that below, off in Baja
+	# and in Compatibility (none of these four exist outside Forward+) — turning
+	# them on here first would still warn once even though it flips them off
+	# right after.
 	env.volumetric_fog_density = FOG_DENSITY
 	env.volumetric_fog_albedo = Color("#c4c8ec")
 	env.volumetric_fog_ambient_inject = 0.0
@@ -92,14 +95,11 @@ func _environment() -> Environment:
 	env.volumetric_fog_anisotropy = 0.3
 	# Contact shadows where cases and figures meet the floor and walls meet
 	# corners; SSIL lets a lit room or a torch pool spill a little colour round.
-	env.ssao_enabled = true
 	env.ssao_radius = 1.2
 	env.ssao_intensity = 2.0
-	env.ssil_enabled = true
 	env.ssil_radius = 3.0
 	# The polished floor mirrors the lamps and the lit exit (floor.gdshader
 	# keeps it glossy); a short march is plenty from straight above.
-	env.ssr_enabled = true
 	env.ssr_max_steps = 48
 	env.ssr_fade_in = 0.1
 	env.ssr_fade_out = 2.0

@@ -121,9 +121,12 @@ func night_as_map(n: int) -> MapFile:
 		Sim.custom = Story.tuning(n)
 		var seed_ := host._story_seed(n)
 		host._lay_out(n, seed_)
-		var at: Array[Vector2i] = []
+		var at: Array[GuardSpawn] = []
 		for g in host.guards:
-			at.append(Vector2i(floori(g.x), floori(g.y)))
+			var spawn := GuardSpawn.new()
+			spawn.at = Vector2i(floori(g.x), floori(g.y))
+			spawn.dir = g.dir
+			at.append(spawn)
 		var m := MapFile.from_museum(n, seed_, at)
 		m.name = night_name(n)
 		night_maps[n] = m

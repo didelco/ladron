@@ -8,6 +8,9 @@ guardia): conservan nombre, material, padre, modificador de esqueleto y todo el 
 el hueso de la mano (vertex group mano.L / mano.R). Se puede repetir: siempre sale lo
 mismo. Sin --salida guarda encima de art/personajes/<nombre>.blend.
 
+Para el ninja ya no: sus manos (mitones negros con pulgar y puño vuelto) las hace
+art/characters/ninja_v2.py, y esto las cambiaría por el puño. Vale para el guardia.
+
 La mano (la izquierda; la derecha es su espejo exacto en x) son tres masas:
 - el puño: una caja muy redondeada (superelipsoide) con el dorso hacia fuera,
 - los dedos: un solo rodillo a lo largo de los nudillos, enrollado hacia la palma,

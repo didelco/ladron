@@ -4,10 +4,10 @@ extends SceneTree
 ## corta, y el rótulo se alarga si la voz dura más. Y si la carpeta de audios
 ## (res://audio/megafonia) tiene ficheros, que estén todas las frases: aviso
 ## mientras está vacía, fallo en cuanto tenga alguno y falte alguna.
-var fails := 0
+const Support := preload("res://tests/support.gd")
+var qa := Support.new()
 func check(ok: bool, what: String) -> void:
-	print(("ok   " if ok else "FALLO ") + what)
-	if not ok: fails += 1
+	qa.check(ok, what)
 
 
 ## Un tono de medio segundo en memoria, en vez de un .ogg.
@@ -121,5 +121,4 @@ func _init() -> void:
 			if files.has(MegaVoice.path_for(k).get_file()):
 				check(load(MegaVoice.path_for(k)) is AudioStream, "%s carga como AudioStream (¿importado?)" % k)
 				break
-	print("%d fallos" % fails)
-	quit(1 if fails > 0 else 0)
+	quit(qa.summary())

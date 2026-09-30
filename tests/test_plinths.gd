@@ -6,13 +6,12 @@ extends SceneTree
 
 const DT := 1.0 / 60.0
 
-var failures: Array[String] = []
+const Support := preload("res://tests/support.gd")
+var qa := Support.new("  ")
 
 
 func check(ok: bool, what: String) -> void:
-	print(("  ok   " if ok else "  FALLO ") + what)
-	if not ok:
-		failures.append(what)
+	qa.check(ok, what)
 
 
 func _init() -> void:
@@ -115,5 +114,4 @@ func _init() -> void:
 	Plinths.put(hand)
 	check(Plinths.list == hand, "en la partida es un pedestal donde se puso")
 
-	print("OK: pedestales" if failures.is_empty() else "FALLOS: %d" % failures.size())
-	quit(0 if failures.is_empty() else 1)
+	quit(qa.summary())

@@ -753,19 +753,24 @@ func _dojo_walls() -> void:
 		var centre := Vector3(t.x + 0.5 - Museum.w / 2.0, 0, t.y + 0.5 - Museum.h / 2.0) \
 			+ Vector3(out.x, 0, out.y) * (0.5 + PANEL / 2.0) - holder.position
 		var length := 1.02
+		# The house's own outer wall (its true edge, not an inside partition) stands
+		# taller (OUTER_HEIGHT): the paper runs all the way up to its rail too, so no
+		# bare plaster shows above the shoji on the dojo's outer walls.
+		var is_edge := Museum.is_outside(t.x - out.x, t.y - out.y)
+		var paper_top: float = PAPER_TOP + (OUTER_HEIGHT - WALL_HEIGHT if is_edge else 0.0)
 		var band := func(y0: float, y1: float, thick: float, colour: Color, into: Array) -> void:
 			var size := Vector3(length if north_south else thick, y1 - y0, thick if north_south else length)
 			into.append([Transform3D(Basis.from_scale(size), centre + Vector3(0, (y0 + y1) / 2.0, 0) + Vector3(out.x, 0, out.y) * (thick - PANEL) / 2.0), colour])
 		band.call(0.0, SKIRT_TOP, PANEL * 1.6, DOJO_WOOD_DARK, wood)
 		band.call(SKIRT_TOP, WAIN_TOP, PANEL, DOJO_WOOD * (0.94 + 0.12 * _hash01(t.x, t.y, 61)), wood)
-		band.call(WAIN_TOP, PAPER_TOP, PANEL * 0.8, Color.WHITE, paper)
-		band.call(PAPER_TOP, PAPER_TOP + 0.075, PANEL * 1.5, DOJO_RAIL, wood)
+		band.call(WAIN_TOP, paper_top, PANEL * 0.8, Color.WHITE, paper)
+		band.call(paper_top, paper_top + 0.075, PANEL * 1.5, DOJO_RAIL, wood)
 		# A post where the run of face ends on either side.
 		for s: int in [-1, 1]:
 			var next: Vector2i = t + along * s
 			if not faces.has([next.x, next.y, side]):
 				var pc: Vector3 = centre + Vector3(along.x, 0, along.y) * s * 0.5 + Vector3(out.x, 0, out.y) * PANEL * 0.4
-				wood.append([Transform3D(Basis.from_scale(Vector3(0.11, PAPER_TOP + 0.075, 0.11)), pc + Vector3(0, (PAPER_TOP + 0.075) / 2.0, 0)), DOJO_RAIL.darkened(0.2)])
+				wood.append([Transform3D(Basis.from_scale(Vector3(0.11, paper_top + 0.075, 0.11)), pc + Vector3(0, (paper_top + 0.075) / 2.0, 0)), DOJO_RAIL.darkened(0.2)])
 		# A little high window in the paper, now and then.
 		if _hash01(t.x, t.y, 67) < 0.22:
 			var size := Vector3(0.5 if north_south else 0.02, 0.24, 0.02 if north_south else 0.5)
@@ -926,22 +931,17 @@ func _trial_starts() -> void:
 			"sock":
 				var p := _pivot(self, to_world(t.x + 0.5, t.y + 0.5), 0.0)
 				_empty_plinth(p)
+				_tier_ring(p, st.tier, 0.02)
 				var sock := LootModels.build("sock", Color("#ffcf3a"))
 				_fit(sock, 0.5)
 				sock.position = Vector3(0, Plinths.HEIGHT + 0.3, 0)
 				p.add_child(sock)
 			"ring":
 				var p := _pivot(self, to_world(t.x + 0.5, t.y + 0.5), 0.0)
-				var disc := MeshInstance3D.new()
-				var ring := TorusMesh.new()
-				ring.inner_radius = 0.38
-				ring.outer_radius = 0.5
-				disc.mesh = ring
-				disc.material_override = toon(Color("#c1272d") if st.tier == 2 else (Color("#e0a030") if st.tier == 1 else Color("#3f8f4f")))
-				disc.position = Vector3(0, 0.03, 0)
-				p.add_child(disc)
+				_tier_ring(p, st.tier, 0.03)
 			"plinth", "armour":
-				pass
+				var p := _pivot(self, to_world(t.x + 0.5, t.y + 0.5), 0.0)
+				_tier_ring(p, st.tier, 0.02)
 			_:
 				# On the tile, or hung on the wall at its side (the row's `wall`).
 				var wall: Vector2i = row.get("wall", Vector2i.ZERO)
@@ -950,6 +950,8 @@ func _trial_starts() -> void:
 				var part := BenchProps.build(self, st.via, spot, st.tier, piece)
 				part.t = 0.0
 				_trial_parts[key] = part
+				var floor_mark := _pivot(self, to_world(t.x + 0.5, t.y + 0.5), 0.0)
+				_tier_ring(floor_mark, st.tier, 0.02)
 				# A green glow under each one for while it is done.
 				var glow := MeshInstance3D.new()
 				var q := QuadMesh.new()
@@ -967,13 +969,27 @@ func _trial_starts() -> void:
 				glow.visible = false
 				add_child(glow)
 				_trial_glows[key] = glow
-		_start_boards[key] = _board(to_world(t.x + 0.5, t.y + 0.5, 1.95), 16, Color("#ffe28a"))
+		_start_boards[key] = _board(to_world(t.x + 0.5, t.y + 0.5, 1.95), 16, DojoTrials.TIERS[st.tier].color.lightened(0.35))
 	for row in Practice.open_trials(players):
 		var r := Practice.zone_rect(String(row.zone))
 		var sign := _board(to_world(r.position.x + r.size.x / 2.0 - 0.5, r.position.y + 1.0, 2.5), 30, Color("#e8f0c0"))
 		sign.text = Text.t(String(row.name))
 	set_lamps(Practice.lamps_new())
 	refresh_signs()
+
+
+## The floor mark of a start point's difficulty: a flat ring in the tier's own
+## colour (DojoTrials.TIERS: green easy, orange medium, red hard), the same
+## code everywhere a difficulty is picked or shown in the dojo.
+func _tier_ring(parent: Node3D, tier: int, y: float) -> void:
+	var ring := MeshInstance3D.new()
+	var torus := TorusMesh.new()
+	torus.inner_radius = 0.38
+	torus.outer_radius = 0.5
+	ring.mesh = torus
+	ring.material_override = toon(DojoTrials.TIERS[clampi(tier, 0, DojoTrials.TIERS.size() - 1)].color)
+	ring.position = Vector3(0, y, 0)
+	parent.add_child(ring)
 
 
 func _board(at: Vector3, size: int, colour: Color) -> Label3D:

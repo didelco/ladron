@@ -14,7 +14,8 @@ extends SceneTree
 ##     código le tienen que cuadrar los %s/%d del texto con lo que se le pasa.
 ## Si un test cualquiera pide una clave sin texto, Text lo avisa (WARNING) y lo
 ## apunta en Text.missing.
-var fails := 0
+const Support := preload("res://tests/support.gd")
+var qa := Support.new()
 var asked := {}          ## Las claves comprobadas (para contarlas).
 
 ## Literales en mayúsculas que NO son claves de Text, o que solo son la base de
@@ -26,9 +27,7 @@ const NOT_KEYS := [
 
 
 func check(ok: bool, what: String) -> void:
-	print(("ok   " if ok else "FALLO ") + what)
-	if not ok:
-		fails += 1
+	qa.check(ok, what)
 
 
 ## Una clave que tiene que tener texto.
@@ -64,8 +63,7 @@ func _init() -> void:
 	_formats()
 	check(Text.missing.is_empty(), "nadie ha pedido una clave sin texto mientras tanto (%s)" % ", ".join(Text.missing.keys()))
 	print("%d claves comprobadas" % asked.size())
-	print("FALLOS: %d" % fails)
-	quit(1 if fails > 0 else 0)
+	quit(qa.summary())
 
 
 # --- El CSV y la traducción cargada -----------------------------------------------

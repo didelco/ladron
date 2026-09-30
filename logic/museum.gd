@@ -100,6 +100,28 @@ static var zones: Array[Zone] = []
 ## milliseconds each room's lights stay on for; 0 is dark
 static var lights_left: Array[float] = []
 static var spawn := Vector2i(1, 1)
+## Interior doors that open and close, like Den's in the band's house, but
+## for a challenge's own museum (MapFile.doors): one tile each, a plain wall
+## until opened. Shut at the start of every round (load_grid); toggled the
+## same way Den's are (can_toggle_door, toggle_door), and painted onto grid
+## (apply_doors) so guards' sight and everyone's feet see a wall or not.
+static var doors: Array[Vector2i] = []
+static var _doors_open := {}
+## Exempt columns (MapFile.columns): a wall tile marked to stand as a slender
+## column instead of a full wall block. Unlike a door it never opens — the
+## grid keeps it a plain wall (Tiles.WALL) always (so any plain "is this a
+## wall" check, is_wall, still sees a solid tile end to end). blocks_move and
+## has_line_of_sight know better though: for movement and sight a column is
+## only a small circle at the tile's centre (radius COLUMN_R), not the whole
+## square — see blocks_move, Sim._resolve and has_line_of_sight.
+static var columns: Array[Vector2i] = []
+## paintings hung by hand (MapFile.paintings): {"at": Vector2i, "span": int};
+## empty, and MuseumView hangs its own (MuseumView._paintings).
+static var paintings: Array[Dictionary] = []
+## How wide a column's own circle is, in tiles, for movement (Sim._resolve)
+## and sight (has_line_of_sight): under 0.5 so the tile still has floor free
+## all round it, matching the look MuseumView._column draws.
+const COLUMN_R := 0.3
 ## A museum of one theme (Themes), every gallery and corridor the same, and
 ## only its big pieces (MapGen); "" mixes them. Set with the night (Sim.new_map).
 static var only_theme := ""
@@ -129,9 +151,11 @@ static func regenerate(seed: int, size: String = "small", outline: String = "") 
 
 ## A museum from a plan made elsewhere — the generator, or a saved map
 ## (MapFile) — and everything built on it: the round, the rooms and their
-## switches, the named places. The rooms' names draw from rand.
+## switches, the named places. The rooms' names draw from rand. door_tiles:
+## the map's own doors (MapFile.doors), shut at once (reset_doors, apply_doors).
 static func load_grid(seed: int, width: int, height: int, tiles: PackedInt32Array, out: PackedByteArray,
-		edge: PackedByteArray, start: Vector2i, big: Array[Dictionary], rects: Array[Rect2i], rand: Mulberry32) -> void:
+		edge: PackedByteArray, start: Vector2i, big: Array[Dictionary], rects: Array[Rect2i], rand: Mulberry32,
+		door_tiles: Array[Vector2i] = [], column_tiles: Array[Vector2i] = [], painting_data: Array[Dictionary] = []) -> void:
 	seed_used = seed
 	w = width
 	h = height
@@ -180,6 +204,97 @@ static func load_grid(seed: int, width: int, height: int, tiles: PackedInt32Arra
 	_build_zones(rand)
 	version += 1
 
+	doors = door_tiles.duplicate()
+	reset_doors()
+	columns = column_tiles.duplicate()
+	paintings = painting_data.duplicate()
+	# Any wall tile standing alone (MapFile.exempt_walls), on top of whatever
+	# came hand-marked: this is the one place every museum passes through —
+	# generated, from the editor, or a story night's — so it is where the
+	# automatic ones get added, without touching MapGen or the stamps.
+	for c in MapFile.exempt_walls(grid, outside, w, h):
+		if not doors.has(c) and not columns.has(c):
+			columns.append(c)
+
+
+# --- Interior doors (a challenge's own, like Den's) -------------------------
+
+## All shut again: a round always begins with them closed, the map's maker's
+## own doors as much as Den's (Den.reset_doors).
+static func reset_doors() -> void:
+	_doors_open.clear()
+	apply_doors()
+
+
+static func is_door_open(t: Vector2i) -> bool:
+	return _doors_open.has(t)
+
+
+## The ids (here, the tile itself) of the doors open now.
+static func open_doors() -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	for d in doors:
+		if _doors_open.has(d):
+			out.append(d)
+	return out
+
+
+## Set a door open or shut, without asking (apply_doors after, for the grid).
+static func set_door_open(t: Vector2i, on: bool) -> void:
+	if on:
+		_doors_open[t] = true
+	else:
+		_doors_open.erase(t)
+
+
+## The doors' state on grid: shut is a wall, open is floor (Den.apply_doors).
+static func apply_doors() -> void:
+	for d in doors:
+		if inside_bounds(d):
+			grid[d.y * w + d.x] = Tiles.FLOOR if _doors_open.has(d) else Tiles.WALL
+
+
+static func inside_bounds(t: Vector2i) -> bool:
+	return t.x >= 0 and t.y >= 0 and t.x < w and t.y < h
+
+
+## The door a tile is next to (or in): one step, not across a corner. Its
+## tile, or MapFile.NONE for none (Den.door_near).
+static func door_near(t: Vector2i) -> Vector2i:
+	for d in doors:
+		if absi(d.x - t.x) + absi(d.y - t.y) <= 1:
+			return d
+	return MapFile.NONE
+
+
+## Whether anyone (points: Vector2 positions in tiles) is in a door's way,
+## on it or touching it (Den.DOOR_CLEAR): a door cannot be shut on top of
+## someone.
+static func door_in_the_way(t: Vector2i, points: Array) -> bool:
+	var box := Rect2(Vector2(t), Vector2.ONE).grow(Den.DOOR_CLEAR)
+	for p in points:
+		if box.has_point(p):
+			return true
+	return false
+
+
+## Whether the door can be worked now: opened always; shut only with no one
+## in its way (Den.can_toggle).
+static func can_toggle_door(t: Vector2i, points: Array) -> bool:
+	if not doors.has(t):
+		return false
+	return not is_door_open(t) or not door_in_the_way(t, points)
+
+
+## Open a shut door or shut an open one (and the grid follows, apply_doors).
+## False if it could not be (can_toggle_door).
+static func toggle_door(t: Vector2i, points: Array) -> bool:
+	if not can_toggle_door(t, points):
+		return false
+	set_door_open(t, not is_door_open(t))
+	apply_doors()
+	return true
+
 
 # --- Questions about tiles ---------------------------------------------------
 
@@ -207,9 +322,18 @@ static func is_cover(x: float, y: float) -> bool:
 	return tile_at(x, y) == Tiles.COVER
 
 
-## You cannot walk through furniture, only around it.
+## You cannot walk through furniture, only around it. A column tile is the
+## one exception: it is a plain Tiles.WALL in the grid, but not a solid
+## square here — Sim._resolve pushes bodies out of its own small circle
+## instead (Museum.COLUMN_R), so this only has to say "not a whole-tile
+## obstacle", not "no obstacle at all".
 static func blocks_move(x: float, y: float) -> bool:
-	return tile_at(x, y) != Tiles.FLOOR
+	var t := tile_at(x, y)
+	if t == Tiles.FLOOR:
+		return false
+	if t == Tiles.WALL and columns.has(Vector2i(int(floor(x)), int(floor(y)))):
+		return false
+	return true
 
 
 ## Nor see past it, if you are down behind it.
@@ -302,13 +426,20 @@ static func nearest_open(x: float, y: float) -> Vector2i:
 
 # --- Paths, sight and sound --------------------------------------------------
 
-## Breadth-first path between two tiles: the tiles to walk, target last.
+## Breadth-first path between two tiles: the tiles to walk, target last. A
+## shut interior door counts as floor to plan through, same as MapFile's own
+## distances(): a guard (the only one that plans this way, Sim) works out a
+## way across one before it opens it, and opens it when it gets there
+## (Sim.step_guard's own door use).
 static func bfs_path(from: Vector2i, to: Vector2i) -> Array[Vector2i]:
 	var start := from.y * w + from.x
 	var goal := to.y * w + to.x
 	var path: Array[Vector2i] = []
 	if start == goal or goal < 0 or goal >= w * h:
 		return path
+	var door_idx := {}
+	for d in doors:
+		door_idx[d.y * w + d.x] = true
 	var prev := PackedInt32Array()
 	prev.resize(w * h)
 	prev.fill(-1)
@@ -327,9 +458,11 @@ static func bfs_path(from: Vector2i, to: Vector2i) -> Array[Vector2i]:
 			var ny := cy + d.y
 			if nx < 0 or ny < 0 or nx >= w or ny >= h:
 				continue
-			# Walkable means FLOOR: furniture is as solid as a wall to a walker.
+			# Walkable means FLOOR: furniture is as solid as a wall to a
+			# walker. A door tile is the one exception (door_idx above),
+			# whichever way it happens to be right now.
 			var k := ny * w + nx
-			if grid[k] != Tiles.FLOOR or prev[k] != -1:
+			if (grid[k] != Tiles.FLOOR and not door_idx.has(k)) or prev[k] != -1:
 				continue
 			prev[k] = cur
 			queue.append(k)
@@ -392,15 +525,34 @@ static func muffle_between(ax: float, ay: float, bx: float, by: float) -> float:
 
 
 ## Line of sight: walls always block it; the waist-high cases only block it
-## for someone crouched behind them (over_cover = false).
+## for someone crouched behind them (over_cover = false). A column tile is
+## narrower here too: a look that only grazes the tile, well clear of the
+## column's own circle (COLUMN_R), is not cut — only one that actually
+## crosses the stone is. A solid wall keeps blocking across its whole tile
+## as always; this only carves out the column's slim exception.
 static func has_line_of_sight(ax: float, ay: float, bx: float, by: float, over_cover := false) -> bool:
 	var steps := int(ceil(dist(ax, ay, bx, by) * 4))
 	for i in range(1, steps):
 		var t := float(i) / steps
 		var x := ax + (bx - ax) * t
 		var y := ay + (by - ay) * t
-		if is_wall(x, y) if over_cover else blocks_sight(x, y):
-			return false
+		var tile := tile_at(x, y)
+		if tile == Tiles.FLOOR:
+			continue
+		if tile == Tiles.COVER:
+			if not over_cover:
+				return false
+			continue
+		# Tiles.WALL from here on: a plain wall blocks outright; a column
+		# tile only blocks within its own circle at the tile's centre.
+		var cx := int(floor(x))
+		var cy := int(floor(y))
+		if columns.has(Vector2i(cx, cy)):
+			var dx := x - (cx + 0.5)
+			var dy := y - (cy + 0.5)
+			if dx * dx + dy * dy >= COLUMN_R * COLUMN_R:
+				continue
+		return false
 	return true
 
 

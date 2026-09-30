@@ -46,6 +46,14 @@ var sweep := 0.0
 ## and which way it looks from there
 var post := Vector2i(-1, -1)
 var post_dir := 0.0
+## Only while posted: "" (a plain sweep), "room" (wider, the whole room) or
+## "piece" (faces the loot instead of post_dir).
+var watch := ""
+## Traits (GuardSpawn), stacked into a multiplier: how far it sees, how far
+## it hears, how fast it moves — 1.0 is the plain guard everyone else is.
+var view_scale := 1.0
+var hearing_scale := 1.0
+var speed_scale := 1.0
 ## spot being checked while combing the area around a clue, or (-1, -1)
 var search_spot := Vector2i(-1, -1)
 ## seconds spent standing at one junction, so nobody takes root there

@@ -8,9 +8,46 @@ extends RefCounted
 const W := 48
 const H := 36
 const OLD := ["landscape", "portrait", "abstract", "pipe", "banana", "ice_cream"]
+## Hand-drawn paintings, checked before generating one: numbered variants,
+## assets/ui/cuadros/<kind>_<ratio>_<n>.png (ratio one of RATIOS: "43", "11",
+## "34" — right there in the name, so a batch of new ones never needs to
+## guess which frame they're for), probed in order (gaps stop the search, so
+## no holes). One is picked by `seed` — the same wall always shows the same
+## one, different walls can differ — same rule as generating one. None on
+## disk (not even _1): the caller falls back to generating one.
+const DRAWN_DIR := "res://assets/ui/cuadros/"
+const RATIOS := {"43": "4:3 (painting, big, tríptico, pequeños)", "11": "1:1 (cuadrado)", "34": "3:4 (póster)"}
 
 
-static func paint(kind: String, seed: int) -> ImageTexture:
+## Every hand-drawn variant of `kind` at `ratio` (RATIOS), in order
+## (assets/ui/cuadros/<kind>_<ratio>_1.png, _2.png...), or empty if none exist.
+static func drawn_variants(kind: String, ratio: String = "43") -> Array[String]:
+	var out: Array[String] = []
+	var n := 1
+	while true:
+		var path := "%s%s_%s_%d.png" % [DRAWN_DIR, kind, ratio, n]
+		if not ResourceLoader.exists(path):
+			break
+		out.append(path)
+		n += 1
+	return out
+
+
+## The hand-drawn painting for `kind` at `seed` (picks a variant if there is
+## more than one, always the same for the same seed), or null if none have
+## been drawn yet (the caller falls back to generating one).
+static func drawn(kind: String, seed: int, ratio: String = "43") -> Texture2D:
+	var variants := drawn_variants(kind, ratio)
+	if variants.is_empty():
+		return null
+	var i := posmod(seed, variants.size())
+	return load(variants[i]) as Texture2D
+
+
+static func paint(kind: String, seed: int, ratio: String = "43") -> Texture2D:
+	var ready := drawn(kind, seed, ratio)
+	if ready:
+		return ready
 	if kind in OLD:
 		return MuseumView._canvas(seed, OLD.find(kind))
 	var img := Image.create(W, H, false, Image.FORMAT_RGB8)

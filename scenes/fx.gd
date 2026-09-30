@@ -145,11 +145,14 @@ static func puff(parent: Node3D, at: Vector3, smash := false) -> void:
 	look.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	chip.material = look
 	var chips := _burst(parent, at + Vector3(0, 0.3, 0), 9, 1.6, 1.0, c, null, chip)
-	# The floor, for them to land on.
-	var ground := GPUParticlesCollisionBox3D.new()
-	ground.size = Vector3(4, 0.2, 4)
-	ground.position = Vector3(0, -0.4, 0)
-	chips.add_child(ground)
+	# The floor, for them to land on. Checked rather than assumed: in some
+	# builds (older Compatibility templates) this class is not registered,
+	# and the chips just fall through instead of the bust breaking outright.
+	if ClassDB.class_exists("GPUParticlesCollisionBox3D"):
+		var ground := GPUParticlesCollisionBox3D.new()
+		ground.size = Vector3(4, 0.2, 4)
+		ground.position = Vector3(0, -0.4, 0)
+		chips.add_child(ground)
 
 
 ## A burst of glitter in the piece's colour: it is out of its case.

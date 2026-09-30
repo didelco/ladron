@@ -5,6 +5,9 @@
 Sin --salida guarda encima de art/personajes/ninja.blend. Se ejecuta una vez: reemplaza
 las piezas pecho_solapa, columna_solapa y cadera_cinta_2/3/4 por otras nuevas.
 
+Ya pasado y superado: el ninja de ahora lo rehace art/characters/ninja_v2.py (cinturón, nudo y
+colas incluidos) y estas piezas ya no existen. No volver a ejecutarlo.
+
 - Solapas: fuera. El torso queda liso, como los ninjas de la imagen de referencia (cuerpos de
   goma sencillos, sin ropa dibujada).
 - Cordón: un nudo con dos lazos y un ceñidor, y dos colas cónicas que caen algo abiertas, una

@@ -53,13 +53,18 @@ const PAD_REPEAT := 0.07
 const PAD_DEAD := 0.5
 ## The bottom bar's height.
 const BAR := 168
+## The guard sidebar's width, docked at the right.
+const GUARD_SIDEBAR_WIDTH := 300
 ## Colours a piece to steal can be.
 const LOOT_COLOURS := ["#f0c46a", "#f4f1e6", "#ff6b6b", "#ffd43b", "#7bc043", "#4dabf7", "#9b5de5", "#f783ac", "#e8590c", "#8b5a2b"]
 const LOOT_SECONDS := [1.5, 2.0, 3.0, 4.0, 5.0, 6.0]
 ## The characters: where the thieves come in, the case with the piece to
-## steal, the way out, the guards.
-const MAIN_TOOLS := ["spawn", "piece", "exit", "guard"]
-const TOOL_ICONS := {"spawn": "spawn", "piece": "piece", "exit": "exit_door", "guard": "guard"}
+## steal, the way out, the guards, a door in a wall (like the house's,
+## MapFile.doors: opens and shuts on the night, not to be confused with
+## `exit`, the way out), and a column (MapFile.columns: stands exempt, one
+## tile, lighter than a wall — the same tool pattern as the door).
+const MAIN_TOOLS := ["spawn", "piece", "exit", "guard", "door", "column"]
+const TOOL_ICONS := {"spawn": "spawn", "piece": "piece", "exit": "exit_door", "guard": "guard", "door": "door", "column": "column"}
 ## Ready-made rooms, as MapFile.stamp takes them: '#' wall, '.' floor, 'o'
 ## case, 'D' dinosaur, 'S' sarcophagus, 'O' bear, 'b' a bust. The gaps in the border
 ## are doors. gallery: its inside is a room with a light and a name.
@@ -153,6 +158,8 @@ const EXIT := Color("#4ade80")
 const PIECE := Color("#ffe066")
 const PROP := Color("#ff8c2e")
 const ROOM := Color("#d8ac5c")
+const DOOR := Color("#4dabf7")
+const COLUMN := Color("#c9a869")
 
 var map: MapFile
 var tool := "wall"
@@ -171,6 +178,8 @@ var hover := MapFile.NONE
 var held := 0
 ## first corner of a room being marked out (tool "room")
 var room_from := MapFile.NONE
+## The guard whose panel is open ("guard" in _open()), or null.
+var selected_guard: GuardSpawn
 var undo: Array[MapFile] = []
 var dirty := false
 ## Esc once with changes unsaved: a second one leaves
@@ -199,6 +208,11 @@ var _flyout: PanelContainer
 var _flyout_scroll: ScrollContainer
 var _sub_title: Label
 var _sub: VBoxContainer
+## A guard's own panel: docked at the right, not floating over the bar —
+## it wants more room, and can stay open while the plan is worked on.
+var _guard_sidebar: PanelContainer
+var _guard_title: Label
+var _guard_sub: VBoxContainer
 ## the options' page open (OPTION_PAGES)
 var option_page := "size"
 ## the 3D view: its bar, the camera flying round, and how it is held
@@ -338,6 +352,13 @@ func _build() -> void:
 	_view_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_view_button.add_theme_constant_override("icon_max_width", 26)
 	_view_button.tooltip_text = Text.t("EDITOR_PREVIEW")
+	# Play, right beside it: the way to try the map for real (_ask_play).
+	_play_button = _button("", _ask_play, line, Hud.C.green, false, "play")
+	_play_button.custom_minimum_size = Vector2(52, 40)
+	_play_button.size_flags_horizontal = Control.SIZE_SHRINK_END
+	_play_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_play_button.add_theme_constant_override("icon_max_width", 26)
+	_play_button.tooltip_text = Text.t("EDITOR_PLAY")
 	_hint = _label("", 13, Hud.C.dim, top)
 	for l in [_status, _hint]:
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -366,7 +387,6 @@ func _build() -> void:
 	var acts := HBoxContainer.new()
 	acts.add_theme_constant_override("separation", 6)
 	left.add_child(acts)
-	_play_button = _icon_button("play", "EDITOR_PLAY", _ask_play, acts, Hud.C.green)
 	_icon_button("undo", "EDITOR_UNDO", _undo, acts, Hud.C.dim)
 	_save_button = _icon_button("save", "EDITOR_SAVE", _open.bind("save"), acts, Hud.C.green)
 	_exit_button = _icon_button("exit", "EDITOR_EXIT", _leave, acts, Hud.C.dim)
@@ -445,6 +465,43 @@ func _build() -> void:
 	_sub = VBoxContainer.new()
 	_sub.add_theme_constant_override("separation", 6)
 	inside.add_child(_sub)
+
+	# A guard's own panel: docked at the right, the same height as the
+	# plan, not floating over the bar (it has more to show, and stays put
+	# while you click around placing others).
+	_guard_sidebar = PanelContainer.new()
+	var gst := StyleBoxFlat.new()
+	gst.bg_color = Hud.GLASS
+	gst.border_color = Hud.GLASS_EDGE
+	gst.set_border_width_all(2)
+	gst.set_corner_radius_all(14)
+	gst.set_content_margin_all(12)
+	gst.shadow_color = Color(0, 0, 0, 0.5)
+	gst.shadow_size = 10
+	_guard_sidebar.add_theme_stylebox_override("panel", gst)
+	_guard_sidebar.visible = false
+	_guard_sidebar.anchor_left = 1.0
+	_guard_sidebar.anchor_right = 1.0
+	_guard_sidebar.anchor_top = 0.0
+	_guard_sidebar.anchor_bottom = 1.0
+	_guard_sidebar.offset_left = -GUARD_SIDEBAR_WIDTH - 16.0
+	_guard_sidebar.offset_right = -16.0
+	_guard_sidebar.offset_top = 86.0
+	_guard_sidebar.offset_bottom = -BAR - 12.0
+	_ui.add_child(_guard_sidebar)
+	var guard_scroll := ScrollContainer.new()
+	guard_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	guard_scroll.follow_focus = true
+	_guard_sidebar.add_child(guard_scroll)
+	var guard_inside := VBoxContainer.new()
+	guard_inside.add_theme_constant_override("separation", 6)
+	guard_inside.custom_minimum_size = Vector2(GUARD_SIDEBAR_WIDTH, 0)
+	guard_scroll.add_child(guard_inside)
+	_guard_title = _label("", 10, Hud.C.dim, guard_inside, true)
+	_guard_sub = VBoxContainer.new()
+	_guard_sub.add_theme_constant_override("separation", 6)
+	guard_inside.add_child(_guard_sub)
+
 	_pick_kind("wall")
 
 
@@ -588,6 +645,8 @@ func _tool_colour(t: String) -> Color:
 		"piece": return PIECE
 		"exit": return EXIT
 		"guard": return GUARD
+		"door": return DOOR
+		"column": return COLUMN
 		"prop": return PROP
 		"room": return ROOM
 	return Hud.C.safe
@@ -756,19 +815,31 @@ func _column(width := 0.0, parent: Node = null) -> VBoxContainer:
 
 
 ## The panel over the plan: saving ("save": the name, what is stolen and
-## its tale), or leaving with changes not saved ("leave"); "" shuts it.
+## its tale), or leaving with changes not saved ("leave"); "" shuts both it
+## and the guard sidebar. "guard" opens the sidebar instead — it wants more
+## room than the flyout gives, and stays docked while the plan is worked on.
 func _open(k: String) -> void:
 	panel = k
 	leaving = k == "leave"
 	for c in _sub.get_children():
 		_sub.remove_child(c)
 		c.queue_free()
-	_flyout.visible = k != ""
+	for c in _guard_sub.get_children():
+		_guard_sub.remove_child(c)
+		c.queue_free()
+	_flyout.visible = k != "" and k != "guard"
+	_guard_sidebar.visible = k == "guard"
 	if k == "":
 		_refresh()
 		return
 	if k == "save":
 		_save_panel()
+	elif k == "guard":
+		_guard_panel()
+		_refresh()
+		if _guard_sub.get_child_count() > 0:
+			(_guard_sub.get_child(0) as Control).grab_focus.call_deferred()
+		return
 	else:
 		_sub_title.text = Text.t("EDITOR_UNSAVED")
 		_button(Text.t("EDITOR_SAVE_AND_EXIT"), _save_and_leave, _sub, Hud.C.green)
@@ -913,6 +984,195 @@ func _seconds_slider(parent: Node) -> void:
 func _seconds_bar() -> String:
 	var i := maxi(0, LOOT_SECONDS.find(float(map.loot.get("seconds", 3.0))))
 	return "%s%s %s S" % ["|".repeat(i + 1), "·".repeat(LOOT_SECONDS.size() - i - 1), str(LOOT_SECONDS[i])]
+
+
+## The eight ways a guard can start looking, N first and round clockwise
+## (screen down is +Y, so this matches atan2(dy, dx)).
+const GUARD_DIRS := [PI * -0.5, PI * -0.25, 0.0, PI * 0.25, PI * 0.5, PI * 0.75, PI, PI * -0.75]
+const GUARD_DIR_KEYS := ["N", "NE", "E", "SE", "S", "SO", "O", "NO"]
+
+
+## The guard clicked in _press (or just placed): its archetype and the three
+## sliders it seeds (what it is like), how it behaves (patrols or stands
+## guard, and what it watches while it does), which way it looks at the
+## start (‹ › in steps of 45°, like _seconds_slider), and a way to remove it.
+func _guard_panel() -> void:
+	var g := selected_guard
+	if g == null:
+		_open("")
+		return
+	_guard_title.text = Text.t("EDITOR_TOOL_GUARD")
+
+	_label(Text.t("EDITOR_GUARD_ARCHETYPE"), 8, Hud.C.dim, _guard_sub, true)
+	var arch := _dropdown(_guard_sub)
+	var arch_keys := GuardSpawn.ARCHETYPES.keys()
+	for i in arch_keys.size():
+		arch.add_item(Text.t(GuardSpawn.ARCHETYPES[arch_keys[i]].label), i)
+	arch.select(maxi(0, arch_keys.find(g.archetype)))
+	arch.item_selected.connect(func(i: int) -> void: _pick_archetype(arch_keys[i]))
+
+	for stat in ["view", "hearing", "speed"]:
+		_level_row(stat, "EDITOR_GUARD_STAT_" + stat.to_upper())
+	var desc := _label(_guard_description(g), 11, Hud.CREAM, _guard_sub)
+	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	desc.set_meta("guard_desc", true)
+
+	_label(Text.t("EDITOR_GUARD_STANCE"), 8, Hud.C.dim, _guard_sub, true)
+	var stance_row := HBoxContainer.new()
+	stance_row.add_theme_constant_override("separation", 6)
+	_guard_sub.add_child(stance_row)
+	for s in ["round", "post"]:
+		var b := _button(Text.t("EDITOR_GUARD_STANCE_" + s.to_upper()), _pick_stance.bind(s), stance_row, Hud.C.safe)
+		b.set_meta("guard_stance", s)
+
+	if g.stance == "post":
+		# Some missions ask for exactly this: a guard that never leaves its
+		# post, whichever way you set it to look.
+		_label(Text.t("EDITOR_GUARD_WATCH"), 8, Hud.C.dim, _guard_sub, true)
+		var watch_row := HBoxContainer.new()
+		watch_row.add_theme_constant_override("separation", 6)
+		_guard_sub.add_child(watch_row)
+		for w in ["", "room", "piece"]:
+			var b := _button(Text.t("EDITOR_GUARD_WATCH_" + (w if w != "" else "none").to_upper()), _pick_watch.bind(w), watch_row, Hud.C.safe)
+			b.set_meta("guard_watch", w)
+
+	_label(Text.t("EDITOR_GUARD_FACING"), 8, Hud.C.dim, _guard_sub, true)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	_guard_sub.add_child(row)
+	var less := _button("‹", _step_dir.bind(-1), row, Hud.C.safe)
+	var bar := _button(Text.t("EDITOR_GUARD_" + GUARD_DIR_KEYS[_nearest_dir(g.dir)]), _step_dir.bind(0), row, Hud.C.safe)
+	var more := _button("›", _step_dir.bind(1), row, Hud.C.safe)
+	for b in [less, more]:
+		b.custom_minimum_size = Vector2(38, 38)
+		b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+		b.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	bar.custom_minimum_size = Vector2(176, 38)
+	bar.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	bar.autowrap_mode = TextServer.AUTOWRAP_OFF
+	bar.set_meta("guard_dir", true)
+	bar.gui_input.connect(func(e: InputEvent) -> void:
+		for pair in [["ui_left", -1], ["ui_right", 1]]:
+			if e.is_action_pressed(pair[0], true):
+				_step_dir(pair[1])
+				bar.accept_event())
+	_button(Text.t("EDITOR_GUARD_REMOVE"), _remove_selected_guard, _guard_sub, Hud.C.alert)
+
+
+## One slider, "‹ LABEL ›" like _seconds_slider: a click on the middle
+## settles it back on the plain middle level (2), the arrows step it.
+func _level_row(stat: String, title_key: String) -> void:
+	_label(Text.t(title_key), 8, Hud.C.dim, _guard_sub, true)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	_guard_sub.add_child(row)
+	var less := _button("‹", _step_level.bind(stat, -1), row, Hud.C.safe)
+	var bar := _button(Text.t(GuardSpawn.LEVEL_LABELS[stat][selected_guard.level(stat)]), _step_level.bind(stat, 0), row, Hud.C.safe)
+	var more := _button("›", _step_level.bind(stat, 1), row, Hud.C.safe)
+	for b in [less, more]:
+		b.custom_minimum_size = Vector2(38, 38)
+		b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+		b.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	bar.custom_minimum_size = Vector2(176, 38)
+	bar.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	bar.autowrap_mode = TextServer.AUTOWRAP_OFF
+	bar.set_meta("guard_level", stat)
+	bar.gui_input.connect(func(e: InputEvent) -> void:
+		for pair in [["ui_left", -1], ["ui_right", 1]]:
+			if e.is_action_pressed(pair[0], true):
+				_step_level(stat, pair[1])
+				bar.accept_event())
+
+
+## What the sliders say it is like, in words: the ones off the plain middle
+## strung together, or a line saying it is nothing out of the ordinary.
+func _guard_description(g: GuardSpawn) -> String:
+	var parts: Array[String] = []
+	for stat in ["view", "hearing", "speed"]:
+		var lvl := g.level(stat)
+		if lvl != 2:
+			parts.append(Text.t(GuardSpawn.LEVEL_LABELS[stat][lvl]))
+	if parts.is_empty():
+		return Text.t("EDITOR_GUARD_NO_TRAITS")
+	return ", ".join(parts)
+
+
+## The closest of the eight GUARD_DIRS to an angle.
+func _nearest_dir(dir: float) -> int:
+	var best := 0
+	var best_diff := INF
+	for i in GUARD_DIRS.size():
+		var diff := absf(wrapf(GUARD_DIRS[i] - dir, -PI, PI))
+		if diff < best_diff:
+			best_diff = diff
+			best = i
+	return best
+
+
+## One step round (-1/1), or 0 to just settle it on the nearest of the eight.
+func _step_dir(step: int) -> void:
+	if selected_guard == null:
+		return
+	var i := (_nearest_dir(selected_guard.dir) + step) % GUARD_DIRS.size()
+	if i < 0:
+		i += GUARD_DIRS.size()
+	selected_guard.dir = GUARD_DIRS[i]
+	dirty = true
+	_refresh()
+
+
+func _remove_selected_guard() -> void:
+	if selected_guard == null:
+		return
+	_remember()
+	map.guards = map.guards.filter(func(g): return g != selected_guard)
+	selected_guard = null
+	_open("")
+
+
+## An archetype loads its three sliders fresh (the "default values"
+## moment); from then on they are free to move one at a time without it
+## snapping back.
+func _pick_archetype(key: String) -> void:
+	if selected_guard == null:
+		return
+	selected_guard.archetype = key
+	var preset: Dictionary = GuardSpawn.ARCHETYPES[key]
+	selected_guard.view_level = int(preset.view)
+	selected_guard.hearing_level = int(preset.hearing)
+	selected_guard.speed_level = int(preset.speed)
+	dirty = true
+	_open("guard")
+
+
+## -1/1 to step a slider, or 0 to settle it back on the plain middle (2).
+func _step_level(stat: String, step: int) -> void:
+	if selected_guard == null:
+		return
+	var next := 2 if step == 0 else clampi(selected_guard.level(stat) + step, 0, 4)
+	selected_guard.set_level(stat, next)
+	dirty = true
+	_refresh()
+
+
+## Whether it patrols or stands guard: the "watch" row only makes sense
+## posted, so this rebuilds the panel instead of just refreshing it.
+func _pick_stance(s: String) -> void:
+	if selected_guard == null:
+		return
+	selected_guard.stance = s
+	if s != "post":
+		selected_guard.watch = ""
+	dirty = true
+	_open("guard")
+
+
+func _pick_watch(w: String) -> void:
+	if selected_guard == null:
+		return
+	selected_guard.watch = w
+	dirty = true
+	_refresh()
 
 
 ## Its tale: the piece's name, a line on it, and the story told before the
@@ -1256,6 +1516,12 @@ func _paints() -> bool:
 
 
 func _press(t: Vector2i, erase: bool) -> void:
+	if not erase and tool == "guard":
+		var here := map.guards.filter(func(g): return g.at == t)
+		if not here.is_empty():
+			selected_guard = here[0]
+			_open("guard")
+			return
 	_remember()
 	if not erase and tool == "room":
 		room_from = t
@@ -1272,8 +1538,12 @@ func _use(t: Vector2i, erase: bool) -> void:
 	var edge := t.x == 0 or t.y == 0 or t.x == map.w - 1 or t.y == map.h - 1
 	if erase:
 		# What stands on it first, then the tile itself.
-		if map.guards.has(t):
-			map.guards.erase(t)
+		if map.guards.any(func(g): return g.at == t):
+			map.guards = map.guards.filter(func(g): return g.at != t)
+			if selected_guard != null and selected_guard.at == t:
+				selected_guard = null
+				if panel == "guard":
+					_open("")
 		elif map.exhibits.has(t):
 			map.exhibits.erase(t)
 		elif map.props.any(func(p): return p.at == t):
@@ -1282,6 +1552,10 @@ func _use(t: Vector2i, erase: bool) -> void:
 			map.exit = MapFile.NONE
 		elif map.piece == t:
 			map.piece = MapFile.NONE
+		elif map.doors.has(t):
+			map.doors.erase(t)
+		elif map.columns.has(t):
+			map.columns.erase(t)
 		elif tool == "room" and _room_at(t) >= 0:
 			map.rooms.remove_at(_room_at(t))
 		elif not edge:
@@ -1312,12 +1586,30 @@ func _use(t: Vector2i, erase: bool) -> void:
 					if map.door_face(t + d) == -d:
 						map.exit = t + d
 		"guard":
-			if map.guards.has(t):
-				map.guards.erase(t)
-			elif map.at(t) == Tiles.FLOOR and map.guards.size() < MapFile.MAX_GUARDS:
-				map.guards.append(t)
+			# An existing guard is picked up by _press (to edit it, not place
+			# another): here there is never one already on t.
+			if map.at(t) == Tiles.FLOOR and map.guards.size() < MapFile.MAX_GUARDS:
+				var spawn := GuardSpawn.new()
+				spawn.at = t
+				map.guards.append(spawn)
 				if map.guard_count > 0:
 					map.guard_count = maxi(map.guard_count, map.guards.size())
+				selected_guard = spawn
+				_open("guard")
+		"door":
+			# On a wall, not the plan's own edge (the building stays shut):
+			# a click marks or clears it, like a door between rooms at home.
+			if map.doors.has(t):
+				map.doors.erase(t)
+			elif map.at(t) == Tiles.WALL and not edge and not map.columns.has(t) and map.door_fits(t):
+				map.doors.append(t)
+		"column":
+			# Same spot a door could go, but it never opens: a click marks
+			# or clears a column instead.
+			if map.columns.has(t):
+				map.columns.erase(t)
+			elif map.at(t) == Tiles.WALL and not edge and not map.doors.has(t):
+				map.columns.append(t)
 		_ when tool.begins_with("exhibit:"):
 			# On floor or a case; the same piece again leaves the case plain.
 			var what := tool.substr(8)
@@ -1430,6 +1722,20 @@ func _refresh() -> void:
 				_look(b, b.get_meta("save_page") == save_page)
 			elif b.has_meta("seconds"):
 				b.text = _seconds_bar()
+	elif panel == "guard" and selected_guard != null:
+		for b in _guard_sub.find_children("*", "Button", true, false):
+			if b.has_meta("guard_dir"):
+				b.text = Text.t("EDITOR_GUARD_" + GUARD_DIR_KEYS[_nearest_dir(selected_guard.dir)])
+			elif b.has_meta("guard_level"):
+				var stat: String = b.get_meta("guard_level")
+				b.text = Text.t(GuardSpawn.LEVEL_LABELS[stat][selected_guard.level(stat)])
+			elif b.has_meta("guard_stance"):
+				_look(b, b.get_meta("guard_stance") == selected_guard.stance)
+			elif b.has_meta("guard_watch"):
+				_look(b, b.get_meta("guard_watch") == selected_guard.watch)
+		for l in _guard_sub.find_children("*", "Label", true, false):
+			if l.has_meta("guard_desc"):
+				l.text = _guard_description(selected_guard)
 	var errors := map.check()
 	if errors.is_empty():
 		_status.text = Text.t("EDITOR_OK")
@@ -1465,6 +1771,10 @@ func _draw_plan() -> void:
 	var o := _origin()
 	var box := func(t: Vector2i, inset := 0.0) -> Rect2: return Rect2(o + Vector2(t) * c + Vector2.ONE * inset, Vector2.ONE * (c - inset * 2))
 	var mid := func(t: Vector2i) -> Vector2: return o + (Vector2(t) + Vector2.ONE * 0.5) * c
+	# Stray wall tiles nobody marked (MapFile.exempt_walls): drawn as a
+	# column here too, the way they will stand once played, so the plan
+	# does not lie about what a lone `#` will look like.
+	var auto_columns := MapFile.exempt_walls(map.grid, map.outside, map.w, map.h)
 	_plan.draw_rect(Rect2(o, Vector2(map.w, map.h) * c), OUTSIDE)
 	for y in map.h:
 		for x in map.w:
@@ -1475,6 +1785,10 @@ func _draw_plan() -> void:
 			_plan.draw_rect(box.call(t), Hud.MAP_WALL if tile == Tiles.WALL else (Hud.MAP_CASE if tile == Tiles.COVER else Hud.MAP_FLOOR))
 			if tile == Tiles.COVER:
 				_plan.draw_rect(box.call(t, c * 0.18), Color("#8fc4d6"), false, maxf(1.0, c * 0.08))
+			elif tile == Tiles.WALL and map.doors.has(t):
+				_plan.draw_rect(box.call(t, c * 0.14), DOOR)
+			elif tile == Tiles.WALL and (map.columns.has(t) or auto_columns.has(t)):
+				_plan.draw_circle(mid.call(t), c * 0.22, COLUMN)
 	# A faint grid, to count tiles by.
 	if c >= 10:
 		for x in map.w + 1:
@@ -1507,9 +1821,15 @@ func _draw_plan() -> void:
 		var r := c * 0.42
 		_plan.draw_colored_polygon(PackedVector2Array([m + Vector2(0, -r), m + Vector2(r, 0), m + Vector2(0, r), m + Vector2(-r, 0)]), PIECE)
 	for i in map.guards.size():
-		var g: Vector2i = map.guards[i]
-		_plan.draw_rect(box.call(g, c * 0.15), GUARD)
-		_plan.draw_string(Hud.ARCADE, (mid.call(g) as Vector2) + Vector2(-c * 0.2, c * 0.2), str(i + 1), HORIZONTAL_ALIGNMENT_LEFT, -1, int(c * 0.45), Color.WHITE)
+		var g: GuardSpawn = map.guards[i]
+		_plan.draw_rect(box.call(g.at, c * 0.15), GUARD)
+		if g == selected_guard:
+			_plan.draw_rect(box.call(g.at, c * 0.15), Color.WHITE, false, maxf(2.0, c * 0.1))
+		var gm: Vector2 = mid.call(g.at)
+		_plan.draw_line(gm, gm + Vector2(cos(g.dir), sin(g.dir)) * c * 0.4, INK, maxf(2.0, c * 0.12))
+		if g.stance == "post":
+			_plan.draw_circle(gm, c * 0.08, INK)
+		_plan.draw_string(Hud.ARCADE, gm + Vector2(-c * 0.2, c * 0.2), str(i + 1), HORIZONTAL_ALIGNMENT_LEFT, -1, int(c * 0.45), Color.WHITE)
 	_plan.draw_circle(mid.call(map.spawn), c * 0.38, THIEF)
 	_plan.draw_arc(mid.call(map.spawn), c * 0.38, 0, TAU, 20, INK, maxf(1.0, c * 0.08))
 	# Floor you cannot walk to: crossed out, so a closed space shows itself.
@@ -1539,7 +1859,11 @@ func _draw_plan() -> void:
 		elif tool == "room" and room_from != MapFile.NONE:
 			var r := Rect2i(room_from, Vector2i.ONE).merge(Rect2i(hover, Vector2i.ONE))
 			_plan.draw_rect(Rect2(o + Vector2(r.position) * c, Vector2(r.size) * c), ROOM, false, 3.0)
-		_plan.draw_rect(box.call(hover), Hud.CREAM if _plan.has_focus() else Color(Hud.CREAM, 0.7), false, 2.0)
+		var edge_hover := hover.x == 0 or hover.y == 0 or hover.x == map.w - 1 or hover.y == map.h - 1
+		var blocked := tool == "door" and map.at(hover) == Tiles.WALL and not edge_hover and not map.doors.has(hover) \
+			and (map.columns.has(hover) or not map.door_fits(hover))
+		var cursor_colour := Hud.C.alert if blocked else (Hud.CREAM if _plan.has_focus() else Color(Hud.CREAM, 0.7))
+		_plan.draw_rect(box.call(hover), cursor_colour, false, 2.0)
 	if _plan.has_focus():
 		_plan.draw_rect(Rect2(o, Vector2(map.w, map.h) * c).grow(2), Hud.BRASS, false, 2.0)
 
@@ -1634,7 +1958,9 @@ static func _changed(a: MapFile, b: MapFile) -> Array[Vector2i]:
 	for y in b.h:
 		for x in b.w:
 			var t := Vector2i(x, y)
-			if a.at(t) != b.at(t) or a.exhibits.get(t, "") != b.exhibits.get(t, "") or a.guards.has(t) != b.guards.has(t) \
+			if a.at(t) != b.at(t) or a.exhibits.get(t, "") != b.exhibits.get(t, "") \
+					or a.guards.any(func(g): return g.at == t) != b.guards.any(func(g): return g.at == t) \
+					or a.doors.has(t) != b.doors.has(t) or a.columns.has(t) != b.columns.has(t) \
 					or a.props.any(func(p): return p.at == t) != b.props.any(func(p): return p.at == t):
 				out.append(t)
 	for k in [["spawn", a.spawn, b.spawn], ["piece", a.piece, b.piece], ["exit", a.exit, b.exit]]:
@@ -1946,7 +2272,7 @@ func _pick_up(t: Vector2i) -> void:
 	var k := "wall"
 	var prop: Array = map.props.filter(func(p): return p.at == t)
 	var big := map.big_at(t)
-	if map.guards.has(t):
+	if map.guards.any(func(g): return g.at == t):
 		what = "guard"
 	elif t == map.spawn:
 		what = "spawn"
@@ -1954,6 +2280,10 @@ func _pick_up(t: Vector2i) -> void:
 		what = "piece"
 	elif t == map.exit:
 		what = "exit"
+	elif map.doors.has(t):
+		what = "door"
+	elif map.columns.has(t):
+		what = "column"
 	elif not prop.is_empty():
 		what = "prop:" + String(prop[0].kind)
 	elif not big.is_empty():
@@ -1994,7 +2324,7 @@ static func picture(m: MapFile, cell := 4) -> ImageTexture:
 		if m.inside(t):
 			img.fill_rect(Rect2i(t * cell - Vector2i.ONE * cell / 2, Vector2i.ONE * cell * 2), colour)
 	for g in m.guards:
-		mark.call(g, GUARD)
+		mark.call(g.at, GUARD)
 	if m.exit != MapFile.NONE:
 		mark.call(m.exit + m.door_face(m.exit), EXIT)
 	mark.call(m.piece, PIECE)

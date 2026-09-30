@@ -102,6 +102,70 @@ func _font_size() -> int:
 	return int(h * 0.36)
 
 
+## Real ink extents of one glyph at a font size (left, right, top, bottom),
+## read from the font's outlines. Hud.ARCADE's ascent/descent describe its
+## em-box, not where a capital's pixels actually fall: caps sit flush on
+## the left of their advance box, leave about an eighth of it as a right
+## gap, and their baseline doesn't quite touch the reported descent. Cached
+## per (font size, character), since a font's outlines don't change.
+static var _ink_cache := {}
+
+
+static func _ink(fs: int, ch: String) -> Vector4:
+	if ch.is_empty():
+		return Vector4.ZERO
+	var key := "%d:%s" % [fs, ch]
+	if not _ink_cache.has(key):
+		var rid := Hud.ARCADE.get_rids()[0]
+		var ts := TextServerManager.get_primary_interface()
+		var idx := ts.font_get_glyph_index(rid, fs, ch.unicode_at(0), 0)
+		var points: PackedVector3Array = ts.font_get_glyph_contours(rid, fs, idx).get("points", PackedVector3Array())
+		var out := Vector4.ZERO
+		if not points.is_empty():
+			var min_x := INF
+			var max_x := -INF
+			var min_y := INF
+			var max_y := -INF
+			for p in points:
+				min_x = minf(min_x, p.x)
+				max_x = maxf(max_x, p.x)
+				min_y = minf(min_y, p.y)
+				max_y = maxf(max_y, p.y)
+			out = Vector4(min_x, max_x, min_y, max_y)
+		_ink_cache[key] = out
+	return _ink_cache[key]
+
+
+## The y for draw_string (its baseline) that puts a glyph's real ink, not
+## its em-box, in the middle of a box centred at box_center_y. Falls back
+## to the old ascent-based guess if the font can't give us contours (e.g.
+## a blank label).
+static func _centred_y(box_center_y: float, fs: int, text: String) -> float:
+	var ink := _ink(fs, text.left(1))
+	if ink == Vector4.ZERO:
+		return box_center_y + Hud.ARCADE.get_ascent(fs) / 2.0
+	return box_center_y - (ink.z + ink.w) / 2.0
+
+
+## The x nudge that puts a string's real ink, not its advance box, in the
+## middle of a box drawn with HORIZONTAL_ALIGNMENT_CENTER. draw_string
+## centres the advance box (left bearing of the first glyph to right
+## bearing of the last); since this font has no left bearing but does have
+## a right one, that leaves the ink leaning left by half the difference.
+static func _centred_dx(fs: int, text: String) -> float:
+	if text.is_empty():
+		return 0.0
+	var first := _ink(fs, text.left(1))
+	var last_ch := text.right(1)
+	var last := _ink(fs, last_ch)
+	if first == Vector4.ZERO or last == Vector4.ZERO:
+		return 0.0
+	var last_adv := Hud.ARCADE.get_string_size(last_ch, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+	var left_bearing := first.x
+	var right_bearing := last_adv - last.y
+	return (right_bearing - left_bearing) / 2.0
+
+
 func _draw() -> void:
 	match spec.get("kind", "key"):
 		"pad":
@@ -125,8 +189,9 @@ func _draw_key() -> void:
 	_round_rect(face, r, Hud.CREAM.lightened(0.15 * _down))
 	var text: String = spec.get("label", "?")
 	var fs := _font_size()
-	var ascent := Hud.ARCADE.get_ascent(fs)
-	draw_string(Hud.ARCADE, Vector2(0, face.position.y + face.size.y / 2 + ascent / 2 - 1), text, HORIZONTAL_ALIGNMENT_CENTER, w, fs, Hud.INK)
+	var y := _centred_y(face.position.y + face.size.y / 2, fs, text)
+	var x := _centred_dx(fs, text)
+	draw_string(Hud.ARCADE, Vector2(x, y), text, HORIZONTAL_ALIGNMENT_CENTER, w, fs, Hud.INK)
 
 
 ## The four caps in their pyramid: up on top, left, down and right under it.
@@ -155,8 +220,10 @@ func _draw_keys4() -> void:
 			var side := dir.orthogonal()
 			draw_colored_polygon(PackedVector2Array([c + dir * s, c - dir * s * 0.7 + side * s, c - dir * s * 0.7 - side * s]), ink)
 		else:
-			var ascent := Hud.ARCADE.get_ascent(fs)
-			draw_string(Hud.ARCADE, Vector2(face.position.x, face.position.y + face.size.y / 2 + ascent / 2 - 1), String(labels[i]), HORIZONTAL_ALIGNMENT_CENTER, k, fs, ink)
+			var label_text := String(labels[i])
+			var ly := _centred_y(face.position.y + face.size.y / 2, fs, label_text)
+			var lx := face.position.x + _centred_dx(fs, label_text)
+			draw_string(Hud.ARCADE, Vector2(lx, ly), label_text, HORIZONTAL_ALIGNMENT_CENTER, k, fs, ink)
 
 
 ## The face button, round on its lip, and the diamond of four beside it.
@@ -175,7 +242,9 @@ func _draw_pad() -> void:
 		_draw_ps_mark(mark, c, r * 0.5)
 	else:
 		var fs := int(h * 0.4)
-		draw_string(Hud.ARCADE, Vector2(c.x - r, c.y + Hud.ARCADE.get_ascent(fs) / 2 - 1), mark, HORIZONTAL_ALIGNMENT_CENTER, r * 2, fs, Color.WHITE)
+		var y := _centred_y(c.y, fs, mark)
+		var x := c.x - r + _centred_dx(fs, mark)
+		draw_string(Hud.ARCADE, Vector2(x, y), mark, HORIZONTAL_ALIGNMENT_CENTER, r * 2, fs, Color.WHITE)
 	# Which of the four: the lit dot in the diamond.
 	var d := Vector2(r * 2 + h * 0.32, h / 2)
 	var step := h * 0.17

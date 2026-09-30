@@ -23,6 +23,12 @@ le quita (a objetos y materiales), así que dos piezas pueden tener cada una su
 Una colección con la propiedad "sitio" ("case", "plinth", "floor" o "botin":
 la pieza a robar, que flota sobre su vitrina) avisa al exportar si la pieza
 no cabe en su sitio (FITS).
+
+Una colección con la propiedad "ladron_sub" sale a su propia subcarpeta dentro
+de la salida del fichero (assets/models/<salida>/<ladron_sub>/<colección>.glb)
+en vez de directa en <salida>: así un fichero puede agrupar varias zonas
+(varios temas, varias categorías de un kit...) que en el juego siguen
+viviendo en carpetas separadas. Sin esa propiedad, sale igual que siempre.
 """
 import os
 import re
@@ -78,11 +84,23 @@ def names():
     return [c.name for c in pieces()]
 
 
+def sub_of(name):
+    """La subcarpeta propia de una pieza (su colección) dentro de la salida del
+    fichero: su propiedad custom "ladron_sub", o "" si no la tiene."""
+    coll = bpy.data.collections.get(name)
+    return coll.get("ladron_sub", "") if coll else ""
+
+
+def _rel_target(name):
+    """La ruta de una pieza de este fichero, relativa a assets/models/."""
+    if kind() == "personaje":
+        return name + ".glb"
+    return os.path.join(bpy.context.scene.get("ladron_salida", ""), sub_of(name), name + ".glb")
+
+
 def target(name):
     """El .glb de una pieza de este fichero."""
-    if kind() == "personaje":
-        return os.path.join(MODELS, name + ".glb")
-    return os.path.join(MODELS, bpy.context.scene.get("ladron_salida", ""), name + ".glb")
+    return os.path.join(MODELS, _rel_target(name))
 
 
 # --- La fila -----------------------------------------------------------------
@@ -232,10 +250,7 @@ def export_file(path, wanted=None, out_dir=None):
         stem = os.path.splitext(os.path.basename(path))[0]
         if wanted and name not in wanted and stem not in wanted and stem + ".blend" not in wanted:
             continue
-        out = None
-        if out_dir:
-            sub = "" if kind() == "personaje" else bpy.context.scene.get("ladron_salida", "")
-            out = os.path.join(out_dir, sub, name + ".glb")
+        out = os.path.join(out_dir, _rel_target(name)) if out_dir else None
         if kind() == "personaje":
             export_character(out)
         else:

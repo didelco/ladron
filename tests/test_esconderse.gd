@@ -8,14 +8,13 @@ extends SceneTree
 
 const DT := 1.0 / 60.0
 
-var failures: Array[String] = []
+const Support := preload("res://tests/support.gd")
+var qa := Support.new("  ")
 var m
 
 
 func check(ok: bool, what: String) -> void:
-	print(("  ok   " if ok else "  FALLO ") + what)
-	if not ok:
-		failures.append(what)
+	qa.check(ok, what)
 
 
 func key(k: Key, down: bool) -> void:
@@ -424,5 +423,4 @@ func _init() -> void:
 				check(Arcades.within_reach(p, m.thieves).x < 0 and m._action_for(p).get("do", "") != "arcade", "robo %d: la recreativa no juega" % n)
 		Arcades.list.clear()
 
-	print("OK: esconderse, jugando" if failures.is_empty() else "FALLOS: %d" % failures.size())
-	quit(0 if failures.is_empty() else 1)
+	quit(qa.summary())

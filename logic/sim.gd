@@ -254,7 +254,7 @@ static func _lesson_holds(kind: String, g: Guard, post: Vector2i, dir: float, st
 				return false
 			return not _way(start, stands, func(t: Vector2i) -> bool: return seen.call(t, false))
 		"quiet":
-			var ear := Hearing.HEARING_CALM * tuning("hearing")
+			var ear := Hearing.HEARING_CALM * tuning("hearing") * g.hearing_scale
 			var soft := Hearing.step_loudness(CREEP, TOP_SPEED) * ear
 			var loud := Hearing.step_loudness(TOP_SPEED, TOP_SPEED) * ear
 			# Heard as the game hears it: the walls in between take their share.
@@ -325,7 +325,8 @@ static func now_ms() -> float:
 static func view_of(g: Guard) -> Dictionary:
 	var v: Dictionary = VIEW.alert if g.alert else VIEW.calm
 	# Easier guards see less far; the width of the cone stays the same.
-	return {"near": v.near * tuning("view"), "range": v.range * tuning("view"), "half": v.half}
+	var k: float = tuning("view") * g.view_scale
+	return {"near": v.near * k, "range": v.range * k, "half": v.half}
 
 
 ## How strong this night's torches are: the same dial as how far guards
@@ -421,13 +422,22 @@ static func new_guards(count: int = 2) -> Array[Guard]:
 ## Guards where a saved map stands them (MapFile.guards), in order; the rest
 ## keep the stops new_guards gave them. Each walks its round from the stop
 ## nearest where it stands.
-static func place_guards(guards: Array[Guard], at: Array[Vector2i]) -> void:
+static func place_guards(guards: Array[Guard], at: Array[GuardSpawn]) -> void:
 	for i in mini(guards.size(), at.size()):
 		var g := guards[i]
-		var t := at[i]
+		var spawn := at[i]
+		var t := spawn.at
 		g.x = t.x + 0.5
 		g.y = t.y + 0.5
 		g.target = t
+		g.dir = spawn.dir
+		g.view_scale = spawn.scale("view")
+		g.hearing_scale = spawn.scale("hearing")
+		g.speed_scale = spawn.scale("speed")
+		if spawn.stance == "post":
+			g.post = t
+			g.post_dir = spawn.dir
+			g.watch = spawn.watch
 		var best := INF
 		for k in Museum.watchpoints.size():
 			var w := Museum.watchpoints[k]
@@ -471,6 +481,34 @@ static func _resolve(x: float, y: float, r: float) -> Array:
 					hit = "shelf"
 				elif hit == "":
 					hit = "wall"
+		# A column is no longer a solid tile (Museum.blocks_move skips it),
+		# only its own small circle at the tile's centre: the same
+		# circle-out-of-circle push _doorway_assist's callers already get
+		# from a wall corner, just against a real circle instead of a
+		# square's nearest point. Lets a body round it hugging the tile's
+		# free corners, instead of stopping dead at the tile's edge.
+		for t in Museum.columns:
+			var col_x := t.x + 0.5
+			var col_y := t.y + 0.5
+			if absf(x - col_x) > r + Museum.COLUMN_R or absf(y - col_y) > r + Museum.COLUMN_R:
+				continue
+			var nx := x - col_x
+			var ny := y - col_y
+			var d := sqrt(nx * nx + ny * ny)
+			var min_d := r + Museum.COLUMN_R
+			if d >= min_d:
+				continue
+			if d < 1e-6:
+				# Dead-centre on the column: leave along +x, arbitrarily.
+				nx = 1.0
+				ny = 0.0
+				d = 0.0
+				x += min_d
+			else:
+				x += nx / d * (min_d - d)
+				y += ny / d * (min_d - d)
+			if hit == "":
+				hit = "wall"
 	return [x, y, hit]
 
 
@@ -942,7 +980,7 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 			var spot_d := INF
 			var crash := false
 			for n in noises:
-				var at = Hearing.heard_at(g, n, tuning("hearing"))
+				var at = Hearing.heard_at(g, n, tuning("hearing") * g.hearing_scale)
 				var d := Museum.dist(g.x, g.y, n.x, n.y)
 				if at != null and d < spot_d:
 					spot = at
@@ -1072,7 +1110,13 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 	if g.post.x >= 0 and g.suspicion == 0 and g.errand == "" and not on_to(g, now):
 		if _tile(g) == g.post:
 			g.path.clear()
-			g.dir = g.post_dir + sin(now / 1400.0) * 0.8
+			match g.watch:
+				"room":
+					g.dir = g.post_dir + sin(now / 1400.0) * 1.6
+				"piece":
+					g.dir = atan2(Heist.at.y + 0.5 - g.y, Heist.at.x + 0.5 - g.x) + sin(now / 1400.0) * 0.15
+				_:
+					g.dir = g.post_dir + sin(now / 1400.0) * 0.8
 			return
 		if g.path.is_empty() or g.target != g.post:
 			g.target = g.post
@@ -1090,7 +1134,7 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 		return
 
 	# Calm is a stroll; alert is a brisk walk that becomes a run.
-	var speed := ((2.3 + dec.aggression * 2.3) if alert else (1.0 + dec.aggression * 0.5)) * tuning("speed")
+	var speed := ((2.3 + dec.aggression * 2.3) if alert else (1.0 + dec.aggression * 0.5)) * tuning("speed") * g.speed_scale
 
 	# Close enough to lunge: go for the body, not the middle of its tile.
 	if player and Museum.dist(g.x, g.y, player.x, player.y) < LUNGE_RANGE:
@@ -1138,6 +1182,13 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 		return
 
 	var step := g.path[0]
+	# A closed interior door in the way: a guard uses it like a thief would
+	# (Museum.toggle_door), whether it is patrolling, chasing or working a
+	# clue (_search_spot_near's targets go through here too) — never stuck
+	# against it like a plain wall. Opening never fails (can_toggle_door),
+	# so no one's positions are needed here; closing behind is close_doors_behind.
+	if Museum.doors.has(step) and not Museum.is_door_open(step):
+		Museum.toggle_door(step, [])
 	var dx := step.x + 0.5 - g.x
 	var dy := step.y + 0.5 - g.y
 	var d := sqrt(dx * dx + dy * dy)
@@ -1299,7 +1350,7 @@ static func call_for_backup(saw_before: Dictionary, guards: Array[Guard], now: f
 		for g in guards:
 			if g == spotter or g.sees_player:
 				continue
-			var spot = Hearing.heard_at(g, yell, tuning("hearing"))
+			var spot = Hearing.heard_at(g, yell, tuning("hearing") * g.hearing_scale)
 			if spot == null:
 				continue
 			heard_by.append(g.name)
@@ -1421,3 +1472,31 @@ static func keep_apart(guards: Array[Guard]) -> void:
 			b.sweep = 0
 			b.watching = 0
 			b.path = Museum.bfs_path(_tile(b), b.target)
+
+
+## A door a guard opened (step_guard's own use) does not stay open for
+## good: once nobody — guard or thief, in the game's eyes, not just what a
+## guard has spotted — still needs it (within DOOR_LINGER of its tile), it
+## swings shut again, same as the band's own house does for the player.
+## Called once a frame for the whole watch, alongside call_for_backup and
+## warn_partners.
+const DOOR_LINGER := 1.3
+
+static func close_doors_behind(guards: Array[Guard], thieves: Array[Thief]) -> void:
+	if Museum.doors.is_empty():
+		return
+	for d in Museum.open_doors():
+		var cx := d.x + 0.5
+		var cy := d.y + 0.5
+		var busy := false
+		for g in guards:
+			if Museum.dist(g.x, g.y, cx, cy) < DOOR_LINGER:
+				busy = true
+				break
+		if not busy:
+			for p in thieves:
+				if not p.out and Museum.dist(p.x, p.y, cx, cy) < DOOR_LINGER:
+					busy = true
+					break
+		if not busy:
+			Museum.toggle_door(d, [])

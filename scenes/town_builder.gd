@@ -374,16 +374,18 @@ var made := {}
 var unseen := {}
 
 
-func _init(parent: Node3D) -> void:
+## The town's seed: always 7 in the game, so it is always the same town; the
+## tools may pass another to compare variants of the same rules.
+func _init(parent: Node3D, town_seed := 7) -> void:
 	root = parent
-	_rng.seed = 7
-	_conifers.seed = 11
+	_rng.seed = town_seed
+	_conifers.seed = town_seed + 11
 	_conifers.frequency = 0.035
-	_groves.seed = 23
+	_groves.seed = town_seed + 23
 	_groves.frequency = 0.07
-	_fields.seed = 5
+	_fields.seed = town_seed + 5
 	_fields.frequency = 0.045
-	_hills.seed = 31
+	_hills.seed = town_seed + 31
 	_hills.frequency = HILLS_FREQ
 
 
@@ -1182,31 +1184,44 @@ func _plant_mesh(kind: String) -> ArrayMesh:
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	match kind:
 		"pine":
-			_shape(st, _cone(0.06, 0.08, 0.3), Vector3(0, 0.15, 0), TRUNK)
-			for k in 3:
-				_shape(st, _cone(0.0, 0.34 - k * 0.085, 0.42), Vector3(0, 0.42 + k * 0.2, 0), PINE_GREEN.lightened(k * 0.06))
+			_shape(st, _cone(0.05, 0.075, 0.16), Vector3(0, 0.08, 0), TRUNK.darkened(0.1))
+			_shape(st, _cone(0.055, 0.07, 0.22), Vector3(0, 0.24, 0), TRUNK)
+			for k in 4:
+				_shape(st, _cone(0.0, 0.32 - k * 0.07, 0.34), Vector3(0, 0.38 + k * 0.165, 0), PINE_GREEN.lightened(k * 0.05))
 		"oak", "autumn":
 			var leaves := OAK_GREEN if kind == "oak" else AUTUMN_LEAVES
 			_shape(st, _cone(0.05, 0.07, 0.45), Vector3(0, 0.22, 0), TRUNK)
-			_shape(st, _ball(0.34), Vector3(0, 0.66, 0), leaves)
-			_shape(st, _ball(0.24), Vector3(0.16, 0.8, 0.06), leaves.lightened(0.08))
-			_shape(st, _ball(0.22), Vector3(-0.14, 0.76, -0.1), leaves.darkened(0.08))
+			_shape(st, _ball(0.3), Vector3(0, 0.62, 0), leaves)
+			_shape(st, _ball(0.24), Vector3(0.17, 0.78, 0.07), leaves.lightened(0.08))
+			_shape(st, _ball(0.22), Vector3(-0.15, 0.74, -0.11), leaves.darkened(0.08))
+			_shape(st, _ball(0.16), Vector3(0.02, 0.9, -0.12), leaves.lightened(0.14))
+			_shape(st, _ball(0.14), Vector3(-0.2, 0.58, 0.16), leaves.darkened(0.04))
 		"birch":
 			_shape(st, _cone(0.03, 0.04, 0.8), Vector3(0, 0.4, 0), BIRCH_BARK)
-			_shape(st, _ball(0.22), Vector3(0, 0.74, 0), BIRCH_GREEN, Vector3(1, 1.5, 1))
+			_shape(st, _ball(0.19), Vector3(0, 0.68, 0), BIRCH_GREEN, Vector3(1, 1.3, 1))
+			_shape(st, _ball(0.14), Vector3(0.12, 0.86, 0.05), BIRCH_GREEN.lightened(0.08), Vector3(1, 1.2, 1))
+			_shape(st, _ball(0.12), Vector3(-0.11, 0.8, -0.08), BIRCH_GREEN.darkened(0.06), Vector3(1, 1.2, 1))
 		"poplar":
 			_shape(st, _cone(0.04, 0.05, 0.3), Vector3(0, 0.15, 0), TRUNK)
-			_shape(st, _ball(0.18), Vector3(0, 0.6, 0), POPLAR_GREEN, Vector3(1, 2.3, 1))
+			_shape(st, _ball(0.15), Vector3(0, 0.44, 0), POPLAR_GREEN.darkened(0.04), Vector3(1, 1.4, 1))
+			_shape(st, _ball(0.165), Vector3(0, 0.68, 0), POPLAR_GREEN, Vector3(1, 1.5, 1))
+			_shape(st, _ball(0.13), Vector3(0, 0.92, 0), POPLAR_GREEN.lightened(0.08), Vector3(1, 1.3, 1))
 		"bush", "bloom":
-			_shape(st, _ball(0.5), Vector3(0, 0.25, 0), BUSH_GREEN, Vector3(1, 0.7, 1))
-			_shape(st, _ball(0.32), Vector3(0.28, 0.2, 0.1), BUSH_GREEN.lightened(0.07), Vector3(1, 0.75, 1))
+			_shape(st, _ball(0.46), Vector3(0, 0.24, 0), BUSH_GREEN, Vector3(1, 0.66, 1))
+			_shape(st, _ball(0.3), Vector3(0.27, 0.2, 0.1), BUSH_GREEN.lightened(0.07), Vector3(1, 0.72, 1))
+			_shape(st, _ball(0.24), Vector3(-0.22, 0.16, -0.16), BUSH_GREEN.darkened(0.05), Vector3(1, 0.7, 1))
 			if kind == "bloom":
 				for k in 6:
 					var a := k * TAU / 6.0 + 0.4
 					_shape(st, _ball(0.09), Vector3(cos(a) * 0.36, 0.34 + 0.08 * sin(a * 3.0), sin(a) * 0.36), BLOSSOM)
 		"hedge":
-			_shape(st, BoxMesh.new(), Vector3(0, 0.42, 0), HEDGE_GREEN, Vector3(0.34, 0.84, 1.0))
-			_shape(st, BoxMesh.new(), Vector3(0, 0.92, 0), HEDGE_GREEN.lightened(0.06), Vector3(0.28, 0.16, 0.97))
+			# A base block, clipped square, with a row of smaller lobes along
+			# the top so it reads as trimmed foliage, not a smooth slab.
+			_shape(st, BoxMesh.new(), Vector3(0, 0.36, 0), HEDGE_GREEN, Vector3(0.34, 0.72, 1.0))
+			for k in 5:
+				var z := -0.42 + k * 0.21
+				var h := 0.1 if k % 2 == 0 else 0.06
+				_shape(st, _ball(0.18), Vector3(0, 0.72 + h, z), HEDGE_GREEN.lightened(0.05 + 0.03 * (k % 2)), Vector3(1.0, 0.62, 1.15))
 	st.generate_normals()
 	return st.commit()
 

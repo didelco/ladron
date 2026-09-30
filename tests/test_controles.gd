@@ -1,10 +1,10 @@
 extends SceneTree
 ## Los controles: qué hace cada tecla y botón en partida, en los menús y al
 ## elegir sitio. Eventos simulados, sobre la escena principal.
-var fails := 0
+const Support := preload("res://tests/support.gd")
+var qa := Support.new()
 func check(ok: bool, what: String) -> void:
-	print(("ok   " if ok else "FALLO ") + what)
-	if not ok: fails += 1
+	qa.check(ok, what)
 func pad(b: int, down: bool) -> void:
 	var e := InputEventJoypadButton.new(); e.device = 0; e.button_index = b; e.pressed = down
 	Input.parse_input_event(e); Input.flush_buffered_events()
@@ -98,5 +98,4 @@ func _init() -> void:
 	m.seats.assign(["any"])
 	m.pads_lost.clear()
 	print("etiqueta de KEY_SLASH en este teclado: ", m.hands.key_label(KEY_SLASH), " · punto: ", m.hands.key_label(KEY_PERIOD))
-	print("FALLOS: %d" % fails)
-	quit(1 if fails else 0)
+	quit(qa.summary())

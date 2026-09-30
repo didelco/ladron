@@ -16,6 +16,8 @@ const DEFAULTS := {
 	"megaphone_mode": "both",
 	"difficulty": "medium",
 	"size": "small",
+	# generative mode's museum theme (Themes), "" for any theme mixed
+	"theme": "",
 	"fullscreen": false,
 	"vsync": true,
 	# graphics: "high" (as designed) or "low" (Quality), and the 3D render
@@ -90,6 +92,8 @@ static func read() -> Dictionary:
 		out.input_mode = DEFAULTS.input_mode
 	if not out.size in ["small", "medium", "large"]:
 		out.size = DEFAULTS.size
+	if not out.theme in Themes.ids() + [""]:
+		out.theme = DEFAULTS.theme
 	for k in ["music_volume", "effects_volume", "rumble_strength"]:
 		out[k] = volume(out[k])
 	out.deadzone = clampi(snappedi(out.deadzone, VOLUME_STEP), 20, 80)

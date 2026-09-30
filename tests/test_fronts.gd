@@ -6,13 +6,12 @@ extends SceneTree
 ## gives way to another.
 ##   godot --headless --script tests/test_fronts.gd
 
-var failures: Array[String] = []
+const Support := preload("res://tests/support.gd")
+var qa := Support.new("  ")
 
 
 func check(ok: bool, what: String) -> void:
-	print(("  ok   " if ok else "  FALLO ") + what)
-	if not ok:
-		failures.append(what)
+	qa.check(ok, what)
 
 
 func _init() -> void:
@@ -72,5 +71,4 @@ func _init() -> void:
 			if MuseumView.front_of(t) == Vector2i(0, 1):
 				south += 1
 	check(could > 0 and south == could, "con suelo libre al sur, el frente mira al sur (a la cámara)")
-	print("TODO BIEN" if failures.is_empty() else "FALLOS: %d" % failures.size())
-	quit(0 if failures.is_empty() else 1)
+	quit(qa.summary())

@@ -67,7 +67,7 @@ const ALL := {
 		"colours": ["#5cc85c", "#ff6fa8", "#5ac8fa", "#ffd23f"],
 		"cloth": "#2e4a2a",
 		"floor": ["@diorama"],
-		"paintings": ["landscape"],
+		"paintings": ["wildlife"],
 		"big": ["bear", "log"],
 	},
 	"moderna": {
@@ -97,6 +97,23 @@ static func ids() -> Array:
 ## The gallery's name for a theme: [English, key into Text].
 static func gallery(theme: String) -> Array:
 	return ALL[theme].gallery
+
+
+## The column (MapFile.columns, MuseumView's exempt pillar) a theme's gallery
+## stands: the ancient world's fluted "dorica", the middle ages' compound
+## "gotica", prehistory's squared brown megalith ("piedra", in the same
+## ochre-and-flint browns as Themes.ALL.prehistoria's own palette), nature's
+## wooden post ("madera" — a trunk fits its groves and dioramas). The modern
+## age keeps the bare-concrete "moderno" (a raw Ando-style tube reads fine
+## as "no style at all" there), and so does no theme at all (a corridor, or
+## the band's house, Den, which is wood throughout already).
+const COLUMN_STYLES := {"antiguo": "dorica", "edad_media": "gotica", "naturaleza": "madera", "prehistoria": "piedra"}
+
+
+## The column style (MuseumView._column's looks) a gallery of this theme
+## stands ("" for a corridor or the band's house: the plain one, "moderno").
+static func column_style(theme: String) -> String:
+	return COLUMN_STYLES.get(theme, "moderno")
 
 
 ## The theme that wants this big piece ("dinosaur", "sarcophagus"), or "".

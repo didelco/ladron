@@ -149,8 +149,12 @@ const SHUT := 0.62
 ## plinth, each floor's height from the ground up (the noble one tallest).
 const M_W := 4.6
 const M_D := 2.4
-const M_BASE := 0.15
-const M_FLOORS := [0.72, 0.92, 0.9]
+## Half a body high: the plinth that lifts the ground floor clear of the
+## water, the moat passing under it.
+const M_BASE := 0.4
+## The ground floor stands taller than before: the drawbridge has further to
+## swing down from its door to the yard.
+const M_FLOORS := [1.05, 0.92, 0.9]
 ## Its front's bays across (the middle one the big job's, the crest over
 ## it), the pilasters between them; down each side, the same (back from the
 ## front, z), past the tower.
@@ -197,6 +201,8 @@ const M_STAINED := [Color("#e0304a"), Color("#3f6fe0"), Color("#f2c24a"), Color(
 const M_COBBLE := [Color("#8f8478"), Color("#a09484"), Color("#7c7268"), Color("#978a7b")]
 const M_COBBLE_EDGE := Color("#5e554c")
 const M_MOAT := Color("#3a3028")
+const M_RIVER := Color("#264456")
+const M_RIVER_LIT := Color("#3a6a82")
 const M_STEEL := Color("#a9b2c4")
 const M_FLAME := Color("#ff9a3a")
 const M_DUCK := Color("#ffd23a")
@@ -302,23 +308,16 @@ func _hall(rooms: Array) -> void:
 	dome.is_hemisphere = true
 	_mesh(dome, deep, Vector3(0, PLINTH + H + 0.6, -0.25))
 	_box(Vector3(0.03, 0.7, 0.03), POLE, Vector3(0, PLINTH + H + 0.6 + DOME_R * 0.8 + 0.35, -0.25))
-	var flag := _box(Vector3(0.45, 0.26, 0.02), _colour if open else deep, Vector3(0.24, PLINTH + H + 0.6 + DOME_R * 0.8 + 0.55, -0.25))
+	var flag := Node3D.new()
 	flag.name = "Flag"
+	flag.position = Vector3(0, PLINTH + H + 0.6 + DOME_R * 0.8 + 0.55, -0.25)
+	add_child(flag)
+	_box_in(flag, Vector3(0.45, 0.26, 0.02), _colour if open else deep, Vector3(0.225, 0, 0))
 	# A banner in its colour at each end, gold along its foot.
 	for s in [-1, 1]:
 		_box(Vector3(0.36, 0.95, 0.03), _colour if open else deep, Vector3(s * 2.6, PLINTH + H - 0.62, D * 0.5 + 0.3))
 		_box(Vector3(0.36, 0.08, 0.035), GOLD.darkened(0.0 if open else SHUT), Vector3(s * 2.6, PLINTH + H - 1.08, D * 0.5 + 0.3))
 		_box(Vector3(0.42, 0.04, 0.05), POLE, Vector3(s * 2.6, PLINTH + H - 0.12, D * 0.5 + 0.3))
-	# Its name over the columns.
-	var sign := Label3D.new()
-	sign.text = String(Story.museum(m).name).to_upper()
-	sign.font_size = 48
-	sign.pixel_size = 0.0028
-	sign.outline_size = 0
-	sign.modulate = WOOD if open else WOOD.lightened(0.2)
-	sign.position = Vector3(0, PLINTH + H - 0.07, D * 0.5 + 0.33)
-	sign.width = W * 300.0
-	add_child(sign)
 	# The door, lit round its edge when open.
 	_box(Vector3(0.62, 0.62, 0.05), WOOD.darkened(0.0 if open else 0.4), Vector3(0, PLINTH + 0.31, D * 0.5 + 0.02))
 	if open:
@@ -432,6 +431,16 @@ func _prehistory(rooms: Array) -> void:
 		_box(Vector3(P_W + 0.06, 0.06, P_D + 0.06), stone, Vector3(0, P_BASE + f * P_FLOOR, -P_D * 0.5))
 	_box(Vector3(P_W + 0.24, 0.14, P_D + 0.24), stone, Vector3(0, roof_y + 0.07, -P_D * 0.5))
 	_box(Vector3(P_W - 0.1, 0.2, P_D - 0.1), trim, Vector3(0, roof_y + 0.24, -P_D * 0.5))
+	# A gabled roof, its ridge along the front (the long side): it slopes
+	# down to the front and the back, and shows its triangular end at
+	# each side.
+	var roof_rise := 0.5
+	var roof_over := 0.18
+	var roof_prism := PrismMesh.new()
+	roof_prism.size = Vector3(P_D + roof_over * 2.0, roof_rise, P_W + roof_over * 2.0)
+	roof_prism.left_to_right = 0.5
+	var roof := _mesh(roof_prism, trim.darkened(0.1), Vector3(0, roof_y + 0.34 + roof_rise * 0.5, -P_D * 0.5))
+	roof.rotation.y = PI / 2.0
 	# The pilasters on the corners, seen from the front, the back and the
 	# sides.
 	for sx in [-1, 1]:
@@ -456,23 +465,26 @@ func _prehistory(rooms: Array) -> void:
 		_mesh(col, stone, Vector3(x, (porch_top + P_BASE) * 0.5, P_PORCH - 0.08))
 		_box(Vector3(0.24, 0.08, 0.24), stone, Vector3(x, P_BASE + 0.04, P_PORCH - 0.08))
 		_box(Vector3(0.26, 0.08, 0.26), stone, Vector3(x, porch_top - 0.04, P_PORCH - 0.08))
-	_box(Vector3(2.5, 0.2, P_PORCH + 0.08), stone, Vector3(0, porch_top + 0.1, (P_PORCH + 0.08) * 0.5 + 0.02))
+	# The entablature: a cornice standing proud of the tympanum along the
+	# base and both raking (sloped) sides; the tympanum itself set back
+	# behind it, not flush.
+	var corn_d := P_PORCH + 0.16
+	_box(Vector3(2.5, 0.05, corn_d), stone, Vector3(0, porch_top + 0.1, corn_d * 0.5 + 0.02))
 	_box(Vector3(2.52, 0.05, 0.04), accent, Vector3(0, porch_top + 0.04, P_PORCH + 0.1))
+	var ped_w := 2.1
+	var ped_rise := 0.42
 	var ped := PrismMesh.new()
-	ped.size = Vector3(2.6, 0.48, P_PORCH + 0.08)
-	_mesh(ped, stone, Vector3(0, porch_top + 0.44, (P_PORCH + 0.08) * 0.5 + 0.02))
+	ped.size = Vector3(ped_w, ped_rise, P_PORCH + 0.06)
+	_mesh(ped, stone, Vector3(0, porch_top + 0.13 + ped_rise * 0.5, (P_PORCH + 0.06) * 0.5 + 0.02))
 	var tym := PrismMesh.new()
-	tym.size = Vector3(2.0, 0.3, 0.04)
-	_mesh(tym, accent, Vector3(0, porch_top + 0.38, P_PORCH + 0.08))
-	var sign := Label3D.new()
-	sign.text = String(Story.museum(museum).name).to_upper()
-	sign.font_size = 48
-	sign.pixel_size = 0.0022
-	sign.outline_size = 0
-	sign.modulate = WOOD if open else WOOD.lightened(0.2)
-	sign.position = Vector3(0, porch_top + 0.11, P_PORCH + 0.11)
-	sign.width = 2.4 * 450.0
-	add_child(sign)
+	tym.size = Vector3(ped_w - 0.3, ped_rise - 0.16, 0.03)
+	_mesh(tym, accent, Vector3(0, porch_top + 0.13 + (ped_rise - 0.16) * 0.5 + 0.03, P_PORCH + 0.08))
+	var slope_len := Vector2(ped_w * 0.5, ped_rise).length()
+	var slope_angle := atan2(ped_rise, ped_w * 0.5)
+	for sx in [-1, 1]:
+		var raking := _box(Vector3(slope_len + 0.16, 0.06, corn_d), stone,
+			Vector3(sx * ped_w * 0.25, porch_top + 0.13 + ped_rise * 0.5, corn_d * 0.5 + 0.02))
+		raking.rotation.z = -sx * slope_angle
 	# The door, lit round its edge when open.
 	_box(Vector3(0.5, 0.62, 0.05), WOOD.darkened(0.0 if open else 0.4), Vector3(0, P_BASE + 0.31, 0.12))
 	if open:
@@ -482,8 +494,11 @@ func _prehistory(rooms: Array) -> void:
 		_box(Vector3(0.18, 1.1, 0.02), accent, Vector3(sx * 1.75, P_BASE + P_FLOOR * 2.3, 0.02))
 		_box(Vector3(0.18, 0.06, 0.025), GOLD.darkened(0.0 if open else SHUT), Vector3(sx * 1.75, P_BASE + P_FLOOR * 2.3 - 0.52, 0.025))
 	_box(Vector3(0.03, 0.8, 0.03), POLE, Vector3(0, roof_y + 0.7, -0.4))
-	var flag := _box(Vector3(0.45, 0.26, 0.02), _colour if open else accent, Vector3(0.24, roof_y + 0.95, -0.4))
+	var flag := Node3D.new()
 	flag.name = "Flag"
+	flag.position = Vector3(0, roof_y + 0.95, -0.4)
+	add_child(flag)
+	_box_in(flag, Vector3(0.45, 0.26, 0.02), _colour if open else accent, Vector3(0.225, 0, 0))
 	# The plain windows of the wings, three floors of them, down both sides
 	# and across the back, lit here and there; but where a room is (it has
 	# its own).
@@ -514,8 +529,8 @@ func _prehistory(rooms: Array) -> void:
 		var lamp := _mesh(head, LIT, Vector3(sx * 1.55, 0.8, P_PORCH + 0.55))
 		if open:
 			lamp.material_override = _lit_material(LIT, 3.0)
-	# The dinosaurs on their plinths: a tyrannosaur on the left, a long neck
-	# on the right, both turned a little to the steps.
+	# The dinosaurs on their plinths (real models, Gobkit's pack): a trex on
+	# the left, a triceratops on the right, both turned a little to the steps.
 	for sx in [-1, 1]:
 		var at := Vector3(sx * 1.75, 0, P_SQUARE - 0.75)
 		_box(Vector3(0.62, 0.34, 0.8), _shade(GRANITE[2]), at + Vector3(0, 0.17, 0))
@@ -526,9 +541,9 @@ func _prehistory(rooms: Array) -> void:
 		dino.scale = Vector3.ONE * 1.35
 		add_child(dino)
 		if sx < 0:
-			_tyrannosaur(dino)
+			_dino_model(dino, "trex", 0.95)
 		else:
-			_long_neck(dino)
+			_dino_model(dino, "triceratops", 0.6)
 	# The rooms: some of the wings' windows and the side's (P_ROOMS), the big
 	# job's over the door. Only one reached shows as a room: its window lit up
 	# warm and bright, no bars across it and nothing in it (and the crown on
@@ -649,43 +664,23 @@ func _square(centre: Vector3, size: Vector2, rng: RandomNumberGenerator, flags: 
 	add_child(mmi)
 
 
-## A tyrannosaur in stone, roaring: a leaning body, a big head with its jaw
-## open, a tail out behind, two strong legs and two silly little arms.
-func _tyrannosaur(at: Node3D) -> void:
-	var pale := _shade(SCULPTURE)
-	var dark := _shade(SCULPTURE_DARK)
-	var body := _mesh_in(at, _ball(0.2), pale, Vector3(0, 0.46, 0))
-	body.scale = Vector3(1.0, 1.05, 1.5)
-	body.rotation.x = -0.35
-	var head := _box_in(at, Vector3(0.2, 0.16, 0.3), pale, Vector3(0, 0.74, 0.3))
-	head.rotation.x = -0.25
-	var jaw := _box_in(at, Vector3(0.16, 0.05, 0.24), dark, Vector3(0, 0.62, 0.3))
-	jaw.rotation.x = 0.35
-	var tail := _mesh_in(at, _cone(0.1, 0.0, 0.6), pale, Vector3(0, 0.42, -0.45))
-	tail.rotation.x = -PI / 2 + 0.3
-	for sx in [-1, 1]:
-		_mesh_in(at, _cone(0.05, 0.045, 0.34), dark, Vector3(sx * 0.1, 0.17, -0.02))
-		_box_in(at, Vector3(0.09, 0.04, 0.16), dark, Vector3(sx * 0.1, 0.02, 0.04))
-		var arm := _box_in(at, Vector3(0.03, 0.03, 0.1), pale, Vector3(sx * 0.1, 0.5, 0.24))
-		arm.rotation.x = 0.6
-
-
-## A long neck in stone: a round body on four legs, a long neck up and
-## forward with a little head, a tail out behind.
-func _long_neck(at: Node3D) -> void:
-	var pale := _shade(SCULPTURE)
-	var dark := _shade(SCULPTURE_DARK)
-	var body := _mesh_in(at, _ball(0.22), pale, Vector3(0, 0.36, 0))
-	body.scale = Vector3(1.0, 0.9, 1.5)
-	for sx in [-1, 1]:
-		for sz in [-1, 1]:
-			_mesh_in(at, _cone(0.05, 0.05, 0.28), dark, Vector3(sx * 0.12, 0.14, sz * 0.17))
-	var neck := _mesh_in(at, _cone(0.07, 0.035, 0.62), pale, Vector3(0, 0.66, 0.34))
-	neck.rotation.x = 0.55
-	var head := _mesh_in(at, _ball(0.07), pale, Vector3(0, 0.94, 0.52))
-	head.scale = Vector3(1, 0.8, 1.4)
-	var tail := _mesh_in(at, _cone(0.07, 0.0, 0.6), pale, Vector3(0, 0.3, -0.52))
-	tail.rotation.x = -PI / 2 - 0.25
+## A real dinosaur model (art/dinosaurios_gobkit.blend, PROCEDENCIA.json
+## gobkit-dino-pack) standing on its plinth, its own colour, scaled to the
+## museum's compressed scale, at its rig's rest pose (no animation played).
+func _dino_model(at: Node3D, name: String, tall: float) -> void:
+	var model := MuseumView.asset("dinosaurios/%s" % name)
+	var low := INF
+	var high := -INF
+	for p in _points_of(model):
+		low = minf(low, p.y)
+		high = maxf(high, p.y)
+	var s := tall / maxf(high - low, 0.001)
+	model.position = Vector3(0, -low * s, 0)
+	model.scale = Vector3.ONE * s
+	at.add_child(model)
+	var stone := MenuStage._material(_shade(SCULPTURE))
+	for mi: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
+		mi.material_override = stone
 
 
 ## The ancient museum, a Palladian villa after La Rotonda: a compact block
@@ -785,14 +780,14 @@ func _antiquity(rooms: Array) -> void:
 		sl.rotation.y = PI / 2
 		_box(Vector3(0.44, 0.48, 0.44), trim, Vector3(wx, 0.24, foot_z + 0.12))
 		_box(Vector3(0.5, 0.05, 0.5), stone, Vector3(wx, 0.5, foot_z + 0.12))
-	_statue("statue-a", 0.95, Vector3(-1.45, 0.52, foot_z + 0.12), 0.5, false)
-	_statue("statue-b", 0.85, Vector3(1.45, 0.52, foot_z + 0.12), -0.5, true)
-	# An amphora each side of the door, a mop stuck in one.
+	# An amphora on each pedestal at the foot of the steps, where they
+	# actually show (by the door they stood behind the columns, out of
+	# sight); a mop stuck in one.
 	for sx in [-1, 1]:
 		var jar := MuseumView.asset("anfora")
-		jar.position = Vector3(sx * 0.56, A_BASE, 0.25)
+		jar.position = Vector3(sx * 1.45, 0.525, foot_z + 0.12)
 		jar.rotation.y = sx * 0.6
-		jar.scale = Vector3.ONE * 0.9
+		jar.scale = Vector3.ONE * 1.3
 		add_child(jar)
 		if sx > 0:
 			_mop(jar)
@@ -826,15 +821,6 @@ func _antiquity(rooms: Array) -> void:
 		if k < 13 and absf(x + 1.35 / 13.0) > 0.8:
 			_box(Vector3(0.1, 0.08, 0.012), accent, Vector3(x + 1.35 / 13.0, roof_y + 0.16, porch_z + 0.011))
 	_box(Vector3(1.5, 0.1, 0.02), trim.lightened(0.3), Vector3(0, roof_y + 0.16, porch_z + 0.015))
-	var title := Label3D.new()
-	title.text = String(Story.museum(museum).name).to_upper()
-	title.font_size = 48
-	title.pixel_size = 0.0015
-	title.outline_size = 0
-	title.modulate = WOOD if open else WOOD.lightened(0.2)
-	title.position = Vector3(0, roof_y + 0.16, porch_z + 0.027)
-	title.width = 1.45 / 0.0015
-	add_child(title)
 	var ped := PrismMesh.new()
 	ped.size = Vector3(2.96, 0.46, porch_z + 0.08)
 	_mesh(ped, stone, Vector3(0, ent_top + 0.23, (porch_z + 0.08) * 0.5))
@@ -989,8 +975,11 @@ func _a_dome(roof_top: float, z: float) -> float:
 	_mesh(cap, tiles, Vector3(0, at + 0.31, z))
 	_mesh(_ball(0.05), _shade(_colour), Vector3(0, at + 0.49, z))
 	_box(Vector3(0.03, 0.7, 0.03), POLE, Vector3(0, at + 0.85, z))
-	var flag := _box(Vector3(0.42, 0.24, 0.02), _colour if open else _shade(_colour), Vector3(0.22, at + 1.07, z))
+	var flag := Node3D.new()
 	flag.name = "Flag"
+	flag.position = Vector3(0, at + 1.07, z)
+	add_child(flag)
+	_box_in(flag, Vector3(0.42, 0.24, 0.02), _colour if open else _shade(_colour), Vector3(0.21, 0, 0))
 	return at + 1.2
 
 
@@ -1198,9 +1187,9 @@ func _cone(bottom: float, top_r: float, h: float) -> CylinderMesh:
 ## skin of pale perforated metal (fine ribs), blind: no windows. The light
 ## comes out between them: under each box a joint, set back all round, of
 ## glass lit from inside. Under them a glass ground floor, lit, with the
-## museum's name; railings round the terraces the steps back leave, a giant
-## rubber duck on one; before it a square of polished concrete with long
-## benches, a giant banana and a banner.
+## museum's name, a giant rubber duck on one of the terraces the steps back
+## leave; before it a square of polished concrete with long benches, a
+## giant banana and a banner.
 ##
 ## Each room is a floor, a whole box, in order up the tower (C_FLOORS), the
 ## big job's the top one; each seen from its own wall (C_FACES), round the
@@ -1248,7 +1237,6 @@ const C_METAL := Color("#8e8e9c")
 const C_DUCK := Color("#ffd23a")
 const C_BEAK := Color("#ff8a1e")
 const C_BANANA := Color("#ffdf4a")
-const C_BANANA_TIP := Color("#5a4630")
 const C_WHITE := Color("#f2f2f6")
 ## How much the white skin and the pop art shine of their own at night; a
 ## room's box, a little more, and picked, lit up (towards LIT_PICKED).
@@ -1291,10 +1279,6 @@ func _contemporary(rooms: Array) -> void:
 	for k in C_FLOORS.size():
 		boxes.append(_c_box(k, base[k], bits))
 		joints.append(_c_joint(k, base[k], open and rooms.is_empty(), bits))
-	# Railings round the terraces a step back leaves, and round the roof.
-	for k in range(1, C_FLOORS.size()):
-		_c_railings(C_FLOORS[k - 1], C_FLOORS[k], base[k])
-	_c_railings(C_FLOORS[-1], {}, roof_y)
 	# The giant rubber duck on the first terrace, looking out.
 	var duck := Node3D.new()
 	duck.position = Vector3(-1.5, base[1], 0.0)
@@ -1356,8 +1340,12 @@ func _c_box(k: int, y0: float, bits: Array) -> MeshInstance3D:
 	var x: float = f.x
 	var front: float = f.front
 	var skin := _shade(C_SKIN[k % C_SKIN.size()])
-	var lo := y0 + C_JOINT
-	var box := _box(Vector3(s.x, s.y - C_JOINT, s.z), skin, Vector3(x, (lo + y0 + s.y) * 0.5, front - s.z * 0.5))
+	# The ground floor's window of light keeps its full height; the rest,
+	# much lower, a quarter of it, so the boxes read as solid with just a
+	# thin seam of light, not a stack of lit slabs.
+	var joint_h := C_JOINT if k == 0 else C_JOINT * 0.25
+	var lo := y0 + joint_h
+	var box := _box(Vector3(s.x, s.y - joint_h, s.z), skin, Vector3(x, (lo + y0 + s.y) * 0.5, front - s.z * 0.5))
 	if open:
 		# White at night: lit a little from the town round it.
 		box.material_override = _lit_material(skin, C_SKIN_GLOW)
@@ -1387,8 +1375,9 @@ func _c_joint(k: int, y0: float, lit: bool, bits: Array) -> MeshInstance3D:
 	var front: float = float(f.front) - C_JOINT_IN
 	var w := s.x - C_JOINT_IN * 2.0
 	var d := s.z - C_JOINT_IN * 2.0
-	var cy := y0 + C_JOINT * 0.5
-	var glass := _box(Vector3(w, C_JOINT, d), _shade(GLASS_DARK), Vector3(x, cy, front - d * 0.5))
+	var joint_h := C_JOINT if k == 0 else C_JOINT * 0.25
+	var cy := y0 + joint_h * 0.5
+	var glass := _box(Vector3(w, joint_h, d), _shade(GLASS_DARK), Vector3(x, cy, front - d * 0.5))
 	if open:
 		glass.material_override = _lit_material(LIT, C_JOINT_GLOW) if lit else _lit_material(C_JOINT_OFF, C_JOINT_DIM)
 	var mullion := _shade(C_MULLION)
@@ -1396,12 +1385,12 @@ func _c_joint(k: int, y0: float, lit: bool, bits: Array) -> MeshInstance3D:
 	for i in n + 1:
 		for z: float in [front + 0.008, front - d - 0.008]:
 			var at := Vector3(x - w * 0.5 + i * (w / n), cy, z)
-			bits.append([Transform3D(Basis.from_scale(Vector3(0.018, C_JOINT, 0.016)), at), mullion])
+			bits.append([Transform3D(Basis.from_scale(Vector3(0.018, joint_h, 0.016)), at), mullion])
 	var m := int(d / 0.3)
 	for i in m + 1:
 		for sx: int in [-1, 1]:
 			var at := Vector3(x + sx * (w * 0.5 + 0.008), cy, front - i * (d / m))
-			bits.append([Transform3D(Basis.from_scale(Vector3(0.016, C_JOINT, 0.018)), at), mullion])
+			bits.append([Transform3D(Basis.from_scale(Vector3(0.016, joint_h, 0.018)), at), mullion])
 	return glass
 
 
@@ -1433,15 +1422,6 @@ func _c_lobby(bits: Array) -> void:
 	if open:
 		door.material_override = _lit_material(LIT, 1.2)
 	_box(Vector3(0.02, 0.4, 0.04), mullion, Vector3(0, 0.2, C_LOBBY_Z + 0.04))
-	var name_sign := Label3D.new()
-	name_sign.text = String(Story.museum(museum).name).to_upper()
-	name_sign.font_size = 48
-	name_sign.pixel_size = 0.0021
-	name_sign.outline_size = 10
-	name_sign.outline_modulate = _shade(Color("#2a1030"))
-	name_sign.modulate = _shade(_colour)
-	name_sign.position = Vector3(0, C_LOBBY - 0.14, C_LOBBY_Z + 0.04)
-	add_child(name_sign)
 	# The banner on its pole, left of the doors; the lamps.
 	var metal := _shade(C_METAL)
 	_box(Vector3(0.035, 1.3, 0.035), metal, Vector3(-1.95, 0.65, C_LOBBY_Z + 0.65))
@@ -1472,52 +1452,25 @@ func _c_square(rng: RandomNumberGenerator, bits: Array) -> void:
 		_box(Vector3(1.1, 0.07, 0.3), _shade(C_WHITE), at + Vector3(0, 0.2, 0))
 		for sx in [-1, 1]:
 			_box(Vector3(0.06, 0.17, 0.26), _shade(C_MULLION), at + Vector3(sx * 0.42, 0.1, 0))
-	# The banana: bent, standing on its end on a white plinth.
+	# The banana: the real model (Plewr's, CC0; PROCEDENCIA.json
+	# plewr-banana), lying curved on a white plinth.
 	var plinth := Vector3(1.95, 0, 1.0)
 	_box(Vector3(0.5, 0.32, 0.5), _shade(C_WHITE), plinth + Vector3(0, 0.16, 0))
-	var banana := Node3D.new()
-	banana.position = plinth + Vector3(-0.08, 0.34, 0)
+	var banana := MuseumView.asset("moderno/banana")
+	var b_low := INF
+	var b_high := -INF
+	for p in _points_of(banana):
+		b_low = minf(b_low, p.y)
+		b_high = maxf(b_high, p.y)
+	var b_s := 0.85 / maxf(b_high - b_low, 0.001)
+	banana.position = plinth + Vector3(0, 0.32 - b_low * b_s, 0)
 	banana.rotation.y = -0.5
+	banana.scale = Vector3.ONE * b_s
 	add_child(banana)
-	_c_banana(banana)
-
-
-## Railings on the top of box `low` (at height y) where the box over it
-## (`high`, or none: the roof) leaves it bare: along its front, and down
-## either side.
-func _c_railings(low: Dictionary, high: Dictionary, y: float) -> void:
-	var s: Vector3 = low.size
-	var x0: float = float(low.x) - s.x * 0.5
-	var x1: float = float(low.x) + s.x * 0.5
-	var z1: float = low.front
-	var z0: float = z1 - s.z
-	var metal := _shade(C_METAL)
-	var bare_front := true
-	var bare_left := true
-	var bare_right := true
-	if not high.is_empty():
-		var hs: Vector3 = high.size
-		bare_front = z1 - float(high.front) > 0.15
-		bare_left = (float(high.x) - hs.x * 0.5) - x0 > 0.15
-		bare_right = x1 - (float(high.x) + hs.x * 0.5) > 0.15
-	var rail := 0.2
-	if bare_front:
-		_c_rail(Vector3(x0 + 0.04, y, z1 - 0.04), Vector3(x1 - 0.04, y, z1 - 0.04), rail, metal)
-	if bare_left:
-		_c_rail(Vector3(x0 + 0.04, y, z0 + 0.04), Vector3(x0 + 0.04, y, z1 - 0.04), rail, metal)
-	if bare_right:
-		_c_rail(Vector3(x1 - 0.04, y, z0 + 0.04), Vector3(x1 - 0.04, y, z1 - 0.04), rail, metal)
-
-
-## A railing from a to b (along x or z), `tall` high: a bar on posts.
-func _c_rail(a: Vector3, b: Vector3, tall: float, colour: Color) -> void:
-	var run := b - a
-	var along := run.length()
-	var bar := Vector3(along, 0.025, 0.025) if absf(run.x) > absf(run.z) else Vector3(0.025, 0.025, along)
-	_box(bar, colour, (a + b) * 0.5 + Vector3(0, tall, 0))
-	var n := maxi(1, int(along / 0.35))
-	for i in n + 1:
-		_box(Vector3(0.02, tall, 0.02), colour, a + run * (float(i) / n) + Vector3(0, tall * 0.5, 0))
+	var b_yellow := _shade(C_BANANA)
+	for mi: MeshInstance3D in banana.find_children("*", "MeshInstance3D", true, false):
+		mi.material_override = MenuStage._material(b_yellow)
+		_pop(mi)
 
 
 ## A giant rubber duck, its head to +x: a squat yellow body, a round head,
@@ -1533,28 +1486,6 @@ func _c_duck(at: Node3D) -> void:
 		_mesh_in(at, _ball(0.022), _shade(Color("#1a1420")), Vector3(0.26, 0.45, sz * 0.08))
 	var tail := _pop(_mesh_in(at, _cone(0.08, 0.0, 0.16), yellow, Vector3(-0.3, 0.28, 0)))
 	tail.rotation.z = 0.8
-
-
-## A giant banana standing on its end, bending over: yellow segments, a
-## brown stalk at the top and a brown tip at its foot.
-func _c_banana(at: Node3D) -> void:
-	var yellow := _shade(C_BANANA)
-	var here := Vector3.ZERO
-	var bend := -0.25
-	for k in 5:
-		var dir := Vector3(sin(bend), cos(bend), 0)
-		var seg := CapsuleMesh.new()
-		seg.radius = 0.11 - absf(k - 2) * 0.012
-		seg.height = 0.34
-		seg.radial_segments = 10
-		seg.rings = 2
-		var mi := _pop(_mesh_in(at, seg, yellow, here + dir * 0.13))
-		mi.rotation.z = -bend
-		here += dir * 0.24
-		bend += 0.24
-	_mesh_in(at, _ball(0.05), _shade(C_BANANA_TIP), Vector3(0, 0.0, 0))
-	var stalk := _mesh_in(at, _cone(0.045, 0.035, 0.14), _shade(C_BANANA_TIP), here + Vector3(sin(bend), cos(bend), 0) * 0.03)
-	stalk.rotation.z = -bend
 
 
 ## A piece of pop art, lit a little of its own when the museum's open.
@@ -1607,9 +1538,12 @@ static var _m_glass_texture: ImageTexture
 ## its front, both its sides and its back; little barred ones on the ground
 ## floor. The rooms' are some of them (M_ROOMS, round the palace); the big job's the big one in the
 ## middle of the noble floor, on a balcony, the family's crest over it (and
-## the crown on the crest). Before it, a cobbled yard: a little drawbridge
-## over a dry moat (a rubber duck in it), a brazier each side, a well, and a
-## knight in armour holding up a plunger for a lance.
+## the crown on the crest). Before it, a cobbled yard: a moat no wider than
+## the museum itself, a rubber duck adrift on it, its water just proud of
+## its kerb so the stones never show dry; the drawbridge a ramp up from the
+## water to the door, on the plinth (M_BASE) that lifts the ground floor
+## clear of it; a brazier each side, burning on a low hemisphere foot, no
+## pole; a siege catapult; and a suit of armour standing on its plinth.
 func _middle_ages(rooms: Array) -> void:
 	_m_parts.clear()
 	var sand := _shade(M_SAND)
@@ -1690,33 +1624,26 @@ func _middle_ages(rooms: Array) -> void:
 	for s: int in [-1, 1]:
 		var rooms_at: Array[bool] = [taken.has(_m_key(0, s * half, 2)), taken.has(_m_key(s, M_TOWER_Z, 2))]
 		_m_tower(Vector3(s * half, 0, M_TOWER_Z), s, tower_stone, trim, accent, rng, rooms_at)
-	# The door: a stone frame, the door in the museum's colour studded in
-	# gold, lit round its edge when open; a cornice over it.
-	_box(Vector3(0.66, 0.66, 0.05), trim, Vector3(0, M_BASE + 0.33, 0.015))
-	_box(Vector3(0.48, 0.55, 0.04), accent.darkened(0.3), Vector3(0, M_BASE + 0.275, 0.03))
-	for k in 3:
-		_m_part(Vector3(0.012, 0.55, 0.01), _shade(WOOD), Vector3((k - 1) * 0.12, M_BASE + 0.275, 0.052))
-	for x: float in [-0.18, -0.06, 0.06, 0.18]:
+	# The door: a stone frame, big, the door in the museum's colour studded in
+	# gold, lit round its edge when open; a cornice over it. The taller
+	# ground floor gives it the room, and the drawbridge outside (_m_yard)
+	# the same doorway to close against.
+	_box(Vector3(0.95, 1.0, 0.06), trim, Vector3(0, M_BASE + 0.5, 0.02))
+	_box(Vector3(0.76, 0.88, 0.045), accent.darkened(0.3), Vector3(0, M_BASE + 0.44, 0.035))
+	for k in 5:
+		_m_part(Vector3(0.014, 0.88, 0.012), _shade(WOOD), Vector3((k - 2) * 0.14, M_BASE + 0.44, 0.058))
+	for x: float in [-0.27, -0.09, 0.09, 0.27]:
 		for j in 3:
-			_m_part(Vector3(0.025, 0.025, 0.02), _shade(GOLD), Vector3(x, M_BASE + 0.12 + j * 0.17, 0.055))
+			_m_part(Vector3(0.032, 0.032, 0.022), _shade(GOLD), Vector3(x, M_BASE + 0.19 + j * 0.26, 0.06))
 	if open:
-		_glow(Vector3(0.52, 0.03, 0.03), LIT, Vector3(0, M_BASE + 0.565, 0.04), 1.5)
-	_box(Vector3(0.82, 0.07, 0.1), trim, Vector3(0, M_BASE + 0.7, 0.04))
+		_glow(Vector3(0.8, 0.035, 0.035), LIT, Vector3(0, M_BASE + 0.85, 0.045), 1.5)
+	_box(Vector3(1.15, 0.09, 0.12), trim, Vector3(0, M_BASE + 1.02, 0.045))
 	# The bench along its foot, each side of the door.
 	for s: int in [-1, 1]:
 		_box(Vector3(1.05, 0.2, 0.18), sand_dark, Vector3(s * 1.28, 0.1, 0.12))
 		_box(Vector3(1.09, 0.03, 0.22), trim, Vector3(s * 1.28, 0.215, 0.12))
-	# Its name on the frieze under the cornice.
+	# The frieze under the cornice, plain.
 	_box(Vector3(front, 0.13, 0.03), trim, Vector3(0, roof_y - 0.065, 0.015))
-	var label := Label3D.new()
-	label.text = String(Story.museum(museum).name).to_upper()
-	label.font_size = 44
-	label.pixel_size = 0.0021
-	label.outline_size = 0
-	label.modulate = WOOD if open else WOOD.lightened(0.2)
-	label.position = Vector3(0, roof_y - 0.065, 0.032)
-	label.width = 3.0 / 0.0021
-	add_child(label)
 	# The big job's balcony: a slab, a railing hung with a cloth in the
 	# museum's colour, gold along its foot.
 	var noble := _m_floor_y(1)
@@ -1879,10 +1806,13 @@ func _m_tower(c: Vector3, s: int, stone: Color, trim: Color, accent: Color, rng:
 	_box(Vector3(0.03, 0.7, 0.03), POLE, c + Vector3(0, deck + 0.35, 0))
 	var pennant := PrismMesh.new()
 	pennant.size = Vector3(0.22, 0.46, 0.02)
-	var flag := _mesh(pennant, _colour if open else accent, c + Vector3(0.23, deck + 0.58, 0))
+	var pivot := Node3D.new()
+	pivot.position = c + Vector3(0, deck + 0.58, 0)
+	add_child(pivot)
+	var flag := _mesh_in(pivot, pennant, _colour if open else accent, Vector3(0.23, 0, 0))
 	flag.rotation.z = -PI * 0.5
 	if s > 0:
-		flag.name = "Flag"
+		pivot.name = "Flag"
 
 
 ## Ashlar joints on a wall: at, its foot's middle on its face (its basis x
@@ -2002,39 +1932,41 @@ func _m_yard(rng: RandomNumberGenerator) -> void:
 			var at := Vector3(x + rng.randf_range(-0.012, 0.012), 0.035, z + rng.randf_range(-0.012, 0.012))
 			var tone: Color = M_COBBLE[rng.randi() % M_COBBLE.size()]
 			_m_part(Vector3(cobble - 0.035, 0.03, cobble - 0.035), _shade(tone), at, Basis(Vector3.UP, rng.randf_range(-0.15, 0.15)))
-	# The moat: a dark pit in stone kerbs, the duck, the drawbridge.
+	# The moat before it, a pool no wider than the museum itself, its water
+	# a touch proud of its kerb stones (never showing them dry); the duck
+	# adrift; the drawbridge a ramp up from the water to the (raised, bigger)
+	# door, its chains running up to it.
 	var trim := _shade(M_TRIM)
-	_box(Vector3(1.36, 0.012, 0.62), _shade(M_MOAT), Vector3(0, 0.03, 0.38))
-	_m_part(Vector3(1.44, 0.06, 0.06), trim, Vector3(0, 0.05, 0.72))
-	for sx: int in [-1, 1]:
-		_m_part(Vector3(0.06, 0.06, 0.64), trim, Vector3(sx * 0.7, 0.05, 0.38))
+	var river_w := M_W + 0.2
+	var water_y := 0.09
+	_box(Vector3(river_w, 0.02, 0.85), _shade(M_RIVER if not open else M_RIVER_LIT), Vector3(0, water_y, 0.4))
+	_m_part(Vector3(river_w + 0.08, 0.06, 0.06), trim, Vector3(0, 0.05, 0.83))
+	_m_part(Vector3(river_w + 0.08, 0.06, 0.06), trim, Vector3(0, 0.05, -0.03))
 	var duck := Node3D.new()
-	duck.position = Vector3(0.45, 0.04, 0.42)
+	duck.position = Vector3(1.4, water_y + 0.01, 0.55)
 	duck.rotation.y = -0.6
 	add_child(duck)
 	_mesh_in(duck, _ball(0.065), _shade(M_DUCK), Vector3(0, 0.05, 0)).scale = Vector3(1, 0.8, 1.3)
 	_mesh_in(duck, _ball(0.04), _shade(M_DUCK), Vector3(0, 0.12, 0.05))
 	_box_in(duck, Vector3(0.04, 0.015, 0.04), _shade(M_FLAME), Vector3(0, 0.115, 0.1))
 	var wood := _shade(WOOD.lightened(0.15))
-	_box(Vector3(0.5, 0.04, 0.68), wood, Vector3(0, 0.08, 0.38))
-	for k in 4:
-		_m_part(Vector3(0.5, 0.01, 0.012), _shade(WOOD), Vector3(0, 0.102, 0.12 + k * 0.17))
+	var ramp_run := 0.8 * 1.15
+	var ramp_rise := M_BASE - water_y
+	var ramp_len := Vector2(ramp_run, ramp_rise).length()
+	var ramp_angle := atan2(ramp_rise, ramp_run)
+	var ramp := _box(Vector3(0.86, 0.04, ramp_len), wood, Vector3(0, (water_y + M_BASE) * 0.5, 0.05 + ramp_run * 0.5))
+	ramp.rotation.x = ramp_angle
+	# The planks: cross-strips along the ramp's own length, so it reads as
+	# wood, not a flat coloured slab.
+	for k in 6:
+		_box_in(ramp, Vector3(0.86, 0.01, 0.012), _shade(WOOD), Vector3(0, 0.022, -ramp_len * 0.5 + 0.06 + k * (ramp_len - 0.12) / 5.0))
 	for sx: int in [-1, 1]:
-		_m_link(Vector3(sx * 0.23, 0.1, 0.7), Vector3(sx * 0.3, M_BASE + 0.62, 0.05), _shade(M_IRON))
-	# A brazier each side of it, burning.
+		_m_link(Vector3(sx * 0.4, water_y, 0.05 + ramp_run), Vector3(sx * 0.44, M_BASE + 0.85, 0.05), _shade(M_IRON))
+	# A brazier each side of it, burning: an iron bowl on a low hemisphere
+	# footing, the fire a burst of glowing particles over it.
 	for sx: int in [-1, 1]:
-		var at := Vector3(sx * 1.0, 0, 0.95)
-		_mesh(_cone(0.035, 0.025, 0.55), _shade(M_IRON), at + Vector3(0, 0.275, 0))
-		_mesh(_cone(0.05, 0.1, 0.08), _shade(M_IRON), at + Vector3(0, 0.59, 0))
-		var fire := _mesh(_cone(0.08, 0.0, 0.2), M_FLAME, at + Vector3(0, 0.72, 0))
-		var core := _mesh(_cone(0.045, 0.0, 0.14), GOLD, at + Vector3(0, 0.7, 0))
-		if open:
-			fire.material_override = _lit_material(M_FLAME, 2.5)
-			core.material_override = _lit_material(GOLD, 3.0)
-		else:
-			fire.material_override = MenuStage._material(_shade(M_IRON))
-			core.material_override = fire.material_override
-	_m_well(Vector3(-1.7, 0, 1.8))
+		_m_brazier(Vector3(sx * 1.0, 0, 0.95))
+	_m_catapult(Vector3(-1.7, 0, 1.8), 0.5)
 	var knight := Node3D.new()
 	knight.position = Vector3(1.7, 0, 1.85)
 	knight.rotation.y = -0.45
@@ -2050,61 +1982,102 @@ func _m_link(a: Vector3, b: Vector3, colour: Color) -> void:
 	_m_part(Vector3(0.015, a.distance_to(b), 0.015), colour, (a + b) * 0.5, Basis(up.cross(z), up, z))
 
 
+## A brazier: an iron bowl on a squat hemisphere foot standing on the
+## ground (no pole holding it up); its fire a burst of glowing particles
+## when open, banked to cold embers when shut.
+func _m_brazier(at: Vector3) -> void:
+	var iron := _shade(M_IRON)
+	var foot := SphereMesh.new()
+	foot.radius = 0.22
+	foot.height = 0.22
+	foot.is_hemisphere = true
+	foot.radial_segments = 10
+	foot.rings = 4
+	_mesh(foot, iron, at)
+	var bowl := SphereMesh.new()
+	bowl.radius = 0.17
+	bowl.height = 0.17
+	bowl.is_hemisphere = true
+	bowl.radial_segments = 10
+	bowl.rings = 3
+	_mesh(bowl, iron, at + Vector3(0, 0.32, 0)).rotation.x = PI
+	if not open:
+		_mesh(_ball(0.09), _shade(M_IRON.lightened(0.12)), at + Vector3(0, 0.3, 0))
+		return
+	var fire := GPUParticles3D.new()
+	fire.position = at + Vector3(0, 0.3, 0)
+	add_child(fire)
+	fire.amount = 18
+	fire.lifetime = 0.8
+	fire.local_coords = true
+	var pm := ParticleProcessMaterial.new()
+	pm.direction = Vector3(0, 1, 0)
+	pm.spread = 20.0
+	pm.gravity = Vector3(0, 0.9, 0)
+	pm.initial_velocity_min = 0.3
+	pm.initial_velocity_max = 0.55
+	pm.scale_min = 0.5
+	pm.scale_max = 1.0
+	var curve := Curve.new()
+	curve.add_point(Vector2(0, 1.0))
+	curve.add_point(Vector2(1, 0.1))
+	var ct := CurveTexture.new()
+	ct.curve = curve
+	pm.scale_curve = ct
+	var grad := Gradient.new()
+	grad.set_color(0, Color(1.0, 0.95, 0.6, 1.0))
+	grad.add_point(0.4, Color(1.0, 0.55, 0.15, 0.9))
+	grad.add_point(1.0, Color(0.5, 0.08, 0.03, 0.0))
+	var gt := GradientTexture1D.new()
+	gt.gradient = grad
+	pm.color_ramp = gt
+	fire.process_material = pm
+	var flame := _cone(0.0, 0.045, 0.1)
+	flame.radial_segments = 5
+	var fm := StandardMaterial3D.new()
+	fm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	fm.vertex_color_use_as_albedo = true
+	fm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	fm.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	flame.material = fm
+	fire.draw_pass_1 = flame
+
+
 ## A well: a round stone kerb, the water dark in it, two posts and a beam,
 ## a little tiled roof, a bucket on its rope.
-func _m_well(at: Vector3) -> void:
-	var stone := _shade(M_SAND_DARK)
-	var wood := _shade(WOOD)
-	_mesh(_cone(0.27, 0.27, 0.3), stone, at + Vector3(0, 0.15, 0))
-	_mesh(_cone(0.3, 0.3, 0.05), _shade(M_TRIM), at + Vector3(0, 0.32, 0))
-	_mesh(_cone(0.22, 0.22, 0.02), _shade(Color("#1c2a44")), at + Vector3(0, 0.34, 0))
-	for sx: int in [-1, 1]:
-		_box(Vector3(0.05, 0.6, 0.05), wood, at + Vector3(sx * 0.25, 0.6, 0))
-	var beam := _mesh(_cone(0.022, 0.022, 0.56), wood, at + Vector3(0, 0.8, 0))
-	beam.rotation.z = PI * 0.5
-	var roof := PrismMesh.new()
-	roof.size = Vector3(0.44, 0.2, 0.68)
-	var tiles := _mesh(roof, _shade(M_TILE), at + Vector3(0, 1.0, 0))
-	tiles.rotation.y = PI * 0.5
-	_box(Vector3(0.012, 0.26, 0.012), _shade(M_IRON), at + Vector3(0, 0.66, 0))
-	_mesh(_cone(0.06, 0.075, 0.1), _shade(POLE), at + Vector3(0, 0.49, 0))
+## A siege catapult standing in the yard (Kenney's Castle Kit, PROCEDENCIA.json
+## kenney-castle-kit), scaled to the castle's own compressed scale, turned
+## to face out over the wall.
+func _m_catapult(at: Vector3, turn: float) -> void:
+	var model := MuseumView.asset("castillo/siege-catapult")
+	var low := INF
+	var high := -INF
+	for p in _points_of(model):
+		low = minf(low, p.y)
+		high = maxf(high, p.y)
+	var s := 1.1 / maxf(high - low, 0.001)
+	model.position = at - Vector3(0, low * s, 0)
+	model.rotation.y = turn
+	model.scale = Vector3.ONE * s
+	add_child(model)
 
 
-## A knight in armour on a plinth, standing proud, a red plume on his helmet
-## and a shield with a croquette on it; for a lance, a plunger held high.
+## A suit of armour on a plinth, standing proud: the real armadura model
+## (the same the props use, at life size), not built from primitives here.
+## Scaled to the castle's own compressed scale, its feet on the plinth's cap.
 func _m_knight(at: Node3D) -> void:
-	var steel := _shade(M_STEEL)
-	var dark := _shade(M_STEEL.darkened(0.35))
-	var accent := _shade(_colour)
 	_box_in(at, Vector3(0.52, 0.26, 0.52), _shade(M_SAND_DARK), Vector3(0, 0.13, 0))
 	_box_in(at, Vector3(0.58, 0.04, 0.58), _shade(M_TRIM), Vector3(0, 0.28, 0))
-	var k := Node3D.new()
-	k.position = Vector3(0, 0.3, 0)
-	k.scale = Vector3.ONE * 1.25
-	at.add_child(k)
-	for sx: int in [-1, 1]:
-		_mesh_in(k, _cone(0.04, 0.045, 0.3), steel, Vector3(sx * 0.06, 0.17, 0))
-		_box_in(k, Vector3(0.07, 0.04, 0.13), dark, Vector3(sx * 0.06, 0.02, 0.03))
-	_mesh_in(k, _cone(0.14, 0.1, 0.12), dark, Vector3(0, 0.36, 0))
-	_mesh_in(k, _ball(0.13), steel, Vector3(0, 0.52, 0)).scale = Vector3(1.0, 1.15, 0.8)
-	for sx: int in [-1, 1]:
-		_mesh_in(k, _ball(0.06), steel, Vector3(sx * 0.14, 0.62, 0))
-	# The helmet, its visor's slit, the plume.
-	_mesh_in(k, _cone(0.085, 0.08, 0.17), steel, Vector3(0, 0.78, 0))
-	_mesh_in(k, _ball(0.08), steel, Vector3(0, 0.86, 0))
-	_box_in(k, Vector3(0.12, 0.02, 0.02), M_IRON, Vector3(0, 0.8, 0.08))
-	var plume := _mesh_in(k, _cone(0.04, 0.0, 0.22), accent, Vector3(0, 1.0, -0.04))
-	plume.rotation.x = -0.45
-	# The arm up with the plunger; the other with the shield.
-	var arm := _box_in(k, Vector3(0.05, 0.24, 0.05), steel, Vector3(0.17, 0.74, 0.02))
-	arm.rotation.z = -0.15
-	_mesh_in(k, _cone(0.014, 0.014, 0.95), _shade(WOOD.lightened(0.3)), Vector3(0.2, 0.95, 0.05))
-	_mesh_in(k, _ball(0.075), accent, Vector3(0.2, 1.44, 0.05)).scale = Vector3(1, 0.75, 1)
-	_mesh_in(k, _cone(0.085, 0.085, 0.02), accent.darkened(0.2), Vector3(0.2, 1.4, 0.05))
-	_box_in(k, Vector3(0.05, 0.22, 0.05), steel, Vector3(-0.16, 0.5, 0.02))
-	_box_in(k, Vector3(0.18, 0.22, 0.025), accent, Vector3(-0.16, 0.46, 0.09))
-	_box_in(k, Vector3(0.2, 0.03, 0.03), _shade(GOLD), Vector3(-0.16, 0.57, 0.09))
-	_mesh_in(k, _ball(0.04), _shade(M_CROQUETTE), Vector3(-0.16, 0.45, 0.11)).scale = Vector3(1.3, 0.75, 0.6)
+	var suit := MuseumView.asset("armadura")
+	var low := INF
+	var high := -INF
+	for p in _points_of(suit):
+		low = minf(low, p.y)
+		high = maxf(high, p.y)
+	var s := 1.05 / maxf(high - low, 0.001)
+	suit.position = Vector3(0, 0.3 - low * s, 0)
+	suit.scale = Vector3.ONE * s
+	at.add_child(suit)
 
 
 ## A flat disc facing +y (turn it to face out of a wall).
@@ -2361,6 +2334,8 @@ const N_PLANTER_COLOUR := Color("#d2ccdb")
 const N_WOOD := Color("#c89160")
 const N_WOOD_DARK := Color("#7c5234")
 const N_WOOD_GLOW := Color("#ffd9a0")
+const N_WATER := Color("#8fd8e8")
+const N_POND_EDGE := Color("#8a8478")
 const N_MOSS := Color("#5f8f3e")
 const N_GRASS := Color("#3b6a40")
 const N_PAVING := Color("#f3f0f6")
@@ -2500,15 +2475,6 @@ func _nature(rooms: Array) -> void:
 	# Its name on a timber board standing on the roof's front edge.
 	for sx: int in [-1, 1]:
 		_n_part(Vector3(0.05, 0.5, 0.05), N_WOOD_DARK, Vector3(sx * 0.85, roof_y + 0.25, N_SIGN_Z))
-	_n_part(Vector3(2.0, 0.22, 0.05), N_WOOD_DARK, Vector3(0, roof_y + N_SIGN_Y, N_SIGN_Z))
-	var board := Label3D.new()
-	board.text = String(Story.museum(museum).name).to_upper()
-	board.font_size = 48
-	board.pixel_size = 0.0024
-	board.outline_size = 0
-	board.modulate = _shade(Color("#f4e6c8"))
-	board.position = Vector3(0, roof_y + N_SIGN_Y, N_SIGN_Z + 0.03)
-	add_child(board)
 	# On the square: a bed of bushes and flowers each side of the path, trees
 	# in planters down its sides, lamps, the giant ladybird.
 	for sx: int in [-1, 1]:
@@ -2532,6 +2498,7 @@ func _nature(rooms: Array) -> void:
 		if open:
 			lamp.material_override = _lit_material(LIT, 3.0)
 	_n_ladybird(Transform3D(Basis(Vector3.UP, 0.7), Vector3(-1.85, N_PAVE, 1.3)))
+	_n_waterfall(rng)
 	# The whole tower as one mesh, the plants as a MultiMesh a kind.
 	var body := MeshInstance3D.new()
 	body.mesh = _n_body.commit()
@@ -2757,6 +2724,77 @@ func _n_ladybird(at: Transform3D) -> void:
 			_n_shape("cyl", N_BLACK, Vector3(x, 0.12 + h * 0.31, z) + n * 0.005, Vector3(0.12, 0.02, 0.12), at, spot)
 
 
+## A waterfall off one of the terraces, down the tower's side, into a
+## small pond at its foot: a bright sheet down the wall, a couple of
+## ripples where it lands. Dimmer while the museum is still shut.
+func _n_waterfall(rng: RandomNumberGenerator) -> void:
+	# A rocky outcrop standing free in the square, clear of the tower's own
+	# planted terraces (which would hide it): water falling its face into a
+	# pond, real particles for the fall and the splash where it lands.
+	var at := Vector3(-1.15, 0.0, 2.5)
+	var rock := Color("#7d7468")
+	var h := 1.3
+	for i in 4:
+		var s := 1.0 - i * 0.16
+		_box(Vector3(0.5 * s, h / 4.0, 0.4 * s), _shade(rock.lightened(i * 0.03)), at + Vector3(0.05 * i, N_PAVE + h * (i + 0.5) / 4.0, -0.05 * i))
+	var tint := N_WATER if open else N_WATER.darkened(0.3)
+	var energy := 1.2 if open else 0.35
+	var pond := at + Vector3(0.32, 0.0, 0.05)
+	_box(Vector3(0.9, 0.05, 0.75), N_POND_EDGE, pond + Vector3(0, N_PAVE + 0.005, 0))
+	_glow(Vector3(0.72, 0.02, 0.58), tint, pond + Vector3(0, N_PAVE + 0.03, 0), energy * 0.8)
+	if not open:
+		return
+	var drop_mesh := _ball(0.03)
+	var fm := StandardMaterial3D.new()
+	fm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	fm.albedo_color = tint.lightened(0.3)
+	fm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	drop_mesh.material = fm
+	# The fall: droplets sheeting down the rock face.
+	var fall := GPUParticles3D.new()
+	fall.position = at + Vector3(0.15, N_PAVE + h, -0.1)
+	add_child(fall)
+	fall.amount = 40
+	fall.lifetime = 0.9
+	fall.local_coords = true
+	var pm := ParticleProcessMaterial.new()
+	pm.direction = Vector3(0, -1, 0)
+	pm.spread = 4.0
+	pm.gravity = Vector3(0, -2.6, 0)
+	pm.initial_velocity_min = 0.2
+	pm.initial_velocity_max = 0.4
+	pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	pm.emission_box_extents = Vector3(0.16, 0.02, 0.05)
+	pm.scale_min = 0.5
+	pm.scale_max = 1.0
+	var fade := Gradient.new()
+	fade.set_color(0, Color(1, 1, 1, 0.9))
+	fade.set_color(1, Color(1, 1, 1, 0.0))
+	var fade_tex := GradientTexture1D.new()
+	fade_tex.gradient = fade
+	pm.color_ramp = fade_tex
+	fall.process_material = pm
+	fall.draw_pass_1 = drop_mesh
+	# The splash where it lands: a quick burst of droplets bouncing up.
+	var splash := GPUParticles3D.new()
+	splash.position = pond + Vector3(0, N_PAVE + 0.04, 0)
+	add_child(splash)
+	splash.amount = 16
+	splash.lifetime = 0.5
+	splash.local_coords = true
+	var sm := ParticleProcessMaterial.new()
+	sm.direction = Vector3(0, 1, 0)
+	sm.spread = 45.0
+	sm.gravity = Vector3(0, -3.0, 0)
+	sm.initial_velocity_min = 0.3
+	sm.initial_velocity_max = 0.6
+	sm.scale_min = 0.3
+	sm.scale_max = 0.6
+	sm.color_ramp = fade_tex
+	splash.process_material = sm
+	splash.draw_pass_1 = drop_mesh
+
+
 ## A giant snail, at `at` (its head along +z): a long soft body,
 ## a big spiral shell on its back, two stalks with its eyes on top.
 func _n_snail(at: Transform3D) -> void:
@@ -2812,23 +2850,32 @@ static func _n_plant_mesh(kind: String) -> ArrayMesh:
 		return _n_plant_meshes[kind]
 	var st := NMesh.new()
 	var leaf := _n_prim("leaf")
+	# Each leaf cluster turned a little of its own about the trunk, not all
+	# stacked square on the same axis: reads as a crown grown this way, not
+	# parts glued on.
+	var rot := func(a: float) -> Basis: return Basis(Vector3.UP, a)
 	match kind:
 		"tree", "autumn":
 			var leaves := (TownBuilder.OAK_GREEN if kind == "tree" else TownBuilder.AUTUMN_LEAVES).lightened(N_LEAF_LIGHT)
 			st.add(_n_prim("trunk"), _n_xf(Vector3(0, 0.22, 0), Vector3(0.12, 0.45, 0.12)), TownBuilder.TRUNK)
-			st.add(leaf, _n_xf(Vector3(0, 0.62, 0), Vector3.ONE * 0.66), leaves)
-			st.add(leaf, _n_xf(Vector3(0.18, 0.8, 0.06), Vector3.ONE * 0.46), leaves.lightened(0.08))
-			st.add(leaf, _n_xf(Vector3(-0.15, 0.76, -0.1), Vector3.ONE * 0.42), leaves.darkened(0.08))
+			st.add(leaf, _n_xf(Vector3(0, 0.6, 0), Vector3.ONE * 0.62, rot.call(0.3)), leaves)
+			st.add(leaf, _n_xf(Vector3(0.19, 0.78, 0.06), Vector3.ONE * 0.46, rot.call(1.1)), leaves.lightened(0.08))
+			st.add(leaf, _n_xf(Vector3(-0.16, 0.74, -0.11), Vector3.ONE * 0.42, rot.call(-0.8)), leaves.darkened(0.08))
+			st.add(leaf, _n_xf(Vector3(0.02, 0.9, -0.13), Vector3.ONE * 0.3, rot.call(2.0)), leaves.lightened(0.14))
+			st.add(leaf, _n_xf(Vector3(-0.22, 0.56, 0.17), Vector3.ONE * 0.28, rot.call(-1.7)), leaves.darkened(0.04))
 		"pine":
 			st.add(_n_prim("trunk"), _n_xf(Vector3(0, 0.15, 0), Vector3(0.14, 0.3, 0.14)), TownBuilder.TRUNK)
-			for k in 3:
-				st.add(_n_prim("cone"), _n_xf(Vector3(0, 0.42 + k * 0.2, 0), Vector3(0.66 - k * 0.17, 0.42, 0.66 - k * 0.17)), TownBuilder.PINE_GREEN.lightened(N_LEAF_LIGHT + k * 0.06))
+			for k in 4:
+				st.add(_n_prim("cone"), _n_xf(Vector3(0, 0.36 + k * 0.165, 0), Vector3(0.62 - k * 0.13, 0.36, 0.62 - k * 0.13), rot.call(k * 0.5)), TownBuilder.PINE_GREEN.lightened(N_LEAF_LIGHT + k * 0.05))
 		"birch":
 			st.add(_n_prim("trunk"), _n_xf(Vector3(0, 0.4, 0), Vector3(0.07, 0.8, 0.07)), TownBuilder.BIRCH_BARK)
-			st.add(leaf, _n_xf(Vector3(0, 0.74, 0), Vector3(0.44, 0.66, 0.44)), TownBuilder.BIRCH_GREEN.lightened(N_LEAF_LIGHT))
+			st.add(leaf, _n_xf(Vector3(0, 0.68, 0), Vector3(0.38, 0.58, 0.38), rot.call(0.6)), TownBuilder.BIRCH_GREEN.lightened(N_LEAF_LIGHT))
+			st.add(leaf, _n_xf(Vector3(0.13, 0.85, 0.05), Vector3(0.28, 0.42, 0.28), rot.call(-1.3)), TownBuilder.BIRCH_GREEN.lightened(N_LEAF_LIGHT + 0.08))
+			st.add(leaf, _n_xf(Vector3(-0.12, 0.78, -0.08), Vector3(0.24, 0.36, 0.24), rot.call(2.3)), TownBuilder.BIRCH_GREEN.darkened(0.06))
 		"bush", "bloom":
-			st.add(leaf, _n_xf(Vector3(0, 0.3, 0), Vector3(1.0, 0.7, 1.0)), TownBuilder.BUSH_GREEN.lightened(N_LEAF_LIGHT + 0.08))
-			st.add(leaf, _n_xf(Vector3(0.3, 0.26, 0.1), Vector3(0.64, 0.5, 0.64)), TownBuilder.BUSH_GREEN.lightened(N_LEAF_LIGHT + 0.16))
+			st.add(leaf, _n_xf(Vector3(0, 0.3, 0), Vector3(0.94, 0.66, 0.94), rot.call(0.4)), TownBuilder.BUSH_GREEN.lightened(N_LEAF_LIGHT + 0.08))
+			st.add(leaf, _n_xf(Vector3(0.29, 0.26, 0.1), Vector3(0.6, 0.46, 0.6), rot.call(-1.5)), TownBuilder.BUSH_GREEN.lightened(N_LEAF_LIGHT + 0.16))
+			st.add(leaf, _n_xf(Vector3(-0.24, 0.2, -0.15), Vector3(0.5, 0.4, 0.5), rot.call(1.9)), TownBuilder.BUSH_GREEN.darkened(0.04))
 			if kind == "bloom":
 				for k in 7:
 					var a := k * TAU / 7.0 + 0.4
@@ -2855,8 +2902,8 @@ static func _n_prim(kind: String) -> PackedVector3Array:
 			var b := SphereMesh.new()
 			b.radius = 0.5
 			b.height = 1.0
-			b.radial_segments = 6 if kind == "leaf" else 12
-			b.rings = 3 if kind == "leaf" else 6
+			b.radial_segments = 9 if kind == "leaf" else 12
+			b.rings = 4 if kind == "leaf" else 6
 			if kind == "half":
 				b.height = 0.5
 				b.is_hemisphere = true

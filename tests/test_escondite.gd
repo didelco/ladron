@@ -4,14 +4,14 @@ extends SceneTree
 ## empujar y armaduras donde esconderse, sin estrellas ni nada guardado. Se
 ## elige en la ciudad (a la izquierda del primer museo), se entra sin plano y
 ## se sale por la pausa a la ciudad, con la casita elegida.
-var fails := 0
+const Support := preload("res://tests/support.gd")
+var qa := Support.new()
 const DT := 1.0 / 60.0
 var m
 
 
 func check(ok: bool, what: String) -> void:
-	print(("ok   " if ok else "FALLO ") + what)
-	if not ok: fails += 1
+	qa.check(ok, what)
 
 
 func _accept_key() -> InputEventKey:
@@ -297,11 +297,12 @@ func _init() -> void:
 		var ys: Array = row.starts.map(func(t): return t.y)
 		var spread: bool = (xs.max() - xs.min() >= 4) or (ys.max() - ys.min() >= 4)
 		check(spread, "%s: sus tres puntos van separados (%s)" % [row.id, row.starts])
-	# Walls between bays with doorways three wide; the rest is wall.
+	# Walls between bays with doorways three wide, except the middle row (the three
+	# games of skill), which shares one open room: no inside wall there at all.
 	for x in [34, 48]:
-		for y in [4, 5, 6, 13, 14, 15, 22, 23, 24]:
-			check(full.at(Vector2i(x, y)) == Tiles.FLOOR, "pasillo entre bahías en %d,%d" % [x, y])
-		for y in [1, 2, 3, 7, 8, 9, 10, 11, 12, 16, 17, 18, 19, 20, 21, 25, 28]:
+		for y in [4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 22, 23, 24]:
+			check(full.at(Vector2i(x, y)) == Tiles.FLOOR, "pasillo (o sala común) entre bahías en %d,%d" % [x, y])
+		for y in [1, 2, 3, 7, 8, 9, 18, 19, 20, 21, 25, 28]:
 			check(full.at(Vector2i(x, y)) == Tiles.WALL, "muro entre bahías en %d,%d" % [x, y])
 	for y in [9, 18]:
 		for x in [26, 27, 28, 40, 41, 42, 54, 55, 56]:
@@ -643,5 +644,4 @@ func _init() -> void:
 	check(_socks_in(m.den_view) == pedestals2 + 1, "y en toda la casa solo quedan los pedestales de PILLA EL CALCETÍN y la bandera: %d" % _socks_in(m.den_view))
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
-	print("\n%d fallos" % fails)
-	quit(1 if fails > 0 else 0)
+	quit(qa.summary())

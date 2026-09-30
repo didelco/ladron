@@ -268,7 +268,7 @@ window.TEXTOS = [
   "group": "Menús",
   "at": [
    "scenes/main.gd:30",
-   "scenes/map_editor.gd:136"
+   "scenes/map_editor.gd:138"
   ],
   "via": []
  },
@@ -280,7 +280,7 @@ window.TEXTOS = [
   "group": "Menús",
   "at": [
    "scenes/main.gd:30",
-   "scenes/map_editor.gd:136"
+   "scenes/map_editor.gd:138"
   ],
   "via": []
  },
@@ -292,7 +292,7 @@ window.TEXTOS = [
   "group": "Menús",
   "at": [
    "scenes/main.gd:30",
-   "scenes/map_editor.gd:136"
+   "scenes/map_editor.gd:138"
   ],
   "via": []
  },
@@ -304,7 +304,7 @@ window.TEXTOS = [
   "group": "Menús",
   "at": [
    "scenes/main.gd:29",
-   "scenes/map_editor.gd:135"
+   "scenes/map_editor.gd:137"
   ],
   "via": []
  },
@@ -316,7 +316,7 @@ window.TEXTOS = [
   "group": "Menús",
   "at": [
    "scenes/main.gd:29",
-   "scenes/map_editor.gd:135"
+   "scenes/map_editor.gd:137"
   ],
   "via": []
  },
@@ -328,7 +328,7 @@ window.TEXTOS = [
   "group": "Menús",
   "at": [
    "scenes/main.gd:29",
-   "scenes/map_editor.gd:135"
+   "scenes/map_editor.gd:137"
   ],
   "via": []
  },
@@ -3446,7 +3446,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2063"
+   "scenes/hud.gd:2065"
   ],
   "via": []
  },
@@ -3457,7 +3457,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2655"
+   "scenes/hud.gd:2662"
   ],
   "via": []
  },
@@ -3468,7 +3468,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1251"
+   "scenes/main.gd:1260"
   ],
   "via": []
  },
@@ -3479,7 +3479,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1253"
+   "scenes/main.gd:1262"
   ],
   "via": []
  },
@@ -3490,7 +3490,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1256"
+   "scenes/main.gd:1265"
   ],
   "via": []
  },
@@ -3501,7 +3501,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2424"
+   "scenes/hud.gd:2431"
   ],
   "via": []
  },
@@ -3512,7 +3512,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2426"
+   "scenes/hud.gd:2433"
   ],
   "via": []
  },
@@ -3523,7 +3523,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1272"
+   "scenes/main.gd:1281"
   ],
   "via": []
  },
@@ -3534,7 +3534,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1271"
+   "scenes/main.gd:1280"
   ],
   "via": []
  },
@@ -3556,7 +3556,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1268"
+   "scenes/main.gd:1277"
   ],
   "via": []
  },
@@ -3567,7 +3567,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1270"
+   "scenes/main.gd:1279"
   ],
   "via": []
  },
@@ -3578,7 +3578,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1258"
+   "scenes/main.gd:1267"
   ],
   "via": []
  },
@@ -3589,7 +3589,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1269"
+   "scenes/main.gd:1278"
   ],
   "via": []
  },
@@ -3600,7 +3600,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1260"
+   "scenes/main.gd:1269"
   ],
   "via": []
  },
@@ -3611,7 +3611,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1267"
+   "scenes/main.gd:1276"
   ],
   "via": []
  },
@@ -3622,7 +3622,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1267"
+   "scenes/main.gd:1276"
   ],
   "via": []
  },
@@ -3633,7 +3633,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1267"
+   "scenes/main.gd:1276"
   ],
   "via": []
  },
@@ -3795,7 +3795,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1250"
+   "scenes/main.gd:1259"
   ],
   "via": []
  },
@@ -3806,7 +3806,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1250"
+   "scenes/main.gd:1259"
   ],
   "via": []
  },
@@ -3850,7 +3850,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:401"
+   "scenes/night_loop.gd:409"
   ],
   "via": []
  },
@@ -3894,7 +3894,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:451"
+   "scenes/night_loop.gd:459"
   ],
   "via": []
  },
@@ -3905,7 +3905,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:451"
+   "scenes/night_loop.gd:459"
   ],
   "via": []
  },
@@ -3916,7 +3916,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/scenery.gd:386"
+   "scenes/scenery.gd:389"
   ],
   "via": []
  },
@@ -3927,7 +3927,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/scenery.gd:446"
+   "scenes/scenery.gd:449"
   ],
   "via": []
  },
@@ -3938,7 +3938,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2285"
+   "scenes/hud.gd:2292"
   ],
   "via": []
  },
@@ -3949,7 +3949,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2285"
+   "scenes/hud.gd:2292"
   ],
   "via": []
  },
@@ -3960,7 +3960,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2285"
+   "scenes/hud.gd:2292"
   ],
   "via": []
  },
@@ -3971,7 +3971,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2285"
+   "scenes/hud.gd:2292"
   ],
   "via": []
  },
@@ -3982,7 +3982,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2286"
+   "scenes/hud.gd:2293"
   ],
   "via": []
  },
@@ -3993,7 +3993,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2286"
+   "scenes/hud.gd:2293"
   ],
   "via": []
  },
@@ -4004,7 +4004,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2286"
+   "scenes/hud.gd:2293"
   ],
   "via": []
  },
@@ -4015,7 +4015,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2287"
+   "scenes/hud.gd:2294"
   ],
   "via": []
  },
@@ -4026,7 +4026,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/hud.gd:2287"
+   "scenes/hud.gd:2294"
   ],
   "via": []
  },
@@ -4158,7 +4158,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:406"
+   "scenes/night_loop.gd:414"
   ],
   "via": []
  },
@@ -4169,7 +4169,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:414"
+   "scenes/night_loop.gd:422"
   ],
   "via": []
  },
@@ -4180,7 +4180,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:414"
+   "scenes/night_loop.gd:422"
   ],
   "via": []
  },
@@ -4191,7 +4191,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:417"
+   "scenes/night_loop.gd:425"
   ],
   "via": []
  },
@@ -4202,7 +4202,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:447"
+   "scenes/night_loop.gd:455"
   ],
   "via": []
  },
@@ -4213,7 +4213,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:447"
+   "scenes/night_loop.gd:455"
   ],
   "via": []
  },
@@ -4224,7 +4224,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:447"
+   "scenes/night_loop.gd:455"
   ],
   "via": []
  },
@@ -4235,7 +4235,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:452"
+   "scenes/night_loop.gd:460"
   ],
   "via": []
  },
@@ -4246,7 +4246,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:437"
+   "scenes/night_loop.gd:445"
   ],
   "via": []
  },
@@ -4257,7 +4257,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:472"
+   "scenes/night_loop.gd:480"
   ],
   "via": []
  },
@@ -4268,7 +4268,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:469"
+   "scenes/night_loop.gd:477"
   ],
   "via": []
  },
@@ -4279,7 +4279,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:469"
+   "scenes/night_loop.gd:477"
   ],
   "via": []
  },
@@ -4290,7 +4290,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:460"
+   "scenes/night_loop.gd:468"
   ],
   "via": []
  },
@@ -4301,7 +4301,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:523"
+   "scenes/night_loop.gd:531"
   ],
   "via": []
  },
@@ -4330,7 +4330,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1322"
+   "scenes/main.gd:1332"
   ],
   "via": []
  },
@@ -4396,7 +4396,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1390"
+   "scenes/main.gd:1400"
   ],
   "via": []
  },
@@ -4407,7 +4407,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1390"
+   "scenes/main.gd:1400"
   ],
   "via": []
  },
@@ -4418,7 +4418,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1397"
+   "scenes/main.gd:1407"
   ],
   "via": []
  },
@@ -4429,7 +4429,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1397"
+   "scenes/main.gd:1407"
   ],
   "via": []
  },
@@ -4794,7 +4794,7 @@ window.TEXTOS = [
   "group": "Juego",
   "at": [
    "scenes/main.gd:570",
-   "logic/museum.gd:260"
+   "logic/museum.gd:351"
   ],
   "via": []
  },
@@ -4805,8 +4805,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/museum.gd:548",
-   "logic/museum.gd:549"
+   "logic/museum.gd:639",
+   "logic/museum.gd:640"
   ],
   "via": []
  },
@@ -4818,7 +4818,7 @@ window.TEXTOS = [
   "group": "Juego",
   "at": [
    "scenes/main.gd:576",
-   "logic/museum.gd:640"
+   "logic/museum.gd:731"
   ],
   "via": []
  },
@@ -4873,7 +4873,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "logic/museum.gd:656"
+   "logic/museum.gd:747"
   ],
   "via": []
  },
@@ -5409,7 +5409,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/main.gd:1251"
+   "scenes/main.gd:1260"
   ],
   "via": []
  },
@@ -5846,7 +5846,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:325"
+   "scenes/map_editor.gd:328"
   ],
   "via": []
  },
@@ -5857,7 +5857,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:810"
+   "scenes/map_editor.gd:814"
   ],
   "via": []
  },
@@ -5868,9 +5868,9 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:268",
-   "scenes/map_editor.gd:810",
-   "scenes/map_editor.gd:1134"
+   "scenes/map_editor.gd:271",
+   "scenes/map_editor.gd:814",
+   "scenes/map_editor.gd:1138"
   ],
   "via": []
  },
@@ -5892,7 +5892,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:619"
+   "scenes/map_editor.gd:623"
   ],
   "via": []
  },
@@ -5903,7 +5903,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:652"
+   "scenes/map_editor.gd:656"
   ],
   "via": []
  },
@@ -5963,6 +5963,17 @@ window.TEXTOS = [
   ]
  },
  {
+  "key": "EDITOR_TOOL_DOOR",
+  "es": "PUERTA",
+  "broken": false,
+  "extra": [],
+  "group": "Editor de mapas",
+  "at": [],
+  "via": [
+   "EDITOR_TOOL_…"
+  ]
+ },
+ {
   "key": "EDITOR_TOOL_PROP",
   "es": "OBJETO",
   "broken": false,
@@ -5980,7 +5991,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:660"
+   "scenes/map_editor.gd:664"
   ],
   "via": []
  },
@@ -6000,7 +6011,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:67"
+   "scenes/map_editor.gd:69"
   ],
   "via": []
  },
@@ -6011,7 +6022,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:75"
+   "scenes/map_editor.gd:77"
   ],
   "via": []
  },
@@ -6022,7 +6033,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:83"
+   "scenes/map_editor.gd:85"
   ],
   "via": []
  },
@@ -6033,7 +6044,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:91"
+   "scenes/map_editor.gd:93"
   ],
   "via": []
  },
@@ -6044,7 +6055,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:101"
+   "scenes/map_editor.gd:103"
   ],
   "via": []
  },
@@ -6055,7 +6066,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:127"
+   "scenes/map_editor.gd:129"
   ],
   "via": []
  },
@@ -6066,7 +6077,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:659"
+   "scenes/map_editor.gd:663"
   ],
   "via": []
  },
@@ -6122,7 +6133,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:718"
+   "scenes/map_editor.gd:722"
   ],
   "via": []
  },
@@ -6133,7 +6144,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:1094"
+   "scenes/map_editor.gd:1098"
   ],
   "via": []
  },
@@ -6144,7 +6155,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:719"
+   "scenes/map_editor.gd:723"
   ],
   "via": []
  },
@@ -6155,7 +6166,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:370"
+   "scenes/map_editor.gd:373"
   ],
   "via": []
  },
@@ -6166,8 +6177,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:340",
-   "scenes/map_editor.gd:1607"
+   "scenes/map_editor.gd:343",
+   "scenes/map_editor.gd:1622"
   ],
   "via": []
  },
@@ -6178,7 +6189,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:369"
+   "scenes/map_editor.gd:372"
   ],
   "via": []
  },
@@ -6189,9 +6200,9 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:371",
-   "scenes/map_editor.gd:796",
-   "scenes/map_editor.gd:823"
+   "scenes/map_editor.gd:374",
+   "scenes/map_editor.gd:800",
+   "scenes/map_editor.gd:827"
   ],
   "via": []
  },
@@ -6202,7 +6213,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:372"
+   "scenes/map_editor.gd:375"
   ],
   "via": []
  },
@@ -6213,7 +6224,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:1142"
+   "scenes/map_editor.gd:1146"
   ],
   "via": []
  },
@@ -6224,7 +6235,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:1142"
+   "scenes/map_editor.gd:1146"
   ],
   "via": []
  },
@@ -6235,7 +6246,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:1137"
+   "scenes/map_editor.gd:1141"
   ],
   "via": []
  },
@@ -6246,8 +6257,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:1148",
-   "scenes/map_editor.gd:1156"
+   "scenes/map_editor.gd:1152",
+   "scenes/map_editor.gd:1160"
   ],
   "via": []
  },
@@ -6258,7 +6269,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:773"
+   "scenes/map_editor.gd:777"
   ],
   "via": []
  },
@@ -6269,7 +6280,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:1435"
+   "scenes/map_editor.gd:1448"
   ],
   "via": []
  },
@@ -6301,7 +6312,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:431"
+   "logic/map_file.gd:443"
   ],
   "via": []
  },
@@ -6312,7 +6323,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:441"
+   "logic/map_file.gd:453"
   ],
   "via": []
  },
@@ -6323,7 +6334,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:443"
+   "logic/map_file.gd:455"
   ],
   "via": []
  },
@@ -6334,7 +6345,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:449"
+   "logic/map_file.gd:461"
   ],
   "via": []
  },
@@ -6345,7 +6356,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:453"
+   "logic/map_file.gd:465"
   ],
   "via": []
  },
@@ -6356,8 +6367,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:456",
-   "logic/map_file.gd:458"
+   "logic/map_file.gd:468",
+   "logic/map_file.gd:470"
   ],
   "via": []
  },
@@ -6368,7 +6379,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:461"
+   "logic/map_file.gd:473"
   ],
   "via": []
  },
@@ -6379,7 +6390,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:464"
+   "logic/map_file.gd:476"
   ],
   "via": []
  },
@@ -6390,8 +6401,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:469",
-   "logic/map_file.gd:470"
+   "logic/map_file.gd:481",
+   "logic/map_file.gd:482"
   ],
   "via": []
  },
@@ -6642,7 +6653,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:774"
+   "scenes/map_editor.gd:778"
   ],
   "via": []
  },
@@ -6653,7 +6664,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:775"
+   "scenes/map_editor.gd:779"
   ],
   "via": []
  },
@@ -6664,8 +6675,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:776",
-   "scenes/map_editor.gd:826"
+   "scenes/map_editor.gd:780",
+   "scenes/map_editor.gd:830"
   ],
   "via": []
  },
@@ -6694,7 +6705,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:710"
+   "scenes/map_editor.gd:714"
   ],
   "via": []
  },
@@ -7051,7 +7062,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:109"
+   "scenes/map_editor.gd:111"
   ],
   "via": []
  },
@@ -7062,7 +7073,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:119"
+   "scenes/map_editor.gd:121"
   ],
   "via": []
  },
@@ -7238,7 +7249,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:832"
+   "scenes/map_editor.gd:836"
   ],
   "via": []
  },
@@ -7249,7 +7260,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:837"
+   "scenes/map_editor.gd:841"
   ],
   "via": []
  },
@@ -7260,7 +7271,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:948"
+   "scenes/map_editor.gd:952"
   ],
   "via": []
  },
@@ -7271,7 +7282,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:847"
+   "scenes/map_editor.gd:851"
   ],
   "via": []
  },
@@ -7282,7 +7293,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:925"
+   "scenes/map_editor.gd:929"
   ],
   "via": []
  },
@@ -7293,7 +7304,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:929"
+   "scenes/map_editor.gd:933"
   ],
   "via": []
  },
@@ -7304,7 +7315,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:929"
+   "scenes/map_editor.gd:933"
   ],
   "via": []
  },
@@ -7315,7 +7326,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:933"
+   "scenes/map_editor.gd:937"
   ],
   "via": []
  },
@@ -7326,7 +7337,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:936"
+   "scenes/map_editor.gd:940"
   ],
   "via": []
  },
@@ -7346,7 +7357,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "logic/map_file.gd:527"
+   "logic/map_file.gd:539"
   ],
   "via": []
  },
@@ -7357,7 +7368,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:858"
+   "scenes/map_editor.gd:862"
   ],
   "via": []
  },
@@ -7806,7 +7817,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:1442"
+   "scenes/map_editor.gd:1455"
   ],
   "via": []
  },
@@ -7817,7 +7828,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:1442"
+   "scenes/map_editor.gd:1455"
   ],
   "via": []
  },
@@ -7828,7 +7839,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:1444"
+   "scenes/map_editor.gd:1457"
   ],
   "via": []
  },
@@ -7839,7 +7850,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:1624"
+   "scenes/map_editor.gd:1639"
   ],
   "via": []
  },
@@ -10506,7 +10517,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:627"
+   "scenes/map_editor.gd:631"
   ],
   "via": []
  },
@@ -10517,7 +10528,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:620"
+   "scenes/map_editor.gd:624"
   ],
   "via": []
  },
@@ -10528,7 +10539,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Editor de mapas",
   "at": [
-   "scenes/map_editor.gd:1591"
+   "scenes/map_editor.gd:1606"
   ],
   "via": []
  },
@@ -10682,7 +10693,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Juego",
   "at": [
-   "scenes/night_loop.gd:387"
+   "scenes/night_loop.gd:395"
   ],
   "via": []
  },
@@ -14859,7 +14870,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1273"
+   "scenes/main.gd:1282",
+   "scenes/main.gd:1283"
   ],
   "via": []
  },
@@ -14870,7 +14882,8 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1273"
+   "scenes/main.gd:1282",
+   "scenes/main.gd:1283"
   ],
   "via": []
  },
@@ -14881,7 +14894,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1385"
+   "scenes/main.gd:1395"
   ],
   "via": []
  },
@@ -14991,7 +15004,7 @@ window.TEXTOS = [
   "extra": [],
   "group": "Otros",
   "at": [
-   "scenes/main.gd:1270"
+   "scenes/main.gd:1279"
   ],
   "via": []
  },
