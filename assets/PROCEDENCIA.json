@@ -137,7 +137,7 @@
 		"personajes-blender": {
 			"nombre": "Personajes (ninja y guardia)",
 			"tipo": "propio",
-			"metodo": "Modelados por script en Blender (art/characters/kit.py, ninja.py, guardia.py, rig.py: formas sencillas fundidas con remallado de vóxeles, esqueleto y acciones) y retocados a mano en art/personajes/*.blend (hoy piezas sueltas, con manos y caras rehechas por art/characters/mejorar_partes.py); exportados con art/export.py. art/blockbench/ guarda copias .obj/.glb para abrirlos en Blockbench.",
+			"metodo": "Modelados por script en Blender (art/characters/kit.py, ninja.py, guardia.py, rig.py: formas sencillas fundidas con remallado de vóxeles, esqueleto y acciones) y retocados a mano en art/personajes/*.blend (hoy piezas sueltas, con manos y caras rehechas por art/characters/mejorar_partes.py); el ninja de ahora lo rehace entero art/characters/ninja_v2.py (formas de campo de distancia remalladas en cuadriláteros con QuadriFlow, simétricas en x, con el mismo esqueleto y las mismas acciones); exportados con art/export.py. art/blockbench/ guarda copias .obj/.glb para abrirlos en Blockbench.",
 			"autor": "Chema, con Claude",
 			"licencia": "LicenseRef-Propia",
 			"url": "",
