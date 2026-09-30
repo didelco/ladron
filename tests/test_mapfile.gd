@@ -194,6 +194,24 @@ func _doors() -> void:
 	check(m.check().is_empty(), "una sala tras una puerta se puede jugar: %s" % [m.check()])
 	check(m.door_fits(Vector2i(7, 5)), "un tramo recto de muro (dos lados opuestos) vale para una puerta")
 
+	# The two tiles of floor right where the door opens, not any floor near it.
+	check(m.door_clear(Vector2i(7, 5)), "con el paso libre a los dos lados, la puerta no está bloqueada")
+	check(m.blocks_door(Vector2i(6, 5)) and m.blocks_door(Vector2i(8, 5)), "las dos casillas por las que se cruza la puerta cuentan como su paso")
+	check(not m.blocks_door(Vector2i(7, 4)), "una casilla fuera de ese eje no cuenta")
+
+	# A case, an exhibit or a big piece right outside it (Tiles.COVER either
+	# way) leaves the door open on paper but not to walk through.
+	var cased := m.copy()
+	cased.put(Vector2i(8, 5), Tiles.COVER)
+	check(not cased.door_clear(Vector2i(7, 5)), "una vitrina justo al salir de la puerta la deja bloqueada")
+	check(cased.check().has("EDITOR_ERR_DOOR_BLOCKED"), "y el chequeo general lo detecta")
+
+	# A prop stands on plain floor (props is its own list): blocks the same way.
+	var propped := m.copy()
+	propped.props.append({"kind": "bin", "at": Vector2i(6, 5)})
+	check(not propped.door_clear(Vector2i(7, 5)), "un objeto tirado ahí también la bloquea, aunque la casilla siga siendo suelo")
+	check(propped.check().has("EDITOR_ERR_DOOR_BLOCKED"), "y se detecta igual")
+
 	# A corner (an L, not a straight stretch): the tile itself a wall, with
 	# wall to the south and to the east but floor the other two ways — a
 	# door there would cut into the building at an angle, not straight

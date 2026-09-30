@@ -388,6 +388,38 @@ func door_fits(t: Vector2i) -> bool:
 	return (n and s and not e and not w) or (e and w and not n and not s)
 
 
+## The two floor tiles a door at `t` opens onto, straight out on the axis it
+## cuts through (door_fits' own reasoning: wall on the other two sides).
+## Only meaningful where door_fits(t) holds; ZERO, ZERO otherwise.
+func door_front_tiles(t: Vector2i) -> Array[Vector2i]:
+	if not door_fits(t):
+		return []
+	if at(t + Vector2i(0, -1)) == Tiles.WALL:
+		return [t + Vector2i(1, 0), t + Vector2i(-1, 0)]
+	return [t + Vector2i(0, 1), t + Vector2i(0, -1)]
+
+
+## Whether a door at `t` opens onto floor free to walk on both sides: no case,
+## exhibit, big piece (all Tiles.COVER) or prop right where you would step out
+## of it. A door that fits the wall but has something stood in its way is
+## open on paper only, so this is checked on its own from door_fits.
+func door_clear(t: Vector2i) -> bool:
+	for f in door_front_tiles(t):
+		if at(f) == Tiles.COVER or props.any(func(p): return p.at == f):
+			return false
+	return true
+
+
+## Whether standing something at `t` (a case, an exhibit, a big piece, a
+## prop) would block a door already marked: true if `t` is one of the two
+## tiles a fitting door opens onto.
+func blocks_door(t: Vector2i) -> bool:
+	for d in doors:
+		if door_front_tiles(d).has(t):
+			return true
+	return false
+
+
 ## Floor right against the outer wall, where you come in from outside: as
 ## MapGen marks it (next to a tile of the footprint's edge).
 func ring() -> PackedByteArray:
@@ -538,6 +570,10 @@ func check() -> Array[String]:
 	for d in doors:
 		if not door_fits(d):
 			errors.append("EDITOR_ERR_DOOR")
+			break
+	for d in doors:
+		if door_fits(d) and not door_clear(d):
+			errors.append("EDITOR_ERR_DOOR_BLOCKED")
 			break
 	for b in big:
 		var r: Rect2i = b.rect
