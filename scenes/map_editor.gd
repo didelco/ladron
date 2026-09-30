@@ -39,12 +39,12 @@ signal preview(map: MapFile)
 ## "nav", "ok", "back", as the menus make.
 signal ui_sound(kind: String)
 
-## The kinds of tool: the four big ones left to right, and the options (a
-## small button up with what to do); all but wall and floor fill the
-## catalogue.
-const KINDS := ["wall", "main", "objects", "rooms", "options"]
+## The kinds of tool: the three big ones left to right, and the options (a
+## small button up with what to do). "construir" is wall/floor, the
+## characters and the rooms together, one catalogue after another.
+const KINDS := ["construir", "objects", "options"]
 ## The kinds LT/RT go round (the options have no tool to hold).
-const PAD_KINDS := ["wall", "main", "objects", "rooms"]
+const PAD_KINDS := ["construir", "objects"]
 ## A direction held on the pad: the first step at once, the next after this
 ## long (s), then one every PAD_REPEAT.
 const PAD_DELAY := 0.24
@@ -165,7 +165,7 @@ var map: MapFile
 var tool := "wall"
 ## the toolbar button lit (KINDS), and the one whose panel is open ("" none,
 ## "leave" for the unsaved changes)
-var kind := "wall"
+var kind := "construir"
 var panel := ""
 ## wall/floor: what a drag paints, set by the first tile it starts on
 var paint := Tiles.WALL
@@ -212,6 +212,8 @@ var _sub: VBoxContainer
 ## it wants more room, and can stay open while the plan is worked on.
 var _guard_sidebar: PanelContainer
 var _guard_title: Label
+var _guard_remove: Button
+var _guard_tabs: HBoxContainer
 var _guard_sub: VBoxContainer
 ## the options' page open (OPTION_PAGES)
 var option_page := "size"
@@ -497,12 +499,22 @@ func _build() -> void:
 	guard_inside.add_theme_constant_override("separation", 6)
 	guard_inside.custom_minimum_size = Vector2(GUARD_SIDEBAR_WIDTH, 0)
 	guard_scroll.add_child(guard_inside)
-	_guard_title = _label("", 10, Hud.C.dim, guard_inside, true)
+	# Above the tabs, once: the panel's name, and the way to remove the
+	# guard — always in reach, whichever tab is open.
+	var guard_head := HBoxContainer.new()
+	guard_head.add_theme_constant_override("separation", 6)
+	guard_inside.add_child(guard_head)
+	_guard_title = _label("", 10, Hud.C.dim, guard_head, true)
+	_guard_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_guard_remove = _icon_button("clear", "EDITOR_GUARD_REMOVE", _remove_selected_guard, guard_head, Hud.C.alert)
+	_guard_tabs = HBoxContainer.new()
+	_guard_tabs.add_theme_constant_override("separation", 6)
+	guard_inside.add_child(_guard_tabs)
 	_guard_sub = VBoxContainer.new()
 	_guard_sub.add_theme_constant_override("separation", 6)
 	guard_inside.add_child(_guard_sub)
 
-	_pick_kind("wall")
+	_pick_kind("construir")
 
 
 ## A small square button with a drawn icon, its name on hover.
@@ -635,6 +647,57 @@ func _swatch(part: String, which := -2) -> ImageTexture:
 	return ImageTexture.create_from_image(img)
 
 
+## A stat's level (0-4) as a little bar chart, like a volume meter: five
+## bars rising left to right, gold up to the level in force, the rest dim.
+func _level_bars_texture(level: int) -> ImageTexture:
+	var w := 160
+	var h := 30
+	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	var n := 5
+	var bw := 20
+	var gap := 9
+	var start_x := (w - (n * bw + (n - 1) * gap)) / 2
+	for i in n:
+		var bar_h := roundi(h * (0.3 + 0.7 * float(i + 1) / n))
+		var x := start_x + i * (bw + gap)
+		var y := h - bar_h
+		var col := Hud.C.gold if i <= level else Color(Hud.CREAM, 0.22)
+		img.fill_rect(Rect2i(x, y, bw, bar_h), col)
+	return ImageTexture.create_from_image(img)
+
+
+## An upward arrow turned to face one of the eight GUARD_DIRS: each pixel
+## checked against the shape unrotated, by undoing the turn on its way in.
+func _dir_arrow_texture(angle: float) -> ImageTexture:
+	var w := 40
+	var img := Image.create(w, w, false, Image.FORMAT_RGBA8)
+	var c := w / 2.0
+	var cos_a := cos(-angle)
+	var sin_a := sin(-angle)
+	for y in w:
+		for x in w:
+			var dx := x - c
+			var dy := y - c
+			var lx := dx * cos_a - dy * sin_a
+			var ly := dx * sin_a + dy * cos_a
+			if _in_arrow_shape(lx, ly, c):
+				img.set_pixel(x, y, Hud.CREAM)
+	return ImageTexture.create_from_image(img)
+
+
+## The arrow's shape in its own upward frame (north is -Y): a shaft below
+## the centre, a triangular head above it, its tip at the top.
+func _in_arrow_shape(lx: float, ly: float, c: float) -> bool:
+	if absf(lx) <= c * 0.12 and ly >= -c * 0.15 and ly <= c * 0.75:
+		return true
+	var head_top := -c * 0.85
+	var head_base := -c * 0.05
+	if ly < head_top or ly > head_base:
+		return false
+	var t := (ly - head_top) / (head_base - head_top)
+	return absf(lx) <= t * c * 0.55
+
+
 func _tool_colour(t: String) -> Color:
 	if t.begins_with("prop:"):
 		return PROP
@@ -654,11 +717,11 @@ func _tool_colour(t: String) -> Color:
 
 # --- Tools and settings ------------------------------------------------------------
 
-## A kind of tool: its catalogue along the bottom. Wall and floor has only
-## the one tool, straight into the hand.
+## A kind of tool: its catalogue along the bottom. "construir" opens
+## straight into the wall/floor brush, the one used most.
 func _pick_kind(k: String) -> void:
 	kind = k
-	if k == "wall":
+	if k == "construir":
 		_pick_tool("wall")
 	_fill_catalogue()
 	_refresh()
@@ -674,13 +737,21 @@ func _fill_catalogue() -> void:
 	_template_buttons.clear()
 	_tabs.visible = kind == "objects"
 	match kind:
-		"wall":
-			_tool_buttons["wall"] = _item("wall", Text.t("EDITOR_TOOL_WALL"), _choose_tool.bind("wall", "wall"), Hud.C.safe)
+		"construir":
+			# Wall/floor, the characters, and the rooms, one block after
+			# another (a separator between), so the whole of what you build
+			# with shows at a glance.
+			_tool_buttons["wall"] = _item("wall", Text.t("EDITOR_TOOL_WALL"), _choose_tool.bind("construir", "wall"), Hud.C.safe)
 			var note := _label(Text.t("EDITOR_WALL_NOTE"), 13, Hud.C.dim, _catalogue)
 			note.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		"main":
+			_catalogue.add_child(VSeparator.new())
 			for t in MAIN_TOOLS:
-				_tool_buttons[t] = _item(TOOL_ICONS[t], Text.t("EDITOR_TOOL_" + t.to_upper()), _choose_tool.bind("main", t), _tool_colour(t))
+				_tool_buttons[t] = _item(TOOL_ICONS[t], Text.t("EDITOR_TOOL_" + t.to_upper()), _choose_tool.bind("construir", t), _tool_colour(t))
+			_catalogue.add_child(VSeparator.new())
+			for i in TEMPLATES.size():
+				_template_buttons.append(_item(_template_picture(i), Text.t(TEMPLATES[i].key), _choose_template.bind(i), Hud.C.gold))
+			_item("turn", Text.t("EDITOR_TURN"), _turn, Hud.C.dim)
+			_tool_buttons["room"] = _item("room", Text.t("EDITOR_TOOL_ROOM"), _choose_tool.bind("construir", "room"), ROOM)
 		"objects":
 			for id in [""] + Themes.ids():
 				var tab := _button(Text.t("EDITOR_FILTER_ALL") if id == "" else Text.t("THEME_" + String(id).to_upper()), _pick_filter.bind(id), _tabs, Hud.C.gold)
@@ -712,11 +783,6 @@ func _fill_catalogue() -> void:
 				_tool_buttons[t] = _item(load("res://assets/icons/objects/%s.png" % id), name, _choose_tool.bind("objects", t), _tool_colour(t))
 		"options":
 			_options()
-		"rooms":
-			for i in TEMPLATES.size():
-				_template_buttons.append(_item(_template_picture(i), Text.t(TEMPLATES[i].key), _choose_template.bind(i), Hud.C.gold))
-			_item("turn", Text.t("EDITOR_TURN"), _turn, Hud.C.dim)
-			_tool_buttons["room"] = _item("room", Text.t("EDITOR_TOOL_ROOM"), _choose_tool.bind("rooms", "room"), ROOM)
 
 
 ## One thing in the catalogue: its picture, its name under it.
@@ -823,6 +889,9 @@ func _open(k: String) -> void:
 	leaving = k == "leave"
 	for c in _sub.get_children():
 		_sub.remove_child(c)
+		c.queue_free()
+	for c in _guard_tabs.get_children():
+		_guard_tabs.remove_child(c)
 		c.queue_free()
 	for c in _guard_sub.get_children():
 		_guard_sub.remove_child(c)
@@ -992,10 +1061,15 @@ const GUARD_DIRS := [PI * -0.5, PI * -0.25, 0.0, PI * 0.25, PI * 0.5, PI * 0.75,
 const GUARD_DIR_KEYS := ["N", "NE", "E", "SE", "S", "SO", "O", "NO"]
 
 
-## The guard clicked in _press (or just placed): its archetype and the three
-## sliders it seeds (what it is like), how it behaves (patrols or stands
-## guard, and what it watches while it does), which way it looks at the
-## start (‹ › in steps of 45°, like _seconds_slider), and a way to remove it.
+## The guard clicked in _press (or just placed): two tabs, like the save
+## panel's (GUARD_PAGES/guard_page) — "capabilities" (archetype and the
+## three sliders it seeds) and "position" (patrols or stands guard, what it
+## watches while it does, and which way it looks at the start). Its name and
+## the way to remove it sit above the tabs, built once in _build.
+const GUARD_PAGES := ["capabilities", "position"]
+var guard_page := "capabilities"
+
+
 func _guard_panel() -> void:
 	var g := selected_guard
 	if g == null:
@@ -1003,6 +1077,25 @@ func _guard_panel() -> void:
 		return
 	_guard_title.text = Text.t("EDITOR_TOOL_GUARD")
 
+	for page in GUARD_PAGES:
+		var b := _button(Text.t("EDITOR_GUARD_TAB_" + page.to_upper()), func() -> void:
+			guard_page = page
+			_open("guard"), _guard_tabs, Hud.C.gold)
+		b.custom_minimum_size = Vector2(0, 30)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.set_meta("guard_page", page)
+
+	match guard_page:
+		"capabilities":
+			_guard_capabilities_page(g)
+		"position":
+			_guard_position_page(g)
+
+
+## The archetype (its dropdown seeds the three sliders below), the sliders
+## themselves — drawn as a little bar chart, like a volume meter, the stat's
+## name at its top right — and the line of traits they add up to.
+func _guard_capabilities_page(g: GuardSpawn) -> void:
 	_label(Text.t("EDITOR_GUARD_ARCHETYPE"), 8, Hud.C.dim, _guard_sub, true)
 	var arch := _dropdown(_guard_sub)
 	var arch_keys := GuardSpawn.ARCHETYPES.keys()
@@ -1017,12 +1110,18 @@ func _guard_panel() -> void:
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	desc.set_meta("guard_desc", true)
 
+
+## How it moves (round/post) and, posted, what it watches: icon buttons —
+## their words are long, and full-width ones would spill past the sidebar —
+## and which way it looks at the start (‹ › in steps of 45°, an arrow icon
+## turned to match, like _seconds_slider).
+func _guard_position_page(g: GuardSpawn) -> void:
 	_label(Text.t("EDITOR_GUARD_STANCE"), 8, Hud.C.dim, _guard_sub, true)
 	var stance_row := HBoxContainer.new()
 	stance_row.add_theme_constant_override("separation", 6)
 	_guard_sub.add_child(stance_row)
 	for s in ["round", "post"]:
-		var b := _button(Text.t("EDITOR_GUARD_STANCE_" + s.to_upper()), _pick_stance.bind(s), stance_row, Hud.C.safe)
+		var b := _icon_button("stance_" + s, "EDITOR_GUARD_STANCE_" + s.to_upper(), _pick_stance.bind(s), stance_row, Hud.C.safe)
 		b.set_meta("guard_stance", s)
 
 	if g.stance == "post":
@@ -1032,8 +1131,9 @@ func _guard_panel() -> void:
 		var watch_row := HBoxContainer.new()
 		watch_row.add_theme_constant_override("separation", 6)
 		_guard_sub.add_child(watch_row)
+		var watch_icons := {"": "watch_none", "room": "room", "piece": "piece"}
 		for w in ["", "room", "piece"]:
-			var b := _button(Text.t("EDITOR_GUARD_WATCH_" + (w if w != "" else "none").to_upper()), _pick_watch.bind(w), watch_row, Hud.C.safe)
+			var b := _icon_button(watch_icons[w], "EDITOR_GUARD_WATCH_" + (w if w != "" else "none").to_upper(), _pick_watch.bind(w), watch_row, Hud.C.safe)
 			b.set_meta("guard_watch", w)
 
 	_label(Text.t("EDITOR_GUARD_FACING"), 8, Hud.C.dim, _guard_sub, true)
@@ -1041,7 +1141,10 @@ func _guard_panel() -> void:
 	row.add_theme_constant_override("separation", 6)
 	_guard_sub.add_child(row)
 	var less := _button("‹", _step_dir.bind(-1), row, Hud.C.safe)
-	var bar := _button(Text.t("EDITOR_GUARD_" + GUARD_DIR_KEYS[_nearest_dir(g.dir)]), _step_dir.bind(0), row, Hud.C.safe)
+	var idx := _nearest_dir(g.dir)
+	var bar := _button(GUARD_DIR_KEYS[idx], _step_dir.bind(0), row, Hud.C.safe, false, _dir_arrow_texture(GUARD_DIRS[idx]))
+	bar.tooltip_text = Text.t("EDITOR_GUARD_" + GUARD_DIR_KEYS[idx])
+	bar.add_theme_constant_override("icon_max_width", 28)
 	var more := _button("›", _step_dir.bind(1), row, Hud.C.safe)
 	for b in [less, more]:
 		b.custom_minimum_size = Vector2(38, 38)
@@ -1056,18 +1159,28 @@ func _guard_panel() -> void:
 			if e.is_action_pressed(pair[0], true):
 				_step_dir(pair[1])
 				bar.accept_event())
-	_button(Text.t("EDITOR_GUARD_REMOVE"), _remove_selected_guard, _guard_sub, Hud.C.alert)
 
 
-## One slider, "‹ LABEL ›" like _seconds_slider: a click on the middle
-## settles it back on the plain middle level (2), the arrows step it.
+## One stat, its name at the top right (like a volume setting's); the bars
+## below stand for the five levels, lit up to the one in force. A click on
+## the middle settles it back on the plain middle level (2), the arrows
+## step it.
 func _level_row(stat: String, title_key: String) -> void:
-	_label(Text.t(title_key), 8, Hud.C.dim, _guard_sub, true)
+	var head := HBoxContainer.new()
+	_guard_sub.add_child(head)
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(spacer)
+	_label(Text.t(title_key), 8, Hud.C.dim, head, true)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 6)
 	_guard_sub.add_child(row)
 	var less := _button("‹", _step_level.bind(stat, -1), row, Hud.C.safe)
-	var bar := _button(Text.t(GuardSpawn.LEVEL_LABELS[stat][selected_guard.level(stat)]), _step_level.bind(stat, 0), row, Hud.C.safe)
+	var level := selected_guard.level(stat)
+	var bar := _button("", _step_level.bind(stat, 0), row, Hud.C.safe, false, _level_bars_texture(level))
+	bar.tooltip_text = Text.t(GuardSpawn.LEVEL_LABELS[stat][level])
+	bar.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	bar.add_theme_constant_override("icon_max_width", 150)
 	var more := _button("›", _step_level.bind(stat, 1), row, Hud.C.safe)
 	for b in [less, more]:
 		b.custom_minimum_size = Vector2(38, 38)
@@ -1248,8 +1361,16 @@ func _step_seconds(dir: int) -> void:
 	_refresh()
 
 
-## Over the bar, above the button that opened it, as tall as fits.
+## Over the bar, above the button that opened it, as tall as fits. The
+## "unsaved changes" warning ("leave") is not tied to a button on screen
+## when it pops up unasked (closing the window, say), so that one goes
+## in the middle instead.
 func _place_flyout() -> void:
+	if panel == "leave":
+		_flyout.size = Vector2.ZERO
+		var fs := _flyout.get_combined_minimum_size()
+		_flyout.position = ((_ui.size - fs) * 0.5).round()
+		return
 	var from: Button = _save_button if panel == "save" else _exit_button
 	if from == null:
 		return
@@ -1270,7 +1391,7 @@ func _choose_tool(k: String, t: String) -> void:
 
 
 func _choose_template(i: int) -> void:
-	kind = "rooms"
+	kind = "construir"
 	_pick_template(i)
 
 
@@ -1568,12 +1689,16 @@ func _use(t: Vector2i, erase: bool) -> void:
 			# The plan's own edge stays wall: the building is shut.
 			if not edge or paint == Tiles.WALL:
 				map.put(t, paint)
-		"case": map.put(t, Tiles.COVER)
+		"case":
+			if not map.blocks_door(t):
+				map.put(t, Tiles.COVER)
 		"spawn":
 			if map.at(t) == Tiles.FLOOR:
 				map.spawn = t
 		"piece":
 			if map.at(t) != Tiles.COVER:
+				if map.blocks_door(t):
+					return
 				map.put(t, Tiles.COVER)
 			if map.big_at(t).is_empty():
 				map.piece = t
@@ -1601,7 +1726,7 @@ func _use(t: Vector2i, erase: bool) -> void:
 			# a click marks or clears it, like a door between rooms at home.
 			if map.doors.has(t):
 				map.doors.erase(t)
-			elif map.at(t) == Tiles.WALL and not edge and not map.columns.has(t) and map.door_fits(t):
+			elif map.at(t) == Tiles.WALL and not edge and not map.columns.has(t) and map.door_fits(t) and map.door_clear(t):
 				map.doors.append(t)
 		"column":
 			# Same spot a door could go, but it never opens: a click marks
@@ -1616,21 +1741,33 @@ func _use(t: Vector2i, erase: bool) -> void:
 			if map.at(t) == Tiles.WALL and edge:
 				return
 			if map.at(t) != Tiles.COVER:
+				# Only a new case can block a door; toggling one already
+				# there is always fine.
+				if map.blocks_door(t):
+					return
 				map.put(t, Tiles.COVER)
 			if map.exhibits.get(t, "") == what:
 				map.exhibits.erase(t)
 			else:
 				map.exhibits[t] = what
 		_ when tool.begins_with("big:"):
-			map.place_big(tool.substr(4), _big_rect(t))
+			var r := _big_rect(t)
+			var ok := true
+			for y in range(r.position.y, r.end.y):
+				for x in range(r.position.x, r.end.x):
+					if map.blocks_door(Vector2i(x, y)):
+						ok = false
+			if ok:
+				map.place_big(tool.substr(4), r)
 		_ when tool.begins_with("prop:"):
 			if map.at(t) != Tiles.FLOOR:
 				return
 			var what := tool.substr(5)
 			var there: Array = map.props.filter(func(p): return p.at == t)
 			map.props = map.props.filter(func(p): return p.at != t)
-			# The same one again takes it away; another swaps it.
-			if there.is_empty() or there[0].kind != what:
+			# The same one again takes it away (always allowed); another
+			# swaps it in, unless that would block a door right there.
+			if (there.is_empty() or there[0].kind != what) and not map.blocks_door(t):
 				map.props.append({"kind": what, "at": t})
 		"stamp":
 			map.stamp(_rows(), _stamp_corner(t), TEMPLATES[template].gallery)
@@ -1723,12 +1860,20 @@ func _refresh() -> void:
 			elif b.has_meta("seconds"):
 				b.text = _seconds_bar()
 	elif panel == "guard" and selected_guard != null:
+		for b in _guard_tabs.get_children():
+			if b.has_meta("guard_page"):
+				_look(b, b.get_meta("guard_page") == guard_page)
 		for b in _guard_sub.find_children("*", "Button", true, false):
 			if b.has_meta("guard_dir"):
-				b.text = Text.t("EDITOR_GUARD_" + GUARD_DIR_KEYS[_nearest_dir(selected_guard.dir)])
+				var idx := _nearest_dir(selected_guard.dir)
+				b.text = GUARD_DIR_KEYS[idx]
+				b.icon = _dir_arrow_texture(GUARD_DIRS[idx])
+				b.tooltip_text = Text.t("EDITOR_GUARD_" + GUARD_DIR_KEYS[idx])
 			elif b.has_meta("guard_level"):
 				var stat: String = b.get_meta("guard_level")
-				b.text = Text.t(GuardSpawn.LEVEL_LABELS[stat][selected_guard.level(stat)])
+				var level := selected_guard.level(stat)
+				b.icon = _level_bars_texture(level)
+				b.tooltip_text = Text.t(GuardSpawn.LEVEL_LABELS[stat][level])
 			elif b.has_meta("guard_stance"):
 				_look(b, b.get_meta("guard_stance") == selected_guard.stance)
 			elif b.has_meta("guard_watch"):
@@ -1861,7 +2006,7 @@ func _draw_plan() -> void:
 			_plan.draw_rect(Rect2(o + Vector2(r.position) * c, Vector2(r.size) * c), ROOM, false, 3.0)
 		var edge_hover := hover.x == 0 or hover.y == 0 or hover.x == map.w - 1 or hover.y == map.h - 1
 		var blocked := tool == "door" and map.at(hover) == Tiles.WALL and not edge_hover and not map.doors.has(hover) \
-			and (map.columns.has(hover) or not map.door_fits(hover))
+			and (map.columns.has(hover) or not map.door_fits(hover) or not map.door_clear(hover))
 		var cursor_colour := Hud.C.alert if blocked else (Hud.CREAM if _plan.has_focus() else Color(Hud.CREAM, 0.7))
 		_plan.draw_rect(box.call(hover), cursor_colour, false, 2.0)
 	if _plan.has_focus():
@@ -2253,12 +2398,12 @@ func _pad_item(step: int) -> void:
 	_say(b.tooltip_text, Hud.CREAM)
 
 
-## The kind of tool before or after (wall, characters, objects, rooms), with
-## its first thing in hand unless what is in hand is already one of its own.
+## The kind of tool before or after (building, objects), with its first
+## thing in hand unless what is in hand is already one of its own.
 func _pad_kind(step: int) -> void:
 	var i := PAD_KINDS.find(kind)
 	_pick_kind(PAD_KINDS[posmod(i + step, PAD_KINDS.size())])
-	var own := tool in _tool_buttons or (tool == "stamp" and kind == "rooms")
+	var own := tool in _tool_buttons or (tool == "stamp" and kind == "construir")
 	if not own:
 		_pad_item(1)
 	else:
@@ -2269,7 +2414,7 @@ func _pad_kind(step: int) -> void:
 ## catalogue open (and every theme shown, so it is there to see).
 func _pick_up(t: Vector2i) -> void:
 	var what := "wall"
-	var k := "wall"
+	var k := "construir"
 	var prop: Array = map.props.filter(func(p): return p.at == t)
 	var big := map.big_at(t)
 	if map.guards.any(func(g): return g.at == t):
@@ -2292,9 +2437,7 @@ func _pick_up(t: Vector2i) -> void:
 		what = "exhibit:" + String(map.exhibits[t])
 	elif map.at(t) == Tiles.COVER:
 		what = "case"
-	if what in MAIN_TOOLS:
-		k = "main"
-	elif what != "wall":
+	if what != "wall" and not (what in MAIN_TOOLS):
 		k = "objects"
 		filter = ""
 		filter_type = ""

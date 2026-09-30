@@ -583,6 +583,8 @@ EDITOR_GUARD_SO,SUROESTE
 EDITOR_GUARD_O,OESTE
 EDITOR_GUARD_NO,NOROESTE
 EDITOR_GUARD_REMOVE,QUITAR GUARDIA
+EDITOR_GUARD_TAB_CAPABILITIES,CAPACIDADES
+EDITOR_GUARD_TAB_POSITION,POSICIÓN
 EDITOR_GUARD_ARCHETYPE,ARQUETIPO
 EDITOR_GUARD_ARCH_STANDARD,ESTÁNDAR
 EDITOR_GUARD_ARCH_WATCHER,VIGÍA
@@ -657,6 +659,7 @@ EDITOR_ERR_EXIT,"Falta la salida: suelo junto al muro exterior, lejos de la entr
 EDITOR_ERR_GUARD,Hay un guardia fuera del suelo al que se llega.
 EDITOR_ERR_GUARDS,"Demasiados guardias: cinco, como mucho."
 EDITOR_ERR_DOOR,"Una puerta no está en un tramo recto de muro (dos lados opuestos con muro, los otros dos sin él)."
+EDITOR_ERR_DOOR_BLOCKED,Una puerta tiene una vitrina o un objeto justo al salir por ella.
 EDITOR_ERR_BIG,Una pieza grande no está sobre vitrinas.
 EDITOR_HINT_FLOOR,Clic: suelo (arrastra: sigue) · Clic derecho: borrar · Ctrl+Z: deshacer
 EDITOR_HINT_WALL,Clic: muro ↔ suelo (arrastra: sigue) · Clic derecho: borrar · Ctrl+Z: deshacer
@@ -672,6 +675,7 @@ EDITOR_HINT_STAMP,Clic: pon la sala (borra lo de debajo) · R: girarla · Clic d
 EDITOR_TAB_OPTIONS,OPCIONES DEL MAPA
 EDITOR_KIND_WALL,MURO / SUELO
 EDITOR_KIND_MAIN,PERSONAJES
+EDITOR_KIND_CONSTRUIR,CONSTRUIR
 EDITOR_KIND_OBJECTS,OBJETOS
 EDITOR_KIND_ROOMS,SALAS
 EDITOR_KIND_ACTIONS,HERRAMIENTAS
