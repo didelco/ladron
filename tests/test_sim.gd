@@ -72,6 +72,59 @@ func _init() -> void:
 				bumps += 1
 		check(p.x > 12 and bumps == 0, "entra por la puerta desde y=%.1f (x=%.2f, golpes %d)" % [y0, p.x, bumps])
 
+	print("Puerta interior y guardia")
+	# A wall splitting the hall in two, with one gap marked as an interior
+	# door (like MapFile._doors' fixture): closed, it blocks a guard's feet
+	# and sight exactly like a wall (Museum.apply_doors); this checks it
+	# does not get stuck against it, opens it and walks through instead,
+	# then it swings shut again once the guard has moved well past it.
+	var dm := MapFile.blank(15, 11)
+	for y in range(1, 10):
+		dm.put(Vector2i(7, y), Tiles.WALL)
+	dm.doors.append(Vector2i(7, 5))
+	dm.spawn = Vector2i(2, 5)
+	dm.exit = Vector2i(13, 5)
+	dm.apply()
+	var door := Vector2i(7, 5)
+	check(not Museum.is_door_open(door), "la noche empieza con la puerta cerrada")
+	var dg: Guard = Sim.new_guards(1)[0]
+	dg.x = 3.5
+	dg.y = 5.5
+	dg.dir = 0.0
+	dg.target = Vector2i(12, 5)
+	dg.path = Museum.bfs_path(Vector2i(3, 5), dg.target)
+	check(not dg.path.is_empty(), "hay camino a través de la puerta (la planificación la trata como suelo)")
+	var none_t: Array[Thief] = []
+	var no_noise: Array[SoundEvent] = []
+	var opened := false
+	var crossed := false
+	var t_clock := 1000.0
+	for f in 600:
+		t_clock += 1000.0 / 60
+		Sim.step_guard(dg, none_t, no_noise, t_clock, 1.0 / 60)
+		if Museum.is_door_open(door):
+			opened = true
+		if dg.x > 7.5:
+			crossed = true
+			break
+	check(opened, "el guardia abre la puerta cerrada que tiene en su camino")
+	check(crossed, "y la cruza en vez de quedarse encajado contra ella")
+	# Well clear of it now, and nobody else around: close_doors_behind shuts
+	# it again behind him, the same way the band's own house does for the
+	# player once nobody is left in its way.
+	dg.x = 11.5
+	dg.y = 5.5
+	Sim.close_doors_behind([dg], none_t)
+	check(not Museum.is_door_open(door), "y la cierra tras de sí al alejarse, sin quedar abierta para siempre")
+	# Standing right beside it, it is left open (nobody shuts a door on
+	# whoever is still using it).
+	Museum.set_door_open(door, true)
+	Museum.apply_doors()
+	dg.x = 6.6
+	dg.y = 5.5
+	Sim.close_doors_behind([dg], none_t)
+	check(Museum.is_door_open(door), "pero no mientras el propio guardia sigue junto a ella")
+
 	print("A gatas")
 	open_room()
 	Museum.grid[8 * Museum.w + 10] = Tiles.COVER

@@ -22,6 +22,10 @@ func _init() -> void:
 	_round_trip()
 	_invalid()
 	_on_disk()
+	_doors()
+	_columns()
+	_auto_columns()
+	_guard_traits()
 	_plays()
 	_heist()
 	_story_nights()
@@ -56,7 +60,7 @@ func _story_nights() -> void:
 		Sim.new_map(seed_, night.size, -1, night.shape)
 		Heist.plan_job(n, night.loot, 1, {})
 		var want := _museum_print() + "%s %s" % [Heist.at, Heist.exit]
-		var none: Array[Vector2i] = []
+		var none: Array[GuardSpawn] = []
 		var m := MapFile.from_museum(n, seed_, none)
 		var back := MapFile.from_dict(JSON.parse_string(JSON.stringify(m.to_dict())))
 		back.apply()
@@ -149,14 +153,19 @@ func _invalid() -> void:
 	m.spawn = Vector2i(0, 0)
 	check(m.check().has("EDITOR_ERR_SPAWN"), "la entrada en un muro se rechaza")
 
+	var guard_at := func(t: Vector2i) -> GuardSpawn:
+		var g := GuardSpawn.new()
+		g.at = t
+		return g
+
 	m = good.copy()
-	m.guards.append(Vector2i(7, 5))
+	m.guards.append(guard_at.call(Vector2i(7, 5)))
 	check(m.check().has("EDITOR_ERR_GUARD"), "un guardia sobre una vitrina se rechaza")
 
 	# Painting over things takes them off.
 	m = good.copy()
 	m.piece = Vector2i(7, 5)
-	m.guards.append(Vector2i(3, 3))
+	m.guards.append(guard_at.call(Vector2i(3, 3)))
 	m.put(Vector2i(7, 5), Tiles.FLOOR)
 	m.put(Vector2i(3, 3), Tiles.WALL)
 	check(m.piece == MapFile.NONE and m.guards.is_empty(), "pintar encima quita la pieza y el guardia")
@@ -167,6 +176,154 @@ func _invalid() -> void:
 	check(m.rooms.size() == 1 and m.rooms[0] == Rect2i(2, 2, 9, 7) and m.big.size() == 1 and m.big[0].kind == "dinosaur", "la sala del dinosaurio: su sala y su dinosaurio")
 	check(m.at(Vector2i(6, 1)) == Tiles.WALL and m.at(Vector2i(6, 9)) == Tiles.FLOOR, "la puerta contra el muro exterior se queda en muro; la de dentro, abierta")
 	check(m.check().is_empty(), "y se puede jugar: %s" % [m.check()])
+
+
+## A challenge's own doors (MapFile.doors, like Den's in the band's house):
+## marked on a wall tile, they count as floor to walk to (distances, check),
+## save and load back, and the night begins with them shut (Museum), a
+## guard's sight and everyone's feet seeing a wall until someone opens one.
+func _doors() -> void:
+	var m := MapFile.blank(15, 11)
+	# A wall splitting the room in two, with one gap marked as a door.
+	for y in range(1, 10):
+		m.put(Vector2i(7, y), Tiles.WALL)
+	m.doors.append(Vector2i(7, 5))
+	m.put(Vector2i(9, 5), Tiles.COVER)
+	m.piece = Vector2i(9, 5)
+	m.exit = Vector2i(13, 5)
+	check(m.check().is_empty(), "una sala tras una puerta se puede jugar: %s" % [m.check()])
+	check(m.door_fits(Vector2i(7, 5)), "un tramo recto de muro (dos lados opuestos) vale para una puerta")
+
+	# A corner (an L, not a straight stretch): the tile itself a wall, with
+	# wall to the south and to the east but floor the other two ways — a
+	# door there would cut into the building at an angle, not straight
+	# through.
+	var corner := m.copy()
+	corner.put(Vector2i(5, 5), Tiles.WALL)
+	corner.put(Vector2i(5, 6), Tiles.WALL)
+	corner.put(Vector2i(6, 5), Tiles.WALL)
+	check(not corner.door_fits(Vector2i(5, 5)), "una esquina no vale para una puerta")
+	corner.doors.append(Vector2i(5, 5))
+	check(corner.check().has("EDITOR_ERR_DOOR"), "una puerta en una esquina se rechaza")
+
+	var without := m.copy()
+	without.doors.clear()
+	check(without.check().has("EDITOR_ERR_CLOSED") or without.check().has("EDITOR_ERR_PIECE"), "sin marcarla como puerta, la sala queda incomunicada")
+
+	var back := MapFile.from_dict(JSON.parse_string(JSON.stringify(m.to_dict())))
+	check(back.doors == m.doors, "la puerta se guarda y se lee igual")
+	check(back.at(Vector2i(7, 5)) == Tiles.WALL, "en el plano guardado, un muro más")
+
+	m.put(Vector2i(7, 5), Tiles.FLOOR)
+	check(m.doors.is_empty(), "pintar encima de la puerta la quita")
+	m = back
+
+	m.apply()
+	var door := Vector2i(7, 5)
+	check(Museum.doors == m.doors, "el museo toma las puertas del mapa")
+	check(not Museum.is_door_open(door) and Museum.grid[5 * m.w + 7] == Tiles.WALL, "la noche empieza con la puerta cerrada, un muro más")
+	check(Museum.door_near(Vector2i(6, 5)) == door and Museum.door_near(Vector2i(1, 1)) == MapFile.NONE, "junto a la puerta, esa puerta; lejos, ninguna")
+	check(Museum.blocks_sight(7.5, 5.5), "cerrada, corta la vista")
+	check(Museum.toggle_door(door, []) and Museum.is_door_open(door), "se abre")
+	check(Museum.grid[5 * m.w + 7] == Tiles.FLOOR and not Museum.blocks_sight(7.5, 5.5), "y el hueco deja de ser muro y de cortar la vista")
+	check(not Museum.toggle_door(door, [Vector2(7.5, 5.5)]) and Museum.is_door_open(door), "abierta y con alguien en el umbral, no se cierra")
+	check(Museum.toggle_door(door, []) and not Museum.is_door_open(door), "sin nadie, se cierra")
+	check(Museum.grid[5 * m.w + 7] == Tiles.WALL, "y vuelve a ser muro")
+	check(not Museum.toggle_door(Vector2i(0, 0), []), "una puerta que no existe no hace nada")
+
+
+## An exempt column (MapFile.columns): marked on a wall tile like a door, but
+## it never opens — the plan still reads it as a plain wall (check, save and
+## load, and Museum's grid once the round starts).
+func _columns() -> void:
+	var m := MapFile.blank(15, 11)
+	for y in range(1, 10):
+		m.put(Vector2i(7, y), Tiles.WALL)
+	m.columns.append(Vector2i(7, 5))
+	m.put(Vector2i(9, 5), Tiles.COVER)
+	m.piece = Vector2i(9, 5)
+	m.exit = Vector2i(13, 5)
+	# Unlike a door, a column never opens: the wall it stands on still shuts
+	# the room off completely.
+	check(m.check().has("EDITOR_ERR_CLOSED") or m.check().has("EDITOR_ERR_PIECE"), "una columna no abre paso: la sala tras ella sigue incomunicada")
+
+	var back := MapFile.from_dict(JSON.parse_string(JSON.stringify(m.to_dict())))
+	check(back.columns == m.columns, "la columna se guarda y se lee igual")
+	check(back.at(Vector2i(7, 5)) == Tiles.WALL, "en el plano guardado, un muro más")
+
+	m.put(Vector2i(7, 5), Tiles.FLOOR)
+	check(m.columns.is_empty(), "pintar encima de la columna la quita")
+
+	# A door and a column never share a tile: marking one where the other
+	# stands takes the first away.
+	var mixed := MapFile.blank(15, 11)
+	mixed.put(Vector2i(7, 5), Tiles.WALL)
+	mixed.doors.append(Vector2i(7, 5))
+	mixed.columns.append(Vector2i(7, 5))
+	check(MapFile.from_dict(JSON.parse_string(JSON.stringify(mixed.to_dict()))).columns.is_empty(), "de vuelta del disco, una puerta ya marcada gana: no hay columna a la vez")
+
+	m = back
+	m.apply()
+	var col := Vector2i(7, 5)
+	check(Museum.columns == m.columns, "el museo toma las columnas del mapa")
+	check(Museum.grid[5 * m.w + 7] == Tiles.WALL, "la columna sigue siendo un muro en la rejilla")
+	check(Museum.blocks_sight(7.5, 5.5), "eso solo (Museum.blocks_sight, la pregunta llana) la sigue viendo muro entero")
+
+	# But movement and sight are the real, narrower thing: not a solid tile,
+	# only a small circle at the column's own centre.
+	check(not Museum.blocks_move(7.5, 5.5), "para el movimiento ya no es un cuadrado sólido: Museum.blocks_move la deja pasar (Sim._resolve la trata aparte)")
+	var centred := Sim._resolve(7.5, 5.5, Sim.BODY)
+	var moved := Vector2(centred[0], centred[1]).distance_to(Vector2(7.5, 5.5))
+	check(moved >= Museum.COLUMN_R + Sim.BODY - 0.001, "un cuerpo justo en el centro de la columna es apartado hasta rozar su círculo: %.3f" % moved)
+	var grazing_x := 7.5 + Museum.COLUMN_R + Sim.BODY + 0.05
+	var hug := Sim._resolve(grazing_x, 5.5, Sim.BODY)
+	check(is_equal_approx(hug[0], grazing_x) and is_equal_approx(hug[1], 5.5), "pero pegado al borde de la casilla, sin tocar el círculo de la columna, no se le empuja: puede rodearla")
+	check(not Museum.has_line_of_sight(6.0, 5.5, 9.0, 5.5), "una mirada que cruza el centro de la columna sí se corta")
+	var graze_y := 5.5 + Museum.COLUMN_R + 0.1
+	check(Museum.has_line_of_sight(6.0, graze_y, 9.0, graze_y), "una que solo roza la casilla, fuera del círculo, no se corta")
+
+
+## A wall tile nobody marked, with no other wall touching it (MapFile.exempt_
+## walls): the same treatment a hand-marked column gets, without anyone
+## marking it — Museum.load_grid is where every museum (generated, from the
+## editor, or a story night's) picks these up on its own.
+func _auto_columns() -> void:
+	var m := MapFile.blank(15, 11)
+	var lone := Vector2i(7, 5)
+	m.put(lone, Tiles.WALL)
+	m.put(Vector2i(9, 5), Tiles.COVER)
+	m.piece = Vector2i(9, 5)
+	m.exit = Vector2i(13, 5)
+	check(m.columns.is_empty(), "nadie la marcó a mano")
+	check(MapFile.exempt_walls(m.grid, m.outside, m.w, m.h) == [lone], "un muro suelto, sin otro muro pegado, se detecta solo")
+	check(m.check().is_empty(), "no corta ningún paso: se puede jugar igual: %s" % [m.check()])
+	m.apply()
+	check(Museum.columns.has(lone), "el museo la trata como columna sin que nadie la marcara")
+	check(Museum.grid[lone.y * m.w + lone.x] == Tiles.WALL, "y sigue siendo un muro de verdad en la rejilla")
+
+	# Pegado a otro muro (una pared normal, no suelta) no cuenta.
+	var wall_pair := MapFile.blank(15, 11)
+	for y in [4, 5]:
+		wall_pair.put(Vector2i(7, y), Tiles.WALL)
+	check(MapFile.exempt_walls(wall_pair.grid, wall_pair.outside, wall_pair.w, wall_pair.h).is_empty(), "un muro pegado a otro no es una columna")
+
+	# El borde exterior del edificio nunca se vuelve columna: fuera de la
+	# rejilla, o donde `out` diga que no hay edificio, cuenta como "no hay
+	# muro" — así que un muro suelto de verdad (sin otro muro al lado) sigue
+	# siendo el único que se detecta.
+	var w := 7
+	var h := 3
+	var grid_ := PackedInt32Array()
+	grid_.resize(w * h)
+	grid_.fill(Tiles.FLOOR)
+	var out_ := PackedByteArray()
+	out_.resize(w * h)
+	grid_[1 * w + 0] = Tiles.WALL # en el borde de la rejilla misma
+	grid_[1 * w + 3] = Tiles.WALL # suelto de verdad, en medio
+	out_[1 * w + 5] = 1 # "fuera del edificio" marcado a mano, dentro de la rejilla
+	grid_[1 * w + 6] = Tiles.WALL # pegado a ese "fuera": tampoco cuenta
+	var found := MapFile.exempt_walls(grid_, out_, w, h)
+	check(found == [Vector2i(3, 1)], "solo el muro realmente suelto por dentro se detecta; el del borde de la rejilla y el pegado a 'fuera' no (%s)" % [found])
 
 
 func _on_disk() -> void:
@@ -186,6 +343,41 @@ func _on_disk() -> void:
 		check(built.check().is_empty(), "el reto de serie %s es válido: %s" % [built.name, built.check()])
 
 
+## A guard's archetype, traits, stance and watch (GuardSpawn): saved and
+## read back the same, and scale() stacks its traits onto one multiplier.
+func _guard_traits() -> void:
+	var m := MapFile.blank(15, 11)
+	var g := GuardSpawn.new()
+	g.at = Vector2i(3, 3)
+	g.dir = PI * 0.5
+	g.archetype = "dormilon"
+	g.view_level = 2
+	g.hearing_level = 1
+	g.speed_level = 0
+	g.stance = "post"
+	g.watch = "room"
+	m.guards.append(g)
+
+	var back := MapFile.from_dict(JSON.parse_string(JSON.stringify(m.to_dict())))
+	var bg: GuardSpawn = back.guards[0]
+	check(bg.at == g.at and is_equal_approx(bg.dir, g.dir) and bg.archetype == g.archetype
+		and bg.view_level == g.view_level and bg.hearing_level == g.hearing_level and bg.speed_level == g.speed_level
+		and bg.stance == g.stance and bg.watch == g.watch,
+		"arquetipo, niveles, guardia fija y a qué vigila se guardan igual: %s" % [[bg.at, bg.dir, bg.archetype, bg.view_level, bg.hearing_level, bg.speed_level, bg.stance, bg.watch]])
+
+	check(is_equal_approx(g.scale("speed"), 0.7), "cansado (nivel 0) en la velocidad (%.3f)" % g.scale("speed"))
+	check(is_equal_approx(g.scale("hearing"), 0.8), "duro de oído (nivel 1) en el oído (%.3f)" % g.scale("hearing"))
+	check(g.scale("view") == 1.0, "vista en su nivel normal (2) no cambia nada")
+	g.view_level = 0
+	check(is_equal_approx(g.scale("view"), 0.6), "un tercer nivel se ajusta sin tocar los otros dos (%.3f)" % g.scale("view"))
+
+	# A map saved before this existed: guards keep patrolling, at the plain
+	# middle of every slider.
+	var old := MapFile.from_dict({"rows": ["...", "...", "..."], "guards": [[1, 1]]})
+	check(old.guards[0].stance == "round" and old.guards[0].view_level == 2 and old.guards[0].hearing_level == 2 and old.guards[0].speed_level == 2,
+		"un guardia guardado antes de esto sigue en ronda, en el nivel normal de todo")
+
+
 ## A map with its piece, its door and two guards placed by hand, played as
 ## the game does it (Main._lay_out): the job goes where it says.
 func _plays() -> void:
@@ -200,7 +392,11 @@ func _plays() -> void:
 		for x in m.w:
 			if reach[y * m.w + x] > 12:
 				open.append(Vector2i(x, y))
-	m.guards = [open[0], open[-1]]
+	var guard_at := func(t: Vector2i) -> GuardSpawn:
+		var g := GuardSpawn.new()
+		g.at = t
+		return g
+	m.guards = [guard_at.call(open[0]), guard_at.call(open[-1])]
 	m.props = [{"kind": "bust", "at": open[open.size() / 2]}]
 	check(m.check().is_empty(), "el mapa colocado a mano es válido: %s" % [m.check()])
 
@@ -213,7 +409,7 @@ func _plays() -> void:
 	var guards := Sim.new_guards(Sim.guard_count(Museum.size_name))
 	Sim.place_guards(guards, m.guards)
 	Heist.plan_job(1, {}, 1, m.job())
-	check(guards.size() == 2 and Vector2i(int(guards[0].x), int(guards[0].y)) == m.guards[0], "dos guardias, donde dice el mapa")
+	check(guards.size() == 2 and Vector2i(int(guards[0].x), int(guards[0].y)) == m.guards[0].at, "dos guardias, donde dice el mapa")
 	check(Heist.at == m.piece, "la pieza en su vitrina")
 	var wall := Heist.exit + Heist.exit_face
 	check(Heist.exit == m.exit and Museum.is_wall(wall.x + 0.5, wall.y + 0.5) and Museum.is_outside(wall.x + Heist.exit_face.x, wall.y + Heist.exit_face.y), "la puerta donde dice el mapa, en el muro exterior")

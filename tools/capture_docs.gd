@@ -642,7 +642,9 @@ func _objects() -> void:
 		m.grid[1 * m.w + 1] = Tiles.COVER
 		m.piece = Vector2i(1, 1)
 		for g in [Vector2i(9, 9), Vector2i(8, 9), Vector2i(9, 8)]:
-			m.guards.append(g)
+			var spawn := GuardSpawn.new()
+			spawn.at = g
+			m.guards.append(spawn)
 		var at := Vector2i(5, 5)
 		var tiles := Vector2i(1, 1)
 		if what == "prop":

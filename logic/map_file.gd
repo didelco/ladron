@@ -78,8 +78,28 @@ var loot := {}
 ## what stands on a case, where chosen by hand: tile to a piece (Themes.is_piece:
 ## one of MuseumView.EXHIBITS or a theme's model)
 var exhibits := {}
-## where each guard starts, in order
-var guards: Array[Vector2i] = []
+## where each guard starts, in order, and which way it looks at first
+var guards: Array[GuardSpawn] = []
+## interior doors that open and close (like Den's, in the band's house):
+## a gap in a wall, one tile, marked in the editor; stored as a plain wall
+## tile (CHARS) until the night begins and Museum shuts them (Museum.doors,
+## Museum.apply_doors). Not to be confused with `exit`, the way out.
+var doors: Array[Vector2i] = []
+## exempt columns, one tile each, marked on a wall tile in the editor like a
+## door (same pattern: stored as a plain wall tile, CHARS has no letter for
+## one): unlike a door it never opens, it just stands there instead of a
+## full wall block — MuseumView draws it lighter, its own shape, in the
+## style its theme picks (Themes.column_style), instead of the solid wall
+## mass. Collision and sight stay simple: the tile still blocks like any
+## other wall (Museum treats it the same), only the look is a slender
+## column with room round it inside its own tile, not the true free-standing
+## obstacle a real column would be (docs/pendiente_general.md has the note).
+var columns: Array[Vector2i] = []
+## paintings hung by hand: {"at": Vector2i (the wall tile, its left end),
+## "span": 1, 2 or 3 (a plain frame, a big one, or a triptych — matches
+## MuseumView.PAINTING/BIG_PAINTING/TRIPTYCH)}; empty, and MuseumView's
+## own algorithm hangs its own (MuseumView._paintings), same as always.
+var paintings: Array[Dictionary] = []
 ## things to knock over, stood by hand: {"kind": a Props.KINDS, "at": Vector2i};
 ## none, and the game stands its own
 var props: Array[Dictionary] = []
@@ -173,8 +193,14 @@ func resized(width: int, height: int) -> MapFile:
 	m.piece = piece if keep.has_point(piece) else NONE
 	m.exit = exit if keep.has_point(exit) else NONE
 	for g in guards:
-		if keep.has_point(g):
-			m.guards.append(g)
+		if keep.has_point(g.at):
+			m.guards.append(g.duplicate())
+	for d in doors:
+		if keep.has_point(d):
+			m.doors.append(d)
+	for c in columns:
+		if keep.has_point(c):
+			m.columns.append(c)
 	for p in props:
 		if keep.has_point(p.at):
 			m.props.append(p.duplicate())
@@ -215,10 +241,13 @@ func put(t: Vector2i, tile: int) -> void:
 		if piece == t:
 			piece = NONE
 	if grid[i] != Tiles.FLOOR:
-		guards = guards.filter(func(g): return g != t)
+		guards = guards.filter(func(g): return g.at != t)
 		props = props.filter(func(p): return p.at != t)
 		if exit == t:
 			exit = NONE
+	if grid[i] != Tiles.WALL:
+		doors = doors.filter(func(d): return d != t)
+		columns = columns.filter(func(c): return c != t)
 
 
 ## Where there is no building, worked out from the walls: wall that reaches
@@ -264,7 +293,7 @@ func stamp(rows: Array, corner: Vector2i, gallery: bool) -> void:
 	rooms = rooms.filter(func(r): return not r.intersects(area))
 	big = big.filter(func(b): return not (b.rect as Rect2i).intersects(area))
 	props = props.filter(func(p): return not area.has_point(p.at))
-	guards = guards.filter(func(g): return not area.has_point(g))
+	guards = guards.filter(func(g): return not area.has_point(g.at))
 	for t in exhibits.keys():
 		if area.has_point(t):
 			exhibits.erase(t)
@@ -347,6 +376,18 @@ func door_face(t: Vector2i) -> Vector2i:
 	return Vector2i.ZERO
 
 
+## Whether an interior door could sit here: wall on two opposite sides,
+## floor (or another door, which is a plain wall tile too until the night
+## starts) on the other two — a straight stretch of wall cut through, not a
+## corner or a dead end. The only shape a gap can really work as a doorway.
+func door_fits(t: Vector2i) -> bool:
+	var n := at(t + Vector2i(0, -1)) == Tiles.WALL
+	var s := at(t + Vector2i(0, 1)) == Tiles.WALL
+	var e := at(t + Vector2i(1, 0)) == Tiles.WALL
+	var w := at(t + Vector2i(-1, 0)) == Tiles.WALL
+	return (n and s and not e and not w) or (e and w and not n and not s)
+
+
 ## Floor right against the outer wall, where you come in from outside: as
 ## MapGen marks it (next to a tile of the footprint's edge).
 func ring() -> PackedByteArray:
@@ -372,6 +413,36 @@ func _interior(t: Vector2i) -> bool:
 	return true
 
 
+## Walls that stand alone — no other Tiles.WALL touching them north, south,
+## east or west — found straight on a plain grid (no MapFile at hand): a
+## stray wall tile the generator or an editor stamp (EDITOR_T_COLUMNS) left
+## as one bare `#` where a column was meant, or a real one from a story
+## night's museum. MuseumView draws these like a hand-marked column
+## (MapFile.columns), not a solid wall block, wherever this runs
+## (Museum.load_grid, so it covers every museum the same way, and the
+## editor's own plan while it draws).
+##
+## Off the grid, or where `out` says there is no building, counts as "no
+## wall there": so the building's outer wall — always backed by more wall
+## running along it — is never mistaken for one of these; only a tile with
+## floor or the outside on all four sides is.
+static func exempt_walls(grid_: PackedInt32Array, out_: PackedByteArray, width: int, height: int) -> Array[Vector2i]:
+	var is_wall := func(x: int, y: int) -> bool:
+		return x >= 0 and y >= 0 and x < width and y < height and grid_[y * width + x] == Tiles.WALL
+	var is_outside := func(x: int, y: int) -> bool:
+		return x < 0 or y < 0 or x >= width or y >= height or out_[y * width + x] == 1
+	var found: Array[Vector2i] = []
+	for y in height:
+		for x in width:
+			if not is_wall.call(x, y):
+				continue
+			if is_outside.call(x - 1, y) or is_outside.call(x + 1, y) or is_outside.call(x, y - 1) or is_outside.call(x, y + 1):
+				continue
+			if not (is_wall.call(x - 1, y) or is_wall.call(x + 1, y) or is_wall.call(x, y - 1) or is_wall.call(x, y + 1)):
+				found.append(Vector2i(x, y))
+	return found
+
+
 ## Steps from a tile to every floor tile, walking; -1 where it cannot go.
 func distances(from: Vector2i) -> PackedInt32Array:
 	var d := PackedInt32Array()
@@ -387,7 +458,9 @@ func distances(from: Vector2i) -> PackedInt32Array:
 		head += 1
 		for dir in DIRS:
 			var n := c + dir
-			if at(n) != Tiles.FLOOR or d[n.y * w + n.x] >= 0:
+			# A door counts as floor to walk to: shut for the night's start
+			# (a plain wall on the stored plan), but not a wall for good.
+			if (at(n) != Tiles.FLOOR and not doors.has(n)) or d[n.y * w + n.x] >= 0:
 				continue
 			d[n.y * w + n.x] = d[c.y * w + c.x] + 1
 			queue.append(n)
@@ -457,11 +530,15 @@ func check() -> Array[String]:
 	elif door_spots(reach).is_empty():
 		errors.append("EDITOR_ERR_EXIT")
 	for g in guards:
-		if at(g) != Tiles.FLOOR or reach[g.y * w + g.x] < 0:
+		if at(g.at) != Tiles.FLOOR or reach[g.at.y * w + g.at.x] < 0:
 			errors.append("EDITOR_ERR_GUARD")
 			break
 	if guards.size() > MAX_GUARDS or guard_count > MAX_GUARDS:
 		errors.append("EDITOR_ERR_GUARDS")
+	for d in doors:
+		if not door_fits(d):
+			errors.append("EDITOR_ERR_DOOR")
+			break
 	for b in big:
 		var r: Rect2i = b.rect
 		for y in range(r.position.y, r.end.y):
@@ -540,7 +617,7 @@ func apply() -> void:
 	var big_copy: Array[Dictionary] = []
 	for b in big:
 		big_copy.append(b.duplicate())
-	Museum.load_grid(seed, w, h, grid.duplicate(), outside.duplicate(), ring(), spawn, big_copy, rooms.duplicate(), rand)
+	Museum.load_grid(seed, w, h, grid.duplicate(), outside.duplicate(), ring(), spawn, big_copy, rooms.duplicate(), rand, doors.duplicate(), columns.duplicate(), paintings.duplicate())
 
 
 ## Stand the map's props, if it has any: true when it did.
@@ -579,7 +656,12 @@ func to_dict() -> Dictionary:
 		"spawn": pair.call(spawn),
 		"piece": pair.call(piece),
 		"exit": pair.call(exit),
-		"guards": guards.map(pair),
+		"guards": guards.map(func(g: GuardSpawn) -> Dictionary: return {"x": g.at.x, "y": g.at.y, "dir": g.dir,
+			"stance": g.stance, "watch": g.watch, "archetype": g.archetype,
+			"view": g.view_level, "hearing": g.hearing_level, "speed": g.speed_level}),
+		"doors": doors.map(pair),
+		"columns": columns.map(pair),
+		"paintings": paintings.map(func(p): return {"span": p.span, "at": pair.call(p.at)}),
 		"props": props.map(func(p): return {"kind": p.kind, "at": pair.call(p.at)}),
 		"loot": loot,
 		"exhibits": exhibits.keys().map(func(t): return {"kind": exhibits[t], "at": pair.call(t)}),
@@ -623,7 +705,35 @@ static func from_dict(d: Variant) -> MapFile:
 	m.piece = pair.call(d.get("piece"))
 	m.exit = pair.call(d.get("exit"))
 	for g in d.get("guards", []):
-		m.guards.append(pair.call(g))
+		var spawn := GuardSpawn.new()
+		if g is Dictionary:
+			spawn.at = Vector2i(int(g.get("x", -1)), int(g.get("y", -1)))
+			spawn.dir = float(g.get("dir", PI))
+			spawn.stance = "post" if String(g.get("stance", "")) == "post" else "round"
+			var watch := String(g.get("watch", ""))
+			spawn.watch = watch if watch in ["room", "piece"] else ""
+			var archetype := String(g.get("archetype", ""))
+			spawn.archetype = archetype if GuardSpawn.ARCHETYPES.has(archetype) else ""
+			spawn.view_level = clampi(int(g.get("view", 2)), 0, 4)
+			spawn.hearing_level = clampi(int(g.get("hearing", 2)), 0, 4)
+			spawn.speed_level = clampi(int(g.get("speed", 2)), 0, 4)
+		else:
+			spawn.at = pair.call(g)
+		m.guards.append(spawn)
+	for dr in d.get("doors", []):
+		var dt: Vector2i = pair.call(dr)
+		if m.inside(dt) and m.at(dt) == Tiles.WALL:
+			m.doors.append(dt)
+	for cr in d.get("columns", []):
+		var ct: Vector2i = pair.call(cr)
+		if m.inside(ct) and m.at(ct) == Tiles.WALL and not m.doors.has(ct):
+			m.columns.append(ct)
+	for pt in d.get("paintings", []):
+		if pt is Dictionary:
+			var at: Vector2i = pair.call(pt.get("at"))
+			var span := clampi(int(pt.get("span", 1)), 1, 3)
+			if m.inside(at) and m.at(at) == Tiles.WALL:
+				m.paintings.append({"span": span, "at": at})
 	for p in d.get("props", []):
 		if p is Dictionary and Props.KINDS.has(p.get("kind", "")):
 			m.props.append({"kind": String(p.kind), "at": pair.call(p.get("at"))})
@@ -701,7 +811,7 @@ static func for_night(n: int) -> MapFile:
 ## The museum being played, as a map: the plan, its galleries and big pieces,
 ## the way in, the piece and the door, the guards where they start, the things
 ## to knock over and the empty pedestals. For a story night (n), to touch up.
-static func from_museum(n: int, seed_: int, guard_tiles: Array[Vector2i]) -> MapFile:
+static func from_museum(n: int, seed_: int, guard_spawns: Array[GuardSpawn]) -> MapFile:
 	var m := MapFile.new()
 	m.night = n
 	m.seed = seed_
@@ -717,7 +827,14 @@ static func from_museum(n: int, seed_: int, guard_tiles: Array[Vector2i]) -> Map
 	m.spawn = Museum.spawn
 	m.piece = Heist.at
 	m.exit = Heist.exit
-	m.guards = guard_tiles.duplicate()
+	m.guards = guard_spawns.duplicate()
+	# Doors store as a plain wall (CHARS has no letter for one): whichever
+	# way this one stood when the snapshot was taken.
+	m.doors = Museum.doors.duplicate()
+	for t in m.doors:
+		m.grid[t.y * m.w + t.x] = Tiles.WALL
+	m.columns = Museum.columns.duplicate()
+	m.paintings = Museum.paintings.duplicate()
 	for p in Props.list:
 		m.props.append({"kind": p.kind, "at": p.tile})
 	for t in MuseumView.exhibits:
