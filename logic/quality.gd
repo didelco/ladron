@@ -22,6 +22,14 @@ static func is_low() -> bool:
 	return level == "low"
 
 
+## Whether the game is running under the Compatibility (OpenGL 3.3) renderer,
+## where volumetric fog, SSAO, SSIL, SSR and depth of field do not exist —
+## Quality.apply_environment/apply_light turn them off regardless of `level`,
+## whether the player picked "Alta" or not, so nothing warns or misbehaves.
+static func is_compatibility() -> bool:
+	return RenderingServer.get_current_rendering_method() == "gl_compatibility"
+
+
 ## A level as saved, or "high" for anything else.
 static func valid_level(v: Variant) -> String:
 	return v if v is String and v in LEVELS else LEVELS[0]
@@ -59,10 +67,10 @@ static func setup_viewport(vp: Viewport) -> void:
 	vp.scaling_3d_scale = scale / 100.0
 
 
-## The night's environment: the costly effects on in high, off in low. The
-## look of each (radius, steps, density...) is the caller's, set once.
+## The night's environment: the costly effects on in high, off in low, and
+## always off in Compatibility (none of the four exist there — Forward+ only).
 static func apply_environment(env: Environment) -> void:
-	var on := not is_low()
+	var on := not is_low() and not is_compatibility()
 	env.volumetric_fog_enabled = on
 	env.ssao_enabled = on
 	env.ssil_enabled = on

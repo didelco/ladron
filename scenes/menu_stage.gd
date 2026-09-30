@@ -152,6 +152,10 @@ func _build() -> void:
 func _frame(span: float, lift: float) -> void:
 	var distance := span * 0.5 / tan(deg_to_rad(FOV * 0.5))
 	_cam.position = Vector3(0, lift, 0) + _cam.basis.z * distance
+	# Depth of field only exists in Forward+/Mobile; in Compatibility the
+	# card just stays sharp edge to edge instead of warning every frame.
+	if Quality.is_compatibility():
+		return
 	var dof := CameraAttributesPractical.new()
 	dof.dof_blur_far_enabled = true
 	dof.dof_blur_far_distance = distance + span * 0.45

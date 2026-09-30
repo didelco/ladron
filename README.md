@@ -391,9 +391,20 @@ Para pasar a 0.2, se cambia `BASE` en `tools/version.py`.
 
 ## Exportar
 
-`export_presets.cfg` trae tres configuraciones: **Windows Desktop** (x86_64), **macOS** (universal,
-firma ad-hoc y sin notarizar, así que no hace falta certificado) y **Linux** (x86_64). Todo sale en
-`build/` (ignorado por git); `tests/` y `brain/` no se incluyen. El icono es `assets/icon.png`.
+`export_presets.cfg` trae tres configuraciones principales: **Windows Desktop** (x86_64), **macOS**
+(universal, firma ad-hoc y sin notarizar, así que no hace falta certificado) y **Linux** (x86_64),
+las tres en Forward+ (Vulkan/Metal). Todo sale en `build/` (ignorado por git); `tests/` y `brain/`
+no se incluyen. El icono es `assets/icon.png`.
+
+Además hay un **"modo clásico"** por plataforma (**Windows Desktop (modo clásico)**, **macOS (modo
+clásico)**, **Linux (modo clásico)**), para ordenadores que no llegan a Vulkan 1.2 ni Metal (GPUs de
+2010 en adelante): arrancan en Compatibility (OpenGL 3.3) sin tocar nada a mano. El mecanismo es un
+feature tag de exportación: cada preset clásico lleva `custom_features="compatibility"` y
+`project.godot` trae `[rendering] renderer/rendering_method.compatibility="gl_compatibility"`, que
+Godot aplica solo a los builds con esa etiqueta. Se pierden niebla volumétrica, SSAO, SSIL y SSR
+(el ajuste de calidad "Baja" ya los apaga; en modo clásico se apagan igual aunque el jugador tenga
+puesta "Alta"); el resto del juego es el mismo. Para probarlo sin exportar:
+`godot --path . --rendering-method gl_compatibility`.
 
 Primero hay que instalar las plantillas de exportación de 4.7.2 una vez: en el editor,
 **Editor → Administrar plantillas de exportación → Descargar e instalar**
@@ -404,6 +415,10 @@ Primero hay que instalar las plantillas de exportación de 4.7.2 una vez: en el 
 godot --headless --export-release "Windows Desktop" build/windows/NinjaKarma.exe
 godot --headless --export-release "macOS" build/macos/NinjaKarma.zip
 godot --headless --export-release "Linux" build/linux/NinjaKarma.x86_64
+# modo clásico (Compatibility), igual pero con el nombre del preset:
+godot --headless --export-release "Windows Desktop (modo clásico)" build/windows/NinjaKarma-classico.exe
+godot --headless --export-release "macOS (modo clásico)" build/macos/NinjaKarma-classico.zip
+godot --headless --export-release "Linux (modo clásico)" build/linux/NinjaKarma-classico.x86_64
 ```
 
 (las carpetas `build/windows`, `build/macos` y `build/linux` tienen que existir: `mkdir -p` antes).
