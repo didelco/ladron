@@ -718,16 +718,13 @@ func _bar_text(font: Font, x: float, y: float, words: String, size: int, colour:
 ## The bar over the town, in the order of the story: the hideout and the five
 ## museums as cards (a disc in the museum's colour with its number, its
 ## stars), the one picked lit and raised, the shut ones dim with a padlock,
-## the next to do tagged SIGUIENTE; and a line from the one picked to its
-## place on the map behind.
+## and the next to do tagged SIGUIENTE; its place on the map behind ringed.
 func _draw_bar() -> void:
 	if state != "city" or _cards.is_empty():
 		return
 	var font := _bar.get_theme_default_font()
 	var pulse := 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.006)
 	var at := stage.stop_point(stage.picked)
-	var top: Rect2 = _cards[stage.picked]
-	_bar.draw_line(Vector2(top.get_center().x, top.position.y), at, Color(Hud.GLOW, 0.55), 3.0, true)
 	_bar.draw_arc(at, 34.0 + 6.0 * pulse, 0.0, TAU, 40, Color(Hud.GLOW, 0.9), 4.0, true)
 	for m in _cards:
 		var r: Rect2 = _cards[m]

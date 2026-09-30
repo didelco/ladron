@@ -43,7 +43,7 @@ const YAW := 20.0
 ## the next two up in the high town, one above the other; across it to the
 ## fourth; and over the second bridge to the last, by the water again.
 const MUSEUM_SPOTS := [Vector2(-12, -7.5), Vector2(-7, 13), Vector2(-20, 32), Vector2(15, 13), Vector2(20, -7.5)]
-const HIDEOUT_SPOT := Vector2(24, -16)
+const HIDEOUT_SPOT := Vector2(-21, -16.5)
 ## The hideout is one more thing to pick in the town, after the museums
 ## (not -1: that is "none" for Main).
 const HIDEOUT := 5

@@ -574,13 +574,19 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 ##                                                    the map, the piece (an id:
 ##                                                    set_picture changes it)
 ##   {"list": [{"text", "call"?, "open", "colour"?, "selected"?} or {"head": text}],
-##     "width"?, "height"?}                           lines to go down with the
+##     "width"?, "height"?, "right_id"?}                lines to go down with the
 ##                                                    arrows, in a box that scrolls:
 ##                                                    landing on one calls "call",
-##                                                    pressing it "open" (_list)
-##   {"buttons": [{"text", "call", "icon"?, "colour"?}], "row": bool, "focus"?: int}
-##                                                    text buttons, all one width
-##                                                    ("step" for "call": a setting, _stepper)
+##                                                    pressing it "open" (_list);
+##                                                    right_id: every line's
+##                                                    right arrow reaches a
+##                                                    button elsewhere with
+##                                                    that "id" (_resolve_right_links)
+##   {"buttons": [{"text", "call", "icon"?, "colour"?, "id"?}], "row": bool,
+##     "focus"?: int, "align"?: "left"}                 text buttons, all one width
+##                                                    ("step" for "call": a setting, _stepper);
+##                                                    id: for a list elsewhere to
+##                                                    reach right into it (right_id)
 ##   {"cards": [{"title", "text"?, "picture", "call", "colour"?, "selected"?,
 ##     "focus"?}], "width"?: int}                     big picture cards in a row
 ##   {"legend": [keys], "thieves": [Color], "loot": Color}
@@ -2129,11 +2135,14 @@ static func live_map(thieves: Array[Thief], colours: Array) -> Image:
 
 ## The plan on parchment, before the job: the same map, with the route in
 ## ink dots, where you come in (the thieves' icons) and where each guard
-## starts (a red cross).
-static func plan_map(guards: Array[Guard], colours: Array) -> Image:
+## starts (a red cross). pins: for the plan looked round pin by pin
+## (PlanTalk), whose chinchetas already mark the guards and the way in —
+## so the picture under them does not print its own, one on top of the
+## other.
+static func plan_map(guards: Array[Guard], colours: Array, pins := false) -> Image:
 	var none: Array[Thief] = []
 	home_map = false
-	return _draw_map(none, [], guards, colours)
+	return _draw_map(none, [], guards, colours, pins)
 
 
 ## Pixels a tile: the plan fills about MAP_WIDTH whatever the museum's size,
@@ -2167,7 +2176,7 @@ const ICON_PANEL := [
 ]
 
 
-static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard], start_colours: Array) -> Image:
+static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard], start_colours: Array, pins := false) -> Image:
 	var s := clampi(int(MAP_WIDTH / Museum.w), 8, 32)
 	var img := Image.create(Museum.w * s, Museum.h * s, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
@@ -2227,15 +2236,18 @@ static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard
 		gem.call(mid.call(Heist.at), 20)
 	elif Heist.dropped != Vector2.INF:
 		gem.call(Heist.dropped, 16)
-	for g in guards:
-		_square(img, at.call(Vector2(g.x, g.y)), 12, MAP_GUARD)
+	if not pins:
+		for g in guards:
+			_square(img, at.call(Vector2(g.x, g.y)), 12, MAP_GUARD)
 	# The way out: the kunai that points the way in play, green, through the
 	# door and pointing out.
 	_kunai(img, at.call(mid.call(Heist.exit) + Vector2(Heist.exit_face) * 0.3), Vector2(Heist.exit_face), 1.6, C.green)
-	# Where you come in: a dot for each thief who will, side by side.
-	for i in start_colours.size():
-		var off := Vector2((i - (start_colours.size() - 1) / 2.0) * 34.0 / s, 0)
-		_dot(img, at.call(mid.call(Heist.start) + off), 14, start_colours[i], MAP_INK)
+	# Where you come in: a dot for each thief who will, side by side. Not
+	# with the pins: the "start" chincheta already says as much.
+	if not pins:
+		for i in start_colours.size():
+			var off := Vector2((i - (start_colours.size() - 1) / 2.0) * 34.0 / s, 0)
+			_dot(img, at.call(mid.call(Heist.start) + off), 14, start_colours[i], MAP_INK)
 	for i in thieves.size():
 		var p := thieves[i]
 		if p.out:

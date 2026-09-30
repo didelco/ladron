@@ -6,10 +6,10 @@ extends Node3D
 ## The generative: a new museum every time, at the difficulty and size you
 ## pick. Either with one thief or two; with two, the job takes both (Heist).
 ##
-## Screens: title (pick the mode; for the story and the generative, how many
-## thieves in a bubble out of its card) → the mode's menu (the story: the
-## town's map, a museum and its night; the generative: difficulty and size)
-## → [prologue] → loot (the piece and its story) → mission
+## Screens: title (pick the mode; the story asks first how many thieves, in
+## a bubble out of its card) → the mode's menu (the story: the town's map, a
+## museum and its night; the generative: difficulty, size, theme and how
+## many thieves) → [prologue] → loot (the piece and its story) → mission
 ## (the plan, a map) → countdown → playing ⇄ paused → caught, or escaped with the piece (next level). No
 ## clock: a round lasts as long as it takes. The loop is the web version's Game.tsx tick: thieves and their
 ## noise, the job and its alarm, guards, the yell, the warning, keeping apart,
@@ -219,7 +219,7 @@ func _show_title(pick := "") -> void:
 	var on := pick if pick != "" else "story"
 	hud.show_menu([
 		{"cards": [
-			{"title": Text.t("MENU_GENERATIVE"), "text": Text.t("MENU_GENERATIVE_TEXT"), "stage": MenuStage.make("generative"), "call": _pick_players.bind("generative"), "colour": Hud.C.gold, "id": "generative", "focus": on == "generative"},
+			{"title": Text.t("MENU_GENERATIVE"), "text": Text.t("MENU_GENERATIVE_TEXT"), "stage": MenuStage.make("generative"), "call": _show_generative_menu, "colour": Hud.C.gold, "id": "generative", "focus": on == "generative"},
 			{"title": Text.t("MENU_STORY"), "text": Text.t("MENU_STORY_TEXT"), "stage": MenuStage.make("story"), "call": _pick_players.bind("story"), "colour": Hud.C.safe, "id": "story", "focus": on == "story"},
 			{"title": Text.t("MENU_CHALLENGE"), "text": Text.t("MENU_CHALLENGE_TEXT"), "stage": MenuStage.make("museum:large"), "call": challenges.show_menu, "colour": Hud.C.green},
 		], "width": 270, "arrows": true},
@@ -230,7 +230,9 @@ func _show_title(pick := "") -> void:
 		], "row": true, "small": true, "width": 260},
 	], "title")
 	hud.show_version()
-	if pick != "":
+	# Only the story asks first how many thieves, in a bubble out of its
+	# card; the generative picks that among its own settings now.
+	if pick == "story":
 		_pick_players(pick)
 
 
@@ -399,7 +401,7 @@ func _plan_data() -> Dictionary:
 	var beats := PlanBeats.build(level, players, guards)
 	return {
 		"n": level,
-		"image": Hud.plan_map(guards, _thief_colours().slice(0, thieves.size())),
+		"image": Hud.plan_map(guards, _thief_colours().slice(0, thieves.size()), true),
 		"tile_px": float(clampi(int(Hud.MAP_WIDTH / Museum.w), 8, 32)),
 		"beats": beats,
 		"marks": PlanBeats.marks(beats, guards),
@@ -448,15 +450,15 @@ func _tour_go(_n: int) -> void:
 	_start_countdown(Hud.FADE_S)
 
 
-## The generative mode's settings: three big cards, the difficulty, the
-## museum's size and its theme, each showing the one in force (its diorama
-## and its name), framed like every other menu's; pressing one pops a bubble
-## of its choices out of it (_pick_setting), like the title's how many
-## thieves. Under them, EMPEZAR, with the focus, plays with the thieves
-## picked in the title's bubble (_pick_players); back goes to that bubble,
-## to change how many.
-## on: the card to come back to ("difficulty", "size" or "theme"), just set
-## in its bubble; "" starts on EMPEZAR.
+## The generative mode's settings: four big cards, the difficulty, the
+## museum's size, its theme and how many thieves, each showing the one in
+## force (its diorama and its name), framed like every other menu's;
+## pressing one pops a bubble of its choices out of it (_pick_setting, or
+## for the thieves _pick_generative_players), like the title's how many
+## thieves used to, before the story picked them (_pick_players still does,
+## there). Under them, EMPEZAR, with the focus.
+## on: the card to come back to ("difficulty", "size", "theme" or
+## "players"), just set in its bubble; "" starts on EMPEZAR.
 func _show_generative_menu(on := "") -> void:
 	hud.backdrop(Hud.SPOTS.generative)
 	phase = "generative"
@@ -469,6 +471,8 @@ func _show_generative_menu(on := "") -> void:
 				"call": _pick_setting.bind("size"), "id": "size", "focus": on == "size"},
 			{"title": Text.t("MENU_THEME"), "text": Text.t(THEME_NAMES[theme]), "stage": MenuStage.make("theme:" + theme),
 				"call": _pick_setting.bind("theme"), "id": "theme", "focus": on == "theme"},
+			{"title": Text.t("MENU_PLAYERS"), "text": "%dP" % players, "stage": MenuStage.make("players:%d" % players),
+				"call": _pick_generative_players, "id": "players", "focus": on == "players"},
 		], "width": 230},
 		{"gap": 24},
 		{"buttons": [
@@ -526,6 +530,27 @@ func _set_setting(which: String, k: String) -> void:
 			theme = k
 	options.save()
 	_show_generative_menu(which)
+
+
+## How many thieves, out of the generative menu's own card (same bubble as
+## the title's how many, Hud.pop_bubble, one to four ninja heads): picking
+## keeps it (_generative_players_picked); back or a click off it closes it,
+## to the card, as it was.
+func _pick_generative_players() -> void:
+	phase = "pick"
+	var choices: Array = []
+	for n in range(1, 5):
+		choices.append({"title": "%dP" % n, "icon": load("res://assets/ui/ninjas_%d.png" % n),
+			"colour": _thief_colours()[n - 1], "call": _generative_players_picked.bind(n)})
+	hud.pop_bubble("players", Text.t("MENU_HOW_MANY"), choices, players - 1,
+		func() -> void: phase = "generative")
+
+
+## n thieves picked in the generative menu's own bubble: kept (players), and
+## the menu again, its card showing it and with the focus.
+func _generative_players_picked(n: int) -> void:
+	players = n
+	_show_generative_menu("players")
 
 
 func _start(which: String, n: int, picked := false) -> void:

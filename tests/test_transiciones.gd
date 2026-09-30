@@ -125,23 +125,38 @@ func _init() -> void:
 	m.hands.unjoin()
 	await frames(Hud.SWAP_WAIT_FRAMES + 2)
 	check(m.phase == "pick" and hud.bubble_open() and hud.bubble_focus() == 1, "atrás desde los mandos vuelve al bocadillo, en el 2")
-	# The generative: its bubble, then its menu with the gang picked.
+	# The generative: its menu straight away, no bocadillo first; the gang
+	# picked from its own "players" card in it, like the size or the theme.
 	await press(KEY_ESCAPE)
 	await frames(2)
 	m._show_title()
 	await frames(3)
 	(hud._cards["generative"] as Button).pressed.emit()
 	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	check(m.phase == "pick" and hud._bubble_anchor == hud._cards["generative"], "el generativo abre su bocadillo en su tarjeta")
+	check(m.phase == "generative", "el generativo va directo a su menú")
+	(hud._cards["players"] as Button).pressed.emit()
+	await frames(Hud.SWAP_WAIT_FRAMES + 2)
+	check(m.phase == "pick" and hud._bubble_anchor == hud._cards["players"], "su tarjeta de personas abre el bocadillo de cuántos ladrones")
 	hud.bubble_pick(2)
 	await frames(3)
-	check(m.phase == "generative" and m.players == 3 and not hud.bubble_open(), "elegir 3 lleva al menú del generativo, con 3 ladrones")
+	check(m.phase == "generative" and m.players == 3 and not hud.bubble_open(), "elegir 3 deja el menú con 3 ladrones")
 	await press(KEY_ESCAPE)
 	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	check(m.phase == "pick" and hud.bubble_focus() == 2 and hud._bubble_anchor == hud._cards["generative"], "atrás desde el generativo vuelve a su bocadillo, en el 3")
+	check(m.phase == "title" and not hud.bubble_open() and focused() == hud._cards["generative"], "atrás desde el generativo va al título, en su tarjeta")
+	(hud._cards["generative"] as Button).pressed.emit()
+	await frames(Hud.SWAP_WAIT_FRAMES + 2)
+	(hud._cards["players"] as Button).pressed.emit()
+	await frames(Hud.SWAP_WAIT_FRAMES + 2)
+	check(hud.bubble_focus() == 2, "... su tarjeta de personas sigue en el 3")
 	hud.bubble_pick(0)
 	await frames(3)
 	check(m.phase == "generative" and m.players == 1, "... y se puede cambiar a 1")
+	# The focus stayed on the "players" card (the menu keeps it where it
+	# was); back on EMPEZAR, for what follows to start from there, as a
+	# fresh generative menu would.
+	(hud._panel_box.find_children("*", "Button", true, false).filter(
+		func(b): return (b as Button).text == Text.t("MENU_START"))[0] as Button).grab_focus()
+	await frames()
 
 	# --- The generative's settings: three cards, each with its bubble ----------------
 	# (The size and difficulty picked are saved: put back as they were at the end.)
@@ -153,7 +168,7 @@ func _init() -> void:
 	await frames(Hud.SWAP_WAIT_FRAMES + 2)
 	var start_button := focused() as Button
 	check(start_button != null and start_button.text == Text.t("MENU_START"), "el generativo empieza con el foco en EMPEZAR")
-	check(hud._cards.size() == 3 and hud._cards.has("difficulty") and hud._cards.has("size") and hud._cards.has("theme"), "... y tres tarjetas: dificultad, tamaño y tema")
+	check(hud._cards.size() == 4 and hud._cards.has("difficulty") and hud._cards.has("size") and hud._cards.has("theme") and hud._cards.has("players"), "... y cuatro tarjetas: dificultad, tamaño, tema y personas")
 	var rims: Array = hud._cards.values().map(func(c): return ((c as Button).get_theme_stylebox("normal") as StyleBoxFlat).border_color)
 	check(rims.all(func(r): return r == Hud.GLASS_EDGE), "... con el borde de siempre, sin colores de la elegida")
 	var hard_card: Button = hud._cards["difficulty"]

@@ -58,13 +58,16 @@ const GUARD_SIDEBAR_WIDTH := 300
 ## Colours a piece to steal can be.
 const LOOT_COLOURS := ["#f0c46a", "#f4f1e6", "#ff6b6b", "#ffd43b", "#7bc043", "#4dabf7", "#9b5de5", "#f783ac", "#e8590c", "#8b5a2b"]
 const LOOT_SECONDS := [1.5, 2.0, 3.0, 4.0, 5.0, 6.0]
-## The characters: where the thieves come in, the case with the piece to
-## steal, the way out, the guards, a door in a wall (like the house's,
-## MapFile.doors: opens and shuts on the night, not to be confused with
-## `exit`, the way out), and a column (MapFile.columns: stands exempt, one
-## tile, lighter than a wall — the same tool pattern as the door).
-const MAIN_TOOLS := ["spawn", "piece", "exit", "guard", "door", "column", "case"]
-const TOOL_ICONS := {"spawn": "spawn", "piece": "piece", "exit": "exit_door", "guard": "guard", "door": "door", "column": "column", "case": "type_case"}
+## The characters: the door in, the case with the piece to steal, the way
+## out, the guards, and a door in a wall (like the house's, MapFile.doors:
+## opens and shuts on the night, not to be confused with `exit`, the way
+## out). In this order in the "construir" row (wall, then these, "rooms"
+## stepped in after "door" — see _fill_catalogue). No manual column (that
+## stayed MuseumView's own, by theme — Themes.column_style) nor a random
+## case (Themes.catalogue's own "case", kept for the objects tab only): the
+## editor's tools for them were dropped, at the word of whoever plays it.
+const MAIN_TOOLS := ["door", "spawn", "exit", "piece", "guard"]
+const TOOL_ICONS := {"spawn": "flag", "piece": "piece", "exit": "exit_door", "guard": "guard", "door": "door"}
 ## Ready-made rooms, as MapFile.stamp takes them: '#' wall, '.' floor, 'o'
 ## case, 'D' dinosaur, 'S' sarcophagus, 'O' bear, 'b' a bust. The gaps in the border
 ## are doors. gallery: its inside is a room with a light and a name.
@@ -143,9 +146,23 @@ const DIFFICULTY_NAMES := {"easy": "MENU_DIFFICULTY_EASY", "medium": "MENU_DIFFI
 ## page's choices to its right.
 ## (The guards are placed with the characters: how many there are is theirs.)
 ## (What is stolen, and its tale, are written when saving: _save_panel.)
-const OPTION_PAGES := ["size", "floor", "wall", "difficulty", "map"]
-const OPTION_ICONS := {"size": "size", "floor": "rooms", "wall": "wall", "difficulty": "difficulty", "map": "random"}
+## (A new map, one from the generator, or one from disk: buttons of their
+## own at the bottom now, not a page here — _new_button/_random/_import_map.)
+const OPTION_PAGES := ["size", "floor", "wall", "difficulty"]
+const OPTION_ICONS := {"size": "size", "floor": "rooms", "wall": "wall", "difficulty": "difficulty"}
 const PROP_ORDER := ["bust", "bin", "panel", "armour"]
+## The objects tab's theme filter, along the top, in this order: all of
+## them, "comunes" (Themes.catalogue's pieces with no theme of their own),
+## then the five themes (Themes.ALL's own order does not match the one
+## asked for here).
+const THEME_FILTER_ORDER := ["", "comunes", "prehistoria", "antiguo", "edad_media", "naturaleza", "moderna"]
+## The objects tab's type filter, down the left: fewer, broader groups than
+## Themes.TYPES itself (which other code still depends on as it is) —
+## "expositores" folds vitrina and pequeño together, "especiales" tirable
+## and escondite.
+const TYPE_FILTER_GROUPS := {"": [], "cases": ["case", "small"], "big": ["big"], "special": ["prop", "hide"]}
+const TYPE_FILTER_ORDER := ["", "cases", "big", "special"]
+const TYPE_FILTER_LABELS := {"": "EDITOR_TYPEGROUP_ALL", "cases": "EDITOR_TYPEGROUP_CASES", "big": "EDITOR_TYPEGROUP_BIG", "special": "EDITOR_TYPEGROUP_SPECIAL"}
 const UNDO_STEPS := 60
 
 ## The plan's colours: the paper map's (Hud), so the editor and the map you
@@ -184,6 +201,9 @@ var room_from := MapFile.NONE
 ## The guard whose panel is open ("guard" in _open()), or null.
 var selected_guard: GuardSpawn
 var undo: Array[MapFile] = []
+## What _undo() has popped, to put back with _redo() — cleared the moment a
+## new change is remembered (_remember()), as usual.
+var redo: Array[MapFile] = []
 var dirty := false
 ## Esc once with changes unsaved: a second one leaves
 var leaving := false
@@ -199,11 +219,13 @@ var _template_buttons: Array[Button] = []
 var _kind_buttons := {}
 var _exit_button: Button
 var _save_button: Button
+var _new_button: Button
 var _kind_name: Label
 ## the catalogue along the bottom: its tabs (the objects' themes) and its row
 var _tabs: HBoxContainer
 var _catalogue: HBoxContainer
-## the theme and the type (Themes.TYPES) the objects are shown for ("" all)
+## the theme the objects are shown for ("" all, "comunes" no theme of its
+## own — TYPE_FILTER_GROUPS has the type's own grouping)
 var filter := ""
 var filter_type := ""
 ## the panel of choices over the bar (the options, or leaving unsaved)
@@ -350,6 +372,14 @@ func _build() -> void:
 	_status = _label("", 14, Hud.C.alert, line)
 	_status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_status.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	# Leaving the editor: left of the 2D/3D switch, up here where it is seen
+	# (not lost among undo/save at the bottom any more).
+	_exit_button = _button("", _leave, line, Hud.C.alert, false, "exit")
+	_exit_button.custom_minimum_size = Vector2(52, 40)
+	_exit_button.size_flags_horizontal = Control.SIZE_SHRINK_END
+	_exit_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_exit_button.add_theme_constant_override("icon_max_width", 26)
+	_exit_button.tooltip_text = Text.t("EDITOR_EXIT")
 	# The plan or the museum in 3D: the switch in the top right corner.
 	_view_button = _button("", _toggle_3d, line, Hud.C.safe, false, "view3d")
 	_view_button.custom_minimum_size = Vector2(52, 40)
@@ -389,22 +419,28 @@ func _build() -> void:
 	var left := VBoxContainer.new()
 	left.add_theme_constant_override("separation", 8)
 	row.add_child(left)
+	# Nuevo, mapa aleatorio, importar, guardar, deshacer, rehacer: small icon
+	# buttons, in the order the hand reaches for them.
 	var acts := HBoxContainer.new()
 	acts.add_theme_constant_override("separation", 6)
 	left.add_child(acts)
-	_icon_button("undo", "EDITOR_UNDO", _undo, acts, Hud.C.dim)
+	_new_button = _icon_button("new", "EDITOR_NEW", _open.bind("new"), acts, Hud.C.dim)
+	_icon_button("random", "EDITOR_RANDOM", _random, acts, Hud.C.dim)
+	_icon_button("import", "EDITOR_IMPORT", _import_map, acts, Hud.C.dim)
 	_save_button = _icon_button("save", "EDITOR_SAVE", _open.bind("save"), acts, Hud.C.green)
-	_exit_button = _icon_button("exit", "EDITOR_EXIT", _leave, acts, Hud.C.dim)
+	_icon_button("undo", "EDITOR_UNDO", _undo, acts, Hud.C.dim)
+	_icon_button("redo", "EDITOR_REDO", _redo, acts, Hud.C.dim)
+	# The three big kinds of tool, side by side, "opciones" the same size as
+	# the rest — not a small one off on its own.
 	var kinds := HBoxContainer.new()
 	kinds.add_theme_constant_override("separation", 6)
 	left.add_child(kinds)
 	for k in KINDS:
-		var big: bool = k != "options"
-		var b := _button(Text.t("EDITOR_KIND_" + k.to_upper()), _pick_kind.bind(k), kinds if big else acts, Hud.C.safe, false, k)
-		b.custom_minimum_size = Vector2(56, 56) if big else Vector2(42, 36)
+		var b := _button(Text.t("EDITOR_KIND_" + k.to_upper()), _pick_kind.bind(k), kinds, Hud.C.safe, false, k)
+		b.custom_minimum_size = Vector2(56, 56)
 		b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		b.add_theme_constant_override("icon_max_width", 36 if big else 20)
+		b.add_theme_constant_override("icon_max_width", 36)
 		b.tooltip_text = Text.t("EDITOR_KIND_" + k.to_upper())
 		b.text = ""
 		_kind_buttons[k] = b
@@ -712,7 +748,6 @@ func _tool_colour(t: String) -> Color:
 		"exit": return EXIT
 		"guard": return GUARD
 		"door": return DOOR
-		"column": return COLUMN
 		"prop": return PROP
 		"case": return PIECE
 		"room": return ROOM
@@ -753,49 +788,65 @@ func _fill_catalogue() -> void:
 				_item("turn", Text.t("EDITOR_TURN"), _turn, Hud.C.dim)
 				_tool_buttons["room"] = _item("room", Text.t("EDITOR_TOOL_ROOM"), _choose_tool.bind("construir", "room"), ROOM)
 			else:
-				# Wall/floor and the characters (spawn, piece, exit, guard,
-				# door, column, case) all in the one row, then "salas" to
-				# step into its own.
+				# One after another, no separators: wall, the door, salas
+				# (stepping into its own row), entrada, salida, robo, guardia.
 				_tool_buttons["wall"] = _item("wall", Text.t("EDITOR_TOOL_WALL"), _choose_tool.bind("construir", "wall"), Hud.C.safe)
-				_catalogue.add_child(VSeparator.new())
-				for t in MAIN_TOOLS:
-					_tool_buttons[t] = _item(TOOL_ICONS[t], Text.t("EDITOR_TOOL_" + t.to_upper()), _choose_tool.bind("construir", t), _tool_colour(t))
-				_catalogue.add_child(VSeparator.new())
+				_tool_buttons["door"] = _item(TOOL_ICONS["door"], Text.t("EDITOR_TOOL_DOOR"), _choose_tool.bind("construir", "door"), _tool_colour("door"))
 				_item("rooms", Text.t("EDITOR_TOOL_ROOMS"), _pick_building_page.bind("rooms"), ROOM)
+				for t in ["spawn", "exit", "piece", "guard"]:
+					_tool_buttons[t] = _item(TOOL_ICONS[t], Text.t("EDITOR_TOOL_" + t.to_upper()), _choose_tool.bind("construir", t), _tool_colour(t))
 		"objects":
-			for id in [""] + Themes.ids():
-				var tab := _button(Text.t("EDITOR_FILTER_ALL") if id == "" else Text.t("THEME_" + String(id).to_upper()), _pick_filter.bind(id), _tabs, Hud.C.gold)
+			# The theme, along the top, with words (not just icons): all of
+			# them, "comunes" (no theme of its own), then the five themes in
+			# THEME_FILTER_ORDER.
+			for id in THEME_FILTER_ORDER:
+				var label := Text.t("EDITOR_FILTER_ALL") if id == "" else (Text.t("EDITOR_FILTER_COMMON") if id == "comunes" else Text.t("THEME_" + id.to_upper()))
+				var tab := _button(label, _pick_filter.bind(id), _tabs, Hud.C.gold)
 				tab.custom_minimum_size = Vector2(0, 26)
 				tab.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 				tab.autowrap_mode = TextServer.AUTOWRAP_OFF
 				tab.alignment = HORIZONTAL_ALIGNMENT_CENTER
 				tab.add_theme_font_size_override("font_size", 8)
 				tab.set_meta("filter", id)
-			_tabs.add_child(VSeparator.new())
-			for type in [""] + Themes.TYPES:
-				# An icon each, its name on hover.
-				var tab := _button("", _pick_type.bind(type), _tabs, Hud.C.safe, false, "type_" + (type if type != "" else "all"))
-				tab.custom_minimum_size = Vector2(46, 28)
-				tab.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-				tab.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-				tab.add_theme_constant_override("icon_max_width", 24)
-				tab.tooltip_text = Text.t("EDITOR_TYPE_" + (String(type).to_upper() if type != "" else "ALL"))
-				tab.set_meta("type", type)
+			# Down the left of the row, a column by type instead (same width
+			# each): expositores (vitrina + pequeño), grandes, especiales
+			# (tirable + escondite).
+			var type_col := _column(96)
+			for cat in TYPE_FILTER_ORDER:
+				var tab := _button(Text.t(TYPE_FILTER_LABELS[cat]), _pick_type.bind(cat), type_col, Hud.C.safe)
+				tab.custom_minimum_size = Vector2(96, 32)
+				tab.autowrap_mode = TextServer.AUTOWRAP_OFF
+				tab.add_theme_font_size_override("font_size", 8)
+				tab.set_meta("type", cat)
+			_catalogue.add_child(VSeparator.new())
 			for entry in Themes.catalogue():
 				var t: String = entry[0]
-				# The random case is its own tool now, up in "construir"
-				# next to the wall and the door — same level, not buried
-				# in a theme's tab.
+				# The random case is its own tool up in "construir" (not any
+				# more — see MAIN_TOOLS' note), so it stays out of the
+				# objects tab either way: there is nothing to preview for it.
 				if t == "case":
 					continue
 				var themes: Array = entry[1]
-				if filter != "" and not themes.has(filter):
+				# "Comunes": no theme calls it its own (an empty list in
+				# Themes.catalogue — the bare pedestal, the bin, the panel,
+				# a big piece no theme picked).
+				if filter == "comunes":
+					if not themes.is_empty():
+						continue
+				elif filter != "" and not themes.has(filter):
 					continue
-				if filter_type != "" and entry[2] != filter_type:
+				if filter_type != "" and not (entry[2] in TYPE_FILTER_GROUPS[filter_type]):
 					continue
 				var id := t.replace(":", "_").replace("/", "_")
 				var name := Themes.label(t.substr(8)) if t.begins_with("exhibit:") else Text.t("EDITOR_TOOL_" + id.to_upper())
-				_tool_buttons[t] = _item(load("res://assets/icons/objects/%s.png" % id), name, _choose_tool.bind("objects", t), _tool_colour(t))
+				var b := _item(load("res://assets/icons/objects/%s.png" % id), name, _choose_tool.bind("objects", t), _tool_colour(t))
+				_tool_buttons[t] = b
+				# A badge, bottom left: tirable or escondite, so the two
+				# read apart from the rest at a glance.
+				if entry[2] == "prop":
+					_badge(b, "type_prop")
+				elif entry[2] == "hide":
+					_badge(b, "type_hide")
 		"options":
 			_options()
 
@@ -812,6 +863,21 @@ func _item(icon: Variant, name: String, call: Callable, colour: Color) -> Button
 	b.add_theme_font_size_override("font_size", 7)
 	b.tooltip_text = name
 	return b
+
+
+## A little icon in a card's bottom left corner (an _item's), over its own
+## picture: tirable or escondite, marked apart from the rest of "especiales".
+func _badge(b: Button, icon: String) -> void:
+	var t := TextureRect.new()
+	t.texture = load("res://assets/icons/editor/%s.svg" % icon)
+	t.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	t.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	t.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	t.offset_left = 4
+	t.offset_top = -20
+	t.offset_right = 20
+	t.offset_bottom = -4
+	b.add_child(t)
 
 
 func _pick_filter(id: String) -> void:
@@ -861,9 +927,6 @@ func _options() -> void:
 		"difficulty":
 			for k in DIFFICULTIES:
 				_choice(Text.t(DIFFICULTY_NAMES[k]), "difficulty", _set_difficulty.bind(k), k, "difficulty")
-		"map":
-			_choice(Text.t("EDITOR_RANDOM"), "", _random, null, "random")
-			_choice(Text.t("EDITOR_CLEAR"), "", _clear, null, "clear")
 
 
 ## One card of an options page: in force, it is lit (meta "choice" against
@@ -931,6 +994,10 @@ func _open(k: String) -> void:
 		if _guard_sub.get_child_count() > 0:
 			(_guard_sub.get_child(0) as Control).grab_focus.call_deferred()
 		return
+	elif k == "new":
+		_sub_title.text = Text.t("EDITOR_NEW_CONFIRM")
+		_button(Text.t("EDITOR_NEW_YES"), _confirm_new, _sub, Hud.C.alert)
+		_button(Text.t("EDITOR_KEEP_EDITING"), _stay, _sub, Hud.C.dim)
 	else:
 		_sub_title.text = Text.t("EDITOR_UNSAVED")
 		_button(Text.t("EDITOR_SAVE_AND_EXIT"), _save_and_leave, _sub, Hud.C.green)
@@ -1393,7 +1460,7 @@ func _place_flyout() -> void:
 		var fs := _flyout.get_combined_minimum_size()
 		_flyout.position = ((_ui.size - fs) * 0.5).round()
 		return
-	var from: Button = _save_button if panel == "save" else _exit_button
+	var from: Button = _save_button if panel == "save" else (_new_button if panel == "new" else _exit_button)
 	if from == null:
 		return
 	var room := _ui.size.y - BAR - 30.0
@@ -1514,10 +1581,52 @@ func _clear() -> void:
 	_rebuild()
 
 
+## "Nuevo", confirmed: a blank map the size this one is now (_clear), then
+## back to the plan.
+func _confirm_new() -> void:
+	_clear()
+	_open("")
+
+
+## Load a map from the player's own disk (not the game's user:// folder):
+## the system's own file picker, any .json in MapFile.to_dict's shape.
+func _import_map() -> void:
+	var dlg := FileDialog.new()
+	dlg.access = FileDialog.ACCESS_FILESYSTEM
+	dlg.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	dlg.add_filter("*.json", "Mapa (JSON)")
+	dlg.use_native_dialog = true
+	dlg.title = Text.t("EDITOR_IMPORT")
+	add_child(dlg)
+	dlg.file_selected.connect(func(f: String) -> void:
+		var m := MapFile.read(f)
+		if m == null:
+			_say(Text.t("EDITOR_IMPORT_FAILED"), Hud.C.alert)
+		else:
+			_remember()
+			m.name = m.name if m.name != "" else Text.t("EDITOR_UNTITLED")
+			# A map of its own, not the file it came from: saving it never
+			# touches (or takes the place of) whatever is on disk there.
+			m.path = ""
+			m.built_in = false
+			map = m
+			_name.text = map.name
+			_refresh()
+			_rebuild()
+			_say(Text.t("EDITOR_IMPORTED"), Hud.C.green)
+		dlg.queue_free.call_deferred())
+	dlg.canceled.connect(dlg.queue_free)
+	dlg.close_requested.connect(dlg.queue_free)
+	dlg.popup_centered_ratio(0.7)
+
+
 func _remember() -> void:
 	undo.append(map.copy())
 	if undo.size() > UNDO_STEPS:
 		undo.remove_at(0)
+	# A new change: whatever _undo() had put aside for _redo() no longer
+	# follows from where the map is now.
+	redo.clear()
 	dirty = true
 	leaving = false
 
@@ -1525,7 +1634,22 @@ func _remember() -> void:
 func _undo() -> void:
 	if undo.is_empty():
 		return
+	redo.append(map.copy())
+	if redo.size() > UNDO_STEPS:
+		redo.remove_at(0)
 	map = undo.pop_back()
+	_name.text = map.name
+	_refresh()
+	_rebuild()
+
+
+func _redo() -> void:
+	if redo.is_empty():
+		return
+	undo.append(map.copy())
+	if undo.size() > UNDO_STEPS:
+		undo.remove_at(0)
+	map = redo.pop_back()
 	_name.text = map.name
 	_refresh()
 	_rebuild()
@@ -1697,8 +1821,6 @@ func _use(t: Vector2i, erase: bool) -> void:
 			map.piece = MapFile.NONE
 		elif map.doors.has(t):
 			map.doors.erase(t)
-		elif map.columns.has(t):
-			map.columns.erase(t)
 		elif tool == "room" and _room_at(t) >= 0:
 			map.rooms.remove_at(_room_at(t))
 		elif not edge:
@@ -1750,13 +1872,6 @@ func _use(t: Vector2i, erase: bool) -> void:
 				map.doors.erase(t)
 			elif map.at(t) == Tiles.WALL and not edge and not map.columns.has(t) and map.door_fits(t) and map.door_clear(t):
 				map.doors.append(t)
-		"column":
-			# Same spot a door could go, but it never opens: a click marks
-			# or clears a column instead.
-			if map.columns.has(t):
-				map.columns.erase(t)
-			elif map.at(t) == Tiles.WALL and not edge and not map.doors.has(t):
-				map.columns.append(t)
 		_ when tool.begins_with("exhibit:"):
 			# On floor or a case; the same piece again leaves the case plain.
 			var what := tool.substr(8)
@@ -1839,8 +1954,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			_leave()
 	elif event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_Z and (event.ctrl_pressed or event.meta_pressed):
+		if event.keycode == KEY_Z and (event.ctrl_pressed or event.meta_pressed) and event.shift_pressed:
+			_redo()
+		elif event.keycode == KEY_Z and (event.ctrl_pressed or event.meta_pressed):
 			_undo()
+		elif event.keycode == KEY_Y and (event.ctrl_pressed or event.meta_pressed):
+			_redo()
 		elif event.keycode == KEY_R:
 			_turn()
 		else:
@@ -1861,7 +1980,9 @@ func _refresh() -> void:
 	for tab in _tabs.get_children():
 		if tab.has_meta("filter"):
 			_look(tab, tab.get_meta("filter") == filter)
-		elif tab.has_meta("type"):
+	# The type column, down the left of the catalogue itself (not the tabs).
+	for tab in _catalogue.find_children("*", "Button", true, false):
+		if tab.has_meta("type"):
 			_look(tab, tab.get_meta("type") == filter_type)
 	for t in _tool_buttons:
 		_look(_tool_buttons[t], tool == t)
@@ -2449,8 +2570,6 @@ func _pick_up(t: Vector2i) -> void:
 		what = "exit"
 	elif map.doors.has(t):
 		what = "door"
-	elif map.columns.has(t):
-		what = "column"
 	elif not prop.is_empty():
 		what = "prop:" + String(prop[0].kind)
 	elif not big.is_empty():

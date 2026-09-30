@@ -27,6 +27,18 @@ const TORCH_COLOUR := Color("#fff1d8")
 const TORCH_ENERGY := 9.0
 const TORCH_ENERGY_ALERT := 13.0
 
+## A torch is alive, not a lamp on a pole: its strength breathes by up to
+## this share either way, slowly (two waves, radians a second, so it never
+## looks like a loop), and at its dimmest it goes a touch warmer. Too little
+## to read as a flicker, or to change what the beam shows.
+const TORCH_BREATH := 0.045
+const TORCH_BREATH_SPEED := Vector2(1.7, 4.3)
+const TORCH_WARM := Color("#ffdcae")
+
+## The sack the piece goes in, on the carrier's back: big enough to read from
+## the camera up high.
+const SACK_SCALE := 1.4
+
 ## Lit rooms glow warm, like a hotel lobby with the chandeliers on.
 const ROOM_LIGHT_COLOUR := Color("#ffc47e")
 const ROOM_LIGHT_ENERGY := 1.4
@@ -326,8 +338,7 @@ func build_job() -> void:
 	loot_node = LootModels.build(Heist.loot.shape, colour)
 	host.world.add_child(loot_node)
 	sack_node = LootModels.sack()
-	# Big enough to read from the camera up high.
-	sack_node.scale = Vector3.ONE * 1.4
+	sack_node.scale = Vector3.ONE * SACK_SCALE
 	sack_node.visible = false
 	host.world.add_child(sack_node)
 	# The star of the collection gets a spotlight from the ceiling: a cone of
@@ -505,17 +516,38 @@ func draw_figures(dt: float) -> void:
 		draw_suspicion(i, g)
 		var view := Sim.view_of(g)
 		var torch := torches[i]
-		torch.light_color = Game.COLOURS.alert if g.sees_player else TORCH_COLOUR
+		var breath := torch_breath(i)
+		torch.light_color = Game.COLOURS.alert if g.sees_player else TORCH_COLOUR.lerp(TORCH_WARM, maxf(0.0, -breath) * 0.5)
 		# A touch wider than the cone: the soft rim spends the edge fading out.
 		torch.spot_angle = rad_to_deg(view.half) * 1.1
 		torch.spot_range = view.range + 1.0
 		# Under the ceiling lights a torch is pointless, and switched off.
 		# A harder night hands them stronger torches.
 		var power := Sim.torch_power()
-		torch.light_energy = 0.0 if Museum.is_lit(g.x, g.y) else (TORCH_ENERGY_ALERT if g.alert else TORCH_ENERGY) * power * power
+		torch.light_energy = 0.0 if Museum.is_lit(g.x, g.y) else (TORCH_ENERGY_ALERT if g.alert else TORCH_ENERGY) * power * power * (1.0 + TORCH_BREATH * breath)
 		draw_cone(g, cones[i])
 	for d in host.house.mannequins:
 		d.set_state(d.position, float(d.get_meta("dir", PI)), 0.0, dt)
+
+
+## -1..1: where torch i is in its breathing (TORCH_BREATH), two slow waves,
+## each guard's out of step with the others'.
+func torch_breath(i: int) -> float:
+	var t := Time.get_ticks_msec() / 1000.0
+	return 0.65 * sin(t * TORCH_BREATH_SPEED.x + i * 2.1) + 0.35 * sin(t * TORCH_BREATH_SPEED.y + i * 0.9)
+
+
+## The piece is in the sack: its carrier jumps for joy (Figure.pop) and the
+## sack pops onto its back, from small to a touch too big and settling.
+func pop_steal() -> void:
+	for i in host.thieves.size():
+		if host.thieves[i].id == Heist.carrier and i < thief_nodes.size():
+			thief_nodes[i].pop()
+	var rest := Vector3.ONE * SACK_SCALE
+	sack_node.scale = rest * 0.6
+	var tw := sack_node.create_tween()
+	tw.tween_property(sack_node, "scale", rest * 1.15, 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(sack_node, "scale", rest, 0.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
 func draw_room_lights() -> void:

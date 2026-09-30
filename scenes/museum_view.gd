@@ -144,6 +144,8 @@ static func asset(name: String) -> Node3D:
 				m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 				m.metallic = 0.0
 				m.roughness = 1.0
+				if src.transparency != BaseMaterial3D.TRANSPARENCY_DISABLED:
+					_glass(m)
 				_asset_mats[src] = m
 			mi.set_surface_override_material(s, _asset_mats[src])
 			if src.transparency != BaseMaterial3D.TRANSPARENCY_DISABLED:
@@ -152,6 +154,69 @@ static func asset(name: String) -> Node3D:
 
 
 static var _asset_mats := {}
+
+
+## How much light the glass catches along its edges (the rim), and how
+## rough it is: the roughness is what keeps the rim to the edges (at 1 it
+## would spread over the whole pane).
+const GLASS_RIM := 0.45
+const GLASS_ROUGH := 0.5
+
+## The sheen over the glass (_glass_sheen): how much of a light passing by
+## it catches where you look along a pane, and the faint glint it keeps in
+## the dark.
+const GLASS_SHEEN := 1.0
+const GLASS_SHEEN_DARK := 0.15
+
+static var _sheen: ShaderMaterial
+
+
+## Glass (the cases': the only see-through material in the models): a rim of
+## whatever light is about where you look along the pane, tinted the glass's
+## colour, so a case reads as glass and not as an empty frame. The pane is
+## nearly clear, and a rim on it would be nearly clear too: the fresnel that
+## shows is a pass of its own over it (_glass_sheen).
+static func _glass(m: BaseMaterial3D) -> void:
+	m.rim_enabled = true
+	m.rim = GLASS_RIM
+	m.rim_tint = 0.3
+	m.roughness = GLASS_ROUGH
+	if _sheen == null:
+		_sheen = ShaderMaterial.new()
+		_sheen.shader = _glass_sheen()
+		_sheen.set_shader_parameter("tint", C.glass)
+		_sheen.set_shader_parameter("strength", GLASS_SHEEN)
+		_sheen.set_shader_parameter("dark", GLASS_SHEEN_DARK)
+	m.next_pass = _sheen
+
+
+## A fresnel added over the glass: nothing on a pane seen face on (the lids,
+## from the camera up high), more the more you look along it (the fronts and
+## sides). Lit by the lights that reach it, so a torch sweeping past sets the
+## panes glinting; and a faint glint of its own, so a case in the dark still
+## reads as glass.
+static func _glass_sheen() -> Shader:
+	var sh := Shader.new()
+	sh.code = """
+shader_type spatial;
+render_mode blend_add, depth_draw_never, cull_back, specular_disabled, ambient_light_disabled, shadows_disabled;
+
+uniform vec3 tint : source_color = vec3(0.66, 0.85, 0.91);
+uniform float strength = 1.0;
+uniform float dark = 0.15;
+
+void fragment() {
+	float edge = pow(1.0 - clamp(abs(dot(NORMAL, VIEW)), 0.0, 1.0), 2.5);
+	ALBEDO = tint * edge;
+	EMISSION = tint * edge * dark;
+}
+
+void light() {
+	// However the light falls on it: glass catches it all along the pane.
+	DIFFUSE_LIGHT += LIGHT_COLOR * ATTENUATION * strength / PI;
+}
+"""
+	return sh
 
 
 ## The arcade machines' games (Themes.VARIANTS), one look each, in the modern

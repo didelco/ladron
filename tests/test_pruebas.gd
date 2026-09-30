@@ -278,10 +278,10 @@ func _menu() -> void:
 	w.input(stick(JOY_AXIS_LEFT_X, 0.0))
 	check(w.input(stick(JOY_AXIS_LEFT_Y, 0.9)).has("move") and w.selected == 1 and w.input(stick(JOY_AXIS_RIGHT_X, 0.9)).is_empty(), "stick abajo: un paso; el otro stick no cuenta")
 	# Accept and back, the same as on every menu.
-	for a in [["E", key(KEY_E)], ["el punto", key(KEY_PERIOD)], ["A del mando", pad(JOY_BUTTON_A)]]:
+	for a in [["E", key(KEY_E)], ["el punto", key(KEY_PERIOD)], ["Espacio", key(KEY_SPACE)], ["Enter", key(KEY_ENTER)], ["A del mando", pad(JOY_BUTTON_A)]]:
 		w.selected = 1
 		check(w.input(a[1]) == {"pick": "again"}, "aceptar con %s: lo elegido" % a[0])
-	for bk in [["Esc", key(KEY_ESCAPE)], ["Espacio", key(KEY_SPACE)], ["Enter", key(KEY_ENTER)], ["B del mando", pad(JOY_BUTTON_B)], ["Tab", key(KEY_TAB)], ["Start", pad(JOY_BUTTON_START)]]:
+	for bk in [["Esc", key(KEY_ESCAPE)], ["B del mando", pad(JOY_BUTTON_B)], ["Tab", key(KEY_TAB)], ["Start", pad(JOY_BUTTON_START)]]:
 		w.selected = 0
 		check(w.input(bk[1]) == {"pick": "exit"}, "atrás con %s: salir" % bk[0])
 	var held := key(KEY_E)

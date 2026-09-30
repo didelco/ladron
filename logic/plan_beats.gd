@@ -128,6 +128,21 @@ static func _mid(t: Vector2i) -> Vector2:
 	return Vector2(t.x + 0.5, t.y + 0.5)
 
 
+## What stands out about one guard's hearing, in the plan's own words: the
+## night's dial (Sim.tuning) scaled by its own ear (Guard.hearing_scale),
+## against the same marks Briefing's line for the whole night goes by
+## (SHARP_EARS, DULL_EARS) — so a guard with sharp or dull ears is called
+## that here too, never text of its own. "" when there is nothing to say
+## (a guard that hears as well as any other).
+static func guard_hearing_trait(g: Guard) -> String:
+	var hearing := Sim.tuning("hearing") * g.hearing_scale
+	if hearing >= Briefing.SHARP_EARS:
+		return Heist.first_upper(Text.t("TIP_TRAIT_SHARP_EARS_ONE")) + "."
+	if hearing < Briefing.DULL_EARS:
+		return Heist.first_upper(Text.t("TIP_TRAIT_DULL_EARS_ONE")) + "."
+	return ""
+
+
 ## What can be picked on the plan while looking round, each pinned where it
 ## is: the piece's case, what is new, every guard, the alarm panels, the way
 ## in and the way out, and any rule about somewhere else (a switch, a thing
@@ -151,7 +166,11 @@ static func marks(beats: Array, guards: Array[Guard]) -> Array:
 			out.append(_mark("news", b.at, Text.t("TOUR_TAG_NEWS"), b.title, i))
 	for g in guards:
 		var still := g.post.x >= 0
-		out.append(_mark("guard", Vector2(g.x, g.y), Text.t("TOUR_TAG_GUARD"), Text.t("TOUR_MARK_GUARD_POST" if still else "TOUR_MARK_GUARD_ROUND")))
+		var text := Text.t("TOUR_MARK_GUARD_POST" if still else "TOUR_MARK_GUARD_ROUND")
+		var ear := guard_hearing_trait(g)
+		if ear != "":
+			text += " " + ear
+		out.append(_mark("guard", Vector2(g.x, g.y), Text.t("TOUR_TAG_GUARD"), text))
 	if Heist.team:
 		for p in [Heist.panel, Heist.panel2]:
 			if p.x >= 0:
