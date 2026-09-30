@@ -1058,7 +1058,7 @@ func _painting(parent: Node3D, seed: int, kind := "", size := PAINTING) -> void:
 static func _canvas(seed: int, forced := -1) -> Texture2D:
 	var r := func(k: int) -> float: return _hash01(seed, k, 71)
 	var kind := int(r.call(1) * 6) if forced < 0 else forced
-	var ready := Canvases.drawn(Canvases.OLD[kind])
+	var ready := Canvases.drawn(Canvases.OLD[kind], seed)
 	if ready:
 		return ready
 	var w := 48

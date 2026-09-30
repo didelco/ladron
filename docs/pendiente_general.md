@@ -42,21 +42,20 @@ Ideas sueltas, sin prioridad marcada:
 
 ## Cuadros dibujados a mano (`assets/ui/cuadros/`)
 
-El sistema ya está montado (`Canvases.paint`/`MuseumView._canvas` buscan un PNG dibujado antes de generar uno; tamaños documentados en `ESTILO.md`, sección «Museo, piezas y cuadros»). **`assets/ui/cuadros/` está vacía — todo sigue en procedural, 0 de 22 dibujados.** El tamaño no multiplica la cuenta: los 5 formatos estándar (painting, big, pequeño×2, pequeño×3 y cada panel del tríptico) son todos 4:3 y comparten el mismo fichero por tipo — solo el tríptico tiene un problema aparte (ver abajo).
+El sistema ya está montado (`Canvases.paint`/`MuseumView._canvas` buscan un PNG dibujado antes de generar uno; tamaños documentados en `ESTILO.md`, sección «Museo, piezas y cuadros»). Admite variantes numeradas por tipo, con el nombre del fichero llevando toda la información: **`<kind>_<ratio>_<n>.png`** (p. ej. `wildlife_43_1.png` = naturaleza, 4:3, variante 1). `ratio` es uno de `Canvases.RATIOS`: `43` (4:3, el único enganchado al juego hoy), `11` (cuadrado) o `34` (póster). `Canvases.drawn_variants(kind, ratio)` prueba `_1`, `_2`... hasta el primer hueco, y `Canvases.drawn(kind, seed, ratio)` elige una de forma determinista (`posmod(seed, nº variantes)`) — la misma pared siempre saca el mismo dibujo. `ratio` tiene por defecto `"43"`, así que se puede crear de más sin tocar código: basta con seguir la numeración y, cuando se enganchen `11`/`34` a algo, ya estará el nombre listo. Un tipo sin ningún fichero sigue cayendo en el procedural de siempre, sin fallos.
 
-Cuenta cerrada, calculada contra cuántas veces puede repetirse el mismo tipo en un museo grande (hasta ~15 cuadros, `MuseumView._paintings`: `most := 6 + ancho×alto/120`), no solo contra el número de tipos:
+**Prehistoria y naturaleza ya no comparten cuadros**: `naturaleza` pasa de `landscape` a su propio tipo, `wildlife` (`logic/themes.gd`). Antes se justificaban 6 imágenes de `landscape` porque las repartían dos museos; separados, cada uno puede repetir su único tipo hasta ~15 veces por su cuenta (`MuseumView._paintings`: `most := 6 + ancho×alto/120`), así que cada uno necesita sus 6 propias — la cuenta del par sube de 6 a 12.
 
-| Tema | Tipos (`logic/themes.gd`) | Variantes/tipo | Objetivo | Tenemos |
-|---|---|---|---|---|
-| prehistoria + naturaleza | `landscape` (1, compartido) | 6 | 6 | 0 |
-| antiguo | `pyramids`, `hieroglyphs`, `nile` (3) | 2 c/u | 6 | 0 |
-| edad_media | `castle`, `dragon`, `tapestry`, `gioconda`, `vitruvian` (5) | 1 c/u | 5 | 0 |
-| moderna | `abstract`, `pipe`, `banana`, `ice_cream`, `portrait` (5) | 1 c/u | 5 | 0 |
-| **Total 4:3** | | | **22** | **0** |
-| Cuadrado 1:1 (vinilo, solo moderna) | sin definir | — | 3-4 (provisional) | 0 |
-| Póster 3:4 vertical (solo moderna) | sin definir | — | 3-4 (provisional) | 0 |
+**Nota importante — `ResourceLoader.exists()` no ve un PNG recién creado hasta que Godot reimporta.** Por eso los 28 lienzos en blanco (480×360, blanco liso, nombrados ya `<kind>_43_<n>.png`) se han creado en `assets/ui/cuadros_pendientes/`, no en `assets/ui/cuadros/`: así no hay riesgo de que una reimportación futura (al abrir el editor, por ejemplo) los recoja como "ya dibujados" y sustituyan el procedural con cuadros en blanco por error. Al terminar cada dibujo, mover el fichero correspondiente a `assets/ui/cuadros/` (sin el `_pendientes`) — el nombre no cambia, ya lleva el `ratio` correcto.
 
-`landscape` es la prioridad real: al ser el único tipo de dos museos enteros, con 1 sola imagen todos sus cuadros saldrían idénticos; con 3-5 tipos (el resto de temas) la repetición se diluye sola y 1-2 por tipo basta. `gioconda` a propósito se queda en 1 — es un icono concreto, no debería variar.
+| Formato | prehistoria (`landscape`) | naturaleza (`wildlife`) | antiguo | edad_media | moderna | **Necesitamos** | **Tenemos** |
+|---|---|---|---|---|---|---|---|
+| 4:3 (painting, big, tríptico, pequeños) | 6 | 6 | 6 (3 tipos × 2) | 5 (5 tipos × 1) | 5 (5 tipos × 1) | **28** | **0** (28 lienzos en blanco en `cuadros_pendientes/`) |
+| 1:1 (cuadrado, vinilo) | — | — | — | — | 3-4 (provisional) | **3-4** | **0** |
+| 3:4 (póster, vertical) | — | — | — | — | 3-4 (provisional) | **3-4** | **0** |
+| **Total por tema** | **6** | **6** | **6** | **5** | **11-12** | **34-36** | **0** |
+
+Cada tipo es ahora la prioridad real en su tema: con 1 sola imagen todos sus cuadros saldrían idénticos; con 3-5 tipos (temas con varios) la repetición se diluye sola y 1-2 por tipo basta. `gioconda` a propósito se queda en 1 — es un icono concreto, no debería variar.
 
 **Tríptico, aparte**: sus 3 paneles comparten `kind` pero no imagen (en procedural cada panel sale con semilla distinta; con un PNG fijo, un tríptico dibujado a mano mostraría el mismo dibujo 3 veces en un marco). Es el tamaño menos frecuente con diferencia (~10% de los cuadros, `_paintings()`), así que no bloquea nada: arreglarlo pediría una imagen panorámica dedicada por tipo (3× de ancho, cortada en 3 al mostrarla) o dejar que el tríptico tire siempre del procedural aunque el resto del tipo ya esté dibujado. Sin decidir, no urge.
 

@@ -67,7 +67,7 @@ const ALL := {
 		"colours": ["#5cc85c", "#ff6fa8", "#5ac8fa", "#ffd23f"],
 		"cloth": "#2e4a2a",
 		"floor": ["@diorama"],
-		"paintings": ["landscape"],
+		"paintings": ["wildlife"],
 		"big": ["bear", "log"],
 	},
 	"moderna": {
