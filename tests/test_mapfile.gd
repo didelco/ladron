@@ -10,13 +10,12 @@ extends SceneTree
 ##     same job; saved, the night finds it, and taken away it builds its own.
 ##   godot --headless --script tests/test_mapfile.gd
 
-var failures: Array[String] = []
+const Support := preload("res://tests/support.gd")
+var qa := Support.new("  ")
 
 
 func check(ok: bool, what: String) -> void:
-	print(("  ok   " if ok else "  FALLO ") + what)
-	if not ok:
-		failures.append(what)
+	qa.check(ok, what)
 
 
 func _init() -> void:
@@ -26,12 +25,7 @@ func _init() -> void:
 	_plays()
 	_heist()
 	_story_nights()
-	if failures.is_empty():
-		print("OK: mapas guardados")
-		quit(0)
-	else:
-		printerr("%d fallos" % failures.size())
-		quit(1)
+	quit(qa.summary())
 
 
 ## Everything a museum is, as one string.

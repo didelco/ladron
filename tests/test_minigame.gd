@@ -4,14 +4,13 @@ extends SceneTree
 ## Then the job: the case opens by the pick, and a gang cuts the panel first.
 ##   godot --headless --script tests/test_minigame.gd
 
-var failures: Array[String] = []
+const Support := preload("res://tests/support.gd")
+var qa := Support.new("  ")
 const DT := 1.0 / 60
 
 
 func check(ok: bool, what: String) -> void:
-	print(("  ok   " if ok else "  FALLO ") + what)
-	if not ok:
-		failures.append(what)
+	qa.check(ok, what)
 
 
 ## Seconds to pick a lock of `pins` pins. The expert sees the needle coming
@@ -439,11 +438,7 @@ func _init() -> void:
 	print("El estornudo")
 	sneeze()
 
-	if failures.is_empty():
-		print("OK: minijuegos")
-	else:
-		print("FALLOS: %d" % failures.size())
-	quit(1 if not failures.is_empty() else 0)
+	quit(qa.summary())
 
 
 ## The arcade machine's pong (ArcadeGame): it never ends, the ball stays on
@@ -495,8 +490,7 @@ func arcade() -> void:
 
 ## A check that only speaks up when it fails (it runs every frame).
 func check_quiet(ok: bool, what: String) -> void:
-	if not ok and not failures.has(what):
-		check(false, what)
+	qa.check_quiet(ok, what)
 
 
 ## Holding in a sneeze in a hideout (SneezeGame): one who keeps the beat

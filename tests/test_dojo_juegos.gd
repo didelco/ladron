@@ -6,7 +6,8 @@ extends SceneTree
 ## las tres dificultades (tramos de niveles), el guardado de la mejor marca por
 ## dificultad y banda, los puntos de inicio del dojo y la vista de fin.
 ## (El contrato común de las pruebas, el banco, el circuito y el panel: test_pruebas.gd.)
-var fails := 0
+const Support := preload("res://tests/support.gd")
+var qa := Support.new()
 const DT := 1.0 / 60.0
 var field: DojoField
 var bare: DojoField
@@ -14,8 +15,7 @@ var start := Vector2i(3, 8)
 
 
 func check(ok: bool, what: String) -> void:
-	print(("ok   " if ok else "FALLO ") + what)
-	if not ok: fails += 1
+	qa.check(ok, what)
 
 
 func bl(list: Array) -> Array[Dictionary]:
@@ -110,8 +110,7 @@ func _init() -> void:
 	_den_tests()
 	await _view_tests()
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
-	print("\n%d fallos" % fails)
-	quit(1 if fails > 0 else 0)
+	quit(qa.summary())
 
 
 # --- The field ---------------------------------------------------------------------------------

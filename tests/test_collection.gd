@@ -6,13 +6,12 @@ extends SceneTree
 ## kept.
 ##   godot --headless --script tests/test_collection.gd
 
-var failures: Array[String] = []
+const Support := preload("res://tests/support.gd")
+var qa := Support.new("  ")
 
 
 func check(ok: bool, what: String) -> void:
-	print(("  ok   " if ok else "  FALLO ") + what)
-	if not ok:
-		failures.append(what)
+	qa.check(ok, what)
 
 
 ## A night as the game lays it out (main._lay_out).
@@ -147,5 +146,4 @@ func _init() -> void:
 	check(thrones == 2, "y el museo no añade otro trono (%d)" % thrones)
 	MuseumView.exhibits = {}
 
-	print("OK: colección" if failures.is_empty() else "FALLOS: %d" % failures.size())
-	quit(0 if failures.is_empty() else 1)
+	quit(qa.summary())

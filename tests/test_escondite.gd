@@ -4,14 +4,14 @@ extends SceneTree
 ## empujar y armaduras donde esconderse, sin estrellas ni nada guardado. Se
 ## elige en la ciudad (a la izquierda del primer museo), se entra sin plano y
 ## se sale por la pausa a la ciudad, con la casita elegida.
-var fails := 0
+const Support := preload("res://tests/support.gd")
+var qa := Support.new()
 const DT := 1.0 / 60.0
 var m
 
 
 func check(ok: bool, what: String) -> void:
-	print(("ok   " if ok else "FALLO ") + what)
-	if not ok: fails += 1
+	qa.check(ok, what)
 
 
 func _accept_key() -> InputEventKey:
@@ -642,5 +642,4 @@ func _init() -> void:
 	check(_socks_in(m.den_view) == pedestals2 + 1, "y en toda la casa solo quedan los pedestales de PILLA EL CALCETÍN y la bandera: %d" % _socks_in(m.den_view))
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
-	print("\n%d fallos" % fails)
-	quit(1 if fails > 0 else 0)
+	quit(qa.summary())

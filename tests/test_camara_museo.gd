@@ -5,10 +5,10 @@ extends SceneTree
 ## vez, sin saltos; las flechas rodean el edificio en un orden que no cambia
 ## al girar; al salir, la ciudad como siempre. También con las salas del
 ## costado izquierdo y de detrás de la prehistoria.
-var fails := 0
+const Support := preload("res://tests/support.gd")
+var qa := Support.new()
 func check(ok: bool, what: String) -> void:
-	print(("ok   " if ok else "FALLO ") + what)
-	if not ok: fails += 1
+	qa.check(ok, what)
 
 
 func frames(n := 4) -> void:
@@ -161,5 +161,4 @@ func _init() -> void:
 	tour.queue_free()
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
-	print("FALLOS: %d" % fails if fails else "OK: la cámara del museo")
-	quit(1 if fails else 0)
+	quit(qa.summary())

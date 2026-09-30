@@ -3,13 +3,13 @@ extends SceneTree
 ## cuenta dos veces. Del título al menú, del menú a la partida y del final
 ## a lo siguiente; y el foco, que no salta al rehacer la misma pantalla.
 ## Pulsaciones de verdad (Input.parse_input_event), sobre la escena principal.
-var fails := 0
+const Support := preload("res://tests/support.gd")
+var qa := Support.new()
 var m
 
 
 func check(ok: bool, what: String) -> void:
-	print(("ok   " if ok else "FALLO ") + what)
-	if not ok: fails += 1
+	qa.check(ok, what)
 
 
 func key(k: Key, down: bool) -> void:
@@ -290,5 +290,4 @@ func _init() -> void:
 	m._set_setting("size", size_was)
 	m._set_setting("difficulty", difficulty_was)
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
-	print("FALLOS: %d" % fails)
-	quit(1 if fails else 0)
+	quit(qa.summary())

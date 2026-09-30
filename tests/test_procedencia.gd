@@ -4,14 +4,13 @@ extends SceneTree
 ## licencia, y toda licencia declarada está en la lista de permitidas. Lo mismo que hace
 ## tools/procedencia.py (que además cuida CREDITS.md), pero dentro de tests/run_all.sh.
 ## Los patrones valen como en fnmatch: «*» cubre cualquier texto, también «/»; gana la primera regla.
-var fails := 0
+const Support := preload("res://tests/support.gd")
+var qa := Support.new("", true)
 var data := {}
 
 
 func check(ok: bool, what: String) -> void:
-	if not ok:
-		print("FALLO " + what)
-		fails += 1
+	qa.check(ok, what)
 
 
 func _init() -> void:
@@ -92,8 +91,7 @@ func _init() -> void:
 
 
 func _end() -> void:
-	print("FALLOS: %d" % fails)
-	quit(1 if fails > 0 else 0)
+	quit(qa.summary())
 
 
 func _licence(where: String, lid: String, allowed: Array, licences: Dictionary) -> void:

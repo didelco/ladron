@@ -2,13 +2,12 @@ extends SceneTree
 ## Behaviour checks for the simulation: the scenarios the web version was
 ## tested with. godot --headless --script tests/test_sim.gd
 
-var failures: Array[String] = []
+const Support := preload("res://tests/support.gd")
+var qa := Support.new("  ")
 
 
 func check(ok: bool, what: String) -> void:
-	print(("  ok   " if ok else "  FALLO ") + what)
-	if not ok:
-		failures.append(what)
+	qa.check(ok, what)
 
 
 ## An empty walled room to test in.
@@ -259,9 +258,4 @@ func _init() -> void:
 	check(not easy_sees and hard_sees, "a 8,5 casillas: en fácil no te ve, en difícil sí")
 	check(easy_lock < Heist.loot_for(1).seconds and hard_lock > Heist.loot_for(1).seconds, "forzar: %s s fácil, %s s media, %s s difícil" % [easy_lock, Heist.loot_for(1).seconds, hard_lock])
 
-	if failures.is_empty():
-		print("OK: simulación como en la web")
-		quit(0)
-	else:
-		printerr("%d fallos" % failures.size())
-		quit(1)
+	quit(qa.summary())

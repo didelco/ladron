@@ -5,14 +5,14 @@ extends SceneTree
 ## la opción elegida de entrada, que la pulsación que acaba la prueba no acepte y que no se
 ## acepte dos veces, y el recorrido de cada una en la casa (empezar con la acción, HUD común,
 ## ganar y perder hasta el panel, SEGUIR / OTRA VEZ / SALIR, una prueba a la vez, Tab).
-var fails := 0
+const Support := preload("res://tests/support.gd")
+var qa := Support.new()
 const DT := 1.0 / 60.0
 var m
 
 
 func check(ok: bool, what: String) -> void:
-	print(("ok   " if ok else "FALLO ") + what)
-	if not ok: fails += 1
+	qa.check(ok, what)
 
 
 func frames(n := 4) -> void:
@@ -68,8 +68,7 @@ func _init() -> void:
 	await _view()
 	await _house()
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
-	print("\n%d fallos" % fails)
-	quit(1 if fails > 0 else 0)
+	quit(qa.summary())
 
 
 # --- El contrato de cada fila del registro ---------------------------------------------------

@@ -3,7 +3,8 @@ extends SceneTree
 ## y los guardias no se la pasan unos a otros en bucle.
 ## godot --headless --script tests/test_alerta.gd
 
-var failures: Array[String] = []
+const Support := preload("res://tests/support.gd")
+var qa := Support.new("  ")
 var clock := 1000.0
 const DT := 1.0 / 60
 ## Tope para que todos vuelvan a la calma tras perder al ladron:
@@ -12,9 +13,7 @@ const TOPE_S := 60.0 + 30.0 + 10.0 + 20.0
 
 
 func check(ok: bool, what: String) -> void:
-	print(("  ok   " if ok else "  FALLO ") + what)
-	if not ok:
-		failures.append(what)
+	qa.check(ok, what)
 
 
 func open_room() -> void:
@@ -102,9 +101,4 @@ func _init() -> void:
 	t = run(gs, 400.0)
 	check(t >= 0.0 and t <= 60.0, "!! por seguro sin ladron: calma en %.0f s (tope 60)" % t)
 
-	if failures.is_empty():
-		print("OK: la alerta baja")
-		quit(0)
-	else:
-		printerr("%d fallos" % failures.size())
-		quit(1)
+	quit(qa.summary())

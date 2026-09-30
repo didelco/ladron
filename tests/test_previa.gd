@@ -4,10 +4,10 @@ extends SceneTree
 ## sale de ella y lo que se cuenta encima, explorarlo e ir al robo; la
 ## vuelta al museo tras el robo, a la ciudad tras un gran golpe, y el plano
 ## que ya no se cuenta al repetir. Con uno y con dos ladrones.
-var fails := 0
+const Support := preload("res://tests/support.gd")
+var qa := Support.new()
 func check(ok: bool, what: String) -> void:
-	print(("ok   " if ok else "FALLO ") + what)
-	if not ok: fails += 1
+	qa.check(ok, what)
 
 
 func frames(n := 4) -> void:
@@ -532,5 +532,4 @@ func _init() -> void:
 	check(m.phase == "countdown" and m.thieves.size() == 2, "y al robo, los dos")
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
-	print("FALLOS: %d" % fails if fails else "OK: la previa de la historia")
-	quit(1 if fails else 0)
+	quit(qa.summary())

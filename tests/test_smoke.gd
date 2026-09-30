@@ -3,13 +3,12 @@ extends SceneTree
 ## a guard that loses you in it no longer knows which way you went, and one
 ## that sees a cloud comes to look. godot --headless --script tests/test_smoke.gd
 
-var failures: Array[String] = []
+const Support := preload("res://tests/support.gd")
+var qa := Support.new("  ")
 
 
 func check(ok: bool, what: String) -> void:
-	print(("  ok   " if ok else "  FALLO ") + what)
-	if not ok:
-		failures.append(what)
+	qa.check(ok, what)
 
 
 ## An empty walled room.
@@ -112,8 +111,4 @@ func _init() -> void:
 	Sim.step_guard(back, [] as Array[Thief], [] as Array[SoundEvent], Sim.now_ms(), 1.0 / 60)
 	check(back.suspicion == 0, "de espaldas, no la ve")
 
-	if failures.is_empty():
-		print("OK: la bomba de humo")
-	else:
-		print("FALLAN %d" % failures.size())
-	quit(1 if not failures.is_empty() else 0)
+	quit(qa.summary())

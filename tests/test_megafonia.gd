@@ -4,10 +4,10 @@ extends SceneTree
 ## comentan lo que hace el ladrón pronto, solo a veces y sin repetir frase (ni en
 ## el robo siguiente); el primer robo (sin guardias) no habla de guardias; las
 ## pistas son del museo de la noche; y en el juego el rótulo cabe en 4:3 y en 32:9.
-var fails := 0
+const Support := preload("res://tests/support.gd")
+var qa := Support.new()
 func check(ok: bool, what: String) -> void:
-	print(("ok   " if ok else "FALLO ") + what)
-	if not ok: fails += 1
+	qa.check(ok, what)
 
 
 func words(t: String) -> int:
@@ -628,5 +628,4 @@ func _init() -> void:
 		var view := hud.get_viewport().get_visible_rect()
 		check(view.grow(0.5).encloses(r) and r.position.y >= 60.0, "el rótulo cabe en %s (%s dentro de %s)" % [size, r, view.size])
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.path))
-	print("%d fallos" % fails)
-	quit(1 if fails > 0 else 0)
+	quit(qa.summary())
