@@ -35,7 +35,9 @@ extends RefCounted
 ##             difficulty, `limit` the seconds, `scarecrows` the guards' coats that sweep
 ##             their torch: {at, dir (the middle of the sweep), turn: {amp, speed, phase}}
 ##   minigame  (bench) the Minigame it is, `steps` how many steps at each difficulty
-##             and `limit` the seconds it may take (over them it is lost)
+##             (`pieces` instead for ESCONDITE: the piece of furniture, whose tightness
+##             is the step, Hideouts.TIGHT) and `limit` the seconds it may take (over
+##             them it is lost)
 ## The difficulties are the same for all: DojoTrials.TIERS.
 
 const SECTION := "dojo"

@@ -36,13 +36,14 @@ const SIGN_DIM := Color("#b9a9d8")
 const SIGN_SHUT := Color("#8a7fa3")
 
 ## The bar of stops in front of the town (the hideout, then the museums 1 to 5,
-## in the order of the story): the height of a card and the gap between them,
-## and the room under it for the keys at the bottom.
-const CARD_H := 92.0
-const CARD_GAP := 14.0
-const BAR_LIFT := 168.0
+## in the order of the story): a low strip of small smoked-glass cards along
+## the bottom (their height, the gap, and how far its top is from the bottom
+## edge, over the keys), so the town keeps the screen.
+const CARD_H := 46.0
+const CARD_GAP := 10.0
+const BAR_LIFT := 116.0
 ## The mouse must move this far before it picks anything by hovering.
-const HOVER_MOVE := 12.0
+const HOVER_MOVE := 30.0
 ## How close (px) it has to be to a stop of the map behind.
 const HIT_STOP := 120.0
 
@@ -73,6 +74,7 @@ var _next := -1
 ## never takes the pick from the pad
 var _hover := -1
 var _travel := 0.0
+var _travel_at := 0
 ## the rooms of the museum inside, as Story has them: heist numbers
 var _nights: Array[int] = []
 ## under each room reached, its stars
@@ -526,18 +528,26 @@ func _on_mouse(event: InputEvent) -> void:
 				talk.mouse(event)
 		"city":
 			if event is InputEventMouseMotion:
+				# Only a quick, deliberate move counts: the small drift of a hand at
+				# rest never picks anything.
+				var now := Time.get_ticks_msec()
+				if now - _travel_at > 250:
+					_travel = 0.0
+				_travel_at = now
 				_travel += event.relative.length()
 			# The bar first (it is the way), then the map behind.
 			var target := -1
 			for m in _cards:
 				if _cards[m].grow(6.0).has_point(at):
 					target = m
+			var on_card := target >= 0
 			if target < 0:
 				for m in stage._museums.size():
 					var d := at.distance_to(stage.stop_point(m))
 					if d < near:
 						near = d
 						target = m
+			var entered := target != _hover
 			_hover = target
 			_root.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if target >= 0 and stage.is_open(target) else Control.CURSOR_ARROW
 			if target < 0:
@@ -551,7 +561,7 @@ func _on_mouse(event: InputEvent) -> void:
 					_pick_museum(target)
 				if stage.is_open(target):
 					_enter_museum()
-			elif target != stage.picked and stage.is_open(target) and _travel > HOVER_MOVE:
+			elif on_card and entered and target != stage.picked and stage.is_open(target) and _travel > HOVER_MOVE:
 				_nav()
 				_pick_museum(target)
 		"museum":
@@ -611,7 +621,7 @@ func _process(_dt: float) -> void:
 		_sign.size = _sign.get_combined_minimum_size()
 		var goal := at - Vector2(_sign.size.x * 0.5, _sign.size.y + 6)
 		goal.x = clampf(goal.x, 16, view.x - _sign.size.x - 16)
-		goal.y = clampf(goal.y, 90, view.y - _sign.size.y - (BAR_LIFT + 8 if state == "city" else 70))
+		goal.y = clampf(goal.y, 90, view.y - _sign.size.y - (BAR_LIFT + 34 if state == "city" else 70))
 		_sign.position = goal if _sign.position == Vector2.ZERO else _sign.position.lerp(goal, 0.3)
 
 
@@ -685,7 +695,7 @@ func _place_bar(view: Vector2) -> void:
 	if state != "city":
 		return
 	var items := bar_items()
-	var w := clampf((view.x - 80.0 - CARD_GAP * (items.size() - 1)) / items.size(), 84.0, 150.0)
+	var w := clampf((view.x - 120.0 - CARD_GAP * (items.size() - 1)) / items.size(), 72.0, 124.0)
 	var total := w * items.size() + CARD_GAP * (items.size() - 1)
 	var x := view.x * 0.5 - total * 0.5
 	var y := view.y - BAR_LIFT
@@ -694,72 +704,70 @@ func _place_bar(view: Vector2) -> void:
 		x += w + CARD_GAP
 
 
-func _card_style(kind: String, colour: Color) -> StyleBoxFlat:
-	var st := StyleBoxFlat.new()
-	st.bg_color = Hud.GLASS_LIT if kind == "picked" else Hud.GLASS
-	st.set_corner_radius_all(18)
-	st.anti_aliasing = true
-	st.border_color = Hud.GLOW if kind == "picked" else colour
-	st.set_border_width_all(5 if kind == "picked" else 3 if kind == "hover" else 2)
-	if kind == "picked":
-		st.shadow_color = Color(Hud.GLOW, 0.5)
-		st.shadow_size = 14
-	return st
-
-
 ## Text with a dark edge, centred on x, its baseline at y.
-func _bar_text(font: Font, x: float, y: float, words: String, size: int, colour: Color) -> void:
+func _bar_text(font: Font, x: float, y: float, words: String, size: int, colour: Color, left := false) -> void:
 	var ext := font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, size)
-	var at := Vector2(x - ext.x * 0.5, y)
-	_bar.draw_string_outline(font, at, words, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 8, Color("#1a1024"))
+	var at := Vector2(x if left else x - ext.x * 0.5, y)
+	_bar.draw_string_outline(font, at, words, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 6, Color("#1a1024"))
 	_bar.draw_string(font, at, words, HORIZONTAL_ALIGNMENT_LEFT, -1, size, colour)
 
 
-## The bar over the town, in the order of the story: the hideout and the five
-## museums as cards (a disc in the museum's colour with its number, its
-## stars), the one picked lit and raised, the shut ones dim with a padlock,
-## and the next to do tagged SIGUIENTE; its place on the map behind ringed.
+## The bar over the town, in the order of the story: a low strip of small
+## smoked-glass cards like the menus' (Hud.GLASS, a pale rim), the hideout and
+## the museums 1 to 5, each with a small dot in the museum's colour (its
+## number) and its stars; the one picked lit with the warm glow and its name
+## over the strip, the shut ones dim with a padlock, the next to do tagged.
+## (The map behind already shows the one picked: the camera centres it and
+## the ring turns under it.)
 func _draw_bar() -> void:
 	if state != "city" or _cards.is_empty():
 		return
 	var font := _bar.get_theme_default_font()
 	var pulse := 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.006)
-	var at := stage.stop_point(stage.picked)
-	_bar.draw_arc(at, 34.0 + 6.0 * pulse, 0.0, TAU, 40, Color(Hud.GLOW, 0.9), 4.0, true)
 	for m in _cards:
 		var r: Rect2 = _cards[m]
 		var open := stage.is_open(m)
 		var picked: bool = m == stage.picked
-		var colour := SIGN_SHUT
+		var accent := SIGN_SHUT
 		if m == CityStage.HIDEOUT:
-			colour = Color("#e2262f").lightened(0.3)
+			accent = Color("#e2262f").lightened(0.3)
 		elif open:
-			colour = Color(Story.MUSEUMS[m].colour)
+			accent = Color(Story.MUSEUMS[m].colour)
+		var st := StyleBoxFlat.new()
+		st.bg_color = Hud.GLASS_LIT if picked else Hud.GLASS
+		st.set_corner_radius_all(14)
+		st.anti_aliasing = true
+		st.border_color = Hud.GLOW if picked else (Hud.GLOW.lerp(Hud.GLASS_EDGE, 0.5) if m == _hover and open else Hud.GLASS_EDGE)
+		st.set_border_width_all(3 if picked else 2)
 		if picked:
-			r = r.grow_individual(6, 10, 6, 0)
-		var kind := "picked" if picked else "hover" if m == _hover and open else "normal"
-		_bar.draw_style_box(_card_style(kind, Color(colour, 0.9 if open else 0.35)), r)
-		var c := Vector2(r.get_center().x, r.position.y + 34.0)
-		var alpha := 1.0 if open else 0.45
-		_bar.draw_circle(c, 23.0, Color(colour, alpha))
+			st.shadow_color = Color(Hud.GLOW, 0.45)
+			st.shadow_size = 12
+		_bar.draw_style_box(st, r)
+		var alpha := 1.0 if open else 0.4
+		var c := Vector2(r.position.x + 21.0, r.get_center().y)
+		var dark := Color("#1a1024")
 		if m == CityStage.HIDEOUT:
-			# A little house.
 			var cream := Color(SIGN, alpha)
-			_bar.draw_colored_polygon(PackedVector2Array([c + Vector2(-15, -2), c + Vector2(0, -15), c + Vector2(15, -2)]), cream)
-			_bar.draw_rect(Rect2(c + Vector2(-10, -2), Vector2(20, 14)), cream)
-			_bar.draw_rect(Rect2(c + Vector2(-3, 4), Vector2(6, 8)), Color("#1a1024"))
-		elif open:
-			_bar_text(Hud.ARCADE, c.x, c.y + 10, str(m + 1), 24, SIGN)
+			_bar.draw_colored_polygon(PackedVector2Array([c + Vector2(-11, 0), c + Vector2(0, -10), c + Vector2(11, 0)]), cream)
+			_bar.draw_rect(Rect2(c + Vector2(-8, 0), Vector2(16, 10)), cream)
+			_bar.draw_rect(Rect2(c + Vector2(-2, 4), Vector2(4, 6)), dark)
+			_bar_text(font, c.x + 20.0, c.y + 6.0, Text.t("TOUR_BAR_HIDEOUT"), 15, Color(SIGN, alpha), true)
+			continue
+		if open:
+			_bar.draw_circle(c, 13.0, Color(accent, 0.95))
+			_bar_text(Hud.ARCADE, c.x, c.y + 6.0, str(m + 1), 14, dark if accent.get_luminance() > 0.5 else SIGN)
+			_bar_text(font, c.x + 19.0, c.y + 6.0, StarSlots.museum_line(m, players), 15, SIGN, true)
 		else:
-			# A padlock.
-			var dark := Color("#1a1024")
-			_bar.draw_arc(c + Vector2(0, -3), 7.0, PI, TAU, 12, dark, 3.0, true)
-			_bar.draw_rect(Rect2(c + Vector2(-9, -3), Vector2(18, 14)), dark)
-		var words := Text.t("TOUR_BAR_HIDEOUT") if m == CityStage.HIDEOUT else (StarSlots.museum_line(m, players) if open else "")
-		if words != "":
-			_bar_text(font, r.get_center().x, r.end.y - 12, words, 17, SIGN)
-		if m == _next:
-			_bar_text(Hud.ARCADE, r.get_center().x, r.position.y - 14.0, Text.t("TOUR_NEXT_STOP"), 14, Color(Hud.GLOW, 0.65 + 0.35 * pulse))
+			_bar.draw_arc(c + Vector2(0, -2), 5.0, PI, TAU, 12, Color(SIGN_SHUT, alpha), 2.5, true)
+			_bar.draw_rect(Rect2(c + Vector2(-7, -2), Vector2(14, 10)), Color(SIGN_SHUT, alpha))
+	if _cards.has(_next):
+		var rn: Rect2 = _cards[_next]
+		_bar_text(Hud.ARCADE, rn.get_center().x, rn.position.y - 8.0, Text.t("TOUR_NEXT_STOP"), 10, Color(Hud.GLOW, 0.65 + 0.35 * pulse))
+	# The name of the one picked, small, over the strip.
+	if stage.picked != CityStage.HIDEOUT and stage.is_open(stage.picked):
+		var first: Rect2 = _cards[CityStage.HIDEOUT]
+		var last: Rect2 = _cards[4]
+		_bar_text(font, (first.position.x + last.end.x) * 0.5, first.position.y - 34.0, String(Story.museum(stage.picked).name), 15, Hud.GLOW_TEXT)
 
 
 func _nav() -> void:

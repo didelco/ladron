@@ -419,10 +419,11 @@ func _init() -> void:
 	t.act("right")
 	check(t.stage.picked == 0, "... y los cerrados siguen cerrados")
 	var over := InputEventMouseMotion.new()
-	over.position = t.stage.stop_point(CityStage.HIDEOUT)
-	over.relative = Vector2(30, 0)
+	# Hovering only picks on the bar's cards now (the map behind is for clicking).
+	over.position = (t._cards[CityStage.HIDEOUT] as Rect2).get_center()
+	over.relative = Vector2(40, 0)
 	t._on_mouse(over)
-	check(t.stage.picked == CityStage.HIDEOUT, "con el ratón encima, la casita")
+	check(t.stage.picked == CityStage.HIDEOUT, "con el ratón encima de su tarjeta, la casita")
 
 	# In: no plan, no briefing.
 	var went := [0]

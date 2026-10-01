@@ -301,7 +301,7 @@ func _shots() -> void:
 		["wires", "panel", 19, "Minijuego: los cables", "Desconectar el cuadro de alarma."],
 		["steady", "case", 19, "Minijuego: la ventosa", "Cortar el cristal sin moverse."],
 		["balance", "plinth", 21, "Minijuego: el equilibrio", "Hacerse pasar por estatua sobre un pedestal."],
-		["squeeze", "hideout", 11, "Minijuego: colarse", "Meterse en un escondite, un empujón, de uno a tres segundos a la vista."],
+		["squeeze", "hideout", 11, "Minijuego: colarse", "Meterse en un escondite: ordenar las bolas de colores como el código, unos segundos a la vista."],
 		["sneeze", "hideout", 18, "Minijuego: el estornudo", "Escondido, aguantar el estornudo: pulsar cuando el polvo pasa por la barra."],
 		["arcade", "arcade", 21, "Minijuego: la recreativa", "Un pong de broma en la máquina: no se gana nada y los guardias siguen su ronda."]]
 	for g in games:

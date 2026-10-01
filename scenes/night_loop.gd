@@ -110,7 +110,7 @@ func sneeze(p: Thief, noises: Array[SoundEvent]) -> void:
 	host.loudspeaker.act("sneeze", host.thieves.find(p))
 
 
-## A frame of a thief wriggling into a hideout (Hideouts.squeeze): in once
+## A frame of a thief at a hideout's colour code (Hideouts.squeeze): in once
 ## it is done, or let go if the hideout went meanwhile.
 func squeeze(p: Thief, done: bool) -> void:
 	var spot := p.hide_target
@@ -340,7 +340,7 @@ func _do_action(t: Thief, i: int, act: Dictionary, keys: Dictionary, now: float,
 			host.sfx.at("roll", host._to_world(t.x, t.y), 0.4, 2.0)
 			host._log(Text.t("LOG_PLINTH_BLOWN" if t.pose_blown else "LOG_PLINTH_UP"))
 		"hide":
-			# In with a moment's wriggling (Minigame "squeeze", _squeeze);
+			# In once its colour code is made (Minigame "squeeze", squeeze);
 			# before the nights have minigames, in at once.
 			if Heist.minigames():
 				Hideouts.start(t, act.at, host._game_input(i, keys))

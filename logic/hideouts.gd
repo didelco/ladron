@@ -19,9 +19,10 @@ extends RefCounted
 ## (MapGen), the props only so many suits of armour (Props.place), and each
 ## night adds furniture, and empty pedestals to pose on (Plinths), up to the
 ## museum's share (places, spread). A saved map keeps what it stood by hand.
-## Getting in takes a shove or two (Minigame "squeeze", start), one to
-## three seconds out in the open — once the nights have minigames
-## (Heist.minigames); before that, the action key gets you in at once.
+## Getting in takes its colour code (Minigame "squeeze", a ColourCode:
+## start), a few seconds out in the open putting the balls in the code's
+## order — once the nights have minigames (Heist.minigames); before that,
+## the action key gets you in at once.
 ##
 ## Inside, you make no sound and no guard sees you. Same deal as the statue
 ## (Plinths): it only works unseen. Get in in front of a guard and it
@@ -59,8 +60,8 @@ const BIG_SHARE := 0.4
 ## None closer than this to another, in tiles, middle to middle: running
 ## from one to the next is a risk of its own.
 const APART := 9.0
-## How tight a squeeze each is: a little slower to sink in (SqueezeGame);
-## the roomy ones are not.
+## How tight a squeeze each is: its colour code dealt one swap further
+## (SqueezeGame); the roomy ones are not.
 const TIGHT := {"box": 1, "egg": 1, "chest": 1, "shell": 1, "armour": 1, "legionary": 1}
 
 ## The pieces of furniture standing tonight: tile -> kind (PIECES).
@@ -262,8 +263,8 @@ static func within_reach(p: Thief, thieves: Array[Thief], allow := Callable()) -
 	return best
 
 
-## Start wriggling into one (Minigame "squeeze"): it stops where it is,
-## hands and all, out in the open until it is in.
+## Start on the colour code of one (Minigame "squeeze"): it stops where it
+## is, hands and all, out in the open until it is in.
 static func start(p: Thief, s: Spot, input: Dictionary) -> void:
 	p.game = Minigame.make("squeeze", "hideout", TIGHT.get(s.kind, 0), input)
 	p.hide_target = s

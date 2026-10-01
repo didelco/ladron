@@ -45,6 +45,6 @@ No se ha tocado: es la geometría más frágil (los guardias que giran), y el us
 
 ## Pendiente
 
-- ESCONDITE está integrado solo a nivel de flujo (`BenchTrial`, `Minigame.make("squeeze", "bench", …)`); si el minijuego `squeeze` cambia, se adapta en su fila de `DojoTrials.TABLE` (`pieces`, `limit`) y en `BenchTrial.steps_for`.
+- ESCONDITE comparte con la ciudad el minijuego `squeeze` (el código de colores, `ColourCode`): `BenchTrial` hace `Minigame.make("squeeze", "bench", …)` y `Hideouts.start` el mismo con `"hideout"`; su fila de `DojoTrials.TABLE` solo pone el mueble (`pieces`, su apretón es un cambio más) y el reloj (`limit`).
 - Puertas que cierran los juegos (`gates_closed`): `Den` no tiene `dojo_gates()`; los niveles «con puerta» degradan.
 - Al cerrar el bloque: capturas de documentación e hitos (`python3 tools/docs.py build shots`), no antes.
