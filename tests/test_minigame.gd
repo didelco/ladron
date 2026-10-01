@@ -123,19 +123,33 @@ func balance(late: float, pressure: float, seed_: int, limit: float, level := 1,
 	return t
 
 
-## Seconds to get into a hideout: the shove `react` seconds after it could
-## be made (`wait`: only when the place is dark, at the dojo's own lantern).
-func squeeze(react: float, tremble: float, level := 1, tight := 0, wait := false, what := "hideout") -> float:
-	var g := Minigame.make("squeeze", what, tight, {}, 3, level) as SqueezeGame
-	g.tremble = tremble
-	var since := 0.0
-	var held := false
-	while not g.done and g.t < 30.0:
-		since = since + DT if g.ready() and not (wait and g.watched) else 0.0
-		var press := g.ready() and since >= react
-		g.tick({"action": true} if press and not held else {}, DT)
-		held = press
-	return g.t
+## A press of one key on a squeeze (down one frame, up the next).
+func tap(g: SqueezeGame, k: String) -> String:
+	var out := g.tick({k: true}, DT)
+	g.tick({}, DT)
+	return out
+
+
+## Make a hideout's colour code the straight way: for every slot out of
+## place, walk the cursor to it, pick, walk to the ball that goes there, pick.
+## The swaps it took (-1 if it never came out).
+func solve(g: SqueezeGame) -> int:
+	var swaps := 0
+	while not g.done and swaps < 16:
+		var slot := -1
+		for i in g.size():
+			if g.code.balls[i] != g.code.target[i]:
+				slot = i
+				break
+		if slot < 0:
+			return -1
+		var other := g.code.balls.find(g.code.target[slot])
+		for to in [slot, other]:
+			while g.cursor != to:
+				tap(g, "right" if to > g.cursor else "left")
+			tap(g, "action")
+		swaps += 1
+	return swaps if g.done else -1
 
 
 func _init() -> void:
@@ -274,59 +288,74 @@ func _init() -> void:
 		cup_level.append(sum / 8)
 	check(cup_level[0] < cup_level[1] and cup_level[1] < cup_level[2], "ventosa por niveles: %.1f s fácil, %.1f s medio, %.1f s difícil" % cup_level)
 
-	print("Colarse en un escondite")
-	var quickest := squeeze(0.0, 0.0, 0)
-	var usual := squeeze(0.2, 0.0, 1, 0, true, "bench")
-	var hardest := squeeze(0.2, 0.0, 2, 1, true, "bench")
-	var worst := squeeze(0.2, 1.0, 2, 1, true, "bench")
-	check(quickest >= 0.6 and quickest <= 1.0, "lo más rápido posible, fácil: %.1f s" % quickest)
-	check(squeeze(0.3, 0.0, 0) <= 2.0, "fácil: 2 s como mucho: %.1f s" % squeeze(0.3, 0.0, 0))
-	check(usual <= 3.0, "medio, esperando a que pase la linterna: %.1f s" % usual)
-	check(hardest > usual and hardest <= 3.0, "difícil y apretado, esperando dos veces: %.1f s (3 s como mucho)" % hardest)
-	check(worst >= hardest and worst <= 3.6, "difícil, apretado y temblando: %.1f s" % worst)
-	check(squeeze(0.2, 0.0, 1, 1) > squeeze(0.2, 0.0, 1), "apretado cuesta más")
-	check(squeeze(0.2, 1.0, 1) > squeeze(0.2, 0.0, 1), "con las manos temblando cuesta más")
+	print("Colarse en un escondite: el código de colores")
+	# The same puzzle in a heist and at the dojo's bench, by level: 3, 4 and 5 balls.
+	var sizes := [[], [], []]
+	for lv in 3:
+		for what in ["hideout", "bench"]:
+			var sg := Minigame.make("squeeze", what, 0, {}, 3 + lv, lv) as SqueezeGame
+			sizes[lv].append(sg.size())
+			check(sg.code != null and sg.steps == sg.size() and sg.code.target.size() == sg.size(), "%s nivel %d: un código de %d bolas, los pasos son las bolas" % [what, lv, sg.size()])
+	check(sizes[0] == [3, 3] and sizes[1] == [4, 4] and sizes[2] == [5, 5], "fácil 3 bolas, medio 4, difícil 5, en el robo y en el banco igual: %s" % [sizes])
+	# Never dealt made already, whatever the dice.
+	var dealt_done := 0
+	var far_enough := true
+	for s in 300:
+		var lv := s % 3
+		var tight := (s / 3) % 2
+		var sg := Minigame.make("squeeze", "hideout", tight, {}, 1000 + s, lv) as SqueezeGame
+		if sg.code.solved() or sg.done:
+			dealt_done += 1
+		if sg.code.distance() < ColourCode.swaps_for(lv, tight):
+			far_enough = false
+	check(dealt_done == 0, "300 repartos: ninguno sale hecho de entrada (%d)" % dealt_done)
+	check(far_enough, "... y todos a los cambios que pide el nivel por lo menos (apretado, uno más)")
+	check(ColourCode.swaps_for(0, 0) == 1 and ColourCode.swaps_for(0, 1) == 2 and ColourCode.swaps_for(1, 0) == 2 and ColourCode.swaps_for(2, 1) == 4, "cambios mínimos: 1 fácil, 2 medio, 3 difícil; apretado, uno más (nunca más de bolas - 1)")
+	# The E that opened it is not a pick; a swap changes the two balls of place.
 	var sq := Minigame.make("squeeze", "hideout", 0, {"action": true}, 3, 1) as SqueezeGame
 	sq.tick({"action": true}, DT)
-	check(sq.sink <= 0.0 and sq.step == 0 and sq.events.is_empty(), "la E que abrió el juego no empuja")
+	check(sq.picked() < 0 and sq.code.swaps == 0 and sq.events.is_empty(), "la E que abrió el juego no coge ninguna bola")
 	sq.tick({}, DT)
+	var before := sq.code.balls.duplicate()
+	tap(sq, "action")
+	check(sq.picked() == 0 and sq.events.is_empty() and sq.code.balls == before, "la acción coge la bola del cursor: nada cambia aún")
+	tap(sq, "right")
+	check(sq.cursor == 1 and sq.picked() == 0, "la derecha mueve el cursor, la bola cogida sigue cogida")
 	sq.tick({"action": true}, DT)
-	check(sq.sink > 0.0 and sq.events.has("pin") and not sq.slow, "empujar: empieza a hundirse")
-	var was := sq.sink
+	check(sq.picked() < 0 and sq.code.swaps == 1 and sq.events.has("pin"), "la acción sobre otra: las dos cambian de sitio")
+	check(sq.code.balls[0] == before[1] and sq.code.balls[1] == before[0] and sq.code.balls[2] == before[2], "... la del cursor y la cogida, las demás quietas")
+	check(sq.steps == 4 and sq.step == sq.code.matched() and sq.progress() == float(sq.step) / 4.0, "el avance: las bolas en su sitio")
 	sq.tick({}, DT)
-	sq.tick({"action": true}, DT)
-	check(sq.sink < was and sq.events.is_empty(), "machacar no acelera: hundiéndose no cuenta")
-	for i in 60:
-		sq.tick({}, DT)
-	check(sq.done and sq.step == sq.steps and sq.progress() == 1.0, "una sola vez y dentro (medio)")
-	# Watched, it sinks slowly.
-	var seen := Minigame.make("squeeze", "hideout", 0, {}, 3, 1) as SqueezeGame
-	var free := Minigame.make("squeeze", "hideout", 0, {}, 3, 1) as SqueezeGame
-	seen.watched = true
-	seen.tick({"action": true}, DT)
-	free.tick({"action": true}, DT)
-	check(seen.sink > free.sink * 1.8 and seen.slow and seen.events.has("slip"), "empujar a la vista: se hunde a cámara lenta (y suena mal)")
-	# The dojo's own lantern: none on the easy one, on part of the round on the rest.
-	var lamp := [0, 0, 0]
+	tap(sq, "action")
+	tap(sq, "action")
+	check(sq.picked() < 0 and sq.code.swaps == 1, "cogerla y soltarla en el mismo sitio no cambia nada")
+	# The cursor goes round.
+	tap(sq, "left")
+	tap(sq, "left")
+	check(sq.cursor == 3, "a la izquierda del principio, la última")
+	tap(sq, "right")
+	check(sq.cursor == 0, "... y a la derecha del final, la primera")
+	# Made: done, every ball in place.
+	var took := solve(sq)
+	check(sq.done and took >= 1 and sq.code.solved() and sq.progress() == 1.0 and sq.step == sq.steps, "ordenadas como el código: dentro (%d cambios)" % took)
+	# At every level, the straight way makes it in as many swaps as it is dealt from.
 	for lv in 3:
-		var b := Minigame.make("squeeze", "bench", 0, {}, 3, lv) as SqueezeGame
-		for i in 220:
-			b.tick({}, DT)
-			lamp[lv] += 1 if b.watched else 0
-	check(lamp[0] == 0 and lamp[1] > 40 and lamp[2] > lamp[1] and lamp[2] < 200, "la linterna del dojo: ninguna en fácil, más en difícil (%s)" % str(lamp))
+		var sg := Minigame.make("squeeze", "bench", 0, {}, 77 + lv, lv) as SqueezeGame
+		var away := sg.code.distance()
+		var made := solve(sg)
+		check(made == away and sg.done, "nivel %d: hecho en %d cambios, los justos (%d bolas)" % [lv, made, sg.size()])
+	# Watched is for the box only: the puzzle is the same.
+	var seen := Minigame.make("squeeze", "hideout", 0, {}, 3, 1) as SqueezeGame
+	seen.watched = true
+	check(solve(seen) >= 1 and seen.done, "a la vista se juega igual: solo cuesta el tiempo")
 	var hard := Minigame.make("squeeze", "hideout", 1, {}, 3, 2) as SqueezeGame
-	check(hard.steps == 2 and Minigame.make("squeeze", "hideout", 0, {}, 3, 0).steps == 1, "difícil: dos empujones; fácil y medio, uno")
-	hard.tick({"action": true}, DT)
-	for i in 80:
-		hard.tick({}, DT)
-	check(not hard.done and hard.step == 1 and hard.progress() == 0.5 and hard.ready(), "difícil: a mitad de camino toca otro empujón")
+	check(hard.size() == 5 and hard.code.distance() >= 4, "difícil y apretado: cinco bolas, a cuatro cambios")
 	check(hard.tick({"cancel": true}, DT) == "quit", "B (rodar) lo deja")
-	# Only the action key: a direction never does anything.
+	# Up and down do nothing: the row is a row.
 	var dirs := Minigame.make("squeeze", "hideout", 0, {}, 3, 1) as SqueezeGame
-	for k in ["left", "right", "up", "down"]:
-		dirs.tick({k: true}, DT)
-		dirs.tick({}, DT)
-	check(dirs.sink <= 0.0 and dirs.step == 0 and dirs.lock == 0.0, "las direcciones no empujan ni atascan")
+	for k in ["up", "down"]:
+		tap(dirs, k)
+	check(dirs.cursor == 0 and dirs.picked() < 0 and dirs.code.swaps == 0, "arriba y abajo no hacen nada")
 
 	print("Minijuegos: uno por fichero")
 	for k in ["lockpick", "wires", "steady", "balance", "squeeze"]:

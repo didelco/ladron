@@ -21,7 +21,7 @@ Añadidas para los mapas de reto (`MapFile.columns`, herramienta "column" en el 
 ## Dojo (`docs/pendiente_dojo_juegos.md`)
 
 - Puertas que cierran juegos (`gates_closed`): `Den` no tiene `dojo_gates()`; los niveles con puerta (6 y 10) degradan a laberinto sin puerta real.
-- Si cambia el minijuego ESCONDITE, hay que retocar `DojoTrials.TABLE` y `BenchTrial.steps_for`.
+- El minijuego ESCONDITE es ya el código de colores (`ColourCode`, `SqueezeGame`), el mismo en la ciudad y en el dojo; su fila de `DojoTrials.TABLE` solo pone muebles y reloj.
 
 ## Estructura y compatibilidad (`docs/pendiente_estructura_y_compatibilidad.md`)
 

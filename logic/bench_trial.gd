@@ -7,7 +7,7 @@ extends DojoTrial
 ## difficulty and size of band) and SEGUIR / OTRA VEZ / SALIR.
 ##
 ## One attempt for each difficulty (the difficulties are the levels: more pins,
-## more wires, a smaller ring, a tighter hideout, see DojoTrials.TABLE), so what it
+## more wires, a smaller ring, a longer colour code, see DojoTrials.TABLE), so what it
 ## keeps is the time of the pass. The minigames cannot be failed, only done slowly,
 ## so a test is failed by the clock: `limit` seconds (a row of the table) from the
 ## moment it begins. The thief lets go of it like of any trial, with Tab (or with
@@ -35,7 +35,7 @@ func _setup() -> void:
 
 
 ## How many steps a test asks of its minigame at a difficulty (the pins, the
-## wriggles the tightness of the piece adds, the lamps).
+## tightness of the piece, the lamps).
 static func steps_for(trial_id: String, tier_: int) -> int:
 	var row := DojoTrials.info(trial_id)
 	if row.has("pieces"):
