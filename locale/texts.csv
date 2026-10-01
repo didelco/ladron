@@ -9,6 +9,8 @@ MENU_SETTINGS,AJUSTES
 MENU_QUIT,SALIR
 MENU_QUIT_GAME,SALIR DEL JUEGO
 MENU_QUIT_ASK,¿SALIR DEL JUEGO?
+MENU_LEAVE_ASK,¿VOLVER AL MENÚ?
+MENU_LEAVE_EDITOR_ASK,¿VOLVER AL EDITOR?
 MENU_QUIT_ASK_TEXT,La noche en curso no se guarda.
 MENU_BACK,< VOLVER
 MENU_PREV,< ATRÁS
@@ -46,9 +48,9 @@ MENU_TO_MENU,< MENÚ
 JOIN_TITLE,¿QUIÉN JUEGA?
 JOIN_PLAYER,JUGADOR %d
 JOIN_PRESS,Pulsa un botón
-JOIN_HOW,Pulsa mando o teclado para unirte
+JOIN_HOW,Elige un lado del teclado o tu mando para unirte
 JOIN_READY,¡LISTOS!
-JOIN_UNDO,Esc: quitar al último · tu tecla: salir
+JOIN_UNDO,Esc: quitar al último · sin jugadores vuelve al menú
 SEAT_KB_LEFT,Teclado · WASD
 SEAT_KB_RIGHT,Teclado · flechas
 SEAT_ANY,Teclado y mandos
@@ -102,6 +104,7 @@ CONTROLS_SLOW,ANDAR LENTO|Shift izq.|Shift dcha.|Stick a medias o LB
 CONTROLS_CROUCH,A GATAS|C|{slash}|X o clic del stick
 CONTROLS_ROLL,RODAR · SOLTAR|Espacio|Enter|B
 CONTROLS_PUSH,ACCIÓN|E|{period}|A
+CONTROLS_SMOKE,HUMO|F|{comma}|Y
 CONTROLS_MAP,MAPA|M|View
 CONTROLS_PAUSE,PAUSA|P o Esc|Start
 CONTROLS_MUTE,SILENCIAR|N|—
@@ -172,7 +175,7 @@ LESSON_BIG_TITLE,UN MUSEO GRANDE
 LESSON_BIG_TEXT,"Más salas, nada nuevo. Planea la ruta en el plano antes de entrar."
 LESSON_FINALE_TITLE,EL ÚLTIMO GOLPE
 LESSON_FINALE_TEXT,"Todos despiertos y sin calmarse. Todo lo que sabes, a la vez. Suerte."
-LESSON_CASE_ALARM_TEXT,"La vitrina pita mientras la abres. Si viene alguien, suéltala y escóndete."
+LESSON_CASE_ALARM_TEXT,"Mientras la abres, la vitrina pita. Si llega alguien, suéltala y escóndete."
 NIGHT_01_NAME,la dentadura del abuelo Paco
 NIGHT_01_BLURB,"Postiza, de porcelana. Tan vieja que parece un fósil."
 NIGHT_01_VERB,DESENROSCANDO EL TARRO
@@ -556,7 +559,7 @@ CHALLENGE_UNPLAYABLE,Sin terminar: ábrelo en el editor
 CHALLENGE_INFO,%s · %s · %d guardias
 CHALLENGE_EMPTY,Aún no hay mapas: crea uno.
 CHALLENGE_PAGE,Página %d de %d
-CHALLENGE_MAPS_HEAD,RETOS
+CHALLENGE_MAPS_HEAD,JUGAR MAPAS
 CHALLENGE_HINT,"A, E o clic: abrir"
 CHALLENGE_NIGHT_EDITED,retocado a mano
 CHALLENGE_NIGHT_BUILT,como lo genera el juego
@@ -801,7 +804,7 @@ EDITOR_SHAPE_BUCKET,CUBO DE FREGONA
 EDITOR_PLAN,VER EL PLANO
 EDITOR_PAD_HELP,Cruceta: mover · A: poner (mantén: pinta) · X: borrar · B: deshacer · Y: coger · LB/RB: objeto · LT/RT: categoría · Start: botones · View: 3D
 EDITOR_PAD_HELP_3D,Stick izq.: mover · Stick der.: girar cámara · A: poner · X: borrar · B: deshacer · Y: coger · LB/RB: objeto · LT/RT: categoría · View: al plano
-EDITOR_3D_HELP,3D: botón derecho arrastrando gira · rueda acerca · Esc: al plano
+EDITOR_3D_HELP,3D: arrastra con botón derecho para girar · rueda: zoom · Esc: plano
 EDITOR_3D_WAITS,"Arregla lo que sale en rojo: en cuanto se pueda jugar, el museo se vuelve a construir."
 GEN_OWNER_1_WHO,la abuela Remedios
 GEN_OWNER_1_OF,de la abuela Remedios
@@ -986,7 +989,7 @@ TIP_JUMPY,Un solo ruido raro y dan la alarma.
 TIP_GRUDGE_ONE,"Si se mosquea, tarda en calmarse: espera bien escondido."
 TIP_GRUDGE_MANY,"Si se mosquean, tardan en calmarse: espera bien escondido."
 TIP_POST,Un guardia no se mueve: pasa cuando mire a otro lado.
-TIP_CASE_ALARM,"La vitrina pita al abrirla: luego, corre a la salida."
+TIP_CASE_ALARM,"Mientras abres pita: escóndete si vienen. Con la pieza, ve a la salida."
 TIP_LIGHTS_ONE,En alerta enciende la luz: apágala con E en el interruptor.
 TIP_LIGHTS_MANY,En alerta encienden la luz: apágala con E en el interruptor.
 TIP_TWO,"Si uno te ve, grita y los demás vienen corriendo."
@@ -1454,7 +1457,7 @@ HIDEOUT_DOOR_OPEN,ABRIR
 HIDEOUT_DOOR_CLOSE,CERRAR
 HIDEOUT_HINT,"Salir: la puerta o la pausa. Mapa: M o View"
 HIDEOUT_PIECE,la pieza de práctica
-HIDEOUT_PIECE_BLURB,No se abre: es para practicar.
+HIDEOUT_PIECE_BLURB,Esta vitrina permanece cerrada: sirve para practicar.
 HIDEOUT_POSTER_1,"SE BUSCA:\nEL BARÓN"
 HIDEOUT_POSTER_2,"NINJA\nKARMA"
 HIDEOUT_POSTER_3,"NO SE\nTOCA EL\nQUESO"
@@ -1531,3 +1534,39 @@ TOUR_NEXT_STOP,SIGUIENTE
 TOUR_BAR_HIDEOUT,CASITA
 TOUR_PIECE_HEAD,LA PIEZA
 HUD_VERSION,v%s
+
+CHALLENGE_RETOUCHED,RETOCADO
+CHALLENGE_EDIT_LEGEND,* RETOCADO: robo de Historia modificado en el editor
+MENU_HELP_DIFFICULTY,Cambia la vista y el oído de los guardias y las cerraduras.
+MENU_HELP_SIZE,Más salas implican más recorrido y lugares donde esconderse.
+MENU_HELP_THEME,Cambia las salas y su decoración.
+MENU_HELP_PLAYERS,De 1 a 4 jugadores en equipo. Dos pueden compartir teclado.
+SETTINGS_ADJUST_HELP,←/→ ajustan · Clic o aceptar cambia al instante y guarda
+SETTINGS_HELP_FULLSCREEN,Ocupa toda la pantalla o vuelve a una ventana.
+SETTINGS_HELP_WINDOW,Tamaño de la ventana; más píxeles exigen más trabajo gráfico.
+SETTINGS_HELP_UI_SCALE,Agranda textos y botones; usa la rueda o el foco para recorrer menús largos.
+SETTINGS_HELP_QUALITY,Alta añade efectos y sombras; baja reduce detalle y mejora el rendimiento.
+SETTINGS_HELP_RENDER_SCALE,Menos resolución 3D mejora el rendimiento y reduce nitidez; los textos no cambian.
+SETTINGS_HELP_VSYNC,Sincroniza imagen y pantalla para evitar cortes; puede añadir latencia.
+SETTINGS_HELP_MEGAPHONE,Elige avisos en texto y voz: ambos / solo texto / solo voz / apagada.
+SETTINGS_HELP_IA,Muestra lo que piensan los guardias durante el robo.
+SETTINGS_HELP_SOUND,Activa o silencia todos los sonidos del juego.
+SETTINGS_HELP_MUSIC,Activa o silencia la música.
+SETTINGS_HELP_MUSIC_VOLUME,Cambia el volumen de la música.
+SETTINGS_HELP_EFFECTS_VOLUME,Cambia el volumen de los efectos y las voces.
+SETTINGS_HELP_RUMBLE,Activa la vibración de los mandos compatibles.
+SETTINGS_HELP_RUMBLE_STRENGTH,Ajusta la intensidad de la vibración.
+SETTINGS_HELP_DEADZONE,Ignora pequeños movimientos del stick para evitar que el ladrón se mueva solo.
+MENU_DOJO,DOJO
+MENU_DOJO_TEXT,"Practica sin riesgo. Desbloquea pruebas en Historia"
+MENU_DOJO_HOW_MANY,BANDA · PRUEBAS DISPONIBLES
+MENU_DOJO_BAND,%dP · %d/%d
+MENU_DOJO_LEAVE,< A LA PORTADA
+
+JOIN_KEYBOARD_LEFT,Teclado izquierdo (WASD): E para entrar · Espacio para salir
+JOIN_KEYBOARD_RIGHT,Teclado derecho (flechas): %s para entrar · Enter para salir
+JOIN_PAD,Cada mando: A para entrar · B para salir
+JOIN_EXTRA_PADS,El teclado admite 2 jugadores; para 3 o 4 hacen falta mandos
+PAUSE_CONTROLS_HINT,Humo y mapa: consulta Ajustes → Controles
+CHALLENGE_STORY_HEAD,EDITAR ROBOS DE HISTORIA
+EDITOR_ICONS_HELP,Iconos: pasa el ratón o enfoca para ver su función

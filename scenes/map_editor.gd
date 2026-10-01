@@ -618,7 +618,10 @@ func _button(text: String, call: Callable, parent: Node, colour: Color, big := f
 	_look(b, false)
 	b.pressed.connect(call)
 	b.pressed.connect(func() -> void: ui_sound.emit("ok"))
-	b.focus_entered.connect(func() -> void: ui_sound.emit("nav"))
+	b.focus_entered.connect(func() -> void:
+		ui_sound.emit("nav")
+		if not b.tooltip_text.is_empty() and is_instance_valid(_hint):
+			_say(b.tooltip_text, Hud.CREAM))
 	b.mouse_entered.connect(b.grab_focus)
 	parent.add_child(b)
 	return b
@@ -2035,7 +2038,9 @@ func _refresh() -> void:
 	if _pad:
 		_hint.text = Text.t("EDITOR_PAD_HELP_3D" if in_3d else "EDITOR_PAD_HELP")
 	elif in_3d:
-		_hint.text = Text.t("EDITOR_3D_HELP") + " · " + _hint.text
+		_hint.text = Text.t("EDITOR_3D_HELP") + "\n" + _hint.text
+	else:
+		_hint.text += "\n" + Text.t("EDITOR_ICONS_HELP")
 	_plan.queue_redraw()
 
 

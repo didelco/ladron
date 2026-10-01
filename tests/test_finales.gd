@@ -126,15 +126,18 @@ func _init() -> void:
 	m._new_round(5)
 	check(Text.t("END_HEAD_MUSEUM").left(10) in m._front_page(true).headline, "tras el gran golpe, el museo desvalijado")
 
-	# The pause: the monitor on, the menu over it, off again on the way back.
+	# The pause: scenes/hub.gd replaces the monitor and its menu with its own
+	# pegatinas (Seguir/Ajustes/Salir); the real monitor turns off instead of
+	# staying lit, same as the real panel underneath it (ver Hub._process).
 	m.phase = "playing"
 	m._pause()
 	await process_frame
-	check(paused and hud.cctv_on(), "en pausa se ve el monitor")
-	check(buttons(hud).size() == 4, "reanudar, ajustes, salir a la ciudad, salir del juego")
+	check(paused and m.hub.visible and m.hub.active == m.hub.PAUSE_OPTIONS, "en pausa se ve el hub, no el monitor de siempre")
+	check(not hud.cctv_on(), "el monitor real se apaga: las pegatinas lo tapan")
 	check(Hud.cctv_caps("la sala de los fósiles") == "LA SALA DE LOS FOSILES", "el monitor escribe en mayúsculas sin tildes")
 	m.options.show("paused")
-	check(hud.cctv_on(), "los ajustes desde la pausa lo mantienen")
+	await process_frame
+	check(not m.hub.visible and not hud.cctv_on(), "ajustes desde la pausa: la pantalla real, sin el hub encima")
 	m.options.back()
 	m._start_playing()
 	check(not paused, "reanudar quita la pausa")

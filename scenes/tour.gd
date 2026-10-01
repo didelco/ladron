@@ -426,7 +426,7 @@ func fade_out() -> void:
 ## A press, whatever it came from, as what it means here: "left", "right",
 ## "up", "down", "accept", "back", "skip", "prev", "next", or "" for nothing.
 ## Keys: the arrows and WASD; accept, back and skip as on every menu
-## (MenuKeys: E or the full stop to take, Escape, Space or Enter to go back,
+## (MenuKeys: E, the full stop, Space or Enter to take; Escape or Backspace back,
 ## Tab to skip); a pad: the cross or the left stick, A, B, Start, LB and RB
 ## (which flick between rooms inside a museum; in the town they do nothing).
 func intent(event: InputEvent) -> String:
@@ -661,7 +661,7 @@ static func glyph_for(what: String, pad: bool) -> Dictionary:
 	match what:
 		"move": return {"kind": "keys4", "labels": ["W", "A", "S", "D"]}
 		"accept": return {"kind": "key", "label": "E"}
-		"back": return {"kind": "key", "label": Text.t("KEY_SPACE")}
+		"back": return {"kind": "key", "label": "ESC"}
 		"skip": return {"kind": "key", "label": "TAB"}
 	return {"kind": "key", "label": "?"}
 

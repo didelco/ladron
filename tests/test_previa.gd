@@ -100,6 +100,25 @@ func _init() -> void:
 	check(t.intent(stick) == "right", "el stick mueve")
 	check(t.intent(stick) == "", "... una vez por empujón")
 
+	check(Tour.glyph_for("accept", false).label == "E" and Tour.glyph_for("back", false).label == "ESC",
+		"ayuda de ciudad, museo y plano: E acepta y ESC vuelve")
+	check(Tour.glyph_for("accept", true).pos == "south" and Tour.glyph_for("back", true).pos == "east",
+		"ayuda de mando: A acepta y B vuelve")
+	# Run each advertised control through the actual city → museum → plan path.
+	for event in [key(KEY_E), key(KEY_PERIOD), key(KEY_SPACE), key(KEY_ENTER), pad(JOY_BUTTON_A)]:
+		t.input(event)
+		await frames()
+		check(t.state == "museum", "aceptar en ciudad entra al museo")
+		t.input(event)
+		await frames(8)
+		check(t.state == "plan", "aceptar en museo abre el plano")
+		t.input(key(KEY_ESCAPE))
+		await frames(6)
+		check(t.state == "museum", "ESC desde primera página del plano vuelve al museo")
+		t.input(pad(JOY_BUTTON_B))
+		await frames(6)
+		check(t.state == "city", "B desde museo vuelve a ciudad")
+
 	# Into the museum: its first room, the rest shut.
 	t.act("accept")
 	await frames()
@@ -208,8 +227,8 @@ func _init() -> void:
 	talk._pick(guard_at)
 	var lit := talk._rule_lines.filter(func(l): return l.text.begins_with("▶")).size()
 	check(lit == talk.marks[guard_at].rules.size(), "elegir un guardia resalta sus reglas en la lista")
-	t.act("accept")
-	check(talk.mode == "look" and talk._card != null and talk._card_at == talk.marks[guard_at].at, "A sobre el guardia: su ficha junto a él")
+	t.input(key(KEY_SPACE))
+	check(talk.mode == "look" and talk._card != null and talk._card_at == talk.marks[guard_at].at, "Espacio sobre el guardia: su ficha junto a él")
 	t.act("back")
 	check(talk.mode == "explore" and talk._list.visible, "B la cierra, la lista sigue")
 	var sheet: PlanSheet = t.stage.sheet

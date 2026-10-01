@@ -41,6 +41,7 @@ const VELVET := Color("#5c1f33")
 const BACKDROP := {
 	"story": Color("#15112a"),
 	"generative": Color("#1b1526"),
+	"dojo": Color("#20182a"),
 	"players": Color("#221510"),
 	"seat": Color("#221510"),
 	"guards:easy": Color("#161b24"),
@@ -143,6 +144,7 @@ func _build() -> void:
 	match kind:
 		"story": _story()
 		"generative": _generative()
+		"dojo": _dojo()
 		"players": _players(int(arg))
 		"seat": _players(0, int(arg))
 		"guards": _guards(arg)
@@ -227,6 +229,38 @@ func _story() -> void:
 		_glow(s, Color.WHITE, 2.5)
 	var thief := _figure("thief", Color("#2ec4a6"), Color("#12705f"), 0.7)
 	_extra.append(thief)
+
+
+## A training mat, the sock to catch, and a wooden lookout to sneak past.
+## This is a diorama only: it never borrows the live house or its progress.
+func _dojo() -> void:
+	_frame(3.7, 0.65)
+	_island(3.5, 2.7, WOOD, SOIL)
+	_rounded(_root, 3.1, 2.3, 0.05, 0.1, MINT, Vector3(0, 0.03, 0))
+	for x in [-0.5, 0.5]:
+		_box(_root, Vector3(0.02, 0.01, 2.1), CREAM.darkened(0.25), Vector3(x, 0.065, 0))
+	_rounded(_root, 0.55, 0.55, 0.55, 0.07, CREAM, Vector3(0.15, 0.34, -0.65))
+	var sock := LootModels.build("sock", GOLD)
+	sock.scale = Vector3.ONE * 0.7
+	sock.position = Vector3(0.15, 0.85, -0.65)
+	_root.add_child(sock)
+	_extra.append(sock)
+	# Its timber body and crossbar make it a practice dummy, not a guard.
+	_box(_root, Vector3(0.12, 1.25, 0.12), WOOD, Vector3(1.05, 0.65, -0.3))
+	_box(_root, Vector3(0.85, 0.12, 0.12), WOOD, Vector3(1.05, 0.95, -0.3))
+	var head := SphereMesh.new()
+	head.radius = 0.22
+	head.height = 0.44
+	_mesh(_root, head, CREAM, Vector3(1.05, 1.45, -0.3))
+	var beam := SpotLight3D.new()
+	beam.position = Vector3(1.05, 1.25, -0.1)
+	beam.rotation_degrees = Vector3(-58, 0, 0)
+	beam.light_color = Color("#ffe7a8")
+	beam.light_energy = 2.0
+	beam.spot_range = 3.0
+	beam.spot_angle = 25
+	_root.add_child(beam)
+	_figure("thief", Color("#2ec4a6"), Color("#12705f"), 0.8)
 
 
 ## A floor plan on a sheet of paper, popping up wall by wall, a pair of dice
@@ -382,6 +416,8 @@ func _pose(dt: float) -> void:
 	match kind:
 		"story":
 			_figures[0].set_state(Vector3(-0.35, 0, 1.0), PI / 4, 0.0, dt)
+		"dojo":
+			_figures[0].set_state(Vector3(-0.65, 0.065, 0.6), PI / 4, 0.0, dt)
 		"players", "seat":
 			for i in _figures.size():
 				var x := (i - (_figures.size() - 1) / 2.0) * 0.75
@@ -407,6 +443,11 @@ func _animate(dt: float) -> void:
 			for k in 2:
 				var glass: StandardMaterial3D = _extra[k].get_meta("material")
 				glass.emission_energy_multiplier = 1.4 + 1.0 * absf(sin(_t * (5.0 + k * 2.0)) * sin(_t * 1.7))
+		"dojo":
+			var f := _figures[0]
+			f.set_state(Vector3(-0.65 + sin(_t * 1.2) * 0.3, 0.065, 0.6), PI / 4, 0.0, dt)
+			_hop(f, _t * 5.0, 0.045)
+			_extra[0].position.y = 0.85 + sin(_t * 2.0) * 0.06
 		"generative":
 			if int(_t / 2.0) != int((_t - dt) / 2.0):
 				_plan_seed += 1

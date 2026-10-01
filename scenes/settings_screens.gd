@@ -41,10 +41,13 @@ func show(from: String, page := "") -> void:
 		rows.append({"text": Text.t("SETTINGS_CONTROLS_PAGE"), "call": show.bind(from, "pads")})
 		rows.append({"text": Text.t("SETTINGS_OPTIONS_PAGE"), "call": show.bind(from, "options")})
 	for k in keys:
-		rows.append({"text": text_of(k), "step": step.bind(k)})
+		rows.append({"text": text_of(k), "step": step.bind(k), "help": Text.t("SETTINGS_HELP_" + k.to_upper())})
 	rows.append({"text": Text.t("MENU_BACK"), "call": back, "colour": Hud.C.dim})
 	var title := Text.t({"": "MENU_SETTINGS", "sound": "SETTINGS_SOUND_TITLE", "screen": "SETTINGS_SCREEN_TITLE", "pads": "SETTINGS_CONTROLS_TITLE", "options": "SETTINGS_OPTIONS_TITLE"}[page])
-	var items: Array = [{"title": title, "size": 48}, {"buttons": rows}]
+	var items: Array = [{"title": title, "size": 48}]
+	if page != "":
+		items.append({"text": Text.t("SETTINGS_ADJUST_HELP"), "size": 15, "wrap": true, "width": 570, "colour": Hud.C.text})
+	items.append({"buttons": rows})
 	match page:
 		"sound":
 			items.append({"text": Text.t("SETTINGS_SOUND_HELP"), "size": 16, "colour": Hud.C.dim})
@@ -67,8 +70,8 @@ func controls_table() -> Dictionary:
 	]
 	# The main action first, then the way out, then the rest. P2's keys by
 	# what they say on this keyboard ({slash}: "-" on a Spanish one).
-	for key in ["CONTROLS_MOVE", "CONTROLS_PUSH", "CONTROLS_ROLL", "CONTROLS_CROUCH", "CONTROLS_SLOW", "CONTROLS_MAP", "CONTROLS_PAUSE", "CONTROLS_MUTE"]:
-		var line := Text.t(key).replace("{slash}", Hands.key_label(KEY_SLASH)).replace("{period}", Hands.key_label(KEY_PERIOD))
+	for key in ["CONTROLS_MOVE", "CONTROLS_PUSH", "CONTROLS_ROLL", "CONTROLS_CROUCH", "CONTROLS_SLOW", "CONTROLS_SMOKE", "CONTROLS_MAP", "CONTROLS_PAUSE", "CONTROLS_MUTE"]:
+		var line := Text.t(key).replace("{slash}", Hands.key_label(KEY_SLASH)).replace("{period}", Hands.key_label(KEY_PERIOD)).replace("{comma}", Hands.key_label(KEY_COMMA))
 		var cells: Array = Array(line.split("|"))
 		if cells.size() == 3:
 			cells[1] = {"text": cells[1], "span": 2}

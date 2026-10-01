@@ -207,92 +207,109 @@ func _init() -> void:
 		print("(la previa del generativo tiene una sola página: aceptar ahí empieza, se prueba en test_transiciones)")
 	await each(BACKS, "previa", brief, func(): return m.phase == "generative", "vuelve al generativo")
 
-	# --- La pausa, y los ajustes desde ella ---------------------------------------------------
+	# --- La pausa: Esc/P pausa de verdad (Game._pause, intacta), pero se ve con las
+	# pegatinas del hub en vez del panel de texto de siempre (scenes/hub.gd) -----------------
 	var pause := func() -> void:
 		m._start_playing()
 		await frames(2)
 		m._pause()
-	await each(ACCEPTS, "pausa", pause, func(): return m.phase == "playing" and not paused, "SEGUIR")
-	await each(BACKS, "pausa", pause, func(): return m.phase == "playing" and not paused, "atrás: a jugar")
-	await each(BACKS, "ajustes desde la pausa", func():
-		await pause.call()
-		await frames(W)
-		m.options.show("paused"), func(): return m.phase == "paused", "vuelve a la pausa")
+	await each(ACCEPTS, "pausa", pause, func(): return m.phase == "playing" and not paused and not m.hub.visible, "Seguir (primera tarjeta)")
+	await each(BACKS, "pausa", pause, func(): return m.phase == "playing" and not paused and not m.hub.visible, "atrás: a jugar")
 
-	# --- SALIR DEL JUEGO, desde la pausa: pide confirmar, y no cierra de verdad aquí ----------
-	var quits := [0]
-	m.quit_hook = func() -> void: quits[0] += 1
-	var focus_text := func() -> String:
-		var f := root.gui_get_focus_owner()
-		return (f as Button).text if f is Button else ""
-	var buttons_of := func() -> Array:
-		var out: Array = []
-		var f := root.gui_get_focus_owner()
-		if f:
-			for c in f.get_parent().get_children():
-				if c is Button:
-					out.append((c as Button).text)
-		return out
 	await pause.call()
 	await frames(W)
-	var opts: Array = buttons_of.call()
-	check(opts.size() >= 2 and opts[-1] == Text.t("MENU_QUIT_GAME") and opts.count(Text.t("MENU_QUIT_GAME")) == 1,
-		"pausa · SALIR DEL JUEGO existe y es la última (%s)" % [opts])
-	for k in [KEY_S, KEY_DOWN]:
-		await pause.call()
-		await frames(W)
-		for i in opts.size() - 1:
-			await hit(k)
-			await frames(2)
-		check(focus_text.call() == Text.t("MENU_QUIT_GAME"), "pausa · %s baja hasta SALIR DEL JUEGO" % OS.get_keycode_string(k))
+	check(m.hub.visible and m.hub.active == m.hub.PAUSE_OPTIONS and m.hub.active[m.hub.cursor].id == "resume",
+		"pausa · pegatinas Seguir/Ajustes/Salir, Seguir ya seleccionado")
+
+	# Ajustes desde la pausa: el mismo carril de pegatinas que desde el hub inicial, y
+	# cada subpágina abre la pantalla de ajustes real de verdad.
 	for k in ACCEPTS:
 		await pause.call()
 		await frames(W)
-		for i in opts.size() - 1:
-			await hit(KEY_DOWN)
-			await frames(2)
+		await hit(KEY_RIGHT)
+		await frames(2)
 		await hit(k)
 		await frames(W)
-		check(m.phase == "paused" and m.quit_asking and quits[0] == 0 and focus_text.call() == Text.t("SETTINGS_NO"),
-			"pausa · %s en SALIR DEL JUEGO pregunta, sin salir, con NO elegido" % name_of(k))
-		# Atrás (o P, o Start) es NO: vuelve a la pausa, no al juego.
-		await hit(KEY_ESCAPE)
+		check(m.hub.visible and m.hub.active == m.hub.SETTINGS_OPTIONS,
+			"pausa · %s en Ajustes abre Sonido/Pantalla/Controles/Opciones" % name_of(k))
+	for k in BACKS:
+		await pause.call()
 		await frames(W)
-		check(m.phase == "paused" and not m.quit_asking and quits[0] == 0 and buttons_of.call() == opts,
-			"pregunta · Esc cancela: vuelve a la pausa")
+		await hit(KEY_RIGHT)
+		await frames(2)
+		await hit(ACCEPTS[0])
+		await frames(W)
+		await hit(k)
+		await frames(W)
+		check(m.hub.visible and m.hub.active == m.hub.PAUSE_OPTIONS,
+			"pausa · ajustes · %s vuelve a Seguir/Ajustes/Salir" % name_of(k))
 	await pause.call()
 	await frames(W)
-	m._ask_quit()
-	await frames(W)
-	await hit(KEY_P)
-	await frames(W)
-	check(m.phase == "paused" and not m.quit_asking and quits[0] == 0, "pregunta · P cancela: vuelve a la pausa")
-	m._ask_quit()
-	await frames(W)
-	await hit("B")
-	await frames(W)
-	check(m.phase == "paused" and not m.quit_asking and quits[0] == 0, "pregunta · B cancela: vuelve a la pausa")
-	m._ask_quit()
-	await frames(W)
+	await hit(KEY_RIGHT)
+	await frames(2)
 	await hit(KEY_E)
 	await frames(W)
-	check(m.phase == "paused" and not m.quit_asking and quits[0] == 0, "pregunta · E sobre NO: vuelve a la pausa")
-	m._ask_quit()
+	await hit(KEY_RIGHT)
+	await frames(2)
+	await hit(KEY_E)  # Sonido
+	await frames(W)
+	check(m.phase == "settings" and not m.hub.visible, "pausa · ajustes · Sonido abre su pantalla real")
+	await hit(KEY_ESCAPE)  # de Sonido a la página principal de ajustes (sigue "settings")
+	await frames(W)
+	await hit(KEY_ESCAPE)  # de ahí, a la pausa de verdad
+	await frames(W)
+	check(m.hub.visible and m.hub.active == m.hub.PAUSE_OPTIONS,
+		"pausa · volver del todo de ajustes real reaparece con Seguir/Ajustes/Salir")
+	m._start_playing()
+
+	# Salir desde la pausa: en modo práctica, directo (como siempre: sin preguntar);
+	# fuera de ella, pide confirmar con la pregunta real — y el hub se aparta mientras
+	# esa pregunta está en pantalla (Game.quit_asking), para no comérsela.
+	var was_mode: String = m.mode
+	m.mode = Practice.MODE
+	await pause.call()
+	await frames(W)
+	await hit(KEY_RIGHT)
+	await hit(KEY_RIGHT)
+	await frames(2)
+	await hit(KEY_E)
+	await frames(W)
+	check(m.phase != "paused" and not m.hub.visible, "pausa · Salir en práctica vuelve sin preguntar")
+	m.mode = was_mode
+
+	m._start("generative", 1)
+	await pause.call()
+	await frames(W)
+	await hit(KEY_RIGHT)
+	await hit(KEY_RIGHT)
+	await frames(2)
+	await hit(KEY_E)
+	await frames(W)
+	check(m.phase == "paused" and m.quit_asking and not m.hub.visible,
+		"pausa · Salir fuera de práctica pregunta de verdad, el hub no la tapa")
+	await hit(KEY_ESCAPE)
+	await frames(W)
+	check(m.phase == "paused" and not m.quit_asking and m.hub.visible and m.hub.active == m.hub.PAUSE_OPTIONS,
+		"pregunta · Esc cancela: vuelve a la pausa, otra vez con sus pegatinas")
+	await pause.call()
+	await frames(W)
+	await hit(KEY_RIGHT)
+	await hit(KEY_RIGHT)
+	await frames(2)
+	await hit(KEY_E)
 	await frames(W)
 	await hit(KEY_LEFT)
 	await frames(2)
-	check(focus_text.call() == Text.t("SETTINGS_YES"), "pregunta · izquierda lleva a SÍ")
 	await hit(KEY_E)
 	await frames(W)
-	check(quits[0] == 1, "pregunta · SÍ cierra el juego (una vez)")
-	m.quit_hook = Callable()
-	# En la casa de la banda la pausa ya sale por la puerta: sin la opción.
-	var was_mode: String = m.mode
-	m.mode = Practice.MODE
-	m._pause()
-	await frames(W)
-	check(Text.t("MENU_QUIT_GAME") not in buttons_of.call(), "pausa del dojo · sin SALIR DEL JUEGO")
-	m.mode = was_mode
+	# quit_asking solo se resetea dentro de _pause(): al salir del todo a otra
+	# pantalla se queda en true, sin que importe (nadie vuelve a leerlo hasta
+	# la próxima pausa, que lo reconstruye). No es señal de que algo falle.
+	check(m.phase != "paused" and not m.hub.visible,
+		"pregunta · SÍ sale de verdad a donde tocaba (ciudad/menú real)")
+	# SALIR DEL JUEGO (cerrar del todo desde la pausa) no tiene tarjeta propia en este
+	# rediseño: se queda pendiente si hace falta devolverlo, ver scenes/hub.gd.
+	m._start("generative", 1)
 
 	# --- Jugando: rodar no es atrás, la acción no es aceptar -------------------------------
 	var play := func() -> void:

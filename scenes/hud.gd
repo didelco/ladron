@@ -261,6 +261,7 @@ var _count_on_done: Callable
 ## how long the count waits before its first number (countdown's wait)
 var _count_wait := 0.0
 var _map: Control
+var _map_gang_visible := true
 var _map_picture: TextureRect
 var _map_stage: MapStage
 ## the folded map on the menu on show, if any, to lean with the arrows
@@ -326,6 +327,10 @@ func _ready() -> void:
 	_map.add_child(dim)
 	var column := VBoxContainer.new()
 	column.set_anchors_preset(Control.PRESET_FULL_RECT)
+	column.offset_left = 24
+	column.offset_top = 24
+	column.offset_right = -24
+	column.offset_bottom = -24
 	column.alignment = BoxContainer.ALIGNMENT_CENTER
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_map.add_child(column)
@@ -335,8 +340,7 @@ func _ready() -> void:
 	_map_picture.texture = _map_stage.get_texture()
 	_map_picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_map_picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_map_picture.custom_minimum_size = Vector2(MapStage.SIZE) * 0.95
-	_map_picture.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_map_picture.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_map_picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(_map_picture)
 	# The legend is filled in when the map comes out (show_map): it knows
@@ -632,6 +636,8 @@ func show_menu(items: Array, screen := "") -> void:
 	_titles.clear()
 	for item in items:
 		_menu_item(item, _panel_box, st)
+	if screen.begins_with("settings:") or screen == "generative" or (screen == "title" and get_viewport().get_visible_rect().size.x < 1120):
+		_scroll_menu(_panel_box)
 	_resolve_right_links(st)
 	var rows := st.rows
 	var first := st.first
@@ -673,9 +679,36 @@ func _new_box() -> VBoxContainer:
 	return box
 
 
+## Long settings remain reachable at larger interface sizes, including by focus.
+func _scroll_menu(box: VBoxContainer) -> void:
+	var scroll := ScrollContainer.new()
+	scroll.follow_focus = true
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	_centre.remove_child(box)
+	_centre.add_child(scroll)
+	scroll.add_child(box)
+	var fit := func() -> void:
+		if not is_instance_valid(box) or not is_instance_valid(scroll):
+			return
+		var room := get_viewport().get_visible_rect().size - Vector2(40, 48)
+		var content := box.get_combined_minimum_size()
+		scroll.custom_minimum_size = Vector2(minf(content.x + 16, room.x), minf(content.y + 16, room.y))
+	fit.call_deferred()
+	var viewport := get_viewport()
+	viewport.size_changed.connect(fit)
+	box.minimum_size_changed.connect(fit)
+	box.tree_exited.connect(func() -> void:
+		if viewport.size_changed.is_connected(fit):
+			viewport.size_changed.disconnect(fit)
+		scroll.queue_free())
+
+
 ## The menu that was on show, on its way out: no longer pressable, clicked
 ## or focused, whatever happens to it next (_show_box).
 func _let_go(box: Control) -> void:
+	if box.get_parent() is ScrollContainer:
+		box.get_parent().mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var focus := get_viewport().gui_get_focus_owner()
 	if focus and box.is_ancestor_of(focus):
 		get_viewport().gui_release_focus()
@@ -877,6 +910,12 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 				else:
 					button.custom_minimum_size = Vector2(240 if item.get("row", false) else 400, 42)
 			box.add_child(button)
+			if b.has("help"):
+				var help := _label(13, C.text, box)
+				help.text = b.help
+				help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+				help.custom_minimum_size.x = 570
+				help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			if item.get("row", false):
 				line.append(button)
 			else:
@@ -1413,7 +1452,7 @@ func _card(c: Dictionary, width: int, back := false) -> Button:
 		r.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		r.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if c.has("stage") else CanvasItem.TEXTURE_FILTER_NEAREST
+		r.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if c.has("stage") or c.get("smooth", false) else CanvasItem.TEXTURE_FILTER_NEAREST
 		var k := (width - 24.0) / picture.get_width()
 		r.custom_minimum_size = Vector2(width - 24, picture.get_height() * k)
 		_round_corners(r, r.custom_minimum_size, 16.0)
@@ -1435,7 +1474,9 @@ func _card(c: Dictionary, width: int, back := false) -> Button:
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		l.custom_minimum_size = Vector2(width - 24, 0)
 		# Room for every line it wraps to (about 6.5 px a character).
-		var lines := ceili(l.text.length() * 6.5 / (width - 24))
+		var lines := 0
+		for paragraph in l.text.split("\n"):
+			lines += maxi(1, ceili(paragraph.length() * 6.5 / (width - 24)))
 		height += 10 + 17 * maxi(2, lines)
 	b.custom_minimum_size = Vector2(width, height + 34)
 	# A card to look at, not to press (the player-select seats).
@@ -1482,7 +1523,7 @@ const STICKER := Vector2(120, 80)
 ## to make out what is on it, and its corners rounded like a card's picture.
 const STAGE_STICKER := Vector2(168, 112)
 const STAGE_RADIUS := 12.0
-const DIM := 0.35
+const DIM := 0.82
 ## A choice's sticker: in full colour and a touch brighter with the focus
 ## (lit 1), nearly a dark silhouette without it (lit 0), grey with a hint of
 ## the bubble's purple. radius: its corners rounded (box: its size), for a
@@ -1494,7 +1535,7 @@ uniform vec2 box = vec2(120.0, 80.0);
 uniform float radius = 0.0;
 void fragment() {
 	float grey = dot(COLOR.rgb, vec3(0.299, 0.587, 0.114));
-	vec3 off = vec3(grey) * vec3(0.2, 0.18, 0.26);
+	vec3 off = mix(vec3(grey), COLOR.rgb, 0.55) * 0.72;
 	vec3 on = min(COLOR.rgb * 1.12, vec3(1.0));
 	float a = COLOR.a;
 	vec2 q = min(UV * box, box - UV * box);
@@ -1565,7 +1606,10 @@ func pop_bubble(anchor_id: String, heading: String, choices: Array, focus: int, 
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(row)
 	_bubble_buttons.clear()
-	for c in choices:
+	var choice_width := (get_viewport().get_visible_rect().size.x - 2 * BUBBLE_EDGE - 28 - 10 * (choices.size() - 1)) / maxi(1, choices.size())
+	for choice: Dictionary in choices:
+		var c := choice.duplicate()
+		c["max_width"] = choice_width
 		var b := _bubble_choice(c)
 		row.add_child(b)
 		_bubble_buttons.append(b)
@@ -1584,7 +1628,7 @@ func pop_bubble(anchor_id: String, heading: String, choices: Array, focus: int, 
 	_bubble_tail = Control.new()
 	_bubble_tail.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_bubble_tail.size = TAIL + Vector2(0, 3)
-	_bubble_tail.draw.connect(_draw_tail)
+	_bubble_tail.draw.connect(_draw_tail.bind(_bubble_tail))
 	root.add_child(_bubble_tail)
 	root.modulate.a = 0.0
 	_bubble_open(root, _bubble_buttons[clampi(focus, 0, n - 1)] if n > 0 else null)
@@ -1603,6 +1647,9 @@ func _bubble_open(root: Control, first: Button) -> void:
 		_quiet = true
 		first.grab_focus()
 		_quiet = false
+	# Focus callbacks may close or replace the selector synchronously.
+	if root != _bubble or not is_instance_valid(_bubble_tail):
+		return
 	_place_bubble()
 	var up: bool = _bubble_tail.get_meta("up", false)
 	_bubble_box.pivot_offset = Vector2(_bubble_tail.position.x + TAIL.x / 2 - _bubble_box.position.x, _bubble_box.size.y if up else 0.0)
@@ -1645,6 +1692,7 @@ func _bubble_choice(c: Dictionary) -> Button:
 		b.add_child(stage)
 		icon.texture = stage.get_texture()
 		sticker = STAGE_STICKER
+		sticker *= minf(1.0, (c.get("max_width", 172.0) - 4) / sticker.x)
 		m.set_shader_parameter("box", sticker)
 		m.set_shader_parameter("radius", STAGE_RADIUS)
 	else:
@@ -1657,9 +1705,12 @@ func _bubble_choice(c: Dictionary) -> Button:
 	m.set_shader_parameter("lit", 0.0)
 	icon.material = m
 	box.add_child(icon)
-	var t := _label(12, colour.lerp(CREAM, 0.2), box, true)
+	var title_size := int(c.get("title_size", mini(12, floori((c.get("max_width", 172.0) - 4) / maxi(1, String(c.title).length())))))
+	var t := _label(title_size, colour.lerp(CREAM, 0.2), box, true)
 	t.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
 	t.text = c.title
+	t.clip_text = true
+	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	t.modulate = Color(DIM, DIM, DIM)
 	b.custom_minimum_size = Vector2(maxf(CHOICE_W, sticker.x + 4), sticker.y + 34)
@@ -1771,8 +1822,9 @@ func _place_bubble() -> void:
 	_bubble_box.size = size
 	var x := clampf(card.get_center().x - size.x / 2, BUBBLE_EDGE, maxf(BUBBLE_EDGE, screen.x - size.x - BUBBLE_EDGE))
 	var below := card.end.y + TAIL.y - 2.0
-	var up := below + size.y > screen.y - BUBBLE_EDGE
+	var up := _screen == "generative" or below + size.y > screen.y - BUBBLE_EDGE
 	var y := card.position.y - TAIL.y + 2.0 - size.y if up else below
+	y = clampf(y, BUBBLE_EDGE, maxf(BUBBLE_EDGE, screen.y - size.y - BUBBLE_EDGE))
 	_bubble_box.position = Vector2(x, y)
 	var tip := clampf(card.get_center().x, x + 30.0, x + size.x - 30.0)
 	_bubble_tail.position = Vector2(tip - TAIL.x / 2, y + size.y - 3.0 if up else y - TAIL.y)
@@ -1783,8 +1835,8 @@ func _place_bubble() -> void:
 
 ## The tail: a triangle of the bubble's glass with its glowing rim on its
 ## two sides, over the bubble's own rim where they meet (3 px into it).
-func _draw_tail() -> void:
-	var up: bool = _bubble_tail.get_meta("up", false)
+func _draw_tail(tail: Control) -> void:
+	var up: bool = tail.get_meta("up", false)
 	var w := TAIL.x
 	var h := TAIL.y
 	var sides: PackedVector2Array
@@ -1797,8 +1849,8 @@ func _draw_tail() -> void:
 		# Pointing up, into the bubble's top rim (y h to h + 3).
 		sides = PackedVector2Array([Vector2(0, h), Vector2(w / 2, 0), Vector2(w, h)])
 		fill = PackedVector2Array([Vector2(0, h), Vector2(w / 2, 0), Vector2(w, h), Vector2(w, h + 3), Vector2(0, h + 3)])
-	_bubble_tail.draw_colored_polygon(fill, Color(GLASS_LIT, 1.0))
-	_bubble_tail.draw_polyline(sides, GLOW, 3.0, true)
+	tail.draw_colored_polygon(fill, Color(GLASS_LIT, 1.0))
+	tail.draw_polyline(sides, GLOW, 3.0, true)
 
 
 ## The thief on the title screen, as the web draws it: a hooded figure in
@@ -1837,7 +1889,7 @@ func hide_panel() -> void:
 	for c in _play:
 		if not c.visible or not _shown:
 			c.modulate.a = 1.0
-		c.visible = true
+		c.visible = c != _gang or not _map.visible
 	if not _shown:
 		return
 	# The game's HUD comes back as the menu goes.
@@ -2089,7 +2141,10 @@ func set_ia(on: bool, entries: Array) -> void:
 
 ## Take the map out (or put it away) during play: it unfolds as it comes.
 func show_map(plan: Image, thief_colours: Array = []) -> void:
+	if not _map.visible:
+		_map_gang_visible = _gang.visible
 	for c in _map_legend.get_children():
+		_map_legend.remove_child(c)
 		c.queue_free()
 	var keys := ["thief", "gem", "exit", "prop"]
 	if home_map:
@@ -2098,7 +2153,7 @@ func show_map(plan: Image, thief_colours: Array = []) -> void:
 		keys.append("door")
 	if Heist.team and not Heist.taken and not home_map:
 		keys.append("panel")
-	legend_row(_map_legend, keys, thief_colours, Color(Heist.loot.colour))
+	legend_row(_map_legend, keys, thief_colours, Color(Heist.loot.colour), true)
 	var hint := _label(12, C.dim, _map_legend)
 	hint.text = Text.t("HUD_MAP_HIDE")
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -2106,6 +2161,7 @@ func show_map(plan: Image, thief_colours: Array = []) -> void:
 	_map_stage.process_mode = Node.PROCESS_MODE_INHERIT
 	_map_stage.unfold()
 	_map.visible = true
+	_gang.visible = false
 
 
 func update_map(plan: Image) -> void:
@@ -2118,6 +2174,8 @@ func push_map(v: Vector2) -> void:
 
 
 func hide_map() -> void:
+	if _map.visible:
+		_gang.visible = _map_gang_visible
 	_map.visible = false
 	_map_stage.process_mode = Node.PROCESS_MODE_DISABLED
 
@@ -2370,10 +2428,15 @@ static func legend_icon(key: String, colour := Color.WHITE) -> ImageTexture:
 
 ## The legend as a row: each entry its icon and its words. thief_colours
 ## paints the thieves' icon, loot_colour the gem.
-func legend_row(parent: Node, keys: Array, thief_colours: Array, loot_colour: Color) -> HBoxContainer:
-	var row := HBoxContainer.new()
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override("separation", 22)
+func legend_row(parent: Node, keys: Array, thief_colours: Array, loot_colour: Color, wrap := false) -> Container:
+	var row: Container = HFlowContainer.new() if wrap else HBoxContainer.new()
+	if wrap:
+		(row as HFlowContainer).alignment = FlowContainer.ALIGNMENT_CENTER
+		row.add_theme_constant_override("h_separation", 22)
+		row.add_theme_constant_override("v_separation", 6)
+	else:
+		(row as HBoxContainer).alignment = BoxContainer.ALIGNMENT_CENTER
+		row.add_theme_constant_override("separation", 22)
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(row)
 	for key in keys:

@@ -49,13 +49,13 @@ func _init() -> void:
 	await frames(3)
 	var hud: Hud = m.hud
 
-	# --- The title: the cover, over the menu already there -----------------------
+	# --- The title: the cover, over the hub already there (scenes/hub.gd) --------------
 	var cover: TitleScreen = null
 	for c in m.get_children():
 		if c is TitleScreen:
 			cover = c
 	check(cover != null, "sin argumentos, sale la portada")
-	check(m.phase == "title" and hud.menu_open(), "... con el menú ya debajo, para fundirse sobre él y no sobre el museo")
+	check(m.phase == "title" and m.hub.visible, "... con el hub ya debajo, para fundirse sobre él y no sobre la guarida")
 	key(KEY_E, true)
 	await frames()
 	check(cover._leaving and m.phase == "title", "la tecla que quita la portada no elige también la tarjeta")
@@ -69,66 +69,62 @@ func _init() -> void:
 	check(is_instance_valid(cover) and cover._leaving, "la portada aún se está yendo")
 	await press(KEY_E)
 	await frames()
-	check(m.phase == "pick", "una pulsación nueva mientras se va llega al menú: no se pierde")
+	check(m.hub.visible, "una pulsación nueva mientras se va llega al hub: no se pierde")
+	# Esa pulsación habrá elegido lo que tuviera el foco (Guarida, la
+	# primera tarjeta, abre su propio "cuántos"): volvemos al carril
+	# principal antes de seguir con la historia.
+	var guard := 0
+	while m.hub.active != m.hub.OPTIONS and guard < 5:
+		await press(KEY_ESCAPE)
+		await frames(Hud.SWAP_WAIT_FRAMES + 2)
+		guard += 1
+	check(m.hub.active == m.hub.OPTIONS, "... y un atrás lo deja en el carril principal")
 
-	# --- How many thieves: a bubble out of the mode's card ----------------------------
-	var story_card: Control = hud._cards["story"]
-	await frames(Hud.SWAP_WAIT_FRAMES + 1)
-	check(hud.bubble_open() and m.phase == "pick", "elegir la historia abre el bocadillo de cuántos ladrones")
-	check(hud.bubble_focus() == m.players - 1, "... con el foco en la banda de la última vez")
-	check(hud._panel_box.modulate.a == 1.0 and story_card.modulate == Color.WHITE, "... sin apagar el título ni la tarjeta de la que sale")
-	var box: Rect2 = hud._bubble_box.get_global_rect()
-	check(absf(box.get_center().x - story_card.get_global_rect().get_center().x) < 2.0 and box.position.y >= story_card.get_global_rect().end.y, "... debajo de su tarjeta")
+	# --- Cuántos ladrones: ya no un bocadillo sobre la tarjeta, sino el propio carril
+	# de pegatinas del hub (scenes/hub.gd, PLAYERS_OPTIONS) ------------------------------
+	guard = 0
+	while m.hub.active[m.hub.cursor].id != "story" and guard < 10:
+		await press(KEY_RIGHT)
+		await frames(2)
+	check(m.hub.active[m.hub.cursor].id == "story", "las flechas llegan a Modo Historia")
+	await press(KEY_E)
+	await frames(Hud.SWAP_WAIT_FRAMES + 2)
+	check(m.hub.visible and m.hub.active == m.hub.PLAYERS_OPTIONS and m.hub.active[m.hub.cursor].id == "p%d" % m.players,
+		"elegir Modo Historia abre cuántos jugadores, con el foco en la banda de la última vez")
+	var was_id: String = m.hub.active[m.hub.cursor].id
 	await press(KEY_RIGHT)
-	await frames()
-	check(hud.bubble_focus() == m.players % 4, "las flechas van por el bocadillo")
-	await press(KEY_A)
-	await frames()
-	check(hud.bubble_focus() == m.players - 1, "... y A y D también (el jugador de la izquierda)")
-	# Stickers, not 3D: the one with the focus in colour, the rest dark.
-	await create_timer(Hud.SWAP_S + 0.1).timeout
-	var flat := true
-	var lit_ok := true
-	for i in hud._bubble_buttons.size():
-		var b: Button = hud._bubble_buttons[i]
-		if not b.find_children("*", "SubViewport", true, false).is_empty():
-			flat = false
-		var icons := b.find_children("*", "TextureRect", true, false)
-		var lit: float = (icons[0] as TextureRect).material.get("shader_parameter/lit") if icons.size() > 0 else -1.0
-		if lit != (1.0 if i == hud.bubble_focus() else 0.0):
-			lit_ok = false
-	check(flat, "... pegatinas 2D, sin escenas 3D")
-	check(lit_ok, "... la elegida encendida, las demás apagadas")
+	await frames(2)
+	check(m.hub.active[m.hub.cursor].id != was_id, "las flechas se mueven por el carril")
+	await press(KEY_LEFT)
+	await frames(2)
+	check(m.hub.active[m.hub.cursor].id == was_id, "... en los dos sentidos")
+	await press(KEY_ESCAPE)
+	await frames(Hud.SWAP_WAIT_FRAMES + 2)
+	check(m.hub.visible and m.hub.active == m.hub.OPTIONS and m.hub.active[m.hub.cursor].id == "story",
+		"atrás vuelve al hub, en Modo Historia, donde estaba")
 	await press(KEY_ESCAPE)
 	await frames(2)
-	check(m.phase == "title" and not hud.bubble_open(), "atrás cierra el bocadillo, en el título")
-	check(focused() == story_card, "... con el foco en la historia, donde estaba")
-	await press(KEY_ESCAPE)
-	await frames(2)
-	check(m.phase == "title", "... y otro atrás en el título no hace nada")
-	# A click off the bubble closes it too.
+	check(m.hub.visible and m.hub.active == m.hub.OPTIONS, "... y otro atrás en el hub no hace nada raro")
+	# Elegir 2 va directo a los mandos de la historia, como antes.
 	await press(KEY_E)
 	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	var click := InputEventMouseButton.new()
-	click.button_index = MOUSE_BUTTON_LEFT
-	click.pressed = true
-	click.position = Vector2(8, 8)
-	hud._bubble.gui_input.emit(click)
-	await frames(2)
-	check(m.phase == "title" and not hud.bubble_open() and focused() == story_card, "un clic fuera del bocadillo lo cierra")
-	# Picking goes straight on: two thieves, to say whose controls are whose.
+	while m.hub.active[m.hub.cursor].id != "p2":
+		await press(KEY_RIGHT)
+		await frames(2)
 	await press(KEY_E)
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	await press(KEY_2)
 	await frames(2)
-	check(m.phase == "join" and m.hands.join_for == "story" and m.hands.join_count == 2, "elegir 2 en el bocadillo va directo a los mandos de la historia")
+	check(m.phase == "join" and m.hands.join_for == "story" and m.hands.join_count == 2, "elegir 2 jugadores va directo a los mandos de la historia")
+	# Cancelar sin nadie sentado va al título real (Hands.unjoin): un paso más
+	# atrás del hub, pero el mismo sitio de siempre.
 	m.hands.unjoin()
 	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	check(m.phase == "pick" and hud.bubble_open() and hud.bubble_focus() == 1, "atrás desde los mandos vuelve al bocadillo, en el 2")
+	# Hands.unjoin() llama a _show_title("story"), que con choose=true (su
+	# valor de siempre) reabre el bocadillo de la tarjeta: el título real,
+	# no el hub, ya con sus propias tarjetas construidas de verdad.
+	check(not m.hub.visible and m.phase == "pick" and hud.bubble_open() and hud.bubble_focus() == m.players - 1,
+		"atrás desde los mandos, sin nadie sentado, reabre el bocadillo real en la banda de la última vez")
 	# The generative: its menu straight away, no bocadillo first; the gang
 	# picked from its own "players" card in it, like the size or the theme.
-	await press(KEY_ESCAPE)
-	await frames(2)
 	m._show_title()
 	await frames(3)
 	(hud._cards["generative"] as Button).pressed.emit()

@@ -39,10 +39,10 @@ func show_menu() -> void:
 	host.phase = "menu"
 	challenge_delete = false
 	host.podium.drop()
-	var lines: Array = [{"head": Text.t("MENU_STORY")}]
+	var lines: Array = [{"head": Text.t("CHALLENGE_STORY_HEAD")}]
 	for n in range(1, Story.count() + 1):
 		var edited := MapFile.for_night(n) != null
-		lines.append({"text": night_name(n) + (" *" if edited else ""), "colour": Hud.C.green if edited else Hud.C.text,
+		lines.append({"text": ("* " + Text.t("CHALLENGE_RETOUCHED") + " · " if edited else "") + night_name(n), "colour": Hud.C.green if edited else Hud.C.text,
 			"call": land_night.bind(n), "open": show_night_map.bind(n), "selected": challenge_at == "night:%d" % n})
 	lines.append({"head": Text.t("CHALLENGE_MAPS_HEAD")})
 	var maps := MapFile.list()
@@ -57,13 +57,14 @@ func show_menu() -> void:
 	host.hud.show_menu([
 		{"title": Text.t("MENU_CHALLENGE"), "size": 40},
 		{"text": Text.t("CHALLENGE_TEXT"), "colour": Hud.C.dim},
+		{"text": Text.t("CHALLENGE_EDIT_LEGEND"), "size": 15, "colour": Hud.C.text},
 		{"columns": [
 			# The challenges, in the middle; its line's right arrow reaches
 			# the new-map button, up top on the other side (right_id/id).
 			{"items": [{"list": lines, "width": 380, "height": 450, "right_id": "edit_map"}]},
 			{"items": [
 				{"buttons": [{"text": Text.t("CHALLENGE_NEW"), "id": "edit_map", "call": show_editor.bind(small), "colour": Hud.C.green}], "row": true, "small": true},
-				{"text": "", "id": "pick_name", "size": 24},
+				{"text": "", "id": "pick_name", "size": 24, "wrap": true, "width": 560},
 				{"text": "", "id": "pick_info", "size": 16, "colour": Hud.C.dim},
 				{"picture": room, "id": "pick_plan", "height": 330},
 				{"text": Text.t("CHALLENGE_HINT"), "size": 14, "colour": Hud.C.dim},
@@ -113,18 +114,21 @@ func night_as_map(n: int) -> MapFile:
 		saved.name = night_name(n)
 		return saved
 	if not night_maps.has(n):
-		var was := [host.mode, host.players, host.level, host.saved_map]
-		host.mode = "story"
-		host.players = 1
-		host.level = n
-		host.saved_map = null
+		# Layout uses shared simulation data. Borrow it synchronously with fresh
+		# containers, then put the live round back before any frame can draw it.
+		# A separate Game also keeps the live actors paired with Scenery's nodes.
+		var was := _borrow_layout_state()
+		var layout := Game.new()
+		layout.mode = "story"
+		layout.players = 1
+		layout.level = n
 		MuseumView.palette = Story.palette(n)
 		MuseumView.exhibits = {}
 		Sim.custom = Story.tuning(n)
-		var seed_ := host._story_seed(n)
-		host._lay_out(n, seed_)
+		var seed_ := layout._story_seed(n)
+		layout._lay_out(n, seed_)
 		var at: Array[GuardSpawn] = []
-		for g in host.guards:
+		for g in layout.guards:
 			var spawn := GuardSpawn.new()
 			spawn.at = Vector2i(floori(g.x), floori(g.y))
 			spawn.dir = g.dir
@@ -132,11 +136,48 @@ func night_as_map(n: int) -> MapFile:
 		var m := MapFile.from_museum(n, seed_, at)
 		m.name = night_name(n)
 		night_maps[n] = m
-		host.mode = was[0]
-		host.players = was[1]
-		host.level = was[2]
-		host.saved_map = was[3]
+		layout.free()
+		_restore_layout_state(was)
 	return (night_maps[n] as MapFile).copy()
+
+
+## Mutable globals touched by Game._story_seed/_lay_out, including caches.
+## Keep the original containers: an editor/world may still hold their references.
+static var layout_state := {
+	Museum: "w h shape size_name seed_used grid outside ring open_tiles cover_tiles big_pieces watchpoints rooms zones lights_left spawn doors _doors_open columns paintings only_theme version _room_index _zone_index",
+	Heist: "level loot at start exit exit_face route plan progress by carrier dropped taken _last_alarm team panel panel_face panel_by panel2 panel2_face panel2_by waiting hands short_hand panel_off panel2_off",
+	Sim: "custom gang",
+	MuseumView: "palette exhibits",
+	Props: "list knocked",
+	Placed: "plinths furniture",
+	Collection: "picks _made_from",
+	Arcades: "list fronts",
+}
+
+
+static func _borrow_layout_state() -> Dictionary:
+	var state := {}
+	for script: Script in layout_state:
+		var fields := {}
+		for field in String(layout_state[script]).split(" "):
+			var value: Variant = script.get(field)
+			fields[field] = value
+			if value is Array or value is Dictionary:
+				script.set(field, value.duplicate(true))
+		state[script] = fields
+	# These are aliases, not independent lists: Museum.clear and the layout
+	# helpers must see the same temporary containers throughout generation.
+	Plinths.list = Placed.plinths
+	Hideouts.pieces = Placed.furniture
+	return state
+
+
+static func _restore_layout_state(state: Dictionary) -> void:
+	for script: Script in state:
+		for field in state[script]:
+			script.set(field, state[script][field])
+	Plinths.list = Placed.plinths
+	Hideouts.pieces = Placed.furniture
 
 
 ## One story night: its plan, then edit it or, touched up, put it back as the

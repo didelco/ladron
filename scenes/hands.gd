@@ -78,12 +78,19 @@ func draw_join() -> void:
 		cards.append({"title": Text.t("JOIN_PLAYER") % (i + 1), "text": seat_label(seat) if seat != "" else Text.t("JOIN_PRESS"),
 			"stage": MenuStage.make("seat:%d" % (i + 1)), "colour": host._thief_colours()[i],
 			"selected": seat != "", "static": true, "animate": seat != "", "dim": seat == "", "title_size": 12})
-	host.hud.show_menu([
+	var items: Array = [
 		{"title": Text.t("JOIN_TITLE"), "size": 40},
 		{"cards": cards, "width": 200},
-		{"text": Text.t("JOIN_HOW"), "size": 16},
-		{"text": Text.t("JOIN_READY") if joining.size() == join_count else Text.t("JOIN_UNDO"), "size": 16, "colour": Hud.C.gold if joining.size() == join_count else Hud.C.dim},
-	], "join")
+		{"text": Text.t("JOIN_KEYBOARD_LEFT"), "size": 16},
+		{"text": Text.t("JOIN_KEYBOARD_RIGHT") % key_label(KEY_PERIOD), "size": 16},
+		{"text": Text.t("JOIN_PAD"), "size": 16},
+		{"text": Text.t("JOIN_UNDO"), "size": 16, "colour": Hud.C.dim},
+	]
+	if join_count > 2:
+		items.append({"text": Text.t("JOIN_EXTRA_PADS"), "size": 16, "colour": Hud.C.gold})
+	if joining.size() == join_count:
+		items.append({"text": Text.t("JOIN_READY"), "size": 16, "colour": Hud.C.gold})
+	host.hud.show_menu(items, "join")
 
 
 func seat_label(seat: String) -> String:
@@ -138,6 +145,8 @@ func join_input(event: InputEvent) -> void:
 				if join_for == "story":
 					# The story's gang goes on to the town, to pick a night.
 					host._story_gang(join_count)
+				elif join_for == "dojo":
+					host._dojo_start(join_count, true)
 				else:
 					host._start(join_for, join_count, true))
 
@@ -158,6 +167,8 @@ func unjoin() -> void:
 	if joining.is_empty():
 		if join_for == "story":
 			host._show_title("story")
+		elif join_for == "dojo":
+			host._show_title("dojo")
 		elif join_for == "challenge":
 			host.challenges.show_map(host.challenges.challenge_map)
 		else:

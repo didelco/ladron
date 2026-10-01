@@ -91,6 +91,13 @@ func _init() -> void:
 		if c is TitleScreen:
 			c.queue_free()
 	await frames(2)
+	# Detrás del hub se arranca ahora en la guarida (DenView), que de
+	# propósito apaga ssr/ssil por su ambiente cálido (DenView.mood). Para
+	# probar que la calidad por defecto enciende los efectos de verdad (lo
+	# que comprueba esto), una noche de historia, sin ese ajuste propio.
+	m.mode = "story"
+	m._new_round(1)
+	await frames(2)
 	var w: Environment = m.nightenv.world_env
 	check(w.ssr_enabled and w.ssil_enabled and w.ssao_enabled and w.volumetric_fog_enabled, "la noche por defecto: efectos encendidos")
 	check(m.nightenv.moon.directional_shadow_max_distance == 35.0, "la noche por defecto: sombras a 35 m")

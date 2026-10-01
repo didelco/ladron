@@ -31,6 +31,8 @@ const DIFFICULTY_NAMES := {"easy": "MENU_DIFFICULTY_EASY", "medium": "MENU_DIFFI
 ## "" is any theme, mixed (Museum.only_theme's own "any" value).
 const THEME_NAMES := {"": "MENU_THEME_RANDOM", "antiguo": "MENU_THEME_ANCIENT", "edad_media": "MENU_THEME_MEDIEVAL",
 	"prehistoria": "MENU_THEME_PREHISTORY", "naturaleza": "MENU_THEME_NATURE", "moderna": "MENU_THEME_MODERN"}
+const THEME_CHOICE_NAMES := {"": "AL AZAR", "antiguo": "ANTIGUO", "edad_media": "MEDIEVAL",
+	"prehistoria": "PREHISTORIA", "naturaleza": "NATURALEZA", "moderna": "MODERNA"}
 ## What a guard yells on spotting you.
 const SHOUTS := ["HUD_SHOUT_1", "HUD_SHOUT_2", "HUD_SHOUT_3"]
 
@@ -78,6 +80,9 @@ var loudspeaker := MegaphoneRun.new(self)
 var loop := NightLoop.new(self)
 var challenges := ChallengeScreens.new(self)
 var briefing := BriefScreens.new(self)
+## La casa como punto de partida (sustituye el menú de tarjetas) y la pausa
+## real vista con su misma pinta; ver scenes/hub.gd.
+var hub := Hub.new(self)
 
 ## "story", "generative" or "challenge"
 var mode := "story"
@@ -183,16 +188,21 @@ func _ready() -> void:
 	add_child(mega_voice)
 	hud = Hud.new()
 	add_child(hud)
+	add_child(hub)
 	hud.ui_sound.connect(func(kind: String) -> void: sfx.ui(kind, 0.6))
 	options.load_all()
 	nightenv.build()
-	# A museum behind the title screen, so it is not a black void.
+	# La guarida detrás del hub, en vez de un museo: es donde se empieza
+	# ahora, no solo un fondo para que no sea un vacío negro.
+	mode = Practice.MODE
+	players = 1
+	seats = ["any"]
 	_new_round(1)
-	# The cover first, when the game is simply opened; the menu under it.
+	# The cover first, when the game is simply opened; the hub under it.
 	if OS.get_cmdline_user_args().is_empty() and TitleScreen.available():
 		_show_cover()
 	else:
-		_show_title()
+		hub.show_start()
 	launch.apply()
 
 
@@ -202,37 +212,52 @@ func _ready() -> void:
 ## The menu is built under it at once, so the cover fades away onto it,
 ## never onto the museum behind; the cover keeps the keys while it is up.
 func _show_cover() -> void:
-	_show_title()
+	hub.show_start()
 	var cover := TitleScreen.new()
 	cover.started.connect(func() -> void: sfx.ui("ok"))
 	add_child(cover)
 
 
-## The modes as cards. The story and the generative ask how many thieves
-## first, in a bubble out of their card (_pick_players); pick: that bubble
-## up again, coming back to it from what it led to.
-func _show_title(pick := "") -> void:
+## The modes as cards. Story and dojo choose their band in a bubble;
+## generative keeps that choice among its settings.
+func _show_title(pick := "", choose := true) -> void:
+	# Por si hub (scenes/hub.gd) seguía puesto por detrás: sus propias teclas
+	# de aceptar/atrás no deben comerse las de esta pantalla.
+	hub.visible = false
 	hud.backdrop(Hud.SPOTS.title)
 	phase = "title"
 	challenges.testing = null
+	dojo_from_title = false
 	podium.drop()
 	var on := pick if pick != "" else "story"
-	hud.show_menu([
-		{"cards": [
-			{"title": Text.t("MENU_GENERATIVE"), "text": Text.t("MENU_GENERATIVE_TEXT"), "stage": MenuStage.make("generative"), "call": _show_generative_menu, "colour": Hud.C.gold, "id": "generative", "focus": on == "generative"},
-			{"title": Text.t("MENU_STORY"), "text": Text.t("MENU_STORY_TEXT"), "stage": MenuStage.make("story"), "call": _pick_players.bind("story"), "colour": Hud.C.safe, "id": "story", "focus": on == "story"},
-			{"title": Text.t("MENU_CHALLENGE"), "text": Text.t("MENU_CHALLENGE_TEXT"), "stage": MenuStage.make("museum:large"), "call": challenges.show_menu, "colour": Hud.C.green},
-		], "width": 270, "arrows": true},
-		{"gap": 40},
+	var cards: Array = [
+		{"title": Text.t("MENU_GENERATIVE"), "text": Text.t("MENU_GENERATIVE_TEXT"), "stage": MenuStage.make("generative"), "call": _show_generative_menu, "colour": Hud.C.gold, "id": "generative", "focus": on == "generative"},
+		{"title": Text.t("MENU_STORY"), "text": Text.t("MENU_STORY_TEXT"), "stage": MenuStage.make("story"), "call": _pick_players.bind("story"), "colour": Hud.C.safe, "id": "story", "focus": on == "story"},
+		{"title": Text.t("MENU_CHALLENGE"), "text": Text.t("MENU_CHALLENGE_TEXT"), "stage": MenuStage.make("museum:large"), "call": challenges.show_menu, "colour": Hud.C.green},
+		{"title": Text.t("MENU_DOJO"), "text": Text.t("MENU_DOJO_TEXT"), "stage": MenuStage.make("dojo"), "call": _pick_players.bind("dojo"), "colour": Color("#f0a13a"), "id": "dojo", "focus": on == "dojo"},
+	]
+	# Four roomy dioramas on a wide window; two rows on a narrow logical
+	# viewport (large UI scale included), so names keep a readable font.
+	var narrow := hud.get_viewport().get_visible_rect().size.x < 1120
+	var card_rows: Array = []
+	if narrow:
+		var w := clampi(int(hud.get_viewport().get_visible_rect().size.x / 2) - 60, 180, 240)
+		card_rows = [{"cards": cards.slice(0, 2), "width": w}, {"cards": cards.slice(2, 4), "width": w}]
+	else:
+		card_rows = [{"cards": cards, "width": 240, "arrows": true}]
+	hud.show_menu(card_rows + [
+		{"gap": 24},
 		{"buttons": [
 			{"text": Text.t("MENU_SETTINGS"), "glyph": "settings", "call": options.show.bind("title"), "colour": Hud.C.dim},
 			{"text": Text.t("MENU_QUIT"), "glyph": "quit", "call": _quit, "colour": Hud.C.dim},
 		], "row": true, "small": true, "width": 260},
 	], "title")
 	hud.show_version()
-	# Only the story asks first how many thieves, in a bubble out of its
-	# card; the generative picks that among its own settings now.
-	if pick == "story":
+	if pick != "" and not choose and hud._cards.has(on):
+		hud._cards[on].grab_focus.call_deferred()
+	# Story and dojo ask how many thieves in a bubble out of their card;
+	# generative picks that among its own settings.
+	if choose and pick in ["story", "dojo"]:
 		_pick_players(pick)
 
 
@@ -246,9 +271,10 @@ func _pick_players(which: String) -> void:
 	phase = "pick"
 	var choices: Array = []
 	for n in range(1, 5):
-		choices.append({"title": "%dP" % n, "icon": load("res://assets/ui/ninjas_%d.png" % n),
+		var title := Text.t("MENU_DOJO_BAND") % [n, Practice.open_trials(n).size(), DojoTrials.TABLE.size()] if which == "dojo" else "%dP" % n
+		choices.append({"title": title, "icon": load("res://assets/ui/ninjas_%d.png" % n),
 			"colour": _thief_colours()[n - 1], "call": _players_picked.bind(which, n)})
-	hud.pop_bubble(which, Text.t("MENU_HOW_MANY"), choices, players - 1, func() -> void: phase = "title")
+	hud.pop_bubble(which, Text.t("MENU_DOJO_HOW_MANY" if which == "dojo" else "MENU_HOW_MANY"), choices, players - 1, func() -> void: phase = "title")
 
 
 ## n thieves picked in the bubble: the story's gang says which controls are
@@ -258,6 +284,8 @@ func _players_picked(which: String, n: int) -> void:
 	players = n
 	if which == "story":
 		_story_players(n)
+	elif which == "dojo":
+		_dojo_start(n)
 	else:
 		_show_generative_menu()
 
@@ -278,7 +306,7 @@ func _leave_game(to: Callable) -> void:
 ## The words on that way out.
 func _leave_text() -> String:
 	if mode == Practice.MODE:
-		return Text.t("PRACTICE_LEAVE")
+		return Text.t("MENU_DOJO_LEAVE" if dojo_from_title else "PRACTICE_LEAVE")
 	return Text.t("EDITOR_BACK_TO_EDITOR" if challenges.testing else "MENU_TO_MENU")
 
 
@@ -386,10 +414,36 @@ func _tour_room(n: int) -> void:
 ## The hideout picked in the town: the practice room, straight in. No plan,
 ## no briefing; the town fades into the room and the count begins.
 func _tour_practice() -> void:
+	dojo_from_title = false
 	mode = Practice.MODE
 	pads_lost.clear()
 	_new_round(1)
 	_tour_go(0)
+
+
+## The same house and trials reached from the title, with the band's own
+## story unlocks and records. The origin only chooses the way back.
+var dojo_from_title := false
+const DOJO_ENTRY := Vector2i(22, 11)
+
+
+func _dojo_title() -> void:
+	_show_title("dojo", false)
+
+
+func _dojo_start(n: int, picked := false) -> void:
+	if n >= 2 and not picked:
+		hands.show_join("dojo", n)
+		return
+	mode = Practice.MODE
+	players = n
+	dojo_from_title = true
+	if n == 1:
+		seats = ["any"]
+	pads_lost.clear()
+	get_viewport().disable_3d = false
+	_new_round(1)
+	_start_countdown()
 
 
 ## What the tour needs to tell the plan of the heist laid out: its picture,
@@ -465,16 +519,16 @@ func _show_generative_menu(on := "") -> void:
 	hud.show_menu([
 		{"title": Text.t("MENU_GENERATIVE_TITLE"), "size": 40},
 		{"cards": [
-			{"title": Text.t("MENU_DIFFICULTY"), "text": Text.t(DIFFICULTY_NAMES[Sim.difficulty]), "stage": MenuStage.make("guards:" + Sim.difficulty),
+			{"title": Text.t("MENU_DIFFICULTY"), "text": Text.t(DIFFICULTY_NAMES[Sim.difficulty]) + "\n" + Text.t("MENU_HELP_DIFFICULTY"), "stage": MenuStage.make("guards:" + Sim.difficulty),
 				"call": _pick_setting.bind("difficulty"), "id": "difficulty", "focus": on == "difficulty"},
-			{"title": Text.t("MENU_SIZE"), "text": Text.t(SIZE_NAMES[size]), "stage": MenuStage.make("museum:" + size),
+			{"title": Text.t("MENU_SIZE"), "text": Text.t(SIZE_NAMES[size]) + "\n" + Text.t("MENU_HELP_SIZE"), "stage": MenuStage.make("museum:" + size),
 				"call": _pick_setting.bind("size"), "id": "size", "focus": on == "size"},
-			{"title": Text.t("MENU_THEME"), "text": Text.t(THEME_NAMES[theme]), "stage": MenuStage.make("theme:" + theme),
+			{"title": Text.t("MENU_THEME"), "text": Text.t(THEME_NAMES[theme]) + "\n" + Text.t("MENU_HELP_THEME"), "picture": _theme_picture(theme), "smooth": true,
 				"call": _pick_setting.bind("theme"), "id": "theme", "focus": on == "theme"},
-			{"title": Text.t("MENU_PLAYERS"), "text": "%dP" % players, "stage": MenuStage.make("players:%d" % players),
+			{"title": Text.t("MENU_PLAYERS"), "text": ("%dP" % players) + "\n" + Text.t("MENU_HELP_PLAYERS"), "stage": MenuStage.make("players:%d" % players),
 				"call": _pick_generative_players, "id": "players", "focus": on == "players"},
-		], "width": 230},
-		{"gap": 24},
+		], "width": clampi(int(hud.get_viewport().get_visible_rect().size.x / 4) - 24, 150, 230)},
+		{"gap": 36},
 		{"buttons": [
 			{"text": Text.t("MENU_START"), "call": _start.bind("generative", players)},
 			{"text": Text.t("MENU_BACK"), "call": _show_title.bind("generative"), "colour": Hud.C.dim},
@@ -483,7 +537,7 @@ func _show_generative_menu(on := "") -> void:
 
 
 ## The difficulty, the size or the theme, in a bubble out of its card
-## (Hud.pop_bubble): its choices, each on its own diorama (still), starting
+## (Hud.pop_bubble): static theme icons or still dioramas, starting
 ## on the one in force. Picking keeps it (_set_setting); back (MenuKeys) or
 ## a click off it closes it, back to the card, as it was.
 func _pick_setting(which: String) -> void:
@@ -505,17 +559,50 @@ func _pick_setting(which: String) -> void:
 			title_key = "MENU_HOW_BIG"
 		_:
 			names = THEME_NAMES
-			stage_prefix = "theme:"
 			current = theme
 			title_key = "MENU_HOW_THEME"
 	var colours := {"easy": Hud.C.green, "medium": Hud.C.gold, "hard": Hud.C.alert}
 	var choices: Array = []
 	for k: String in names:
-		choices.append({"title": Text.t(names[k]), "stage": MenuStage.make(stage_prefix + k),
-			"colour": colours.get(k, Hud.C.safe), "call": _set_setting.bind(which, k)})
+		var choice := {"title": THEME_CHOICE_NAMES[k] if which == "theme" else Text.t(names[k]),
+			"colour": colours.get(k, Hud.C.safe), "call": _set_setting.bind(which, k)}
+		if which == "theme":
+			choice.icon = _theme_picture(k)
+			choice.title_size = 10
+		else:
+			choice.stage = MenuStage.make(stage_prefix + k)
+		choices.append(choice)
 	var now := names.keys().find(current)
 	hud.pop_bubble(which, Text.t(title_key), choices, now,
 		func() -> void: phase = "generative")
+
+
+## Theme cards and choices share static art; random shows all five without
+## creating a 3D viewport. Compose once, preserving the PNGs' transparency.
+static var _theme_pictures := {}
+
+
+static func _theme_picture(key: String) -> Texture2D:
+	if _theme_pictures.has(key):
+		return _theme_pictures[key]
+	if key != "":
+		_theme_pictures[key] = load("res://assets/ui/temas/%s.png" % key)
+	else:
+		var collage := Image.create(512, 342, false, Image.FORMAT_RGBA8)
+		collage.fill(Color.TRANSPARENT)
+		var positions := [Vector2i(18, 48), Vector2i(182, 48), Vector2i(346, 48), Vector2i(100, 184), Vector2i(264, 184)]
+		var i := 0
+		for theme_key: String in THEME_NAMES:
+			if theme_key == "":
+				continue
+			var icon := _theme_picture(theme_key).get_image()
+			if icon.is_compressed():
+				icon.decompress()
+			icon.resize(148, 99, Image.INTERPOLATE_LANCZOS)
+			collage.blend_rect(icon, Rect2i(Vector2i.ZERO, icon.get_size()), positions[i])
+			i += 1
+		_theme_pictures[key] = ImageTexture.create_from_image(collage)
+	return _theme_pictures[key]
 
 
 ## A difficulty, a size or a theme picked in its bubble: kept in the
@@ -587,7 +674,7 @@ func _pause() -> void:
 	var buttons: Array = [
 		{"text": Text.t("MENU_RESUME"), "call": _start_playing},
 		{"text": Text.t("MENU_SETTINGS"), "call": options.show.bind("paused")},
-		{"text": _leave_text(), "call": _quit_to_title},
+		{"text": _leave_text(), "call": _ask_leave},
 	]
 	# The den has its own way out (the pause's way to the city, or its door).
 	if mode != Practice.MODE:
@@ -595,21 +682,34 @@ func _pause() -> void:
 	hud.show_menu([
 		{"title": Text.t("MENU_PAUSE"), "size": 56}] + lost + [
 		{"buttons": buttons},
+		{"text": Text.t("PAUSE_CONTROLS_HINT"), "size": 15, "colour": Hud.C.text},
 	], "paused")
 
 
-## SALIR DEL JUEGO, from the pause: it leaves the night unsaved, so a second
-## step first, with NO under the focus; back (Esc, B, P, Start) is NO.
+## Leaving a night needs confirmation; practice returns straight to the city.
+## Editor trials use the same warning and return to the editor after YES.
+func _ask_leave() -> void:
+	if mode == Practice.MODE and not challenges.testing:
+		_quit_to_title()
+		return
+	_confirm_quit(Text.t("MENU_LEAVE_EDITOR_ASK" if challenges.testing else "MENU_LEAVE_ASK"), _quit_to_title, "paused_leave")
+
+
+## SALIR DEL JUEGO, from the pause: back (Esc, B, P, Start) is NO.
 func _ask_quit() -> void:
+	_confirm_quit(Text.t("MENU_QUIT_ASK"), _quit, "paused_quit")
+
+
+func _confirm_quit(title: String, yes: Callable, screen: String) -> void:
 	quit_asking = true
 	hud.show_menu([
-		{"title": Text.t("MENU_QUIT_ASK"), "size": 44},
+		{"title": title, "size": 44},
 		{"text": Text.t("MENU_QUIT_ASK_TEXT"), "size": 18, "colour": Hud.C.dim},
 		{"buttons": [
-			{"text": Text.t("SETTINGS_YES"), "call": _quit, "colour": Hud.C.alert},
+			{"text": Text.t("SETTINGS_YES"), "call": yes, "colour": Hud.C.alert},
 			{"text": Text.t("SETTINGS_NO"), "call": _pause},
 		], "row": true, "focus": 1},
-	], "paused_quit")
+	], screen)
 
 
 func _quit_to_title() -> void:
@@ -691,6 +791,8 @@ func _show_end() -> void:
 
 ## Out of a night's end, its button or back: to the mode's menu.
 func _way_out() -> Callable:
+	if mode == Practice.MODE and dojo_from_title:
+		return _dojo_title
 	return {"story": _show_city, "challenge": challenges.show_menu,
 		Practice.MODE: _show_city.bind(CityStage.HIDEOUT)}.get(mode, _show_title)
 
@@ -808,7 +910,7 @@ func _again() -> void:
 	briefing.show(0)
 
 
-## Where back (Escape, Space, Enter or B: MenuKeys) goes somewhere, and so
+## Where back (Escape, Backspace or B: MenuKeys) goes somewhere, and so
 ## sounds.
 const BACK_PHASES := ["menu", "pick", "generative", "challenge", "prologue", "ending", "brief", "paused", "settings", "caught", "escaped"]
 
@@ -956,7 +1058,7 @@ func _count_beep(i: int) -> void:
 func _start_playing() -> void:
 	phase = "playing"
 	get_tree().paused = false
-	# Space and Enter go back out of the pause: one still held from there is
+	# Space and Enter can accept SEGUIR on the pause: one still held from there is
 	# not a roll until it is let go (Sim.step_thief rolls on the press).
 	for t in thieves:
 		t.roll_key = true
@@ -1094,6 +1196,8 @@ func _new_round(n: int) -> void:
 	elif mode == Practice.MODE:
 		Sim.custom = Practice.tuning()
 		saved_map = Practice.map(players)
+		if dojo_from_title:
+			saved_map.spawn = DOJO_ENTRY
 		_lay_out(n, saved_map.seed)
 	else:
 		Sim.custom = {"theme": theme} if theme != "" else {}
