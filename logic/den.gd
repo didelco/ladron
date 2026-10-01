@@ -33,17 +33,32 @@ const ROOMS := {
 	"trofeos": [1, 1, 19, 8],
 	"dojo": [21, 1, 41, 28],
 	"aseo": [21, 30, 9, 7],
+	# The dojo's wings (propuesta_progreso_por_banda.md): small rooms in a
+	# chain, south-east of the main dojo and clear of the bathroom, each
+	# holding (once there is one) a trial for one more thief than the last.
+	# Little footprint on purpose: the dojo's own bays are the point, these
+	# are just the way on to a bigger band's trials.
+	"dojo2": [31, 30, 6, 5],
+	"dojo3": [38, 30, 6, 5],
+	"dojo4": [45, 30, 6, 5],
 }
-const ORDER := ["salon", "trofeos", "dojo", "aseo"]
+const ORDER := ["salon", "trofeos", "dojo", "aseo", "dojo2", "dojo3", "dojo4"]
 ## The doors between rooms: gaps in the walls (rect: x, y, width, height, in
 ## tiles) that join two rooms (a, b). They open and close (DOOR_* below): a
 ## shut one is wall for the feet; and what one sees follows what is open
 ## (visible_rooms). Easy to move or add: the plan (rows) and the rest follow.
+## "min_players" (default 1, none of the house's own doors ask for it): the
+## band has to be at least this big to work the door at all (can_toggle),
+## shut or open — the dojo's wings are reached one at a time, in a chain
+## (1 -> 2 -> 3 -> 4), never by a band too small for what is past them.
 const DOORS := [
 	{"id": "salon_trofeos", "rect": [9, 9, 2, 1], "a": "salon", "b": "trofeos"},
 	{"id": "salon_dojo", "rect": [20, 11, 1, 2], "a": "salon", "b": "dojo"},
 	{"id": "trofeos_dojo", "rect": [20, 3, 1, 2], "a": "trofeos", "b": "dojo"},
 	{"id": "dojo_aseo", "rect": [27, 29, 2, 1], "a": "dojo", "b": "aseo"},
+	{"id": "dojo_dojo2", "rect": [32, 29, 2, 1], "a": "dojo", "b": "dojo2", "min_players": 2},
+	{"id": "dojo2_dojo3", "rect": [37, 31, 1, 2], "a": "dojo2", "b": "dojo3", "min_players": 3},
+	{"id": "dojo3_dojo4", "rect": [44, 31, 1, 2], "a": "dojo3", "b": "dojo4", "min_players": 4},
 ]
 ## How long a door takes to swing (DenView), in seconds.
 const DOOR_SECONDS := 0.3
@@ -271,17 +286,22 @@ static func in_the_way(id: String, points: Array) -> bool:
 
 
 ## Whether the door can be worked now: opened always; shut only with no one
-## in its way.
-static func can_toggle(id: String, points: Array) -> bool:
-	if door(id).is_empty():
+## in its way; and, for a door that asks a band of some size (DOORS'
+## "min_players", the dojo's wings), only with a band that big — too small a
+## band finds it as inert as a wall, in or out.
+static func can_toggle(id: String, points: Array, players := 4) -> bool:
+	var d := door(id)
+	if d.is_empty():
+		return false
+	if players < int(d.get("min_players", 1)):
 		return false
 	return not is_open(id) or not in_the_way(id, points)
 
 
 ## Open a shut door or shut an open one (and the plan follows,
-## apply_doors). False if it could not be (can_toggle).
-static func toggle_door(id: String, points: Array) -> bool:
-	if not can_toggle(id, points):
+## apply_doors). False if it could not be (can_toggle, `players` the same).
+static func toggle_door(id: String, points: Array, players := 4) -> bool:
+	if not can_toggle(id, points, players):
 		return false
 	if is_open(id):
 		_open.erase(id)
@@ -666,5 +686,27 @@ static func filled(players := 1) -> Array[int]:
 	var out: Array[int] = []
 	for st in stands():
 		if is_filled(st.n, players):
+			out.append(st.n)
+	return out
+
+
+## Whether the piece of heist n is in its stand, robbed with ANY size of
+## band: the trophy room's general view (the gallery, seen walking past)
+## does not care which size took it, only the stand's own plaque, up close,
+## breaks the heist down band by band (propuesta_progreso_por_banda.md).
+static func is_filled_any(n: int) -> bool:
+	for players in range(1, 5):
+		if is_filled(n, players):
+			return true
+	return false
+
+
+## The heists whose stands are full, by any size of band (n, in order): the
+## trophy room's general view; `filled` (a size at a time) is for the
+## detail, as `is_filled` is for `is_filled_any`.
+static func filled_any() -> Array[int]:
+	var out: Array[int] = []
+	for st in stands():
+		if is_filled_any(st.n):
 			out.append(st.n)
 	return out
