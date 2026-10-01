@@ -136,8 +136,36 @@ func _init() -> void:
 	check(not Museum.blocks_move(9.5, 9.5) and Museum.blocks_move(20.5, 11.5), "... solo esa")
 	for door in Den.DOORS:
 		if not Den.is_open(door.id):
-			Den.toggle_door(door.id, [])
+			# The dojo wings' three doors mind their own sensors now (can_toggle
+			# refuses them outright, tested below); forced open here all the
+			# same, to check the plan once every door is open, sensors or not.
+			if Den.DOOR_SENSORS.has(door.id):
+				Den.set_open(door.id, true)
+			else:
+				Den.toggle_door(door.id, [])
+	Den.apply_doors()
 	check(Den.open_doors().size() == Den.DOORS.size() and Museum.grid == map.grid, "con todas las puertas abiertas el plano es el del mapa, alcanzable de punta a punta")
+	Den.reset_doors()
+
+	# The dojo wings' three doors: a pressure gate (Den.DOOR_SENSORS), not a
+	# toggle one works with the action key.
+	for id in Den.DOOR_SENSORS:
+		var tiles: Array = Den.DOOR_SENSORS[id]
+		check(not Den.can_toggle(id, [], 4) and not Den.can_toggle(id, [Vector2(tiles[0].x + 0.5, tiles[0].y + 0.5)], 4), "la puerta %s no se abre con la tecla de acción" % id)
+		# One fewer ninja than sensors: never a distinct one on every plate at once.
+		var short_points: Array = []
+		for i in tiles.size() - 1:
+			short_points.append(Vector2(tiles[i].x + 0.5, tiles[i].y + 0.5))
+		check(not Den.sensors_satisfied(id, short_points), "con menos gente que sensores en %s, nunca a la vez" % id)
+		check(not Den.sensors_tick(id, short_points) and not Den.is_open(id), "... la puerta sigue cerrada")
+		# Someone different on every plate at once: the door opens on its own.
+		var full_points: Array = []
+		for t in tiles:
+			full_points.append(Vector2(t.x + 0.5, t.y + 0.5))
+		check(Den.sensors_satisfied(id, full_points), "con alguien distinto en cada sensor de %s, a la vez" % id)
+		check(Den.sensors_tick(id, full_points) and Den.is_open(id), "... la puerta se abre sola")
+		# One steps off a plate: shut again, like a pressure door, not a toggle one stays.
+		check(Den.sensors_tick(id, short_points) and not Den.is_open(id), "uno se baja de un sensor y se cierra otra vez")
 	Den.reset_doors()
 
 	# The dojo: what is open depends on the job reached.

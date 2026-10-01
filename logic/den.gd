@@ -47,10 +47,13 @@ const ORDER := ["salon", "trofeos", "dojo", "aseo", "dojo2", "dojo3", "dojo4"]
 ## tiles) that join two rooms (a, b). They open and close (DOOR_* below): a
 ## shut one is wall for the feet; and what one sees follows what is open
 ## (visible_rooms). Easy to move or add: the plan (rows) and the rest follow.
-## "min_players" (default 1, none of the house's own doors ask for it): the
-## band has to be at least this big to work the door at all (can_toggle),
-## shut or open — the dojo's wings are reached one at a time, in a chain
-## (1 -> 2 -> 3 -> 4), never by a band too small for what is past them.
+## "min_players" (default 1, none of the house's own doors ask for it): kept
+## here only as a note of the same number DOOR_SENSORS below asks for in
+## tiles, not read any more by can_toggle for a door that has sensors (it
+## refuses those outright, DOOR_SENSORS.has(id)) — the dojo's wings are
+## reached one at a time, in a chain (1 -> 2 -> 3 -> 4), never by a band too
+## small to cover what is past them, but that is now a fact of the sensors'
+## own geometry (sensors_satisfied), not a number asked of the band.
 const DOORS := [
 	{"id": "salon_trofeos", "rect": [9, 9, 2, 1], "a": "salon", "b": "trofeos"},
 	{"id": "salon_dojo", "rect": [20, 11, 1, 2], "a": "salon", "b": "dojo"},
@@ -60,6 +63,22 @@ const DOORS := [
 	{"id": "dojo2_dojo3", "rect": [37, 31, 1, 2], "a": "dojo2", "b": "dojo3", "min_players": 3},
 	{"id": "dojo3_dojo4", "rect": [44, 31, 1, 2], "a": "dojo3", "b": "dojo4", "min_players": 4},
 ]
+## The sensors of the dojo's wings (propuesta_progreso_por_banda.md): in each
+## room of the chain, one tile for each ninja the next door asks for, near
+## that door, far enough apart (DOOR_CLEAR and the body's own radius,
+## Sim.BODY) that nobody stands on two at once. While every one of a door's
+## own sensors has somebody on it, at the same time, it may open
+## (sensors_satisfied, sensors_tick, called each tick, HouseRun.sensors_tick
+## — not the action key, can_toggle refuses these ids outright); the moment
+## one is stepped off, it shuts again, a pressure door, not a toggle one
+## stays as it leaves it. A band smaller than a door's own sensors can never
+## cover them all at once, so the door is as far out of its reach as if it
+## still asked "min_players" in words — except nobody has to be told so.
+const DOOR_SENSORS := {
+	"dojo_dojo2": [Vector2i(24, 27), Vector2i(29, 27)],
+	"dojo2_dojo3": [Vector2i(34, 31), Vector2i(34, 33), Vector2i(36, 32)],
+	"dojo3_dojo4": [Vector2i(41, 30), Vector2i(41, 34), Vector2i(43, 31), Vector2i(43, 33)],
+}
 ## How long a door takes to swing (DenView), in seconds.
 const DOOR_SECONDS := 0.3
 ## A door cannot be shut with someone this close to (inside) its tiles, in
@@ -288,14 +307,54 @@ static func in_the_way(id: String, points: Array) -> bool:
 ## Whether the door can be worked now: opened always; shut only with no one
 ## in its way; and, for a door that asks a band of some size (DOORS'
 ## "min_players", the dojo's wings), only with a band that big — too small a
-## band finds it as inert as a wall, in or out.
+## band finds it as inert as a wall, in or out. A door with sensors
+## (DOOR_SENSORS) is never one the action key works at all: it minds its own
+## sensors (sensors_tick), not the band's size nor anyone's say-so.
 static func can_toggle(id: String, points: Array, players := 4) -> bool:
 	var d := door(id)
-	if d.is_empty():
+	if d.is_empty() or DOOR_SENSORS.has(id):
 		return false
 	if players < int(d.get("min_players", 1)):
 		return false
 	return not is_open(id) or not in_the_way(id, points)
+
+
+# --- The dojo wings' sensors --------------------------------------------------------
+
+## Whether somebody (points: Vector2 positions in tiles, as can_toggle takes
+## them) stands on a sensor's tile now: its feet in that one tile, no more
+## (floor(x), floor(y)) — DOOR_SENSORS spaces them out so nobody's body
+## (Sim.BODY) reaches two at once.
+static func sensor_on(tile: Vector2i, points: Array) -> bool:
+	for p in points:
+		if int(floor(p.x)) == tile.x and int(floor(p.y)) == tile.y:
+			return true
+	return false
+
+
+## Whether every one of a door's own sensors is stood on right now (each by
+## somebody, DOOR_SENSORS); false for a door with none.
+static func sensors_satisfied(id: String, points: Array) -> bool:
+	var tiles: Array = DOOR_SENSORS.get(id, [])
+	if tiles.is_empty():
+		return false
+	for t in tiles:
+		if not sensor_on(t, points):
+			return false
+	return true
+
+
+## Step a sensor-gated door for one tick (HouseRun.sensors_tick): open while
+## sensors_satisfied, shut the moment it is not — a pressure door, not a
+## toggle one stays set once it is worked. True if its state changed this
+## tick (DenView follows, set_door).
+static func sensors_tick(id: String, points: Array) -> bool:
+	var want := sensors_satisfied(id, points)
+	if want == is_open(id):
+		return false
+	set_open(id, want)
+	apply_doors()
+	return true
 
 
 ## Open a shut door or shut an open one (and the plan follows,

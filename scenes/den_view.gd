@@ -80,6 +80,8 @@ var _dark := {}
 var _dark_goal := {}
 ## door id -> {leaves: [Node3D, Node3D], length: float, open: float (0..1), goal: float}
 var _door_nodes := {}
+## door id -> Array[MeshInstance3D] (the dojo wings' sensor plates, _dojo_sensors)
+var _sensor_nodes := {}
 
 
 func build() -> void:
@@ -106,6 +108,7 @@ func build() -> void:
 	_dojo_walls()
 	_dojo_wall_things()
 	_dojo_wings()
+	_dojo_sensors()
 	_trial_starts()
 	_scarecrows()
 	_alarm_lights()
@@ -727,25 +730,66 @@ func _dojo() -> void:
 
 
 ## The dojo's wings (propuesta_progreso_por_banda.md): small rooms in a chain
-## past the dojo, one for each size of band over one, with nothing in them
-## yet (no PARTY_GROUP trial exists) but a sign saying so and which size they
-## ask for. Den.DOORS keeps a band too small out of the whole chain
-## (min_players); this is only what is seen once in.
+## past the dojo. Rooms 1 (the dojo itself), 2 and 3 each gate their own way
+## out with a real little minigame now (_dojo_sensors: stand on every plate
+## at once, or the next door stays shut) — nothing to read there any more,
+## it is understood by playing. Room 4 is still the chain's dead end, with
+## nothing of its own yet, so it alone keeps the "PRÓXIMAMENTE" sign.
 func _dojo_wings() -> void:
-	for n in range(2, 5):
-		var r := Den.rect("dojo%d" % n)
-		var board := Label3D.new()
-		board.text = Text.t("HIDEOUT_ROOM_SOON") % n
-		board.font = Hud.ARCADE
-		board.font_size = 24
-		board.pixel_size = 0.007
-		board.line_spacing = 10.0
-		board.modulate = Color("#cfd8c0")
-		board.outline_size = 8
-		board.outline_modulate = Color("#1c2410")
-		board.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-		board.position = to_world(r.position.x + r.size.x / 2.0, r.position.y + r.size.y / 2.0, 1.3)
-		add_child(board)
+	var r := Den.rect("dojo4")
+	var board := Label3D.new()
+	board.text = Text.t("HIDEOUT_ROOM_SOON") % 4
+	board.font = Hud.ARCADE
+	board.font_size = 24
+	board.pixel_size = 0.007
+	board.line_spacing = 10.0
+	board.modulate = Color("#cfd8c0")
+	board.outline_size = 8
+	board.outline_modulate = Color("#1c2410")
+	board.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	board.position = to_world(r.position.x + r.size.x / 2.0, r.position.y + r.size.y / 2.0, 1.3)
+	add_child(board)
+
+
+## The sensor plates of the dojo wings' doors (Den.DOOR_SENSORS): a low brass
+## disc set into the floor by each door, dim until somebody stands on it
+## (set_sensors, every tick, HouseRun.sensors_tick) — N+1 of them, spread out
+## so no one body reaches two, the band's own proof that it is big enough to
+## fill every one at once, with nothing written about it anywhere.
+const SENSOR_OFF := Color("#4a4030")
+const SENSOR_ON := Color("#ffce5c")
+
+func _dojo_sensors() -> void:
+	for id in Den.DOOR_SENSORS:
+		var plates: Array = []
+		for t: Vector2i in (Den.DOOR_SENSORS[id] as Array):
+			var plate := MeshInstance3D.new()
+			plate.mesh = _cyl(0.32, 0.05)
+			var mat := StandardMaterial3D.new()
+			mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			mat.albedo_color = SENSOR_OFF
+			mat.emission_enabled = true
+			mat.emission = SENSOR_ON
+			mat.emission_energy_multiplier = 0.0
+			plate.material_override = mat
+			plate.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			plate.position = to_world(t.x + 0.5, t.y + 0.5, 0.03)
+			add_child(plate)
+			plates.append(plate)
+		_sensor_nodes[id] = plates
+
+
+## The sensor plates' state (door id -> Array[bool], Den.DOOR_SENSORS'
+## order), lit or not.
+func set_sensors(state: Dictionary) -> void:
+	for id in state:
+		var plates: Array = _sensor_nodes.get(id, [])
+		var on: Array = state[id]
+		for i in plates.size():
+			var mat := (plates[i] as MeshInstance3D).material_override as StandardMaterial3D
+			var lit: bool = i < on.size() and bool(on[i])
+			mat.albedo_color = SENSOR_ON if lit else SENSOR_OFF
+			mat.emission_energy_multiplier = 1.4 if lit else 0.0
 
 
 # --- The dojo's walls -------------------------------------------------------------------

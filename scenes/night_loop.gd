@@ -157,6 +157,7 @@ func tick(dt: float) -> void:
 		host.house.trial_lock = maxf(0.0, host.house.trial_lock - dt)
 		host.house.scarecrow_tick(dt)
 		host.house.lamps_tick(dt)
+		host.house.sensors_tick()
 	if host.mode == Practice.MODE and host.house.home_tick():
 		return
 	var now := Sim.now_ms()

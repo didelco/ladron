@@ -48,9 +48,15 @@ const MAX_LEVEL := 99
 ## nine here are all PARTY_SOLO (PILLA EL CALCETÍN, EQUILIBRIO, BOLOS, AGUANTA
 ## ESCONDIDO, GANZÚA, ESCONDITE, CABLES, PULSO, CIRCUITO: one at a time at its
 ## pedestal, vitrine, bench or ring, the kind of game or minigame it is does
-## not change with the band). A PARTY_GROUP trial, when there is one, lives in
-## the dojo's wings (Den.ROOMS "dojo2".."dojo4", DOORS "min_players") and
-## fixes a number or a range of thieves of its own — propuesta_progreso_por_banda.md.
+## not change with the band). A PARTY_GROUP trial, when there is one, would
+## live in the dojo's wings (Den.ROOMS "dojo2".."dojo4") and fix a number or
+## a range of thieves of its own — propuesta_progreso_por_banda.md. The way
+## into each wing is already gated by a band big enough (Den.DOOR_SENSORS:
+## stand on every one of a door's own sensors at once, which a band too
+## small never can), but that gate is not itself a trial of this table —
+## no difficulty, no time or level to beat, nothing to settle or keep a
+## record of, just a door that minds its own sensors. None of TABLE's rows
+## is PARTY_GROUP yet; the first real one still waits to be built.
 const PARTY_SOLO := "solo"
 const PARTY_GROUP := "group"
 ## The difficulties. A game begun at one starts at `from` and is won by doing `to`

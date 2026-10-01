@@ -114,6 +114,30 @@ func lamps_tick(dt: float) -> void:
 		host.den_view.set_lamps(lamps)
 
 
+## The dojo wings' sensor plates (Den.DOOR_SENSORS), each tick: who stands on
+## which (DenView.set_sensors, always, so the plates follow the band even
+## while a door is not about to move) and whether a door's own plates are all
+## stood on at once, which opens it, or not, which shuts it again (a pressure
+## door, Den.sensors_tick) — never the action key (Den.can_toggle refuses
+## these ids).
+func sensors_tick() -> void:
+	if Den.DOOR_SENSORS.is_empty() or host.den_view == null or not is_instance_valid(host.den_view):
+		return
+	var points := band_points()
+	var lit := {}
+	for id in Den.DOOR_SENSORS:
+		var tiles: Array = Den.DOOR_SENSORS[id]
+		var on: Array = []
+		for t in tiles:
+			on.append(Den.sensor_on(t, points))
+		lit[id] = on
+		if Den.sensors_tick(id, points):
+			host.den_view.set_door(id, Den.is_open(id))
+			var r := Den.door_rect(id)
+			host.sfx.at("door", host._to_world(r.position.x + r.size.x / 2.0, r.position.y + r.size.y / 2.0, 0.5), 0.5, 4.0)
+	host.den_view.set_sensors(lit)
+
+
 ## Whether a trial is on (until its panel is accepted or left). While it is, nothing
 ## else in the house answers the action key (trial_action): the start points of the
 ## other trials, the props, the hideouts, the doors, and nothing tips over.
