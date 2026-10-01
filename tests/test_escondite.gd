@@ -102,7 +102,7 @@ func _init() -> void:
 	check(Den.visible_rooms(["salon_dojo", "dojo_aseo"], ["salon"]) == ["salon", "dojo", "aseo"], "por dos puertas abiertas seguidas, también")
 	check(Den.visible_rooms(["salon_trofeos"], ["aseo"]) == ["aseo"], "una puerta abierta que no toca la sala no enseña nada")
 	check(Den.visible_rooms([], ["salon", "aseo"]) == ["salon", "aseo"], "dos ladrones en salas distintas: se ven las dos")
-	check(Den.visible_rooms([], ["dojo", "salon", "trofeos", "aseo"]) == Den.ORDER, "cuatro ladrones en cuatro salas: todas")
+	check(Den.visible_rooms([], Den.ORDER) == Den.ORDER, "un ladrón en cada sala: todas")
 	check(Den.visible_rooms(["trofeos_dojo"], ["salon", "salon", "aseo", "salon"]) == ["salon", "aseo"], "cuatro ladrones en dos salas, con una puerta abierta que no toca ninguna")
 	check(Den.visible_rooms(["salon_trofeos"], ["trofeos", "aseo"]) == ["salon", "trofeos", "aseo"], "la unión de lo que ve cada uno")
 	check(Den.visible_rooms(every_door, []).is_empty() and Den.visible_rooms(every_door, [""]).is_empty(), "sin ladrones en ninguna sala, no se ve nada")

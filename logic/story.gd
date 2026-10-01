@@ -431,6 +431,30 @@ static func stars_in(m: int, players := 1) -> int:
 	return total
 
 
+## Heist n's best mask, over every size of band (0 to 3, STARS): what the
+## trophy room's general view shows (Den.is_filled_any), since it does not
+## care which size of band took the piece — the stand's own plaque, up
+## close, breaks it down band by band instead (star_mask, stars, per band).
+static func star_mask_any(n: int) -> int:
+	var mask := 0
+	for players in range(1, 5):
+		mask |= star_mask(n, players)
+	return mask
+
+
+## Heist n's best, over every size of band: 0 to 3 stars (star_mask_any).
+static func stars_any(n: int) -> int:
+	return count_stars(star_mask_any(n))
+
+
+## The stars won in museum m (0-based), over every size of band: 0 to 15.
+static func stars_in_any(m: int) -> int:
+	var total := 0
+	for n in nights_in(clampi(m, 0, MUSEUMS.size() - 1)):
+		total += stars_any(n)
+	return total
+
+
 ## Keeps the stars a go at heist n won (mask) with the ones won before: a
 ## star once won is never lost. Returns the ones that are new.
 static func keep_stars(n: int, players: int, mask: int) -> int:
@@ -471,6 +495,50 @@ static func _star_masks(players: int) -> Array[int]:
 		for i in mini(kept.size(), out.size()):
 			out[i] = int(kept[i]) & (STAR_TAKEN | STAR_UNSEEN | STAR_FAST)
 	return out
+
+
+# --- The best time -----------------------------------------------------------------
+
+## Every heist's quickest escape for this many thieves, kept beside the
+## stars ("times", "robo_<gang>"): seconds, 0 for a heist never got away
+## with (for the stand's ficha, star_mask already says per band whether it
+## was ever passed; this is only how fast, the fastest go kept).
+static func _best_times(players: int) -> Array:
+	var out: Array = []
+	out.resize(LEVELS.size())
+	out.fill(0.0)
+	var cfg := ConfigFile.new()
+	if cfg.load(save) != OK:
+		return out
+	var kept: Variant = cfg.get_value("times", _key(players), [])
+	if kept is Array or kept is PackedFloat32Array or kept is PackedFloat64Array:
+		for i in mini(kept.size(), out.size()):
+			out[i] = float(kept[i])
+	return out
+
+
+## Heist n's quickest escape for this many thieves, in seconds (0: never got
+## away with it, _best_times).
+static func best_time(n: int, players := 1) -> float:
+	var all := _best_times(players)
+	return all[n - 1] if n >= 1 and n <= all.size() else 0.0
+
+
+## Keeps the time a go at heist n took, seconds, against the band's
+## quickest ever (0: none yet, the first one kept). Called once a go gets
+## away with the piece (HeistStats.rate keeps the stars the same way); a go
+## only looked at keeps nothing, same as keep_stars.
+static func record_time(n: int, players: int, seconds: float) -> void:
+	if n < 1 or n > LEVELS.size() or seconds <= 0.0:
+		return
+	var all := _best_times(players)
+	if all[n - 1] > 0.0 and seconds >= all[n - 1]:
+		return
+	all[n - 1] = seconds
+	var cfg := ConfigFile.new()
+	cfg.load(save)
+	cfg.set_value("times", _key(players), all)
+	cfg.save(save)
 
 
 # --- Museums ---------------------------------------------------------------------

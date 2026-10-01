@@ -364,7 +364,7 @@ func _do_action(t: Thief, i: int, act: Dictionary, keys: Dictionary, now: float,
 		"door":
 			# Open or shut (it was checked no one is in the way): the plan
 			# follows, the leaves slide, and what is seen is worked out again.
-			if Den.toggle_door(act.at, host.house.band_points()):
+			if Den.toggle_door(act.at, host.house.band_points(), host.players):
 				if host.den_view != null and is_instance_valid(host.den_view):
 					host.den_view.set_door(act.at, Den.is_open(act.at))
 				host.sfx.at("door", host._to_world(t.x, t.y, 0.5), 0.6, 4.0)

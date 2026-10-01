@@ -105,6 +105,7 @@ func build() -> void:
 	_dojo()
 	_dojo_walls()
 	_dojo_wall_things()
+	_dojo_wings()
 	_trial_starts()
 	_scarecrows()
 	_alarm_lights()
@@ -220,6 +221,10 @@ func _floors() -> void:
 	_gallery_floor(img, Den.rect("trofeos"))
 	_straw(img, Den.rect("dojo"))
 	_tiles(img, Den.rect("aseo"))
+	# The dojo's wings: the same straw as the dojo itself, the chain reads as
+	# one place.
+	for n in range(2, 5):
+		_straw(img, Den.rect("dojo%d" % n))
 	var m := StandardMaterial3D.new()
 	m.albedo_texture = ImageTexture.create_from_image(img)
 	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
@@ -477,8 +482,10 @@ static func _radial(colour: Color) -> ImageTexture:
 ## heists (Den.stands): a niche on the north wall for the first three, a glass
 ## case on the floor for the last two. All of them are there from the start,
 ## empty, with a plaque (the heist's number); the piece stands in its stand,
-## lit, once it has been stolen (Den.is_filled), and the plaque shows the
-## stars won. A museum done, whole, has a star over the board.
+## lit, once it has been stolen with ANY size of band (Den.is_filled_any: the
+## gallery's own general view does not care who did it, only the plaque's
+## ficha, up close, breaks a heist down band by band). A museum done, whole,
+## has a star over the board.
 func _trophies() -> void:
 	var most := Story.MUSEUMS.size() * Story.ROOMS * Story.STARS_EACH
 	var total := 0
@@ -487,9 +494,9 @@ func _trophies() -> void:
 		var colour := Color(Story.MUSEUMS[m].colour)
 		var done := 0
 		for st in Den.stands():
-			if st.museum == m and Den.is_filled(st.n, players):
+			if st.museum == m and Den.is_filled_any(st.n):
 				done += 1
-		var stars := Story.stars_in(m, players)
+		var stars := Story.stars_in_any(m)
 		total += stars
 		taken += done
 		_section_board(m, colour, stars, done)
@@ -555,7 +562,8 @@ func _trophy_star(at: Vector3, size: float, colour := Color("#ffd23f")) -> Label
 ## case, empty or with the piece of its heist, and its plaque.
 func _museum_stand(st: Dictionary, colour: Color) -> void:
 	var tile: Vector2i = st.tile
-	var got := Den.is_filled(st.n, players)
+	# The general view: got with any size of band at all (Den.is_filled_any).
+	var got := Den.is_filled_any(st.n)
 	var niche: bool = st.kind == "niche"
 	var pivot: Node3D
 	var top: float
@@ -583,9 +591,21 @@ func _museum_stand(st: Dictionary, colour: Color) -> void:
 	if not got:
 		_plaque_text(pivot, "?", Vector3(0.13, plaque_y, front + 0.05), Color("#a89c84"), 26)
 		return
-	var won := Story.count_stars(Story.star_mask(st.n, players))
+	# The quick row, same general view as `got`: the best of any band.
+	var won := Story.stars_any(st.n)
 	for i in Story.STARS_EACH:
 		_plaque_text(pivot, "★", Vector3(i * 0.14, plaque_y, front + 0.05), Color("#ffd23f") if i < won else Color("#6a6258"), 22)
+	# The ficha: up close, floating over the stand, the heist broken down band
+	# by band (passed, how many stars, the quickest time) — the detail the
+	# gallery's own general view does not show (propuesta_progreso_por_banda.md).
+	var lines: Array[String] = []
+	for p in range(1, 5):
+		var k := Story.stars(st.n, p)
+		var stars_txt := "★".repeat(k) + "☆".repeat(Story.STARS_EACH - k)
+		var secs := Story.best_time(st.n, p)
+		var time_txt := "%d:%02d" % [int(secs) / 60, int(secs) % 60] if secs > 0.0 else "—"
+		lines.append("%d %s %s" % [p, stars_txt, time_txt])
+	_plaque_text(pivot, "\n".join(lines), Vector3(0, top + 0.75, 0.0), Color("#cfd8c0"), 14)
 	# The piece, in its stand, and a soft spot of light over it.
 	var loot: Dictionary = Story.LEVELS[st.n - 1].loot
 	var depth := 0.38 if niche else 0.0
@@ -704,6 +724,28 @@ func _dojo() -> void:
 	board.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	board.position = to_world(r.position.x + 5.0, r.position.y + 0.6, 1.3)
 	add_child(board)
+
+
+## The dojo's wings (propuesta_progreso_por_banda.md): small rooms in a chain
+## past the dojo, one for each size of band over one, with nothing in them
+## yet (no PARTY_GROUP trial exists) but a sign saying so and which size they
+## ask for. Den.DOORS keeps a band too small out of the whole chain
+## (min_players); this is only what is seen once in.
+func _dojo_wings() -> void:
+	for n in range(2, 5):
+		var r := Den.rect("dojo%d" % n)
+		var board := Label3D.new()
+		board.text = Text.t("HIDEOUT_ROOM_SOON") % n
+		board.font = Hud.ARCADE
+		board.font_size = 24
+		board.pixel_size = 0.007
+		board.line_spacing = 10.0
+		board.modulate = Color("#cfd8c0")
+		board.outline_size = 8
+		board.outline_modulate = Color("#1c2410")
+		board.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		board.position = to_world(r.position.x + r.size.x / 2.0, r.position.y + r.size.y / 2.0, 1.3)
+		add_child(board)
 
 
 # --- The dojo's walls -------------------------------------------------------------------

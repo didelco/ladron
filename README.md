@@ -315,12 +315,20 @@ andando: el **salón** (sofás con cojines, alfombras, tele con altavoz, cocina 
 **sala de trofeos** (un museo pequeño de la banda, `Den.stands`: 25 puestos vacíos desde el principio, cinco por
 museo, cada sección con su rótulo y su alfombra en el color del museo; tres nichos en la pared y dos vitrinas en
 el suelo por sección, con su placa —número del robo, «?» y, al robarla, sus ★—; un puesto se llena con la pieza
-real, con un foco suave, cuando el robo se hizo con la pieza cogida, la estrella «botín», `Den.filled`, por
-tamaño de banda; una estrella dorada, no un calcetín, sobre el rótulo del museo completado (y donde el botín de un robo es un calcetín, los puestos enseñan esa estrella); bancos, cuadros, felpudos y una mesita con lámpara), el **dojo** (nueve
+real, con un foco suave, cuando el robo se hizo con la pieza cogida con **cualquier** tamaño de banda, la vitrina
+general (`Den.is_filled_any`/`filled_any`: no importa con cuántos se jugó); de cerca, la placa desglosa el robo
+banda a banda —pasado o no, sus ★ y el mejor tiempo de cada tamaño (1 a 4), `Story.star_mask`/`best_time`, por
+`players`—; una estrella dorada, no un calcetín, sobre el rótulo del museo completado (y donde el botín de un robo
+es un calcetín, los puestos enseñan esa estrella); bancos, cuadros, felpudos y una mesita con lámpara), el **dojo** (nueve
 bahías de práctica en tres filas, 41 × 28 casillas —más de dos veces el de antes—, con muros de papel de arroz —zócalo de madera, listones *shoji*, remate,
 postes y ventanitas altas— y pasillos de tres casillas entre bahías, `Den.DOJO_PLAN` y `Den.DOJO_ZONES`; una bahía por prueba, rotulada, con sitio para sus tres puntos de inicio:
 arriba, **alarma y vitrinas** (GANZÚA, CABLES, PULSO); en medio, **juegos de habilidad** (PILLA EL CALCETÍN, EQUILIBRIO, BOLOS); abajo, **sigilo** (el CIRCUITO con guardias, ESCONDITE, AGUANTA ESCONDIDO);
-el croquis está en `docs/pendiente_dojo_juegos.md`). Los únicos **espantapájaros** de guardia con linterna están en el circuito, tres, que **giran** su linterna (`Practice.scarecrow_facing`,
+el croquis está en `docs/pendiente_dojo_juegos.md`; las nueve son pruebas **individuales** —una sola persona, el resto de la
+banda sin tomar parte, da igual el tamaño de banda, `DojoTrials.PARTY_SOLO`/`is_group`—). Tres salas pequeñas en cadena
+al sur del dojo, `dojo2`/`dojo3`/`dojo4` (`Den.ROOMS`), solo se cruzan atravesando la anterior (puertas
+`dojo_dojo2`/`dojo2_dojo3`/`dojo3_dojo4`, cada una con `min_players`: 2, 3 y 4 —una banda más pequeña las encuentra
+cerradas igual que un muro, `Den.can_toggle`), listas para alojar pruebas **de varios** (cooperación real de N
+ladrones) el día que las haya; por ahora, un rótulo de «PRÓXIMAMENTE». Los únicos **espantapájaros** de guardia con linterna están en el circuito, tres, que **giran** su linterna (`Practice.scarecrow_facing`,
 `turn: {amp, speed, phase}`) y ven con la regla de los guardias y sus propios números —`Practice.scarecrow_sees`, alcance 5,5 y ±24°—; si ven a un ladrón (no escondido)
 **todo el dojo se pone rojo con una sirena 3 s** (`Practice.alert_step`, enfriamiento de 1,5 s) y no pasa nada más (salvo en la prueba CIRCUITO, donde es perderla). AGUANTA ESCONDIDO y las rondas «vigiladas» de
 PILLA EL CALCETÍN no llevan guardias propios: el primero pone su espantapájaros de linterna solo mientras dura (`Practice.LANTERN_AT`), las segundas colocan el calcetín en el cono de los del circuito.

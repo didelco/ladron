@@ -671,6 +671,9 @@ func _show_end() -> void:
 			HeistStats.rate(level, players, true, not just_looking)
 			if not just_looking:
 				Story.unlock(level + 1, players)
+				# The go's time, against the band's own best for this heist
+				# (the stand's ficha, den_view, shows it by band).
+				Story.record_time(level, players, HeistStats.time)
 			story_pick = mini(level + 1, Story.count())
 			if level >= Story.count():
 				_show_ending()
@@ -1268,7 +1271,7 @@ func _action_for(t: Thief) -> Dictionary:
 		return {"do": "job", "at": job}
 	if mode == Practice.MODE:
 		var door := Den.door_near(Vector2i(int(floor(t.x)), int(floor(t.y))))
-		if door != "" and Den.can_toggle(door, house.band_points()):
+		if door != "" and Den.can_toggle(door, house.band_points(), players):
 			return {"do": "door", "at": door}
 		# The start point of a trial next to it (the games, the bench's tests, the circuit).
 		if house.trial_lock <= 0.0:

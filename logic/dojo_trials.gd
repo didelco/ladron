@@ -40,6 +40,19 @@ extends RefCounted
 
 const SECTION := "dojo"
 const MAX_LEVEL := 99
+## Whether a trial is done by one thief alone, the rest of the band standing
+## by (PARTY_SOLO: the same trial whatever the band's size, nothing exclusive,
+## no marks to fuse between sizes of band) or by several at once, really
+## together (PARTY_GROUP: its score depends on how many play, and it may only
+## exist for one size of band). Every row of TABLE says which (`party`); the
+## nine here are all PARTY_SOLO (PILLA EL CALCETÍN, EQUILIBRIO, BOLOS, AGUANTA
+## ESCONDIDO, GANZÚA, ESCONDITE, CABLES, PULSO, CIRCUITO: one at a time at its
+## pedestal, vitrine, bench or ring, the kind of game or minigame it is does
+## not change with the band). A PARTY_GROUP trial, when there is one, lives in
+## the dojo's wings (Den.ROOMS "dojo2".."dojo4", DOORS "min_players") and
+## fixes a number or a range of thieves of its own — propuesta_progreso_por_banda.md.
+const PARTY_SOLO := "solo"
+const PARTY_GROUP := "group"
 ## The difficulties. A game begun at one starts at `from` and is won by doing `to`
 ## (the ten levels of the games); the other trials read the index. `color` is the
 ## difficulty's own colour, the same in the nine bays' pedestals, vitrines and
@@ -51,35 +64,35 @@ const TIERS := [
 	{"id": "hard", "from": 7, "to": 10, "text": "HIDEOUT_TIER_HARD", "color": Color("#c1272d")},
 ]
 static var TABLE: Array = [
-	{"id": "atrapa", "kind": "game", "cls": CatchGame, "name": "HIDEOUT_TRIAL_NAME_ATRAPA", "start_text": "HIDEOUT_TRIAL_START_ATRAPA",
+	{"id": "atrapa", "kind": "game", "party": PARTY_SOLO, "cls": CatchGame, "name": "HIDEOUT_TRIAL_NAME_ATRAPA", "start_text": "HIDEOUT_TRIAL_START_ATRAPA",
 		"hint": "HIDEOUT_TRIAL_HINT_ATRAPA", "lesson": "games", "zone": "atrapa", "via": "sock",
 		"starts": [Vector2i(24, 15), Vector2i(27, 15), Vector2i(30, 15)]},
-	{"id": "pedestal", "kind": "game", "cls": PedestalGame, "name": "HIDEOUT_TRIAL_NAME_PEDESTAL", "start_text": "",
+	{"id": "pedestal", "kind": "game", "party": PARTY_SOLO, "cls": PedestalGame, "name": "HIDEOUT_TRIAL_NAME_PEDESTAL", "start_text": "",
 		"hint": "HIDEOUT_TRIAL_HINT_PEDESTAL", "lesson": "games", "zone": "pedestal", "via": "plinth",
 		"starts": [Vector2i(38, 15), Vector2i(41, 15), Vector2i(44, 15)]},
-	{"id": "bolos", "kind": "game", "cls": BowlingGame, "name": "HIDEOUT_TRIAL_NAME_BOLOS", "start_text": "HIDEOUT_TRIAL_START_BOLOS",
+	{"id": "bolos", "kind": "game", "party": PARTY_SOLO, "cls": BowlingGame, "name": "HIDEOUT_TRIAL_NAME_BOLOS", "start_text": "HIDEOUT_TRIAL_START_BOLOS",
 		"hint": "HIDEOUT_TRIAL_HINT_BOLOS", "lesson": "props", "zone": "bolos", "via": "ring",
 		"starts": [Vector2i(52, 14), Vector2i(55, 14), Vector2i(58, 14)]},
-	{"id": "aguanta", "kind": "game", "cls": HideGame, "name": "HIDEOUT_TRIAL_NAME_AGUANTA", "start_text": "",
+	{"id": "aguanta", "kind": "game", "party": PARTY_SOLO, "cls": HideGame, "name": "HIDEOUT_TRIAL_NAME_AGUANTA", "start_text": "",
 		"hint": "HIDEOUT_TRIAL_HINT_AGUANTA", "lesson": "torch", "zone": "aguanta", "via": "armour",
 		"starts": [Vector2i(59, 21), Vector2i(59, 23), Vector2i(59, 25)]},
-	{"id": "lockpick", "kind": "bench", "cls": BenchTrial, "name": "HIDEOUT_TRIAL_NAME_LOCKPICK", "start_text": "HIDEOUT_TRIAL_START_LOCKPICK",
+	{"id": "lockpick", "kind": "bench", "party": PARTY_SOLO, "cls": BenchTrial, "name": "HIDEOUT_TRIAL_NAME_LOCKPICK", "start_text": "HIDEOUT_TRIAL_START_LOCKPICK",
 		"hint": "HIDEOUT_TRIAL_HINT_LOCKPICK", "lesson": "games", "zone": "lockpick", "via": "vitrine",
 		"starts": [Vector2i(24, 5), Vector2i(27, 5), Vector2i(30, 5)],
 		"minigame": "lockpick", "steps": [1, 2, 3], "limit": [30.0, 40.0, 50.0]},
-	{"id": "squeeze", "kind": "bench", "cls": BenchTrial, "name": "HIDEOUT_TRIAL_NAME_SQUEEZE", "start_text": "HIDEOUT_TRIAL_START_SQUEEZE",
+	{"id": "squeeze", "kind": "bench", "party": PARTY_SOLO, "cls": BenchTrial, "name": "HIDEOUT_TRIAL_NAME_SQUEEZE", "start_text": "HIDEOUT_TRIAL_START_SQUEEZE",
 		"hint": "HIDEOUT_TRIAL_HINT_SQUEEZE", "lesson": "props", "zone": "squeeze", "via": "hideout",
 		"starts": [Vector2i(38, 23), Vector2i(41, 23), Vector2i(44, 23)], "pieces": ["fridge", "box", "chest"],
 		"minigame": "squeeze", "steps": [0, 0, 0], "limit": [30.0, 40.0, 50.0]},
-	{"id": "wires", "kind": "bench", "cls": BenchTrial, "name": "HIDEOUT_TRIAL_NAME_WIRES", "start_text": "HIDEOUT_TRIAL_START_WIRES",
+	{"id": "wires", "kind": "bench", "party": PARTY_SOLO, "cls": BenchTrial, "name": "HIDEOUT_TRIAL_NAME_WIRES", "start_text": "HIDEOUT_TRIAL_START_WIRES",
 		"hint": "HIDEOUT_TRIAL_HINT_WIRES", "lesson": "case_alarm", "zone": "wires", "via": "alarm_wires",
 		"starts": [Vector2i(37, 1), Vector2i(41, 1), Vector2i(45, 1)], "wall": Vector2i(0, -1),
 		"minigame": "wires", "steps": [3, 3, 3], "limit": [30.0, 40.0, 50.0]},
-	{"id": "steady", "kind": "bench", "cls": BenchTrial, "name": "HIDEOUT_TRIAL_NAME_STEADY", "start_text": "HIDEOUT_TRIAL_START_STEADY",
+	{"id": "steady", "kind": "bench", "party": PARTY_SOLO, "cls": BenchTrial, "name": "HIDEOUT_TRIAL_NAME_STEADY", "start_text": "HIDEOUT_TRIAL_START_STEADY",
 		"hint": "HIDEOUT_TRIAL_HINT_STEADY", "lesson": "two", "zone": "steady", "via": "alarm_glass",
 		"starts": [Vector2i(51, 1), Vector2i(55, 1), Vector2i(59, 1)], "wall": Vector2i(0, -1),
 		"minigame": "steady", "steps": [4, 6, 8], "limit": [30.0, 40.0, 50.0]},
-	{"id": "circuit", "kind": "circuit", "cls": CircuitTrial, "name": "HIDEOUT_TRIAL_NAME_CIRCUIT", "start_text": "HIDEOUT_TRIAL_START_CIRCUIT",
+	{"id": "circuit", "kind": "circuit", "party": PARTY_SOLO, "cls": CircuitTrial, "name": "HIDEOUT_TRIAL_NAME_CIRCUIT", "start_text": "HIDEOUT_TRIAL_START_CIRCUIT",
 		"hint": "HIDEOUT_TRIAL_HINT_CIRCUIT", "lesson": "guard", "zone": "circuit", "via": "ring",
 		"starts": [Vector2i(21, 20), Vector2i(23, 20), Vector2i(25, 20)], "goal": Vector2i(33, 27),
 		"speed": [0.7, 1.0, 1.4], "limit": [90.0, 75.0, 60.0],
@@ -113,6 +126,13 @@ static func of_kind(kind: String) -> Array:
 ## The row whose start point is of this kind of object (`via`), in TABLE order.
 static func by_via(via: String) -> Array:
 	return TABLE.filter(func(g: Dictionary) -> bool: return g.via == via)
+
+
+## Whether a trial is PARTY_GROUP (several thieves together, the rest of the
+## band not just stood by): false for an id there is not, and for every
+## trial today (PARTY_SOLO).
+static func is_group(id: String) -> bool:
+	return info(id).get("party", PARTY_SOLO) == PARTY_GROUP
 
 
 ## A trial, not begun (start() begins it): for a band of `players` thieves, its dice
