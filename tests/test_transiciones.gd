@@ -43,6 +43,7 @@ func focused() -> Control:
 
 func _init() -> void:
 	Story.save = "user://test_transiciones.cfg"
+	Settings.path = "user://test_transiciones_settings.cfg"
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
 	m = load("res://scenes/main.tscn").instantiate()
 	root.add_child(m)
@@ -80,137 +81,38 @@ func _init() -> void:
 		guard += 1
 	check(m.hub.active == m.hub.OPTIONS, "... y un atrás lo deja en el carril principal")
 
-	# --- Cuántos ladrones: ya no un bocadillo sobre la tarjeta, sino el propio carril
-	# de pegatinas del hub (scenes/hub.gd, PLAYERS_OPTIONS) ------------------------------
-	guard = 0
-	while m.hub.active[m.hub.cursor].id != "story" and guard < 10:
-		await press(KEY_RIGHT)
-		await frames(2)
-	check(m.hub.active[m.hub.cursor].id == "story", "las flechas llegan a Modo Historia")
+	# Los retornos usan el mismo menú, conservan selección y no duplican teclas.
+	m._show_title("story", false)
 	await press(KEY_E)
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	check(m.hub.visible and m.hub.active == m.hub.PLAYERS_OPTIONS and m.hub.active[m.hub.cursor].id == "p%d" % m.players,
-		"elegir Modo Historia abre cuántos jugadores, con el foco en la banda de la última vez")
-	var was_id: String = m.hub.active[m.hub.cursor].id
-	await press(KEY_RIGHT)
-	await frames(2)
-	check(m.hub.active[m.hub.cursor].id != was_id, "las flechas se mueven por el carril")
-	await press(KEY_LEFT)
-	await frames(2)
-	check(m.hub.active[m.hub.cursor].id == was_id, "... en los dos sentidos")
+	await frames(3)
+	check(m.hub.active_kind == "players" and m.hub.pending_mode == "story", "Historia abre jugadores nuevos")
 	await press(KEY_ESCAPE)
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	check(m.hub.visible and m.hub.active == m.hub.OPTIONS and m.hub.active[m.hub.cursor].id == "story",
-		"atrás vuelve al hub, en Modo Historia, donde estaba")
-	await press(KEY_ESCAPE)
-	await frames(2)
-	check(m.hub.visible and m.hub.active == m.hub.OPTIONS, "... y otro atrás en el hub no hace nada raro")
-	# Elegir 2 va directo a los mandos de la historia, como antes.
-	await press(KEY_E)
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	while m.hub.active[m.hub.cursor].id != "p2":
-		await press(KEY_RIGHT)
-		await frames(2)
-	await press(KEY_E)
-	await frames(2)
-	check(m.phase == "join" and m.hands.join_for == "story" and m.hands.join_count == 2, "elegir 2 jugadores va directo a los mandos de la historia")
-	# Cancelar sin nadie sentado va al título real (Hands.unjoin): un paso más
-	# atrás del hub, pero el mismo sitio de siempre.
+	await frames(3)
+	check(m.hub.active_kind == "options" and m.hub.active[m.hub.cursor].id == "story", "Esc restaura Historia en inicio nuevo")
+	m.hub._pick("story")
+	m.hub._pick("p2")
+	check(m.phase == "join" and m.hub.visible, "2P abre asignación nueva")
 	m.hands.unjoin()
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	# Hands.unjoin() llama a _show_title("story"), que con choose=true (su
-	# valor de siempre) reabre el bocadillo de la tarjeta: el título real,
-	# no el hub, ya con sus propias tarjetas construidas de verdad.
-	check(not m.hub.visible and m.phase == "pick" and hud.bubble_open() and hud.bubble_focus() == m.players - 1,
-		"atrás desde los mandos, sin nadie sentado, reabre el bocadillo real en la banda de la última vez")
-	# The generative: its menu straight away, no bocadillo first; the gang
-	# picked from its own "players" card in it, like the size or the theme.
-	m._show_title()
-	await frames(3)
-	(hud._cards["generative"] as Button).pressed.emit()
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	check(m.phase == "generative", "el generativo va directo a su menú")
-	(hud._cards["players"] as Button).pressed.emit()
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	check(m.phase == "pick" and hud._bubble_anchor == hud._cards["players"], "su tarjeta de personas abre el bocadillo de cuántos ladrones")
-	hud.bubble_pick(2)
-	await frames(3)
-	check(m.phase == "generative" and m.players == 3 and not hud.bubble_open(), "elegir 3 deja el menú con 3 ladrones")
-	await press(KEY_ESCAPE)
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	check(m.phase == "title" and not hud.bubble_open() and focused() == hud._cards["generative"], "atrás desde el generativo va al título, en su tarjeta")
-	(hud._cards["generative"] as Button).pressed.emit()
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	(hud._cards["players"] as Button).pressed.emit()
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	check(hud.bubble_focus() == 2, "... su tarjeta de personas sigue en el 3")
-	hud.bubble_pick(0)
-	await frames(3)
-	check(m.phase == "generative" and m.players == 1, "... y se puede cambiar a 1")
-	# The focus stayed on the "players" card (the menu keeps it where it
-	# was); back on EMPEZAR, for what follows to start from there, as a
-	# fresh generative menu would.
-	(hud._panel_box.find_children("*", "Button", true, false).filter(
-		func(b): return (b as Button).text == Text.t("MENU_START"))[0] as Button).grab_focus()
-	await frames()
-
-	# --- The generative's settings: three cards, each with its bubble ----------------
-	# (The size and difficulty picked are saved: put back as they were at the end.)
+	check(m.hub.active_kind == "players" and m.hub.pending_mode == "story", "cancelar asignación vuelve al carril correcto")
 	var size_was: String = m.size
-	var difficulty_was: String = Sim.difficulty
-	m._set_setting("difficulty", "medium")
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	m._show_generative_menu()
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	var start_button := focused() as Button
-	check(start_button != null and start_button.text == Text.t("MENU_START"), "el generativo empieza con el foco en EMPEZAR")
-	check(hud._cards.size() == 4 and hud._cards.has("difficulty") and hud._cards.has("size") and hud._cards.has("theme") and hud._cards.has("players"), "... y cuatro tarjetas: dificultad, tamaño, tema y personas")
-	var rims: Array = hud._cards.values().map(func(c): return ((c as Button).get_theme_stylebox("normal") as StyleBoxFlat).border_color)
-	check(rims.all(func(r): return r == Hud.GLASS_EDGE), "... con el borde de siempre, sin colores de la elegida")
-	var hard_card: Button = hud._cards["difficulty"]
-	check(hard_card.find_children("*", "Label", true, false).any(func(l): return (l as Label).text == Text.t("MENU_DIFFICULTY_MEDIUM")), "... la de dificultad dice la que hay")
-	hard_card.grab_focus()
+	var difficulty_was := Sim.difficulty
+	m._show_generative_menu("difficulty")
+	m._pick_setting("difficulty")
 	await frames()
-	await press(KEY_E)
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	check(m.phase == "pick" and hud._bubble_anchor == hard_card and hud._bubble_buttons.size() == 3, "pulsar la dificultad abre su bocadillo, con tres")
-	check(hud.bubble_focus() == 1, "... con el foco en la que hay (media)")
-	var stills: Array = hud._bubble.find_children("*", "MenuStage", true, false)
-	check(stills.size() == 3 and stills.all(func(s): return not (s as MenuStage).active), "... cada una en su diorama, quieto")
-	await press(KEY_4)
-	await frames(2)
-	check(m.phase == "pick" and hud.bubble_open(), "el 4 no hace nada en un bocadillo de tres")
-	await press(KEY_ESCAPE)
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	check(m.phase == "generative" and not hud.bubble_open() and focused() == hard_card and Sim.difficulty == "medium", "Esc lo cierra sin cambiar nada, con el foco en su tarjeta")
-	await press(KEY_E)
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	await press(KEY_D)
-	await frames()
-	await press(KEY_E)
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	check(Sim.difficulty == "hard" and m.phase == "generative" and not hud.bubble_open(), "D y E: la difícil, elegida")
-	hard_card = hud._cards["difficulty"]
-	check(focused() == hard_card, "... el foco vuelve a su tarjeta")
-	check(hard_card.find_children("*", "Label", true, false).any(func(l): return (l as Label).text == Text.t("MENU_DIFFICULTY_HARD")), "... que ya dice la difícil")
-	var cards: Array = hud._panel_box.find_children("*", "Button", true, false)
-	check(cards.all(func(b): return (b as Control).modulate.a > 0.0) and hud._panel_box.modulate.a == 1.0, "... y el menú está entero, sin fundirse")
-	(hud._cards["size"] as Button).pressed.emit()
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	check(m.phase == "pick" and hud._bubble_anchor == hud._cards["size"], "el tamaño abre su bocadillo en su tarjeta")
-	await press(KEY_3)
-	await frames(Hud.SWAP_WAIT_FRAMES + 2)
-	check(m.size == "large" and focused() == hud._cards["size"], "el 3: el grande, con el foco en su tarjeta")
-	# Down from the difficulty: EMPEZAR, under it (VOLVER is under the size).
-	(hud._cards["difficulty"] as Button).grab_focus()
-	await frames()
-	await press(KEY_DOWN)
-	await frames()
-	check(focused() is Button and (focused() as Button).text == Text.t("MENU_START"), "abajo desde la dificultad: EMPEZAR")
+	m.hub._select(2, false)
 	await press(KEY_E)
 	await frames(3)
-	check(m.phase == "brief" and m.mode == "generative" and m.players == 1, "EMPEZAR: a la previa del golpe, con 1 ladrón")
-
+	check(Sim.difficulty == "hard" and m.phase == "generative", "una pulsación elige dificultad y vuelve a configuración")
+	check(m.hub.active[m.hub.cursor].id == "difficulty", "se conserva la categoría elegida")
+	m._pick_setting("size")
+	await press(KEY_3)
+	await frames(3)
+	check(m.size == "large" and m.hub.active[m.hub.cursor].id == "size", "atajo 3 elige museo grande")
+	m._show_title("generative", false)
+	await press(KEY_E)
+	await frames(3)
+	check(m.phase == "generative", "generativo abre con una pulsación")
+	m.players = 1
 	# --- Into a night ------------------------------------------------------------
 	m._start("generative", 1)
 	await frames(3)
@@ -281,10 +183,10 @@ func _init() -> void:
 	await frames(3)
 	await press(KEY_ESCAPE)
 	await frames(3)
-	check(m.phase == "title", "atrás desde el final: al título")
+	check(m.phase == "generative" and m.hub.visible, "atrás desde el final: a configuración nueva")
 	await press(KEY_ESCAPE)
 	await frames(2)
-	check(m.phase == "title", "... una sola vez")
+	check(m.phase == "title" and m.hub.visible, "siguiente Esc vuelve al inicio nuevo")
 
 	# --- The pause comes and goes with the monitor ------------------------------------
 	m._start("generative", 1)
@@ -301,4 +203,5 @@ func _init() -> void:
 	m._set_setting("size", size_was)
 	m._set_setting("difficulty", difficulty_was)
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.path))
 	quit(qa.summary())

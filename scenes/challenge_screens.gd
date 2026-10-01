@@ -35,65 +35,34 @@ func _init(game: Game) -> void:
 ## beside it the one the list is on: its plan and what kind of night it is.
 ## Pressing a line opens it; a new map opens the editor.
 func show_menu() -> void:
-	host.hud.backdrop(Hud.SPOTS.challenge)
-	host.phase = "menu"
 	challenge_delete = false
 	host.podium.drop()
-	var lines: Array = [{"head": Text.t("CHALLENGE_STORY_HEAD")}]
+	var choices: Array = [
+		{"id": "back", "label": Text.t("MENU_BACK"), "sticker": "salir.png", "flip": true, "call": host._show_title.bind("challenge", false)},
+		{"id": "new", "label": Text.t("CHALLENGE_NEW"), "sticker": "opciones.png", "description": Text.t("CHALLENGE_EDIT_LEGEND"), "call": show_editor.bind(MapFile.blank(Museum.SIZES.small.w, Museum.SIZES.small.h))},
+	]
+	for m in MapFile.list():
+		choices.append({"id": "map:" + m.path, "label": m.name.to_upper(), "sticker": "retos.png", "call": show_map.bind(m), "focus": land_map.bind(m)})
 	for n in range(1, Story.count() + 1):
-		var edited := MapFile.for_night(n) != null
-		lines.append({"text": ("* " + Text.t("CHALLENGE_RETOUCHED") + " · " if edited else "") + night_name(n), "colour": Hud.C.green if edited else Hud.C.text,
-			"call": land_night.bind(n), "open": show_night_map.bind(n), "selected": challenge_at == "night:%d" % n})
-	lines.append({"head": Text.t("CHALLENGE_MAPS_HEAD")})
-	var maps := MapFile.list()
-	if maps.is_empty():
-		lines.append({"head": Text.t("CHALLENGE_EMPTY")})
-	for m in maps:
-		lines.append({"text": m.name.to_upper(), "colour": Hud.C.gold if m.built_in else Hud.C.green,
-			"call": land_map.bind(m), "open": show_map.bind(m), "selected": challenge_at == "map:" + m.path})
-	# The plan's room: as big as the biggest museum's, so none jumps about.
-	var room := MapEditor.picture(MapFile.blank(Museum.SIZES.large.w, Museum.SIZES.large.h), 8)
-	var small := MapFile.blank(Museum.SIZES.small.w, Museum.SIZES.small.h)
-	host.hud.show_menu([
-		{"title": Text.t("MENU_CHALLENGE"), "size": 40},
-		{"text": Text.t("CHALLENGE_TEXT"), "colour": Hud.C.dim},
-		{"text": Text.t("CHALLENGE_EDIT_LEGEND"), "size": 15, "colour": Hud.C.text},
-		{"columns": [
-			# The challenges, in the middle; its line's right arrow reaches
-			# the new-map button, up top on the other side (right_id/id).
-			{"items": [{"list": lines, "width": 380, "height": 450, "right_id": "edit_map"}]},
-			{"items": [
-				{"buttons": [{"text": Text.t("CHALLENGE_NEW"), "id": "edit_map", "call": show_editor.bind(small), "colour": Hud.C.green}], "row": true, "small": true},
-				{"text": "", "id": "pick_name", "size": 24, "wrap": true, "width": 560},
-				{"text": "", "id": "pick_info", "size": 16, "colour": Hud.C.dim},
-				{"picture": room, "id": "pick_plan", "height": 330},
-				{"text": Text.t("CHALLENGE_HINT"), "size": 14, "colour": Hud.C.dim},
-			], "width": 560},
-		], "separation": 30},
-		{"buttons": [
-			{"text": Text.t("MENU_BACK"), "call": host._show_title, "colour": Hud.C.dim},
-		], "row": true, "small": true, "align": "left"},
-	])
+		choices.append({"id": "night:%d" % n, "label": night_name(n), "sticker": "historia.png", "call": show_night_map.bind(n), "focus": land_night.bind(n)})
+	var selected := 2 if choices.size() > 2 else 1
+	for i in choices.size():
+		if choices[i].id == challenge_at:
+			selected = i
+	host.hub.show_screen(Text.t("MENU_CHALLENGE"), choices, "challenges", "menu", host._show_title.bind("challenge", false), selected)
 
 
-## The list lands on a story night: its museum, beside it.
 func land_night(n: int) -> void:
 	challenge_at = "night:%d" % n
 	var m := night_as_map(n)
-	host.hud.set_text("pick_name", night_name(n), Hud.C.safe)
-	host.hud.set_text("pick_info", night_info(n, m), Hud.C.dim)
-	host.hud.set_picture("pick_plan", MapEditor.picture(m, 8))
+	host.hub.set_preview(MapEditor.picture(m, 8), night_name(n) + "\n" + night_info(n, m))
 
 
-## The list lands on a challenge: its plan, beside it.
 func land_map(m: MapFile) -> void:
 	challenge_at = "map:" + m.path
-	host.hud.set_text("pick_name", m.name.to_upper(), Hud.C.gold if m.built_in else Hud.C.green)
-	host.hud.set_text("pick_info", Text.t("CHALLENGE_BUILT_IN" if m.built_in else "CHALLENGE_MINE") + " · " + challenge_info(m), Hud.C.dim)
-	host.hud.set_picture("pick_plan", MapEditor.picture(m, 8))
+	host.hub.set_preview(MapEditor.picture(m, 8), m.name + "\n" + Text.t("CHALLENGE_BUILT_IN" if m.built_in else "CHALLENGE_MINE") + " · " + challenge_info(m))
 
 
-## A night's name in the list: its number and its piece.
 func night_name(n: int) -> String:
 	return Text.t("MENU_NIGHT_PIECE") % [n, String(Story.level(n).loot.name).to_upper()]
 
@@ -183,25 +152,17 @@ static func _restore_layout_state(state: Dictionary) -> void:
 ## One story night: its plan, then edit it or, touched up, put it back as the
 ## night builds it.
 func show_night_map(n: int) -> void:
-	host.hud.backdrop(Hud.SPOTS.challenge)
-	host.phase = "challenge"
 	challenge_at = "night:%d" % n
 	var m := night_as_map(n)
-	var edited := MapFile.for_night(n) != null
-	var row: Array = [{"text": Text.t("CHALLENGE_EDIT"), "call": show_editor.bind(m), "colour": Hud.C.gold}]
-	if edited:
-		row.append({"text": Text.t("CHALLENGE_RESTORE_SURE" if challenge_delete else "CHALLENGE_RESTORE"), "call": restore_night.bind(n), "colour": Hud.C.alert})
-	row.append({"text": Text.t("MENU_BACK"), "call": show_menu, "colour": Hud.C.dim})
-	host.hud.show_menu([
-		{"title": night_name(n), "size": 36, "colour": Hud.C.safe},
-		{"text": night_info(n, m), "colour": Hud.C.dim, "size": 17},
-		{"picture": MapEditor.picture(m, 8), "height": 300},
-		{"text": Text.t("CHALLENGE_NIGHT_TEXT"), "colour": Hud.C.dim, "size": 14, "wrap": true, "width": 640},
-		{"buttons": row, "row": true, "small": true},
-	], "night:%d" % n)
+	var choices: Array = [
+		{"id": "edit", "label": Text.t("CHALLENGE_EDIT"), "picture": MapEditor.picture(m, 8), "description": night_info(n, m) + "\n" + Text.t("CHALLENGE_NIGHT_TEXT"), "call": show_editor.bind(m)},
+	]
+	if MapFile.for_night(n) != null:
+		choices.append({"id": "restore", "label": Text.t("CHALLENGE_RESTORE_SURE" if challenge_delete else "CHALLENGE_RESTORE"), "sticker": "cancelar.png", "call": restore_night.bind(n)})
+	choices.append({"id": "back", "label": Text.t("MENU_BACK"), "sticker": "salir.png", "flip": true, "call": show_menu})
+	host.hub.show_screen(night_name(n), choices, "challenge_night", "challenge", show_menu, 1 if challenge_delete else 0)
 
 
-## Twice to put a night back as it builds itself: the first press only asks.
 func restore_night(n: int) -> void:
 	if not challenge_delete:
 		challenge_delete = true
@@ -226,30 +187,23 @@ func challenge_info(m: MapFile) -> String:
 ## One map: its plan, then play it with one to four thieves, edit it, or
 ## (the player's own) delete it.
 func show_map(m: MapFile) -> void:
-	host.hud.backdrop(Hud.SPOTS.challenge)
-	host.phase = "challenge"
 	challenge_map = m
-	var items: Array = [
-		{"title": m.name.to_upper(), "size": 36, "colour": Hud.C.gold if m.built_in else Hud.C.green},
-		{"text": Text.t("CHALLENGE_BUILT_IN" if m.built_in else "CHALLENGE_MINE") + " · " + challenge_info(m), "colour": Hud.C.dim, "size": 17},
-		{"picture": MapEditor.picture(m, 8), "height": 260},
-	]
+	challenge_at = "map:" + m.path
+	var info := Text.t("CHALLENGE_BUILT_IN" if m.built_in else "CHALLENGE_MINE") + " · " + challenge_info(m)
+	var choices: Array = [{"id": "preview", "label": m.name, "picture": MapEditor.picture(m, 8), "description": info}]
 	if m.check().is_empty():
-		items.append({"cards": [
-			{"title": Text.t("MENU_PLAY_1"), "stage": MenuStage.make("players:1"), "call": host._start.bind("challenge", 1), "colour": Game.COLOURS.thief, "title_size": 12},
-			{"title": Text.t("MENU_PLAY_2"), "stage": MenuStage.make("players:2"), "call": host._start.bind("challenge", 2), "colour": Game.COLOURS.thief2, "title_size": 12},
-			{"title": Text.t("MENU_PLAY_3"), "stage": MenuStage.make("players:3"), "call": host._start.bind("challenge", 3), "colour": Game.COLOURS.thief3, "title_size": 12},
-			{"title": Text.t("MENU_PLAY_4"), "stage": MenuStage.make("players:4"), "call": host._start.bind("challenge", 4), "colour": Game.COLOURS.thief4, "title_size": 12},
-		], "width": 140})
-	var row: Array = [{"text": Text.t("CHALLENGE_EDIT"), "call": show_editor.bind(m), "colour": Hud.C.gold}]
+		for n in range(1, 5):
+			choices.append({"id": "p%d" % n, "label": Text.t("MENU_PLAY_%d" % n), "res": "res://assets/ui/ninjas_%d.png" % n, "description": info, "call": host._start.bind("challenge", n)})
+	choices.append({"id": "edit", "label": Text.t("CHALLENGE_EDIT"), "sticker": "opciones.png", "description": info, "call": show_editor.bind(m)})
+	var selected := 1
 	if not m.built_in:
-		row.append({"text": Text.t("CHALLENGE_DELETE_SURE" if challenge_delete else "CHALLENGE_DELETE"), "call": delete_map.bind(m), "colour": Hud.C.alert})
-	row.append({"text": Text.t("MENU_BACK"), "call": show_menu, "colour": Hud.C.dim})
-	items.append({"buttons": row, "row": true, "small": true})
-	host.hud.show_menu(items, "map:" + m.path)
+		if challenge_delete:
+			selected = choices.size()
+		choices.append({"id": "delete", "label": Text.t("CHALLENGE_DELETE_SURE" if challenge_delete else "CHALLENGE_DELETE"), "sticker": "cancelar.png", "call": delete_map.bind(m)})
+	choices.append({"id": "back", "label": Text.t("MENU_BACK"), "sticker": "salir.png", "flip": true, "call": show_menu})
+	host.hub.show_screen(m.name.to_upper(), choices, "challenge_map", "challenge", show_menu, selected)
 
 
-## Twice to delete: the first press only asks.
 func delete_map(m: MapFile) -> void:
 	if not challenge_delete:
 		challenge_delete = true

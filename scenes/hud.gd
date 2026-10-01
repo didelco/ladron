@@ -22,10 +22,8 @@ const GLASS_EDGE := Color("#8f82b8", 0.5)
 const GLOW := Color("#ffae42")
 const GLOW_TEXT := Color("#fff0d6")
 
-## Behind every menu: a museum wall at night — aubergine above, dark wood
-## below, a faint striped wallpaper with a damask dot, the warm pool of a
-## lamp from the top, a vignette round the edge.
-## Out of the game a picture of the museum hall shows instead (MENU_PICTURE),
+## Menus without a backdrop picture leave the game visible, with no veil.
+## Out of the game a picture of the museum hall can show (MENU_PICTURE),
 ## darker at the top and bottom so the headings and buttons read, looking at a
 ## different part of it on each screen (focus, SPOTS) and drifting.
 ## In the pause, the game itself as the museum's security monitor shows it
@@ -35,8 +33,6 @@ const GLOW_TEXT := Color("#fff0d6")
 ## too coarse and dark to spy on the guards from.
 const BACKDROP_SHADER := """
 shader_type canvas_item;
-uniform vec4 top : source_color = vec4(0.16, 0.09, 0.2, 0.97);
-uniform vec4 bottom : source_color = vec4(0.08, 0.045, 0.035, 0.98);
 uniform sampler2D picture : filter_linear, repeat_disable;
 uniform float cover = 0.0;
 uniform vec2 focus = vec2(0.5);
@@ -75,13 +71,8 @@ vec3 monitor(vec2 uv, vec2 frag, vec2 pixel) {
 	return mix(phosphor_dark.rgb, phosphor.rgb, clamp(l, 0.0, 1.0)) * inside;
 }
 void fragment() {
-	vec4 c = mix(top, bottom, smoothstep(0.0, 1.0, UV.y));
-	float stripe = step(0.5, fract(FRAGCOORD.x / 64.0));
-	c.rgb += stripe * 0.012 * (1.0 - UV.y);
-	vec2 g = fract(FRAGCOORD.xy / vec2(64.0, 80.0) + vec2(0.25, 0.0)) - 0.5;
-	c.rgb += smoothstep(0.09, 0.06, length(g * vec2(1.0, 0.7))) * 0.018 * (1.0 - UV.y);
-	// A wainscot rail across the lower third.
-	c.rgb += smoothstep(0.004, 0.0, abs(UV.y - 0.72)) * 0.05;
+	// No decorative veil: without a picture or CCTV, show the game directly.
+	vec4 c = vec4(0.0);
 	if (cover > 0.0) {
 		vec2 pic = vec2(textureSize(picture, 0));
 		float screen = SCREEN_PIXEL_SIZE.y / SCREEN_PIXEL_SIZE.x;
@@ -97,12 +88,8 @@ void fragment() {
 		// Darker at the top, under the heading, and at the bottom, under the buttons.
 		p *= 1.0 - 0.35 * smoothstep(0.3, 0.0, UV.y);
 		p *= 1.0 - 0.4 * pow(clamp((UV.y - 0.6) / 0.4, 0.0, 1.0), 2.0);
-		c.rgb = mix(c.rgb, p, cover);
+		c = vec4(p, cover);
 	}
-	// The lamp: warm light pooling from the top centre, breathing slowly.
-	float lamp = exp(-pow(distance(UV * vec2(1.6, 1.0), vec2(0.8, 0.05)) * 1.9, 2.0));
-	c.rgb += vec3(0.45, 0.28, 0.12) * lamp * (0.3 + 0.03 * sin(TIME * 1.3)) * (1.0 - cover) * (1.0 - cctv);
-	c.rgb *= 1.0 - distance(UV, vec2(0.5)) * 0.55 * (1.0 - cctv);
 	if (cctv > 0.0) {
 		c = mix(c, vec4(monitor(UV, FRAGCOORD.xy, SCREEN_PIXEL_SIZE), 1.0), cctv);
 	}
@@ -352,7 +339,9 @@ func _ready() -> void:
 	_map_stage.process_mode = Node.PROCESS_MODE_DISABLED
 
 	_panel = ColorRect.new()
-	# Opaque: the shader paints it, and only takes its fade (modulate) from it.
+	# No menu is open at startup; show_menu() reveals this layer when needed.
+	_panel.visible = false
+	_panel.modulate.a = 0.0
 	_panel.color = Color(C.panel, 1.0)
 	_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
 	var backdrop := Shader.new()
@@ -631,7 +620,6 @@ func show_menu(items: Array, screen := "") -> void:
 	_named.clear()
 	_pictures.clear()
 	_cards.clear()
-	close_bubble()
 	_menu_map = null
 	_titles.clear()
 	for item in items:
@@ -1505,356 +1493,6 @@ func _card(c: Dictionary, width: int, back := false) -> Button:
 	return b
 
 
-# --- The bubble: a quick choice popping out of a card -----------------------------
-
-## The bubble up (pop_bubble), the card it points at, its choices, and what
-## to do when it is closed without a choice.
-var _bubble: Control
-var _bubble_box: PanelContainer
-var _bubble_tail: Control
-var _bubble_anchor: Control
-var _bubble_buttons: Array[Button] = []
-var _bubble_closed: Callable
-## A choice in the bubble: how wide, how big its sticker, and how bright the
-## title of one without the focus.
-const CHOICE_W := 124.0
-const STICKER := Vector2(120, 80)
-## A choice on a diorama instead (a MenuStage, 3:2 like the sticker): bigger,
-## to make out what is on it, and its corners rounded like a card's picture.
-const STAGE_STICKER := Vector2(168, 112)
-const STAGE_RADIUS := 12.0
-const DIM := 0.82
-## A choice's sticker: in full colour and a touch brighter with the focus
-## (lit 1), nearly a dark silhouette without it (lit 0), grey with a hint of
-## the bubble's purple. radius: its corners rounded (box: its size), for a
-## diorama; 0 for a sticker, cut out already.
-const STICKER_SHADER := """
-shader_type canvas_item;
-uniform float lit = 0.0;
-uniform vec2 box = vec2(120.0, 80.0);
-uniform float radius = 0.0;
-void fragment() {
-	float grey = dot(COLOR.rgb, vec3(0.299, 0.587, 0.114));
-	vec3 off = mix(vec3(grey), COLOR.rgb, 0.55) * 0.72;
-	vec3 on = min(COLOR.rgb * 1.12, vec3(1.0));
-	float a = COLOR.a;
-	vec2 q = min(UV * box, box - UV * box);
-	if (radius > 0.0 && q.x < radius && q.y < radius) {
-		a *= 1.0 - smoothstep(radius - 1.5, radius, length(vec2(radius) - q));
-	}
-	COLOR = vec4(mix(off, on, lit), a);
-}
-"""
-## the tail's size, and the least room kept between the bubble and the edge
-const TAIL := Vector2(26, 14)
-const BUBBLE_EDGE := 12.0
-
-
-## A little bubble of choices popping out of a card of the menu on show
-## (the card with that id, see "cards"), like a speech bubble: the menu stays
-## as it is, neither dimmed nor covered beyond the bubble, and the card stays
-## lit while it is up. choices are small cards, left to right:
-##   {"title", "icon": Texture2D, "colour", "call"}, or "stage": MenuStage
-##   for "icon" (a diorama, still, bigger: STAGE_STICKER)
-## focus: the one to start on. The arrows, the stick or the cross move along
-## it and accept (A, E, the full stop) or a click picks; back (the game's own
-## _unhandled_input, through close_bubble) or a click anywhere else closes
-## it, back to the card, and closed is called. It comes and goes in SWAP_S.
-func pop_bubble(anchor_id: String, heading: String, choices: Array, focus: int, closed: Callable) -> void:
-	close_bubble()
-	var anchor: Control = _cards.get(anchor_id)
-	if anchor == null:
-		return
-	_bubble_anchor = anchor
-	_bubble_closed = closed
-	var root := Control.new()
-	root.set_anchors_preset(Control.PRESET_FULL_RECT)
-	# Nothing under it takes the mouse while it is up; a click off it closes it.
-	root.mouse_filter = Control.MOUSE_FILTER_STOP
-	root.gui_input.connect(func(event: InputEvent) -> void:
-		if event is InputEventMouseButton and event.pressed:
-			root.accept_event()
-			ui_sound.emit("back")
-			close_bubble(true))
-	_panel.add_child(root)
-	_bubble = root
-	var box := PanelContainer.new()
-	var st := StyleBoxFlat.new()
-	# Solid, so the tail can sit over its rim; the menu round it stays lit.
-	st.bg_color = Color(GLASS_LIT, 1.0)
-	st.set_corner_radius_all(20)
-	st.anti_aliasing = true
-	st.border_color = GLOW
-	st.set_border_width_all(3)
-	st.shadow_color = Color(0, 0, 0, 0.45)
-	st.shadow_size = 12
-	st.shadow_offset = Vector2(0, 4)
-	st.set_content_margin_all(14)
-	box.add_theme_stylebox_override("panel", st)
-	box.mouse_filter = Control.MOUSE_FILTER_STOP
-	root.add_child(box)
-	_bubble_box = box
-	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 10)
-	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_child(column)
-	var head := _label(10, C.gold, column, true)
-	head.text = heading
-	head.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 10)
-	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(row)
-	_bubble_buttons.clear()
-	var choice_width := (get_viewport().get_visible_rect().size.x - 2 * BUBBLE_EDGE - 28 - 10 * (choices.size() - 1)) / maxi(1, choices.size())
-	for choice: Dictionary in choices:
-		var c := choice.duplicate()
-		c["max_width"] = choice_width
-		var b := _bubble_choice(c)
-		row.add_child(b)
-		_bubble_buttons.append(b)
-	# Along the row and round the ends; up and down stay put.
-	var n := _bubble_buttons.size()
-	for i in n:
-		var b := _bubble_buttons[i]
-		var left := b.get_path_to(_bubble_buttons[(i - 1 + n) % n])
-		var right := b.get_path_to(_bubble_buttons[(i + 1) % n])
-		b.focus_neighbor_left = left
-		b.focus_previous = left
-		b.focus_neighbor_right = right
-		b.focus_next = right
-		b.focus_neighbor_top = b.get_path_to(b)
-		b.focus_neighbor_bottom = b.get_path_to(b)
-	_bubble_tail = Control.new()
-	_bubble_tail.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_bubble_tail.size = TAIL + Vector2(0, 3)
-	_bubble_tail.draw.connect(_draw_tail.bind(_bubble_tail))
-	root.add_child(_bubble_tail)
-	root.modulate.a = 0.0
-	_bubble_open(root, _bubble_buttons[clampi(focus, 0, n - 1)] if n > 0 else null)
-
-
-## The bubble in: once its choices have drawn (SWAP_WAIT_FRAMES) and
-## the menu under it has taken its own focus, the focus into it and a quick
-## fade and grow out of the card.
-func _bubble_open(root: Control, first: Button) -> void:
-	for i in SWAP_WAIT_FRAMES:
-		await get_tree().process_frame
-	if root != _bubble:
-		return
-	_hold(_bubble_anchor, true)
-	if first:
-		_quiet = true
-		first.grab_focus()
-		_quiet = false
-	# Focus callbacks may close or replace the selector synchronously.
-	if root != _bubble or not is_instance_valid(_bubble_tail):
-		return
-	_place_bubble()
-	var up: bool = _bubble_tail.get_meta("up", false)
-	_bubble_box.pivot_offset = Vector2(_bubble_tail.position.x + TAIL.x / 2 - _bubble_box.position.x, _bubble_box.size.y if up else 0.0)
-	_bubble_box.scale = Vector2.ONE * 0.92
-	var tw := create_tween().set_parallel().set_trans(TRANS).set_ease(EASE)
-	tw.tween_property(root, "modulate:a", 1.0, SWAP_S)
-	tw.tween_property(_bubble_box, "scale", Vector2.ONE, SWAP_S)
-
-
-## One choice in the bubble: no frame of its own, just its sticker (a 2D
-## picture, see tools/ninja_stickers.py, or a still diorama) and its short title under it, in
-## its colour. The one with the focus lights up, in colour, and pops a little
-## bigger (_lift); the rest stand dark, nearly silhouettes. Either way it
-## eases there in SWAP_S (_light_choice).
-func _bubble_choice(c: Dictionary) -> Button:
-	var b := Button.new()
-	b.focus_mode = Control.FOCUS_ALL
-	var colour: Color = c.get("colour", C.safe)
-	for state in ["normal", "hover", "pressed", "focus"]:
-		b.add_theme_stylebox_override(state, StyleBoxEmpty.new())
-	var box := VBoxContainer.new()
-	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_theme_constant_override("separation", 4)
-	box.set_anchors_preset(Control.PRESET_FULL_RECT)
-	box.offset_left = 2
-	box.offset_right = -2
-	box.offset_top = 4
-	box.offset_bottom = -6
-	b.add_child(box)
-	var icon := TextureRect.new()
-	var sticker := STICKER
-	var shader := Shader.new()
-	shader.code = STICKER_SHADER
-	var m := ShaderMaterial.new()
-	m.shader = shader
-	# A diorama: drawn through its texture, still (never set going: a
-	# bubble is a quick pick, and three stirring at once would be a fuss).
-	if c.has("stage"):
-		var stage: MenuStage = c.stage
-		b.add_child(stage)
-		icon.texture = stage.get_texture()
-		sticker = STAGE_STICKER
-		sticker *= minf(1.0, (c.get("max_width", 172.0) - 4) / sticker.x)
-		m.set_shader_parameter("box", sticker)
-		m.set_shader_parameter("radius", STAGE_RADIUS)
-	else:
-		icon.texture = c.icon
-	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
-	icon.custom_minimum_size = sticker
-	m.set_shader_parameter("lit", 0.0)
-	icon.material = m
-	box.add_child(icon)
-	var title_size := int(c.get("title_size", mini(12, floori((c.get("max_width", 172.0) - 4) / maxi(1, String(c.title).length())))))
-	var t := _label(title_size, colour.lerp(CREAM, 0.2), box, true)
-	t.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
-	t.text = c.title
-	t.clip_text = true
-	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	t.modulate = Color(DIM, DIM, DIM)
-	b.custom_minimum_size = Vector2(maxf(CHOICE_W, sticker.x + 4), sticker.y + 34)
-	b.focus_entered.connect(_light_choice.bind(b, icon, t, true))
-	b.focus_exited.connect(_light_choice.bind(b, icon, t, false))
-	_lift(b, 1.08)
-	var call: Callable = c.call
-	b.pressed.connect(func() -> void:
-		ui_sound.emit("ok")
-		close_bubble()
-		call.call())
-	return b
-
-
-## A choice in the bubble lit up (on) or dark: its sticker (STICKER_SHADER)
-## and its title ease there together, from wherever they are.
-func _light_choice(b: Button, icon: TextureRect, title: Label, on: bool) -> void:
-	if b.has_meta("light"):
-		var old: Tween = b.get_meta("light")
-		old.kill()
-	var m := icon.material as ShaderMaterial
-	var from: float = m.get_shader_parameter("lit")
-	var tw := b.create_tween().set_parallel().set_trans(TRANS).set_ease(EASE)
-	tw.tween_method(func(v: float) -> void: m.set_shader_parameter("lit", v), from, 1.0 if on else 0.0, SWAP_S)
-	tw.tween_property(title, "modulate", Color.WHITE if on else Color(DIM, DIM, DIM), SWAP_S)
-	b.set_meta("light", tw)
-
-
-## The bubble away, if one is up: it fades out (SWAP_S), deaf to every key
-## and click as it goes. back: closed without a choice, so the card it came
-## from takes the focus again and closed (pop_bubble) is called.
-func close_bubble(back := false) -> void:
-	if _bubble == null:
-		return
-	var old := _bubble
-	var anchor := _bubble_anchor
-	var closed := _bubble_closed
-	_bubble = null
-	_bubble_anchor = null
-	_bubble_buttons.clear()
-	var focus := get_viewport().gui_get_focus_owner()
-	if focus and old.is_ancestor_of(focus):
-		get_viewport().gui_release_focus()
-	old.propagate_call("set", ["mouse_filter", Control.MOUSE_FILTER_IGNORE])
-	old.propagate_call("set", ["focus_mode", Control.FOCUS_NONE])
-	var tw := create_tween().set_trans(TRANS).set_ease(EASE)
-	tw.tween_property(old, "modulate:a", 0.0, SWAP_S * old.modulate.a)
-	tw.tween_callback(old.queue_free)
-	if is_instance_valid(anchor):
-		_hold(anchor, false)
-		if back and anchor.is_visible_in_tree():
-			anchor.grab_focus()
-	if back and closed.is_valid():
-		closed.call()
-
-
-## Whether a bubble is up.
-func bubble_open() -> bool:
-	return _bubble != null
-
-
-## Which of the bubble's choices has the focus (-1 for none).
-func bubble_focus() -> int:
-	return _bubble_buttons.find(get_viewport().gui_get_focus_owner())
-
-
-## The focus dir choices along the bubble, round the ends (the game's own
-## keys for it: A and D).
-func bubble_move(dir: int) -> void:
-	if _bubble_buttons.is_empty():
-		return
-	_bubble_buttons[posmod(maxi(0, bubble_focus()) + dir, _bubble_buttons.size())].grab_focus()
-
-
-## The bubble's choice i picked, as if pressed (the game's own keys: E, and
-## 1 to 4).
-func bubble_pick(i: int) -> void:
-	if i >= 0 and i < _bubble_buttons.size():
-		_bubble_buttons[i].pressed.emit()
-
-
-## A card lit up and kept so, focus or not (the one a bubble came out of),
-## or let go back to its way.
-func _hold(c: Control, on: bool) -> void:
-	if not (c is Button) or c.get_meta("held", false) == on:
-		return
-	c.set_meta("held", on)
-	var b := c as Button
-	if on:
-		b.set_meta("rest_style", b.get_theme_stylebox("normal"))
-		b.add_theme_stylebox_override("normal", b.get_theme_stylebox("focus"))
-		b.modulate = Color.WHITE
-	elif b.has_meta("rest_style"):
-		b.add_theme_stylebox_override("normal", b.get_meta("rest_style"))
-		if not b.has_focus():
-			b.focus_exited.emit()
-
-
-## The bubble under its card, the tail pointing up at it; above it when
-## there is no room below. Kept on screen, and following the card as it moves.
-func _place_bubble() -> void:
-	if _bubble == null or not is_instance_valid(_bubble_anchor):
-		return
-	var screen := _bubble.size
-	var card := _bubble_anchor.get_global_rect()
-	var inv := _bubble.get_global_transform().affine_inverse()
-	card = Rect2(inv * card.position, card.size)
-	var size := _bubble_box.get_combined_minimum_size()
-	_bubble_box.size = size
-	var x := clampf(card.get_center().x - size.x / 2, BUBBLE_EDGE, maxf(BUBBLE_EDGE, screen.x - size.x - BUBBLE_EDGE))
-	var below := card.end.y + TAIL.y - 2.0
-	var up := _screen == "generative" or below + size.y > screen.y - BUBBLE_EDGE
-	var y := card.position.y - TAIL.y + 2.0 - size.y if up else below
-	y = clampf(y, BUBBLE_EDGE, maxf(BUBBLE_EDGE, screen.y - size.y - BUBBLE_EDGE))
-	_bubble_box.position = Vector2(x, y)
-	var tip := clampf(card.get_center().x, x + 30.0, x + size.x - 30.0)
-	_bubble_tail.position = Vector2(tip - TAIL.x / 2, y + size.y - 3.0 if up else y - TAIL.y)
-	if _bubble_tail.get_meta("up", false) != up:
-		_bubble_tail.set_meta("up", up)
-		_bubble_tail.queue_redraw()
-
-
-## The tail: a triangle of the bubble's glass with its glowing rim on its
-## two sides, over the bubble's own rim where they meet (3 px into it).
-func _draw_tail(tail: Control) -> void:
-	var up: bool = tail.get_meta("up", false)
-	var w := TAIL.x
-	var h := TAIL.y
-	var sides: PackedVector2Array
-	var fill: PackedVector2Array
-	if up:
-		# Pointing down, from the bubble's bottom rim (y 0 to 3).
-		sides = PackedVector2Array([Vector2(0, 3), Vector2(w / 2, h + 3), Vector2(w, 3)])
-		fill = PackedVector2Array([Vector2(0, 0), Vector2(w, 0), Vector2(w, 3), Vector2(w / 2, h + 3), Vector2(0, 3)])
-	else:
-		# Pointing up, into the bubble's top rim (y h to h + 3).
-		sides = PackedVector2Array([Vector2(0, h), Vector2(w / 2, 0), Vector2(w, h)])
-		fill = PackedVector2Array([Vector2(0, h), Vector2(w / 2, 0), Vector2(w, h), Vector2(w, h + 3), Vector2(0, h + 3)])
-	tail.draw_colored_polygon(fill, Color(GLASS_LIT, 1.0))
-	tail.draw_polyline(sides, GLOW, 3.0, true)
-
-
-## The thief on the title screen, as the web draws it: a hooded figure in
-## pixels with the slit of a visor. One per player, side by side.
 static func thief_icon(colours: Array) -> ImageTexture:
 	var cell := 10
 	var img := Image.create(12 * colours.size() - 2, 14, false, Image.FORMAT_RGBA8)
@@ -1883,7 +1521,14 @@ func show_panel(title: String, title_colour: Color, lines: Array, footer: String
 ## Fades the menu away. It is gone for the game straight away: it lets go of
 ## the focus and lets clicks through while it fades, so a menu on its way out
 ## never swallows a key or a click. Calling it again when hidden does nothing.
-func hide_panel() -> void:
+func hide_gameplay() -> void:
+	if _play_fade:
+		_play_fade.kill()
+	for c in _play:
+		c.visible = false
+
+
+func hide_panel(instant := false) -> void:
 	if _play_fade:
 		_play_fade.kill()
 	for c in _play:
@@ -1891,6 +1536,8 @@ func hide_panel() -> void:
 			c.modulate.a = 1.0
 		c.visible = c != _gang or not _map.visible
 	if not _shown:
+		if instant:
+			_fade_panel(0.0, true)
 		return
 	# The game's HUD comes back as the menu goes.
 	_play_fade = create_tween().set_parallel().set_trans(TRANS).set_ease(EASE)
@@ -1901,12 +1548,17 @@ func hide_panel() -> void:
 	get_viewport().gui_release_focus()
 	_panel.propagate_call("set", ["mouse_filter", Control.MOUSE_FILTER_IGNORE])
 	_panel.propagate_call("set", ["focus_mode", Control.FOCUS_NONE])
-	_fade_panel(0.0)
+	_fade_panel(0.0, instant)
 
 
-func _fade_panel(to: float) -> void:
+func _fade_panel(to: float, instant := false) -> void:
 	if _fade:
 		_fade.kill()
+	if instant:
+		_panel.modulate.a = to
+		if to == 0.0:
+			_panel_gone()
+		return
 	_fade = create_tween().set_trans(TRANS).set_ease(EASE)
 	_fade.tween_property(_panel, "modulate:a", to, FADE_S * absf(to - _panel.modulate.a))
 	if to == 0.0:
@@ -1962,10 +1614,9 @@ static func fade_layer(layer: CanvasLayer, to: float) -> Tween:
 
 
 ## Behind the menus, one of PICTURES (the hall unless said) looking at focus
-## (a point in it, see SPOTS), or the museum wall with null. Menu to menu it
+## (a point in it, see SPOTS), or transparent with null. Menu to menu it
 ## pans and fades across; a menu coming up takes it at once; another
-## picture comes in at once. The wall comes back when the menu goes away, so
-## the menus over the game keep it.
+## picture comes in at once. Without a picture, the game remains visible.
 func backdrop(focus: Variant, picture := "hall") -> void:
 	var m := _panel.material as ShaderMaterial
 	if focus != null and picture != _picture:
@@ -2816,8 +2467,6 @@ func _process(dt: float) -> void:
 	if _cctv_on:
 		_draw_cctv(dt)
 	# The bubble follows its card as it springs and moves.
-	if _bubble:
-		_place_bubble()
 	for i in _titles.size():
 		var t := _titles[i]
 		if is_instance_valid(t):

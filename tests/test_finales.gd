@@ -132,12 +132,12 @@ func _init() -> void:
 	m.phase = "playing"
 	m._pause()
 	await process_frame
-	check(paused and m.hub.visible and m.hub.active == m.hub.PAUSE_OPTIONS, "en pausa se ve el hub, no el monitor de siempre")
+	check(paused and m.hub.visible and m.hub.active_kind == "pause", "en pausa se ve el hub, no el monitor de siempre")
 	check(not hud.cctv_on(), "el monitor real se apaga: las pegatinas lo tapan")
 	check(Hud.cctv_caps("la sala de los fósiles") == "LA SALA DE LOS FOSILES", "el monitor escribe en mayúsculas sin tildes")
 	m.options.show("paused")
 	await process_frame
-	check(not m.hub.visible and not hud.cctv_on(), "ajustes desde la pausa: la pantalla real, sin el hub encima")
+	check(m.hub.visible and m.hub.active_kind == "settings" and not hud.cctv_on(), "ajustes desde la pausa: pegatinas, sin el monitor antiguo")
 	m.options.back()
 	m._start_playing()
 	check(not paused, "reanudar quita la pausa")

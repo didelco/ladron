@@ -93,26 +93,14 @@ func layout(size: Vector2i, ui: int, label: String) -> void:
 	game._show_title("dojo", false)
 	await frames(12)
 	var screen := Rect2(Vector2.ZERO, root.get_visible_rect().size)
-	var dojo: Button = game.hud._cards.dojo
-	check(game.hud._rows.slice(0, -1).reduce(func(count: int, row: Array) -> int: return count + row.size(), 0) == 4, label + ": cuatro cards")
-	for id in ["generative", "story", "dojo"]:
-		var card: Button = game.hud._cards[id]
-		check(card.size.x >= 180 and card.get_global_rect().position.x >= -1
-			and card.get_global_rect().end.x <= screen.end.x + 1, label + ": ancho legible de " + id)
-	check(screen.encloses(dojo.get_global_rect()), label + ": Dojo enfocado visible")
+	var dojo: Control = game.hub.cards[game.hub.cursor].container
+	check(screen.encloses(dojo.get_global_rect()), label + ": pegatina seleccionada visible")
 	await hit("A")
-	check(game.hud.bubble_open(), label + ": A abre banda")
+	check(game.hub.active_kind == "players", label + ": A abre banda nueva")
 	await frames(12)
-	check(screen.encloses(game.hud._bubble_box.get_global_rect()), label + ": selector dentro de pantalla")
-	if OS.get_cmdline_user_args().has("render"):
-		await RenderingServer.frame_post_draw
-		root.get_texture().get_image().save_png("/tmp/dojo-card-qa/" + label + "-selector.png")
+	check(screen.encloses(game.hub.cards[game.hub.cursor].container.get_global_rect()), label + ": jugador seleccionado cabe")
 	await hit("B")
-	check(game.phase == "title" and root.gui_get_focus_owner() == dojo, label + ": B vuelve card")
-	if OS.get_cmdline_user_args().has("render"):
-		await create_timer(0.3).timeout
-		await RenderingServer.frame_post_draw
-		root.get_texture().get_image().save_png("/tmp/dojo-card-qa/" + label + "-portada.png")
+	check(game.phase == "title" and game.hub.active[game.hub.cursor].id == "dojo", label + ": B vuelve a Guarida")
 
 
 func _init() -> void:
@@ -140,17 +128,14 @@ func _init() -> void:
 	root.content_scale_size = root.size
 	game.ui_scale = 100
 	game.options.apply_ui_scale()
-	game._show_title("story", false)
+	game._show_title("dojo", false)
 	await frames()
-	await hit(KEY_RIGHT)
-	await hit(KEY_RIGHT)
-	check(root.gui_get_focus_owner() == game.hud._cards.dojo, "flechas alcanzan Dojo desde Historia")
 	await hit(KEY_ENTER)
-	check(game.phase == "pick" and game.hud.bubble_open(), "Enter abre selector")
+	check(game.hub.active_kind == "players", "Enter abre selector nuevo")
 	await hit(KEY_ESCAPE)
-	check(root.gui_get_focus_owner() == game.hud._cards.dojo, "Esc devuelve foco a Dojo")
-	await click(game.hud._cards.dojo)
-	check(game.hud.bubble_open(), "clic abre selector Dojo")
+	check(game.hub.active[game.hub.cursor].id == "dojo", "Esc devuelve Guarida seleccionada")
+	await click(game.hub.cards[game.hub.cursor].container)
+	check(game.hub.active_kind == "players", "clic en pegatina abre selector")
 	await hit(KEY_ESCAPE)
 	check(Practice.open_trials(1).is_empty(), "banda nueva: pruebas bloqueadas por Historia")
 	for n in range(1, 5):
@@ -161,16 +146,15 @@ func _init() -> void:
 		var open := Practice.open_trials(n).map(func(t: Dictionary) -> String: return t.id)
 		game._show_title("dojo")
 		await frames()
-		var choice: Button = game.hud._bubble_buttons[n - 1]
-		check(choice.find_children("*", "Label", true, false).any(func(l: Label) -> bool: return l.text == "%dP · %d/%d" % [n, open.size(), DojoTrials.TABLE.size()]), "banda%d: disponibilidad visible" % n)
-		choice.pressed.emit()
+		game.hub._select(n, false)
+		check(game.hub._detail.text == "%dP · %d/%d" % [n, open.size(), DojoTrials.TABLE.size()], "banda%d: disponibilidad visible" % n)
+		game.hub._pick("p%d" % n)
 		if n > 1:
 			check(game.phase == "join" and game.hands.join_for == "dojo", "banda%d: unión de controles" % n)
-			# Cancel with no seats: back to this band's selector, not another mode.
 			game.hands.unjoin()
 			await frames()
-			check(game.hud.bubble_open() and game.phase == "pick", "banda%d: cancelar unión vuelve Dojo" % n)
-			game.hud._bubble_buttons[n - 1].pressed.emit()
+			check(game.hub.active_kind == "players" and game.hub.pending_mode == "dojo", "banda%d: cancelar unión vuelve Guarida" % n)
+			game.hub._pick("p%d" % n)
 			await join(n)
 		await frames()
 		check(game.phase == "playing" and game.mode == Practice.MODE and game.players == n and game.thieves.size() == n, "banda%d: práctica lista sin prólogo ni robo" % n)
@@ -181,13 +165,13 @@ func _init() -> void:
 		check(game._leave_text() == Text.t("MENU_DOJO_LEAVE"), "banda%d: pausa anuncia portada" % n)
 		game._ask_leave()
 		await frames()
-		check(game.phase == "title" and not paused and not game.hud.bubble_open() and root.gui_get_focus_owner() == game.hud._cards.dojo, "banda%d: pausa devuelve a card Dojo" % n)
+		check(game.phase == "title" and not paused and game.hub.visible and game.hub.active[game.hub.cursor].id == "dojo", "banda%d: pausa devuelve a card Dojo" % n)
 		game._dojo_start(n, true)
 		game.thieves[0].x = Den.EXIT.x + 0.5
 		game.thieves[0].y = Den.EXIT.y + 0.5
 		game.house.home_tick()
 		await frames()
-		check(game.phase == "title" and root.gui_get_focus_owner() == game.hud._cards.dojo, "banda%d: puerta devuelve a card Dojo" % n)
+		check(game.phase == "title" and game.hub.visible and game.hub.active[game.hub.cursor].id == "dojo", "banda%d: puerta devuelve a card Dojo" % n)
 	# Original access is still the house from the town, with its lounge spawn.
 	game._show_city(CityStage.HIDEOUT)
 	await frames()

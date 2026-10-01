@@ -1,0 +1,35 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "name": "estrella-ninja-conseguida",
+      "prompt": "Use case: stylized-concept. Asset: small earned rating star shown in a 3-slot level-complete rating row, like simple mobile puzzle-game score stars. Create ONE extremely simple flat golden ninja shuriken icon, face-on. Exactly FOUR equal short broad straight triangular points at north/east/south/west, shallow concave notches between points, a small round transparent hole at exact center. Perfect rotational symmetry. One solid warm yellow fill, one clean uniform dark-purple contour, thin white sticker rim. Think flat UI pictogram, legible at 24 px. No curved blades, no faceting, no highlights, no jewels, no gold ring, no internal lines, no detail, no bevel, no depth, no metallic reflections, no gradients, no glow, no sparkles, no text. Centered at exact canvas center, balanced small empty margins, 3:2 landscape canvas. True transparent background including central hole.",
+      "source": "/Users/chema/.codex/generated_images/01a0f817-88a9-7751-b200-2233366eaabd/exec-4bbaff48-80a7-4223-a2ff-05f1ff267c27.png",
+      "destination": "assets/ui/puntuacion/estrella-ninja-conseguida.png"
+    },
+    {
+      "name": "estrella-ninja-vacia",
+      "prompt": "Use case: precise-object-edit. Create the EMPTY rating-slot version of this exact simple four-point shuriken rating icon. Keep the EXACT outer shape, proportions, position, scale, orientation, contour thickness, white rim, central round transparent hole and 1536x1024 canvas. Change ONLY the golden yellow fill to one flat muted pale lavender-gray fill. No gradients, no faceting, no shine, no highlights, no internal details, no shadow, no glow. This is the unearned star in a three-star mobile-game level result row. True transparent background, preserve all transparency. The shape must match exactly the earned icon and align when swapped. No other objects.",
+      "source": "/Users/chema/.codex/generated_images/01a0f817-88a9-7751-b200-2233366eaabd/exec-dc74010c-d57d-442b-944e-2c09323604f6.png",
+      "destination": "assets/ui/puntuacion/estrella-ninja-vacia.png"
+    },
+    {
+      "name": "dificultad-facil",
+      "prompt": "Use case: precise-object-edit. Edit this exact game's moustached security guard sticker. Preserve the SAME character, pose, broad moustache, navy peaked cap, black visor, gold shield badges, brown sideburns, white shirt, black tie, chunky cartoon cel illustration style, portrait proportions and white die-cut edge. Keep same 1536x1024 landscape canvas, fully visible with transparent margins. True transparent background. No glow or background. Make the sleeping expression more expressive: eyes fully closed, peacefully asleep, small open round snoring mouth. ADD exactly three readable lowercase letters z z z, spelling 'zzz', arranged diagonally rising beside the upper LEFT side of the head, outside the hat silhouette so they do not obscure the guard. Start small near his head and grow slightly towards the upper left. Bold simple rounded dark-purple letters with thin white sticker borders, readable at small menu size. The only text is 'zzz'. Leave enough margin to keep all three letters inside canvas. Preserve original character colors.",
+      "source": "/Users/chema/.codex/generated_images/01a0f817-88a9-7751-b200-2233366eaabd/exec-5aff8575-c61f-48a7-bcec-96a3ab69eaf7.png",
+      "destination": "assets/ui/hub/dificultad-facil.png"
+    },
+    {
+      "name": "dificultad-media",
+      "prompt": "Use case: stylized-concept. Asset type: difficulty-selection game sticker. Input image 1 is the EXACT CHARACTER IDENTITY and game aesthetic reference, not a generic policeman. Create a faithful simple cartoon sticker portrait of THIS game's museum security guard, head and upper shoulders front-on with a slight three-quarter feel. Preserve distinctive broad dark-brown/black two-lobed moustache, chunky round peach head, small rounded nose, dark brown hair sideburns, navy blue low broad peaked cap with BLACK visor and small GOLD SHIELD badge (not round badge), white collared shirt and black necktie visible. Match the game's cute chunky toy proportions and rounded shapes; simplified 2D cel illustration with just a few broad flat shaded planes inspired by the model, no elaborate illustration or glossy reflections. CALM / TRANQUILO expression: large open friendly oval eyes, relaxed horizontal eyebrows, relaxed little mouth under the moustache. Same navy uniform palette across all difficulty levels. Deep-purple/near-black clear outlines, neat white die-cut sticker edge, true transparent background. Centered full sticker within generous empty margins, 3:2 landscape canvas. No text, no lettering, no stars, no color-coded green/yellow/red cap, no new accessories, no background, no glow. This is the MEDIUM difficulty icon, the calm state between fully asleep and angry.",
+      "source": "/Users/chema/.codex/generated_images/01a0f817-88a9-7751-b200-2233366eaabd/exec-8cc3fd6d-e910-487e-915a-c96a4684f595.png",
+      "destination": "assets/ui/hub/dificultad-media.png"
+    },
+    {
+      "name": "dificultad-dificil",
+      "prompt": "Use case: precise-object-edit. Edit this exact game's moustached security guard sticker. Preserve the SAME character, pose, broad moustache, navy peaked cap, black visor, gold shield badges, brown sideburns, white shirt, black tie, chunky cartoon cel illustration style, portrait proportions and white die-cut edge. Keep same 1536x1024 landscape canvas, fully visible with transparent margins. True transparent background. No glow or background. Make his angry expression exaggerated and unmistakable. Turn ALL exposed face and ears visibly flushed coral red / pink-red with warm red cheeks, keeping hair, moustache and uniform original colors. Very strongly downward angled thick angry eyebrows, narrowed intense eyes, clenched tiny angry mouth under moustache. ADD two large simple pale gray-white cartoon smoke/steam puffs shooting out from either side near his ears and curling UP beside the cap, as if fuming with anger. Smoke must be part of the clearly outlined cartoon sticker with white die-cut edges, broad readable rounded shapes, not photorealistic fog. Keep all smoke inside the canvas with margin. No letters or symbols.",
+      "source": "/Users/chema/.codex/generated_images/01a0f817-88a9-7751-b200-2233366eaabd/exec-02d993aa-d936-431c-9472-80cad8a03bef.png",
+      "destination": "assets/ui/hub/dificultad-dificil.png"
+    }
+  ]
+}

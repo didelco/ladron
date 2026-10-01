@@ -74,6 +74,19 @@ func home_sight(snap := false) -> void:
 		d.visible = host.den_view.shows_at(d.position.x + Museum.w / 2.0, d.position.z + Museum.h / 2.0)
 
 
+## The opening menu uses the hideout as its backdrop, so show every room and
+## its props while the player is choosing. home_sight() restores the usual
+## room-by-room view when practice starts.
+func menu_sight() -> void:
+	if host.mode != Practice.MODE or host.den_view == null or not is_instance_valid(host.den_view):
+		return
+	host.den_view.set_visible_rooms(Den.ORDER, true)
+	if host.props_view != null and is_instance_valid(host.props_view):
+		host.props_view.show_where(host.den_view.shows_at)
+	for d in mannequins:
+		d.visible = host.den_view.shows_at(d.position.x + Museum.w / 2.0, d.position.z + Museum.h / 2.0)
+
+
 ## The scarecrows look for the band (Practice.scarecrow_sees, the guards' rule
 ## with their own numbers): one sees a thief and the whole dojo goes red with
 ## a siren for a few seconds (DenView.set_alert), then not again for a moment.

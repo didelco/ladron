@@ -1,18 +1,8 @@
 class_name Hub
 extends CanvasLayer
-## La casa como punto de partida: un carril de pegatinas en vez del menú de
-## tarjetas (Game._show_title), con la casa de verdad detrás en vez de un
-## fondo decorativo. Lleva a las mismas pantallas reales de siempre
-## (Game._story_players, ChallengeScreens.show_menu, Game._show_generative_menu,
-## SettingsScreens.show, Hands.show_join, Game._pause/_start_playing/_ask_leave):
-## esto no sustituye su lógica, solo cómo se eligen.
-##
-## También es la pausa real (Esc/P durante la partida) vista con la misma
-## pinta: Game._pause() sigue siendo la que pausa de verdad (ver _process).
-##
-## Sin tecla propia para abrir/cerrar: al arrancar se muestra sola (como
-## _show_title); jugando, ya está Esc/P. Así no choca con las que ya usa el
-## juego (Hands.KB_LEFT incluye Tab, por ejemplo).
+## Menú único de pegatinas: inicio, pausa y pantallas de configuración.
+## Cada pantalla declara sus opciones, fase y destino de Volver/Esc.
+## Los dioramas de los menús históricos están guardados fuera del juego activo.
 
 var host: Game
 
@@ -41,10 +31,24 @@ const PLAYERS_OPTIONS := [
 	{"id": "p3", "label": "3 Jugadores", "res": "res://assets/ui/ninjas_3.png"},
 	{"id": "p4", "label": "4 Jugadores", "res": "res://assets/ui/ninjas_4.png"},
 ]
-const PAUSE_OPTIONS := [
+## En la guarida (modo práctica) no hay nada que perder: la pausa muestra el
+## mismo carril entero de siempre, con Seguir en vez de Guarida (ya estás
+## aquí). En medio de un golpe de verdad, solo lo seguro: Seguir, Ajustes y
+## Salir (que sí confirma antes de abandonar progreso sin guardar).
+const PAUSE_OPTIONS_FULL := [
+	{"id": "resume", "label": "Seguir", "sticker": "pausa-reanudar.png"},
+	{"id": "story", "label": "Modo Historia", "sticker": "historia.png"},
+	{"id": "challenge", "label": "Retos", "sticker": "retos.png"},
+	{"id": "generative", "label": "Atraco Sorpresa", "sticker": "generativo.png"},
+	{"id": "settings", "label": "Ajustes", "sticker": "ajustes.png"},
+	{"id": "leave", "label": "Salir", "sticker": "salir.png"},
+	{"id": "quit_game", "label": "Salir del juego", "sticker": "salir.png"},
+]
+const PAUSE_OPTIONS_SHORT := [
 	{"id": "resume", "label": "Seguir", "sticker": "pausa-reanudar.png"},
 	{"id": "settings", "label": "Ajustes", "sticker": "ajustes.png"},
 	{"id": "leave", "label": "Salir", "sticker": "salir.png"},
+	{"id": "quit_game", "label": "Salir del juego", "sticker": "salir.png"},
 ]
 
 const CARD_W := 220.0
@@ -56,17 +60,99 @@ const REST_SCALE := 0.74
 
 var track: Control
 var active := OPTIONS
+## Qué lista es `active`, en vez de comparar el array: "options", "settings",
+## "players" o "pause" — así "Volver" y el contexto de "Guarida" saben dónde
+## están sin depender de que dos arrays con el mismo contenido sean "iguales".
+var active_kind := "options"
 var cards: Array = []
 var cursor := 0
 ## "story" o "dojo" mientras el carril de PLAYERS_OPTIONS está abierto por
 ## su culpa; vacío el resto del tiempo.
 var pending_mode := ""
-## El índice en OPTIONS del que se salió al abrir un submenú (Ajustes o
-## cuántos jugadores), para volver a la misma tarjeta, no siempre a la
-## primera.
+## El índice del que se salió al abrir un submenú (Ajustes o cuántos
+## jugadores), y a qué carril volver ("options" o "pause"), para volver a la
+## misma tarjeta, no siempre a la primera ni siempre al hub inicial.
 var options_cursor := 0
+var return_kind := "options"
 ## Para que el stick mueva la selección una vez por empuje, no cada frame.
 var _stick_side := 0.0
+var _stick_vertical := 0.0
+var _screen_phase := "title"
+var _back_action := Callable()
+var _heading: Label
+var _detail: Label
+var _detail_scroll: ScrollContainer
+var _foot: Label
+var _track_tween: Tween
+var _card_tweens: Array[Tween] = []
+var _less: Button
+var _more: Button
+
+
+## Todos los menús interactivos usan este mismo carril de pegatinas.
+## La pantalla conserva su fase de juego y declara adónde vuelve.
+func show_screen(title: String, choices: Array, kind: String, phase: String, back: Callable, selected := 0) -> void:
+	host.phase = phase
+	if kind != "confirm":
+		host.quit_asking = false
+	_screen_phase = phase
+	_back_action = back
+	host.hud.hide_panel(true)
+	host.hud.hide_gameplay()
+	_stick_side = 0.0
+	_stick_vertical = 0.0
+	visible = true
+	_heading.text = title
+	_fill_track(choices, kind, false, selected)
+	_layout()
+
+
+func show_pause() -> void:
+	pending_mode = ""
+	var choices: Array = (PAUSE_OPTIONS_FULL if host.mode == Practice.MODE else PAUSE_OPTIONS_SHORT).duplicate(true)
+	if not host.pads_lost.is_empty():
+		var lost: Array[String] = []
+		for i in host.pads_lost:
+			lost.append(Text.t("PAD_LOST") % (i + 1))
+		choices[0].description = " · ".join(lost) + "\n" + Text.t("PAD_LOST_HOW")
+	show_screen(Text.t("MENU_PAUSE"), choices, "pause", "paused", host._start_playing)
+
+
+func _layout() -> void:
+	if track == null:
+		return
+	var screen := get_viewport().get_visible_rect().size
+	_heading.position = Vector2(20, screen.y * 0.08)
+	_heading.size = Vector2(screen.x - 40, 36)
+	_heading.add_theme_font_size_override("font_size", clampi(int((screen.x - 40) / maxi(1, _heading.text.length())), 10, 18))
+	track.position.y = screen.y * 0.44 - CARD_H / 2.0
+	_detail_scroll.position = Vector2(24, screen.y * 0.77)
+	_detail_scroll.size = Vector2(screen.x - 48, screen.y * 0.15)
+	_foot.position = Vector2(10, screen.y - 28)
+	_foot.size = Vector2(screen.x - 20, 22)
+	var distance := minf(screen.x * 0.35, CARD_W * SELECTED_SCALE * 0.6)
+	_less.position = Vector2(screen.x / 2.0 - distance - 24, screen.y * 0.44 - 24)
+	_more.position = Vector2(screen.x / 2.0 + distance - 24, screen.y * 0.44 - 24)
+	if not cards.is_empty():
+		_select(cursor, false)
+
+
+func set_preview(texture: Texture2D, description: String) -> void:
+	if cards.is_empty():
+		return
+	cards[cursor].picture.texture = texture
+	_detail.text = description
+
+
+func _step_current(direction: int) -> void:
+	var opt: Dictionary = active[cursor]
+	if not opt.has("step"):
+		return
+	opt.label = opt.step.call(direction)
+	cards[cursor].label.text = opt.label
+	host.sfx.ui("nav", 0.6)
+	_layout()
+
 
 
 func _init(game: Game) -> void:
@@ -81,54 +167,77 @@ func _ready() -> void:
 
 ## La pantalla de inicio: lo primero que ve el jugador, donde antes estaba
 ## _show_title(). Congela el movimiento (phase != "playing") hasta elegir.
-func show_start() -> void:
-	host.phase = "title"
+func show_start(pick := "") -> void:
 	pending_mode = ""
-	visible = true
-	_fill_track(OPTIONS, false)
+	host.house.menu_sight()
+	var selected := 0
+	for i in OPTIONS.size():
+		if OPTIONS[i].id == pick:
+			selected = i
+	show_screen("", OPTIONS, "options", "title", Callable(), selected)
 
 
 func _build() -> void:
-	var dim := ColorRect.new()
-	dim.color = Color(0, 0, 0, 0.55)
-	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(dim)
-
-	var screen := get_viewport().get_visible_rect().size
-
-	var hint := Label.new()
-	hint.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	hint.position.y = screen.y * 0.18
-	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	hint.add_theme_font_override("font", Hud.ARCADE)
-	hint.add_theme_font_size_override("font_size", 14)
-	hint.add_theme_color_override("font_color", Hud.C.gold)
-	hint.name = "Hint"
-	add_child(hint)
-
+	_heading = Label.new()
+	_heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_heading.add_theme_font_override("font", Hud.ARCADE)
+	_heading.add_theme_font_size_override("font_size", 18)
+	_heading.add_theme_color_override("font_color", Hud.C.gold)
+	_heading.add_theme_constant_override("outline_size", 5)
+	add_child(_heading)
 	track = Control.new()
 	track.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	track.position.y = screen.y / 2.0 - CARD_H / 2.0
 	add_child(track)
-
-	var foot := Label.new()
-	foot.text = "← → para moverte  ·  aceptar para elegir"
-	foot.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	foot.position.y = -screen.y * 0.16
-	foot.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	foot.add_theme_font_size_override("font_size", 12)
-	foot.add_theme_color_override("font_color", Color("#8a8a9a"))
-	add_child(foot)
-
+	_detail_scroll = ScrollContainer.new()
+	_detail_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	add_child(_detail_scroll)
+	_detail = Label.new()
+	_detail.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_detail.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_detail.add_theme_font_size_override("font_size", 15)
+	_detail.add_theme_constant_override("outline_size", 4)
+	_detail.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_detail_scroll.add_child(_detail)
+	_foot = Label.new()
+	_foot.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_foot.add_theme_font_size_override("font_size", 13)
+	_foot.add_theme_constant_override("outline_size", 4)
+	_foot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_foot)
+	_less = _step_button("−", -1)
+	_more = _step_button("+", 1)
+	get_viewport().size_changed.connect(_layout)
 	visible = false
+	_layout()
+
+
+func _step_button(text: String, direction: int) -> Button:
+	var button := Button.new()
+	button.text = text
+	button.flat = true
+	button.focus_mode = Control.FOCUS_NONE
+	button.size = Vector2(48, 48)
+	button.add_theme_font_size_override("font_size", 36)
+	button.add_theme_color_override("font_color", Hud.C.gold)
+	button.pressed.connect(_step_current.bind(direction))
+	add_child(button)
+	return button
 
 
 ## Rellena el carril con una lista de tarjetas (OPTIONS, SETTINGS_OPTIONS,
 ## PLAYERS_OPTIONS o PAUSE_OPTIONS), todas con el mismo estilo de pegatina:
 ## así cada pantalla a la que se llega se ve igual que esta, aunque por
 ## debajo sea la pantalla de texto real del juego.
-func _fill_track(list: Array, animate := true, start := 0) -> void:
+func _fill_track(list: Array, kind: String, animate := true, start := 0) -> void:
+	if _track_tween:
+		_track_tween.kill()
+	for tween in _card_tweens:
+		if tween and tween.is_valid():
+			tween.kill()
+	_card_tweens.clear()
 	active = list
+	active_kind = kind
 	for c in track.get_children():
 		c.queue_free()
 	cards.clear()
@@ -142,7 +251,9 @@ func _fill_track(list: Array, animate := true, start := 0) -> void:
 		card.position = Vector2(x, 0)
 		card.size = Vector2(CARD_W, CARD_H)
 		card.pivot_offset = Vector2(CARD_W / 2.0, CARD_H / 2.0)
-		var texture: Texture2D = load(opt.res) if opt.has("res") else load(STICKERS + opt.sticker)
+		var texture: Texture2D = opt.get("picture")
+		if texture == null:
+			texture = load(opt.res) if opt.has("res") else load(STICKERS + opt.get("sticker", "aceptar.png"))
 		var glow := TextureRect.new()
 		glow.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		glow.stretch_mode = TextureRect.STRETCH_SCALE
@@ -170,9 +281,26 @@ func _fill_track(list: Array, animate := true, start := 0) -> void:
 		label.add_theme_font_size_override("font_size", 13)
 		label.add_theme_constant_override("outline_size", 6)
 		label.add_theme_color_override("font_outline_color", Color("#2a150c"))
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		label.custom_minimum_size.x = CARD_W
+		label.add_theme_font_size_override("font_size", 11 if String(opt.label).length() > 24 else 13)
 		inner.add_child(label)
+		# La pegatina completa también se puede elegir con el ratón.
+		var click := Button.new()
+		click.flat = true
+		click.focus_mode = Control.FOCUS_NONE
+		click.set_anchors_preset(Control.PRESET_FULL_RECT)
+		click.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		var index := cards.size()
+		click.pressed.connect(func() -> void:
+			if active_kind != "join":
+				if cursor == index:
+					_pick(active[index].id)
+				else:
+					_select(index))
+		card.add_child(click)
 		track.add_child(card)
-		cards.append({"container": card, "glow": glow, "label": label, "centre_x": x + CARD_W / 2.0})
+		cards.append({"container": card, "glow": glow, "label": label, "picture": picture, "centre_x": x + CARD_W / 2.0})
 		x += CARD_W + GAP
 	_select(start, animate)
 
@@ -200,14 +328,34 @@ func _glow_texture() -> GradientTexture2D:
 
 
 func _select(i: int, animate := true) -> void:
+	if cards.is_empty():
+		return
+	if _track_tween:
+		_track_tween.kill()
 	cursor = posmod(i, cards.size())
 	var centre: float = get_viewport().get_visible_rect().size.x / 2.0
 	var target_x: float = centre - cards[cursor].centre_x
 	if animate:
-		var tw := create_tween()
-		tw.tween_property(track, "position:x", target_x, 0.3).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+		_track_tween = create_tween()
+		_track_tween.tween_property(track, "position:x", target_x, 0.3).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
 	else:
 		track.position.x = target_x
+	for tween in _card_tweens:
+		if tween and tween.is_valid():
+			tween.kill()
+	_card_tweens.clear()
+	var opt: Dictionary = active[cursor]
+	_detail_scroll.scroll_vertical = 0
+	_detail.text = opt.get("description", "")
+	_less.visible = opt.has("step")
+	_more.visible = opt.has("step")
+	_foot.text = "← → para moverte · aceptar para elegir · Esc para volver"
+	if opt.has("step"):
+		_foot.text = "← → elegir ajuste · ↑ ↓ cambiar valor · aceptar aumentar · Esc volver"
+	if active_kind == "join":
+		_foot.text = Text.t("JOIN_UNDO")
+	if opt.has("focus"):
+		opt.focus.call()
 	for j in cards.size():
 		_animate_card(cards[j], j == cursor, animate)
 		cards[j].label.add_theme_color_override("font_color",
@@ -231,6 +379,7 @@ func _animate_card(c: Dictionary, selected: bool, animate: bool) -> void:
 		c.glow.modulate = glow_to
 		return
 	var tw := create_tween()
+	_card_tweens.append(tw)
 	tw.set_parallel(true)
 	tw.set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
 	tw.tween_property(card, "scale", scale_to, 0.3)
@@ -240,46 +389,42 @@ func _animate_card(c: Dictionary, selected: bool, animate: bool) -> void:
 
 
 func _pick(id: String) -> void:
+	for opt: Dictionary in active:
+		if opt.id == id:
+			if opt.has("step"):
+				_step_current(1)
+				return
+			if opt.has("call"):
+				_go(opt.call)
+				return
 	match id:
-		"dojo", "story":
-			# _pick_players(which) abriría un bubble anclado a la tarjeta de
-			# _show_title; en su lugar, nuestro propio paso de "cuántos" con
-			# los iconos reales, que para 2-4 lleva a la pantalla real de
-			# asignar mandos/teclado (Hands.show_join) — la misma a la que
-			# ya llevaba el menú de tarjetas.
-			if active == OPTIONS:
-				options_cursor = cursor
-			pending_mode = id
-			# PLAYERS_OPTIONS es [Volver, 1, 2, 3, 4]: su índice y el número
-			# de jugadores coinciden, así que esto empieza en la banda de la
-			# última vez, no siempre en Volver.
-			_fill_track(PLAYERS_OPTIONS, true, host.players)
+		"dojo":
+			# Desde la pausa en la guarida ya estamos aquí: es Seguir, no
+			# "a dónde ir". Solo desde el hub inicial pregunta banda.
+			if active_kind == "pause":
+				_pick("resume")
+			else:
+				_ask_players("dojo")
+		"story":
+			# Historia comparte el selector de banda con Guarida.
+			_ask_players("story")
 		"p1", "p2", "p3", "p4":
 			var n := int(id.substr(1))
 			var mode_id := pending_mode
 			pending_mode = ""
 			if n == 1 and mode_id == "dojo":
-				# Ya estamos aquí, en solitario: solo falta soltar al
-				# jugador a moverse, como SEGUIR en la pausa.
-				visible = false
-				host._start_playing()
+				_go(host._dojo_start.bind(1))
 			elif n == 1:
 				_go(host._story_players.bind(1))
 			else:
 				_go(host.hands.show_join.bind(mode_id, n))
 		"settings":
-			# Mismo carril, otra lista: Sonido/Pantalla/Controles/Opciones
-			# como pegatinas, no la pantalla de texto real.
-			if active == OPTIONS:
-				options_cursor = cursor
-			_fill_track(SETTINGS_OPTIONS)
+			_go(host.options.show.bind("paused" if host.phase == "paused" else "title"))
 		"back":
 			pending_mode = ""
-			if active == PAUSE_OPTIONS:
-				_pick("resume")  # Esc en la pausa siempre vuelve a jugar.
-			else:
-				var to := visible_before_settings()
-				_fill_track(to, true, options_cursor if to == OPTIONS else 0)
+			if _back_action.is_valid():
+				_go(_back_action)
+
 		"challenge":
 			# La pantalla real completa: lista de noches + mapas propios,
 			# info de cada uno, 1-4 jugadores por mapa, y el editor entero
@@ -291,30 +436,35 @@ func _pick(id: String) -> void:
 		"resume":
 			_go(host._start_playing)
 		"leave":
-			# El mismo SALIR real de la pausa: en modo práctica, sin
-			# preguntar, vuelve a la ciudad/guarida de donde viniste; en los
-			# demás modos pide confirmar con la pregunta real (ver
-			# _process, quit_asking). No hay SALIR DEL JUEGO (cerrar del
-			# todo) desde aquí todavía: si hace falta, desde el "Salir" del
-			# título real al que esto te deja, si vienes de fuera de una
-			# partida.
+			# Práctica vuelve directamente; un golpe pide confirmar.
 			_go(host._ask_leave)
-		"sound":
-			_go(host.options.show.bind("paused", "sound"))
-		"screen":
-			_go(host.options.show.bind("paused", "screen"))
-		"controls":
-			_go(host.options.show.bind("paused", "pads"))
-		"options":
-			_go(host.options.show.bind("paused", "options"))
 		"quit":
 			host._quit()
+		"quit_game":
+			_go(host._ask_quit)
 
 
-## "Volver" lleva al carril principal salvo dentro de la pausa, que vuelve a
-## sus tres tarjetas (Seguir/Ajustes/Salir), no a las seis de siempre.
-func visible_before_settings() -> Array:
-	return PAUSE_OPTIONS if host.phase == "paused" else OPTIONS
+## El paso de "cuántos jugadores" para "which" (dojo o historia), desde el
+## hub inicial o desde la pausa en la guarida (return_kind se acuerda de
+## cuál, para que "Volver" sepa adónde).
+func _ask_players(which: String) -> void:
+	if active_kind in ["options", "pause"]:
+		options_cursor = cursor
+		return_kind = active_kind
+	pending_mode = which
+	# PLAYERS_OPTIONS es [Volver, 1, 2, 3, 4]: su índice y el número de
+	# jugadores coinciden, así que esto empieza en la banda de la última vez.
+	var origin := return_kind
+	var back := func() -> void:
+		if origin == "pause":
+			show_pause()
+		else:
+			show_start(which)
+	var choices: Array = PLAYERS_OPTIONS.duplicate(true)
+	if which == "dojo":
+		for n in range(1, 5):
+			choices[n].description = Text.t("MENU_DOJO_BAND") % [n, Practice.open_trials(n).size(), DojoTrials.TABLE.size()]
+	show_screen(Text.t("MENU_DOJO_HOW_MANY" if which == "dojo" else "MENU_HOW_MANY"), choices, "players", host.phase, back, host.players)
 
 
 ## Cede el sitio a una pantalla real del juego: se esconde (esas llamadas
@@ -332,30 +482,25 @@ func _go(call: Callable) -> void:
 func _process(_dt: float) -> void:
 	if not host:
 		return
-	# quit_asking: hay una pregunta real de verdad (Sí/No, MENÚ o SALIR DEL
-	# JUEGO) encima, sin salir de "paused" — la misma señal que usa el
-	# juego real para lo mismo (Game._pause pone quit_asking a false al
-	# reconstruir la pausa en sí). Mientras esté, nos apartamos: esa
-	# pregunta no tiene todavía una versión en pegatinas.
 	if host.phase == "paused" and not host.quit_asking and not visible:
-		host.hud.hide_panel()
-		host.hud.cctv(false)
-		pending_mode = ""
-		visible = true
-		_fill_track(PAUSE_OPTIONS, false)
-	elif visible and (host.phase not in ["title", "paused"] or host.quit_asking):
-		# Otra pantalla real ha tomado el control (retos, ajustes,
-		# generativo, unirse, una pregunta de verdad, un test que llama
-		# directo a una de estas sin pasar por nosotros...): nos apartamos
-		# para no comernos sus teclas.
+		show_pause()
+	elif visible and (host.phase != _screen_phase or (host.quit_asking and active_kind != "confirm")):
 		visible = false
 
 
 func _unhandled_input(e: InputEvent) -> void:
-	if not visible:
+	if not visible or host.phase != _screen_phase or active_kind == "join":
 		return
 	if e is InputEventKey and e.pressed and not e.echo:
 		match (e as InputEventKey).keycode:
+			KEY_UP, KEY_W:
+				_step_current(1)
+				get_viewport().set_input_as_handled()
+				return
+			KEY_DOWN, KEY_S:
+				_step_current(-1)
+				get_viewport().set_input_as_handled()
+				return
 			KEY_RIGHT, KEY_D:
 				_select(cursor + 1)
 				get_viewport().set_input_as_handled()
@@ -366,6 +511,14 @@ func _unhandled_input(e: InputEvent) -> void:
 				return
 	elif e is InputEventJoypadButton and e.pressed and Pads.real(e.device):
 		match e.button_index:
+			JOY_BUTTON_DPAD_UP:
+				_step_current(1)
+				get_viewport().set_input_as_handled()
+				return
+			JOY_BUTTON_DPAD_DOWN:
+				_step_current(-1)
+				get_viewport().set_input_as_handled()
+				return
 			JOY_BUTTON_DPAD_RIGHT:
 				_select(cursor + 1)
 				get_viewport().set_input_as_handled()
@@ -374,17 +527,30 @@ func _unhandled_input(e: InputEvent) -> void:
 				_select(cursor - 1)
 				get_viewport().set_input_as_handled()
 				return
-	elif e is InputEventJoypadMotion and Pads.real(e.device) and e.axis == JOY_AXIS_LEFT_X:
+	elif e is InputEventJoypadMotion and Pads.real(e.device):
 		var side := signf(e.axis_value) if absf(e.axis_value) > 0.6 else 0.0
-		if side != 0.0 and side != _stick_side:
-			_select(cursor + int(side))
-			get_viewport().set_input_as_handled()
-		_stick_side = side
+		if e.axis == JOY_AXIS_LEFT_X:
+			if side != 0.0 and side != _stick_side:
+				_select(cursor + int(side))
+			_stick_side = side
+		elif e.axis == JOY_AXIS_LEFT_Y:
+			if side != 0.0 and side != _stick_vertical:
+				_step_current(-int(side))
+			_stick_vertical = side
+		else:
+			return
+		get_viewport().set_input_as_handled()
 		return
 	var what := MenuKeys.of(e)
-	if what == "accept":
+	if active_kind in ["pause", "confirm"] and ((e is InputEventKey and e.pressed and e.keycode == KEY_P) or (e is InputEventJoypadButton and what == "skip")):
+		_pick("back")
+		get_viewport().set_input_as_handled()
+	elif what == "accept" or (what == "skip" and e is InputEventJoypadButton):
 		_pick(active[cursor].id)
 		get_viewport().set_input_as_handled()
-	elif what == "back" and active != OPTIONS:
+	elif what == "back" and _back_action.is_valid():
 		_pick("back")
+		get_viewport().set_input_as_handled()
+	elif what in ["prev", "next"]:
+		_detail_scroll.scroll_vertical += -36 if what == "prev" else 36
 		get_viewport().set_input_as_handled()

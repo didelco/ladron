@@ -1,0 +1,35 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "name": "estrella-ninja-conseguida",
+      "prompt": "Use case: stylized-concept. Asset: small earned rating star shown in a 3-slot level-complete rating row, like simple mobile puzzle-game score stars. Create ONE extremely simple flat golden ninja shuriken icon, face-on. Exactly FOUR equal short broad straight triangular points at north/east/south/west, shallow concave notches between points, a small round transparent hole at exact center. Perfect rotational symmetry. One solid warm yellow fill, one clean uniform dark-purple contour, thin white sticker rim. Think flat UI pictogram, legible at 24 px. No curved blades, no faceting, no highlights, no jewels, no gold ring, no internal lines, no detail, no bevel, no depth, no metallic reflections, no gradients, no glow, no sparkles, no text. Centered at exact canvas center, balanced small empty margins, 3:2 landscape canvas. True transparent background including central hole.",
+      "source": "/Users/chema/.codex/generated_images/01a0f817-88a9-7751-b200-2233366eaabd/exec-4bbaff48-80a7-4223-a2ff-05f1ff267c27.png",
+      "destination": "assets/ui/puntuacion/estrella-ninja-conseguida.png"
+    },
+    {
+      "name": "estrella-ninja-vacia",
+      "prompt": "Use case: precise-object-edit. Create the EMPTY rating-slot version of this exact simple four-point shuriken rating icon. Keep the EXACT outer shape, proportions, position, scale, orientation, contour thickness, white rim, central round transparent hole and 1536x1024 canvas. Change ONLY the golden yellow fill to one flat muted pale lavender-gray fill. No gradients, no faceting, no shine, no highlights, no internal details, no shadow, no glow. This is the unearned star in a three-star mobile-game level result row. True transparent background, preserve all transparency. The shape must match exactly the earned icon and align when swapped. No other objects.",
+      "source": "/Users/chema/.codex/generated_images/01a0f817-88a9-7751-b200-2233366eaabd/exec-dc74010c-d57d-442b-944e-2c09323604f6.png",
+      "destination": "assets/ui/puntuacion/estrella-ninja-vacia.png"
+    },
+    {
+      "name": "dificultad-facil",
+      "prompt": "Use case: stylized-concept. Production game difficulty menu sticker. Create the EASY member of a coordinated three-level difficulty scale, all represented by the SAME museum security guard's face with the SAME peaked cap silhouette. Reference image is STYLE ONLY: simple flat cartoon, thick deep-violet outline, white die-cut sticker border. Single front-facing guard head, round cream-colored face, mint teal peaked cap with a plain round cream badge (no symbol), two eyebrows, two half-closed sleepy eyes, small nose and relaxed tiny smile. Very few simple shapes, friendly round geometry. No neck, no hands, no equipment, no letters, no stars, no shuriken, no skulls. Fully visible centered icon with empty margins, true transparent background, 3:2 landscape canvas. Flat fills only, no 3D, no gradients, no shiny bevels, no glow.",
+      "source": "/Users/chema/.codex/generated_images/01a0f817-88a9-7751-b200-2233366eaabd/exec-5c51a56f-b879-4845-9856-2459c125bd97.png",
+      "destination": "assets/ui/hub/dificultad-facil.png"
+    },
+    {
+      "name": "dificultad-media",
+      "prompt": "Use case: precise-object-edit. Edit this exact EASY museum guard head sticker into the MEDIUM difficulty member of the same three-level set. Keep SAME head, ears, nose, cap, plain round badge, silhouette, line thickness, white sticker border, position, dimensions and transparent background. Change ONLY: mint cap becomes warm amber yellow; half-closed sleepy eyes become fully open attentive eyes looking straight ahead; relaxed eyebrows become horizontal focused eyebrows; smile becomes short straight neutral mouth. Still friendly but clearly more vigilant. No new objects, no text, no stars, no emblems. Flat simple cartoon, no extra details. Preserve exact 1536x1024 canvas and placement.",
+      "source": "/Users/chema/.codex/generated_images/01a0f817-88a9-7751-b200-2233366eaabd/exec-50a95dd9-9097-43e6-a042-4bd7102d045f.png",
+      "destination": "assets/ui/hub/dificultad-media.png"
+    },
+    {
+      "name": "dificultad-dificil",
+      "prompt": "Use case: precise-object-edit. Edit this exact EASY museum guard head sticker into the HARD difficulty member of the same three-level set. Keep SAME head, ears, nose, cap, plain round badge, silhouette, line thickness, white sticker border, position, dimensions and transparent background. Change ONLY: mint cap becomes bright coral red; sleepy eyes become intensely alert narrowed eyes with sharply inward angled eyebrows, pupils looking straight ahead; relaxed smile becomes small determined downturned mouth. Clearly stern and vigilant, still playful cartoon, not monstrous. No new objects, no text, no stars, no emblems. Flat simple cartoon, no extra details. Preserve exact 1536x1024 canvas and placement.",
+      "source": "/Users/chema/.codex/generated_images/01a0f817-88a9-7751-b200-2233366eaabd/exec-82cfa207-938b-42cd-8d09-f058b21ebcc9.png",
+      "destination": "assets/ui/hub/dificultad-dificil.png"
+    }
+  ]
+}

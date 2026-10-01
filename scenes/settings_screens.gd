@@ -21,48 +21,38 @@ func _init(game: Game) -> void:
 ## the title and from the pause. Each line is a setting (Hud._stepper): accept
 ## or a click moves it on, ← and → move it down and up; each change is saved.
 func show(from: String, page := "") -> void:
-	if from == "title":
-		host.hud.backdrop(Hud.SPOTS.settings)
 	host.podium.drop()
+	var old_id := ""
+	if host.hub.visible and host.hub.active_kind == "settings" and settings_page == page:
+		old_id = host.hub.active[host.hub.cursor].id
 	settings_from = from
 	settings_page = page
-	host.phase = "settings"
-	var keys: Array = {
-		"": [],
-		"sound": ["sound", "music", "music_volume", "effects_volume"],
-		"screen": ["fullscreen", "window", "ui_scale", "quality", "render_scale", "vsync"],
-		"pads": ["rumble", "rumble_strength", "deadzone"],
-		"options": ["megaphone", "ia"],
-	}[page]
-	var rows: Array = []
+	var choices: Array = []
+	var keys: Array = {"": [], "sound": ["sound", "music", "music_volume", "effects_volume"], "screen": ["fullscreen", "window", "ui_scale", "quality", "render_scale", "vsync"], "pads": ["rumble", "rumble_strength", "deadzone"], "options": ["megaphone", "ia"]}[page]
 	if page == "":
-		rows.append({"text": Text.t("SETTINGS_SOUND_PAGE"), "call": show.bind(from, "sound")})
-		rows.append({"text": Text.t("SETTINGS_SCREEN_PAGE"), "call": show.bind(from, "screen")})
-		rows.append({"text": Text.t("SETTINGS_CONTROLS_PAGE"), "call": show.bind(from, "pads")})
-		rows.append({"text": Text.t("SETTINGS_OPTIONS_PAGE"), "call": show.bind(from, "options")})
-	for k in keys:
-		rows.append({"text": text_of(k), "step": step.bind(k), "help": Text.t("SETTINGS_HELP_" + k.to_upper())})
-	rows.append({"text": Text.t("MENU_BACK"), "call": back, "colour": Hud.C.dim})
+		for opt: Dictionary in Hub.SETTINGS_OPTIONS:
+			if opt.id == "back":
+				continue
+			var target := "pads" if opt.id == "controls" else String(opt.id)
+			choices.append({"id": opt.id, "label": opt.label, "sticker": opt.sticker, "call": show.bind(from, target)})
+	else:
+		var sticker: String = {"sound": "sonido.png", "screen": "pantalla.png", "pads": "controles.png", "options": "opciones.png"}[page]
+		for key: String in keys:
+			choices.append({"id": key, "label": text_of(key), "sticker": sticker, "description": Text.t("SETTINGS_HELP_" + key.to_upper()), "step": func(dir: int) -> String: return step(dir, key)})
+		if page == "pads":
+			for key in ["CONTROLS_MOVE", "CONTROLS_PUSH", "CONTROLS_ROLL", "CONTROLS_CROUCH", "CONTROLS_SLOW", "CONTROLS_SMOKE", "CONTROLS_MAP", "CONTROLS_PAUSE", "CONTROLS_MUTE"]:
+				var line := Text.t(key).replace("{slash}", Hands.key_label(KEY_SLASH)).replace("{period}", Hands.key_label(KEY_PERIOD)).replace("{comma}", Hands.key_label(KEY_COMMA))
+				var cells := line.split("|")
+				choices.append({"id": key, "label": cells[0], "sticker": "controles.png", "description": " · ".join(cells)})
+	choices.append({"id": "back", "label": Text.t("MENU_BACK"), "sticker": "salir.png", "flip": true, "call": back})
+	var selected := 0
+	for i in choices.size():
+		if choices[i].id == old_id:
+			selected = i
 	var title := Text.t({"": "MENU_SETTINGS", "sound": "SETTINGS_SOUND_TITLE", "screen": "SETTINGS_SCREEN_TITLE", "pads": "SETTINGS_CONTROLS_TITLE", "options": "SETTINGS_OPTIONS_TITLE"}[page])
-	var items: Array = [{"title": title, "size": 48}]
-	if page != "":
-		items.append({"text": Text.t("SETTINGS_ADJUST_HELP"), "size": 15, "wrap": true, "width": 570, "colour": Hud.C.text})
-	items.append({"buttons": rows})
-	match page:
-		"sound":
-			items.append({"text": Text.t("SETTINGS_SOUND_HELP"), "size": 16, "colour": Hud.C.dim})
-		"pads":
-			var pads := Input.get_connected_joypads()
-			var names: Array = pads.map(func(d): return Pads.describe(d))
-			items.append({"text": (Text.t("SETTINGS_PADS_LIST") % " · ".join(names)) if not pads.is_empty() else Text.t("SETTINGS_NO_PADS"), "size": 16, "colour": Hud.C.gold})
-			items.append(controls_table())
-			items.append({"text": Text.t("CONTROLS_MORE"), "size": 15, "colour": Hud.C.dim})
-	host.hud.show_menu(items, "settings:" + page)
+	host.hub.show_screen(title, choices, "settings", "settings", back, selected)
 
 
-## What does what, for the controls page: an action a row, and its key for
-## each keyboard half and its pad button across. A row's text is its cells
-## split by "|"; one with a single key for both keyboards (M, P, N) spans them.
 func controls_table() -> Dictionary:
 	var rows: Array = [
 		["", Text.t("CONTROLS_P1"), Text.t("CONTROLS_P2"), Text.t("CONTROLS_PAD")],
@@ -255,4 +245,4 @@ func back() -> void:
 	elif settings_from == "paused":
 		host._pause()
 	else:
-		host._show_title()
+		host._show_title("settings", false)

@@ -72,25 +72,14 @@ func show_join(which: String, count := 2) -> void:
 
 
 func draw_join() -> void:
-	var cards: Array = []
+	var choices: Array = []
 	for i in join_count:
 		var seat: String = joining[i] if i < joining.size() else ""
-		cards.append({"title": Text.t("JOIN_PLAYER") % (i + 1), "text": seat_label(seat) if seat != "" else Text.t("JOIN_PRESS"),
-			"stage": MenuStage.make("seat:%d" % (i + 1)), "colour": host._thief_colours()[i],
-			"selected": seat != "", "static": true, "animate": seat != "", "dim": seat == "", "title_size": 12})
-	var items: Array = [
-		{"title": Text.t("JOIN_TITLE"), "size": 40},
-		{"cards": cards, "width": 200},
-		{"text": Text.t("JOIN_KEYBOARD_LEFT"), "size": 16},
-		{"text": Text.t("JOIN_KEYBOARD_RIGHT") % key_label(KEY_PERIOD), "size": 16},
-		{"text": Text.t("JOIN_PAD"), "size": 16},
-		{"text": Text.t("JOIN_UNDO"), "size": 16, "colour": Hud.C.dim},
-	]
-	if join_count > 2:
-		items.append({"text": Text.t("JOIN_EXTRA_PADS"), "size": 16, "colour": Hud.C.gold})
-	if joining.size() == join_count:
-		items.append({"text": Text.t("JOIN_READY"), "size": 16, "colour": Hud.C.gold})
-	host.hud.show_menu(items, "join")
+		choices.append({"id": "seat%d" % i, "label": Text.t("JOIN_PLAYER") % (i + 1), "res": "res://assets/ui/ninjas_%d.png" % (i + 1), "description": seat_label(seat) if seat != "" else Text.t("JOIN_PRESS")})
+	var instructions := Text.t("JOIN_KEYBOARD_LEFT") + " · " + (Text.t("JOIN_KEYBOARD_RIGHT") % key_label(KEY_PERIOD)) + " · " + Text.t("JOIN_PAD")
+	for choice: Dictionary in choices:
+		choice.description += "\n" + instructions
+	host.hub.show_screen(Text.t("JOIN_TITLE"), choices, "join", "join", unjoin, mini(joining.size(), join_count - 1))
 
 
 func seat_label(seat: String) -> String:

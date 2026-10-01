@@ -32,21 +32,23 @@ const WOOD := Color("#a0693a")
 # --- The house's light: every knob in one place -----------------------------------------
 # It had burnt out (mostly the dojo: pale straw, two lanterns and the ambient
 # and the sun on top). Softer now, still warm. Before -> now:
-## the ambient (mood): 0.5 -> 0.36
-const LIGHT_AMBIENT := 0.36
-## the "moon" (mood), the house's sun: 0.55 -> 0.32
-const LIGHT_SUN := 0.32
-## the exposure of the tonemap (mood): 1.0 -> 0.95
-const LIGHT_EXPOSURE := 0.95
+## the ambient (mood): 0.5 -> 0.36 -> 0.48 -> 0.38 -> 0.32 -> 0.2 (de noche:
+## casi todo lo que se ve es de sus propias luces, no de un ambiente plano)
+const LIGHT_AMBIENT := 0.2
+## the "moon" (mood), the house's sun: 0.55 -> 0.32 -> 0.42 -> 0.34 -> 0.28 -> 0.15
+const LIGHT_SUN := 0.15
+## the exposure of the tonemap (mood): 1.0 -> 0.95 -> 1.15 -> 1.0 -> 0.9 -> 0.85
+const LIGHT_EXPOSURE := 0.85
 ## the glow: intensity 0.35 -> 0.12, and only what is brighter than the
 ## threshold (1.0 -> 1.4) blooms
 const LIGHT_GLOW := 0.12
 const LIGHT_GLOW_THRESHOLD := 1.4
-## what the lamps' energies of the list in _lamps are multiplied by: 0.7 -> 0.5
-const LIGHT_LAMP_GAIN := 0.5
-## a dojo lantern's light, as it shines (it was 1.2 * 0.7 = 0.84) -> 0.5; and
-## how far it reaches, in tiles: 9 -> 8
-const LIGHT_LANTERN := 0.5
+## what the lamps' energies of the list in _lamps are multiplied by: 0.7 -> 0.5 -> 0.62 -> 0.5 -> 0.42
+const LIGHT_LAMP_GAIN := 0.42
+## a dojo lantern's light, as it shines (it was 1.2 * 0.7 = 0.84) -> 0.5 -> 0.65
+## -> 0.4 -> 0.33 (tres farolillos por bahía, cada uno más suave todavía);
+## y hasta dónde llega, en tiles: 9 -> 8
+const LIGHT_LANTERN := 0.33
 const LIGHT_LANTERN_RANGE := 8.0
 ## the bathroom's lamps: from a cold white (#fff0dc, 1.1 and 0.8) to a warm one
 const LIGHT_BATH := Color("#ffe2bd")
@@ -1547,50 +1549,116 @@ func _bay_centres() -> Array[Vector2]:
 	return out
 
 
+## Un color del ninja (para que los acentos del salón se sientan "de la
+## banda", no decoración genérica): los cuatro colores de siempre.
+const ACCENT_TEAL := Color("#2ec4a6")
+const ACCENT_BLUE := Color("#4dabf7")
+const ACCENT_PURPLE := Color("#b07cff")
+## El blanco frío de una sala con focos de museo, no una lámpara de salón.
+const SPOT_MUSEUM := Color("#dce8ff")
+
+
+func _omni(x: float, y: float, z: float, color: Color, energy: float, range_: float) -> OmniLight3D:
+	var l := OmniLight3D.new()
+	l.position = to_world(x, y, z)
+	l.light_color = color
+	l.light_energy = energy
+	l.omni_range = range_
+	l.omni_attenuation = 1.0
+	l.light_specular = 0.0
+	l.light_volumetric_fog_energy = 0.0
+	add_child(l)
+	return l
+
+
 func _lamps() -> void:
-	# Lamps, warm and shadowless: a few to a room, no more.
+	_lamps_salon()
+	_lamps_trofeos()
+	_lamps_aseo()
+	_lamps_dojo()
+
+
+## El salón: lámparas cálidas de siempre (su hogar) más un puñado de acentos
+## de color de la banda, cada uno marcando un rincón suyo (la vitrina, el
+## rincón de descanso, la cocina) en vez de una sala iluminada toda igual.
+func _lamps_salon() -> void:
+	# De noche: charcos de luz pequeños y localizados, no una sala entera
+	# bañada — por eso tan corto alcance, y tantos (una lámpara por rincón
+	# de verdad: el sofá, la mesita, la cocina, la estantería...).
 	for spot in [
-		[2.0, 17.2, 1.5, LAMP, 1.5, 7.0], [5.0, 12.5, 2.0, LAMP, 1.0, 8.0], [10.0, 20.0, 2.5, LAMP, 1.1, 9.0],
-		[14.5, 12.0, 2.0, LAMP, 1.1, 8.0], [17.0, 18.0, 2.0, LAMP, 1.0, 8.0],
-		[10.0, 6.0, 2.6, LAMP, 0.9, 9.0],
-		[2.5, 3.0, 2.4, LAMP, 1.0, 5.5], [6.5, 3.0, 2.4, LAMP, 1.0, 5.5], [10.5, 3.0, 2.4, LAMP, 1.0, 5.5],
-		[14.5, 3.0, 2.4, LAMP, 1.0, 5.5], [18.5, 3.0, 2.4, LAMP, 1.0, 5.5],
+		[2.0, 17.2, 1.5, LAMP, 1.3, 3.6], [5.0, 12.5, 2.0, LAMP, 0.9, 3.4], [10.0, 20.0, 2.5, LAMP, 1.0, 3.8],
+		[14.5, 12.0, 2.0, LAMP, 1.0, 3.6], [17.0, 18.0, 2.0, LAMP, 0.9, 3.6],
+		[3.0, 11.5, 2.2, LAMP, 0.7, 3.0], [8.0, 10.6, 2.2, LAMP, 0.7, 3.0],
+		[13.0, 22.0, 1.4, LAMP, 0.6, 2.8], [18.5, 21.5, 1.6, LAMP, 0.65, 3.0],
+	]:
+		_omni(spot[0], spot[1], spot[2], spot[3], spot[4] * LIGHT_LAMP_GAIN, spot[5])
+	# Acentos: bajos, cortos de alcance, para que tiñan su rincón sin lavar
+	# el cálido del resto de la sala.
+	for spot in [
+		[3.2, 22.0, 1.1, ACCENT_TEAL, 0.5, 3.2], [18.2, 11.3, 1.1, ACCENT_BLUE, 0.48, 3.2],
+		[9.8, 15.8, 2.4, ACCENT_PURPLE, 0.38, 2.8],
+	]:
+		_omni(spot[0], spot[1], spot[2], spot[3], spot[4], spot[5])
+
+
+## Los trofeos, como un museo de verdad: focos puntuales (no lámparas que lo
+## bañan todo) picando sobre cada vitrina, blancos y fríos, con charcos de
+## luz y sombra entre medias — no la sala entera encendida por igual.
+func _lamps_trofeos() -> void:
+	for spot in [
+		[2.5, 3.0, 5.5], [6.5, 3.0, 5.5], [10.5, 3.0, 5.5], [14.5, 3.0, 5.5], [18.5, 3.0, 5.5],
+		[10.0, 6.0, 5.5],
+	]:
+		var sp := SpotLight3D.new()
+		sp.position = to_world(spot[0], spot[1], spot[2])
+		sp.rotation_degrees = Vector3(-90, 0, 0)
+		sp.light_color = SPOT_MUSEUM
+		sp.light_energy = 1.7
+		sp.spot_range = 5.4
+		sp.spot_angle = 30.0
+		sp.spot_attenuation = 0.9
+		sp.light_specular = 0.0
+		sp.light_volumetric_fog_energy = 0.0
+		add_child(sp)
+
+
+func _lamps_aseo() -> void:
+	for spot in [
 		[25.0, 18.5 + Den.BATH_DY, 2.0, LIGHT_BATH, 1.1, 7.0], [22.5, 16.5 + Den.BATH_DY, 1.5, LIGHT_BATH, 0.8, 5.0],
 	]:
-		var l := OmniLight3D.new()
-		l.position = to_world(spot[0], spot[1], spot[2])
-		l.light_color = spot[3]
-		l.light_energy = spot[4] * LIGHT_LAMP_GAIN
-		l.omni_range = spot[5]
-		l.omni_attenuation = 1.0
-		l.light_specular = 0.0
-		l.light_volumetric_fog_energy = 0.0
-		add_child(l)
-	# The paper lanterns of the dojo, glowing: one hung in the middle of each bay, with its light.
+		_omni(spot[0], spot[1], spot[2], spot[3], spot[4] * LIGHT_LAMP_GAIN, spot[5])
+
+
+## El dojo: menos intensidad por farolillo, pero muchos más — tres por bahía
+## (el centro y dos a los lados) en vez de uno solo, para una luz repartida
+## y suave en vez de un foco único por sala.
+func _lamps_dojo() -> void:
 	for t in _bay_centres():
-		var bay_light := OmniLight3D.new()
-		bay_light.position = to_world(t.x, t.y, 2.2)
-		bay_light.light_color = LANTERN
-		bay_light.light_energy = LIGHT_LANTERN
-		bay_light.omni_range = 9.0
-		bay_light.omni_attenuation = 1.0
-		bay_light.light_specular = 0.0
-		bay_light.light_volumetric_fog_energy = 0.0
-		add_child(bay_light)
-		var lantern := MeshInstance3D.new()
-		var s := SphereMesh.new()
-		s.radius = 0.22
-		s.height = 0.5
-		lantern.mesh = s
-		var m := StandardMaterial3D.new()
-		m.albedo_color = Color("#ffd9a0")
-		m.emission_enabled = true
-		m.emission = LANTERN
-		m.emission_energy_multiplier = GLOW_LANTERN
-		lantern.material_override = m
-		lantern.position = to_world(t.x, t.y, 2.2)
-		lantern.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		add_child(lantern)
+		var offsets: Array[Vector2] = [Vector2.ZERO, Vector2(-2.4, -1.6), Vector2(2.3, 1.7)]
+		for off in offsets:
+			var p: Vector2 = t + off
+			var small: bool = off != Vector2.ZERO
+			_bay_lantern(p.x, p.y, small)
+
+
+func _bay_lantern(x: float, y: float, small: bool) -> void:
+	var z := 2.2 if not small else 1.9
+	var bay_light := _omni(x, y, z, LANTERN, LIGHT_LANTERN * (0.65 if small else 1.0), 4.4 if small else 6.0)
+	bay_light.omni_attenuation = 1.0
+	var lantern := MeshInstance3D.new()
+	var s := SphereMesh.new()
+	s.radius = 0.22 if not small else 0.14
+	s.height = s.radius * 2.27
+	lantern.mesh = s
+	var m := StandardMaterial3D.new()
+	m.albedo_color = Color("#ffd9a0")
+	m.emission_enabled = true
+	m.emission = LANTERN
+	m.emission_energy_multiplier = GLOW_LANTERN * (0.7 if small else 1.0)
+	lantern.material_override = m
+	lantern.position = to_world(x, y, z)
+	lantern.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(lantern)
 
 
 ## The house's mood for the world's Environment and its "moon": warm and

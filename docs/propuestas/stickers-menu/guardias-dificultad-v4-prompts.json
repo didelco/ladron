@@ -1,0 +1,24 @@
+{
+  "mode": "built-in image_gen",
+  "reference": "docs/assets/modelos/guardia.webp",
+  "assets": [
+    {
+      "name": "dificultad-facil",
+      "prompt": "Use case: precise-object-edit. Edit this exact sticker of our game's moustached security guard. Keep the character identity, broad two-lobed dark moustache, navy peaked cap, black visor, gold shield badges, brown sideburns, white shirt, black tie, camera angle, portrait silhouette, scale, placement and white sticker border EXACTLY the same. Preserve true transparent background and 1536x1024 canvas. Change ONLY his facial expression. No recoloring uniform, no new accessories, no text, no extra symbols, no background. Expression: FULLY ASLEEP / DORMIDO. Both eyes completely CLOSED as two simple curved relaxed eyelid strokes, eyebrows relaxed. Small round open sleeping mouth below moustache. Clearly peacefully sleeping, not half awake. Preserve broad moustache visible above the small mouth. No Z letters, no sleep bubble.",
+      "source": "/Users/chema/.codex/generated_images/01a0f817-88a9-7751-b200-2233366eaabd/exec-35e076d8-248a-4a18-a1ae-de9cb656c884.png",
+      "destination": "assets/ui/hub/dificultad-facil.png"
+    },
+    {
+      "name": "dificultad-media",
+      "prompt": "Use case: stylized-concept. Asset type: difficulty-selection game sticker. Input image 1 is the EXACT CHARACTER IDENTITY and game aesthetic reference, not a generic policeman. Create a faithful simple cartoon sticker portrait of THIS game's museum security guard, head and upper shoulders front-on with a slight three-quarter feel. Preserve distinctive broad dark-brown/black two-lobed moustache, chunky round peach head, small rounded nose, dark brown hair sideburns, navy blue low broad peaked cap with BLACK visor and small GOLD SHIELD badge (not round badge), white collared shirt and black necktie visible. Match the game's cute chunky toy proportions and rounded shapes; simplified 2D cel illustration with just a few broad flat shaded planes inspired by the model, no elaborate illustration or glossy reflections. CALM / TRANQUILO expression: large open friendly oval eyes, relaxed horizontal eyebrows, relaxed little mouth under the moustache. Same navy uniform palette across all difficulty levels. Deep-purple/near-black clear outlines, neat white die-cut sticker edge, true transparent background. Centered full sticker within generous empty margins, 3:2 landscape canvas. No text, no lettering, no stars, no color-coded green/yellow/red cap, no new accessories, no background, no glow. This is the MEDIUM difficulty icon, the calm state between fully asleep and angry.",
+      "source": "/Users/chema/.codex/generated_images/01a0f817-88a9-7751-b200-2233366eaabd/exec-8cc3fd6d-e910-487e-915a-c96a4684f595.png",
+      "destination": "assets/ui/hub/dificultad-media.png"
+    },
+    {
+      "name": "dificultad-dificil",
+      "prompt": "Use case: precise-object-edit. Edit this exact sticker of our game's moustached security guard. Keep the character identity, broad two-lobed dark moustache, navy peaked cap, black visor, gold shield badges, brown sideburns, white shirt, black tie, camera angle, portrait silhouette, scale, placement and white sticker border EXACTLY the same. Preserve true transparent background and 1536x1024 canvas. Change ONLY his facial expression. No recoloring uniform, no new accessories, no text, no extra symbols, no background. Expression: ANGRY / ENFADADO. Thick eyebrows sharply angled down towards the nose, narrowed eyes with visible pupils staring ahead, small deeply downturned mouth below moustache. Unmistakably angry but cute and playful, same character. Do not alter head or hat shape, no red face, no anger symbols.",
+      "source": "/Users/chema/.codex/generated_images/01a0f817-88a9-7751-b200-2233366eaabd/exec-e75e3d6d-c502-46cf-b63b-6e4785d52487.png",
+      "destination": "assets/ui/hub/dificultad-dificil.png"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "name": "dificultad-facil",
+      "prompt": "Use case: precise-object-edit. Edit this exact game's moustached security guard sticker. Preserve the SAME character, pose, broad moustache, navy peaked cap, black visor, gold shield badges, brown sideburns, white shirt, black tie, chunky cartoon cel illustration style, portrait proportions and white die-cut edge. Keep same 1536x1024 landscape canvas, fully visible with transparent margins. True transparent background. No glow or background. Make the sleeping expression more expressive: eyes fully closed, peacefully asleep, small open round snoring mouth. ADD exactly three readable lowercase letters z z z, spelling 'zzz', arranged diagonally rising beside the upper LEFT side of the head, outside the hat silhouette so they do not obscure the guard. Start small near his head and grow slightly towards the upper left. Bold simple rounded dark-purple letters with thin white sticker borders, readable at small menu size. The only text is 'zzz'. Leave enough margin to keep all three letters inside canvas. Preserve original character colors.",
+      "source": "/Users/chema/.codex/generated_images/01a0f817-88a9-7751-b200-2233366eaabd/exec-5aff8575-c61f-48a7-bcec-96a3ab69eaf7.png",
+      "destination": "assets/ui/hub/dificultad-facil.png"
+    },
+    {
+      "name": "dificultad-dificil",
+      "prompt": "Use case: precise-object-edit. Edit this exact game's moustached security guard sticker. Preserve the SAME character, pose, broad moustache, navy peaked cap, black visor, gold shield badges, brown sideburns, white shirt, black tie, chunky cartoon cel illustration style, portrait proportions and white die-cut edge. Keep same 1536x1024 landscape canvas, fully visible with transparent margins. True transparent background. No glow or background. Make his angry expression exaggerated and unmistakable. Turn ALL exposed face and ears visibly flushed coral red / pink-red with warm red cheeks, keeping hair, moustache and uniform original colors. Very strongly downward angled thick angry eyebrows, narrowed intense eyes, clenched tiny angry mouth under moustache. ADD two large simple pale gray-white cartoon smoke/steam puffs shooting out from either side near his ears and curling UP beside the cap, as if fuming with anger. Smoke must be part of the clearly outlined cartoon sticker with white die-cut edges, broad readable rounded shapes, not photorealistic fog. Keep all smoke inside the canvas with margin. No letters or symbols.",
+      "source": "/Users/chema/.codex/generated_images/01a0f817-88a9-7751-b200-2233366eaabd/exec-02d993aa-d936-431c-9472-80cad8a03bef.png",
+      "destination": "assets/ui/hub/dificultad-dificil.png"
+    }
+  ]
+}
