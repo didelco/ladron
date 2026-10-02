@@ -83,6 +83,7 @@ SETTINGS_QUALITY_LOW,BAJA
 SETTINGS_FPS_LIMIT,LÍMITE FPS: %s
 SETTINGS_FPS_UNLIMITED,SIN LÍMITE
 SETTINGS_IA,PANEL IA: %s
+SETTINGS_DEV_MODE,MODO DEV: %s
 SETTINGS_RUMBLE,VIBRACIÓN: %s
 SETTINGS_RUMBLE_STRENGTH,FUERZA %s
 SETTINGS_DEADZONE,ZONA MUERTA STICK: %d%%
@@ -1547,7 +1548,7 @@ MENU_HELP_SIZE,Más salas implican más recorrido y lugares donde esconderse.
 MENU_HELP_THEME,Cambia las salas y su decoración.
 MENU_HELP_PLAYERS,De 1 a 4 jugadores en equipo. Dos pueden compartir teclado.
 SETTINGS_ADJUST_HELP,←/→ ajustan · Clic o aceptar cambia al instante y guarda
-SETTINGS_HELP_SCREEN_MODE,Ventana, pantalla completa o una ventana sin bordes.
+SETTINGS_HELP_SCREEN_MODE,"Ventana, pantalla completa o una ventana sin bordes."
 SETTINGS_HELP_WINDOW,Tamaño de la ventana; más píxeles exigen más trabajo gráfico.
 SETTINGS_HELP_UI_SCALE,Agranda textos y botones; usa la rueda o el foco para recorrer menús largos.
 SETTINGS_HELP_QUALITY,Alta añade efectos y sombras; baja reduce detalle y mejora el rendimiento.
@@ -1555,6 +1556,7 @@ SETTINGS_HELP_FPS_LIMIT,Limita los fotogramas por segundo; menos calienta menos 
 SETTINGS_HELP_VSYNC,Sincroniza imagen y pantalla para evitar cortes; puede añadir latencia.
 SETTINGS_HELP_MEGAPHONE,Elige avisos en texto y voz: ambos / solo texto / solo voz / apagada.
 SETTINGS_HELP_IA,Muestra lo que piensan los guardias durante el robo.
+SETTINGS_HELP_DEV_MODE,Muestra los FPS y los robos de Historia para editarlos desde Retos.
 SETTINGS_HELP_SOUND,Activa o silencia todos los sonidos del juego.
 SETTINGS_HELP_MUSIC,Activa o silencia la música.
 SETTINGS_HELP_MUSIC_VOLUME,Cambia el volumen de la música.
