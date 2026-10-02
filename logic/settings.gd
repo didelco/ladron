@@ -11,6 +11,7 @@ const DEFAULTS := {
 	"sound": true,
 	"music": true,
 	"ia": false,
+	"dev_mode": false,
 	# the museum's loudspeaker (Megaphone: one-line notices; MegaVoice: their
 	# voice), one of MEGAPHONE_MODES
 	"megaphone_mode": "both",

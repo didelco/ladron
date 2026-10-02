@@ -63,6 +63,8 @@ func run() -> void:
 		qa.check(game.theme == key and game.phase == "generative", "elegir tema actualiza la configuración: " + key)
 		qa.check(game.hub.cards[game.hub.cursor].picture.texture == Game._theme_picture(key), "usa imagen estática del tema: " + key)
 	qa.check(no_menu_dioramas(game.hub), "los menús nuevos no instancian dioramas antiguos")
+	if not game.dev_mode:
+		game.options.step(0, "dev_mode")
 	game.challenges.show_menu()
 	var longest := 1
 	for n in range(1, Story.count() + 1):

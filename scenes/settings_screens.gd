@@ -28,7 +28,7 @@ func show(from: String, page := "") -> void:
 	settings_from = from
 	settings_page = page
 	var choices: Array = []
-	var keys: Array = {"": [], "sound": ["sound", "music", "music_volume", "effects_volume"], "screen": ["screen_mode", "window", "ui_scale", "quality", "fps_limit", "vsync"], "pads": ["rumble", "rumble_strength", "deadzone"], "options": ["megaphone", "ia"]}[page]
+	var keys: Array = {"": [], "sound": ["sound", "music", "music_volume", "effects_volume"], "screen": ["screen_mode", "window", "ui_scale", "quality", "fps_limit", "vsync"], "pads": ["rumble", "rumble_strength", "deadzone"], "options": ["megaphone", "dev_mode", "ia"]}[page]
 	if page == "":
 		for opt: Dictionary in Hub.SETTINGS_OPTIONS:
 			if opt.id == "back":
@@ -61,7 +61,7 @@ func sticker_of(key: String, fallback: String) -> String:
 		"music_volume": return "musica.png"
 		"effects_volume": return "sonido.png"
 		"megaphone": return "megafonia.png"
-		"ia": return "panel-debug.png"
+		"ia", "dev_mode": return "panel-debug.png"
 	return fallback
 
 
@@ -97,6 +97,7 @@ func text_of(key: String) -> String:
 		"quality": return Text.t("SETTINGS_QUALITY") % Text.t("SETTINGS_QUALITY_LOW" if Quality.is_low() else "SETTINGS_QUALITY_HIGH")
 		"fps_limit": return Text.t("SETTINGS_FPS_LIMIT") % (Text.t("SETTINGS_FPS_UNLIMITED") if host.fps_limit == 0 else str(host.fps_limit))
 		"ia": return Text.t("SETTINGS_IA") % yes.call(host.show_ia)
+		"dev_mode": return Text.t("SETTINGS_DEV_MODE") % yes.call(host.dev_mode)
 		"megaphone": return Text.t("SETTINGS_MEGAPHONE") % Text.t("SETTINGS_MEGAPHONE_" + host.megaphone_mode.to_upper())
 		"rumble": return Text.t("SETTINGS_RUMBLE") % yes.call(host.rumble)
 		"rumble_strength": return Text.t("SETTINGS_RUMBLE_STRENGTH") % volume_bar(host.rumble_strength)
@@ -120,6 +121,9 @@ func step(dir: int, key: String) -> String:
 		"sound": set_sound(not host.sound_on)
 		"music": toggle_music()
 		"ia": toggle_ia()
+		"dev_mode":
+			host.dev_mode = not host.dev_mode
+			host.dev_overlay.set_enabled(host.dev_mode)
 		"megaphone":
 			# Both, notice only, voice only, off, round again.
 			var modes := Settings.MEGAPHONE_MODES
@@ -218,6 +222,8 @@ func load_all() -> void:
 	host.sound_on = s.sound
 	host.music_on = s.music
 	host.show_ia = s.ia
+	host.dev_mode = s.dev_mode
+	host.dev_overlay.set_enabled(host.dev_mode)
 	host.megaphone_mode = s.megaphone_mode
 	Sim.difficulty = s.difficulty
 	host.size = s.size
@@ -252,6 +258,7 @@ func apply_ui_scale() -> void:
 func save() -> void:
 	Settings.write({
 		"sound": host.sound_on, "music": host.music_on, "ia": host.show_ia, "megaphone_mode": host.megaphone_mode,
+		"dev_mode": host.dev_mode,
 		"difficulty": Sim.difficulty, "size": host.size, "theme": host.theme,
 		"screen_mode": host.screen_mode, "vsync": host.vsync, "window": host.window, "ui_scale": host.ui_scale,
 		"quality": Quality.level, "fps_limit": host.fps_limit,

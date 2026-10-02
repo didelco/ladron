@@ -48,6 +48,7 @@ func run() -> void:
 	Story.save = "user://test_menus.cfg"
 	Settings.path = "user://test_menus_settings.cfg"
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.path))
 	m = load("res://scenes/main.tscn").instantiate()
 	root.add_child(m)
 	await frames()
@@ -114,6 +115,27 @@ func run() -> void:
 	qa.check(m.hub.cards[m.hub.cursor].picture.texture.resource_path.ends_with("megafonia.png"), "megafonía tiene su propia pegatina")
 	select("ia")
 	qa.check(m.hub.cards[m.hub.cursor].picture.texture.resource_path.ends_with("panel-debug.png"), "panel debug tiene su propia pegatina")
+	qa.check(not m.dev_mode and not m.dev_overlay.visible, "modo dev viene desactivado sin FPS")
+	m.challenges.show_menu()
+	qa.check(not m.hub.active.any(func(o): return String(o.id).begins_with("night:")), "sin modo dev Retos oculta la edición de Historia")
+	m.options.show("title", "options")
+	select("dev_mode")
+	await hit(KEY_ENTER)
+	qa.check(m.dev_mode and m.dev_overlay.visible and m.dev_overlay._fps.text.begins_with("FPS:"), "modo dev muestra los FPS al activarse")
+	qa.check(Settings.read().dev_mode, "modo dev queda guardado")
+	m.challenges.show_menu()
+	qa.check(m.hub.active.filter(func(o): return String(o.id).begins_with("night:")).size() == Story.count(), "modo dev ofrece todos los robos de Historia")
+	m.hub._pick("night:1")
+	qa.check(hub("challenge_night") and m.hub.active.any(func(o): return o.id == "edit"), "un robo de Historia abre su opción de editar")
+	m.options.show("paused", "options")
+	select("dev_mode")
+	root.get_tree().paused = true
+	await hit(KEY_ENTER)
+	qa.check(not m.dev_mode and not m.dev_overlay.visible and not Settings.read().dev_mode, "modo dev puede apagarse en pausa y oculta los FPS")
+	await hit(KEY_ENTER)
+	await frames()
+	qa.check(m.dev_overlay.visible and m.dev_overlay.is_processing() and m.dev_overlay.can_process(), "FPS sigue activo durante la pausa")
+	root.get_tree().paused = false
 	m.options.show("title", "sound")
 	select("music_volume")
 	m.music_volume = 50

@@ -43,8 +43,9 @@ func show_menu() -> void:
 	]
 	for m in MapFile.list():
 		choices.append({"id": "map:" + m.path, "label": m.name.to_upper(), "sticker": "retos.png", "call": show_map.bind(m), "focus": land_map.bind(m)})
-	for n in range(1, Story.count() + 1):
-		choices.append({"id": "night:%d" % n, "label": night_name(n), "sticker": "historia.png", "call": show_night_map.bind(n), "focus": land_night.bind(n)})
+	if host.dev_mode:
+		for n in range(1, Story.count() + 1):
+			choices.append({"id": "night:%d" % n, "label": night_name(n), "sticker": "historia.png", "call": show_night_map.bind(n), "focus": land_night.bind(n)})
 	var selected := 2 if choices.size() > 2 else 1
 	for i in choices.size():
 		if choices[i].id == challenge_at:

@@ -96,6 +96,8 @@ var players := 1
 var sound_on := true
 var music_on := true
 var show_ia := false
+var dev_mode := false
+var dev_overlay := DevOverlay.new()
 ## the museum's loudspeaker (Megaphone) and how it is switched on: one of
 ## Settings.MEGAPHONE_MODES ("both", "text", "sound", "off")
 var megaphone_mode := "both"
@@ -192,6 +194,7 @@ func _ready() -> void:
 	hud = Hud.new()
 	add_child(hud)
 	add_child(hub)
+	add_child(dev_overlay)
 	hud.ui_sound.connect(func(kind: String) -> void: sfx.ui(kind, 0.6))
 	options.load_all()
 	nightenv.build()
