@@ -108,7 +108,9 @@ Esc durante las animaciones de entrada, salida, elevación del plano o transici�
 ```mermaid
 flowchart TD
     ROOT["Inicio NUEVO; también pausa de Guarida"] -->|"Atraco Sorpresa"| GEN["Configuración Generativo"]
-    GEN -->|"Dificultad / Tamaño / Tema / Jugadores"| BUB["Selección de opciones · x4 categorías"]
+    GEN -->|"Dificultad / Tamaño / Tema"| BUB["Selección de opciones · x3 categorías"]
+    GEN -->|"Jugadores"| GP["Seleccionar jugadores · 1-4P"]
+    GP -->|"Elegir 1-4P / Esc: volver"| GEN
     BUB -->|"Elegir: guardar valor / Esc: volver"| GEN
     GEN -->|"Esc / Volver"| OLD["Inicio NUEVO"]
     GEN -->|"Empezar 1P"| BR["Previa compartida"]
@@ -119,9 +121,13 @@ flowchart TD
     LIST -->|"Elegir noche de Historia · x25"| NIGHT["Ficha de noche editable"]
     MAP -->|"Esc / Volver"| LIST
     NIGHT -->|"Esc / Volver"| LIST
-    MAP -->|"Jugar 1P: mapa válido"| BR
-    MAP -->|"Jugar 2-4P: mapa válido"| JOIN
+    MAP -->|"Mapa válido: opciones Jugar 1-4P"| RP["Elegir jugadores en la ficha · 1-4P"]
+    RP -->|"Jugar 1P"| BR
+    RP -->|"Jugar 2-4P"| JOIN
     JOIN -->|"Banda completa"| BR
+    JOIN -->|"Esc con participantes: quitar último"| JOIN
+    JOIN -->|"Esc vacío: Generativo"| GEN
+    JOIN -->|"Esc vacío: Retos"| MAP
     MAP -->|"Editar"| ED["Editor"]
     NIGHT -->|"Editar"| ED
     LIST -->|"Crear mapa"| ED
@@ -133,7 +139,18 @@ flowchart TD
     RESTORE -->|"Esc"| LIST
     BR -->|"Aceptar: siguiente / Esc: anterior"| BR
     BR -->|"Última página: Empezar; o Saltar / Tab / Start"| COUNT["Cuenta atrás"]
-    COUNT --> GAME["Golpe jugable"]
+    COUNT --> GAME["Golpe jugable · Generativo / Retos"]
+    GAME -->|"Esc / P / Start; desconexión de mando"| PAUSE["Pausa: Seguir / Ajustes / Salir / Salir del juego"]
+    PAUSE -->|"Seguir / Esc / P / Start"| GAME
+    PAUSE -->|"Ajustes"| SETTINGS["Ajustes · x4 categorías"]
+    SETTINGS -->|"Volver desde raíz / Esc"| PAUSE
+    PAUSE -->|"Salir"| LEAVE["Confirmar abandonar"]
+    LEAVE -->|"No / Esc"| PAUSE
+    LEAVE -->|"Sí: Generativo"| GEN
+    LEAVE -->|"Sí: Retos"| LIST
+    PAUSE -->|"Salir del juego"| QUIT["Confirmar cerrar juego"]
+    QUIT -->|"No / Esc"| PAUSE
+    QUIT -->|"Sí"| CLOSE["Cerrar aplicación"]
     BR -->|"Esc en primera página: Generativo"| GEN
     BR -->|"Esc en primera página: Retos"| MAP
     BR -->|"Esc en primera página: Historia, golpe 1"| PRO["Última página del prólogo"]
@@ -141,6 +158,8 @@ flowchart TD
 ```
 
 La previa agrupa **historia de la pieza**, **novedades** y **plano/reglas**; algunas páginas se omiten según modo y pieza. La entrada habitual de Historia desde la Ciudad usa el plano interactivo del diagrama anterior; esta previa se usa en Generativo, Retos y pruebas del editor. Un mapa inválido no ofrece jugar ni permite probar/ver en 3D desde el editor.
+
+**Jugadores y pausa en ambos modos.** Generativo abre una pantalla de selección de 1–4 jugadores y vuelve a la configuración antes de Empezar. Retos ofrece Jugar 1P, 2P, 3P y 4P dentro de la ficha de cada mapa válido; no abre otra pantalla para elegir el número. Con 2–4 jugadores, ambos pasan por Asignar controles. Durante el golpe, ambos tienen la pausa corta, con Seguir, Ajustes, Salir y Salir del juego; abandonar vuelve a la configuración de Generativo o a la lista de Retos.
 
 ## 5. Editor y sus paneles
 

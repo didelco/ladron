@@ -1,0 +1,46 @@
+{
+  "mode": "imagegen built-in",
+  "reference": "docs/propuestas/stickers-menu/musica.png",
+  "images": [
+    {
+      "name": "volver",
+      "prompt": "Use case: stylized-concept. Asset type: single game menu sticker PNG. Input image is a STYLE REFERENCE ONLY. Match its bold clean cartoon, flat bright colors, simple cel highlights, VERY thick deep-purple outlines and crisp generous white die-cut border. True transparent background: everything outside the white border alpha zero, no glow, no broad shadow, no backdrop. No lettering or watermark. One centered cohesive sticker, entirely visible with generous margins, landscape 3:2 canvas, easily readable at 100px. Subject: Only a thick CORAL RED U-turn return arrow: shaft starts on the right, sweeps upward in a broad 180-degree curved bend and returns pointing LEFT with a large triangular arrowhead. Clear returning motion, not a circular refresh arrow. Simple bold curved red arrow."
+    },
+    {
+      "name": "musica",
+      "prompt": "Use case: stylized-concept. Asset type: single game menu sticker PNG. Input image is a STYLE REFERENCE ONLY. Match its bold clean cartoon, flat bright colors, simple cel highlights, VERY thick deep-purple outlines and crisp generous white die-cut border. True transparent background: everything outside the white border alpha zero, no glow, no broad shadow, no backdrop. No lettering or watermark. One centered cohesive sticker, entirely visible with generous margins, landscape 3:2 canvas, easily readable at 100px. Subject: Only two large joined musical eighth notes, teal with small warm gold accents. Clear musical-note silhouette. NO loudspeaker, no cassette, no headphones."
+    },
+    {
+      "name": "musica-tachada",
+      "prompt": "Use case: stylized-concept. Asset type: single game menu sticker PNG. Input image is a STYLE REFERENCE ONLY. Match its bold clean cartoon, flat bright colors, simple cel highlights, VERY thick deep-purple outlines and crisp generous white die-cut border. True transparent background: everything outside the white border alpha zero, no glow, no broad shadow, no backdrop. No lettering or watermark. One centered cohesive sticker, entirely visible with generous margins, landscape 3:2 canvas, easily readable at 100px. Subject: Two large joined teal musical eighth notes crossed out by ONE prominent coral-red diagonal slash from upper right to lower left. Slash with dark-purple outline, clearly in front. The icon means music disabled. No loudspeaker."
+    },
+    {
+      "name": "sonido",
+      "prompt": "Use case: stylized-concept. Asset type: single game menu sticker PNG. Input image is a STYLE REFERENCE ONLY. Match its bold clean cartoon, flat bright colors, simple cel highlights, VERY thick deep-purple outlines and crisp generous white die-cut border. True transparent background: everything outside the white border alpha zero, no glow, no broad shadow, no backdrop. No lettering or watermark. One centered cohesive sticker, entirely visible with generous margins, landscape 3:2 canvas, easily readable at 100px. Subject: One chunky teal conventional audio loudspeaker icon pointing right with two bold golden curved sound waves. It means sound effects. NO musical notes, no megaphone, no microphone."
+    },
+    {
+      "name": "sonido-tachado",
+      "prompt": "Use case: stylized-concept. Asset type: single game menu sticker PNG. Input image is a STYLE REFERENCE ONLY. Match its bold clean cartoon, flat bright colors, simple cel highlights, VERY thick deep-purple outlines and crisp generous white die-cut border. True transparent background: everything outside the white border alpha zero, no glow, no broad shadow, no backdrop. No lettering or watermark. One centered cohesive sticker, entirely visible with generous margins, landscape 3:2 canvas, easily readable at 100px. Subject: One chunky teal conventional audio loudspeaker icon pointing right, crossed out by ONE prominent coral-red diagonal slash from upper right to lower left with dark-purple outline. No sound waves, no musical notes. It means sound disabled."
+    },
+    {
+      "name": "megafonia",
+      "prompt": "Use case: stylized-concept. Asset type: single game menu sticker PNG. Input image is a STYLE REFERENCE ONLY. Match its bold clean cartoon, flat bright colors, simple cel highlights, VERY thick deep-purple outlines and crisp generous white die-cut border. True transparent background: everything outside the white border alpha zero, no glow, no broad shadow, no backdrop. No lettering or watermark. One centered cohesive sticker, entirely visible with generous margins, landscape 3:2 canvas, easily readable at 100px. Subject: A handheld public-address MEGAPHONE: cream flared horn with coral-red broad mouth rim, teal rear body, unmistakable chunky purple pistol grip handle beneath, pointing diagonally up right, two small golden announcement rays. Clearly a handheld megaphone distinct from a standard audio speaker or musical notes."
+    },
+    {
+      "name": "panel-debug",
+      "prompt": "Use case: stylized-concept. Asset type: single game menu sticker PNG. Input image is a STYLE REFERENCE ONLY. Match its bold clean cartoon, flat bright colors, simple cel highlights, VERY thick deep-purple outlines and crisp generous white die-cut border. True transparent background: everything outside the white border alpha zero, no glow, no broad shadow, no backdrop. No lettering or watermark. One centered cohesive sticker, entirely visible with generous margins, landscape 3:2 canvas, easily readable at 100px. Subject: A compact teal-framed diagnostic computer panel, deep-purple screen showing three large simple colored horizontal status bars and three indicator dots, with a chunky GOLD WRENCH overlapping its lower right corner. The icon represents the game's debug / AI developer panel. No letters, no code text, no musical notes, no robot face. Keep detail minimal and readable."
+    },
+    {
+      "name": "ciudad",
+      "prompt": "Create one game menu sticker for RETURN TO CITY, matching the supplied reference's cartoon style, bright teal/coral/gold colors, VERY thick dark-purple outlines and crisp white die-cut border. Subject: compact city skyline of three chunky buildings with warm glowing windows and a bold teal curved return arrow in front pointing toward the buildings. Instantly readable at small menu size. No book, no ninja, no text, no lettering, no backdrop, no glow, no shadow. True fully transparent background outside the white border. One centered cohesive sticker with generous margins, full subject visible. Square composition."
+    }
+  ],
+  "cleanup_prompt": "Use case: background-extraction. Edit this exact sticker; preserve subject, colors, proportions, composition, thick purple outlines and white die-cut border EXACTLY. Remove ALL broad soft gray/white glow and halo outside the crisp white border AND inside the open holes. All pixels outside the sticker and in its holes must be FULLY transparent alpha zero. NO glow, NO shadow, NO new background. Keep full sticker and generous transparent margins. Return true transparent PNG.",
+  "cleanup_applied_to": [
+    "volver",
+    "musica",
+    "musica-tachada",
+    "sonido",
+    "sonido-tachado"
+  ]
+}

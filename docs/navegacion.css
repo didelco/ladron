@@ -168,3 +168,6 @@ a.bus-item[aria-selected=true] mark { background: #fff3b0; color: var(--texto); 
 .res-mas { margin-top: 6px; font-size: 13px; color: var(--tenue); }
 .res-completo { margin-top: 20px; }
 .res-completo > summary { font-size: 15px; }
+
+/* El esquema conserva su índice y el zoom de los diagramas dentro del visor. */
+.esquema-navegacion { display: block; width: 100%; height: 82vh; min-height: 420px; border: 1px solid var(--linea); border-radius: 4px; margin-top: 16px; background: var(--blanco); }

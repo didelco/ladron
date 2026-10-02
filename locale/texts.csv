@@ -69,7 +69,10 @@ SETTINGS_SOUND,SONIDO: %s  (N)
 SETTINGS_MUSIC,MÚSICA: %s
 SETTINGS_MUSIC_VOLUME,VOL. MÚSICA %s
 SETTINGS_EFFECTS_VOLUME,VOL. EFECTOS %s
-SETTINGS_FULLSCREEN,PANTALLA COMPLETA: %s
+SETTINGS_SCREEN_MODE,PANTALLA: %s
+SETTINGS_SCREEN_MODE_WINDOW,VENTANA
+SETTINGS_SCREEN_MODE_FULLSCREEN,COMPLETA
+SETTINGS_SCREEN_MODE_BORDERLESS,SIN BORDES
 SETTINGS_VSYNC,V-SYNC: %s
 SETTINGS_WINDOW,VENTANA: %d×%d
 SETTINGS_WINDOW_AUTO,VENTANA: AUTO %d×%d
@@ -77,7 +80,8 @@ SETTINGS_UI_SCALE,TAMAÑO INTERFAZ: %d%%
 SETTINGS_QUALITY,CALIDAD GRÁFICA: %s
 SETTINGS_QUALITY_HIGH,ALTA
 SETTINGS_QUALITY_LOW,BAJA
-SETTINGS_RENDER_SCALE,ESCALA 3D: %d%%
+SETTINGS_FPS_LIMIT,LÍMITE FPS: %s
+SETTINGS_FPS_UNLIMITED,SIN LÍMITE
 SETTINGS_IA,PANEL IA: %s
 SETTINGS_RUMBLE,VIBRACIÓN: %s
 SETTINGS_RUMBLE_STRENGTH,FUERZA %s
@@ -114,21 +118,22 @@ ASSETS_FALL_DRY,Al caer: sonido seco
 PROLOGUE_TITLE,HABÍA UNA VEZ...
 ENDING_TITLE,"¡OPERACIÓN
 DEVOLVERLO TODO!"
-STORY_PROLOGUE,"Esta es la Banda del Calcetín: ladrones que solo roban lo que ya estaba robado.
+STORY_PROLOGUE,"Esta es la Banda del Calcetín: Un grupo de Ninjas que solo roban lo que ya estaba robado.
 
-El Barón Von Bostezo enseñó su Diamante Bostezo a los directores de los cinco museos de la ciudad. Bostezaron tanto que le firmaron un papel sin leerlo: «Regalo mi museo al Barón».
+El Barón Von Bostezo, venía de una familia de nobles, con una larga tradición de ladrones, y su familia robando y engañando se quedo con los cinco museos de la ciudad.
 
-Luego se coló en todas las casas del pueblo. Se llevó la dentadura del abuelo Paco, el pato que canta ópera y hasta el bote de ketchup de la nevera de Jake, y lo ha puesto todo en vitrinas con un cartel: «Tesoro antiquísimo».
+El Barón quiso ampliar el museo, y siguiendo con la tradición familiar quería hacerlo robando.Así que el Barón aprovechando que los habitantes de villa crédula son muy confiados y gente afable sin maldad los engaño y estafo uno a uno, para quedarse con sus ""Tesoros"" y así ampliar sus museos.
 
-Esta noche empieza la operación DEVOLVERLO TODO: cinco museos, cinco salas en cada uno. Primera parada: el Museo de la Prehistoria. Huele a ketchup rancio."
-STORY_ENDING,"¡Lo habéis conseguido!
+Pero la banda del calcetin se ha propuesto parar los pies al Barón y devolverlo todo, y así demostrar a los habitantes de Villa Crédula que son unos grandes ninjas, aunque ni en villa crédula les creen, de hecho podriamos decir que son un poco, el hazmereir del pueblo.
 
-El abuelo Paco vuelve a masticar turrón, el pato canta a las siete en punto, Bruto ya tiene su hueso y Jake ya tiene su ketchup (su nevera vuelve a oler fatal, como debe ser).
+Así que esta noche empieza la operación para devolver al pueblo los ""Tesoros"" robados y conseguir el respeto de sus vecinos, esta noche empieza: Operación Desrobar"
+STORY_ENDING,"!Enhorabuena!
 
-Sin su diamante, los directores dejaron de bostezar, rompieron aquel papel y abrieron otra vez sus museos. Gratis para los niños.
+Hemos conseguido devolver los valiosisimos tesoros al pueblo y por fin nuestro pueblo nos respetará!
 
-Al Barón Von Bostezo solo le quedó mirar sus vitrinas vacías... y bostezar. Se quedó dormido de pie. Dicen que todavía ronca.
+La banda del calcetin ahora puede salir a la calle orgullosos de todo lo que han conseguido, aunque en realidad el pueblo se pregunta, por que no les han devuelto sus objetos? Porque los tienen todos en el museo de su casa, al menos el Barón les dejaba ir a sus museos pagando un altisimo precio pero tenia una cafeteria con unas tapas muy ricas.
 
+Tambien se preguntan porque los ninjas siempre
 FIN (de momento)"
 BRIEF_TAB_NEWS,LO NUEVO
 BRIEF_TAB_STORY,LA HISTORIA
@@ -176,15 +181,15 @@ LESSON_BIG_TEXT,"Más salas, nada nuevo. Planea la ruta en el plano antes de ent
 LESSON_FINALE_TITLE,EL ÚLTIMO GOLPE
 LESSON_FINALE_TEXT,"Todos despiertos y sin calmarse. Todo lo que sabes, a la vez. Suerte."
 LESSON_CASE_ALARM_TEXT,"Mientras la abres, la vitrina pita. Si llega alguien, suéltala y escóndete."
-NIGHT_01_NAME,la dentadura del abuelo Paco
+NIGHT_01_NAME,la dentadura del abuelo lolo
 NIGHT_01_BLURB,"Postiza, de porcelana. Tan vieja que parece un fósil."
 NIGHT_01_VERB,DESENROSCANDO EL TARRO
 NIGHT_01_TALE,El Barón la expone con un cartel: «Mandíbula de cavernícola». Desde entonces el abuelo Paco solo come sopa y a todo contesta «mmmfff». Y hoy el museo no tiene guardias.
-NIGHT_02_NAME,la bola de chicle del récord
+NIGHT_02_NAME,la bola de chicle más antigua
 NIGHT_02_BLURB,Masticada por todo el pueblo durante cien años. Casi un fósil.
 NIGHT_02_VERB,DESPEGANDO EL CHICLE
 NIGHT_02_TALE,Cada vecino le añadía un chicle el día de su cumpleaños. El Barón la expone como «coprolito gigante de mamut» y le ha puesto un cartel: «No tocar». Nadie la toca: se queda pegado.
-NIGHT_03_NAME,el bote de ketchup de Jake
+NIGHT_03_NAME,el bote de ketchup del piso de estudiantes
 NIGHT_03_BLURB,Lleva tanto tiempo en la nevera que ya es prehistórico.
 NIGHT_03_VERB,DESPEGANDO LA COSTRA
 NIGHT_03_TALE,"Jake lo abrió para unas patatas del siglo pasado y se le quedó al fondo de la nevera, detrás de un yogur. El Barón lo expone como «pintura roja de las cavernas». Sin él, la nevera de Jake huele a limpio, Jake no pega ojo y en el pueblo las patatas fritas se comen solas y tristes."
@@ -201,7 +206,7 @@ NIGHT_06_NAME,la planta carnívora Filomena
 NIGHT_06_BLURB,"Con dientes, hambre y maceta."
 NIGHT_06_VERB,SOLTANDO LA MACETA
 NIGHT_06_TALE,La vecina Remedios la riega cada día y le habla. El Barón la expone como «flor rarísima de la selva» y no se atreve a regarla. Filomena lleva dos días sin comer y ya mira mal a los guardias.
-NIGHT_07_NAME,el caracol Anselmo
+NIGHT_07_NAME,El huevo de dinosaurio perdido
 NIGHT_07_BLURB,"Lento, brillante y con la casa a cuestas."
 NIGHT_07_VERB,DESPEGANDO AL CARACOL
 NIGHT_07_TALE,"Anselmo salió a por una lechuga y el Barón se lo metió en el bolsillo. Ahora está en una vitrina, «gigante de las Indias», y dice que sigue de camino hacia la lechuga."
@@ -413,7 +418,7 @@ LOG_GOT_IT,"Tienes %s: ahora, a la salida"
 LOG_GOT_IT_TEAM,"Tenéis %s: ahora, todos a la salida"
 LOG_DROPPED,%s ha caído al suelo
 LOG_HEARD_BY,%s lo ha oído y viene
-LOG_AND, y 
+LOG_AND, y
 LOG_NOBODY_HEARD,nadie más lo ha oído
 LOG_SHOUT,%s: ¡Alto! — %s
 LOG_WARN,%s avisa a %s en voz baja
@@ -537,15 +542,15 @@ STORY_ROOM_PIECE,SALA %d · %s
 STORY_BOSS_PIECE,GRAN GOLPE · %s
 STORY_BOSS_ROOM,GRAN GOLPE
 MUSEUM_1_NAME,El Museo de la Prehistoria
-MUSEUM_1_TEXT,"Dinosaurios, mamuts y las herramientas de los primeros humanos"
+MUSEUM_1_TEXT,"Dinosaurios, mamuts y los primeros humanos"
 MUSEUM_2_NAME,El Museo de Ciencias Naturales
-MUSEUM_2_TEXT,"Insectos, plantas y animales de todo el mundo, de la selva al fondo del mar"
+MUSEUM_2_TEXT,Plantas y bichos que te pueden comer o picar.
 MUSEUM_3_NAME,La Villa Clásica
-MUSEUM_3_TEXT,"Estatuas, columnas y jarrones de Grecia y Roma, de lo más auténtico... y de plástico"
+MUSEUM_3_TEXT,"Grecia y Roma, pero no hay pizza, solo jarrones y estatuas sin brazos."
 MUSEUM_4_NAME,El Museo del Castillo
 MUSEUM_4_TEXT,"Caballeros, armaduras y los grandes inventos del Renacimiento"
 MUSEUM_5_NAME,El Museo de Arte Contemporáneo
-MUSEUM_5_TEXT,"Arte de hoy en una torre de cristal. Arriba del todo, el despacho del Barón"
+MUSEUM_5_TEXT,"Arte Moderno con mensaje, ah, no, eso solo es una papelera"
 MENU_CHALLENGE,RETOS
 MENU_CHALLENGE_TEXT,Mapas hechos a mano y tu editor
 CHALLENGE_TEXT,"Elige un mapa o un robo de la historia, o dibuja el tuyo"
@@ -1542,11 +1547,11 @@ MENU_HELP_SIZE,Más salas implican más recorrido y lugares donde esconderse.
 MENU_HELP_THEME,Cambia las salas y su decoración.
 MENU_HELP_PLAYERS,De 1 a 4 jugadores en equipo. Dos pueden compartir teclado.
 SETTINGS_ADJUST_HELP,←/→ ajustan · Clic o aceptar cambia al instante y guarda
-SETTINGS_HELP_FULLSCREEN,Ocupa toda la pantalla o vuelve a una ventana.
+SETTINGS_HELP_SCREEN_MODE,Ventana, pantalla completa o una ventana sin bordes.
 SETTINGS_HELP_WINDOW,Tamaño de la ventana; más píxeles exigen más trabajo gráfico.
 SETTINGS_HELP_UI_SCALE,Agranda textos y botones; usa la rueda o el foco para recorrer menús largos.
 SETTINGS_HELP_QUALITY,Alta añade efectos y sombras; baja reduce detalle y mejora el rendimiento.
-SETTINGS_HELP_RENDER_SCALE,Menos resolución 3D mejora el rendimiento y reduce nitidez; los textos no cambian.
+SETTINGS_HELP_FPS_LIMIT,Limita los fotogramas por segundo; menos calienta menos la máquina.
 SETTINGS_HELP_VSYNC,Sincroniza imagen y pantalla para evitar cortes; puede añadir latencia.
 SETTINGS_HELP_MEGAPHONE,Elige avisos en texto y voz: ambos / solo texto / solo voz / apagada.
 SETTINGS_HELP_IA,Muestra lo que piensan los guardias durante el robo.

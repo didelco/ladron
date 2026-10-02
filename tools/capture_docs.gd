@@ -45,7 +45,7 @@ func _run() -> void:
 	Story.save = "user://docs/progress.cfg"
 	# A window, not the full screen; quiet; every night open to every gang.
 	var s := Settings.DEFAULTS.duplicate()
-	s.fullscreen = false
+	s.screen_mode = "window"
 	s.sound = false
 	s.music = false
 	Settings.write(s)

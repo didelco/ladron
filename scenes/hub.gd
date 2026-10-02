@@ -16,7 +16,7 @@ const OPTIONS := [
 	{"id": "quit", "label": "Salir", "sticker": "salir.png"},
 ]
 const SETTINGS_OPTIONS := [
-	{"id": "back", "label": "Volver", "sticker": "salir.png", "flip": true},
+	{"id": "back", "label": "Volver", "sticker": "volver.png"},
 	{"id": "sound", "label": "Sonido", "sticker": "sonido.png"},
 	{"id": "screen", "label": "Pantalla", "sticker": "pantalla.png"},
 	{"id": "controls", "label": "Controles", "sticker": "controles.png"},
@@ -25,7 +25,7 @@ const SETTINGS_OPTIONS := [
 ## Los iconos de "cuántos jugadores" son los de siempre (assets/ui/ninjas_N.png,
 ## los mismos que usa _pick_players), no pegatinas nuevas.
 const PLAYERS_OPTIONS := [
-	{"id": "back", "label": "Volver", "sticker": "salir.png", "flip": true},
+	{"id": "back", "label": "Volver", "sticker": "volver.png"},
 	{"id": "p1", "label": "1 Jugador", "res": "res://assets/ui/ninjas_1.png"},
 	{"id": "p2", "label": "2 Jugadores", "res": "res://assets/ui/ninjas_2.png"},
 	{"id": "p3", "label": "3 Jugadores", "res": "res://assets/ui/ninjas_3.png"},
@@ -41,13 +41,13 @@ const PAUSE_OPTIONS_FULL := [
 	{"id": "challenge", "label": "Retos", "sticker": "retos.png"},
 	{"id": "generative", "label": "Atraco Sorpresa", "sticker": "generativo.png"},
 	{"id": "settings", "label": "Ajustes", "sticker": "ajustes.png"},
-	{"id": "leave", "label": "Salir", "sticker": "salir.png"},
+	{"id": "leave", "label": "Salir", "sticker": "ciudad.png"},
 	{"id": "quit_game", "label": "Salir del juego", "sticker": "salir.png"},
 ]
 const PAUSE_OPTIONS_SHORT := [
 	{"id": "resume", "label": "Seguir", "sticker": "pausa-reanudar.png"},
 	{"id": "settings", "label": "Ajustes", "sticker": "ajustes.png"},
-	{"id": "leave", "label": "Salir", "sticker": "salir.png"},
+	{"id": "leave", "label": "Salir", "sticker": "ciudad.png"},
 	{"id": "quit_game", "label": "Salir del juego", "sticker": "salir.png"},
 ]
 
@@ -87,6 +87,7 @@ var _track_tween: Tween
 var _card_tweens: Array[Tween] = []
 var _less: Button
 var _more: Button
+var _controls: ControlsDiagram
 
 
 ## Todos los menús interactivos usan este mismo carril de pegatinas.
@@ -125,14 +126,19 @@ func _layout() -> void:
 	_heading.position = Vector2(20, screen.y * 0.08)
 	_heading.size = Vector2(screen.x - 40, 36)
 	_heading.add_theme_font_size_override("font_size", clampi(int((screen.x - 40) / maxi(1, _heading.text.length())), 10, 18))
-	track.position.y = screen.y * 0.44 - CARD_H / 2.0
+	var diagram := _controls.visible
+	var row_y := 0.22 if diagram else 0.44
+	track.position.y = screen.y * row_y - CARD_H / 2.0
+	_controls.position = Vector2(24, screen.y * 0.38)
+	_controls.size = Vector2(screen.x - 48, screen.y * 0.53)
+	_detail_scroll.visible = not diagram
 	_detail_scroll.position = Vector2(24, screen.y * 0.77)
 	_detail_scroll.size = Vector2(screen.x - 48, screen.y * 0.15)
 	_foot.position = Vector2(10, screen.y - 28)
 	_foot.size = Vector2(screen.x - 20, 22)
 	var distance := minf(screen.x * 0.35, CARD_W * SELECTED_SCALE * 0.6)
-	_less.position = Vector2(screen.x / 2.0 - distance - 24, screen.y * 0.44 - 24)
-	_more.position = Vector2(screen.x / 2.0 + distance - 24, screen.y * 0.44 - 24)
+	_less.position = Vector2(screen.x / 2.0 - distance - 24, screen.y * row_y - 24)
+	_more.position = Vector2(screen.x / 2.0 + distance - 24, screen.y * row_y - 24)
 	if not cards.is_empty():
 		_select(cursor, false)
 
@@ -150,6 +156,9 @@ func _step_current(direction: int) -> void:
 		return
 	opt.label = opt.step.call(direction)
 	cards[cursor].label.text = opt.label
+	if opt.has("sticker_state"):
+		opt.sticker = opt.sticker_state.call()
+		cards[cursor].picture.texture = load(STICKERS + opt.sticker)
 	host.sfx.ui("nav", 0.6)
 	_layout()
 
@@ -207,6 +216,9 @@ func _build() -> void:
 	add_child(_foot)
 	_less = _step_button("−", -1)
 	_more = _step_button("+", 1)
+	_controls = ControlsDiagram.new()
+	_controls.visible = false
+	add_child(_controls)
 	get_viewport().size_changed.connect(_layout)
 	visible = false
 	_layout()
@@ -345,11 +357,19 @@ func _select(i: int, animate := true) -> void:
 			tween.kill()
 	_card_tweens.clear()
 	var opt: Dictionary = active[cursor]
+	var device: String = opt.get("controls_device", "")
+	if _controls.visible != (device != ""):
+		_controls.show_device(device)
+		_layout()
+		return
+	_controls.show_device(device)
 	_detail_scroll.scroll_vertical = 0
 	_detail.text = opt.get("description", "")
 	_less.visible = opt.has("step")
 	_more.visible = opt.has("step")
 	_foot.text = "← → para moverte · aceptar para elegir · Esc para volver"
+	if device != "":
+		_foot.text = "← → para ver controles y ajustes · Esc para volver"
 	if opt.has("step"):
 		_foot.text = "← → elegir ajuste · ↑ ↓ cambiar valor · aceptar aumentar · Esc volver"
 	if active_kind == "join":
@@ -368,7 +388,8 @@ func _select(i: int, animate := true) -> void:
 func _animate_card(c: Dictionary, selected: bool, animate: bool) -> void:
 	var card: Control = c.container
 	card.z_index = 5 if selected else 0
-	var scale_to := Vector2(SELECTED_SCALE, SELECTED_SCALE) if selected else Vector2(REST_SCALE, REST_SCALE)
+	var selected_scale := 0.95 if _controls.visible else SELECTED_SCALE
+	var scale_to := Vector2(selected_scale, selected_scale) if selected else Vector2(REST_SCALE, REST_SCALE)
 	var rot_to := deg_to_rad(TILT) if selected else 0.0
 	var dim_to := Color(1, 1, 1, 1.0) if selected else Color(1, 1, 1, 0.55)
 	var glow_to := Color(Hud.C.gold, 0.55 if selected else 0.0)

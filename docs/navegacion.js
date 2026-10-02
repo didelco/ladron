@@ -23,6 +23,7 @@ const GRUPOS = [
   ] },
   { id: "juego", titulo: "Jugar y diseño", paginas: [
     { id: "pantallas", titulo: "Pantallas", desc: "Cada pantalla del juego con sus capturas, sus opciones y a dónde lleva.", n: () => num(Object.keys(NODOS).length, "pantalla", "pantallas"), arbol: true, kw: "menu portada titulo dojo mandos ajustes editor" },
+    { id: "navegacion", titulo: "Navegación de pantallas", desc: "El esquema Mermaid de los recorridos, retornos y destinos de Esc del menú nuevo.", kw: "mermaid diagrama esquema flujo navegacion pegatinas hub pausa guarida retornos escape", externo: "navegacion-pantallas.html" },
     { id: "historia", titulo: "Historia", desc: "El prólogo, los cinco museos y los 25 robos, con todo su texto.", n: () => num(((J.historia || {}).nights || []).length, "robo", "robos"), kw: "noches cuento prologo final estrellas progreso" },
     { id: "ciudad", titulo: "Ciudad y museos", desc: "La ciudad entera y una ficha por museo.", n: () => num((((J.ciudad || {}).museums) || []).length, "museo", "museos"), kw: "mapa museos" },
     { id: "previa", titulo: "Antes de un robo", desc: "El plano, el cuento y las reglas del plan de cada robo.", kw: "briefing plan tour" },
@@ -55,7 +56,7 @@ for (const g of GRUPOS) for (const p of g.paginas) { p.grupo = g; PAG[p.id] = p;
 // Las páginas que solo tienen un índice si se pide con un selector distinto de «h2».
 const TOC_SEL = { megafonia: "h2, h3" };
 // Sin índice lateral (ya tienen su propia rejilla o son cortas).
-const SIN_TOC = new Set(["inicio", "objetos", "propuestas", "referencias", "sonidos", "personajes", "textos"]);
+const SIN_TOC = new Set(["inicio", "navegacion", "objetos", "propuestas", "referencias", "sonidos", "personajes", "textos"]);
 
 // --- Utilidades ---------------------------------------------------------------------------
 const norm = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -113,7 +114,12 @@ function nav(pag, sel) {
   navEl.setAttribute("aria-label", "Documentación");
   const foco = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.plegar : null;
   const paginaActiva = pag === "pantalla" ? "pantallas" : pag;
-  const enlace = p => `<a href="#${p.id}" ${paginaActiva === p.id && !(p.arbol && pag === "pantalla") ? 'class="on" aria-current="page"' : ""}>${html(p.titulo)}</a>`;
+  // p.externo: un enlace de verdad (a un archivo aparte), no al hash de una
+  // página interna — para el esquema de navegación, que vive también como
+  // su propio archivo (navegacion-pantallas.html) y no solo incrustado.
+  const enlace = p => p.externo
+    ? `<a href="${html(p.externo)}" target="_blank" rel="noopener">${html(p.titulo)} ↗</a>`
+    : `<a href="#${p.id}" ${paginaActiva === p.id && !(p.arbol && pag === "pantalla") ? 'class="on" aria-current="page"' : ""}>${html(p.titulo)}</a>`;
   const pagina = p => enlace(p) + (p.arbol ? `<div class="arbol" role="group" aria-label="Árbol de pantallas">${arbol(P, sel)}</div>` : "");
   const grupo = g => {
     const ab = PLIEGUES["g:" + g.id] ?? true;

@@ -101,8 +101,11 @@ var show_ia := false
 var megaphone_mode := "both"
 ## the loudspeaker's voice (MegaVoice)
 var mega_voice: MegaVoice
-var fullscreen := false
+## one of Settings.SCREEN_MODES ("window", "fullscreen", "borderless")
+var screen_mode := "window"
 var vsync := true
+## frames per second, 0 for unlimited (one of Settings.FPS_LIMITS)
+var fps_limit := 0
 ## percent, 0..100 in steps of ten
 var music_volume := 100
 var effects_volume := 100
@@ -472,7 +475,7 @@ func _show_generative_menu(on := "") -> void:
 		{"id": "theme", "label": Text.t(THEME_NAMES[theme]), "picture": _theme_picture(theme), "description": Text.t("MENU_HELP_THEME"), "call": _pick_setting.bind("theme")},
 		{"id": "players", "label": "%dP" % players, "res": "res://assets/ui/ninjas_%d.png" % players, "description": Text.t("MENU_HELP_PLAYERS"), "call": _pick_generative_players},
 		{"id": "start", "label": Text.t("MENU_START"), "sticker": "aceptar.png", "call": _start.bind("generative", players)},
-		{"id": "back", "label": Text.t("MENU_BACK"), "sticker": "salir.png", "flip": true, "call": _show_title.bind("generative", false)},
+		{"id": "back", "label": Text.t("MENU_BACK"), "sticker": "volver.png", "call": _show_title.bind("generative", false)},
 	]
 	var selected := 4
 	for i in choices.size():
@@ -497,7 +500,7 @@ func _pick_setting(which: String) -> void:
 		if key == current:
 			selected = choices.size()
 		choices.append(option)
-	choices.append({"id": "back", "label": Text.t("MENU_BACK"), "sticker": "salir.png", "flip": true, "call": _show_generative_menu.bind(which)})
+	choices.append({"id": "back", "label": Text.t("MENU_BACK"), "sticker": "volver.png", "call": _show_generative_menu.bind(which)})
 	hub.show_screen(Text.t({"difficulty": "MENU_HOW_HARD", "size": "MENU_HOW_BIG", "theme": "MENU_HOW_THEME"}[which]), choices, "generative_choice", "pick", _show_generative_menu.bind(which), selected)
 
 
@@ -545,7 +548,7 @@ func _pick_generative_players() -> void:
 	var choices: Array = []
 	for n in range(1, 5):
 		choices.append({"id": "p%d" % n, "label": "%dP" % n, "res": "res://assets/ui/ninjas_%d.png" % n, "call": _generative_players_picked.bind(n)})
-	choices.append({"id": "back", "label": Text.t("MENU_BACK"), "sticker": "salir.png", "flip": true, "call": _show_generative_menu.bind("players")})
+	choices.append({"id": "back", "label": Text.t("MENU_BACK"), "sticker": "volver.png", "call": _show_generative_menu.bind("players")})
 	hub.show_screen(Text.t("MENU_HOW_MANY"), choices, "generative_players", "pick", _show_generative_menu.bind("players"), players - 1)
 
 

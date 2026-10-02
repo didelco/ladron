@@ -18,15 +18,16 @@ const DEFAULTS := {
 	"size": "small",
 	# generative mode's museum theme (Themes), "" for any theme mixed
 	"theme": "",
-	"fullscreen": false,
+	# "window", "fullscreen" or "borderless"
+	"screen_mode": "window",
 	"vsync": true,
-	# graphics: "high" (as designed) or "low" (Quality), and the 3D render
-	# scale in percent (one of Quality.SCALES)
+	# graphics: "high" (as designed) or "low" (Quality)
 	"quality": "high",
-	"render_scale": 100,
 	# the window's size: an index into WINDOW_SIZES, or -1 for the biggest
 	# that fits the screen
 	"window": -1,
+	# frames per second, 0 for unlimited (one of FPS_LIMITS)
+	"fps_limit": 0,
 	# how big menus and HUD are, percent, in steps of 10
 	"ui_scale": 100,
 	# percent, in steps of VOLUME_STEP
@@ -49,8 +50,12 @@ const VOLUME_STEP := 10
 const MEGAPHONE_MODES := ["both", "text", "sound", "off"]
 ## Window sizes on offer (16:9); only those that fit the screen are used.
 const WINDOW_SIZES := [Vector2i(1280, 720), Vector2i(1600, 900), Vector2i(1920, 1080), Vector2i(2560, 1440), Vector2i(3200, 1800), Vector2i(3840, 2160)]
+## A window, pantalla completa, or a window with no border.
+const SCREEN_MODES := ["window", "fullscreen", "borderless"]
+## FPS caps on offer; 0 is unlimited.
+const FPS_LIMITS := [30, 60, 90, 120, 144, 240, 0]
 const UI_SCALE_MIN := 70
-const UI_SCALE_MAX := 150
+const UI_SCALE_MAX := 120
 const SECTION := "settings"
 
 ## Where they are kept. Tests and recordings point it somewhere else (set it,
@@ -86,6 +91,15 @@ static func read() -> Dictionary:
 			out.megaphone_mode = "off" if not old_on else ("text" if old_voice is bool and not old_voice else "both")
 	if not out.megaphone_mode in MEGAPHONE_MODES:
 		out.megaphone_mode = DEFAULTS.megaphone_mode
+	# Older files kept "fullscreen" as a yes/no.
+	if not cfg.has_section_key(SECTION, "screen_mode") and cfg.has_section_key(SECTION, "fullscreen"):
+		var old_full: Variant = cfg.get_value(SECTION, "fullscreen")
+		if old_full is bool:
+			out.screen_mode = "fullscreen" if old_full else "window"
+	if not out.screen_mode in SCREEN_MODES:
+		out.screen_mode = DEFAULTS.screen_mode
+	if not out.fps_limit in FPS_LIMITS:
+		out.fps_limit = DEFAULTS.fps_limit
 	if not out.difficulty in ["easy", "medium", "hard"]:
 		out.difficulty = DEFAULTS.difficulty
 	if not out.input_mode in ["keys", "mixed", "pads"]:
@@ -99,7 +113,6 @@ static func read() -> Dictionary:
 	out.deadzone = clampi(snappedi(out.deadzone, VOLUME_STEP), 20, 80)
 	out.window = clampi(out.window, -1, WINDOW_SIZES.size() - 1)
 	out.quality = Quality.valid_level(out.quality)
-	out.render_scale = Quality.valid_scale(out.render_scale)
 	out.ui_scale = clampi(snappedi(out.ui_scale, 10), UI_SCALE_MIN, UI_SCALE_MAX)
 	return out
 
@@ -153,22 +166,29 @@ static func window_size(index: int) -> Vector2i:
 	return fits[-1] if index < 0 else fits[mini(index, fits.size() - 1)]
 
 
-## Full screen or a window, and v-sync. Only touches the mode when it has to
-## change; with resize, a window is set to the chosen size and centred.
-## Nothing to do without a window.
-static func apply_display(fullscreen: bool, vsync: bool, window := -1, resize := true) -> void:
+## Full screen, a window, or a window with no border — and v-sync. Only
+## touches the mode when it has to change; with resize, a window (bordered or
+## not) is set to the chosen size and centred. Nothing to do without a window.
+static func apply_display(screen_mode: String, vsync: bool, window := -1, resize := true) -> void:
 	if DisplayServer.get_name() == "headless":
 		return
+	var want_full := screen_mode == "fullscreen"
 	var mode := DisplayServer.window_get_mode()
 	var is_full := mode == DisplayServer.WINDOW_MODE_FULLSCREEN or mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN
-	if fullscreen != is_full:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if fullscreen else DisplayServer.WINDOW_MODE_WINDOWED)
-	if resize and not fullscreen:
+	if want_full != is_full:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if want_full else DisplayServer.WINDOW_MODE_WINDOWED)
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, screen_mode == "borderless")
+	if resize and not want_full:
 		var size := window_size(window)
 		var room := DisplayServer.screen_get_usable_rect()
 		DisplayServer.window_set_size(size)
 		DisplayServer.window_set_position(room.position + (room.size - size) / 2)
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if vsync else DisplayServer.VSYNC_DISABLED)
+
+
+## The FPS cap, 0 for unlimited (Engine.max_fps's own meaning for "none").
+static func apply_fps(limit: int) -> void:
+	Engine.max_fps = limit
 
 
 ## The loudspeaker's notice shows on screen in this mode.

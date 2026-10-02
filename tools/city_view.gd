@@ -74,7 +74,7 @@ func _run() -> void:
 		Settings.path = "user://city_view/settings.cfg"
 		Story.save = "user://city_view/progress.cfg"
 		var st := Settings.DEFAULTS.duplicate()
-		st.fullscreen = false
+		st.screen_mode = "window"
 		st.sound = false
 		st.music = false
 		Settings.write(st)
@@ -108,7 +108,7 @@ func _run() -> void:
 		Settings.path = "user://city_view/settings.cfg"
 		Story.save = "user://city_view/progress.cfg"
 		var st := Settings.DEFAULTS.duplicate()
-		st.fullscreen = false
+		st.screen_mode = "window"
 		st.sound = false
 		st.music = false
 		Settings.write(st)

@@ -407,6 +407,12 @@ details.fam .dentro { padding: 0 10px 10px; }
   <main id="main">
     <section class="pagina" id="p-inicio"></section>
     <section class="pagina" id="p-pantallas"></section>
+    <section class="pagina" id="p-navegacion">
+      <h1>Navegación de pantallas</h1>
+      <p class="lead">Los recorridos del menú de pegatinas, Historia, Retos, el editor y la Guarida, con sus retornos y el comportamiento de Esc.</p>
+      <p>Amplía cada diagrama con + y usa el índice para ir a un apartado. <a href="navegacion-pantallas.html" target="_blank" rel="noopener">Abrir el esquema a pantalla completa</a> · <a href="navegacion-pantallas.md">Fuente Mermaid</a></p>
+      <iframe class="esquema-navegacion" src="navegacion-pantallas.html?integrado" title="Esquema de navegación de pantallas y destinos de Esc" loading="lazy"></iframe>
+    </section>
     <section class="pagina" id="p-pantalla"></section>
     <section class="pagina" id="p-capturas"></section>
     <section class="pagina" id="p-estilo"></section>
@@ -561,6 +567,7 @@ function inicio() {
   const todas = n => [n, ...(n.children || []).flatMap(todas)];
   $("#p-pantallas").innerHTML = `
     <div class="cabeza"><div><h1>Pantallas</h1><div class="sub">Todas las pantallas del juego · pulsa una para verla con las que cuelgan de ella</div></div></div>
+    <p><a href="#navegacion">Ver el esquema de navegación: recorridos entre pantallas y destinos de Esc →</a></p>
     ${P.map(r => `<div class="seccion"><h2><a href="#pantalla/${r.id}">${esc(nombre(r))}</a></h2><span class="nota">${todas(r).length} pantallas</span></div>
       <div class="tarjetas">${todas(r).map(tarjeta).join("")}</div>`).join("")}`;
 }

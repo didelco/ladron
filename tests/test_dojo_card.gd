@@ -109,7 +109,7 @@ func _init() -> void:
 	Settings.path = "user://test_dojo_card_settings.cfg"
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
 	var settings := Settings.DEFAULTS.duplicate()
-	settings.fullscreen = false
+	settings.screen_mode = "window"
 	settings.sound = false
 	settings.music = false
 	Settings.write(settings)

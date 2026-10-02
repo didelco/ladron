@@ -1,7 +1,7 @@
 class_name SettingsScreens
 extends RefCounted
 ## The settings screens (sound, screen, pads, the loudspeaker, the IA panel), and what
-## is kept of them: read at the start (load_all), applied as each line moves (step) and saved. The values themselves (sound_on, fullscreen, ...) live in Game, which
+## is kept of them: read at the start (load_all), applied as each line moves (step) and saved. The values themselves (sound_on, screen_mode, ...) live in Game, which
 ## the rest of the game reads them from.
 
 var host: Game
@@ -28,7 +28,7 @@ func show(from: String, page := "") -> void:
 	settings_from = from
 	settings_page = page
 	var choices: Array = []
-	var keys: Array = {"": [], "sound": ["sound", "music", "music_volume", "effects_volume"], "screen": ["fullscreen", "window", "ui_scale", "quality", "render_scale", "vsync"], "pads": ["rumble", "rumble_strength", "deadzone"], "options": ["megaphone", "ia"]}[page]
+	var keys: Array = {"": [], "sound": ["sound", "music", "music_volume", "effects_volume"], "screen": ["screen_mode", "window", "ui_scale", "quality", "fps_limit", "vsync"], "pads": ["rumble", "rumble_strength", "deadzone"], "options": ["megaphone", "ia"]}[page]
 	if page == "":
 		for opt: Dictionary in Hub.SETTINGS_OPTIONS:
 			if opt.id == "back":
@@ -38,19 +38,31 @@ func show(from: String, page := "") -> void:
 	else:
 		var sticker: String = {"sound": "sonido.png", "screen": "pantalla.png", "pads": "controles.png", "options": "opciones.png"}[page]
 		for key: String in keys:
-			choices.append({"id": key, "label": text_of(key), "sticker": sticker, "description": Text.t("SETTINGS_HELP_" + key.to_upper()), "step": func(dir: int) -> String: return step(dir, key)})
+			choices.append({"id": key, "label": text_of(key), "sticker": sticker_of(key, sticker), "sticker_state": sticker_of.bind(key, sticker), "description": Text.t("SETTINGS_HELP_" + key.to_upper()), "step": func(dir: int) -> String: return step(dir, key)})
 		if page == "pads":
-			for key in ["CONTROLS_MOVE", "CONTROLS_PUSH", "CONTROLS_ROLL", "CONTROLS_CROUCH", "CONTROLS_SLOW", "CONTROLS_SMOKE", "CONTROLS_MAP", "CONTROLS_PAUSE", "CONTROLS_MUTE"]:
-				var line := Text.t(key).replace("{slash}", Hands.key_label(KEY_SLASH)).replace("{period}", Hands.key_label(KEY_PERIOD)).replace("{comma}", Hands.key_label(KEY_COMMA))
-				var cells := line.split("|")
-				choices.append({"id": key, "label": cells[0], "sticker": "controles.png", "description": " · ".join(cells)})
-	choices.append({"id": "back", "label": Text.t("MENU_BACK"), "sticker": "salir.png", "flip": true, "call": back})
+			var layouts: Array = []
+			for device in ["kb_left", "kb_right", "pad"]:
+				var label: String = {"kb_left": "Teclado 1", "kb_right": "Teclado 2", "pad": Text.t("CONTROLS_PAD")}[device]
+				layouts.append({"id": device, "label": label, "sticker": "controles.png", "controls_device": device})
+			choices = layouts + choices
+	choices.append({"id": "back", "label": Text.t("MENU_BACK"), "sticker": "volver.png", "call": back})
 	var selected := 0
 	for i in choices.size():
 		if choices[i].id == old_id:
 			selected = i
 	var title := Text.t({"": "MENU_SETTINGS", "sound": "SETTINGS_SOUND_TITLE", "screen": "SETTINGS_SCREEN_TITLE", "pads": "SETTINGS_CONTROLS_TITLE", "options": "SETTINGS_OPTIONS_TITLE"}[page])
 	host.hub.show_screen(title, choices, "settings", "settings", back, selected)
+
+
+func sticker_of(key: String, fallback: String) -> String:
+	match key:
+		"sound": return "sonido.png" if host.sound_on else "sonido-tachado.png"
+		"music": return "musica.png" if host.music_on else "musica-tachada.png"
+		"music_volume": return "musica.png"
+		"effects_volume": return "sonido.png"
+		"megaphone": return "megafonia.png"
+		"ia": return "panel-debug.png"
+	return fallback
 
 
 func controls_table() -> Dictionary:
@@ -76,14 +88,14 @@ func text_of(key: String) -> String:
 		"music": return Text.t("SETTINGS_MUSIC") % yes.call(host.music_on)
 		"music_volume": return Text.t("SETTINGS_MUSIC_VOLUME") % volume_bar(host.music_volume)
 		"effects_volume": return Text.t("SETTINGS_EFFECTS_VOLUME") % volume_bar(host.effects_volume)
-		"fullscreen": return Text.t("SETTINGS_FULLSCREEN") % yes.call(host.fullscreen)
+		"screen_mode": return Text.t("SETTINGS_SCREEN_MODE") % Text.t("SETTINGS_SCREEN_MODE_" + host.screen_mode.to_upper())
 		"vsync": return Text.t("SETTINGS_VSYNC") % yes.call(host.vsync)
 		"window":
 			var w := Settings.window_size(host.window)
 			return Text.t("SETTINGS_WINDOW_AUTO" if host.window < 0 else "SETTINGS_WINDOW") % [w.x, w.y]
 		"ui_scale": return Text.t("SETTINGS_UI_SCALE") % host.ui_scale
 		"quality": return Text.t("SETTINGS_QUALITY") % Text.t("SETTINGS_QUALITY_LOW" if Quality.is_low() else "SETTINGS_QUALITY_HIGH")
-		"render_scale": return Text.t("SETTINGS_RENDER_SCALE") % Quality.scale
+		"fps_limit": return Text.t("SETTINGS_FPS_LIMIT") % (Text.t("SETTINGS_FPS_UNLIMITED") if host.fps_limit == 0 else str(host.fps_limit))
 		"ia": return Text.t("SETTINGS_IA") % yes.call(host.show_ia)
 		"megaphone": return Text.t("SETTINGS_MEGAPHONE") % Text.t("SETTINGS_MEGAPHONE_" + host.megaphone_mode.to_upper())
 		"rumble": return Text.t("SETTINGS_RUMBLE") % yes.call(host.rumble)
@@ -112,19 +124,30 @@ func step(dir: int, key: String) -> String:
 			# Both, notice only, voice only, off, round again.
 			var modes := Settings.MEGAPHONE_MODES
 			set_megaphone_mode(modes[posmod(modes.find(host.megaphone_mode) + (1 if dir >= 0 else -1), modes.size())])
-		"fullscreen", "vsync":
-			host.set(key, not host.get(key))
-			Settings.apply_display(host.fullscreen, host.vsync, host.window, key == "fullscreen")
+		"screen_mode":
+			# Window, fullscreen, borderless, round again.
+			var modes := Settings.SCREEN_MODES
+			host.screen_mode = modes[posmod(modes.find(host.screen_mode) + (1 if dir >= 0 else -1), modes.size())]
+			Settings.apply_display(host.screen_mode, host.vsync, host.window)
+		"vsync":
+			host.vsync = not host.vsync
+			Settings.apply_display(host.screen_mode, host.vsync, host.window, false)
 		"window":
 			# Auto, then each size that fits, round again.
 			var count := Settings.fitting_sizes().size()
 			host.window = posmod(host.window + 1 + (1 if dir >= 0 else -1), count + 1) - 1
-			Settings.apply_display(host.fullscreen, host.vsync, host.window)
+			Settings.apply_display(host.screen_mode, host.vsync, host.window)
 		"ui_scale":
 			host.ui_scale = Settings.UI_SCALE_MIN if dir == 0 and host.ui_scale >= Settings.UI_SCALE_MAX else clampi(host.ui_scale + (10 if dir >= 0 else -10), Settings.UI_SCALE_MIN, Settings.UI_SCALE_MAX)
 			apply_ui_scale()
-		"quality", "render_scale":
-			step_quality(key)
+		"quality":
+			step_quality()
+		"fps_limit":
+			# Round through the caps on offer, unlimited last.
+			var limits := Settings.FPS_LIMITS
+			var i: int = maxi(limits.find(host.fps_limit), 0)
+			host.fps_limit = limits[posmod(i + (1 if dir >= 0 else -1), limits.size())]
+			Settings.apply_fps(host.fps_limit)
 		"rumble":
 			host.rumble = not host.rumble
 			# Feel it straight away.
@@ -147,16 +170,13 @@ func step(dir: int, key: String) -> String:
 	return text_of(key)
 
 
-## Graphics quality flips; the 3D render scale goes to the next on offer.
-func step_quality(key: String) -> void:
-	if key == "quality":
-		Quality.set_state("high" if Quality.is_low() else "low", Quality.scale)
-	else:
-		Quality.set_state(Quality.level, Quality.next_scale(Quality.scale))
+## Graphics quality flips, high to low and back.
+func step_quality() -> void:
+	Quality.set_state("high" if Quality.is_low() else "low")
 	apply_quality()
 
 
-## Quality and render scale, applied to the night and to every 3D viewport.
+## Quality, applied to the night and to every 3D viewport.
 func apply_quality() -> void:
 	if host.nightenv.world_env:
 		Quality.apply_environment(host.nightenv.world_env)
@@ -202,11 +222,12 @@ func load_all() -> void:
 	Sim.difficulty = s.difficulty
 	host.size = s.size
 	host.theme = s.theme
-	host.fullscreen = s.fullscreen
+	host.screen_mode = s.screen_mode
 	host.vsync = s.vsync
 	host.window = s.window
 	host.ui_scale = s.ui_scale
-	Quality.set_state(s.quality, s.render_scale)
+	host.fps_limit = s.fps_limit
+	Quality.set_state(s.quality)
 	host.music_volume = s.music_volume
 	host.effects_volume = s.effects_volume
 	host.rumble = s.rumble
@@ -216,7 +237,8 @@ func load_all() -> void:
 	AudioServer.set_bus_mute(0, not host.sound_on)
 	host.sfx.set_music(host.music_on)
 	host.sfx.set_volumes(host.music_volume / 100.0, host.effects_volume / 100.0)
-	Settings.apply_display(host.fullscreen, host.vsync, host.window)
+	Settings.apply_display(host.screen_mode, host.vsync, host.window)
+	Settings.apply_fps(host.fps_limit)
 	apply_ui_scale()
 	Quality.apply_tree(host.get_tree())
 
@@ -231,8 +253,8 @@ func save() -> void:
 	Settings.write({
 		"sound": host.sound_on, "music": host.music_on, "ia": host.show_ia, "megaphone_mode": host.megaphone_mode,
 		"difficulty": Sim.difficulty, "size": host.size, "theme": host.theme,
-		"fullscreen": host.fullscreen, "vsync": host.vsync, "window": host.window, "ui_scale": host.ui_scale,
-		"quality": Quality.level, "render_scale": Quality.scale,
+		"screen_mode": host.screen_mode, "vsync": host.vsync, "window": host.window, "ui_scale": host.ui_scale,
+		"quality": Quality.level, "fps_limit": host.fps_limit,
 		"music_volume": host.music_volume, "effects_volume": host.effects_volume,
 		"rumble": host.rumble, "rumble_strength": host.rumble_strength,
 		"deadzone": host.deadzone,

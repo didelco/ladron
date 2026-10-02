@@ -38,7 +38,7 @@ func show_menu() -> void:
 	challenge_delete = false
 	host.podium.drop()
 	var choices: Array = [
-		{"id": "back", "label": Text.t("MENU_BACK"), "sticker": "salir.png", "flip": true, "call": host._show_title.bind("challenge", false)},
+		{"id": "back", "label": Text.t("MENU_BACK"), "sticker": "volver.png", "call": host._show_title.bind("challenge", false)},
 		{"id": "new", "label": Text.t("CHALLENGE_NEW"), "sticker": "opciones.png", "description": Text.t("CHALLENGE_EDIT_LEGEND"), "call": show_editor.bind(MapFile.blank(Museum.SIZES.small.w, Museum.SIZES.small.h))},
 	]
 	for m in MapFile.list():
@@ -159,7 +159,7 @@ func show_night_map(n: int) -> void:
 	]
 	if MapFile.for_night(n) != null:
 		choices.append({"id": "restore", "label": Text.t("CHALLENGE_RESTORE_SURE" if challenge_delete else "CHALLENGE_RESTORE"), "sticker": "cancelar.png", "call": restore_night.bind(n)})
-	choices.append({"id": "back", "label": Text.t("MENU_BACK"), "sticker": "salir.png", "flip": true, "call": show_menu})
+	choices.append({"id": "back", "label": Text.t("MENU_BACK"), "sticker": "volver.png", "call": show_menu})
 	host.hub.show_screen(night_name(n), choices, "challenge_night", "challenge", show_menu, 1 if challenge_delete else 0)
 
 
@@ -200,7 +200,7 @@ func show_map(m: MapFile) -> void:
 		if challenge_delete:
 			selected = choices.size()
 		choices.append({"id": "delete", "label": Text.t("CHALLENGE_DELETE_SURE" if challenge_delete else "CHALLENGE_DELETE"), "sticker": "cancelar.png", "call": delete_map.bind(m)})
-	choices.append({"id": "back", "label": Text.t("MENU_BACK"), "sticker": "salir.png", "flip": true, "call": show_menu})
+	choices.append({"id": "back", "label": Text.t("MENU_BACK"), "sticker": "volver.png", "call": show_menu})
 	host.hub.show_screen(m.name.to_upper(), choices, "challenge_map", "challenge", show_menu, selected)
 
 
