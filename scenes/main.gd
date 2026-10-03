@@ -363,7 +363,6 @@ func _open_tour() -> Tour:
 		_show_title("story"))
 	tour.room_chosen.connect(_tour_room)
 	tour.go.connect(_tour_go)
-	tour.practice.connect(_tour_practice)
 	tour.told.connect(_remember_told)
 	tour.sound.connect(func(kind: String) -> void: sfx.ui(kind, 0.6))
 	get_viewport().disable_3d = true
@@ -387,20 +386,9 @@ func _tour_room(n: int) -> void:
 	tour.show_plan(_plan_data())
 
 
-## The hideout picked in the town: the practice room, straight in. No plan,
-## no briefing; the town fades into the room and the count begins.
-func _tour_practice() -> void:
-	dojo_from_title = false
-	mode = Practice.MODE
-	pads_lost.clear()
-	_new_round(1)
-	_tour_go(0)
-
-
 ## The same house and trials reached from the title, with the band's own
 ## story unlocks and records. The origin only chooses the way back.
 var dojo_from_title := false
-const DOJO_ENTRY := Vector2i(22, 11)
 
 
 func _dojo_title() -> void:
@@ -419,7 +407,11 @@ func _dojo_start(n: int, picked := false) -> void:
 	pads_lost.clear()
 	get_viewport().disable_3d = false
 	_new_round(1)
+	# Walking in at the lounge would flash its own room name first
+	# (home_tick); the hideout's name takes that moment instead.
+	house.home_room = "salon"
 	_start_countdown()
+	hud.room_name(Text.t("HIDEOUT_NAME"))
 
 
 ## What the tour needs to tell the plan of the heist laid out: its picture,
@@ -1148,8 +1140,6 @@ func _new_round(n: int) -> void:
 	elif mode == Practice.MODE:
 		Sim.custom = Practice.tuning()
 		saved_map = Practice.map(players)
-		if dojo_from_title:
-			saved_map.spawn = DOJO_ENTRY
 		_lay_out(n, saved_map.seed)
 	else:
 		Sim.custom = {"theme": theme} if theme != "" else {}

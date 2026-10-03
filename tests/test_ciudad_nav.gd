@@ -264,10 +264,9 @@ func _run() -> void:
 	await frames()
 	t = city(6, H)
 	await frames()
-	var practised := [false]
-	t.practice.connect(func() -> void: practised[0] = true)
+	sounds.clear()
 	t.input(key(KEY_PERIOD))
-	check(practised[0], "aceptar en la casita entra a la casita")
+	check(t.state == "city" and sounds == ["back"], "aceptar en la casita no entra, solo rebota (la única puerta es la del hub)")
 	t.queue_free()
 	await frames()
 	t = city(6)
@@ -364,13 +363,12 @@ func _run() -> void:
 	check(t.stage.picked == 0 and t.state in ["zoom", "museum"], "el clic en otra tarjeta abierta la elige y entra a la vez")
 	t.queue_free()
 	await frames()
-	# The hideout card.
+	# The hideout card: seen (and picked), never gone into from here.
 	t = city(6)
 	await frames(2)
-	var went := [false]
-	t.practice.connect(func() -> void: went[0] = true)
+	sounds.clear()
 	t._on_mouse(click(t._cards[H].get_center()))
-	check(went[0], "el clic en la casita entra en ella")
+	check(t.stage.picked == H and t.state == "city" and sounds == ["nav", "back"], "el clic en la casita la elige pero no entra en ella")
 	t.queue_free()
 	await frames()
 	# The map behind still answers: over a stop or a click on it.

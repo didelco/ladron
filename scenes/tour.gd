@@ -23,8 +23,6 @@ signal left
 signal room_chosen(n: int)
 ## ¡A ROBAR!: heist n, now.
 signal go(n: int)
-## The hideout gone into: the practice room, no heist and no stars.
-signal practice
 ## Heist n's plan has been told: next time, straight to looking round.
 signal told(n: int)
 ## A menu sound to play: "nav", "ok" or "back".
@@ -183,7 +181,9 @@ func _pick_museum(m: int) -> void:
 		_sign_line.text = Text.t("HIDEOUT_LINE")
 		_sign_title.add_theme_color_override("font_color", Color("#e2262f").lightened(0.3))
 		_sign_stars.visible = false
-		_set_hints([["move", Text.t("TOUR_HINT_PICK")], ["accept", Text.t("TOUR_HINT_PRACTICE")], ["back", Text.t("TOUR_HINT_BACK")]])
+		# Nothing to go into from here (is_hideout): just the move/back hints,
+		# no "accept" one, since there is no way in from the town any more.
+		_set_hints([["move", Text.t("TOUR_HINT_PICK")], ["back", Text.t("TOUR_HINT_BACK")]])
 		return
 	_set_hints([["move", Text.t("TOUR_HINT_PICK")], ["accept", Text.t("TOUR_HINT_ENTER")], ["back", Text.t("TOUR_HINT_BACK")]])
 	var museum := Story.museum(m)
@@ -222,14 +222,10 @@ func step_bar(dir: int) -> void:
 
 func _enter_museum() -> void:
 	var m := stage.picked
-	if not stage.is_open(m):
+	# The hideout is seen from here (its sign, its lit road) but not gone
+	# into: the only door in is the Guarida option at the hub.
+	if not stage.is_open(m) or stage.is_hideout(m):
 		_sound("back")
-		return
-	if stage.is_hideout(m):
-		_sound("ok")
-		state = "going"
-		_set_hints([])
-		practice.emit()
 		return
 	_sound("ok")
 	state = "zoom"

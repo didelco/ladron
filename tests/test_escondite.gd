@@ -1,9 +1,10 @@
 extends SceneTree
-## El Escondite del Calcetín: la casita de la banda en la ciudad y su sala de
-## práctica (Practice): sin guardias, con la vitrina sellada, papeleras que
-## empujar y armaduras donde esconderse, sin estrellas ni nada guardado. Se
-## elige en la ciudad (a la izquierda del primer museo), se entra sin plano y
-## se sale por la pausa a la ciudad, con la casita elegida.
+## El Escondite del Calcetín: la casita de la banda, vista (sin entrar) a la
+## izquierda del primer museo en la ciudad de Historia, y su sala de
+## práctica (Practice), a la que solo se entra por la opción Guarida del
+## hub: sin guardias, con la vitrina sellada, papeleras que empujar y
+## armaduras donde esconderse, sin estrellas ni nada guardado. Se entra sin
+## plano, en el salón, y se sale por la pausa al hub.
 const Support := preload("res://tests/support.gd")
 var qa := Support.new()
 const DT := 1.0 / 60.0
@@ -425,13 +426,19 @@ func _init() -> void:
 	t._on_mouse(over)
 	check(t.stage.picked == CityStage.HIDEOUT, "con el ratón encima de su tarjeta, la casita")
 
-	# In: no plan, no briefing.
-	var went := [0]
-	t.practice.connect(func() -> void: went[0] += 1)
+	# Visible, pero sin puerta trasera: aceptar sobre ella no entra, solo rebota
+	# (como un museo cerrado); la única puerta es la opción Guarida del hub.
 	t.act("accept")
 	await frames()
-	check(went[0] == 1, "aceptar sobre la casita avisa de la práctica")
+	check(t.state == "city" and m.mode == "story" and m.phase == "tour", "aceptar sobre la casita no entra, solo se mira desde la ciudad")
+
+	# In: no plan, no briefing, by the hub's own Guarida door — but its own
+	# clear moment of entry, same as a museum's title on its plan.
+	m._show_title("dojo", false)
+	m._dojo_start(1, true)
+	await frames()
 	check(m.mode == Practice.MODE and m.phase == "playing", "la casa, jugando nada más entrar: %s %s" % [m.mode, m.phase])
+	check(m.hud._room != null and m.hud._room.text == Text.t("HIDEOUT_NAME") and m.hud._room.modulate.a > 0.0, "el nombre de la guarida se anuncia al entrar")
 	check(not m.hud.counting() and not m.hud._count.visible, "sin cuenta atrás ni números en pantalla")
 	check(m.guards.is_empty() and Sim.guard_count("small") == 0, "sin guardias")
 	check(m.thieves.size() == 1, "un ladrón")
@@ -570,13 +577,13 @@ func _init() -> void:
 	m.house.home_tick()
 	check(m.house.home_room == "trofeos", "entrar en la sala de trofeos la nombra")
 
-	# The pause, and out to the town with the house picked.
+	# The pause, and out to the hub (the only door in is Guarida, so the only
+	# way back is to it too).
 	m._pause()
 	check(m.phase == "paused", "la pausa")
 	m._quit_to_title()
 	await frames()
-	check(m.phase == "tour" and m.mode == "story", "salir de la pausa lleva a la ciudad: %s %s" % [m.phase, m.mode])
-	check(m.tour != null and m.tour.stage.picked == CityStage.HIDEOUT, "... con la casita elegida")
+	check(m.phase == "title" and m.hub.visible and m.hub.active[m.hub.cursor].id == "dojo", "salir de la pausa lleva al hub, con Guarida elegida: %s" % m.phase)
 
 	m._music_mood()
 	check(m.sfx._house_target == 0.0, "fuera de casa, la música del museo")
@@ -595,7 +602,7 @@ func _init() -> void:
 	m.thieves[0].y = 22.5
 	run(2)
 	await frames(6)
-	check(m.phase == "tour" and m.tour != null and m.tour.stage.picked == CityStage.HIDEOUT, "cruzar la puerta lleva a la ciudad con la casita elegida: %s" % m.phase)
+	check(m.phase == "title" and m.hub.visible and m.hub.active[m.hub.cursor].id == "dojo", "cruzar la puerta lleva al hub, con Guarida elegida: %s" % m.phase)
 
 	# The trophies follow the band's stars.
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))

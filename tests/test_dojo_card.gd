@@ -1,7 +1,8 @@
 extends SceneTree
 ## Portada -> Dojo comparte la casa, desbloqueos y marcas con el escondite.
-## Teclado/mando/ratón, banda 1–4 y salida según origen. Con -- render, QA
-## local de portada normal y ventana pequeña/UI150 en /tmp/dojo-card-qa.
+## Teclado/mando/ratón, banda 1–4 y vuelta al hub (la única puerta). Con
+## -- render, QA local de portada normal y ventana pequeña/UI150 en
+## /tmp/dojo-card-qa.
 const Support := preload("res://tests/support.gd")
 var qa := Support.new()
 var game: Game
@@ -158,7 +159,7 @@ func _init() -> void:
 			await join(n)
 		await frames()
 		check(game.phase == "playing" and game.mode == Practice.MODE and game.players == n and game.thieves.size() == n, "banda%d: práctica lista sin prólogo ni robo" % n)
-		check(game.thieves.all(func(t: Thief) -> bool: return Den.room_at(t.x, t.y) == "dojo" and not Museum.blocks_move(t.x, t.y)), "banda%d: todos llegan al dojo sobre suelo libre" % n)
+		check(game.thieves.all(func(t: Thief) -> bool: return Den.room_at(t.x, t.y) == "salon" and not Museum.blocks_move(t.x, t.y)), "banda%d: todos llegan al salón sobre suelo libre" % n)
 		check(Practice.open_trials(n).map(func(t: Dictionary) -> String: return t.id) == open and DojoTrials.best("atrapa", n) == n + 2, "banda%d: mismos desbloqueos y marcas" % n)
 		check(FileAccess.get_file_as_string(Story.save) == before, "banda%d: entrar no altera progreso" % n)
 		game._pause()
@@ -172,24 +173,14 @@ func _init() -> void:
 		game.house.home_tick()
 		await frames()
 		check(game.phase == "title" and game.hub.visible and game.hub.active[game.hub.cursor].id == "dojo", "banda%d: puerta devuelve a card Dojo" % n)
-	# Original access is still the house from the town, with its lounge spawn.
+	# The hideout is seen from the town (its own card) but there is no door
+	# in from there any more: the only way in is Guarida, at the hub.
 	game._show_city(CityStage.HIDEOUT)
 	await frames()
-	game._tour_practice()
+	check(game.tour != null and game.tour.state == "city" and game.tour.stage.picked == CityStage.HIDEOUT, "escondite: se ve elegida en la ciudad")
+	game.tour.act("accept")
 	await frames()
-	check(game.mode == Practice.MODE and not game.dojo_from_title and Den.room_at(game.thieves[0].x, game.thieves[0].y) == "salon", "escondite: entrada original al salón")
-	check(game._leave_text() == Text.t("PRACTICE_LEAVE"), "escondite: pausa anuncia ciudad")
-	game._pause()
-	game._ask_leave()
-	await frames()
-	check(game.phase == "tour" and game.tour != null and game.tour.state == "city", "escondite: pausa vuelve ciudad")
-	game._tour_practice()
-	await frames()
-	game.thieves[0].x = Den.EXIT.x + 0.5
-	game.thieves[0].y = Den.EXIT.y + 0.5
-	game.house.home_tick()
-	await frames()
-	check(game.phase == "tour" and game.tour.state == "city", "escondite: puerta vuelve ciudad")
+	check(game.tour != null and game.tour.state == "city", "escondite: aceptar en la ciudad no entra en ella")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.path))
 	quit(qa.summary())
