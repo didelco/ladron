@@ -558,17 +558,17 @@ MUSEUM_4_TEXT,"Caballeros, armaduras y los grandes inventos del Renacimiento"
 MUSEUM_5_NAME,El Museo de Arte Contemporáneo
 MUSEUM_5_TEXT,"Arte Moderno con mensaje, ah, no, eso solo es una papelera"
 MENU_CHALLENGE,MISIONES
-MENU_CHALLENGE_TEXT,Robos con historia y obsequio: los de serie y los tuyos
-CHALLENGE_TEXT,"Elige una misión o un robo de la historia, o dibuja la tuya"
-CHALLENGE_NEW,+ NUEVA MISIÓN
+MENU_CHALLENGE_TEXT,"Misiones que se abren con la Historia, y tus mapas"
+CHALLENGE_TEXT,"Elige una misión o uno de tus mapas, o dibuja uno nuevo"
+CHALLENGE_NEW,+ NUEVO MAPA
 CHALLENGE_EDIT,EDITAR
 CHALLENGE_DELETE,BORRAR
 CHALLENGE_DELETE_SURE,¿SEGURO? BORRAR
 CHALLENGE_BUILT_IN,De serie
-CHALLENGE_MINE,Tuyo
+CHALLENGE_MINE,Tuyo · fuera de la Historia
 CHALLENGE_UNPLAYABLE,Sin terminar: ábrelo en el editor
 CHALLENGE_INFO,%s · %s · %d guardias
-CHALLENGE_EMPTY,Aún no hay misiones: crea una.
+CHALLENGE_EMPTY,Aún no hay mapas: crea uno.
 CHALLENGE_PAGE,Página %d de %d
 CHALLENGE_MAPS_HEAD,JUGAR MISIONES
 MISSION_DONE,CONSEGUIDA
@@ -577,8 +577,8 @@ MISSION_STEAL,Robar: %s
 MISSION_GIFT,Obsequio: %s
 MISSION_GIFT_WON,Obsequio ya en tu inventario: %s
 MISSION_PIECE_ANY,la pieza que toque
-MISSION_STORY_DEFAULT,"Alguien quiere que «%s» se quede sin su mejor pieza. Entra, cógela y sal sin que te vean."
-MISSION_GIFT_DEFAULT,Réplica de %s
+MISSION_KIND,Misión
+MISSION_LOCKED,Cerrada: se abre al conseguir el robo %d de la Historia
 END_GIFT_WON,¡NUEVO OBSEQUIO EN TU INVENTARIO: %s!
 CHALLENGE_HINT,"A, E o clic: abrir"
 CHALLENGE_NIGHT_EDITED,retocado a mano

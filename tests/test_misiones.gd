@@ -38,11 +38,22 @@ func _init() -> void:
 	var cfg := ConfigFile.new()
 	check(cfg.load(Story.save) == OK and (cfg.get_value("missions", "gifts", []) as Array).size() == 2, "queda escrito en el archivo de progreso")
 
-	# Un mapa del usuario sin datos de misión: historia, pieza y obsequio por defecto.
+	# Las misiones se abren con la Historia: cada una al conseguir su robo.
+	check(Missions.is_mission(m) and Missions.is_mission(other) and Missions.opens_after(other) == 5, "las de serie son misiones, cada una con su robo de la Historia")
+	check(not Missions.is_open(other) and not Missions.is_open(m), "sin avanzar en la Historia están cerradas")
+	Story.unlock(6, 2)
+	check(Missions.is_open(other) and not Missions.is_open(m), "conseguido el robo 5 (con cualquier banda) se abre la suya y no las demás")
+
+	# Un mapa creado, importado o descargado: fuera de la Historia, no es misión
+	# y nunca da premio.
 	var mine := MapFile.generated(5, "small")
 	mine.name = "Mi museo de prueba"
-	check(Missions.story_of(mine).contains("Mi museo de prueba") and Missions.gift_of(mine).name != "", "un mapa sin misión escrita tiene historia y obsequio por defecto")
-	check(Missions.complete(mine).name != "" and Missions.complete(mine).is_empty(), "y su obsequio también se da solo la primera vez")
+	check(not Missions.is_mission(mine) and Missions.story_of(mine) == "" and not Missions.has_gift(mine) and Missions.gift_of(mine).is_empty(), "un mapa del jugador no es misión: sin historia ni obsequio")
+	check(Missions.complete(mine).is_empty() and not Missions.is_done(mine) and Missions.inventory().size() == 2, "conseguirlo no da premio, no lo marca ni toca el inventario")
+	var copy := m.copy()
+	copy.built_in = false
+	copy.path = "user://maps/cruz_del_baron.json"
+	check(not Missions.is_mission(copy) and Missions.complete(copy).is_empty(), "la copia del jugador de una misión tampoco lo es")
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
 	quit(qa.summary())

@@ -1,27 +1,59 @@
 class_name Missions
 extends RefCounted
-## The missions: each challenge map (MapFile) proposes a robbery with its own
-## story, a piece to steal (MapFile.loot) and a gift (MapFile.gift). The gift
-## is the player's the first time the piece is got away with, and goes to the
-## inventory; doing the mission again gives nothing more.
+## The missions: robberies the game itself proposes, written beforehand like
+## the story and opening as the story goes (AFTER): each is one of the game's
+## own maps (MapFile, res://maps) with its story, a piece to steal
+## (MapFile.loot) and a gift (MapFile.gift). The gift is the player's the
+## first time the piece is got away with, and goes to the inventory; doing the
+## mission again gives nothing more.
+##
+## The maps the player makes, imports or downloads, and the surprise heists,
+## are outside the story: they are not missions, have no story of their own
+## and never give anything.
 ##
 ## The inventory is kept with the rest of the progress (Story.save, section
 ## "missions"): the keys of the missions done, and the gifts won in the order
 ## they came, each {mission, name, shape, colour}. A mission's key is its
-## name's slug (MapFile.slug), so it is the same for a map's file and the
-## player's copy of it.
+## map's file name.
 
 const SECTION := "missions"
 
+## The missions, by their map's file name, and the story's heist that has to
+## be done for each to open (its museum's big job): the fossils after the
+## first museum, the busts after the third, the Barón's cross after the fourth.
+const AFTER := {"ala_de_los_fosiles": 5, "galeria_de_los_bustos": 15, "cruz_del_baron": 20}
 
-## The key a mission is kept under.
+
+## The key a mission is kept under: its map's file name, "" for a map that
+## is not the game's own.
 static func key_of(m: MapFile) -> String:
-	return MapFile.slug(m.name)
+	return m.path.get_file().get_basename() if m.built_in and m.night == 0 else ""
+
+
+## Whether the map is one of the missions, not a map of the player's.
+static func is_mission(m: MapFile) -> bool:
+	return AFTER.has(key_of(m))
+
+
+## The story's heist that opens the mission (AFTER).
+static func opens_after(m: MapFile) -> int:
+	return int(AFTER.get(key_of(m), 0))
+
+
+## Whether the mission is open: its heist of the story done, by a gang of any
+## size (Story.unlocked is the next heist to do; the last one done counts by
+## its stars).
+static func is_open(m: MapFile) -> bool:
+	var n := opens_after(m)
+	for players in range(1, 5):
+		if Story.unlocked(players) > n or Story.stars(n, players) > 0:
+			return true
+	return false
 
 
 ## Whether the mission has been done (the piece got away with) before.
 static func is_done(m: MapFile) -> bool:
-	return key_of(m) in _read("done", [])
+	return is_mission(m) and key_of(m) in _read("done", [])
 
 
 ## The gifts in the inventory: [{mission, name, shape, colour}].
@@ -38,32 +70,36 @@ static func piece_name(m: MapFile) -> String:
 	return String(m.loot_piece().get("name", "")) if not m.loot.is_empty() else Text.t("MISSION_PIECE_ANY")
 
 
-## The mission's story: its maker's, or the plain one.
+## The mission's story; none for a map that is not a mission.
 static func story_of(m: MapFile) -> String:
-	var s := String(m.loot.get("story", ""))
-	return s if s != "" else Text.t("MISSION_STORY_DEFAULT") % m.name
+	return String(m.loot.get("story", "")) if is_mission(m) else ""
 
 
-## The gift for the mission: its maker's, or a replica of the piece.
+## Whether the map gives a gift at all: only a mission, and one that says its
+## gift by name (MapFile.gift). A map of the player's never gives one.
+static func has_gift(m: MapFile) -> bool:
+	return is_mission(m) and String(m.gift.get("name", "")) != ""
+
+
+## The gift for the mission, or an empty dictionary when it has none.
 static func gift_of(m: MapFile) -> Dictionary:
+	if not has_gift(m):
+		return {}
 	var g: Dictionary = m.gift
-	var shape := String(g.get("shape", m.loot.get("shape", "gem")))
-	var name_ := String(g.get("name", ""))
-	if name_ == "":
-		name_ = Text.t("MISSION_GIFT_DEFAULT") % piece_name(m)
-	return {"mission": key_of(m), "name": name_, "shape": shape, "colour": String(g.get("colour", m.loot.get("colour", "#f0c46a")))}
+	return {"mission": key_of(m), "name": String(g.name), "shape": String(g.get("shape", m.loot.get("shape", "gem"))), "colour": String(g.get("colour", m.loot.get("colour", "#f0c46a")))}
 
 
-## The mission got away with: the gift if it is the first time (kept at once),
-## else an empty dictionary.
+## The mission got away with: marked as done, and the gift if it has one and
+## it is the first time (kept at once), else an empty dictionary.
 static func complete(m: MapFile) -> Dictionary:
-	if is_done(m):
+	if not is_mission(m) or is_done(m):
 		return {}
 	var gift := gift_of(m)
 	var done: Array = _read("done", [])
 	done.append(key_of(m))
 	var gifts := inventory()
-	gifts.append(gift)
+	if not gift.is_empty():
+		gifts.append(gift)
 	var cfg := ConfigFile.new()
 	cfg.load(Story.save)
 	cfg.set_value(SECTION, "done", done)

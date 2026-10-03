@@ -41,8 +41,10 @@ func show_menu() -> void:
 		{"id": "back", "label": Text.t("MENU_BACK"), "sticker": "volver.png", "call": host._show_title.bind("challenge", false)},
 		{"id": "new", "label": Text.t("CHALLENGE_NEW"), "sticker": "editor-mapas.png", "description": Text.t("CHALLENGE_EDIT_LEGEND"), "call": show_editor.bind(MapFile.blank(Museum.SIZES.small.w, Museum.SIZES.small.h))},
 	]
+	# The missions first (the game's own, opening with the story), then the
+	# player's maps, which are outside it.
 	for m in MapFile.list():
-		choices.append({"id": "map:" + m.path, "label": ("✓ " if Missions.is_done(m) else "") + m.name.to_upper(), "sticker": "jugar-mapas.png", "call": show_map.bind(m), "focus": land_map.bind(m)})
+		choices.append({"id": "map:" + m.path, "label": ("✓ " if Missions.is_done(m) else "") + m.name.to_upper(), "sticker": "jugar-mapas.png" if mission_open(m) else "cancelar.png", "call": show_map.bind(m), "focus": land_map.bind(m)})
 	if host.dev_mode:
 		for n in range(1, Story.count() + 1):
 			choices.append({"id": "night:%d" % n, "label": night_name(n), "sticker": "historia.png", "call": show_night_map.bind(n), "focus": land_night.bind(n)})
@@ -61,7 +63,7 @@ func land_night(n: int) -> void:
 
 func land_map(m: MapFile) -> void:
 	challenge_at = "map:" + m.path
-	host.hub.set_preview(MapEditor.picture(m, 8), m.name + "\n" + Text.t("CHALLENGE_BUILT_IN" if m.built_in else "CHALLENGE_MINE") + " · " + challenge_info(m) + "\n" + mission_info(m))
+	host.hub.set_preview(MapEditor.picture(m, 8), m.name + "\n" + map_card(m))
 
 
 func night_name(n: int) -> String:
@@ -176,13 +178,35 @@ func restore_night(n: int) -> void:
 	show_night_map(n)
 
 
-## A mission's lines on its card: its story, the piece to steal, the gift, and
-## whether it is done (then the gift is already the player's).
+## Whether the map can be played: a mission once the story has opened it (or
+## with the developer's mode on), a map of the player's always.
+func mission_open(m: MapFile) -> bool:
+	return not Missions.is_mission(m) or host.dev_mode or Missions.is_open(m)
+
+
+## What a map's card says: a mission's own lines, or for a map of the
+## player's that it is theirs and outside the story.
+func map_card(m: MapFile) -> String:
+	if Missions.is_mission(m):
+		return Text.t("MISSION_KIND") + " · " + challenge_info(m) + "\n" + mission_info(m)
+	return Text.t("CHALLENGE_BUILT_IN" if m.built_in else "CHALLENGE_MINE") + " · " + challenge_info(m)
+
+
+## A mission's lines on its card: its story, the piece to steal, its gift, and
+## whether it is done (then the gift is already the player's) — or, while the
+## story has not opened it, which heist does.
 func mission_info(m: MapFile) -> String:
-	var gift := Missions.gift_of(m)
+	if not mission_open(m):
+		return Text.t("MISSION_LOCKED") % Missions.opens_after(m)
 	var done := Missions.is_done(m)
-	return "%s\n%s\n%s\n%s" % [Missions.story_of(m), Text.t("MISSION_STEAL") % Missions.piece_name(m),
-		Text.t("MISSION_GIFT_WON" if done else "MISSION_GIFT") % gift.name, Text.t("MISSION_DONE" if done else "MISSION_TODO")]
+	var lines: Array[String] = []
+	if Missions.story_of(m) != "":
+		lines.append(Missions.story_of(m))
+	lines.append(Text.t("MISSION_STEAL") % Missions.piece_name(m))
+	if Missions.has_gift(m):
+		lines.append(Text.t("MISSION_GIFT_WON" if done else "MISSION_GIFT") % Missions.gift_of(m).name)
+	lines.append(Text.t("MISSION_DONE" if done else "MISSION_TODO"))
+	return "\n".join(lines)
 
 
 ## A map's line on its card: its size, difficulty and guards, or that it
@@ -199,8 +223,13 @@ func challenge_info(m: MapFile) -> String:
 func show_map(m: MapFile) -> void:
 	challenge_map = m
 	challenge_at = "map:" + m.path
-	var info := Text.t("CHALLENGE_BUILT_IN" if m.built_in else "CHALLENGE_MINE") + " · " + challenge_info(m) + "\n" + mission_info(m)
+	var info := map_card(m)
 	var choices: Array = [{"id": "preview", "label": m.name, "picture": MapEditor.picture(m, 8), "description": info}]
+	# A mission the story has not opened yet: to look at, not to play or edit.
+	if not mission_open(m):
+		choices.append({"id": "back", "label": Text.t("MENU_BACK"), "sticker": "volver.png", "call": show_menu})
+		host.hub.show_screen(m.name.to_upper(), choices, "challenge_map", "challenge", show_menu, 1)
+		return
 	if m.check().is_empty():
 		for n in range(1, 5):
 			choices.append({"id": "p%d" % n, "label": Text.t("MENU_PLAY_%d" % n), "res": "res://assets/ui/ninjas_%d.png" % n, "description": info, "call": host._start.bind("challenge", n)})
