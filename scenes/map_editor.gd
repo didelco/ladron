@@ -598,7 +598,12 @@ func _button(text: String, call: Callable, parent: Node, colour: Color, big := f
 	var b := Button.new()
 	b.text = text
 	if icon is String:
-		b.icon = load("res://assets/icons/editor/%s.svg" % icon)
+		var stickers := {"new": "editor-mapas", "save": "guardar-mapa", "play": "probar-mapa"}
+		if stickers.has(icon):
+			b.icon = load("res://assets/ui/hub/%s.png" % stickers[icon])
+			b.set_meta("photo", true)
+		else:
+			b.icon = load("res://assets/icons/editor/%s.svg" % icon)
 	elif icon is Texture2D:
 		b.icon = icon
 		b.set_meta("photo", true)

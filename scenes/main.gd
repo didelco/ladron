@@ -476,7 +476,7 @@ func _show_generative_menu(on := "") -> void:
 		{"id": "difficulty", "label": Text.t(DIFFICULTY_NAMES[Sim.difficulty]), "sticker": {"easy": "dificultad-facil.png", "medium": "dificultad-media.png", "hard": "dificultad-dificil.png"}[Sim.difficulty], "description": Text.t("MENU_HELP_DIFFICULTY"), "call": _pick_setting.bind("difficulty")},
 		{"id": "size", "label": Text.t(SIZE_NAMES[size]), "sticker": {"small": "mapa-pequeno.png", "medium": "mapa-mediano.png", "large": "mapa-grande.png"}[size], "description": Text.t("MENU_HELP_SIZE"), "call": _pick_setting.bind("size")},
 		{"id": "theme", "label": Text.t(THEME_NAMES[theme]), "picture": _theme_picture(theme), "description": Text.t("MENU_HELP_THEME"), "call": _pick_setting.bind("theme")},
-		{"id": "players", "label": "%dP" % players, "res": "res://assets/ui/ninjas_%d.png" % players, "description": Text.t("MENU_HELP_PLAYERS"), "call": _pick_generative_players},
+		{"id": "players", "label": "%dP" % players, "sticker": "jugadores-coop.png", "description": Text.t("MENU_HELP_PLAYERS"), "call": _pick_generative_players},
 		{"id": "start", "label": Text.t("MENU_START"), "sticker": "aceptar.png", "call": _start.bind("generative", players)},
 		{"id": "back", "label": Text.t("MENU_BACK"), "sticker": "volver.png", "call": _show_title.bind("generative", false)},
 	]

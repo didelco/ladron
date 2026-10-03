@@ -33,6 +33,10 @@
     {
       "name": "ciudad",
       "prompt": "Create one game menu sticker for RETURN TO CITY, matching the supplied reference's cartoon style, bright teal/coral/gold colors, VERY thick dark-purple outlines and crisp white die-cut border. Subject: compact city skyline of three chunky buildings with warm glowing windows and a bold teal curved return arrow in front pointing toward the buildings. Instantly readable at small menu size. No book, no ninja, no text, no lettering, no backdrop, no glow, no shadow. True fully transparent background outside the white border. One centered cohesive sticker with generous margins, full subject visible. Square composition."
+    },
+    {
+      "name": "apagar",
+      "prompt": "Create a single game menu die-cut sticker for CLOSE GAME / POWER OFF. Match style reference: bright clean cartoon flat cel colors, very thick dark-purple outlines and generous crisp white die-cut border. Subject ONLY an unmistakable standard POWER OFF symbol: chunky coral-red near-circular ring open at its top and a thick straight vertical red bar coming down into its center from above. Like the universal on/off power button. No arrows, no buildings, no ninja, no text, no lettering, no button words. Clear bold silhouette readable at 80px. Full sticker centered with generous margins. True fully transparent background everywhere outside crisp white border, NO glow, NO shadow, no backdrop."
     }
   ],
   "cleanup_prompt": "Use case: background-extraction. Edit this exact sticker; preserve subject, colors, proportions, composition, thick purple outlines and white die-cut border EXACTLY. Remove ALL broad soft gray/white glow and halo outside the crisp white border AND inside the open holes. All pixels outside the sticker and in its holes must be FULLY transparent alpha zero. NO glow, NO shadow, NO new background. Keep full sticker and generous transparent margins. Return true transparent PNG.",

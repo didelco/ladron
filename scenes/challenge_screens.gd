@@ -39,10 +39,10 @@ func show_menu() -> void:
 	host.podium.drop()
 	var choices: Array = [
 		{"id": "back", "label": Text.t("MENU_BACK"), "sticker": "volver.png", "call": host._show_title.bind("challenge", false)},
-		{"id": "new", "label": Text.t("CHALLENGE_NEW"), "sticker": "opciones.png", "description": Text.t("CHALLENGE_EDIT_LEGEND"), "call": show_editor.bind(MapFile.blank(Museum.SIZES.small.w, Museum.SIZES.small.h))},
+		{"id": "new", "label": Text.t("CHALLENGE_NEW"), "sticker": "editor-mapas.png", "description": Text.t("CHALLENGE_EDIT_LEGEND"), "call": show_editor.bind(MapFile.blank(Museum.SIZES.small.w, Museum.SIZES.small.h))},
 	]
 	for m in MapFile.list():
-		choices.append({"id": "map:" + m.path, "label": m.name.to_upper(), "sticker": "retos.png", "call": show_map.bind(m), "focus": land_map.bind(m)})
+		choices.append({"id": "map:" + m.path, "label": m.name.to_upper(), "sticker": "jugar-mapas.png", "call": show_map.bind(m), "focus": land_map.bind(m)})
 	if host.dev_mode:
 		for n in range(1, Story.count() + 1):
 			choices.append({"id": "night:%d" % n, "label": night_name(n), "sticker": "historia.png", "call": show_night_map.bind(n), "focus": land_night.bind(n)})
@@ -156,7 +156,7 @@ func show_night_map(n: int) -> void:
 	challenge_at = "night:%d" % n
 	var m := night_as_map(n)
 	var choices: Array = [
-		{"id": "edit", "label": Text.t("CHALLENGE_EDIT"), "picture": MapEditor.picture(m, 8), "description": night_info(n, m) + "\n" + Text.t("CHALLENGE_NIGHT_TEXT"), "call": show_editor.bind(m)},
+		{"id": "edit", "label": Text.t("CHALLENGE_EDIT"), "sticker": "editar-mapas.png", "description": night_info(n, m) + "\n" + Text.t("CHALLENGE_NIGHT_TEXT"), "call": show_editor.bind(m)},
 	]
 	if MapFile.for_night(n) != null:
 		choices.append({"id": "restore", "label": Text.t("CHALLENGE_RESTORE_SURE" if challenge_delete else "CHALLENGE_RESTORE"), "sticker": "cancelar.png", "call": restore_night.bind(n)})
@@ -195,7 +195,7 @@ func show_map(m: MapFile) -> void:
 	if m.check().is_empty():
 		for n in range(1, 5):
 			choices.append({"id": "p%d" % n, "label": Text.t("MENU_PLAY_%d" % n), "res": "res://assets/ui/ninjas_%d.png" % n, "description": info, "call": host._start.bind("challenge", n)})
-	choices.append({"id": "edit", "label": Text.t("CHALLENGE_EDIT"), "sticker": "opciones.png", "description": info, "call": show_editor.bind(m)})
+	choices.append({"id": "edit", "label": Text.t("CHALLENGE_EDIT"), "sticker": "editar-mapas.png", "description": info, "call": show_editor.bind(m)})
 	var selected := 1
 	if not m.built_in:
 		if challenge_delete:

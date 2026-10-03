@@ -10,10 +10,10 @@ const STICKERS := "res://assets/ui/hub/"
 const OPTIONS := [
 	{"id": "dojo", "label": "Guarida", "sticker": "dojo.png"},
 	{"id": "story", "label": "Modo Historia", "sticker": "historia.png"},
-	{"id": "challenge", "label": "Retos", "sticker": "retos.png"},
+	{"id": "challenge", "label": "Retos", "sticker": "jugar-mapas.png"},
 	{"id": "generative", "label": "Atraco Sorpresa", "sticker": "generativo.png"},
 	{"id": "settings", "label": "Ajustes", "sticker": "ajustes.png"},
-	{"id": "quit", "label": "Salir", "sticker": "salir.png"},
+	{"id": "quit", "label": "Cerrar Ninja Karma", "sticker": "apagar.png"},
 ]
 const SETTINGS_OPTIONS := [
 	{"id": "back", "label": "Volver", "sticker": "volver.png"},
@@ -38,17 +38,17 @@ const PLAYERS_OPTIONS := [
 const PAUSE_OPTIONS_FULL := [
 	{"id": "resume", "label": "Seguir", "sticker": "pausa-reanudar.png"},
 	{"id": "story", "label": "Modo Historia", "sticker": "historia.png"},
-	{"id": "challenge", "label": "Retos", "sticker": "retos.png"},
+	{"id": "challenge", "label": "Retos", "sticker": "jugar-mapas.png"},
 	{"id": "generative", "label": "Atraco Sorpresa", "sticker": "generativo.png"},
 	{"id": "settings", "label": "Ajustes", "sticker": "ajustes.png"},
 	{"id": "leave", "label": "Salir", "sticker": "ciudad.png"},
-	{"id": "quit_game", "label": "Salir del juego", "sticker": "salir.png"},
+	{"id": "quit_game", "label": "Cerrar Ninja Karma", "sticker": "apagar.png"},
 ]
 const PAUSE_OPTIONS_SHORT := [
 	{"id": "resume", "label": "Seguir", "sticker": "pausa-reanudar.png"},
 	{"id": "settings", "label": "Ajustes", "sticker": "ajustes.png"},
 	{"id": "leave", "label": "Salir", "sticker": "ciudad.png"},
-	{"id": "quit_game", "label": "Salir del juego", "sticker": "salir.png"},
+	{"id": "quit_game", "label": "Cerrar Ninja Karma", "sticker": "apagar.png"},
 ]
 
 const CARD_W := 220.0
@@ -104,7 +104,14 @@ func show_screen(title: String, choices: Array, kind: String, phase: String, bac
 	_stick_vertical = 0.0
 	visible = true
 	_heading.text = title
-	_fill_track(choices, kind, false, selected)
+	# Esc / B returns through _back_action; no duplicate return sticker.
+	var selected_id: String = choices[clampi(selected, 0, choices.size() - 1)].id
+	var visible_choices := choices.filter(func(opt: Dictionary) -> bool: return opt.id != "back")
+	var visible_selected := 0
+	for i in visible_choices.size():
+		if visible_choices[i].id == selected_id:
+			visible_selected = i
+	_fill_track(visible_choices, kind, false, visible_selected)
 	_layout()
 
 

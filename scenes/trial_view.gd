@@ -24,6 +24,8 @@ const PANEL := Color("#35211a")
 const FONT_SIZE := 22
 const RING_R := 34.0
 const EDGE := 40.0
+const STICKERS := {"atrapa": "atrapa-calcetin", "pedestal": "equilibrio", "bolos": "bolos", "aguanta": "aguanta-escondido", "lockpick": "ganzua", "squeeze": "escondite", "wires": "cables", "steady": "pulso", "circuit": "circuito"}
+var _stickers := {}
 ## What sound each event has (Sfx's names); "" for none. The sock's turning
 ## up, a tick, catching, going up a level, the alarm, losing, winning.
 const SOUNDS := {"spawn": "pin", "tick": "tick", "catch": "stolen", "knock": "bin", "strike": "sting", "clear": "ok",
@@ -497,6 +499,14 @@ func _draw_lean(size: Vector2, lean: float, fall: float) -> void:
 ## far it is and the best mark, the clock, and how to leave.
 func _draw_hud(size: Vector2) -> void:
 	var v := _view
+	var id: String = v.get("id", "")
+	if STICKERS.has(id):
+		if not _stickers.has(id):
+			_stickers[id] = load("res://assets/ui/hub/%s.png" % STICKERS[id])
+		var texture: Texture2D = _stickers[id]
+		var dimensions := texture.get_size()
+		var fitted := dimensions * minf(92.0 / dimensions.x, 92.0 / dimensions.y)
+		_ui.draw_texture_rect(texture, Rect2(Vector2(12, 40) + (Vector2(92, 92) - fitted) / 2.0, fitted), false)
 	var top := Vector2(size.x * 0.5, 14)
 	_text(String(v.get("title", "")), top, 26, _tier_colour(int(v.get("tier", 0))), true)
 	_text("    ".join(PackedStringArray(v.get("hud", []))), top + Vector2(0, 34), 16, GOLD, true)
