@@ -1,8 +1,13 @@
 class_name Hud
 extends CanvasLayer
-## Everything drawn over the game: the status line, the log, the job's
-## progress and the arrow to the objective, the guards' yell, and the
-## full-screen panels (title, mission, pause, end of round).
+
+## Interfaz de partida y coordinador de pantallas. Los mapas, elementos de
+## menú y widgets tienen componentes propios que comparten este mismo Hud.
+## Véase CODE_GUIDE.md para localizar cada responsabilidad.
+
+var map_overlay := MapOverlay.new(self)
+var menu_items := MenuItems.new(self)
+var menu_widgets := MenuWidgets.new(self)
 
 ## The menus' toy palette: cream cards and buttons, dark ink text.
 const CREAM := Color("#f1dfbd")
@@ -808,297 +813,18 @@ class MenuState:
 	## by id, not yet built when the list was): {"id", "rows"}, resolved once
 	## everything is up (_resolve_right_links).
 	var pending_right: Array = []
-
-
-## One item of a menu (show_menu), added to parent.
 func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
-	if item.has("columns"):
-		_columns(item, parent, st)
-	elif item.has("title"):
-		# Pixel faces run wide: the arcade title at about two thirds the size.
-		var t := _label(int(item.get("size", 56) * 0.55), item.get("colour", Color("#f0c46a")), parent, true)
-		t.text = item.title
-		t.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT if item.get("align", "") == "left" else HORIZONTAL_ALIGNMENT_CENTER
-		t.add_theme_constant_override("outline_size", 14)
-		t.add_theme_color_override("font_outline_color", Color("#2a150c"))
-		t.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.7))
-		t.add_theme_constant_override("shadow_offset_x", 0)
-		t.add_theme_constant_override("shadow_offset_y", 7)
-		t.resized.connect(func() -> void: t.pivot_offset = t.size / 2)
-		_titles.append(t)
-		# Room for it to bob without brushing what comes next.
-		var gap := Control.new()
-		gap.custom_minimum_size = Vector2(0, 6)
-		parent.add_child(gap)
-	elif item.has("text"):
-		var l := _label(int(item.get("size", 20) * 0.85), item.get("colour", C.text), parent)
-		l.text = item.text
-		if item.has("id"):
-			_named[item.id] = l
-		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT if item.get("align", "") == "left" else HORIZONTAL_ALIGNMENT_CENTER
-		if item.get("wrap", false):
-			l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-			l.custom_minimum_size = Vector2(item.get("width", 560), 0)
-	elif item.has("gap"):
-		var gap := Control.new()
-		gap.custom_minimum_size = Vector2(0, item.gap)
-		parent.add_child(gap)
-	elif item.has("field"):
-		var f: Dictionary = item.field
-		var e := LineEdit.new()
-		e.text = f.get("text", "")
-		e.placeholder_text = f.get("hint", "")
-		if f.has("max_length"):
-			e.max_length = f.max_length
-		e.custom_minimum_size = Vector2(f.get("width", 160), 0)
-		e.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		e.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		e.add_theme_font_size_override("font_size", 22)
-		if f.has("call"):
-			e.text_submitted.connect(f.call)
-		parent.add_child(e)
-		if f.has("id"):
-			_fields[f.id] = e
-		st.rows.append([e])
-		if st.first == null:
-			st.first = e
-	elif item.has("map"):
-		# The plan on the folded paper map, unfolding as the screen opens.
-		var stage := MapStage.new()
-		parent.add_child(stage)
-		stage.print_plan(item.map)
-		stage.unfold()
-		var r := TextureRect.new()
-		r.texture = stage.get_texture()
-		r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		r.custom_minimum_size = Vector2(MapStage.SIZE) * (float(item.get("height", 400.0)) / MapStage.SIZE.y)
-		r.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		parent.add_child(r)
-		# The arrows lean it, as in play.
-		_menu_map = stage
-		_menu_map_rect = r
-		if not _map_tip:
-			_map_tip = Prompt.new()
-			add_child(_map_tip)
-	elif item.has("legend"):
-		legend_row(parent, item.legend, item.get("thieves", []), item.get("loot", Color.WHITE))
-	elif item.has("stage"):
-		var stage: MenuStage = item.stage
-		parent.add_child(stage)
-		stage.active = true
-		var r := TextureRect.new()
-		r.texture = stage.get_texture()
-		r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		r.custom_minimum_size = Vector2(stage.size) * (float(item.get("height", 200.0)) / stage.size.y)
-		parent.add_child(r)
-	elif item.has("picture"):
-		var picture: Texture2D = item.picture
-		var r := TextureRect.new()
-		r.texture = picture
-		r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		var size := Vector2(picture.get_size())
-		var k := minf(720.0 / size.x, float(item.get("height", 420.0)) / size.y)
-		r.custom_minimum_size = size * k
-		r.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if item.get("smooth", false) else CanvasItem.TEXTURE_FILTER_NEAREST
-		parent.add_child(r)
-		if item.has("id"):
-			_pictures[item.id] = r
-	elif item.has("list"):
-		_list(item, parent, st)
-	elif item.has("cards"):
-		var row := HBoxContainer.new()
-		row.alignment = BoxContainer.ALIGNMENT_CENTER
-		row.add_theme_constant_override("separation", 16)
-		parent.add_child(row)
-		var line: Array = []
-		for c in item.cards:
-			var card := _card(c, item.get("width", 300), item.get("arrows", false))
-			row.add_child(card)
-			card.set_meta("selected", c.get("selected", false) or c.get("focus", false))
-			line.append(card)
-			if st.first == null or c.get("focus", false):
-				st.first = card
-		st.rows.append(line)
-		if item.get("arrows", false):
-			row.add_theme_constant_override("separation", 28)
-			row.add_child(_card_arrow(">", line, 1))
-			row.add_child(_card_arrow("<", line, -1))
-			row.move_child(row.get_child(-1), 0)
-	elif item.has("buttons"):
-		var box: BoxContainer = HBoxContainer.new() if item.get("row", false) else VBoxContainer.new()
-		box.alignment = BoxContainer.ALIGNMENT_BEGIN if item.get("align", "") == "left" else BoxContainer.ALIGNMENT_CENTER
-		box.add_theme_constant_override("separation", 24 if item.get("row", false) else 10)
-		if item.get("align", "") == "left":
-			box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		parent.add_child(box)
-		# Atraco Sorpresa's plan: the row still does what it says by mouse,
-		# but the arrows never reach it (BriefScreens.plan_select has them
-		# instead), so it must not look reachable either — no focus ring,
-		# out of the arrows' rows (see the hints row by it, plan_items).
-		var unfocusable: bool = item.get("unfocusable", false)
-		var line: Array = []
-		for bi in item.buttons.size():
-			var b: Dictionary = item.buttons[bi]
-			var button := _button(b)
-			if unfocusable:
-				button.focus_mode = Control.FOCUS_NONE
-			# The one to start on, when it is not the first.
-			if item.get("focus", -1) == bi:
-				st.focus_on = button
-			if b.has("id"):
-				st.by_id[b.id] = button
-			if not b.has("icon"):
-				# big: the one thing to do next; small: the way back.
-				if item.get("big", false):
-					button.custom_minimum_size = Vector2(380, 62)
-					button.add_theme_font_size_override("font_size", 17)
-				elif item.get("small", false):
-					button.custom_minimum_size = Vector2(item.get("width", 240), 38)
-					button.add_theme_font_size_override("font_size", 10)
-				else:
-					button.custom_minimum_size = Vector2(240 if item.get("row", false) else 400, 42)
-			box.add_child(button)
-			if b.has("help"):
-				var help := _label(13, C.text, box)
-				help.text = b.help
-				help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-				help.custom_minimum_size.x = 570
-				help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			if unfocusable:
-				continue
-			if item.get("row", false):
-				line.append(button)
-			else:
-				st.rows.append([button])
-			if st.first == null:
-				st.first = button
-		if not line.is_empty():
-			st.rows.append(line)
-	elif item.has("hints"):
-		# Which key or button does what, over the mouse-only row above or
-		# below it (see "unfocusable", just above) — the same idea as
-		# Tour._set_hints, for a menu built from items instead of a scene of
-		# its own: "pad" says whether to show a pad's glyphs or a
-		# keyboard's (Tour.glyph_for has both sets; this borrows it rather
-		# than keeping a second copy of what every key and button mean).
-		var row := HBoxContainer.new()
-		row.alignment = BoxContainer.ALIGNMENT_CENTER
-		row.add_theme_constant_override("separation", 28)
-		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		parent.add_child(row)
-		var pad: bool = item.get("pad", false)
-		for h in item.hints:
-			var hbox := HBoxContainer.new()
-			hbox.add_theme_constant_override("separation", 8)
-			hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			hbox.set_meta("what", h[0])
-			row.add_child(hbox)
-			var g := Glyph.new()
-			g.set_spec(Tour.glyph_for(h[0], pad), 26)
-			g.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-			hbox.add_child(g)
-			var l := _label(15, C.dim, hbox)
-			l.text = h[1]
-			l.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-			_hint_boxes.append(hbox)
-	elif item.has("table"):
-		_table(item, parent)
-	elif item.has("newspaper"):
-		parent.add_child(EndPages.newspaper(item.newspaper))
-	elif item.has("mugshot"):
-		parent.add_child(EndPages.mugshot(item.mugshot))
-	elif item.has("card"):
-		parent.add_child(EndPages.piece_card(item.card))
-	elif item.has("footer"):
-		var f := _label(14, C.gold, parent, true)
-		f.text = item.footer
-		f.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	menu_items.menu_item(item, parent, st)
 
 
-## A board of short texts: {"table": [[cell, ...], ...], "widths": [int, ...],
-## "heads"?: int}. The first row is the heading, in gold arcade letters; the
-## "heads" - 1 rows after it say a little more under it, small and dim. Below
-## a brass rule, the first column names each row in the arcade face and the
-## rest are in the plain one, to be read at a glance, on alternate stripes.
-## A cell is a text, or {"text", "span"} to run across several columns.
 func _table(item: Dictionary, parent: BoxContainer) -> void:
-	var board := PanelContainer.new()
-	var st := _frame(BRASS, false, false, 18)
-	st.set_content_margin_all(14)
-	st.content_margin_left = 16
-	st.content_margin_right = 16
-	board.add_theme_stylebox_override("panel", st)
-	board.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	parent.add_child(board)
-	var lines := VBoxContainer.new()
-	lines.add_theme_constant_override("separation", 2)
-	board.add_child(lines)
-	var widths: Array = item.widths
-	var rows: Array = item.table
-	var heads: int = item.get("heads", 1)
-	for r in rows.size():
-		if r == heads:
-			var rule := ColorRect.new()
-			rule.color = GLASS_EDGE
-			rule.custom_minimum_size = Vector2(0, 2)
-			lines.add_child(rule)
-		var stripe := PanelContainer.new()
-		var bg := StyleBoxFlat.new()
-		bg.bg_color = Color(1, 1, 1, 0.05) if r >= heads and (r - heads) % 2 == 0 else Color(0, 0, 0, 0)
-		bg.set_corner_radius_all(8)
-		stripe.add_theme_stylebox_override("panel", bg)
-		lines.add_child(stripe)
-		var line := HBoxContainer.new()
-		line.add_theme_constant_override("separation", 0)
-		stripe.add_child(line)
-		var col := 0
-		for cell in rows[r]:
-			var c: Dictionary = cell if cell is Dictionary else {"text": cell}
-			var span: int = c.get("span", 1)
-			var w := 0
-			for k in span:
-				w += int(widths[mini(col + k, widths.size() - 1)])
-			var l: Label
-			if r == 0:
-				l = _label(11, C.gold, line, true)
-			elif r < heads:
-				l = _label(13, C.dim, line)
-			elif col == 0:
-				l = _label(11, CREAM, line, true)
-			else:
-				l = _label(18, C.text, line)
-			l.text = c.text
-			l.custom_minimum_size = Vector2(w, 20 if r < heads else 30)
-			l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT if col == 0 else HORIZONTAL_ALIGNMENT_CENTER
-			if col == 0:
-				# The row's name clear of the stripe's rounded end.
-				l.custom_minimum_size.x -= 12
-				var pad := Control.new()
-				pad.custom_minimum_size = Vector2(12, 0)
-				line.add_child(pad)
-				line.move_child(pad, 0)
-			col += span
+	menu_items.table(item, parent)
 
 
-## Items side by side: {"columns": [{"items": [...], "width"?: int}, ...],
-## "separation"?: int}, each column its own stack of menu items.
 func _columns(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
-	var row := HBoxContainer.new()
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override("separation", item.get("separation", 40))
-	parent.add_child(row)
-	for col in item.columns:
-		var box := VBoxContainer.new()
-		box.add_theme_constant_override("separation", col.get("separation", 10))
-		box.alignment = BoxContainer.ALIGNMENT_CENTER if col.get("middle", false) else BoxContainer.ALIGNMENT_BEGIN
-		box.custom_minimum_size.x = col.get("width", 0)
-		row.add_child(box)
-		for sub in col.items:
-			_menu_item(sub, box, st)
+	menu_items.columns(item, parent, st)
+
+
 
 
 ## Labels a menu gave an id, to change without rebuilding it; pictures too.
@@ -1201,81 +927,10 @@ func set_menu_tip(name_txt: String, tip_txt: String, head: Vector2, colour: Colo
 func set_picture(id: String, picture: Texture2D) -> void:
 	if _pictures.has(id):
 		(_pictures[id] as TextureRect).texture = picture
-
-
-## A list in a box that scrolls with the focus: {"list": [...], "width"?,
-## "height"?}. Each line is {"text", "call"?, "open", "colour"?, "selected"?}:
-## landing on it (the arrows, the mouse) calls "call" — to show it beside the
-## list — and pressing it calls "open". {"head": text} is a heading between
-## lines. The line "selected" is the one the menu opens on.
 func _list(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
-	var width: int = item.get("width", 360)
-	# Its lines' rows, to reach right into another control once it is built
-	# (right_id, _resolve_right_links).
-	var right_id: String = item.get("right_id", "")
-	var my_rows: Array = []
-	var frame := PanelContainer.new()
-	var fs := _frame(BRASS, false, false, 18)
-	fs.set_content_margin_all(10)
-	frame.add_theme_stylebox_override("panel", fs)
-	frame.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	parent.add_child(frame)
-	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(width, item.get("height", 420))
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.follow_focus = true
-	frame.add_child(scroll)
-	var box := VBoxContainer.new()
-	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	box.add_theme_constant_override("separation", 4)
-	scroll.add_child(box)
-	for e in item.list:
-		if e.has("head"):
-			var h := _label(10, C.gold, box, true)
-			h.text = e.head
-			h.custom_minimum_size = Vector2(0, 30)
-			h.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
-			continue
-		var b := Button.new()
-		b.text = e.text
-		b.focus_mode = Control.FOCUS_ALL
-		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		b.clip_text = true
-		b.custom_minimum_size = Vector2(width - 16, 34)
-		b.add_theme_font_override("font", ARCADE)
-		b.add_theme_font_size_override("font_size", 10)
-		var colour: Color = e.get("colour", CREAM)
-		for state in ["normal", "hover", "pressed", "focus"]:
-			var s := _frame(colour, state != "normal", false, 12)
-			if state == "normal":
-				s.bg_color = Color(0, 0, 0, 0)
-				s.border_color = Color(0, 0, 0, 0)
-				s.shadow_color = Color(0, 0, 0, 0)
-			s.set_content_margin_all(6)
-			s.content_margin_left = 14
-			b.add_theme_stylebox_override(state, s)
-		b.add_theme_color_override("font_color", colour)
-		for key in ["font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
-			b.add_theme_color_override(key, GLOW_TEXT)
-		b.focus_entered.connect(func() -> void:
-			if not _quiet:
-				ui_sound.emit("nav")
-			if e.has("call"):
-				e.call.call())
-		b.mouse_entered.connect(func() -> void: b.grab_focus())
-		b.pressed.connect(e.open)
-		b.pressed.connect(func() -> void: ui_sound.emit("ok"))
-		box.add_child(b)
-		var row: Array = [b]
-		st.rows.append(row)
-		my_rows.append(row)
-		if st.first == null:
-			st.first = b
-		if e.get("selected", false):
-			st.focus_on = b
-	if right_id != "":
-		st.pending_right.append({"id": right_id, "rows": my_rows})
+	menu_items.list(item, parent, st)
+
+
 
 
 ## Once every item is up, a list's lines that asked for it (right_id) reach
@@ -1352,90 +1007,18 @@ func _link(rows: Array, towards: Callable, by_place := false) -> void:
 			var bottom: Control = towards.call(down, i, row.size(), c) if by_place else towards.call(down, i, row.size())
 			c.focus_neighbor_top = c.get_path_to(top)
 			c.focus_neighbor_bottom = c.get_path_to(bottom)
-
-
-## A menu button: a framed line of text, or a big icon (the thieves on the
-## title), lit up on hover and focus.
 func _button(b: Dictionary) -> Button:
-	var button := Button.new()
-	button.text = b.get("text", "")
-	button.focus_mode = Control.FOCUS_ALL
-	button.add_theme_font_override("font", ARCADE)
-	button.add_theme_font_size_override("font_size", 12)
-	var colour: Color = b.get("colour", C.safe)
-	# selected: the tab you are on, marked even without the focus.
-	var selected: bool = b.get("selected", false)
-	for state in ["normal", "hover", "pressed", "focus"]:
-		var st := _frame(colour, state != "normal", selected, 22)
-		st.set_content_margin_all(12)
-		st.content_margin_left = 28
-		st.content_margin_right = 28
-		button.add_theme_stylebox_override(state, st)
-	_lift(button)
-	button.add_theme_color_override("font_color", C.gold if selected else CREAM)
-	for key in ["font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
-		button.add_theme_color_override(key, GLOW_TEXT)
-	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	if b.has("icon"):
-		var icon: Texture2D = b.icon
-		button.icon = icon
-		button.expand_icon = true
-		# As tall as the single thief, as wide as however many there are.
-		var h := 120.0
-		var w := h * icon.get_width() / icon.get_height()
-		button.custom_minimum_size = Vector2(w + 40, h + 30)
-		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
-	if b.has("glyph"):
-		button.icon = glyph(b.glyph)
-		button.add_theme_constant_override("icon_max_width", 20)
-		button.add_theme_constant_override("h_separation", 14)
-		button.add_theme_color_override("icon_normal_color", CREAM)
-		for key in ["icon_hover_color", "icon_focus_color", "icon_pressed_color", "icon_hover_pressed_color"]:
-			button.add_theme_color_override(key, GLOW)
-	if b.has("step"):
-		_stepper(button, b.step)
-		button.pressed.connect(func() -> void: ui_sound.emit("ok"))
-	else:
-		button.pressed.connect(b.call)
-		var back: bool = String(b.get("text", "")).begins_with("<")
-		button.pressed.connect(func() -> void: ui_sound.emit("back" if back else "ok"))
-	return button
+	return menu_widgets.button(b)
 
 
-## A button that holds a setting: {"text", "step"} instead of "call", where
-## step(dir) changes it and returns the button's new text. Accept or a click
-## is dir 0 (the next value, round the end), ← and → are -1 and +1. The text
-## changes in place, so the focus stays put for the next press. A button in a
-## column has no neighbours across, so the arrows are free for this.
 func _stepper(button: Button, step: Callable) -> void:
-	button.pressed.connect(func() -> void: button.text = step.call(0))
-	button.gui_input.connect(func(event: InputEvent) -> void:
-		for dir in [-1, 1]:
-			if event.is_action_pressed("ui_left" if dir < 0 else "ui_right", true):
-				button.text = step.call(dir)
-				button.accept_event())
+	menu_widgets.stepper(button, step)
 
 
-## The frame every menu control shares: a pill of dark glass with a thin
-## pale rim and a soft shadow; with the focus the rim turns warm and glows.
-## selected (the choice in force) keeps a rim of its colour while it waits.
 static func _frame(colour: Color, lit: bool, selected := false, radius := 26) -> StyleBoxFlat:
-	var st := StyleBoxFlat.new()
-	st.bg_color = GLASS_LIT if lit else GLASS
-	st.set_corner_radius_all(radius)
-	st.anti_aliasing = true
-	st.border_color = GLOW if lit else (colour.lerp(GLOW, 0.5) if selected else GLASS_EDGE)
-	st.set_border_width_all(3 if lit or selected else 2)
-	if lit:
-		st.shadow_color = Color(GLOW, 0.45)
-		st.shadow_size = 16
-		st.shadow_offset = Vector2.ZERO
-	else:
-		st.shadow_color = Color(0, 0, 0, 0.35)
-		st.shadow_size = 6
-		st.shadow_offset = Vector2(0, 3)
-	return st
+	return MenuWidgets.frame(colour, lit, selected, radius)
+
+
 
 
 ## A choice of a panel drawn over the game (the end of a trial): the same pill
@@ -1469,194 +1052,35 @@ static func pill_lit(button: Button, lit: bool) -> void:
 		button.add_theme_color_override(key, colour)
 	button.pivot_offset = button.size / 2
 	button.scale = Vector2.ONE * (1.07 if lit else 1.0)
-
-
-## A picture clipped to rounded corners.
 func _round_corners(r: TextureRect, box: Vector2, radius: float) -> void:
-	var shader := Shader.new()
-	shader.code = ROUNDED_SHADER
-	var m := ShaderMaterial.new()
-	m.shader = shader
-	m.set_shader_parameter("box", box)
-	m.set_shader_parameter("radius", radius)
-	r.material = m
+	menu_widgets.round_corners(r, box, radius)
 
 
-## Grows a little under the mouse or the focus; the mouse takes the focus,
-## so the arrows and the mouse never point at two different things.
 func _lift(c: Control, grow := 1.07, rest := 1.0) -> void:
-	c.focus_entered.connect(func() -> void:
-		if not _quiet:
-			ui_sound.emit("nav"))
-	c.resized.connect(func() -> void: c.pivot_offset = c.size / 2)
-	c.mouse_entered.connect(func() -> void:
-		if c is BaseButton and not (c as BaseButton).disabled:
-			c.grab_focus())
-	# A springy pop, overshooting a little; always the same both ways, so
-	# nothing ever looks squashed.
-	c.focus_entered.connect(func() -> void:
-		c.scale = Vector2.ONE * rest * 0.97
-		create_tween().tween_property(c, "scale", Vector2.ONE * grow, 0.35).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT))
-	c.focus_exited.connect(func() -> void:
-		# Held up for the bubble it opened (pop_bubble): it stays as it is.
-		if not c.get_meta("held", false):
-			create_tween().tween_property(c, "scale", Vector2.ONE * rest, 0.15).set_trans(Tween.TRANS_QUAD))
-	if c is BaseButton:
-		# On the press, a little dip and back up to its size.
-		(c as BaseButton).button_down.connect(func() -> void:
-			c.scale = Vector2.ONE * grow * 0.95
-			create_tween().tween_property(c, "scale", Vector2.ONE * grow, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT))
+	menu_widgets.lift(c, grow, rest)
+
+
 
 
 const DIM_CARD := Color(0.7, 0.7, 0.8)
-
-
-## An arrow beside a row of cards: a click moves the focus to the card
-## beside the one that has it, round the ends. It never takes the focus.
 func _card_arrow(text: String, cards: Array, dir: int) -> Button:
-	var b := Button.new()
-	b.text = text
-	b.flat = true
-	b.focus_mode = Control.FOCUS_NONE
-	b.add_theme_font_override("font", ARCADE)
-	b.add_theme_font_size_override("font_size", 28)
-	for key in ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color"]:
-		b.add_theme_color_override(key, GLOW if key != "font_color" else CREAM)
-	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	b.pressed.connect(func() -> void:
-		var at := maxi(0, cards.find(get_viewport().gui_get_focus_owner()))
-		(cards[posmod(at + dir, cards.size())] as Control).grab_focus())
-	return b
+	return menu_widgets.card_arrow(text, cards, dir)
 
 
-static var _glyphs := {}
 
 
-## A small line icon for a button, drawn here at four samples a pixel:
-## "settings" a cog, "quit" an arrow going into a door.
 static func glyph(kind: String) -> ImageTexture:
-	if _glyphs.has(kind):
-		return _glyphs[kind]
-	const N := 36
-	const SS := 4
-	var img := Image.create(N, N, false, Image.FORMAT_RGBA8)
-	for y in N:
-		for x in N:
-			var hit := 0
-			for sy in SS:
-				for sx in SS:
-					var p := Vector2(x + (sx + 0.5) / SS, y + (sy + 0.5) / SS) - Vector2(N, N) / 2
-					if _glyph_in(kind, p):
-						hit += 1
-			img.set_pixel(x, y, Color(1, 1, 1, float(hit) / (SS * SS)))
-	_glyphs[kind] = ImageTexture.create_from_image(img)
-	return _glyphs[kind]
+	return MenuWidgets.glyph(kind)
 
 
 static func _glyph_in(kind: String, p: Vector2) -> bool:
-	if kind == "settings":
-		var r := p.length()
-		var teeth := 13.0 if cos(p.angle() * 8.0) > 0.2 else 10.0
-		return r < teeth and r > 4.5
-	# quit: an open door (a frame on the right, open on the left) and an
-	# arrow going in.
-	var frame := Rect2(-5, -13, 18, 26)
-	var inside := frame.grow(-3)
-	var in_frame := frame.has_point(p) and not inside.has_point(p) and not (p.x < -1 and absf(p.y) < 6)
-	var shaft := p.x > -15 and p.x < 5 and absf(p.y) < 1.6
-	var head := p.x >= 0 and p.x < 8 and absf(p.y) < 8 - p.x
-	return in_frame or shaft or head
+	return MenuWidgets.glyph_in(kind, p)
 
 
-## A big card: a picture, a title and a line under it.
-## back: the cards waiting sit smaller, further back (the title's row).
 func _card(c: Dictionary, width: int, back := false) -> Button:
-	var b := Button.new()
-	b.focus_mode = Control.FOCUS_ALL
-	var colour: Color = c.get("colour", C.safe)
-	var selected: bool = c.get("selected", false)
-	for state in ["normal", "hover", "pressed", "focus"]:
-		var st := _frame(colour, state != "normal", selected, 22)
-		if state != "normal":
-			st.set_border_width_all(4)
-		st.set_content_margin_all(12)
-		b.add_theme_stylebox_override(state, st)
-	var box := VBoxContainer.new()
-	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_theme_constant_override("separation", 8)
-	box.alignment = BoxContainer.ALIGNMENT_CENTER
-	box.set_anchors_preset(Control.PRESET_FULL_RECT)
-	box.offset_left = 12
-	box.offset_right = -12
-	box.offset_top = 12
-	box.offset_bottom = -12
-	b.add_child(box)
-	var height := 0.0
-	# A live 3D stage: shown through its texture, animated while focused.
-	if c.has("stage"):
-		var stage: MenuStage = c.stage
-		b.add_child(stage)
-		c.picture = stage.get_texture()
-		b.focus_entered.connect(func() -> void: stage.active = true)
-		b.focus_exited.connect(func() -> void: stage.active = false)
-	if c.has("picture"):
-		var picture: Texture2D = c.picture
-		var r := TextureRect.new()
-		r.texture = picture
-		r.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		r.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if c.has("stage") or c.get("smooth", false) else CanvasItem.TEXTURE_FILTER_NEAREST
-		var k := (width - 24.0) / picture.get_width()
-		r.custom_minimum_size = Vector2(width - 24, picture.get_height() * k)
-		_round_corners(r, r.custom_minimum_size, 16.0)
-		height += r.custom_minimum_size.y
-		box.add_child(r)
-	# The title on one line: the pixel font is one em a character, so a long
-	# title on a narrow card takes a smaller size.
-	var title_size: int = mini(c.get("title_size", 13), floori((width - 30.0) / maxi(1, String(c.title).length())))
-	var t := _label(title_size, CREAM, box, true)
-	t.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
-	t.text = c.title
-	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	height += 24
-	if c.has("text"):
-		var l := _label(12, C.dim, box)
-		l.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
-		l.text = c.text
-		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		l.custom_minimum_size = Vector2(width - 24, 0)
-		# Room for every line it wraps to (about 6.5 px a character).
-		var lines := 0
-		for paragraph in l.text.split("\n"):
-			lines += maxi(1, ceili(paragraph.length() * 6.5 / (width - 24)))
-		height += 10 + 17 * maxi(2, lines)
-	b.custom_minimum_size = Vector2(width, height + 34)
-	# A card to look at, not to press (the player-select seats).
-	if c.get("static", false):
-		b.focus_mode = Control.FOCUS_NONE
-		b.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		if c.has("stage"):
-			(c.stage as MenuStage).active = c.get("animate", false)
-		# Waiting for someone: dimmed.
-		if c.get("dim", false):
-			b.modulate = Color(1, 1, 1, 0.5)
-		return b
-	b.pressed.connect(c.call)
-	b.pressed.connect(func() -> void: ui_sound.emit("ok"))
-	var rest := 0.9 if back else 1.0
-	_lift(b, 1.1, rest)
-	b.scale = Vector2.ONE * rest
-	# The ones waiting sit back in the dark; the one with the focus comes up.
-	b.modulate = DIM_CARD
-	b.focus_entered.connect(func() -> void: create_tween().tween_property(b, "modulate", Color.WHITE, 0.2))
-	b.focus_exited.connect(func() -> void:
-		if not b.get_meta("held", false):
-			create_tween().tween_property(b, "modulate", DIM_CARD, 0.2))
-	if c.has("id"):
-		_cards[c.id] = b
-	return b
+	return menu_widgets.card(c, width, back)
+
+
 
 
 static func thief_icon(colours: Array) -> ImageTexture:
@@ -1954,71 +1378,30 @@ func set_ia(on: bool, entries: Array) -> void:
 		if e.has("note"):
 			var n := _label(13, C.dim, _ia_box)
 			n.text = "  " + e.note
-
-
-## Take the map out (or put it away) during play: it unfolds as it comes.
 func show_map(plan: Image, thief_colours: Array = []) -> void:
-	if not _map.visible:
-		_map_gang_visible = _gang.visible
-	for c in _map_legend.get_children():
-		_map_legend.remove_child(c)
-		c.queue_free()
-	var keys := ["thief", "gem", "exit", "prop"]
-	if home_map:
-		keys = ["thief", "exit", "door", "fog"]
-	elif not Museum.doors.is_empty():
-		keys.append("door")
-	if Heist.team and not Heist.taken and not home_map:
-		keys.append("panel")
-	legend_row(_map_legend, keys, thief_colours, Color(Heist.loot.colour), true)
-	var hint := _label(12, C.dim, _map_legend)
-	hint.text = Text.t("HUD_MAP_HIDE")
-	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_map_stage.print_plan(plan)
-	_map_stage.process_mode = Node.PROCESS_MODE_INHERIT
-	_map_stage.unfold()
-	_map.visible = true
-	_gang.visible = false
+	map_overlay.show_map(plan, thief_colours)
 
 
 func update_map(plan: Image) -> void:
-	_map_stage.print_plan(plan)
+	map_overlay.update_map(plan)
 
 
-## Which way the controls push while the map is out, for it to lean.
 func push_map(v: Vector2) -> void:
-	_map_stage.push(v)
+	map_overlay.push_map(v)
 
 
 func hide_map() -> void:
-	if _map.visible:
-		_gang.visible = _map_gang_visible
-	_map.visible = false
-	_map_stage.process_mode = Node.PROCESS_MODE_DISABLED
+	map_overlay.hide_map()
 
 
-## The map as taken out mid-job, on parchment: the plan, where each thief is
-## now, the piece (or where it lies), the door, and the alarm panel for two.
-## No guards: a map does not know where they are.
-## The map you take out mid-job: the plan with its cases, the things you
-## can knock over, the piece, the way out and where the thieves are — the
-## important ones as icons, all of them in the legend under it.
 static func live_map(thieves: Array[Thief], colours: Array) -> Image:
-	var none: Array[Guard] = []
-	return _draw_map(thieves, colours, none, [])
+	return MapPainter.live_map(thieves, colours)
 
 
-## The plan on parchment, before the job: the same map, with the route in
-## ink dots, where you come in (the thieves' icons) and where each guard
-## starts (a red cross). pins: for the plan looked round pin by pin
-## (PlanTalk), whose chinchetas already mark the guards and the way in —
-## so the picture under them does not print its own, one on top of the
-## other. mark: a tile to ring in gold on top of everything else (the item
-## the arrows have landed on, in the Atraco Sorpresa's plan — BriefScreens).
 static func plan_map(guards: Array[Guard], colours: Array, pins := false, mark := Vector2.INF) -> Image:
-	var none: Array[Thief] = []
-	home_map = false
-	return _draw_map(none, [], guards, colours, pins, mark)
+	return MapPainter.plan_map(guards, colours, pins, mark)
+
+
 
 
 ## Pixels a tile: the plan fills about MAP_WIDTH whatever the museum's size,
@@ -2050,176 +1433,34 @@ const ICON_PANEL := [
 	"###w###",
 	".#####.",
 ]
-
-
 static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard], start_colours: Array, pins := false, mark := Vector2.INF) -> Image:
-	var s := clampi(int(MAP_WIDTH / Museum.w), 8, 32)
-	var img := Image.create(Museum.w * s, Museum.h * s, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))
-	# The plan in three tones: floor, the cases on it, walls; and what can be
-	# knocked over, still standing, a tile a shade off the cases.
-	for y in Museum.h:
-		for x in Museum.w:
-			if Museum.is_outside(x, y):
-				continue
-			var t := Museum.grid[y * Museum.w + x]
-			var tone: Color = MAP_WALL if t == Tiles.WALL else (MAP_CASE if t == Tiles.COVER else MAP_FLOOR)
-			# In the house, a dark room is only its shape: no furniture.
-			if home_map and t != Tiles.WALL and dark_rooms.has(Den.tile_room(Vector2i(x, y))):
-				tone = MAP_FOG
-			img.fill_rect(Rect2i(x * s, y * s, s, s), tone)
-	if home_map:
-		# The doors: floor when open, wood in the wall when shut.
-		for d in Den.DOORS:
-			var r := Den.door_rect(d.id)
-			var tone: Color = MAP_FLOOR if Den.is_open(d.id) else MAP_DOOR
-			img.fill_rect(Rect2i(r.position.x * s, r.position.y * s, r.size.x * s, r.size.y * s), tone)
-	# A challenge's own doors (Museum.doors): the same wood tone shut, floor
-	# open — wall and floor already say as much, this just makes it read as
-	# a door and not just a gap in the plan.
-	for d in Museum.doors:
-		img.fill_rect(Rect2i(d.x * s, d.y * s, s, s), MAP_FLOOR if Museum.is_door_open(d) else MAP_DOOR)
-	for p in Props.list:
-		if home_map and dark_rooms.has(Den.tile_room(p.tile)):
-			continue
-		if not p.fallen:
-			img.fill_rect(Rect2i(p.tile.x * s, p.tile.y * s, s, s), MAP_PROP)
-	var at := func(p: Vector2) -> Vector2i: return Vector2i(int(p.x * s), int(p.y * s))
-	var mid := func(t: Vector2i) -> Vector2: return Vector2(t.x + 0.5, t.y + 0.5)
-	# The plan, before the job: the way from the way in to the piece to the door.
-	if not start_colours.is_empty():
-		var d := maxi(6, s / 2)
-		for i in Heist.route.size():
-			if i % 2 == 0:
-				var t: Vector2i = Heist.route[i]
-				img.fill_rect(Rect2i(t.x * s + s / 2 - d / 2, t.y * s + s / 2 - d / 2, d, d), MAP_ROUTE)
-	# The door, in green, and its sign just inside it.
-	var door: Vector2i = Heist.exit + Heist.exit_face
-	img.fill_rect(Rect2i(door.x * s, door.y * s, s, s), C.green)
-	if Heist.team and not Heist.taken and not home_map:
-		_stamp(img, ICON_PANEL, at.call(mid.call(Heist.panel)), 4, {"#": Color("#ff922b"), "w": MAP_INK})
-		if Heist.panel2.x >= 0:
-			_stamp(img, ICON_PANEL, at.call(mid.call(Heist.panel2)), 4, {"#": Color("#ff922b"), "w": MAP_INK})
-	# The piece: a gem in its colour, sparkling, wherever it is.
-	# The piece: a diamond in its colour, giving off light.
-	var gem := func(p: Vector2, r: int) -> void:
-		var c: Vector2i = (at.call(p) as Vector2i).clamp(Vector2i(r * 2, r * 2), img.get_size() - Vector2i(r * 2, r * 2))
-		_diamond(img, c, r, Color(Heist.loot.colour))
-	# (In the house there is no piece to steal: the dojo's case is sealed.)
-	if home_map:
-		pass
-	elif not Heist.taken:
-		gem.call(mid.call(Heist.at), 20)
-	elif Heist.dropped != Vector2.INF:
-		gem.call(Heist.dropped, 16)
-	if not pins:
-		for g in guards:
-			_square(img, at.call(Vector2(g.x, g.y)), 12, MAP_GUARD)
-	# The way out: the kunai that points the way in play, green, through the
-	# door and pointing out.
-	_kunai(img, at.call(mid.call(Heist.exit) + Vector2(Heist.exit_face) * 0.3), Vector2(Heist.exit_face), 1.6, C.green)
-	# Where you come in: a dot for each thief who will, side by side. Not
-	# with the pins: the "start" chincheta already says as much.
-	if not pins:
-		for i in start_colours.size():
-			var off := Vector2((i - (start_colours.size() - 1) / 2.0) * 34.0 / s, 0)
-			_dot(img, at.call(mid.call(Heist.start) + off), 14, start_colours[i], MAP_INK)
-	for i in thieves.size():
-		var p := thieves[i]
-		if p.out:
-			continue
-		var c: Vector2i = at.call(Vector2(p.x, p.y))
-		# The piece rides along with whoever has it, glowing behind them.
-		if Heist.carrier == p.id:
-			_glow(img, c, 44, Color(Heist.loot.colour))
-		_dot(img, c, 14, colours[i], Color.WHITE)
-	if mark != Vector2.INF:
-		_ring(img, at.call(mark), maxi(18, s), maxi(3, s / 6), Color("#ffe066"))
-	return img
+	return MapPainter.draw_map(thieves, colours, guards, start_colours, pins, mark)
 
 
-## A ring in the given colour, nothing filled inside: round whatever the
-## cursor has landed on (BriefScreens.plan_select), on top of the rest.
 static func _ring(img: Image, c: Vector2i, r: int, thickness: int, colour: Color) -> void:
-	for dy in range(-r, r + 1):
-		for dx in range(-r, r + 1):
-			var d := Vector2(dx, dy).length()
-			if d > r or d < r - thickness:
-				continue
-			var x := c.x + dx
-			var y := c.y + dy
-			if x >= 0 and y >= 0 and x < img.get_width() and y < img.get_height():
-				img.set_pixel(x, y, colour)
+	MapPainter.ring(img, c, r, thickness, colour)
 
 
-## A thief: a disc in its colour with a ring round it.
 static func _dot(img: Image, c: Vector2i, r: int, colour: Color, ring: Color) -> void:
-	_disc(img, c, r + 3, MAP_INK)
-	_disc(img, c, r + 1, ring)
-	_disc(img, c, r - 2, colour)
+	MapPainter.dot(img, c, r, colour, ring)
 
 
-## A guard: a red square, outlined.
 static func _square(img: Image, c: Vector2i, half: int, colour: Color) -> void:
-	img.fill_rect(Rect2i(c.x - half - 3, c.y - half - 3, half * 2 + 6, half * 2 + 6), MAP_INK)
-	img.fill_rect(Rect2i(c.x - half, c.y - half, half * 2, half * 2), colour)
+	MapPainter.square(img, c, half, colour)
 
 
-## Light spilling round something bright: blended over what is under it,
-## strongest in the middle and gone at r.
 static func _glow(img: Image, c: Vector2i, r: int, colour: Color) -> void:
-	var lit := colour.lightened(0.35)
-	for y in range(maxi(0, c.y - r), mini(img.get_height(), c.y + r + 1)):
-		for x in range(maxi(0, c.x - r), mini(img.get_width(), c.x + r + 1)):
-			var d := Vector2(x - c.x, y - c.y).length() / r
-			if d >= 1.0:
-				continue
-			var k := pow(1.0 - d, 1.6) * 0.85
-			var under := img.get_pixel(x, y)
-			var mixed := under.lerp(lit, k)
-			mixed.a = maxf(under.a, k)
-			img.set_pixel(x, y, mixed)
+	MapPainter.glow(img, c, r, colour)
 
 
-## The piece: a diamond (a square on its point) in its colour, lighter on
-## its upper facets with a white glint, in a halo of its own light with
-## four rays.
 static func _diamond(img: Image, c: Vector2i, r: int, colour: Color) -> void:
-	_glow(img, c, r * 3, colour)
-	for k in 4:
-		var dir := Vector2.from_angle(k * PI / 2 + PI / 4)
-		for t in range(r + 4, r * 2 + 2):
-			var q := Vector2(c) + dir * t
-			img.fill_rect(Rect2i(int(q.x) - 1, int(q.y) - 1, 3, 3), Color(1, 1, 0.9).lerp(colour.lightened(0.5), float(t - r) / (r + 2)))
-	for pass_n in 2:
-		var rr := r + 3 - pass_n * 3
-		var fill: Color = MAP_INK if pass_n == 0 else colour
-		for dy in range(-rr, rr + 1):
-			var half := rr - absi(dy)
-			img.fill_rect(Rect2i(c.x - half, c.y + dy, half * 2 + 1, 1), fill)
-	for dy in range(-r + 2, 0):
-		var half := r - absi(dy) - 2
-		img.fill_rect(Rect2i(c.x - half, c.y + dy, half * 2 + 1, 1), colour.lightened(0.3))
-	img.fill_rect(Rect2i(c.x - r / 3, c.y - r / 2, r / 4 + 2, r / 4 + 2), Color.WHITE)
+	MapPainter.diamond(img, c, r, colour)
 
 
-## The HUD's kunai (KUNAI_BLADE) scaled by k, centred on c and pointing
-## along dir, outlined.
 static func _kunai(img: Image, c: Vector2i, dir: Vector2, k: float, colour: Color) -> void:
-	var angle := dir.angle()
-	var blade := PackedVector2Array()
-	for q in KUNAI_BLADE:
-		# Centred on its length: the blade runs from -12 to 30.
-		blade.append(((q - Vector2(9, 0)) * k).rotated(angle))
-	var ring: PackedVector2Array = Geometry2D.offset_polygon(blade, 3.5)[0]
-	var reach := int(30 * k) + 4
-	for y in range(maxi(0, c.y - reach), mini(img.get_height(), c.y + reach + 1)):
-		for x in range(maxi(0, c.x - reach), mini(img.get_width(), c.x + reach + 1)):
-			var p := Vector2(x - c.x, y - c.y)
-			if Geometry2D.is_point_in_polygon(p, blade):
-				img.set_pixel(x, y, colour)
-			elif Geometry2D.is_point_in_polygon(p, ring):
-				img.set_pixel(x, y, MAP_INK)
+	MapPainter.kunai(img, c, dir, k, colour)
+
+
 
 
 ## What the map's legend lists, in this order: the icon and its words (keys
@@ -2229,124 +1470,24 @@ const LEGEND := {
 	"prop": "LEGEND_PROP", "route": "LEGEND_ROUTE", "panel": "LEGEND_PANEL",
 	"door": "LEGEND_DOOR", "fog": "LEGEND_FOG",
 }
-
-
-## A legend icon: the map's own mark, drawn small on its own.
 static func legend_icon(key: String, colour := Color.WHITE) -> ImageTexture:
-	var img := Image.create(64, 40, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))
-	var c := Vector2i(32, 20)
-	match key:
-		"thief":
-			img = Image.create(40, 40, false, Image.FORMAT_RGBA8)
-			img.fill(Color(0, 0, 0, 0))
-			_dot(img, Vector2i(20, 20), 11, colour, MAP_INK)
-		"gem": _diamond(img, c, 9, colour)
-		"guard": _square(img, c, 10, MAP_GUARD)
-		"panel": _stamp(img, ICON_PANEL, c, 4, {"#": Color("#ff922b"), "w": MAP_INK})
-		"prop":
-			img.fill_rect(Rect2i(c.x - 12, c.y - 12, 24, 24), MAP_WALL)
-			img.fill_rect(Rect2i(c.x - 10, c.y - 10, 20, 20), MAP_PROP)
-		"route":
-			for k in 3:
-				img.fill_rect(Rect2i(10 + k * 17, 15, 10, 10), Color("#e8d6b4"))
-		"exit": _kunai(img, c, Vector2.RIGHT, 1.2, C.green)
-		"door":
-			img.fill_rect(Rect2i(c.x - 12, c.y - 12, 24, 24), MAP_INK)
-			img.fill_rect(Rect2i(c.x - 10, c.y - 10, 20, 20), MAP_DOOR)
-		"fog":
-			img.fill_rect(Rect2i(c.x - 12, c.y - 12, 24, 24), MAP_INK)
-			img.fill_rect(Rect2i(c.x - 10, c.y - 10, 20, 20), MAP_FOG)
-	return ImageTexture.create_from_image(img)
-
-
-## The legend as a row: each entry its icon and its words. thief_colours
-## paints the thieves' icon, loot_colour the gem.
+	return MapPainter.legend_icon(key, colour)
 func legend_row(parent: Node, keys: Array, thief_colours: Array, loot_colour: Color, wrap := false) -> Container:
-	var row: Container = HFlowContainer.new() if wrap else HBoxContainer.new()
-	if wrap:
-		(row as HFlowContainer).alignment = FlowContainer.ALIGNMENT_CENTER
-		row.add_theme_constant_override("h_separation", 22)
-		row.add_theme_constant_override("v_separation", 6)
-	else:
-		(row as HBoxContainer).alignment = BoxContainer.ALIGNMENT_CENTER
-		row.add_theme_constant_override("separation", 22)
-	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	parent.add_child(row)
-	for key in keys:
-		var entry := HBoxContainer.new()
-		entry.add_theme_constant_override("separation", 4)
-		row.add_child(entry)
-		var icons: Array = thief_colours if key == "thief" else [loot_colour if key == "gem" else Color.WHITE]
-		for colour in icons:
-			var r := TextureRect.new()
-			r.texture = legend_icon(key, colour)
-			r.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-			r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			r.custom_minimum_size = Vector2(r.texture.get_width(), r.texture.get_height()) * 0.8
-			entry.add_child(r)
-		var l := _label(14, Color("#e8d6b4"), entry)
-		l.text = Text.t(LEGEND[key])
-		l.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	return row
+	return map_overlay.legend_row(parent, keys, thief_colours, loot_colour, wrap)
 
 
 static func _disc(img: Image, c: Vector2i, r: int, colour: Color) -> void:
-	for dy in range(-r, r + 1):
-		var half := int(sqrt(float(r * r - dy * dy)))
-		img.fill_rect(Rect2i(c.x - half, c.y + dy, half * 2 + 1, 1), colour)
+	MapPainter.disc(img, c, r, colour)
 
 
-## A mask stamped centred on c, k pixels a cell; with an outline (ink by
-## default) round every filled cell so it stands off the plan.
 static func _stamp(img: Image, mask: Array, c: Vector2i, k: int, colours: Dictionary, outline := true, ring := MAP_INK) -> void:
-	var w: int = mask[0].length()
-	var h := mask.size()
-	var x0 := c.x - w * k / 2
-	var y0 := c.y - h * k / 2
-	var o := maxi(2, k / 2)
-	if outline:
-		for y in h:
-			for x in w:
-				if mask[y][x] != ".":
-					img.fill_rect(Rect2i(x0 + x * k - o, y0 + y * k - o, k + o * 2, k + o * 2), ring)
-	for y in h:
-		for x in w:
-			var ch: String = mask[y][x]
-			if colours.has(ch):
-				img.fill_rect(Rect2i(x0 + x * k, y0 + y * k, k, k), colours[ch])
+	MapPainter.stamp(img, mask, c, k, colours, outline, ring)
 
 
-## The mission map: the plan, the route from the way in to the piece to the
-## door, and where each guard starts.
 static func mission_map(guards: Array[Guard]) -> ImageTexture:
-	var s := 8
-	var img := Image.create(Museum.w * s, Museum.h * s, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))
-	for y in Museum.h:
-		for x in Museum.w:
-			if Museum.is_outside(x, y):
-				continue
-			var t := Museum.grid[y * Museum.w + x]
-			var c := Color("#1a1538") if t == Tiles.WALL else (Color("#3a3a5a") if t == Tiles.COVER else Color("#2a2550"))
-			img.fill_rect(Rect2i(x * s, y * s, s, s), c)
-	for t in Heist.route:
-		img.fill_rect(Rect2i(t.x * s + s / 2 - 1, t.y * s + s / 2 - 1, 2, 2), Color("#e8ddc0"))
-	var mark := func(t: Vector2i, colour: Color, r: int) -> void:
-		img.fill_rect(Rect2i(t.x * s + s / 2 - r, t.y * s + s / 2 - r, r * 2, r * 2), colour)
-	# Things to knock over, for planning a distraction.
-	for p in Props.list:
-		mark.call(p.tile, Color("#c9a15a"), 2)
-	# Guards first: the way in, the piece and the door go on top.
-	for g in guards:
-		mark.call(Vector2i(int(g.x), int(g.y)), C.alert, 3)
-	mark.call(Heist.start, C.safe, 3)
-	mark.call(Heist.at, Color(Heist.loot.colour), 4)
-	mark.call(Heist.exit, C.green, 3)
-	if Heist.team:
-		mark.call(Heist.panel, Color("#ff922b"), 3)
-	return ImageTexture.create_from_image(img)
+	return MapPainter.mission_map(guards)
+
+
 
 
 # --- During play -----------------------------------------------------------------

@@ -557,10 +557,10 @@ MUSEUM_4_NAME,El Museo del Castillo
 MUSEUM_4_TEXT,"Caballeros, armaduras y los grandes inventos del Renacimiento"
 MUSEUM_5_NAME,El Museo de Arte Contemporáneo
 MUSEUM_5_TEXT,"Arte Moderno con mensaje, ah, no, eso solo es una papelera"
-MENU_CHALLENGE,RETOS
-MENU_CHALLENGE_TEXT,Mapas hechos a mano y tu editor
-CHALLENGE_TEXT,"Elige un mapa o un robo de la historia, o dibuja el tuyo"
-CHALLENGE_NEW,+ NUEVO MAPA
+MENU_CHALLENGE,MISIONES
+MENU_CHALLENGE_TEXT,Robos con historia y obsequio: los de serie y los tuyos
+CHALLENGE_TEXT,"Elige una misión o un robo de la historia, o dibuja la tuya"
+CHALLENGE_NEW,+ NUEVA MISIÓN
 CHALLENGE_EDIT,EDITAR
 CHALLENGE_DELETE,BORRAR
 CHALLENGE_DELETE_SURE,¿SEGURO? BORRAR
@@ -568,9 +568,18 @@ CHALLENGE_BUILT_IN,De serie
 CHALLENGE_MINE,Tuyo
 CHALLENGE_UNPLAYABLE,Sin terminar: ábrelo en el editor
 CHALLENGE_INFO,%s · %s · %d guardias
-CHALLENGE_EMPTY,Aún no hay mapas: crea uno.
+CHALLENGE_EMPTY,Aún no hay misiones: crea una.
 CHALLENGE_PAGE,Página %d de %d
-CHALLENGE_MAPS_HEAD,JUGAR MAPAS
+CHALLENGE_MAPS_HEAD,JUGAR MISIONES
+MISSION_DONE,CONSEGUIDA
+MISSION_TODO,Sin conseguir
+MISSION_STEAL,Robar: %s
+MISSION_GIFT,Obsequio: %s
+MISSION_GIFT_WON,Obsequio ya en tu inventario: %s
+MISSION_PIECE_ANY,la pieza que toque
+MISSION_STORY_DEFAULT,"Alguien quiere que «%s» se quede sin su mejor pieza. Entra, cógela y sal sin que te vean."
+MISSION_GIFT_DEFAULT,Réplica de %s
+END_GIFT_WON,¡NUEVO OBSEQUIO EN TU INVENTARIO: %s!
 CHALLENGE_HINT,"A, E o clic: abrir"
 CHALLENGE_NIGHT_EDITED,retocado a mano
 CHALLENGE_NIGHT_BUILT,como lo genera el juego
@@ -1566,7 +1575,7 @@ SETTINGS_HELP_FPS_LIMIT,Limita los fotogramas por segundo; menos calienta menos 
 SETTINGS_HELP_VSYNC,Sincroniza imagen y pantalla para evitar cortes; puede añadir latencia.
 SETTINGS_HELP_MEGAPHONE,Elige avisos en texto y voz: ambos / solo texto / solo voz / apagada.
 SETTINGS_HELP_IA,Muestra lo que piensan los guardias durante el robo.
-SETTINGS_HELP_DEV_MODE,Muestra los FPS y los robos de Historia para editarlos desde Retos.
+SETTINGS_HELP_DEV_MODE,Muestra los FPS y los robos de Historia para editarlos desde Misiones.
 SETTINGS_HELP_SOUND,Activa o silencia todos los sonidos del juego.
 SETTINGS_HELP_MUSIC,Activa o silencia la música.
 SETTINGS_HELP_MUSIC_VOLUME,Cambia el volumen de la música.

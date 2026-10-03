@@ -16,8 +16,21 @@
 		15
 	],
 	"format": 1,
+	"gift": {
+		"colour": "#c8c4b8",
+		"name": "Busto de bolsillo",
+		"shape": "david"
+	},
 	"guard_count": 0,
 	"guards": [],
+	"loot": {
+		"blurb": "Nadie sabe dónde está la nariz.",
+		"colour": "#d8d4c8",
+		"name": "Busto sin nariz",
+		"seconds": 3.0,
+		"shape": "david",
+		"story": "En la Galería de los Bustos todos tienen la nariz rota menos uno. Es el que hay que llevarse antes de que se la rompan también."
+	},
 	"name": "La Galería de los Bustos",
 	"piece": [
 		16,

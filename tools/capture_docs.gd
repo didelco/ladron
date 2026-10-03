@@ -202,7 +202,7 @@ func _shots() -> void:
 	await _wait(0.5)
 	main.challenges.show_menu()
 	await _wait(1.5)
-	await _shot("menu_retos", "menus", "Retos", "Los robos de la historia y los mapas hechos a mano, con el plano del elegido.")
+	await _shot("menu_retos", "menus", "Misiones", "Los robos de la historia y los mapas hechos a mano, con el plano del elegido.")
 	var maps := MapFile.list()
 	if not maps.is_empty():
 		main.challenges.show_map(maps[0])
@@ -210,7 +210,7 @@ func _shots() -> void:
 		await _shot("menu_reto_mapa", "menus", "Un reto elegido", maps[0].name if "name" in maps[0] else "")
 	main.challenges.show_night_map(1)
 	await _wait(1.5)
-	await _shot("menu_reto_noche", "menus", "Retos: un robo de la historia", "Para retocar su museo en el editor.")
+	await _shot("menu_reto_noche", "menus", "Misiones: un robo de la historia", "Para retocar su museo en el editor.")
 	main.challenges.show_editor(MapFile.generated(4242, "small"))
 	await _wait(1.5)
 	await _shot("menu_editor", "menus", "Editor de mapas")

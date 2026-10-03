@@ -25,6 +25,11 @@
 		-1
 	],
 	"format": 1,
+	"gift": {
+		"colour": "#f0c46a",
+		"name": "Hueso de la suerte",
+		"shape": "bone"
+	},
 	"guard_count": 3,
 	"guards": [
 		[
@@ -32,6 +37,14 @@
 			22
 		]
 	],
+	"loot": {
+		"blurb": "Un hueso del tamaño de una pierna. Pesa lo suyo.",
+		"colour": "#e8dcc0",
+		"name": "Fémur de Rex",
+		"seconds": 4.0,
+		"shape": "bone",
+		"story": "El conservador del Ala de los Fósiles jura que el fémur es de un T. rex. Tu abuela dice que es de pollo. Hay que comprobarlo."
+	},
 	"name": "El Ala de los Fósiles",
 	"piece": [
 		-1,

@@ -35,6 +35,7 @@ const MIN_LEAF := 5
 ## Every shape keeps its arms at least this wide, so a gallery always fits.
 const MIN_ARM := 9
 const DIRS: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+const DIAGONALS: Array[Vector2i] = [Vector2i(1, 1), Vector2i(-1, 1), Vector2i(1, -1), Vector2i(-1, -1)]
 ## The pieces that take more than one tile, in tiles across and along (the
 ## table is BigPieces.SIZES, data only).
 const BIG := BigPieces.SIZES
@@ -671,7 +672,12 @@ func _furnish_rooms() -> void:
 			while line < across - 2:
 				var a := 1 + _rand.below(2)
 				var b := along - 2 - _rand.below(2)
-				var gap := a + 1 + _rand.below(maxi(1, b - a - 1))
+				# The gap leaves at least two tiles of shelf on each side: a
+				# shelf tile standing alone is drawn as a column (MapFile.exempt_walls).
+				var gap := a + 2 + _rand.below(b - a - 3) if b - a >= 4 else -1
+				if b - a < 1:
+					line += 2 + _rand.below(2)
+					continue
 				for k in range(a, b + 1):
 					if k == gap:
 						continue
@@ -680,18 +686,8 @@ func _furnish_rooms() -> void:
 					else:
 						_furnish_wall(rx + k, ry + line)
 				line += 2 + _rand.below(2)
-		elif roll < 0.7 and rw >= 6 and rh >= 6:
-			# Columns in a loose grid, the hall of a grand museum.
-			var gx := 2 + _rand.below(2)
-			var gy := 2 + _rand.below(2)
-			var y := ry + gy
-			while y < ry + rh - 2:
-				var x := rx + gx
-				while x < rx + rw - 2:
-					if _rand.next() < 0.85:
-						_furnish_wall(x, y)
-					x += 2 + _rand.below(2)
-				y += 2 + _rand.below(2)
+		elif roll < 0.7 and _colonnade(room):
+			pass
 		elif roll < 0.85:
 			# A partition jutting in from one wall, making a nook.
 			var side := _rand.below(4)
@@ -715,9 +711,88 @@ func _furnish_rooms() -> void:
 			var cy := ry + 1 + _rand.below(maxi(1, rh - 3))
 			var bw := 1 + _rand.below(2)
 			var bh := 1 + _rand.below(2)
+			# Never a single tile: on its own it would be drawn as a column.
+			if bw == 1 and bh == 1:
+				bh = 2
 			for y in range(cy, mini(cy + bh, ry + rh - 1)):
 				for x in range(cx, mini(cx + bw, rx + rw - 1)):
 					_furnish_wall(x, y)
+
+
+## Columns are structure, not exhibits, so they keep a builder's rhythm: a
+## tile of floor between a column and any wall, three tiles from one column
+## to the next along a row, rows a regular grid, never a column skipped.
+const COLUMN_MARGIN := 1
+const COLUMN_STEP := 3
+## Rows of columns across a gallery: two (a nave between two aisles) up to
+## this width; wider than that, three when a middle row lands dead centre.
+const COLUMN_THREE_ROWS_FROM := 12
+
+
+## Rows of columns down the long axis of a gallery, every row the same
+## rhythm and the rows on one grid. Nothing at all if a full, regular grid
+## does not fit (a lone column reads as one more exhibit): the long side
+## needs 6 tiles for two columns, the short side 5 for one row down the
+## middle. Returns whether anything was placed.
+func _colonnade(room: Rect2i) -> bool:
+	var vertical := room.size.y > room.size.x
+	var along := room.size.y if vertical else room.size.x
+	var across := room.size.x if vertical else room.size.y
+	var line := _rhythm(along, COLUMN_STEP, 2)
+	var rows := _row_offsets(across)
+	if line.is_empty() or rows.is_empty():
+		return false
+	var tiles: Array[Vector2i] = []
+	for r in rows:
+		for k in line:
+			tiles.append(room.position + (Vector2i(r, k) if vertical else Vector2i(k, r)))
+	# Where the outline bites into the room some of its rect is still wall:
+	# a column there, or against it, breaks the margin, and a grid with one
+	# missing is no grid — so the room goes without.
+	for t in tiles:
+		for dy in range(-1, 2):
+			for dx in range(-1, 2):
+				if at(t.x + dx, t.y + dy) != Tiles.FLOOR:
+					return false
+	for t in tiles:
+		_furnish_wall(t.x, t.y)
+	return true
+
+
+## Offsets along a side of `len` tiles for as many columns as fit at `step`
+## with COLUMN_MARGIN free at both ends, centred so the two margins come out
+## as equal as they can; empty with fewer than `at_least`.
+static func _rhythm(len: int, step: int, at_least: int) -> Array[int]:
+	var span := len - 2 * COLUMN_MARGIN - 1
+	if span < 0:
+		return []
+	var n := span / step + 1
+	if n < at_least:
+		return []
+	var start := COLUMN_MARGIN + (span - (n - 1) * step) / 2
+	var out: Array[int] = []
+	for i in n:
+		out.append(start + i * step)
+	return out
+
+
+## Where the rows go across a gallery `len` tiles wide: one down the middle
+## of a 5-wide room; from 6 up, one along each wall (COLUMN_MARGIN in), and
+## a third in the middle only in a wide room where the middle is a tile.
+static func _row_offsets(len: int) -> Array[int]:
+	if len < 2 * COLUMN_MARGIN + 3:
+		return []
+	var first := COLUMN_MARGIN
+	var last := len - 1 - COLUMN_MARGIN
+	var out: Array[int] = []
+	if last - first < COLUMN_STEP:
+		if len % 2 == 1:
+			out.append(len / 2)
+	elif len >= COLUMN_THREE_ROWS_FROM and (first + last) % 2 == 0 and (last - first) / 2 >= COLUMN_STEP:
+		out.assign([first, (first + last) / 2, last])
+	else:
+		out.assign([first, last])
+	return out
 
 
 ## Wall a gallery is furnished with (shelving, columns, a partition, an
@@ -760,7 +835,14 @@ func _clear_wall_crumbs() -> void:
 					if at(n.x, n.y) == Tiles.WALL and not seen.has(n):
 						seen[n] = true
 						bit.append(n)
-			if outer or bit.size() > 2 or bit.any(func(b): return _furniture.has(b)):
+			# One tile with no wall on any side is never the outer wall nor
+			# furniture worth the name, whatever touches its corners: it would
+			# be drawn as a column, and a column stands clear of walls — so
+			# with wall at a corner it is a leftover (a partition's stump, a
+			# filled-in dead end) and goes.
+			var lone := bit.size() == 1 and DIRS.all(func(d): return at(t.x + d.x, t.y + d.y) != Tiles.WALL)
+			var cornered := lone and DIAGONALS.any(func(d): return at(t.x + d.x, t.y + d.y) == Tiles.WALL)
+			if (outer or bit.size() > 2 or bit.any(func(b): return _furniture.has(b))) and not cornered:
 				continue
 			# Only if the floor it leaves has two ways out: a crumb touching the
 			# floor at one side or just at a corner would become a stub.

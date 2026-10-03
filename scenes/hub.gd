@@ -10,7 +10,7 @@ const STICKERS := "res://assets/ui/hub/"
 const OPTIONS := [
 	{"id": "dojo", "label": "Guarida", "sticker": "dojo.png"},
 	{"id": "story", "label": "Modo Historia", "sticker": "historia.png"},
-	{"id": "challenge", "label": "Retos", "sticker": "jugar-mapas.png"},
+	{"id": "challenge", "label": "Misiones", "sticker": "jugar-mapas.png"},
 	{"id": "generative", "label": "Atraco Sorpresa", "sticker": "generativo.png"},
 	{"id": "settings", "label": "Ajustes", "sticker": "ajustes.png"},
 	{"id": "quit", "label": "Cerrar Ninja Karma", "sticker": "apagar.png"},
@@ -38,7 +38,7 @@ const PLAYERS_OPTIONS := [
 const PAUSE_OPTIONS_FULL := [
 	{"id": "resume", "label": "Seguir", "sticker": "pausa-reanudar.png"},
 	{"id": "story", "label": "Modo Historia", "sticker": "historia.png"},
-	{"id": "challenge", "label": "Retos", "sticker": "jugar-mapas.png"},
+	{"id": "challenge", "label": "Misiones", "sticker": "jugar-mapas.png"},
 	{"id": "generative", "label": "Atraco Sorpresa", "sticker": "generativo.png"},
 	{"id": "settings", "label": "Ajustes", "sticker": "ajustes.png"},
 	{"id": "leave", "label": "Salir", "sticker": "ciudad.png"},
@@ -427,12 +427,11 @@ func _pick(id: String) -> void:
 				return
 	match id:
 		"dojo":
-			# Desde la pausa en la guarida ya estamos aquí: es Seguir, no
-			# "a dónde ir". Solo desde el hub inicial pregunta banda.
+			# Guarida entra directamente al salón con la banda actual.
 			if active_kind == "pause":
 				_pick("resume")
 			else:
-				_ask_players("dojo")
+				_go(host._dojo_start.bind(host.players, true))
 		"story":
 			# Historia comparte el selector de banda con Guarida.
 			_ask_players("story")

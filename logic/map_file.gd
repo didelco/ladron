@@ -75,6 +75,9 @@ var exit := NONE
 ## shape), colour (hex), name, blurb, story, seconds to force the case.
 ## Empty: the job picks a piece, as in a generated museum.
 var loot := {}
+## the gift for the first time it is got away with (Missions): shape (a
+## LOOT_SHAPES one), colour (hex), name. Empty: a replica of the piece.
+var gift := {}
 ## what stands on a case, where chosen by hand: tile to a piece (Themes.is_piece:
 ## one of MuseumView.EXHIBITS or a theme's model)
 var exhibits := {}
@@ -700,6 +703,7 @@ func to_dict() -> Dictionary:
 		"paintings": paintings.map(func(p): return {"span": p.span, "at": pair.call(p.at)}),
 		"props": props.map(func(p): return {"kind": p.kind, "at": pair.call(p.at)}),
 		"loot": loot,
+		"gift": gift,
 		"exhibits": exhibits.keys().map(func(t): return {"kind": exhibits[t], "at": pair.call(t)}),
 	}.merged({"night": night} if night > 0 else {}).merged({"drew_outline": false} if not drew_outline else {})
 
@@ -777,6 +781,14 @@ static func from_dict(d: Variant) -> MapFile:
 	if l is Dictionary and LOOT_SHAPES.has(l.get("shape", "")):
 		m.loot = {"shape": String(l.shape), "colour": String(l.get("colour", "#f0c46a")), "name": String(l.get("name", "")),
 			"blurb": String(l.get("blurb", "")), "story": String(l.get("story", "")), "seconds": clampf(float(l.get("seconds", 3.0)), 0.5, 10.0)}
+	var gf: Variant = d.get("gift", {})
+	if gf is Dictionary:
+		if LOOT_SHAPES.has(gf.get("shape", "")):
+			m.gift["shape"] = String(gf.shape)
+		if gf.has("colour"):
+			m.gift["colour"] = String(gf.colour)
+		if String(gf.get("name", "")) != "":
+			m.gift["name"] = String(gf.name)
 	for e in d.get("exhibits", []):
 		if e is Dictionary and Themes.is_piece(String(e.get("kind", ""))):
 			var t: Vector2i = pair.call(e.get("at"))

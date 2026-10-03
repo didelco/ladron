@@ -1,0 +1,28 @@
+{
+	"building/false": "1c9b2625e5d534f8a53933d1ff72b1c790f144df3ee40202b30aec623ca80970",
+	"building/true": "5e46039b5702f1d68f4bce94c7d9a3c61d8e027b9ec13a28d5f7992b8beff6e2",
+	"parts/false/1": {
+		"mesh": "470655aa939ebcff602ae424595afffb4f0b5ff4e1069304cfd822abae1b21af",
+		"rng": "7086124912315665832"
+	},
+	"parts/false/424242": {
+		"mesh": "1fedc8102d6863cd6c27b70a63c21e9f1ab75803c49faa962280f7ceb6afae3d",
+		"rng": "-7730048066470407038"
+	},
+	"parts/false/7127": {
+		"mesh": "fdf281987ae77e1c0f797ee34951e4c4554d8eb97e1fc35fda2da5b4a1332c61",
+		"rng": "-5645901814171062661"
+	},
+	"parts/true/1": {
+		"mesh": "1e476a1da3efde9ab374fef1d5899275314eea9419c0d24c9247c19291869ae2",
+		"rng": "7086124912315665832"
+	},
+	"parts/true/424242": {
+		"mesh": "a1bd7fdfc0331bdd4e9f7565372626d8332d065fd84920ab90938521e5d03573",
+		"rng": "-7730048066470407038"
+	},
+	"parts/true/7127": {
+		"mesh": "4c3d7d6e7e1c6928c3fb5eb4f93cf35e3bc6b1faadae91e8f2adbc96de5d11aa",
+		"rng": "-5645901814171062661"
+	}
+}

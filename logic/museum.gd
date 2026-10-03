@@ -119,9 +119,10 @@ static var columns: Array[Vector2i] = []
 ## empty, and MuseumView hangs its own (MuseumView._paintings).
 static var paintings: Array[Dictionary] = []
 ## How wide a column's own circle is, in tiles, for movement (Sim._resolve)
-## and sight (has_line_of_sight): under 0.5 so the tile still has floor free
-## all round it, matching the look MuseumView._column draws.
-const COLUMN_R := 0.3
+## and sight (has_line_of_sight): the shaft MuseumView._column draws, under
+## 0.5 so the tile's corners stay free and a body (Sim.BODY, 0.3) still
+## passes between a column and the wall a tile away from it.
+const COLUMN_R := 0.4
 ## A museum of one theme (Themes), every gallery and corridor the same, and
 ## only its big pieces (MapGen); "" mixes them. Set with the night (Sim.new_map).
 static var only_theme := ""

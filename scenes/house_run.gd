@@ -9,6 +9,31 @@ var host: Game
 
 ## In the band's house: the room the first thief is in (to say its name as
 ## one walks in) and whether the way out has been taken.
+var space_id := "salon"
+var arrival_from := ""
+var _space_view: HomeSpace
+
+func prepare_space() -> void:
+	if _space_view != null and is_instance_valid(_space_view):
+		_space_view.free()
+	var scene: PackedScene = load("res://scenes/home/%s.tscn" % space_id)
+	_space_view = scene.instantiate() as HomeSpace
+	_space_view.configure(arrival_from)
+
+func take_space_view() -> HomeSpace:
+	var view := _space_view
+	_space_view = null
+	return view
+
+func enter_space(id: String) -> void:
+	trial_end()
+	arrival_from = space_id
+	space_id = id
+	host._new_round(1)
+	host._start_playing()
+	home_room = Den.room_at(host.thieves[0].x, host.thieves[0].y)
+	host.hud.room_name(Text.t("HIDEOUT_ROOM_" + home_room.to_upper()))
+
 var home_room := ""
 var home_leaving := false
 
@@ -178,7 +203,7 @@ func trial_action(t: Thief) -> Dictionary:
 
 ## Who has just got onto a start point (one of the band, now), starts its trial.
 func trial_poll() -> void:
-	if host.mode != Practice.MODE:
+	if host.mode != Practice.MODE or not Den.ROOMS.has("dojo"):
 		return
 	var s := trial_watch.poll(host.thieves, host.players)
 	if not s.is_empty() and not trial_active() and trial_lock <= 0.0:
@@ -411,10 +436,18 @@ func home_tick() -> bool:
 	if home_leaving or host.thieves.is_empty():
 		return home_leaving
 	for p in host.thieves:
-		if not p.out and Den.at_door(p.x, p.y):
+		if not p.out and space_id == "salon" and Den.at_door(p.x, p.y):
 			home_leaving = true
 			host._quit_to_title()
 			return true
+	for p in host.thieves:
+		if p.out:
+			continue
+		for portal in Den.PORTALS:
+			var r: Array = portal.rect
+			if Rect2(r[0], r[1], r[2], r[3]).has_point(Vector2(p.x, p.y)):
+				enter_space(portal.target)
+				return true
 	var room := Den.room_at(host.thieves[0].x, host.thieves[0].y)
 	if room != "" and room != home_room:
 		home_room = room

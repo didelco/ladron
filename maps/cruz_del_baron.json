@@ -34,8 +34,21 @@
 		-1
 	],
 	"format": 1,
+	"gift": {
+		"colour": "#e8b53a",
+		"name": "Corona de latón del Barón",
+		"shape": "crown"
+	},
 	"guard_count": 0,
 	"guards": [],
+	"loot": {
+		"blurb": "Roja, pesada y un poco hortera.",
+		"colour": "#d0263e",
+		"name": "Corona del Barón",
+		"seconds": 4.0,
+		"shape": "crown",
+		"story": "El Barón guarda su corona bajo la cruz de su museo. Dicen que da suerte a quien la lleva. Dicen también que da dolor de cuello."
+	},
 	"name": "La Cruz del Barón",
 	"piece": [
 		-1,

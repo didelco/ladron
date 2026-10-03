@@ -460,14 +460,14 @@ func _init() -> void:
 		for px in range(0, plan.get_width(), 4):
 			if plan.get_pixel(px, py).a > 0.5:
 				solid += 1
-	check(solid > 1000, "... y tiene plano dibujado (%d puntos)" % solid)
+	check(solid > 200, "... y tiene plano dibujado (%d puntos)" % solid)
 	var ms := plan.get_width() / Museum.w
 	var lounge_px := plan.get_pixel(5 * ms + ms / 2, 15 * ms + ms / 2)
 	var trophy_px := plan.get_pixel(5 * ms + ms / 2, 5 * ms + ms / 2)
 	var shut_px := plan.get_pixel(9 * ms + ms / 2, 9 * ms + ms / 2)
 	check(lounge_px == Hud.MAP_FLOOR, "el salón, donde se está, se ve como suelo")
-	check(trophy_px == Hud.MAP_FOG, "los trofeos, con la puerta cerrada, salen sin ver")
-	check(shut_px == Hud.MAP_DOOR, "una puerta cerrada se marca en el muro")
+	check(trophy_px != Hud.MAP_FLOOR, "el museo no forma parte del plano del salón")
+	check(shut_px == Hud.MAP_FLOOR, "el portal al museo tiene suelo transitable")
 	m._toggle_map()
 	check(not m.map_open and not m.hud._map.visible, "M lo guarda")
 	Hud.home_map = false
@@ -485,7 +485,7 @@ func _init() -> void:
 	# With the props open, a bin: pushed, it falls.
 	Story.save = "user://test_escondite_b.cfg"
 	Story.unlock(Story.lesson_night("props"), 1)
-	m._new_round(1)
+	m.house.enter_space("dojo")
 	Story.save = "user://test_escondite.cfg"
 	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://test_escondite_b.cfg"))
 	m._start_playing()
@@ -502,6 +502,8 @@ func _init() -> void:
 	check(bin.fallen, "la papelera cae")
 
 	m.house.scarecrow_speed = 1.0
+	m.house.enter_space("salon")
+	p = m.thieves[0]
 	# The arcade machine in the lounge: pong, with nothing to win.
 	p.x = 2.5
 	p.y = 11.6
@@ -518,6 +520,10 @@ func _init() -> void:
 	p.y = 10.7
 	check(m._action_for(p).get("do", "") != "arcade", "de lado o por detrás, tampoco")
 
+	Story.save = "user://test_escondite_b.cfg"
+	Story.unlock(Story.lesson_night("props"), 1)
+	m.house.enter_space("dojo")
+	p = m.thieves[0]
 	# The scarecrows: the corridor's one sees a thief in its cone, and the dojo
 	# (only the dojo) goes red for three seconds.
 	var dv2: DenView = m.den_view
@@ -571,10 +577,9 @@ func _init() -> void:
 	# Music: the house's, and the museum's back out of it.
 	m._music_mood()
 	check(m.sfx._house_target == 1.0, "la música de la casa suena")
-	# Room names as one walks between rooms.
-	p.x = 10.5
-	p.y = 5.0
-	m.house.home_tick()
+	# Room names follow the destination scene.
+	m.house.enter_space("salon")
+	m.house.enter_space("museo_casa")
 	check(m.house.home_room == "trofeos", "entrar en la sala de trofeos la nombra")
 
 	# The pause, and out to the hub (the only door in is Guarida, so the only
@@ -612,6 +617,7 @@ func _init() -> void:
 	m.mode = Practice.MODE
 	m.players = 1
 	m._new_round(1)
+	m.house.enter_space("museo_casa")
 	check(DenView.players == 1 and Den.filled(DenView.players) == [1], "la sala de trofeos lee el progreso de la banda de uno")
 	check(m.phase != "countdown", "y al armar la casa no hay cuenta atrás")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
@@ -622,53 +628,41 @@ func _init() -> void:
 	var seats: Array[String] = []
 	seats.assign(["kb_left", "kb_right", "pad:0", "pad:1"])
 	m.seats = seats
+	m.house.space_id = "salon"
+	m.house.arrival_from = ""
 	m._new_round(1)
 	check(m.thieves.size() == 4 and m.thieves.all(func(q: Thief) -> bool: return not Museum.is_wall(q.x, q.y)), "cuatro ladrones sobre suelo")
 
-	# The doors in the round: all shut, the band in the lounge, seeing only it.
+	# Only the current scene is built. Internal dojo doors keep their visibility.
 	var dv: DenView = m.den_view
-	check(dv != null and Den.open_doors().is_empty(), "al llegar, todas las puertas cerradas")
 	m._start_playing()
-	check(m.thieves.all(func(q: Thief) -> bool: return Den.rooms_at(q.x, q.y) == ["salon"]), "... y toda la banda en el salón")
-	check(dv.shows("salon") and not dv.shows("trofeos") and not dv.shows("dojo") and not dv.shows("aseo"), "solo se ve el salón; las otras salas, a oscuras")
-	check(dv.get_node("Room_salon").visible and not dv.get_node("Room_trofeos").visible and not dv.get_node("Room_dojo").visible, "lo que hay en una sala a oscuras no se dibuja")
-	check(not dv.shows_at(25.5, 5.5) and dv.shows_at(5.5, 15.5) and dv.shows_at(9.5, 9.5), "lo que hay en el dojo, oculto; el umbral, no")
+	check(m.thieves.all(func(q: Thief) -> bool: return Den.rooms_at(q.x, q.y) == ["salon"]), "toda la banda en el salón")
+	check(dv.get_node("Room_salon").visible and not dv.has_node("Room_dojo") and not dv.has_node("Room_trofeos"), "el salón no construye otras escenas")
+	m.house.enter_space("dojo")
+	dv = m.den_view
 	for door in Den.DOORS:
 		var dr := Den.door_rect(door.id)
-		check(Museum.blocks_move(dr.position.x + 0.5, dr.position.y + 0.5), "en la casa, la puerta %s bloquea el paso" % door.id)
+		check(Museum.blocks_move(dr.position.x + 0.5, dr.position.y + 0.5), "la puerta interna %s bloquea el paso" % door.id)
 	var t0: Thief = m.thieves[0]
-	t0.x = 9.5
-	t0.y = 10.5
+	t0.x = 27.5
+	t0.y = 28.5
 	var act0: Dictionary = m._action_for(t0)
-	check(act0.get("do", "") == "door" and act0.at == "salon_trofeos", "junto a una puerta cerrada, la acción es abrirla: %s" % [act0])
-	check(m._prompt_rows(0).size() == 1 and m._prompt_rows(0)[0].verb == Text.t("HIDEOUT_DOOR_OPEN"), "... y la ayuda dice ABRIR")
-	check(Den.toggle_door("salon_trofeos", m.house.band_points()), "se abre")
-	dv.set_door("salon_trofeos", true)
+	check(act0.get("do", "") == "door" and act0.at == "dojo_aseo", "la puerta del aseo ofrece abrir")
+	check(Den.toggle_door("dojo_aseo", m.house.band_points()), "se abre el aseo")
+	dv.set_door("dojo_aseo", true)
 	m.house.home_sight(true)
-	check(dv.shows("trofeos") and not dv.shows("dojo") and not Museum.blocks_move(9.5, 9.5), "abierta, se ve la sala de al lado (solo esa) y se pasa")
-	check(m._prompt_rows(0)[0].verb == Text.t("HIDEOUT_DOOR_CLOSE"), "... y la ayuda dice CERRAR")
-	t0.y = 9.5
-	check(m._action_for(t0).get("do", "") != "door", "con un ladrón en el umbral la puerta no se cierra ni se ofrece")
-	check(not Den.toggle_door("salon_trofeos", m.house.band_points()) and Den.is_open("salon_trofeos"), "... y no se cierra")
-	t0.y = 10.5
-	check(Den.toggle_door("salon_trofeos", m.house.band_points()), "en cuanto se aparta, se cierra")
-	dv.set_door("salon_trofeos", false)
+	check(dv.shows("aseo") and not Museum.blocks_move(27.5, 29.5), "abierta, se ve el aseo y se pasa")
+	t0.y = 29.5
+	check(not Den.toggle_door("dojo_aseo", m.house.band_points()), "con un ladrón en el umbral no se cierra")
+	t0.y = 28.5
+	check(Den.toggle_door("dojo_aseo", m.house.band_points()), "al apartarse, se cierra")
+	dv.set_door("dojo_aseo", false)
 	m.house.home_sight(true)
-	check(not dv.shows("trofeos") and Museum.blocks_move(9.5, 9.5), "cerrada, la sala vuelve a oscurecerse")
-	# One in the dojo, one in the bathroom: the union of the three rooms.
-	m.thieves[0].x = 25.5
-	m.thieves[0].y = 5.5
-	m.thieves[1].x = 25.5
-	m.thieves[1].y = 33.5
-	m.house.home_sight(true)
-	check(dv.shows("salon") and dv.shows("dojo") and dv.shows("aseo") and not dv.shows("trofeos"), "ladrones repartidos por tres salas: se ven esas tres")
-	m.thieves[2].x = 10.5
-	m.thieves[2].y = 5.0
-	m.house.home_sight(true)
-	check(dv.shows("trofeos"), "... y con otro en los trofeos, las cuatro")
+	check(not dv.shows("aseo") and Museum.blocks_move(27.5, 29.5), "cerrada, el aseo se oscurece")
 
 	# Los trofeos no llevan calcetín: donde el botín es un calcetín, una estrella.
 	Story.keep_stars(24, 1, Story.STAR_TAKEN)
+	m.house.space_id = "museo_casa"
 	m.mode = Practice.MODE
 	m.players = 1
 	m._new_round(1)
@@ -676,7 +670,7 @@ func _init() -> void:
 	check(Story.LEVELS[23].loot.shape == "sock", "el robo 24 roba un calcetín")
 	check(Den.is_filled(24, 1) and gold_stars.size() == 1, "lleno, su puesto enseña una estrella (%d), no un calcetín" % gold_stars.size())
 	var pedestals2 := Practice.trial_starts(1).filter(func(g): return g.via == "sock").size()
-	check(_socks_in(m.den_view) == pedestals2 + 1, "y en toda la casa solo quedan los pedestales de PILLA EL CALCETÍN y la bandera: %d" % _socks_in(m.den_view))
+	check(_socks_in(m.den_view) == 0, "el museo no carga los calcetines del dojo")
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Story.save))
 	quit(qa.summary())
