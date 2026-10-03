@@ -55,12 +55,13 @@ func dots(at: int, count: int) -> String:
 	return " ".join(out)
 
 
-## Before a night, the same in every mode: the piece's tale if it has one,
-## what is new tonight if anything is (only the story teaches), and the plan:
-## the map and the rules for the night (Briefing).
+## Before a night: the piece's tale if it has one (not in the generative,
+## straight to the plan there), what is new tonight if anything is (only
+## the story teaches), and the plan: the map and the rules for the night
+## (Briefing).
 func pages() -> Array:
 	var pages := []
-	if String(Heist.loot.get("story", "")).strip_edges() != "":
+	if host.mode != "generative" and String(Heist.loot.get("story", "")).strip_edges() != "":
 		pages.append("story")
 	if host.mode == "story" and not Story.news(host.level, host.players).is_empty():
 		pages.append("news")
