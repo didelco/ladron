@@ -59,7 +59,6 @@ const PLAYERS_OPTIONS := [
 ## estética y filosofía que el resto — pegatinas por delante, pantallas
 ## reales por detrás (ver _process).
 const PAUSE_OPTIONS := [
-	{"id": "resume", "label": "Seguir", "sticker": "pausa-reanudar.png"},
 	{"id": "settings", "label": "Ajustes", "sticker": "ajustes.png"},
 	{"id": "leave", "label": "Salir", "sticker": "salir.png"},
 ]
@@ -159,7 +158,7 @@ func _autotest() -> void:
 	await get_tree().create_timer(0.3, true, false, true).timeout
 	print("[autotest]    active == PAUSE_OPTIONS? ", active == PAUSE_OPTIONS)
 	print("[autotest] -> resume")
-	_pick("resume")
+	game._start_playing()
 	await get_tree().create_timer(0.2, true, false, true).timeout
 	print("[autotest]    game.phase == playing? ", game.phase == "playing")
 
@@ -377,10 +376,6 @@ func _pick(id: String) -> void:
 			# La pantalla real completa: dificultad/tamaño/tema/jugadores,
 			# no la última configuración guardada en disco a 1 jugador.
 			_go(game._show_generative_menu)
-		"resume":
-			# El mismo SEGUIR real (main.gd:1047): fase a "playing", hud
-			# limpio, el roll que venías manteniendo no cuenta como pulsado.
-			_go(game._start_playing)
 		"leave":
 			# El mismo SALIR real de la pausa en modo práctica (main.gd:680):
 			# sin confirmación, vuelve a la ciudad/guarida de donde viniste.

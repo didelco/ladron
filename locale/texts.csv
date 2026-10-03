@@ -112,7 +112,7 @@ CONTROLS_PAD_WHERE,cualquier mando
 CONTROLS_MOVE,MOVERSE|WASD|Flechas|Stick izq. o cruceta
 CONTROLS_SLOW,ANDAR LENTO|Shift izq.|Shift dcha.|Stick a medias o LB
 CONTROLS_CROUCH,A GATAS|C|{slash}|X o clic del stick
-CONTROLS_ROLL,RODAR · SOLTAR|Espacio|Enter|B
+CONTROLS_ROLL,RODAR (SIN SACO) · SOLTAR|Espacio|Enter|B
 CONTROLS_PUSH,ACCIÓN|E|{period}|A
 CONTROLS_SMOKE,HUMO|F|{comma}|Y
 CONTROLS_MAP,MAPA|M|View
@@ -170,7 +170,7 @@ LESSON_HEIST3_TEXT,Uno sujeta la alarma; dos abren las dos cerraduras a la vez. 
 LESSON_GUARD_TITLE,EL GUARDIA
 LESSON_GUARD_TEXT,"Si su linterna te pilla, va a por ti. Espera tras una pared a que pase."
 LESSON_TORCH_TITLE,AGÁCHATE
-LESSON_TORCH_TEXT,"De lejos, su linterna solo ve a quien va de pie. Cruza agachado (C, o X)."
+LESSON_TORCH_TEXT,"De lejos, su linterna solo ve a quien va de pie. Cruza agachado (C, o X) o rodando (Espacio, o B)."
 LESSON_NOISE_TITLE,EL RUIDO
 LESSON_NOISE_TEXT,"Corriendo te oyen lejos; andando, poco; a gatas, nada."
 LESSON_PROPS_TITLE,LA DISTRACCIÓN
@@ -186,7 +186,7 @@ LESSON_BIG_TITLE,UN MUSEO GRANDE
 LESSON_BIG_TEXT,"Más salas, nada nuevo. Planea la ruta en el plano antes de entrar."
 LESSON_FINALE_TITLE,EL ÚLTIMO GOLPE
 LESSON_FINALE_TEXT,"Todos despiertos y sin calmarse. Todo lo que sabes, a la vez. Suerte."
-LESSON_CASE_ALARM_TEXT,"Mientras la abres, la vitrina pita. Si llega alguien, suéltala y escóndete."
+LESSON_CASE_ALARM_TEXT,"Ábrela limpia: si fallas dos veces el mismo perno, salta la alarma y vienen los guardias."
 NIGHT_01_NAME,la dentadura del abuelo lolo
 NIGHT_01_BLURB,"Postiza, de porcelana. Tan vieja que parece un fósil."
 NIGHT_01_VERB,DESENROSCANDO EL TARRO
@@ -321,6 +321,8 @@ END_STAT_ROLLS_ONE,VOLTERETA
 END_STAT_ROLLS_MANY,VOLTERETAS
 END_STAT_BUMPS_ONE,CHOQUE
 END_STAT_BUMPS_MANY,CHOQUES
+END_STAT_ALARMS_ONE,ALARMA
+END_STAT_ALARMS_MANY,ALARMAS
 END_STAR_TAKEN,BOTÍN
 END_STAR_UNSEEN,SIGILO
 END_STAR_FAST,RAPIDEZ
@@ -410,7 +412,7 @@ LEGEND_DOOR,puerta cerrada
 LEGEND_FOG,sin ver
 LOG_CRASH_EVERYWHERE,¡Menudo estruendo! %s se ha oído en todo el museo
 LOG_KNOCKED,¡Has tirado %s!
-LOG_ROLL_WALL,¡Pum! Te has estampado contra la pared
+LOG_ROLL_WALL,¡Pum! Contra la pared: te oyen y ves estrellas ninja
 LOG_PLINTH_UP,Quieto como una estatua… nadie sospecha nada
 LOG_ARCADE,Una partidita… solo una
 LOG_SNEEZE,¡ACHÍS! Adiós escondite: todo el museo lo ha oído
@@ -418,8 +420,11 @@ LOG_PLINTH_BLOWN,¡Te han visto subir! Así no cuela
 LOG_HIDE_IN,Metido en %s… ni respiras
 LOG_HIDE_BLOWN,¡Te han visto meterte! Saben dónde estás
 LOG_HIDE_TIPPED,¡Se cae la armadura y sales rodando!
-LOG_ROLL_CASE,¡Pum! Te has estampado contra la vitrina
-LOG_CASE_ALARM,¡Salta la alarma de la vitrina!
+LOG_ROLL_CASE,¡Pum! Contra la vitrina: te oyen y ves estrellas ninja
+LOG_ROLL_SACK,Con el saco del botín no puedes rodar
+LOG_ROLL_TIRED,Sin aliento: no te llega para rodar
+LOG_CASE_ALARM,¡Salta la alarma!
+LOG_THEFT_FOUND,"%s ve la vitrina vacía: ¡han robado la pieza!"
 LOG_GOT_IT,"Tienes %s: ahora, a la salida"
 LOG_GOT_IT_TEAM,"Tenéis %s: ahora, todos a la salida"
 LOG_DROPPED,%s ha caído al suelo
@@ -558,8 +563,10 @@ MUSEUM_4_TEXT,"Caballeros, armaduras y los grandes inventos del Renacimiento"
 MUSEUM_5_NAME,El Museo de Arte Contemporáneo
 MUSEUM_5_TEXT,"Arte Moderno con mensaje, ah, no, eso solo es una papelera"
 MENU_CHALLENGE,MISIONES
-MENU_CHALLENGE_TEXT,"Misiones que se abren con la Historia, y tus mapas"
-CHALLENGE_TEXT,"Elige una misión o uno de tus mapas, o dibuja uno nuevo"
+MENU_CHALLENGE_TEXT,Robos con historia y obsequio que se abren con la Historia
+MENU_WORKSHOP,TALLER
+MENU_WORKSHOP_TEXT,"Tus mapas y el editor, fuera de la Historia"
+CHALLENGE_TEXT,"Elige uno de tus mapas, o dibuja uno nuevo"
 CHALLENGE_NEW,+ NUEVO MAPA
 CHALLENGE_EDIT,EDITAR
 CHALLENGE_DELETE,BORRAR
@@ -634,6 +641,12 @@ EDITOR_GUARD_SPEED_1,LENTO
 EDITOR_GUARD_SPEED_2,PASO NORMAL
 EDITOR_GUARD_SPEED_3,ÁGIL
 EDITOR_GUARD_SPEED_4,VELOZ
+EDITOR_GUARD_STAT_ATTENTION,ATENCIÓN
+EDITOR_GUARD_ATTENTION_0,DESPISTADO
+EDITOR_GUARD_ATTENTION_1,POCO ATENTO
+EDITOR_GUARD_ATTENTION_2,ATENCIÓN NORMAL
+EDITOR_GUARD_ATTENTION_3,ATENTO
+EDITOR_GUARD_ATTENTION_4,MUY ATENTO
 EDITOR_GUARD_STANCE,CÓMO SE MUEVE
 EDITOR_GUARD_STANCE_ROUND,EN RONDA
 EDITOR_GUARD_STANCE_POST,GUARDIA FIJA
@@ -1009,13 +1022,14 @@ TIP_JUMPY,Un solo ruido raro y dan la alarma.
 TIP_GRUDGE_ONE,"Si se mosquea, tarda en calmarse: espera bien escondido."
 TIP_GRUDGE_MANY,"Si se mosquean, tardan en calmarse: espera bien escondido."
 TIP_POST,Un guardia no se mueve: pasa cuando mire a otro lado.
-TIP_CASE_ALARM,"Mientras abres pita: escóndete si vienen. Con la pieza, ve a la salida."
+TIP_CASE_ALARM,"Dos fallos en un perno: salta la alarma. Con la pieza, a la salida."
 TIP_LIGHTS_ONE,En alerta enciende la luz: apágala con E en el interruptor.
 TIP_LIGHTS_MANY,En alerta encienden la luz: apágala con E en el interruptor.
 TIP_TWO,"Si uno te ve, grita y los demás vienen corriendo."
 TIP_NOISE,"Corriendo te oyen de lejos; a gatas, nada."
 TIP_GAMES,"Ganzúa, pedestal y escondite piden maña: sigue el recuadro."
 TIP_TORCH,"De lejos, las linternas no ven a quien va a gatas (C, o X)."
+TIP_WIND,Correr cansa y rodar cuesta mucho: sin aliento vas lento y no ruedas.
 TIP_MAP,Museo grande: mira el mapa con M (View en el mando).
 GALLERY_ANCIENT,la sala del mundo antiguo
 GALLERY_ANCIENT_OF,de la sala del mundo antiguo
@@ -1575,7 +1589,7 @@ SETTINGS_HELP_FPS_LIMIT,Limita los fotogramas por segundo; menos calienta menos 
 SETTINGS_HELP_VSYNC,Sincroniza imagen y pantalla para evitar cortes; puede añadir latencia.
 SETTINGS_HELP_MEGAPHONE,Elige avisos en texto y voz: ambos / solo texto / solo voz / apagada.
 SETTINGS_HELP_IA,Muestra lo que piensan los guardias durante el robo.
-SETTINGS_HELP_DEV_MODE,Muestra los FPS y los robos de Historia para editarlos desde Misiones.
+SETTINGS_HELP_DEV_MODE,"Muestra los FPS y los robos de Historia para editarlos desde el Taller, abre todos los museos, salas y misiones, y no guarda nada de lo que juegues (ni récords ni misiones)."
 SETTINGS_HELP_SOUND,Activa o silencia todos los sonidos del juego.
 SETTINGS_HELP_MUSIC,Activa o silencia la música.
 SETTINGS_HELP_MUSIC_VOLUME,Cambia el volumen de la música.
@@ -1596,3 +1610,13 @@ JOIN_EXTRA_PADS,El teclado admite 2 jugadores; para 3 o 4 hacen falta mandos
 PAUSE_CONTROLS_HINT,Humo y mapa: consulta Ajustes → Controles
 CHALLENGE_STORY_HEAD,EDITAR ROBOS DE HISTORIA
 EDITOR_ICONS_HELP,Iconos: pasa el ratón o enfoca para ver su función
+PHONE_RING,"¡RING, RING!"
+PHONE_RING_TEXT,Te llaman por teléfono
+PHONE_ANSWER,COGER
+PHONE_IGNORE,NO COGER
+PHONE_CALLING,TE LLAMA
+PHONE_ACCEPT,ACEPTAR
+PHONE_LATER,DEJAR PARA DESPUÉS
+MISSION_NONE,Aún no te ha llamado nadie
+MISSION_NONE_TEXT,"Pasa un rato en la guarida: cuando haya un robo para ti, sonará el teléfono."
+MISSION_BY,Encargo de %s

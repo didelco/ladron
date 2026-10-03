@@ -426,6 +426,7 @@ details.fam .dentro { padding: 0 10px 10px; }
     <section class="pagina" id="p-minijuegos"></section>
     <section class="pagina" id="p-escondites"></section>
     <section class="pagina" id="p-coleccion"></section>
+    <section class="pagina" id="p-alerta"></section>
     <section class="pagina" id="p-propuesta"></section>
     <section class="pagina" id="p-versiones"></section>
     <section class="pagina" id="p-textos"></section>
@@ -439,6 +440,7 @@ details.fam .dentro { padding: 0 10px 10px; }
 <script src="data/juego.js"></script>
 <script src="data/textos.js"></script>
 <script src="data/estilo.js"></script>
+<script src="data/alerta.js" onerror="void 0"></script>
 <script src="data/funciones.js"></script>
 <script src="data/codigo.js"></script>
 <script src="data/paleta_propuesta.js"></script>
@@ -671,6 +673,11 @@ function estilo() {
     <p class="fuente">NINJA KARMA 0123456789</p>
     <p class="estado">Press Start 2P (<code>assets/fonts/</code>, licencia OFL).</p>
     <p class="estado">Esta página es la documentación, no el juego: va en blanco y negro con Inter, para no confundir su estilo con el del juego.</p></div>`;
+}
+
+// --- Alerta: escrita a mano en docs/ALERTA.md, como la de estilo ---------------------------
+function alerta() {
+  $("#p-alerta").innerHTML = `<div class="md">${md(window.ALERTA || "# Alerta\n\nFalta `docs/ALERTA.md` (o `python3 tools/docs.py texts`).")}</div>`;
 }
 
 // --- Paleta ---------------------------------------------------------------------------
@@ -1634,7 +1641,7 @@ document.addEventListener("keydown", e => {
 
 function pintar() {
   NAV.portada(); inicio(); capturas(); estilo(); paleta(); objetos(); personajes(); sonidos(); historia(); ciudad(); textos(); megafonia(); propuestas(); referencias();
-  previa(); minijuegos(); escondites(); coleccion(); propuesta(); versiones();
+  previa(); minijuegos(); escondites(); coleccion(); alerta(); propuesta(); versiones();
   document.body.classList.toggle("editable", EDITABLE);
 }
 pintar();

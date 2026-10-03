@@ -77,7 +77,9 @@ func _init() -> void:
 		now += 1000.0 / 60
 		secs += 1.0 / 60
 	check(event == "stolen", "robada quieto delante en %.1f s (hacían falta %s)" % [secs, Heist.loot.seconds])
-	check(alarms >= 3, "la alarma sonó %d veces mientras la forzaba" % alarms)
+	# The alarm is the pick's (a pin missed twice, test_modos): standing
+	# still at the case there is nothing to miss, so it never rings.
+	check(alarms == 0 and NightAlert.alarms == 0, "quieto delante, sin ganzúa: la vitrina no pita (%d)" % alarms)
 	p.x = Heist.exit.x + 0.5
 	p.y = Heist.exit.y + 0.5
 	var noises2: Array[SoundEvent] = []
@@ -129,7 +131,7 @@ func _init() -> void:
 		event = Heist.step(pair, 1.0 / 60, now, sounds)
 		now += 1000.0 / 60
 		secs += 1.0 / 60
-	check(event == "stolen" and not sounds.is_empty(), "con el compañero pillado, se fuerza solo y suena la alarma")
+	check(event == "stolen" and sounds.is_empty(), "con el compañero pillado, la abre solo, y sin fallos no pita")
 
 	# Things to knock over: standing against walls, off the doorways; walk
 	# into one and it falls with a crash; a guard who sees it lying there

@@ -8,6 +8,9 @@ extends MinigameView
 const RING := 0.4
 
 var _ring: Node3D
+## the ring's glow: cream, or orange and red as the alarm counts the slips
+## (Minigame.hook_colour)
+var _ring_mat: StandardMaterial3D
 var _cup: Node3D
 var _cup_mat: StandardMaterial3D
 var _lamps: Array[MeshInstance3D] = []
@@ -43,7 +46,8 @@ func build() -> void:
 	torus.outer_radius = RING + 0.012
 	torus.rings = 48
 	ring.mesh = torus
-	ring.material_override = glowing(CREAM, 0.8)
+	_ring_mat = glowing(CREAM, 0.8)
+	ring.material_override = _ring_mat
 	ring.rotation_degrees.x = 90
 	_ring.add_child(ring)
 	# The suction cup: a flat disc of pale rubber on the glass, its rim
@@ -98,6 +102,15 @@ func build() -> void:
 func pose(_dt: float) -> void:
 	var g := game as SteadyGame
 	_ring.scale = Vector3.ONE * g.ring()
+	# The ring: cream while the lamp being lit is clean, orange after a slip,
+	# red (blinking) after two — the alarm has gone off.
+	var hook := g.hook_colour()
+	var ring_c: Color = CREAM if hook == 0 else HOOK_COLOURS[hook]
+	if hook == 2 and fmod(t, 0.4) < 0.15:
+		ring_c = INK
+	_ring_mat.albedo_color = ring_c
+	_ring_mat.emission = ring_c
+	_ring_mat.emission_energy_multiplier = 0.8 if hook == 0 else 2.0
 	_cup.position = Vector3(g.cup.x * RING, -g.cup.y * RING, 0.04)
 	var c := GREEN if g.inside() else RED
 	_cup_mat.albedo_color = c

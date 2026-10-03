@@ -41,6 +41,15 @@ const CAM_INTRO_LOW := 0.6
 const CAM_ZOOM_OUT := 0.12
 const CAM_ZOOM_IN := 1.2
 
+## The menu's picture: the hideout behind the menus seen from closer than
+## when playing, so it reads as a backdrop and its details show: the play
+## camera's own view, this share of its distance. Choosing GUARIDA pulls back
+## to the play camera.
+const MENU_NEAR := 0.68
+
+## How long (s) the camera takes to go between the menu's picture and the play camera.
+const MENU_BLEND_S := 1.3
+
 var host: Game
 
 ## where the camera is headed, followed smoothly; the shake and the punch are
@@ -70,6 +79,11 @@ var punch_tween: Tween
 ## of them, 0 the usual follow), so you see where you are before you go
 var intro := 0.0
 var intro_tween: Tween
+
+## 0..1: how far the camera is from the play camera towards the menu's
+## closer picture of the house (1 in the menu, 0 playing), and where it goes.
+var menu_blend := 0.0
+var menu_tween: Tween
 
 
 func _init(game: Game) -> void:
@@ -137,6 +151,9 @@ func snap() -> void:
 	intro = 0.0
 	if intro_tween:
 		intro_tween.kill()
+	menu_blend = 0.0
+	if menu_tween:
+		menu_tween.kill()
 	host.camera.h_offset = 0.0
 	host.camera.v_offset = 0.0
 	host.camera.position = t + CAM_OFFSET * cam_zoom
@@ -180,7 +197,13 @@ func follow(dt: float) -> void:
 	if intro > 0.0:
 		focus = focus.lerp(gang_middle() + Vector3(0, 0, -CAM_INTRO_LOW), intro)
 	var near := lerpf(1.0, CAM_INTRO_NEAR, intro)
-	host.camera.position = focus + CAM_OFFSET * cam_zoom * near * (1.0 - 0.22 * punch)
+	var eye := focus + CAM_OFFSET * cam_zoom * near * (1.0 - 0.22 * punch)
+	var fog_zoom := cam_zoom
+	if menu_blend > 0.0:
+		eye = focus + (eye - focus) * lerpf(1.0, MENU_NEAR, menu_blend)
+		if host.nightenv.world_env:
+			host.nightenv.world_env.volumetric_fog_length = NightEnv.FOG_LENGTH * cam_zoom * lerpf(1.0, MENU_NEAR, menu_blend)
+	host.camera.position = eye
 	host.camera.look_at(focus)
 	# The shake slides the picture rather than moving the camera, so the
 	# lights nearest the camera do not flicker from room to room.
@@ -211,6 +234,19 @@ func intro_camera(seconds: float) -> void:
 	intro = 1.0
 	intro_tween = host.create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	intro_tween.tween_property(self, "intro", 0.0, seconds).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+
+
+## The menu looks at the house from close up (on) or the play camera takes
+## over, further back (off), either way easing over MENU_BLEND_S; `instant` jumps.
+func menu_view(on: bool, instant := false) -> void:
+	if menu_tween:
+		menu_tween.kill()
+	var to := 1.0 if on else 0.0
+	if instant or is_equal_approx(menu_blend, to):
+		menu_blend = to
+		return
+	menu_tween = host.create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	menu_tween.tween_property(self, "menu_blend", to, MENU_BLEND_S).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
 
 
 ## A jolt of the camera: 0.6 for a guard's first yell, less for a crash.

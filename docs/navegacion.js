@@ -28,6 +28,7 @@ const GRUPOS = [
     { id: "ciudad", titulo: "Ciudad y museos", desc: "La ciudad entera y una ficha por museo.", n: () => num((((J.ciudad || {}).museums) || []).length, "museo", "museos"), kw: "mapa museos" },
     { id: "previa", titulo: "Antes de un robo", desc: "El plano, el cuento y las reglas del plan de cada robo.", kw: "briefing plan tour" },
     { id: "minijuegos", titulo: "Minijuegos", desc: "Los trabajos con las manos: ganzúa, cables, pulso…, con sus niveles.", kw: "ganzua cables pulso vitrina alarma" },
+    { id: "alerta", titulo: "Alerta y guardias", desc: "Los cuatro modos de la noche, los niveles de alerta, la alarma, la ganzúa de colores, los rasgos de los guardias y la fórmula con que se descubre el robo.", kw: "modos intruso sospecha robado nos han robado atencion alarma sirena balizas ganzua naranja rojo vista oido arquetipos probabilidad formula constantes" },
     { id: "escondites", titulo: "Escondites", desc: "Dónde se esconde el ladrón: piezas grandes, muebles y armaduras.", kw: "armadura mueble esconderse" },
     { id: "coleccion", titulo: "Colección", desc: "Qué piezas salen en cada museo, las únicas y la recreativa.", kw: "piezas unicas recreativa arcade" },
     { id: "objetos", titulo: "Objetos y piezas", desc: "Todo lo que se puede poner en un museo y las piezas a robar, con su ficha.", n: () => num(elementos().length, "cosa", "cosas"), kw: "editor catalogo loot vitrina peana" },
@@ -141,7 +142,7 @@ function nav(pag, sel) {
 // --- Portada: un mapa de todo, por lo que se quiere hacer ---------------------------------------
 const INTENCIONES = [
   ["Ver cómo es el juego y cómo se recorre", ["pantallas", "capturas", "ciudad"]],
-  ["Entender la historia y las reglas", ["historia", "previa", "minijuegos", "escondites", "coleccion"]],
+  ["Entender la historia y las reglas", ["historia", "previa", "minijuegos", "alerta", "escondites", "coleccion"]],
   ["Encontrar un objeto, una pieza o un personaje", ["objetos", "personajes"]],
   ["Cambiar un texto del juego o una frase de la megafonía", ["textos", "megafonia"]],
   ["Consultar colores, estilo y sonidos", ["estilo", "paleta", "propuesta", "sonidos"]],
@@ -187,7 +188,7 @@ function portada() {
     <details class="mas"><summary>Sobre esta documentación</summary>
       <p class="estado">Generada el ${html(g.fecha || "—")} desde <code>${html(g.rama || "")}</code> @ <code>${html(g.commit || "")}</code>.
       <code>python3 tools/docs.py build</code> lo regenera todo (abre el juego unos minutos); <code>build --fast</code>, solo datos y textos;
-      <code>serve</code> la sirve en <code>http://localhost:8765</code> con los textos editables. A mano solo están <code>docs/ESTILO.md</code>, <code>docs/pantallas.js</code> y <code>docs/data/resumen.json</code> (este resumen).
+      <code>serve</code> la sirve en <code>http://localhost:8765</code> con los textos editables. A mano solo están <code>docs/ESTILO.md</code>, <code>docs/ALERTA.md</code>, <code>docs/pantallas.js</code> y <code>docs/data/resumen.json</code> (este resumen).
       Atajos: <kbd>/</kbd> o <kbd>Ctrl</kbd>+<kbd>K</kbd> buscan; en una pantalla, <kbd>←</kbd> y <kbd>→</kbd> pasan a la anterior y la siguiente.</p>
     </details>
     </details>`;

@@ -200,9 +200,9 @@ func _shots() -> void:
 	await _shot("menu_generativo_dificultad", "menus", "Generativo: la dificultad", "Pulsar una tarjeta saca debajo un bocadillo con sus tres, cada una en su diorama quieto, como el de cuántos ladrones del título; la que hay, encendida.")
 	main.hud.close_bubble(true)
 	await _wait(0.5)
-	main.challenges.show_menu()
+	main.challenges.show_workshop()
 	await _wait(1.5)
-	await _shot("menu_retos", "menus", "Misiones", "Los robos de la historia y los mapas hechos a mano, con el plano del elegido.")
+	await _shot("menu_retos", "menus", "Taller", "Los robos de la historia y los mapas hechos a mano, con el plano del elegido.")
 	var maps := MapFile.list()
 	if not maps.is_empty():
 		main.challenges.show_map(maps[0])

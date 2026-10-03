@@ -266,10 +266,12 @@ def write_resumen():
 
 
 def build_static():
-    """Lo escrito a mano (docs/ESTILO.md), las constantes del código y la fuente, al lado del HTML."""
+    """Lo escrito a mano (docs/ESTILO.md y docs/ALERTA.md), las constantes del código y la fuente, al lado del HTML."""
     build_code()
     path = os.path.join(DOCS, "ESTILO.md")
     write_js("estilo.js", "ESTILO", open(path, encoding="utf-8").read() if os.path.exists(path) else "")
+    alerta = os.path.join(DOCS, "ALERTA.md")
+    write_js("alerta.js", "ALERTA", open(alerta, encoding="utf-8").read() if os.path.exists(alerta) else "")
     write_js("funciones.js", "FUNCIONES", functions())
     write_propuestas()
     write_resumen()

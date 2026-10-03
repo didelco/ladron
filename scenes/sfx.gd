@@ -47,6 +47,10 @@ var _voices: Array[AudioStreamPlayer3D] = []
 ## Interface sounds all go through one polyphonic player.
 var _ui: AudioStreamPlayer
 var _ui_playback: AudioStreamPlaybackPolyphonic
+## The museum's alarm while it rings (NightAlert): the siren over and over,
+## heard everywhere; stopped by the pause like the world.
+var _siren_player: AudioStreamPlayer
+const SIREN_VOLUME := 0.55
 
 var _calm: AudioStreamPlayer
 var _tense: AudioStreamPlayer
@@ -138,6 +142,8 @@ func _ready() -> void:
 	_streams.nav = _mix(_bells([[1568.0, 0.0]], 0.12, 0.08), _noise(0.02, 2500.0, 0.2))
 	_streams.ok = _bells([[1046.5, 0.0], [1568.0, 0.07]], 0.35, 0.16)
 	_streams.back = _tones([[784.0, 0.0, 0.07], [523.3, 0.07, 0.12]], "sine", 0.22)
+	# The telephone (PhoneCall): an old ringer, two warbling bursts a ring.
+	_streams.phone = _phone_ring()
 	# Every stream is built as samples, then packed once for the engine.
 	for k in _streams.keys():
 		_streams[k] = _wav(_streams[k])
@@ -273,6 +279,33 @@ func ui(sound: String, volume := 1.0) -> void:
 		_ui.play()
 		_ui_playback = _ui.get_stream_playback()
 	_ui_playback.play_stream(_streams[sound], 0.0, linear_to_db(maxf(volume, 0.01)))
+
+
+## The museum's alarm ringing (on) or not: the siren in a loop, till told
+## to stop. Asking again for what it already does changes nothing.
+func siren(on: bool) -> void:
+	if not on:
+		if _siren_player and _siren_player.playing:
+			_siren_player.stop()
+		return
+	if _siren_player == null:
+		var loop := (_streams.siren as AudioStreamWAV).duplicate() as AudioStreamWAV
+		loop.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		loop.loop_begin = 0
+		loop.loop_end = loop.data.size() / 2
+		_siren_player = AudioStreamPlayer.new()
+		_siren_player.stream = loop
+		_siren_player.bus = "World"
+		_siren_player.volume_db = linear_to_db(SIREN_VOLUME)
+		_siren_player.process_mode = Node.PROCESS_MODE_PAUSABLE
+		add_child(_siren_player)
+	if not _siren_player.playing:
+		_siren_player.play()
+
+
+## Whether the alarm's siren is sounding (the tests).
+func siren_on() -> bool:
+	return _siren_player != null and _siren_player.playing
 
 
 ## How tense the music is (0 creeping .. 1 chase) and how loud (0..1).
@@ -727,6 +760,23 @@ func _electric_bell(seconds: float) -> PackedFloat32Array:
 		var hammer := exp(-strike * 5.0)
 		var v := sin(TAU * 1150.0 * t) + 0.6 * sin(TAU * 2650.0 * t) + 0.3 * sin(TAU * 3910.0 * t)
 		out[i] = v * hammer * (1.0 - t / seconds) * 0.28
+	return out
+
+
+## An old telephone's ring: two bursts of two bell notes, warbling.
+func _phone_ring() -> PackedFloat32Array:
+	var n := int(1.4 * RATE)
+	var out := PackedFloat32Array()
+	out.resize(n)
+	for i in n:
+		var t := float(i) / RATE
+		var on := 0.0
+		for start in [0.0, 0.5]:
+			var u: float = t - start
+			if u >= 0.0 and u < 0.36:
+				on = minf(1.0, u / 0.01) * minf(1.0, (0.36 - u) / 0.02)
+		var bell := sin(TAU * 1400.0 * t) + sin(TAU * 1750.0 * t)
+		out[i] = bell * (0.55 + 0.45 * sin(TAU * 25.0 * t)) * on * 0.14
 	return out
 
 

@@ -211,6 +211,14 @@ const SAVE := "user://progress.cfg"
 ## where the progress is kept: SAVE, but the tests keep theirs apart
 static var save := SAVE
 
+## Dev mode (set from the game's setting, Game.dev_mode): everything is open
+## to look at and play (unlocked), and nothing played is kept in the
+## progress: every function that writes it (unlock, keep_stars,
+## record_time, DojoTrials.record, Missions.complete, the plans told)
+## returns without writing. The progress file is never touched, so turning
+## dev off shows exactly the real progress again.
+static var dev := false
+
 ## The town's museums, each a stop on the city map with ROOMS heists
 ## inside, in order, the last its big job. Each shows one theme (Themes):
 ## its galleries, its corridors and its pieces. Each has its own floor and
@@ -298,7 +306,9 @@ static func tuning(n: int) -> Dictionary:
 	var l := level(n)
 	var game: int = GAME_LEVEL[museum_of(n)][1 if is_boss(n) else 0]
 	var out := {"lock": 1.0, "lockpick": n >= LOCKPICK_NIGHT, "game_level": game,
-		"theme": MUSEUMS[museum_of(n)].theme}
+		"theme": MUSEUMS[museum_of(n)].theme,
+		# No tiring in the first museum: running is free while you learn.
+		"fatigue": museum_of(n) > 0}
 	for k in ["guards", "view", "hearing", "speed", "calm_after", "alarms", "props", "lights", "case_alarm", "post"]:
 		if l.has(k):
 			out[k] = l[k]
@@ -311,6 +321,12 @@ static func tuning(n: int) -> Dictionary:
 ## museum, "unlocked_<gang>", and before gangs just "unlocked", the lone
 ## thief's) is read through from_old: nothing done is lost.
 static func unlocked(players := 1) -> int:
+	return LEVELS.size() if dev else reached(players)
+
+
+## The furthest night really reached, whatever dev mode shows (unlocked):
+## the progress as it is kept.
+static func reached(players := 1) -> int:
 	var cfg := ConfigFile.new()
 	if cfg.load(save) != OK:
 		return 1
@@ -322,7 +338,7 @@ static func unlocked(players := 1) -> int:
 
 
 static func unlock(n: int, players := 1) -> void:
-	if n <= unlocked(players):
+	if dev or n <= reached(players):
 		return
 	var cfg := ConfigFile.new()
 	cfg.load(save)
@@ -465,6 +481,8 @@ static func keep_stars(n: int, players: int, mask: int) -> int:
 	if fresh == 0:
 		return 0
 	all[n - 1] |= mask
+	if dev:
+		return fresh
 	var cfg := ConfigFile.new()
 	cfg.load(save)
 	cfg.set_value("stars", _key(players), all)
@@ -529,7 +547,7 @@ static func best_time(n: int, players := 1) -> float:
 ## away with the piece (HeistStats.rate keeps the stars the same way); a go
 ## only looked at keeps nothing, same as keep_stars.
 static func record_time(n: int, players: int, seconds: float) -> void:
-	if n < 1 or n > LEVELS.size() or seconds <= 0.0:
+	if dev or n < 1 or n > LEVELS.size() or seconds <= 0.0:
 		return
 	var all := _best_times(players)
 	if all[n - 1] > 0.0 and seconds >= all[n - 1]:

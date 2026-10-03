@@ -43,7 +43,7 @@ func _progress() -> void:
 		# Never in the player's own progress.
 		if arg.begins_with("--reached=") and Story.save != Story.SAVE:
 			Story.unlock(clampi(int(arg.substr(10)), 1, Story.count()), host.players)
-	host.story_pick = Story.unlocked(host.players)
+	host.story_pick = Story.reached(host.players)
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--pick="):
 			host.story_pick = clampi(int(arg.substr(7)), 1, Story.count())
@@ -72,7 +72,7 @@ func _menu(arg: String) -> void:
 		"generative": host._show_generative_menu()
 		"challenges": host.challenges.show_menu()
 		"editor": host.challenges.show_editor(MapFile.generated(4242, "small"))
-		"settings": host.options.show("title")
+		"settings": host.options.open("title")
 		"pads": host.options.show("title", "pads")
 		"input": host.hands.show_join("generative")
 		# The ends of a night and the pause, to look at them: --pick=N

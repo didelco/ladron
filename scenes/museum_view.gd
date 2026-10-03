@@ -1013,6 +1013,105 @@ func _emergency_lights() -> void:
 		box.material_override = fitting
 		box.position = light.position
 		add_child(box)
+		# An alarm beacon beside it (the first MAX_BEACONS), dark till the
+		# alarm rings (set_alarm).
+		if _beacons.size() < MAX_BEACONS:
+			_beacon(to_world(s.x + 0.5, s.y + 0.5, BEACON_HEIGHT))
+
+
+# --- The alarm's beacons (NightAlert) ---------------------------------------------
+
+## Red lights turning on the corridor round the museum while the alarm
+## rings, like the dojo's alarm but turning: a red dome, a red glow round it
+## that throbs, and a red beam sweeping the floor. Few and shadowless.
+const MAX_BEACONS := 6
+const BEACON_HEIGHT := 1.7
+const BEACON_COLOUR := Color("#ff2a1f")
+const BEACON_ENERGY := 16.0
+const BEACON_GLOW := 2.5
+## turns a second, and how long it takes to come on or go off
+const BEACON_TURNS := 0.9
+const BEACON_FADE_S := 0.3
+
+## each beacon's pivot (turning), its beam, its glow, and the domes' shine
+var _beacons: Array[Node3D] = []
+var _beacon_beams: Array[SpotLight3D] = []
+var _beacon_glows: Array[OmniLight3D] = []
+var _beacon_clock := 0.0
+var _beacon_dome: StandardMaterial3D
+## 0..1 how lit the beacons are, and where that is going
+var _alarm_lit := 0.0
+var _alarm_goal := 0.0
+
+
+func _beacon(at: Vector3) -> void:
+	if _beacon_dome == null:
+		_beacon_dome = StandardMaterial3D.new()
+		_beacon_dome.albedo_color = BEACON_COLOUR.darkened(0.6)
+		_beacon_dome.emission_enabled = true
+		_beacon_dome.emission = BEACON_COLOUR
+		_beacon_dome.emission_energy_multiplier = 0.0
+	var pivot := Node3D.new()
+	pivot.position = at
+	pivot.visible = false
+	add_child(pivot)
+	var dome := MeshInstance3D.new()
+	var s := SphereMesh.new()
+	s.radius = 0.2
+	s.height = 0.26
+	dome.mesh = s
+	dome.material_override = _beacon_dome
+	dome.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	pivot.add_child(dome)
+	var beam := SpotLight3D.new()
+	beam.light_color = BEACON_COLOUR
+	beam.light_energy = 0.0
+	beam.spot_range = 8.0
+	beam.spot_angle = 32.0
+	beam.shadow_enabled = false
+	beam.light_volumetric_fog_energy = 2.0
+	# Out and down, so its pool sweeps round the floor as it turns.
+	beam.rotation = Vector3(-0.6, 0.0, 0.0)
+	pivot.add_child(beam)
+	var glow := OmniLight3D.new()
+	glow.light_color = BEACON_COLOUR
+	glow.light_energy = 0.0
+	glow.omni_range = 3.5
+	glow.shadow_enabled = false
+	glow.position = at + Vector3(0, 0.3, 0)
+	glow.visible = false
+	add_child(glow)
+	_beacons.append(pivot)
+	_beacon_beams.append(beam)
+	_beacon_glows.append(glow)
+
+
+## The alarm ringing (on) or not: the beacons come on and turn, or go dark.
+func set_alarm(on: bool) -> void:
+	_alarm_goal = 1.0 if on else 0.0
+
+
+## How lit the beacons are now (0..1), for the tests.
+func alarm_level() -> float:
+	return _alarm_lit
+
+
+func _pose_beacons(dt: float) -> void:
+	if _beacons.is_empty() or (_alarm_lit == 0.0 and _alarm_goal == 0.0):
+		return
+	_alarm_lit = move_toward(_alarm_lit, _alarm_goal, dt / BEACON_FADE_S)
+	_beacon_clock += dt
+	var on := _alarm_lit > 0.001
+	var throb := 0.6 + 0.4 * sin(_beacon_clock * TAU * BEACON_TURNS * 2.0)
+	_beacon_dome.emission_energy_multiplier = 6.0 * _alarm_lit
+	for i in _beacons.size():
+		var pivot := _beacons[i]
+		pivot.visible = on
+		# Not all in step: each starts a little round from the last.
+		pivot.rotation.y = wrapf(pivot.rotation.y + dt * TAU * BEACON_TURNS, -PI, PI) if on else i * 1.3
+		_beacon_beams[i].light_energy = BEACON_ENERGY * _alarm_lit
+		_beacon_glows[i].visible = on
+		_beacon_glows[i].light_energy = BEACON_GLOW * _alarm_lit * throb
 
 
 # --- Wall lamps -----------------------------------------------------------
@@ -1118,6 +1217,7 @@ func _pose_map_door(d: Dictionary) -> void:
 ## Only a plain MuseumView ticks its own doors: DenView overrides this for
 ## its own (Den.DOOR_SECONDS) and never calls up to it.
 func _process(dt: float) -> void:
+	_pose_beacons(dt)
 	for t in _map_door_nodes:
 		var d: Dictionary = _map_door_nodes[t]
 		if d.open != d.goal:

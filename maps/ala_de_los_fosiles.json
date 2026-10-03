@@ -19,6 +19,18 @@
 			]
 		}
 	],
+	"caller": {
+		"face": {
+			"bg": "#e9a6c0",
+			"glasses": true,
+			"hair": "#d9d9de",
+			"moustache": false,
+			"skin": "#f1c7a0",
+			"style": "bun"
+		},
+		"line": "¡Mi niño! Que el conservador va diciendo por ahí que su hueso es de dinosaurio. ¡Será de pollo! Tráemelo y lo comprobamos con el caldo.",
+		"name": "La abuela Remedios"
+	},
 	"difficulty": "medium",
 	"exit": [
 		-1,

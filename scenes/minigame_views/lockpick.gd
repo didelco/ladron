@@ -10,7 +10,9 @@ const DIAL := 0.4
 
 var _marks: Array[MeshInstance3D] = []
 var _mark_dim: StandardMaterial3D
-var _mark_lit: StandardMaterial3D
+## the lit sector in each of the pin's colours (green, orange, red: the
+## alarm's count of misses, Minigame.hook_colour)
+var _mark_lit: Array[StandardMaterial3D] = []
 var _needle: Node3D
 var _needle_mat: StandardMaterial3D
 var _pins: Array[MeshInstance3D] = []
@@ -38,7 +40,8 @@ func build() -> void:
 	# The dial: a ring of marks round the keyhole; the green ones are where
 	# the pin sets.
 	_mark_dim = MenuStage._material(GOLD.darkened(0.45))
-	_mark_lit = glowing(GREEN, 2.2)
+	for c in HOOK_COLOURS:
+		_mark_lit.append(glowing(c, 2.2))
 	for i in MARKS:
 		var a := float(i) / MARKS * TAU
 		var mark := box(Vector3(0.045, 0.1, 0.03), GOLD, Vector3(sin(a) * DIAL, cos(a) * DIAL, 0.18))
@@ -83,12 +86,15 @@ func build() -> void:
 
 func pose(_dt: float) -> void:
 	var g := game as LockpickGame
-	# The green sector: the marks within the band of the spot.
+	# The green sector: the marks within the band of the spot — orange after
+	# a miss on this pin, red after two (with the alarm on), red blinking.
 	var band := g.band()
+	var hook := g.hook_colour()
+	var blink := hook == 2 and fmod(t, 0.4) < 0.15
 	for i in _marks.size():
 		var d := absf(float(i) / MARKS - g.spot)
-		var lit := minf(d, 1.0 - d) <= band and not g.done
-		_marks[i].material_override = _mark_lit if lit else _mark_dim
+		var lit := minf(d, 1.0 - d) <= band and not g.done and not blink
+		_marks[i].material_override = _mark_lit[hook] if lit else _mark_dim
 	# The needle goes round clockwise from the top, red when it slips.
 	_needle.rotation.z = -g.tip() * TAU
 	_needle_mat.albedo_color = STEEL.lerp(RED, clampf(g.lock / LockpickGame.SLIP_S, 0.0, 1.0))

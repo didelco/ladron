@@ -12,6 +12,7 @@ const OPTIONS := [
 	{"id": "story", "label": "Modo Historia", "sticker": "historia.png"},
 	{"id": "challenge", "label": "Misiones", "sticker": "jugar-mapas.png"},
 	{"id": "generative", "label": "Atraco Sorpresa", "sticker": "generativo.png"},
+	{"id": "workshop", "label": "Taller", "sticker": "editor-mapas.png"},
 	{"id": "settings", "label": "Ajustes", "sticker": "ajustes.png"},
 	{"id": "quit", "label": "Cerrar Ninja Karma", "sticker": "apagar.png"},
 ]
@@ -32,24 +33,29 @@ const PLAYERS_OPTIONS := [
 	{"id": "p4", "label": "4 Jugadores", "res": "res://assets/ui/ninjas_4.png"},
 ]
 ## En la guarida (modo práctica) no hay nada que perder: la pausa muestra el
-## mismo carril entero de siempre, con Seguir en vez de Guarida (ya estás
-## aquí). En medio de un golpe de verdad, solo lo seguro: Seguir, Ajustes y
-## Salir (que sí confirma antes de abandonar progreso sin guardar).
+## mismo carril entero de siempre, sin Guarida (ya estás aquí). En medio de un
+## golpe de verdad, solo lo seguro: Ajustes y Salir (que sí confirma antes de
+## abandonar progreso sin guardar). No hay tarjeta de Seguir: se vuelve al juego
+## con Esc, P, B o Start (Game._back).
 const PAUSE_OPTIONS_FULL := [
-	{"id": "resume", "label": "Seguir", "sticker": "pausa-reanudar.png"},
 	{"id": "story", "label": "Modo Historia", "sticker": "historia.png"},
 	{"id": "challenge", "label": "Misiones", "sticker": "jugar-mapas.png"},
 	{"id": "generative", "label": "Atraco Sorpresa", "sticker": "generativo.png"},
+	{"id": "workshop", "label": "Taller", "sticker": "editor-mapas.png"},
 	{"id": "settings", "label": "Ajustes", "sticker": "ajustes.png"},
 	{"id": "leave", "label": "Salir", "sticker": "ciudad.png"},
 	{"id": "quit_game", "label": "Cerrar Ninja Karma", "sticker": "apagar.png"},
 ]
 const PAUSE_OPTIONS_SHORT := [
-	{"id": "resume", "label": "Seguir", "sticker": "pausa-reanudar.png"},
 	{"id": "settings", "label": "Ajustes", "sticker": "ajustes.png"},
 	{"id": "leave", "label": "Salir", "sticker": "ciudad.png"},
 	{"id": "quit_game", "label": "Cerrar Ninja Karma", "sticker": "apagar.png"},
 ]
+
+## El velo negro detrás del menú: más opaco en el centro (donde van las
+## tarjetas y su texto) y más suave hacia los bordes, donde la casa se ve mejor.
+const VEIL_CENTER_ALPHA := 0.72
+const VEIL_EDGE_ALPHA := 0.4
 
 const CARD_W := 220.0
 const CARD_H := 150.0
@@ -79,6 +85,7 @@ var _stick_side := 0.0
 var _stick_vertical := 0.0
 var _screen_phase := "title"
 var _back_action := Callable()
+var _veil: TextureRect
 var _heading: Label
 var _detail: Label
 var _detail_scroll: ScrollContainer
@@ -98,6 +105,9 @@ func show_screen(title: String, choices: Array, kind: String, phase: String, bac
 		host.quit_asking = false
 	_screen_phase = phase
 	_back_action = back
+	# Over the house (not the pause, in the middle of play) the camera shows the
+	# whole house from afar, as a backdrop; playing brings it back (_dojo_start).
+	host.rig.menu_view(phase != "paused" and host.mode == Practice.MODE)
 	host.hud.hide_panel(true)
 	host.hud.hide_gameplay()
 	_stick_side = 0.0
@@ -194,6 +204,23 @@ func show_start(pick := "") -> void:
 
 
 func _build() -> void:
+	var veil_gradient := Gradient.new()
+	veil_gradient.colors = PackedColorArray([Color(0, 0, 0, VEIL_CENTER_ALPHA), Color(0, 0, 0, VEIL_EDGE_ALPHA)])
+	veil_gradient.offsets = PackedFloat32Array([0.0, 1.0])
+	var veil_texture := GradientTexture2D.new()
+	veil_texture.gradient = veil_gradient
+	veil_texture.fill = GradientTexture2D.FILL_RADIAL
+	veil_texture.fill_from = Vector2(0.5, 0.5)
+	veil_texture.fill_to = Vector2(1.0, 0.5)
+	veil_texture.width = 256
+	veil_texture.height = 256
+	_veil = TextureRect.new()
+	_veil.texture = veil_texture
+	_veil.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_veil.stretch_mode = TextureRect.STRETCH_SCALE
+	_veil.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_veil)
 	_heading = Label.new()
 	_heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_heading.add_theme_font_override("font", Hud.ARCADE)
@@ -428,10 +455,7 @@ func _pick(id: String) -> void:
 	match id:
 		"dojo":
 			# Guarida entra directamente al salón con la banda actual.
-			if active_kind == "pause":
-				_pick("resume")
-			else:
-				_go(host._dojo_start.bind(host.players, true))
+			_go(host._dojo_start.bind(host.players, true))
 		"story":
 			# Historia comparte el selector de banda con Guarida.
 			_ask_players("story")
@@ -446,22 +470,23 @@ func _pick(id: String) -> void:
 			else:
 				_go(host.hands.show_join.bind(mode_id, n))
 		"settings":
-			_go(host.options.show.bind("paused" if host.phase == "paused" else "title"))
+			_go(host.options.open)
 		"back":
 			pending_mode = ""
 			if _back_action.is_valid():
 				_go(_back_action)
 
 		"challenge":
-			# La pantalla real completa: lista de noches + mapas propios,
-			# info de cada uno, 1-4 jugadores por mapa, y el editor entero
+			# Las misiones: los robos del propio juego, que se abren con la
+			# Historia, con su ficha y 1-4 jugadores.
+			_go(host.challenges.show_missions)
+		"workshop":
+			# El taller: los mapas propios y el editor entero
 			# (crear/editar/probar/guardar/borrar/restaurar).
-			_go(host.challenges.show_menu)
+			_go(host.challenges.show_workshop)
 		"generative":
 			# La pantalla real completa: dificultad/tamaño/tema/jugadores.
 			_go(host._show_generative_menu)
-		"resume":
-			_go(host._start_playing)
 		"leave":
 			# Práctica vuelve directamente; un golpe pide confirmar.
 			_go(host._ask_leave)

@@ -5,6 +5,9 @@ extends Minigame
 ## it back. Kept inside the ring for `need` seconds in a row, the glass is
 ## cut; out of the ring, the count starts again. Harder levels have a
 ## smaller ring and a stronger drift; shaking hands make the drift wilder.
+## With the alarm on (Minigame.alarm) the lamp being lit is a hook: out of
+## the ring once, orange; twice before the next lamp lights, red, and the
+## alarm goes off. A lamp lit, green again.
 
 ## The cup's radius (the easy ring's is 1), how hard it drifts, how hard the
 ## keys push it and how quickly it slows.
@@ -70,10 +73,12 @@ func _play(input: Dictionary, _press: Dictionary, dt: float) -> String:
 		var lamps := int(held / need * steps)
 		if lamps > step:
 			events.append("pin")
+			_next_hook()
 		step = mini(lamps, steps)
 	else:
 		held = 0.0
 		step = 0
 		if was_in:
 			events.append("slip")
+			_missed_hook()
 	return "done" if held >= need else ""

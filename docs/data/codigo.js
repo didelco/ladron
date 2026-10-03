@@ -1,6 +1,6 @@
 window.CODIGO = {
  "logic/minigame.gd": {
-  "doc": "A job done with the hands, in a little box by the thief (MinigameBox), as in Among Us: the world goes on meanwhile, so the longer it takes, the longer you stand there to be seen.  This is what they all share: the keys (only presses count, and what was already held when it opened is not a press), the time, the level, how much the hands shake, being held off by someone else's part, and letting go with the roll key (B) — only that one, so a brush of the stick never throws a job away. Each kind is a script of its own in logic/minigames/, named as the kind, with its look in scenes/minigame_views/ (MinigameView):  of the action kind, which cannot be failed, only done slowly: \"lockpick\" (LockpickGame), \"wires\" (WiresGame), \"steady\" (SteadyGame), \"squeeze\" (SqueezeGame: a shove into a hideout); of the enduring kind, which can be failed: \"balance\" (BalanceGame: posing as a statue on one foot), \"sneeze\" (SneezeGame: holding in a sneeze while hiding, which never ends while you stay in); and one just for fun, which never ends: \"arcade\" (ArcadeGame: pong on the arcade machine, Arcades).  A new one: logic/minigames/<kind>.gd extending this (its _setup and _play, and progress if it is not counted in steps), scenes/minigame_views/<kind>.gd extending MinigameView, a line GAME_HOW_<KIND> in locale/texts.csv, and whoever starts it calls Minigame.make(\"<kind>\", …). Nothing else needs to know it exists.  Each comes in three levels (level: 0 easy .. 2 hard, level_now()), and frightened hands shake (tremble, 0..1, from how alarmed the guards are).",
+  "doc": "A job done with the hands, in a little box by the thief (MinigameBox), as in Among Us: the world goes on meanwhile, so the longer it takes, the longer you stand there to be seen.  This is what they all share: the keys (only presses count, and what was already held when it opened is not a press), the time, the level, how much the hands shake, being held off by someone else's part, and letting go with the roll key (B) — only that one, so a brush of the stick never throws a job away. Each kind is a script of its own in logic/minigames/, named as the kind, with its look in scenes/minigame_views/ (MinigameView):  of the action kind, which cannot be failed, only done slowly: \"lockpick\" (LockpickGame), \"wires\" (WiresGame), \"steady\" (SteadyGame), \"squeeze\" (SqueezeGame: the dojo bench's colour code, ColourCode); of the enduring kind, which can be failed: \"balance\" (BalanceGame: posing as a statue on one foot), \"sneeze\" (SneezeGame: holding in a sneeze while hiding, which never ends while you stay in); and one just for fun, which never ends: \"arcade\" (ArcadeGame: pong on the arcade machine, Arcades).  A new one: logic/minigames/<kind>.gd extending this (its _setup and _play, and progress if it is not counted in steps), scenes/minigame_views/<kind>.gd extending MinigameView, a line GAME_HOW_<KIND> in locale/texts.csv, and whoever starts it calls Minigame.make(\"<kind>\", …). Nothing else needs to know it exists.  Each comes in three levels (level: 0 easy .. 2 hard, level_now()), and frightened hands shake (tremble, 0..1, from how alarmed the guards are).",
   "consts": {
    "SCRIPTS": {
     "value": "\"res://logic/minigames/%s.gd\"",
@@ -11,6 +11,16 @@ window.CODIGO = {
     "value": "[\"up\", \"right\", \"down\", \"left\"]",
     "note": "Directions, as the games name them: up, right, down, left.",
     "line": 35
+   },
+   "ORANGE_AT": {
+    "value": "1",
+    "note": "",
+    "line": 62
+   },
+   "RED_AT": {
+    "value": "2",
+    "note": "",
+    "line": 63
    }
   }
  },
@@ -160,37 +170,37 @@ window.CODIGO = {
   }
  },
  "logic/minigames/lockpick.gd": {
-  "doc": "The case: a dial on the lock, a needle going round it and a green sector on its rim; press the action key as the needle crosses the green to set a pin, one pin after another, the green somewhere else each time. A miss slips the pick, and it settles again. Shaking hands make the needle jitter and the green narrower.",
+  "doc": "The case: a dial on the lock, a needle going round it and a green sector on its rim; press the action key as the needle crosses the green to set a pin, one pin after another, the green somewhere else each time. A miss slips the pick, and it settles again. Shaking hands make the needle jitter and the green narrower. With the case's alarm on (Minigame.alarm) each pin is a hook: one miss turns it orange, two red, and red sets the alarm off; the next pin is green again. Picked clean, it never rings.",
   "consts": {
    "PIN_PERIOD": {
     "value": "1.0",
     "note": "Seconds for the needle to go once round the dial.",
-    "line": 10
+    "line": 12
    },
    "PIN_BAND": {
     "value": "0.1",
     "note": "Half the width of the green sector, as a share of the way round, steady; at full tremble it is SHAKE_NARROW narrower.",
-    "line": 13
+    "line": 15
    },
    "SHAKE_NARROW": {
     "value": "0.4",
     "note": "Half the width of the green sector, as a share of the way round, steady; at full tremble it is SHAKE_NARROW narrower.",
-    "line": 14
+    "line": 16
    },
    "SHAKE_JITTER": {
     "value": "0.04",
     "note": "How far the needle jitters at full tremble, as a share of the way round.",
-    "line": 16
+    "line": 18
    },
    "SLIP_S": {
     "value": "0.45",
     "note": "A miss: the pick slips off, and the hands answer again after this long.",
-    "line": 18
+    "line": 20
    },
    "GIVE": {
     "value": "0.45",
     "note": "Each near miss on the same pin loosens it: its sweet spot this much wider (a share of PIN_BAND), so whoever keeps at it always gets there.",
-    "line": 21
+    "line": 23
    }
   }
  },
@@ -270,82 +280,46 @@ window.CODIGO = {
   }
  },
  "logic/minigames/squeeze.gd": {
-  "doc": "Getting into a hideout (Hideouts): one shove with the action key and the thief sinks in. Short, and the risk is the guard, not the keys: a shove made while a guard looks (watched) gets stuck and sinks slowly, so it pays to pick the moment the light has passed. It cannot be failed, only done slowly, and all that time you are out there to be seen.  By level (what the ESCONDITE tests of the dojo teach): easy   one shove, and in. Nobody looks. medium one shove, but a lantern sweeps the place: shove between sweeps. hard   two shoves (half in, then all the way), with the lantern's gaps shorter. Pick both moments. In a heist the lantern is the real guards (watched, set every frame by whoever runs it); in the dojo, where there are none, a lantern of its own goes round (LANTERN_S and LIT_LEVEL), so the same lesson is there.  steps_ is how tight the fit is: 1 for a little longer to sink (Hideouts.TIGHT).",
-  "consts": {
-   "SHOVES_LEVEL": {
-    "value": "[1, 1, 2]",
-    "note": "Shoves it takes to get in, by level.",
-    "line": 22
-   },
-   "SINK_LEVEL": {
-    "value": "[0.7, 0.8, 0.5]",
-    "note": "Seconds sinking after a shove, by level (two shoves on the hard one, each half the way), and this much more for a tight fit, per shove.",
-    "line": 25
-   },
-   "TIGHT_SINK": {
-    "value": "0.2",
-    "note": "Seconds sinking after a shove, by level (two shoves on the hard one, each half the way), and this much more for a tight fit, per shove.",
-    "line": 26
-   },
-   "SHAKE_SINK": {
-    "value": "0.15",
-    "note": "Shaking hands sink this much longer at full tremble.",
-    "line": 28
-   },
-   "WATCHED_SLOW": {
-    "value": "2.0",
-    "note": "Shoved while watched: it sinks this many times slower.",
-    "line": 30
-   },
-   "LANTERN_S": {
-    "value": "2.2",
-    "note": "The dojo's lantern: seconds for a round, and the share of it that lights the place, by level (none on the easy one).",
-    "line": 33
-   },
-   "LIT_LEVEL": {
-    "value": "[0.0, 0.35, 0.4]",
-    "note": "The dojo's lantern: seconds for a round, and the share of it that lights the place, by level (none on the easy one).",
-    "line": 34
-   }
-  }
+  "doc": "A colour code (ColourCode), at the dojo's bench (ESCONDITE, what \"bench\"). The code is shown in order; the same colours sit under it in a row, out of order; the directions move a cursor along the row, the action key picks the ball under it, and the action key on another ball changes the two of place. The row reading as the code, it is done. It cannot be failed, only done slowly.  By level: three balls, one swap away; four balls, two swaps away; five balls, three swaps away (ColourCode.BALLS_LEVEL, SWAPS_LEVEL); a tight piece (steps_, 1: Hideouts.TIGHT) is dealt one swap further. (Hideouts used to run this to get into a hideout, out in the open while you solved it; getting in is instant now, so nothing starts it with what \"hideout\" any more.)  steps counts the balls, step the ones sitting where the code says.",
+  "consts": {}
  },
  "logic/minigames/steady.gd": {
-  "doc": "The alarm panel's glass (or the case's, on some nights instead of the pick): a suction cup on it drifts about on its own; the directions push it back. Kept inside the ring for `need` seconds in a row, the glass is cut; out of the ring, the count starts again. Harder levels have a smaller ring and a stronger drift; shaking hands make the drift wilder.",
+  "doc": "The alarm panel's glass (or the case's, on some nights instead of the pick): a suction cup on it drifts about on its own; the directions push it back. Kept inside the ring for `need` seconds in a row, the glass is cut; out of the ring, the count starts again. Harder levels have a smaller ring and a stronger drift; shaking hands make the drift wilder. With the alarm on (Minigame.alarm) the lamp being lit is a hook: out of the ring once, orange; twice before the next lamp lights, red, and the alarm goes off. A lamp lit, green again.",
   "consts": {
    "CUP": {
     "value": "0.26",
     "note": "The cup's radius (the easy ring's is 1), how hard it drifts, how hard the keys push it and how quickly it slows.",
-    "line": 11
+    "line": 14
    },
    "DRIFT": {
     "value": "2.4",
     "note": "The cup's radius (the easy ring's is 1), how hard it drifts, how hard the keys push it and how quickly it slows.",
-    "line": 12
+    "line": 15
    },
    "RING_LEVEL": {
     "value": "[1.0, 0.84, 0.7]",
     "note": "By level (easy, medium, hard): the ring's size and the drift's strength.",
-    "line": 14
+    "line": 17
    },
    "DRIFT_LEVEL": {
     "value": "[0.8, 1.0, 1.15]",
     "note": "By level (easy, medium, hard): the ring's size and the drift's strength.",
-    "line": 15
+    "line": 18
    },
    "PUSH": {
     "value": "4.2",
     "note": "By level (easy, medium, hard): the ring's size and the drift's strength.",
-    "line": 16
+    "line": 19
    },
    "DAMP": {
     "value": "2.6",
     "note": "By level (easy, medium, hard): the ring's size and the drift's strength.",
-    "line": 17
+    "line": 20
    },
    "GUST_S": {
     "value": "0.45",
     "note": "How often the drift changes its mind, in seconds.",
-    "line": 19
+    "line": 22
    }
   }
  },
@@ -370,7 +344,7 @@ window.CODIGO = {
   }
  },
  "logic/hideouts.gd": {
-  "doc": "Places to hide in. Next to one, the action key gets you in; any direction gets you out, onto the free floor that way.  the big pieces (Museum.big_pieces) you fit inside: the sarcophagus, the Trojan horse, the mammoth (under its coat), the hollow log and the little car on its stand; pieces of furniture on a case tile of their own (pieces), one theme each: a retro fridge and a cardboard box (modern), a legionary's armour (ancient), a confessional and a chest (middle ages), a giant dinosaur egg (prehistory), a giant tortoise shell (nature); a suit of armour still standing (Props): you step inside it.  Whatever looks like a place to hide is one: every big piece and every suit of armour standing in the museum, and every piece of furniture. What keeps it from being too easy is how few of them there are, far apart from one another: the generator stands only so many big pieces to hide in (MapGen), the props only so many suits of armour (Props.place), and each night adds furniture, and empty pedestals to pose on (Plinths), up to the museum's share (places, spread). A saved map keeps what it stood by hand. Getting in takes a shove or two (Minigame \"squeeze\", start), one to three seconds out in the open — once the nights have minigames (Heist.minigames); before that, the action key gets you in at once.  Inside, you make no sound and no guard sees you. Same deal as the statue (Plinths): it only works unseen. Get in in front of a guard and it remembers (Guard.knows) and comes straight for you, and once beside it pulls you out; a guard that did not see you walks right past. A suit of armour knocked over with you inside it tips you out onto the floor.",
+  "doc": "Places to hide in. Next to one, the action key gets you in; any direction gets you out, onto the free floor that way.  the big pieces (Museum.big_pieces) you fit inside: the sarcophagus, the Trojan horse, the mammoth (under its coat), the hollow log and the little car on its stand; pieces of furniture on a case tile of their own (pieces), one theme each: a retro fridge and a cardboard box (modern), a legionary's armour (ancient), a confessional and a chest (middle ages), a giant dinosaur egg (prehistory), a giant tortoise shell (nature); a suit of armour still standing (Props): you step inside it.  Whatever looks like a place to hide is one: every big piece and every suit of armour standing in the museum, and every piece of furniture. What keeps it from being too easy is how few of them there are, far apart from one another: the generator stands only so many big pieces to hide in (MapGen), the props only so many suits of armour (Props.place), and each night adds furniture, and empty pedestals to pose on (Plinths), up to the museum's share (places, spread). A saved map keeps what it stood by hand. The action key gets you in at once: no minigame to get into a hideout (there used to be one, a colour code solved out in the open; it made hiding itself a risk, which was not the fun part, so it is gone).  Inside, you make no sound and no guard sees you. Same deal as the statue (Plinths): it only works unseen. Get in in front of a guard and it remembers (Guard.knows) and comes straight for you, and once beside it pulls you out; a guard that did not see you walks right past. A suit of armour knocked over with you inside it tips you out onto the floor.",
   "consts": {
    "REACH": {
     "value": "1.0",
@@ -419,7 +393,7 @@ window.CODIGO = {
    },
    "TIGHT": {
     "value": "{\"box\": 1, \"egg\": 1, \"chest\": 1, \"shell\": 1, \"armour\": 1, \"legionary\": 1}",
-    "note": "How tight a squeeze each is: a little slower to sink in (SqueezeGame); the roomy ones are not.",
+    "note": "How tight a squeeze each is: its colour code dealt one swap further (SqueezeGame); the roomy ones are not.",
     "line": 64
    }
   }
@@ -487,30 +461,35 @@ window.CODIGO = {
     "note": "Of what stands on a case in a themed gallery, this much is in a glass case, this much on a plinth; the rest on the floor.",
     "line": 89
    },
+   "COLUMN_STYLES": {
+    "value": "{\"antiguo\": \"dorica\", \"edad_media\": \"gotica\", \"naturaleza\": \"madera\", \"prehistoria\": \"piedra\"}",
+    "note": "The column (MapFile.columns, MuseumView's exempt pillar) a theme's gallery stands: the ancient world's fluted \"dorica\", the middle ages' compound \"gotica\", prehistory's squared brown megalith (\"piedra\", in the same ochre-and-flint browns as Themes.ALL.prehistoria's own palette), nature's wooden post (\"madera\" — a trunk fits its groves and dioramas). The modern age keeps the bare-concrete \"moderno\" (a raw Ando-style tube reads fine as \"no style at all\" there), and so does no theme at all (a corridor, or the band's house, Den, which is wood throughout already).",
+    "line": 110
+   },
    "UNIQUE": {
     "value": "[\"dinosaur\", \"trojan_horse\", \"temas/edad_media/espada_piedra\", \"temas/edad_media/trono\", \"temas/edad_media/maquina_voladora\"]",
     "note": "The icons: a museum has one at most, as a second would be a copy. Big pieces by their kind (BigPieces.SIZES), the rest by their model. Every piece not here nor in VARIANTS may stand any number of times.",
-    "line": 142
+    "line": 159
    },
    "VARIANTS": {
     "value": "{\"temas/moderna/recreativa\": [\"tenis\", \"invasores\", \"comecocos\", \"bloques\", \"serpiente\", \"carreras\"]}",
     "note": "The pieces where every copy is really something different: several may stand in one museum, each a different variant, never the same one twice; once they are all out, the place gets another piece. The arcade machine, one game each (MuseumView.ARCADE_GAMES has how each looks; you play pong on all of them, Arcades).",
-    "line": 149
+    "line": 166
    },
    "PROP_THEMES": {
     "value": "{\"bust\": \"antiguo\", \"armour\": \"edad_media\", \"bin\": \"\", \"panel\": \"\"}",
     "note": "What the thieves knock over, and the big pieces, by theme (\"\" for none).",
-    "line": 175
+    "line": 192
    },
    "TYPES": {
     "value": "[\"case\", \"small\", \"big\", \"prop\", \"hide\"]",
     "note": "The kinds of piece, as the editor filters them: in a glass case, small (on a plinth), big (on the floor, or on a block of cases), what the thieves knock over, and what they hide in (Hideouts.PIECES).",
-    "line": 181
+    "line": 198
    },
    "FRONTED": {
     "value": "[\"temas/moderna/recreativa\", \"temas/edad_media/trono\", \"temas/antiguo/anubis\"]",
     "note": "Where a theme's model stands: \"case\", \"plinth\" or \"floor\". The floor pieces with a front that must not face a wall: a screen, a seat, a face. MuseumView turns them to the free floor beside them, and a place with none gets another piece.",
-    "line": 231
+    "line": 248
    }
   }
  },
@@ -655,37 +634,37 @@ window.CODIGO = {
    "MUSEUMS": {
     "value": "[ # El Museo de la Prehistoria: rough ochre stone underfoot, clay walls, dark rock below. {\"name\": \"MUSEUM_1_NAME\", \"text\": \"MUSEUM_1_TEXT\", \"theme\": \"prehistoria\", \"colour\": \"#d08a3a\", \"palette\": {\"floor\": 0, \"stone\": Color(\"#4a3624\"), \"stone2\": Color(\"#56402a\"), \"joint\": Color(\"#1e140c\"), \"gloss\": 0.55, \"paper\": Color(\"#6b3f1f\"), \"paper2\": Color(\"#7a4a25\"), \"wallpaper\": 0, \"wainscot\": Color(\"#3a…",
     "note": "The town's museums, each a stop on the city map with ROOMS heists inside, in order, the last its big job. Each shows one theme (Themes): its galleries, its corridors and its pieces. Each has its own floor and walls (MuseumView.THEMES keys) to match, and a colour for its stop on the map. In the order of time, from the dinosaurs to today: prehistory, nature (the living world, still in the old natural-history style), the ancient world, the middle ages, and the modern age, the Barón's own tower.",
-    "line": 221
+    "line": 229
    },
    "STAR_TAKEN": {
     "value": "1",
     "note": "Each heist of the story gives up to three stars, Overcooked style, each its own goal, as bits of a mask: STAR_TAKEN   out of the door with the piece: the heist done; STAR_UNSEEN  no guard saw anyone of the gang, the whole night through (HeistStats \"seen\" at 0: heard is fine, seen is not); STAR_FAST    out under the heist's par (par): its \"par\" in LEVELS, a gang's a little longer (GANG_PAR). A star once won stays won: the best is kept for each heist and each size of gang, as a mask, so a worse go never takes one away, and two goes can win two different stars (keep_stars). Only the story has them; nothing waits on them: the next museum opens with the big job, as ever.  For the screens: Story.stars(7)          -> 2      the best of heist 7, alone, as a count Story.star_mask(7)      -> 0b011  and which (STAR_TAKEN | STAR_UNSEEN) Story.stars_in(1, 2)    -> 11     museum 2 (0-based m = 1), for two Story.STARS_EACH * Story.ROOMS    the most a museum gives (15) Story.par(7)            -> 25.0   seconds for the fast star, alone Story.goals(7)          -> [\"Roba la pieza\", \"Sin que te vean\", \"En menos de 0:25\"]   (STARS order) And after a go, what it won and what was new: HeistStats.rate (the paper's stars, EndPages.newspaper).",
-    "line": 371
+    "line": 385
    },
    "STAR_UNSEEN": {
     "value": "2",
     "note": "Each heist of the story gives up to three stars, Overcooked style, each its own goal, as bits of a mask: STAR_TAKEN   out of the door with the piece: the heist done; STAR_UNSEEN  no guard saw anyone of the gang, the whole night through (HeistStats \"seen\" at 0: heard is fine, seen is not); STAR_FAST    out under the heist's par (par): its \"par\" in LEVELS, a gang's a little longer (GANG_PAR). A star once won stays won: the best is kept for each heist and each size of gang, as a mask, so a worse go never takes one away, and two goes can win two different stars (keep_stars). Only the story has them; nothing waits on them: the next museum opens with the big job, as ever.  For the screens: Story.stars(7)          -> 2      the best of heist 7, alone, as a count Story.star_mask(7)      -> 0b011  and which (STAR_TAKEN | STAR_UNSEEN) Story.stars_in(1, 2)    -> 11     museum 2 (0-based m = 1), for two Story.STARS_EACH * Story.ROOMS    the most a museum gives (15) Story.par(7)            -> 25.0   seconds for the fast star, alone Story.goals(7)          -> [\"Roba la pieza\", \"Sin que te vean\", \"En menos de 0:25\"]   (STARS order) And after a go, what it won and what was new: HeistStats.rate (the paper's stars, EndPages.newspaper).",
-    "line": 372
+    "line": 386
    },
    "STAR_FAST": {
     "value": "4",
     "note": "Each heist of the story gives up to three stars, Overcooked style, each its own goal, as bits of a mask: STAR_TAKEN   out of the door with the piece: the heist done; STAR_UNSEEN  no guard saw anyone of the gang, the whole night through (HeistStats \"seen\" at 0: heard is fine, seen is not); STAR_FAST    out under the heist's par (par): its \"par\" in LEVELS, a gang's a little longer (GANG_PAR). A star once won stays won: the best is kept for each heist and each size of gang, as a mask, so a worse go never takes one away, and two goes can win two different stars (keep_stars). Only the story has them; nothing waits on them: the next museum opens with the big job, as ever.  For the screens: Story.stars(7)          -> 2      the best of heist 7, alone, as a count Story.star_mask(7)      -> 0b011  and which (STAR_TAKEN | STAR_UNSEEN) Story.stars_in(1, 2)    -> 11     museum 2 (0-based m = 1), for two Story.STARS_EACH * Story.ROOMS    the most a museum gives (15) Story.par(7)            -> 25.0   seconds for the fast star, alone Story.goals(7)          -> [\"Roba la pieza\", \"Sin que te vean\", \"En menos de 0:25\"]   (STARS order) And after a go, what it won and what was new: HeistStats.rate (the paper's stars, EndPages.newspaper).",
-    "line": 373
+    "line": 387
    },
    "STARS": {
     "value": "[STAR_TAKEN, STAR_UNSEEN, STAR_FAST]",
     "note": "The three, in the order they are shown.",
-    "line": 375
+    "line": 389
    },
    "STARS_EACH": {
     "value": "3",
     "note": "The three, in the order they are shown.",
-    "line": 376
+    "line": 390
    },
    "GANG_PAR": {
     "value": "{1: 1.0, 2: 1.2, 3: 1.35, 4: 1.5}",
     "note": "How much longer a gang has for the fast star: everyone has to get out, and a gang shares out the job (the alarm panel).",
-    "line": 379
+    "line": 393
    }
   }
  }

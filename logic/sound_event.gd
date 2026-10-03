@@ -28,7 +28,8 @@ const LOUDNESS := {
 	"whisper": 2.5,
 	## a guard yelling "stop!"
 	"shout": 30.0,
-	"alarm": 14.0,
+	## the alarm's siren (NightAlert.trip), again and again while it rings
+	"alarm": 26.0,
 	## a thief flipping a light switch: a small, dry click
 	"switch": 2.5,
 	## a statue losing its balance and landing on the floor (Plinths.fall)

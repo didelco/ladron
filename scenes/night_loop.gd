@@ -225,6 +225,12 @@ func _move_thieves(dt: float, keys: Dictionary, noises: Array[SoundEvent]) -> vo
 			HeistStats.add("rolls")
 			host.loudspeaker.act("roll", i)
 			host.sfx.at("roll", host._to_world(p.x, p.y), 0.7, 3.0)
+		# Carrying the sack: too bulky to roll, and it says so.
+		if step.roll == "sack":
+			host._log(Text.t("LOG_ROLL_SACK"))
+		# Out of wind: it cannot pay for a roll (the energy bar flashes).
+		if step.roll == "tired":
+			host._log(Text.t("LOG_ROLL_TIRED"))
 		# Rolled into a wall: the thump, a puff of plaster, and it hurts.
 		if step.bumped == "roll":
 			HeistStats.add("bumps")
@@ -310,7 +316,9 @@ func _do_action(t: Thief, i: int, act: Dictionary, keys: Dictionary, now: float,
 	match act.get("do", ""):
 		"job":
 			Heist.start_game(t, act.at, host._game_input(i, keys))
-			if act.at.what == "case":
+			# The loudspeaker only notices hands at the case with the alarm
+			# ringing: picked quietly, nobody knows.
+			if act.at.what == "case" and NightAlert.ringing():
 				host.loudspeaker.act("case", i)
 			host.sfx.at("pick", host._to_world(t.x, t.y), 0.5, 2.0)
 		"plinth":
@@ -381,8 +389,8 @@ func _smoke(now: float, keys: Dictionary, noises: Array[SoundEvent]) -> void:
 
 
 ## The job: working the case (and its alarm), carrying, dropping, the door.
+## The alarm going off (a hook gone red) is NightAlert's: alert_events.
 func _job(dt: float, now: float, noises: Array[SoundEvent]) -> void:
-	var before_alarms := noises.size()
 	var cut_before := [Heist.panel_off, Heist.panel2_off]
 	var took := Heist.step(host.thieves, dt, now, noises)
 	if [Heist.panel_off, Heist.panel2_off] != cut_before:
@@ -390,11 +398,6 @@ func _job(dt: float, now: float, noises: Array[SoundEvent]) -> void:
 		host._log(Text.t("LOG_PANEL_CUT"))
 		host.loudspeaker.say("panel")
 		host.loudspeaker.act("panel")
-	if noises.size() > before_alarms:
-		if Heist.progress < 0.1:
-			host._log(Text.t("LOG_CASE_ALARM"))
-			host.loudspeaker.say("alarm")
-		host.sfx.at("alarm", host._to_world(Heist.at.x + 0.5, Heist.at.y + 0.5), 0.8)
 	match took:
 		"stolen":
 			host.sfx.ui("stolen")
@@ -402,16 +405,20 @@ func _job(dt: float, now: float, noises: Array[SoundEvent]) -> void:
 			host.rig.punch_in()
 			host.scenery.pop_steal()
 			host._log(Text.t("LOG_GOT_IT_TEAM" if host.thieves.size() > 1 else "LOG_GOT_IT") % Heist.loot.name)
-			host.loudspeaker.say("stolen")
+			# Nobody says "stolen" yet: only once a guard finds the case
+			# empty (NightAlert, alert_events).
 		"dropped":
 			host._log(Text.t("LOG_DROPPED") % Heist.first_upper(Heist.loot.name))
 		"picked":
 			host.sfx.ui("pick")
 
 
-## The guards: the lights, their steps and looks, the yell for backup, the warnings.
+## The guards: the night as they all live it (NightAlert: the siren, an
+## intruder, the piece found gone), the lights, their steps and looks, the
+## yell for backup, the warnings.
 func _guards(dt: float, now: float, noises: Array[SoundEvent]) -> void:
 	Sim.tick_lights(dt)
+	NightAlert.step(host.guards, noises, now, dt)
 	var saw_before := {}
 	for g in host.guards:
 		saw_before[g.id] = g.sees_player
@@ -432,6 +439,29 @@ func _guards(dt: float, now: float, noises: Array[SoundEvent]) -> void:
 	for w in Sim.warn_partners(host.guards, now):
 		host.sfx.at("whisper", host._to_world(w.x, w.y), 0.6)
 		host._log(Text.t("LOG_WARN") % [w.from, w.to])
+	alert_events()
+
+
+## What the night as a whole did since the last frame (NightAlert.events):
+## the alarm going off — its bell where it went off, the red flash, the log
+## and, only now, the loudspeaker's word on it (the siren and the turning
+## lights go on while it rings: Game._music_mood, Scenery.draw_loot); the
+## piece found gone — the log, and only now the loudspeaker's "stolen".
+func alert_events() -> void:
+	for e in NightAlert.events:
+		match e:
+			"alarm":
+				var at := NightAlert.alarm_at
+				host.sfx.at("alarm", host._to_world(at.x, at.y), 0.9, 10.0)
+				host.nightenv.screen.flash(Game.COLOURS.alert, 0.7)
+				host.hands.rumble(0.3, 0.6, 0.3)
+				host.rig.shake(0.2)
+				host._log(Text.t("LOG_CASE_ALARM"))
+				host.loudspeaker.say("alarm")
+			"robbed":
+				host._log(Text.t("LOG_THEFT_FOUND") % NightAlert.found_by)
+				host.loudspeaker.say("stolen")
+	NightAlert.events.clear()
 
 
 ## A guard sees a thief for the first time: the yell, the sting, the shake, the

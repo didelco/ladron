@@ -9,11 +9,12 @@ extends RefCounted
 ## What is counted: "seen" (a guard spotted someone and called out),
 ## "hides" (into a hideout), "sneezes", "smoke" (bombs gone off), "knocked"
 ## (things sent over, on purpose or not), "lights" (switches flipped by the
-## gang), "rolls" and "bumps" (rolled into a wall or a case).
-const KINDS := ["seen", "hides", "sneezes", "smoke", "knocked", "lights", "rolls", "bumps"]
+## gang), "rolls" and "bumps" (rolled into a wall or a case), "alarms" (the
+## alarm set off, NightAlert.trip: it costs no star, it only makes the paper).
+const KINDS := ["seen", "hides", "sneezes", "smoke", "knocked", "lights", "rolls", "bumps", "alarms"]
 ## After the time and "seen", which always show (none seen is a boast),
 ## the others that happened, most telling first.
-const ORDER := ["smoke", "hides", "knocked", "sneezes", "lights", "bumps", "rolls"]
+const ORDER := ["alarms", "smoke", "hides", "knocked", "sneezes", "lights", "bumps", "rolls"]
 ## How many figures the paper has room for, the time among them.
 const SHOWN := 4
 

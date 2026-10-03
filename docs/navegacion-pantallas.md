@@ -27,7 +27,7 @@ flowchart TD
     SET -->|"Esc desde categorías"| NEW
     MODE --> GAME["Juego"]
     GAME -->|"Esc"| PAUSE["Pausa"]
-    PAUSE -->|"Esc / Seguir"| GAME
+    PAUSE -->|"Esc / P / Start"| GAME
     PAUSE -->|"Salir"| RETURN["Menú nuevo del modo; Ciudad en Historia"]
     NEW -->|"Salir"| EXIT["Cerrar juego"]
     classDef new fill:#d7f5dc,stroke:#26763c,color:#153e21;
@@ -140,8 +140,8 @@ flowchart TD
     BR -->|"Aceptar: siguiente / Esc: anterior"| BR
     BR -->|"Última página: Empezar; o Saltar / Tab / Start"| COUNT["Cuenta atrás"]
     COUNT --> GAME["Golpe jugable · Generativo / Retos"]
-    GAME -->|"Esc / P / Start; desconexión de mando"| PAUSE["Pausa: Seguir / Ajustes / Salir / Salir del juego"]
-    PAUSE -->|"Seguir / Esc / P / Start"| GAME
+    GAME -->|"Esc / P / Start; desconexión de mando"| PAUSE["Pausa: Ajustes / Salir / Salir del juego"]
+    PAUSE -->|"Esc / P / B / Start"| GAME
     PAUSE -->|"Ajustes"| SETTINGS["Ajustes · x4 categorías"]
     SETTINGS -->|"Volver desde raíz / Esc"| PAUSE
     PAUSE -->|"Salir"| LEAVE["Confirmar abandonar"]
@@ -159,7 +159,7 @@ flowchart TD
 
 La previa agrupa **historia de la pieza**, **novedades** y **plano/reglas**; algunas páginas se omiten según modo y pieza. La entrada habitual de Historia desde la Ciudad usa el plano interactivo del diagrama anterior; esta previa se usa en Generativo, Retos y pruebas del editor. Un mapa inválido no ofrece jugar ni permite probar/ver en 3D desde el editor.
 
-**Jugadores y pausa en ambos modos.** Generativo abre una pantalla de selección de 1–4 jugadores y vuelve a la configuración antes de Empezar. Retos ofrece Jugar 1P, 2P, 3P y 4P dentro de la ficha de cada mapa válido; no abre otra pantalla para elegir el número. Con 2–4 jugadores, ambos pasan por Asignar controles. Durante el golpe, ambos tienen la pausa corta, con Seguir, Ajustes, Salir y Salir del juego; abandonar vuelve a la configuración de Generativo o a la lista de Retos.
+**Jugadores y pausa en ambos modos.** Generativo abre una pantalla de selección de 1–4 jugadores y vuelve a la configuración antes de Empezar. Retos ofrece Jugar 1P, 2P, 3P y 4P dentro de la ficha de cada mapa válido; no abre otra pantalla para elegir el número. Con 2–4 jugadores, ambos pasan por Asignar controles. Durante el golpe, ambos tienen la pausa corta, con Ajustes, Salir y Salir del juego; abandonar vuelve a la configuración de Generativo o a la lista de Retos.
 
 ## 5. Editor y sus paneles
 
@@ -196,10 +196,10 @@ Las categorías del catálogo (construcción, aspecto, dificultad, etc.) y las p
 
 ```mermaid
 flowchart TD
-    GAME["Golpe jugable"] -->|"Esc / P / Start; o desconexión de mando"| SHORT["PAUSA NUEVA corta: Seguir / Ajustes / Salir / Cerrar juego"]
-    DEN["Guarida jugable"] -->|"Esc / P / Start"| FULL["PAUSA NUEVA completa: Seguir + modos + Ajustes + Salir + Cerrar juego"]
-    SHORT -->|"Esc / P / Start / Seguir"| GAME
-    FULL -->|"Esc / P / Start / Seguir"| DEN
+    GAME["Golpe jugable"] -->|"Esc / P / Start; o desconexión de mando"| SHORT["PAUSA NUEVA corta: Ajustes / Salir / Cerrar juego"]
+    DEN["Guarida jugable"] -->|"Esc / P / Start"| FULL["PAUSA NUEVA completa: modos + Ajustes + Salir + Cerrar juego"]
+    SHORT -->|"Esc / P / B / Start"| GAME
+    FULL -->|"Esc / P / B / Start"| DEN
     FULL -->|"Historia / Retos / Atraco Sorpresa"| MODES["Flujos de esos modos"]
     SHORT -->|"Ajustes"| SETTINGS["Carril de Ajustes NUEVO"]
     FULL -->|"Ajustes"| SETTINGS

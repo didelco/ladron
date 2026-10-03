@@ -37,7 +37,7 @@ func unchanged(was: Dictionary) -> bool:
 
 func traverse(label: String) -> void:
 	game.challenges.night_maps.clear()
-	game.challenges.show_menu()
+	game.challenges.show_workshop()
 	await frames()
 	var prior := snapshot()
 	var actors := [game.thieves, game.guards]

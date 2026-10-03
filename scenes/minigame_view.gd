@@ -16,6 +16,9 @@ const WOOD := MenuStage.WOOD
 const STEEL := Color("#b8bcc8")
 const GREEN := Color("#4ade80")
 const RED := Color("#ff3d6e")
+const ORANGE := Color("#ff922b")
+## A hook's colour (Minigame.hook_colour): green, orange, red.
+const HOOK_COLOURS := [GREEN, ORANGE, RED]
 
 var game: Minigame
 ## the thief's colour, for whatever wears it

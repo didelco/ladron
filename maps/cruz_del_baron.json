@@ -28,6 +28,18 @@
 			]
 		}
 	],
+	"caller": {
+		"face": {
+			"bg": "#f0b06a",
+			"glasses": false,
+			"hair": "#2b2b33",
+			"moustache": false,
+			"skin": "#eebf98",
+			"style": "tuft"
+		},
+		"line": "Con lo del calcetín ya he aprendido: el Barón guarda su corona bajo la cruz. Dicen que da suerte, y a mí me hace falta: la lavadora sigue sin soltar el otro calcetín.",
+		"name": "Jake"
+	},
 	"difficulty": "hard",
 	"exit": [
 		-1,

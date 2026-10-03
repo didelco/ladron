@@ -90,6 +90,11 @@ func menu_item(item: Dictionary, parent: BoxContainer, st: Hud.MenuState) -> voi
 		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		r.custom_minimum_size = Vector2(stage.size) * (float(item.get("height", 200.0)) / stage.size.y)
 		parent.add_child(r)
+	elif item.has("node"):
+		# A control drawn by whoever asks (the phone and the caller's face).
+		var node: Control = item.node
+		node.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		parent.add_child(node)
 	elif item.has("picture"):
 		var picture: Texture2D = item.picture
 		var r := TextureRect.new()

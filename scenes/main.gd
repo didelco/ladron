@@ -76,6 +76,8 @@ var _plan_stick_y := 0.0
 ## La casa como punto de partida (sustituye el menú de tarjetas) y la pausa
 ## real vista con su misma pinta; ver scenes/hub.gd.
 var hub := Hub.new(self)
+## the telephone that offers the missions at home (PhoneCall)
+var phone := PhoneCall.new(self)
 
 ## "story", "generative" or "challenge"
 var mode := "story"
@@ -95,7 +97,12 @@ var players := 1
 var sound_on := true
 var music_on := true
 var show_ia := false
-var dev_mode := false
+## Dev mode: everything open, nothing played kept in the progress (Story.dev,
+## which is where the progress is held back).
+var dev_mode := false:
+	set(v):
+		dev_mode = v
+		Story.dev = v
 var dev_overlay := DevOverlay.new()
 ## the museum's loudspeaker (Megaphone) and how it is switched on: one of
 ## Settings.MEGAPHONE_MODES ("both", "text", "sound", "off")
@@ -193,6 +200,7 @@ func _ready() -> void:
 	hud = Hud.new()
 	add_child(hud)
 	add_child(hub)
+	add_child(phone)
 	add_child(dev_overlay)
 	hud.ui_sound.connect(func(kind: String) -> void: sfx.ui(kind, 0.6))
 	options.load_all()
@@ -310,7 +318,7 @@ func _story_players(n: int) -> void:
 func _story_gang(n: int) -> void:
 	players = n
 	mode = "story"
-	story_pick = Story.unlocked(n)
+	story_pick = Story.reached(n)
 	if story_pick == 1:
 		briefing.show_prologue()
 	else:
@@ -394,11 +402,18 @@ func _dojo_start(n: int, picked := false) -> void:
 	mode = Practice.MODE
 	players = n
 	dojo_from_title = true
+	phone.begin_visit()
 	if n == 1:
 		seats = ["any"]
 	pads_lost.clear()
 	get_viewport().disable_3d = false
+	# From the menu's view of the whole house the camera eases in to the play
+	# camera (_new_round snaps it, so the blend is put back after).
+	var from_menu: bool = rig.menu_blend > 0.0
 	_new_round(1)
+	if from_menu:
+		rig.menu_blend = 1.0
+		rig.menu_view(false)
 	# Walking in at the lounge would flash its own room name first
 	# (home_tick); the hideout's name takes that moment instead.
 	house.home_room = "salon"
@@ -432,7 +447,7 @@ func _plan_data() -> Dictionary:
 func _told(n: int) -> bool:
 	if retell:
 		return false
-	if n < Story.unlocked(players) or told_now.has([n, players]):
+	if n < Story.reached(players) or told_now.has([n, players]):
 		return true
 	var cfg := ConfigFile.new()
 	cfg.load(Story.save)
@@ -446,6 +461,8 @@ var retell := false
 
 func _remember_told(n: int) -> void:
 	told_now[[n, players]] = true
+	if Story.dev:
+		return
 	var cfg := ConfigFile.new()
 	cfg.load(Story.save)
 	var key := "told_%d" % players
@@ -615,7 +632,7 @@ func _start(which: String, n: int, picked := false) -> void:
 
 
 ## A real pause: the tree stops, knocked-over props hang in mid-air, until
-## SEGUIR (or Esc, or P) or the way out to the title.
+## Esc, P, B or Start (Game._back), or the way out to the title.
 func _pause() -> void:
 	house.trial_end()
 	_close_map()
@@ -853,7 +870,7 @@ func _again() -> void:
 
 ## Where back (Escape, Backspace or B: MenuKeys) goes somewhere, and so
 ## sounds.
-const BACK_PHASES := ["menu", "pick", "generative", "generative_code", "challenge", "prologue", "ending", "brief", "paused", "settings", "caught", "escaped"]
+const BACK_PHASES := ["menu", "pick", "generative", "generative_code", "challenge", "prologue", "ending", "brief", "paused", "settings", "caught", "escaped", "call"]
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -874,7 +891,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if key == KEY_N:
 		options.set_sound(not sound_on)
 		if phase == "settings":
-			options.show(options.settings_from, options.settings_page)
+			options.refresh()
 		return
 	# Selectors also accept number keys as shortcuts to the first four choices.
 	if phase == "pick" and key in [KEY_A, KEY_D]:
@@ -971,6 +988,7 @@ func _back() -> void:
 			else:
 				_start_playing()
 		"settings": options.back()
+		"call": phone.back()
 		"caught", "escaped": _leave_game(_way_out())
 
 
@@ -1148,6 +1166,7 @@ func _new_round(n: int) -> void:
 		_lay_out(n, last_map_seed)
 	stride = [0.0, 0.0, 0.0, 0.0]
 	HeistStats.reset()
+	NightAlert.reset()
 	caught_thief = -1
 	caught_by = ""
 	push_held = [false, false, false, false]
@@ -1287,7 +1306,8 @@ func _physics_process(dt: float) -> void:
 
 
 ## The music follows the guards: creeping while they are calm, a pulse
-## once any is on alert, all of it while one can see you. Softer in menus.
+## once any is on alert, all of it while one can see you or the alarm
+## rings — and the siren over it, till it stops (NightAlert). Softer in menus.
 func _music_mood() -> void:
 	var tension := 0.0
 	var in_game := phase in ["playing", "countdown", "paused", "over"]
@@ -1297,9 +1317,12 @@ func _music_mood() -> void:
 				tension = 1.0
 			elif g.alert:
 				tension = maxf(tension, 0.55)
+		if NightAlert.ringing():
+			tension = 1.0
 	sfx.mood(tension, 0.8 if in_game else 0.5)
+	sfx.siren(phase in ["playing", "paused"] and NightAlert.ringing())
 	# The band's house has music of its own, and the museums' fades out.
-	sfx.home(mode == Practice.MODE and phase in ["playing", "countdown", "paused"])
+	sfx.home(mode == Practice.MODE and phase in ["playing", "countdown", "paused", "call"])
 
 
 ## The keys a thief's minigame reads this frame: its directions, action key
@@ -1412,7 +1435,8 @@ func _draw_hud(dt: float) -> void:
 	var states: Array = []
 	for p in thieves:
 		states.append({"posture": p.posture, "speed": p.speed if p.moving else 0.0, "carrying": Heist.carrier == p.id,
-			"seen": not p.hidden, "out": p.out, "safe": p.safe, "pose": _pose_of(p), "smoke": Smoke.count(p)})
+			"seen": not p.hidden, "out": p.out, "safe": p.safe, "pose": _pose_of(p), "smoke": Smoke.count(p),
+			"energy": p.energy, "tiring": Energy.active(), "tired": Energy.tired(p), "no_energy": p.energy_flash > 0.0})
 	hud.update_gang(states, dt)
 	var alarm := 0
 	for g in guards:

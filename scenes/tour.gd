@@ -132,7 +132,7 @@ func _init() -> void:
 ## The stop the story asks for next: the museum of the next heist to do, or
 ## the hideout when the whole story is done and nothing is pending.
 static func next_stop(n: int) -> int:
-	var reached := Story.unlocked(n)
+	var reached := Story.reached(n)
 	if reached >= Story.count() and Story.star_mask(Story.count(), n) != 0:
 		return CityStage.HIDEOUT
 	return Story.museum_of(reached)

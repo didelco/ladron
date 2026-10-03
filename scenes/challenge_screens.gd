@@ -31,28 +31,56 @@ func _init(game: Game) -> void:
 	host = game
 
 
-## The maps as a list of names — the story's nights, then the challenges — and
-## beside it the one the list is on: its plan and what kind of night it is.
-## Pressing a line opens it; a new map opens the editor.
+## Which of the two lists show_menu is on: the workshop (Taller: the player's
+## maps and the editor) or the missions. Every way back to the list keeps it.
+var workshop := false
+
+
+## The missions' list, from the start menu's MISIONES.
+func show_missions() -> void:
+	workshop = false
+	show_menu()
+
+
+## The workshop's list, from the start menu's TALLER.
+func show_workshop() -> void:
+	workshop = true
+	show_menu()
+
+
+## One of the two lists of maps, each a line with its name and beside it its
+## plan and what it is. The missions: the game's own robberies, opening with
+## the story (Missions). The workshop: a new map (the editor), the maps the
+## player made, imported or downloaded, outside the story, and with the
+## developer's mode on the story's nights to touch up. Pressing a line opens
+## it.
 func show_menu() -> void:
 	challenge_delete = false
 	host.podium.drop()
-	var choices: Array = [
-		{"id": "back", "label": Text.t("MENU_BACK"), "sticker": "volver.png", "call": host._show_title.bind("challenge", false)},
-		{"id": "new", "label": Text.t("CHALLENGE_NEW"), "sticker": "editor-mapas.png", "description": Text.t("CHALLENGE_EDIT_LEGEND"), "call": show_editor.bind(MapFile.blank(Museum.SIZES.small.w, Museum.SIZES.small.h))},
-	]
-	# The missions first (the game's own, opening with the story), then the
-	# player's maps, which are outside it.
+	var from := "workshop" if workshop else "challenge"
+	var choices: Array = [{"id": "back", "label": Text.t("MENU_BACK"), "sticker": "volver.png", "call": host._show_title.bind(from, false)}]
+	if workshop:
+		choices.append({"id": "new", "label": Text.t("CHALLENGE_NEW"), "sticker": "editor-mapas.png", "description": Text.t("CHALLENGE_EDIT_LEGEND"), "call": show_editor.bind(MapFile.blank(Museum.SIZES.small.w, Museum.SIZES.small.h))})
+	var listed := 0
 	for m in MapFile.list():
+		if Missions.is_mission(m) == workshop:
+			continue
+		# A mission is listed once its phone has rung (Missions.is_called),
+		# or always with the developer's mode on.
+		if not workshop and not host.dev_mode and not Missions.is_called(m):
+			continue
+		listed += 1
 		choices.append({"id": "map:" + m.path, "label": ("✓ " if Missions.is_done(m) else "") + m.name.to_upper(), "sticker": "jugar-mapas.png" if mission_open(m) else "cancelar.png", "call": show_map.bind(m), "focus": land_map.bind(m)})
-	if host.dev_mode:
+	if not workshop and listed == 0:
+		choices.append({"id": "none", "label": Text.t("MISSION_NONE"), "sticker": "cancelar.png", "description": Text.t("MISSION_NONE_TEXT"), "call": host._show_title.bind(from, false)})
+	if workshop and host.dev_mode:
 		for n in range(1, Story.count() + 1):
 			choices.append({"id": "night:%d" % n, "label": night_name(n), "sticker": "historia.png", "call": show_night_map.bind(n), "focus": land_night.bind(n)})
-	var selected := 2 if choices.size() > 2 else 1
+	var selected := 2 if workshop and choices.size() > 2 else mini(1, choices.size() - 1)
 	for i in choices.size():
 		if choices[i].id == challenge_at:
 			selected = i
-	host.hub.show_screen(Text.t("MENU_CHALLENGE"), choices, "challenges", "menu", host._show_title.bind("challenge", false), selected)
+	host.hub.show_screen(Text.t("MENU_WORKSHOP" if workshop else "MENU_CHALLENGE"), choices, "challenges", "menu", host._show_title.bind(from, false), selected)
 
 
 func land_night(n: int) -> void:
@@ -117,7 +145,8 @@ func night_as_map(n: int) -> MapFile:
 ## Keep the original containers: an editor/world may still hold their references.
 static var layout_state := {
 	Museum: "w h shape size_name seed_used grid outside ring open_tiles cover_tiles big_pieces watchpoints rooms zones lights_left spawn doors _doors_open columns paintings only_theme version _room_index _zone_index",
-	Heist: "level loot at start exit exit_face route plan progress by carrier dropped taken _last_alarm team panel panel_face panel_by panel2 panel2_face panel2_by waiting hands short_hand panel_off panel2_off",
+	Heist: "level loot at start exit exit_face route plan progress by carrier dropped taken team panel panel_face panel_by panel2 panel2_face panel2_by waiting hands short_hand panel_off panel2_off",
+	NightAlert: "alarm_left alarm_at alarms intruder quiet robbed found_by door_guard door_spot door_clock door_left clock aims rolls events _noise_in",
 	Sim: "custom gang",
 	MuseumView: "palette exhibits",
 	Props: "list knocked",
@@ -200,6 +229,9 @@ func mission_info(m: MapFile) -> String:
 		return Text.t("MISSION_LOCKED") % Missions.opens_after(m)
 	var done := Missions.is_done(m)
 	var lines: Array[String] = []
+	var caller := Missions.caller_of(m)
+	if not caller.is_empty():
+		lines.append(Text.t("MISSION_BY") % caller.name)
 	if Missions.story_of(m) != "":
 		lines.append(Missions.story_of(m))
 	lines.append(Text.t("MISSION_STEAL") % Missions.piece_name(m))
@@ -233,7 +265,9 @@ func show_map(m: MapFile) -> void:
 	if m.check().is_empty():
 		for n in range(1, 5):
 			choices.append({"id": "p%d" % n, "label": Text.t("MENU_PLAY_%d" % n), "res": "res://assets/ui/ninjas_%d.png" % n, "description": info, "call": host._start.bind("challenge", n)})
-	choices.append({"id": "edit", "label": Text.t("CHALLENGE_EDIT"), "sticker": "editar-mapas.png", "description": info, "call": show_editor.bind(m)})
+	# A mission is the game's, as written: only the developer's mode edits it.
+	if not Missions.is_mission(m) or host.dev_mode:
+		choices.append({"id": "edit", "label": Text.t("CHALLENGE_EDIT"), "sticker": "editar-mapas.png", "description": info, "call": show_editor.bind(m)})
 	var selected := 1
 	if not m.built_in:
 		if challenge_delete:

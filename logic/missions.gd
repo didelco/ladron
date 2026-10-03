@@ -11,6 +11,13 @@ extends RefCounted
 ## are outside the story: they are not missions, have no story of their own
 ## and never give anything.
 ##
+## A mission is offered by a phone call while the band is at home (PhoneCall):
+## the first open one that has not rung yet rings. Once it has rung, whether it
+## was picked up or not, it is "called": it is in the Missions menu (pending
+## until it is done), to look at and play whenever one wants, and the phone
+## does not ring for it again. The ones done before the calls existed count as
+## called. In the developer's mode nothing rings and everything is listed.
+##
 ## The inventory is kept with the rest of the progress (Story.save, section
 ## "missions"): the keys of the missions done, and the gifts won in the order
 ## they came, each {mission, name, shape, colour}. A mission's key is its
@@ -56,6 +63,42 @@ static func is_done(m: MapFile) -> bool:
 	return is_mission(m) and key_of(m) in _read("done", [])
 
 
+## Whether the mission has rung (picked up or not) or been done.
+static func is_called(m: MapFile) -> bool:
+	return is_mission(m) and (key_of(m) in _read("called", []) or is_done(m))
+
+
+## The mission's phone has rung: from now on it is listed, and it does not ring
+## again. Nothing is kept in the developer's mode.
+static func mark_called(m: MapFile) -> void:
+	if Story.dev or not is_mission(m) or is_called(m):
+		return
+	var called: Array = _read("called", [])
+	called.append(key_of(m))
+	var cfg := ConfigFile.new()
+	cfg.load(Story.save)
+	cfg.set_value(SECTION, "called", called)
+	cfg.save(Story.save)
+
+
+## The mission that rings next: the first of AFTER's order that the story has
+## opened and that has not rung; null when none (or in the developer's
+## mode).
+static func pending_call() -> MapFile:
+	if Story.dev:
+		return null
+	for key in AFTER:
+		var m := MapFile.read("res://maps/%s.json" % key)
+		if m != null and is_mission(m) and is_open(m) and not is_called(m):
+			return m
+	return null
+
+
+## Who offers the mission: {name, line, face}, empty when it says nobody.
+static func caller_of(m: MapFile) -> Dictionary:
+	return m.caller if is_mission(m) else {}
+
+
 ## The gifts in the inventory: [{mission, name, shape, colour}].
 static func inventory() -> Array:
 	var out: Array = []
@@ -92,7 +135,8 @@ static func gift_of(m: MapFile) -> Dictionary:
 ## The mission got away with: marked as done, and the gift if it has one and
 ## it is the first time (kept at once), else an empty dictionary.
 static func complete(m: MapFile) -> Dictionary:
-	if not is_mission(m) or is_done(m):
+	# Dev mode (Story.dev) keeps nothing: no gift, shown or kept.
+	if Story.dev or not is_mission(m) or is_done(m):
 		return {}
 	var gift := gift_of(m)
 	var done: Array = _read("done", [])

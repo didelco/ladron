@@ -577,6 +577,8 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 ##                                                    (wrap at width)
 ##   {"columns": [{"items", "width"?}], "separation"?}
 ##                                                    items side by side (_columns)
+##   {"node": Control}                                a control drawn in code (PhoneIcon,
+##                                                    CallerFace), as it comes
 ##   {"picture": Texture2D, "smooth"?, "height"?, "id"?}
 ##                                                    the map, the piece (an id:
 ##                                                    set_picture changes it)
@@ -1660,8 +1662,43 @@ func set_gang(colours: Array, darks: Array, loot: Dictionary) -> void:
 		frame.add_child(pic)
 		var smoke := _smoke_row()
 		frame.add_child(smoke)
+		var wind := _energy_bar()
+		frame.add_child(wind)
 		_gang.add_child(frame)
-		_portraits.append({"anchor": anchor, "fig": fig, "piece": piece, "frame": frame, "box": box, "colour": colours[i], "walked": 0.0, "smoke": smoke})
+		_portraits.append({"anchor": anchor, "fig": fig, "piece": piece, "frame": frame, "box": box, "colour": colours[i], "walked": 0.0, "smoke": smoke, "wind": wind})
+
+
+## A thief's wind (Energy), a thin bar along the top of its portrait: green
+## while it has plenty, orange and then red as it tires, and it blinks white
+## when a roll is refused for want of it. Hidden on a night that does not tire.
+const WIND_H := 7.0
+
+
+func _energy_bar() -> Control:
+	var bar := Control.new()
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.custom_minimum_size = Vector2(PORTRAIT * 0.8, WIND_H)
+	bar.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	bar.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	bar.visible = false
+	bar.set_meta("level", 1.0)
+	bar.set_meta("tired", false)
+	bar.set_meta("blink", false)
+	bar.draw.connect(func() -> void:
+		var level: float = bar.get_meta("level")
+		var wide := bar.size.x
+		bar.draw_rect(Rect2(0, 0, wide, WIND_H), Color(0, 0, 0, 0.65))
+		var colour: Color = C.green
+		if bar.get_meta("tired"):
+			colour = C.alert if level < Energy.ROLL_COST else Color("#ffb347")
+		if bar.get_meta("blink"):
+			colour = Color.WHITE
+		bar.draw_rect(Rect2(1, 1, (wide - 2.0) * clampf(level, 0.0, 1.0), WIND_H - 2.0), colour)
+		# Where a roll becomes possible.
+		var mark := 1.0 + (wide - 2.0) * Energy.ROLL_COST
+		bar.draw_line(Vector2(mark, 0), Vector2(mark, WIND_H), Color(1, 1, 1, 0.55), 1.0)
+	)
+	return bar
 
 
 ## The smoke bombs a thief has in hand (Smoke.PER_THIEF places, the used
@@ -1705,6 +1742,17 @@ func update_gang(states: Array, dt: float) -> void:
 		if smoke.get_meta("count", -1) != int(st.get("smoke", 0)):
 			smoke.set_meta("count", int(st.get("smoke", 0)))
 			smoke.queue_redraw()
+		var wind: Control = p.wind
+		var shown: bool = bool(st.get("tiring", false)) and not st.safe and not st.out
+		var level := float(st.get("energy", 1.0))
+		var blink: bool = bool(st.get("no_energy", false)) and int(Time.get_ticks_msec() / 90) % 2 == 0
+		if wind.visible != shown or absf(float(wind.get_meta("level")) - level) > 0.004 \
+				or wind.get_meta("tired") != bool(st.get("tired", false)) or wind.get_meta("blink") != blink:
+			wind.visible = shown
+			wind.set_meta("level", level)
+			wind.set_meta("tired", bool(st.get("tired", false)))
+			wind.set_meta("blink", blink)
+			wind.queue_redraw()
 		var fig: Figure = p.fig
 		# Out of the door: jumping for joy on the spot, fists in the air.
 		var pose := "victory" if st.safe else str(st.get("pose", ""))

@@ -51,12 +51,23 @@ var lock := 0.0
 var tremble := 0.0
 ## 0..1: how close the guards are (set every frame by whoever runs it)
 var pressure := 0.0
+## The alarm is on for this job (Heist.alarm_live, set by whoever runs it):
+## the misses on the hook being worked (a pin of the pick, a lamp of the
+## suction cup) turn it orange (ORANGE_AT) and then red (RED_AT), and red
+## is when the alarm goes off — once each time it turns red. The next hook
+## starts green again. With the alarm off it stays green, whatever happens.
+var alarm := false
+## misses on the hook being worked (all of them, a wild one too)
+var fails := 0
+const ORANGE_AT := 1
+const RED_AT := 2
 ## held off by someone else's part (the panel not yet cut, a second lock
 ## with nobody at it): the box shows why and nothing answers
 var blocked := ""
 var done := false
 ## what happened this frame, for the sounds and the box: "pin", "slip",
-## "snip", "spark", "fall", "done"
+## "snip", "spark", "fall", "done"; "orange" and "red" (the hook's colour
+## turning, only with the alarm on: red sets it off, Heist.step)
 var events: Array[String] = []
 
 var _rng := RandomNumberGenerator.new()
@@ -145,6 +156,31 @@ func let_go() -> String:
 ## wobbling on one foot.
 func wobbling() -> bool:
 	return false
+
+
+## How the hook being worked stands: 0 green, 1 orange, 2 red. Always green
+## with the alarm off.
+func hook_colour() -> int:
+	if not alarm:
+		return 0
+	return 2 if fails >= RED_AT else (1 if fails >= ORANGE_AT else 0)
+
+
+## A miss on the hook being worked: orange, then red ("orange" and "red" in
+## events the frame it turns).
+func _missed_hook() -> void:
+	fails += 1
+	if not alarm:
+		return
+	if fails == ORANGE_AT:
+		events.append("orange")
+	elif fails == RED_AT:
+		events.append("red")
+
+
+## On to the next hook: green again.
+func _next_hook() -> void:
+	fails = 0
 
 
 ## One frame. Returns "quit" when the thief lets go (the roll key), "done"

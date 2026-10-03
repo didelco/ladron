@@ -39,8 +39,8 @@ func _build() -> void:
 	add_child(layer)
 	_fade = ColorRect.new()
 	_fade.color = Color.BLACK
+	# Full rect: it takes the viewport's size by itself once in the tree.
 	_fade.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_fade.size = Vector2(size)
 	layer.add_child(_fade)
 	_frame(3.5, 0.45)
 	_island(3.5, 2.6, Color("#3a2c3e"), WOOD)
@@ -72,7 +72,6 @@ func _animate(dt: float) -> void:
 	_play(u, dt)
 	_age_rings()
 	# In from black, and out to black at the end of the loop.
-	_fade.size = Vector2(size)
 	_fade.color.a = maxf(1.0 - clampf(u / 0.4, 0.0, 1.0), clampf((u - (loop - 0.7)) / 0.6, 0.0, 1.0))
 
 
@@ -391,7 +390,8 @@ func _play_games(u: float, dt: float) -> void:
 	gem.rotation.y = u * 2.0
 
 
-# --- The case with an alarm: it beeps while forced; let go and hide when they come --
+# --- The case with an alarm: quiet while picked clean; a pin missed twice and it rings;
+# --- let go and hide when they come
 
 func _case_alarm() -> void:
 	_case(Vector3(0.0, 0, -0.35), false)
@@ -405,9 +405,13 @@ func _play_case_alarm(u: float, dt: float) -> void:
 	var fill := clampf((u - 0.9) / 4.5, 0.0, 1.0) if forcing else clampf(0.6 - (u - 3.6) * 0.5, 0.0, 0.6)
 	for m in _bits.meters:
 		_meter_fill(m, fill if u > 0.9 else 0.0)
-	# The case beeps red while forced.
-	(_bits.alarm as Node3D).visible = forcing and fmod(u, 0.4) < 0.2
-	if forcing and _tick(u, dt, 0.4):
+	# Quiet at first; a pin missed (an orange blink), missed again: red, and
+	# the alarm goes off — the case beeps red, and the guard comes.
+	var ringing := u > 2.0 and u < 5.5
+	if u >= 1.6 and u - dt < 1.6:
+		_ring(Vector3(0.0, 0.2, -0.35), 0.9, ORANGE)
+	(_bits.alarm as Node3D).visible = ringing and fmod(u, 0.4) < 0.2
+	if ringing and _tick(u, dt, 0.4):
 		_ring(Vector3(0.0, 0.2, -0.35), 1.8, RED)
 	# The thief lets go when the guard comes, and crawls out of sight behind the case.
 	var tkeys := [[0.0, Vector3(0.9, 0, 0.9)], [0.9, Vector3(0.0, 0, 0.15)], [3.6, Vector3(0.0, 0, 0.15)], [4.1, Vector3(-0.55, 0, 0.0)], [4.7, Vector3(-0.4, 0, -0.75)], [8.0, Vector3(-0.4, 0, -0.75)]]

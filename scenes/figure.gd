@@ -61,13 +61,13 @@ const CRAWL_MIDDLE := Vector3(0, 0.5, 0.0)
 ## how fast it tips back upright when getting up.
 const LYING := 0.25
 const TIP := 4.0
-## The stars going round the head: how many, how far out, turns a second,
+## The ninja stars (shuriken) going round the head: how many, how far out, turns a second,
 ## and each one's size (m); drawn bigger than life, to read from up high.
 const DAZE_STARS := 4
-const DAZE_RING := 0.3
+const DAZE_RING := 0.36
 const DAZE_SPIN := 1.3
-const DAZE_SIZE := 0.11
-const DAZE_COLOUR := Color("#ffd23f")
+const DAZE_SIZE := 0.2
+const DAZE_COLOUR := Color("#d3dae6")
 
 var guard := false
 var _kind := "thief"
@@ -312,7 +312,7 @@ func _play(clip: String, speed: float, blend := BLEND) -> void:
 
 # --- Dizzy ---------------------------------------------------------------------------
 
-## The stars going round the head of a thief lying dizzy (built the first
+## The ninja stars going round the head of a thief lying dizzy (built the first
 ## time they are needed).
 func _daze_show(dt: float) -> void:
 	if _daze == null:
@@ -343,7 +343,7 @@ func _daze_show(dt: float) -> void:
 		var star := _daze.get_child(k) as Node3D
 		# Round in a ring, bobbing, each one spinning on itself.
 		star.position = Vector3(cos(a) * DAZE_RING, sin(a * 2.0 + _daze.rotation.y * 2.0) * 0.04, sin(a) * DAZE_RING)
-		star.rotation.y -= 4.0 * dt
+		star.rotation.y -= 11.0 * dt
 
 
 # --- Sweat --------------------------------------------------------------------------
@@ -395,17 +395,26 @@ func _sweat_show(on: bool) -> void:
 	_sweat.position = SWEAT_AT * SIZE[_kind] + Vector3(0, -SWEAT_RUN * _sweat_t, 0)
 
 
-## A flat five-pointed star lying in the XZ plane, DAZE_SIZE to the points.
+## A flat ninja star (shuriken) lying in the XZ plane, DAZE_SIZE to the
+## points: four swept blades round a hole in the middle.
 static func _daze_star() -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	st.set_normal(Vector3.UP)
-	for k in 10:
-		var r0 := DAZE_SIZE if k % 2 == 0 else DAZE_SIZE * 0.45
-		var r1 := DAZE_SIZE * 0.45 if k % 2 == 0 else DAZE_SIZE
-		var a0 := k * TAU / 10.0
-		var a1 := (k + 1) * TAU / 10.0
-		st.add_vertex(Vector3.ZERO)
-		st.add_vertex(Vector3(cos(a1) * r1, 0, sin(a1) * r1))
-		st.add_vertex(Vector3(cos(a0) * r0, 0, sin(a0) * r0))
+	# Eight points round, tip and notch in turn; the notch lags behind its
+	# tip's turn, so each blade has one long edge and one short, like a
+	# pinwheel. Each is joined to a point under it on the hole's rim.
+	var outer: Array[Vector3] = []
+	var rim: Array[Vector3] = []
+	for k in 4:
+		for part in 2:
+			var a := k * TAU / 4.0 + (0.0 if part == 0 else TAU * 0.16)
+			var r := DAZE_SIZE if part == 0 else DAZE_SIZE * 0.3
+			outer.append(Vector3(cos(a) * r, 0, sin(a) * r))
+			rim.append(Vector3(cos(a) * DAZE_SIZE * 0.14, 0, sin(a) * DAZE_SIZE * 0.14))
+	var n := outer.size()
+	for k in n:
+		var m := (k + 1) % n
+		for v in [outer[k], outer[m], rim[m], outer[k], rim[m], rim[k]]:
+			st.add_vertex(v)
 	return st.commit()

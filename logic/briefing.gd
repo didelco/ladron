@@ -72,6 +72,10 @@ static func tips(guards: Array[Guard], night := 0) -> Array[String]:
 	for m in MECHANICS:
 		if _has(m, n) and _worth_saying(m, night):
 			must.append(_by(n, "TIP_LIGHTS") if m == "lights" else Text.t(_key(m)))
+	# Running tires (Energy), where the night says so: said when it begins to
+	# (the first night of the second museum), or whenever out of the story.
+	if n > 0 and Energy.active() and (night <= 0 or night == Story.ROOMS + 1):
+		nice.append(Text.t("TIP_WIND"))
 	var out: Array[String] = must.slice(0, MOST)
 	for line in nice:
 		if out.size() >= AIM:

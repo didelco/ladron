@@ -17,8 +17,28 @@ func _init(game: Game) -> void:
 	host = game
 
 
+## THE way into the settings, from wherever: always the rail of categories
+## (SONIDO, PANTALLA, CONTROLES, OPCIONES), never inside one, whatever page was
+## on show last time. `from` is where VOLVER goes back to: "title" or "paused";
+## by default, wherever the game is now (the pause, or not).
+func open(from := "") -> void:
+	if from == "" and host.phase == "settings":
+		from = settings_from
+	elif from == "":
+		from = "paused" if host.phase == "paused" or host.hub.active_kind == "pause" else "title"
+	settings_page = ""
+	show(from)
+
+
+## The same screen again, as it is (the sound just flipped with N): the page
+## and the selected line are kept.
+func refresh() -> void:
+	show(settings_from, settings_page)
+
+
 ## The settings: SONIDO, PANTALLA, CONTROLES and OPCIONES (loudspeaker, IA panel). Opens from
-## the title and from the pause. Each line is a setting (Hud._stepper): accept
+## the title and from the pause, always through open(); show() with a page is for
+## moving inside them (the rail's cards, VOLVER) and for tests and captures. Each line is a setting (Hud._stepper): accept
 ## or a click moves it on, ← and → move it down and up; each change is saved.
 func show(from: String, page := "") -> void:
 	host.podium.drop()

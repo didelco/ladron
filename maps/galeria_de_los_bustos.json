@@ -10,6 +10,18 @@
 			]
 		}
 	],
+	"caller": {
+		"face": {
+			"bg": "#9bd6a4",
+			"glasses": true,
+			"hair": "#8a3b2a",
+			"moustache": false,
+			"skin": "#e6b98e",
+			"style": "curls"
+		},
+		"line": "Soy la del cubo de fregona, ¿te acuerdas? Llevo años quitando el polvo de esa galería y todos los bustos tienen la nariz rota menos uno. Ese lo quiero yo en el portal, que da distinción.",
+		"name": "La señora Paqui"
+	},
 	"difficulty": "easy",
 	"exit": [
 		21,

@@ -40,6 +40,11 @@ var dizzy := 0.0
 var stars := false
 ## roll key held last frame: one roll per press
 var roll_key := false
+## wind left, 0 to 1 (Energy): running and rolling spend it, everything
+## else fills it. Full at the start of a night.
+var energy := 1.0
+## seconds left of the bar flashing: it tried to roll without enough (Energy)
+var energy_flash := 0.0
 ## up on an empty pedestal, still as a statue (Plinths): which one
 var posing := false
 var perch := Vector2i(-1, -1)

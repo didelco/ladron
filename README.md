@@ -246,8 +246,10 @@ En el título se elige el modo:
 - **Misiones** (antes Retos): cada una propone un robo con su historia, su pieza y un obsequio
   (`maps/*.json`: `loot` y `gift`; `logic/missions.gd`). La primera vez que se logra escapar con la
   pieza, el obsequio pasa al inventario (`user://progress.cfg`, sección `missions`) y no se repite.
-  Son mapas hechos a mano, los de serie (`maps/`) y los tuyos (`user://maps/*.json`,
-  `logic/map_file.gd`). Desde ahí se abre el **editor** (`scenes/map_editor.gd`): pintar suelo,
+  Son las del propio juego (`maps/`), escritas de antemano como la historia, y cada una se abre
+  al conseguir su robo de la Historia (`Missions.AFTER`).
+- **Taller**: tus mapas, creados, importados o descargados (`user://maps/*.json`,
+  `logic/map_file.gd`), fuera de la Historia: sin historia propia ni obsequio. Desde ahí se abre el **editor** (`scenes/map_editor.gd`): pintar suelo,
   muro, vitrina o exterior, poner salas hechas (galería, vitrinas, pedestales, columnas,
   dinosaurio...), la entrada, la pieza, la salida, guardias y objetos, o partir de un mapa
   aleatorio del generador; tamaño, dificultad y guardias; vista 3D, probar y guardar. Solo deja

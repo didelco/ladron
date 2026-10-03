@@ -102,9 +102,9 @@ const DIFFICULTIES := {
 	# Easy: one slow guard, whatever the size of the museum, and the piece
 	# comes out of its case in a moment.
 	# alarms: how many sounds it takes to put a guard on alert for good.
-	"easy": {"view": 0.8, "hearing": 0.8, "speed": 0.7, "lock": 0.35, "calm_after": 7.0, "alarms": 3, "guards": 1},
-	"medium": {"view": 1.0, "hearing": 1.0, "speed": 1.0, "lock": 1.0, "calm_after": 10.0, "alarms": 2, "guards": 0},
-	"hard": {"view": 1.25, "hearing": 1.2, "speed": 1.1, "lock": 1.3, "calm_after": 14.0, "alarms": 1, "guards": 0},
+	"easy": {"fatigue": false, "view": 0.8, "hearing": 0.8, "speed": 0.7, "lock": 0.35, "calm_after": 7.0, "alarms": 3, "guards": 1},
+	"medium": {"fatigue": true, "view": 1.0, "hearing": 1.0, "speed": 1.0, "lock": 1.0, "calm_after": 10.0, "alarms": 2, "guards": 0},
+	"hard": {"fatigue": true, "view": 1.25, "hearing": 1.2, "speed": 1.1, "lock": 1.3, "calm_after": 14.0, "alarms": 1, "guards": 0},
 }
 static var difficulty := "medium"
 ## The story mode's night, when it sets its own: overrides the difficulty
@@ -329,6 +329,31 @@ static func view_of(g: Guard) -> Dictionary:
 	return {"near": v.near * k, "range": v.range * k, "half": v.half}
 
 
+## A guard's pace in tiles a second, and what it is made of: the stride of
+## its state (alert: a brisk walk that becomes a run; calm: a stroll, both by
+## how hot its plan is, `aggression`) × the night's speed dial × its own
+## agility. step_guard walks at `speed`; the dev overlay reads the rest.
+static func pace_of(g: Guard, aggression: float, alert: bool) -> Dictionary:
+	var stride := (2.3 + aggression * 2.3) if alert else (1.0 + aggression * 0.5)
+	var dial := tuning("speed")
+	return {"speed": stride * dial * g.speed_scale, "stride": stride, "dial": dial, "trait": g.speed_scale}
+
+
+## Seconds until a guard's suspicion comes down a step by itself (the match
+## in step_guard), or INF if nothing is counting (chasing, calm, or the
+## night holds it up: NightAlert.floor_level).
+static func drop_in_s(g: Guard, now: float) -> float:
+	if g.suspicion <= 0 or g.suspicion <= NightAlert.floor_level():
+		return INF
+	var held := now - g.suspicion_at
+	match g.suspicion:
+		3:
+			return INF if on_to(g, now) else maxf(0.0, (CHASE_LOST_MS - held) / 1000.0)
+		2:
+			return maxf(0.0, (ALERT_HOLD_MS - held) / 1000.0)
+	return maxf(0.0, (tuning("calm_after") * HUNCH_SHARE * 1000.0 - held) / 1000.0)
+
+
 ## How strong this night's torches are: the same dial as how far guards
 ## see, so a harder night's torches reach further and shine brighter.
 static func torch_power() -> float:
@@ -434,6 +459,7 @@ static func place_guards(guards: Array[Guard], at: Array[GuardSpawn]) -> void:
 		g.view_scale = spawn.scale("view")
 		g.hearing_scale = spawn.scale("hearing")
 		g.speed_scale = spawn.scale("speed")
+		g.attention_scale = spawn.scale("attention")
 		if spawn.stance == "post":
 			g.post = t
 			g.post_dir = spawn.dir
@@ -572,6 +598,19 @@ static func _touches_cover(x: float, y: float, r: float = 0.34) -> bool:
 ## ended in a wall or a case), "entered_cover": bool, "roll": "" or what the
 ## roll did this frame (Roll.step, or "start")}.
 static func step_thief(p: Thief, keys: Dictionary, dt: float, scheme: String = "solo") -> Dictionary:
+	var out := _step_thief(p, keys, dt, scheme)
+	Energy.tick(p, dt)
+	return out
+
+
+## Whether this night tires a thief out (Energy): the night's "fatigue", from
+## the story (not in its first museum) or the difficulty (not on easy), and
+## not at home.
+static func tiring() -> bool:
+	return bool(custom.get("fatigue", DIFFICULTIES[difficulty].fatigue))
+
+
+static func _step_thief(p: Thief, keys: Dictionary, dt: float, scheme: String) -> Dictionary:
 	var pad: Dictionary = SCHEMES[scheme]
 	var dx := 0
 	var dy := 0
@@ -617,8 +656,15 @@ static func step_thief(p: Thief, keys: Dictionary, dt: float, scheme: String = "
 	# nothing else answers (Roll keeps it low meanwhile).
 	var roll_key := not p.out and _pressed(keys, pad.roll)
 	var rolled := ""
-	if roll_key and not p.roll_key and Roll.start(p):
-		rolled = "start"
+	if roll_key and not p.roll_key:
+		if Roll.start(p):
+			rolled = "start"
+		elif Roll.free_to_roll(p) and Roll.refusal(p) != "":
+			# With the sack, or out of wind: nothing happens, and the key
+			# costs nothing (the night loop says why).
+			rolled = Roll.refusal(p)
+			if rolled == "tired":
+				p.energy_flash = Energy.REFUSED_FLASH
 	p.roll_key = roll_key
 	if p.rolling or p.dizzy > 0.0:
 		var what := Roll.step(p, dt, move_with_collision, CROUCH_SECONDS)
@@ -656,7 +702,7 @@ static func step_thief(p: Thief, keys: Dictionary, dt: float, scheme: String = "
 		# From a run it takes a moment to rein in: braking, not a wall.
 		p.speed = maxf(SLOW_SPEED, p.speed - DECEL * dt)
 	else:
-		p.speed = minf(TOP_SPEED, maxf(CREEP, p.speed + ACCEL * dt))
+		p.speed = minf(Energy.top_speed(p), maxf(CREEP, p.speed + ACCEL * dt))
 
 	var len := sqrt(dx * dx + dy * dy)
 	var px := p.x
@@ -713,6 +759,13 @@ static func visible_to(g: Guard, thieves: Array[Thief]) -> Thief:
 	return best
 
 
+## How low a thief counts for a guard's eyes (0 standing, 1 on all fours):
+## its posture, but stunned by a crash it is on its feet as far as they go
+## (Roll.DIZZY_SECONDS), however flat it lies.
+static func view_posture(p: Thief) -> float:
+	return 0.0 if p.stars and p.dizzy > 0.0 else p.posture
+
+
 static func can_see(g: Guard, p: Thief) -> bool:
 	# Smoke between them (or round either): nothing to see, lit room or not.
 	if Smoke.blocks(g.x, g.y, p.x, p.y, now_ms()):
@@ -731,10 +784,11 @@ static func can_see(g: Guard, p: Thief) -> bool:
 	if d > (LIT_RANGE if lit else view.range):
 		return false
 	# Past the bright pool the torch is too dim to pick out someone low down.
-	if not lit and d > view.near and p.posture >= STANDING:
+	var posture := view_posture(p)
+	if not lit and d > view.near and posture >= STANDING:
 		return false
 	# The cases are waist-high: all the way down behind one, you are hidden.
-	var over_cover := p.posture < DOWN
+	var over_cover := posture < DOWN
 	if d < TOUCH_RANGE:
 		return Museum.has_line_of_sight(g.x, g.y, p.x, p.y, over_cover)
 	if absf(_angle_diff(atan2(p.y - g.y, p.x - g.x) - g.dir)) > view.half:
@@ -1104,6 +1158,19 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 			g.path = Museum.bfs_path(_tile(g), room.switch_at)
 			if g.path.is_empty():
 				g.errand = ""
+	# The piece found gone: its turn to keep an eye on the way out
+	# (NightAlert sends it and calls it off). There, it stands facing the
+	# door, the torch swinging a little.
+	if g.errand == "door":
+		if _tile(g) == g.errand_at:
+			g.path.clear()
+			g.dir = atan2(Heist.exit.y + 0.5 - g.y, Heist.exit.x + 0.5 - g.x) + sin(now / 1400.0) * 0.6
+			return
+		if g.path.is_empty() or g.target != g.errand_at:
+			g.target = g.errand_at
+			g.path = Museum.bfs_path(_tile(g), g.errand_at)
+			if g.path.is_empty():
+				g.errand = ""
 
 	# On a post and nothing going on: back to it, and there, stand looking
 	# where it was told, the torch swinging a little either side.
@@ -1134,7 +1201,7 @@ static func step_guard(g: Guard, thieves: Array[Thief], noises: Array[SoundEvent
 		return
 
 	# Calm is a stroll; alert is a brisk walk that becomes a run.
-	var speed := ((2.3 + dec.aggression * 2.3) if alert else (1.0 + dec.aggression * 0.5)) * tuning("speed") * g.speed_scale
+	var speed: float = pace_of(g, dec.aggression, alert).speed
 
 	# Close enough to lunge: go for the body, not the middle of its tile.
 	if player and Museum.dist(g.x, g.y, player.x, player.y) < LUNGE_RANGE:

@@ -65,7 +65,7 @@ func run() -> void:
 	qa.check(no_menu_dioramas(game.hub), "los menús nuevos no instancian dioramas antiguos")
 	if not game.dev_mode:
 		game.options.step(0, "dev_mode")
-	game.challenges.show_menu()
+	game.challenges.show_workshop()
 	var longest := 1
 	for n in range(1, Story.count() + 1):
 		if game.challenges.night_name(n).length() > game.challenges.night_name(longest).length(): longest = n
@@ -73,8 +73,8 @@ func run() -> void:
 		if game.hub.active[i].id == "night:%d" % longest:
 			game.hub._select(i, false)
 			break
-	await selected_visible("Misiones")
-	qa.check(game.hub._detail.text.contains(game.challenges.night_name(longest)), "Misiones conserva nombre completo en descripción")
+	await selected_visible("Taller")
+	qa.check(game.hub._detail.text.contains(game.challenges.night_name(longest)), "Taller conserva nombre completo en descripción")
 	game.hands.show_join("story", 4)
 	await selected_visible("asignación 4P")
 	root.content_scale_factor = 1.0

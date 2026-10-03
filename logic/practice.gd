@@ -348,4 +348,4 @@ static func map(players := 1) -> MapFile:
 ## the places to hide are the dojo's, whatever it shows).
 static func tuning() -> Dictionary:
 	return {"guards": 0, "case": false, "case_alarm": false, "props": false, "lights": false, "lockpick": true,
-		"plinths": false, "hideouts": false, "theme": "", "lock": 1.0, "game_level": 0}
+		"plinths": false, "hideouts": false, "theme": "", "lock": 1.0, "game_level": 0, "fatigue": false}

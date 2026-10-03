@@ -19,7 +19,7 @@ window.MECANICAS = {
     juegos: {
       lockpick: {
         nombre: "La ganzúa", donde: "En la vitrina de la pieza", clase: "de hacer: no se falla, solo se tarda",
-        texto: "Una esfera en la cerradura con una aguja que da vueltas y un sector verde en el borde: se pulsa la acción cuando la aguja pasa por el verde y cae un perno; el verde cambia de sitio en cada uno. Un fallo hace resbalar la ganzúa un momento. Cada fallo cerca del mismo perno lo afloja (el verde se ensancha), así que quien insiste siempre llega. Con temblor, la aguja vibra y el verde se estrecha. De 1 a 4 pernos, según los segundos que pide la pieza.",
+        texto: "Una esfera en la cerradura con una aguja que da vueltas y un sector verde en el borde: se pulsa la acción cuando la aguja pasa por el verde y cae un perno; el verde cambia de sitio en cada uno. Un fallo hace resbalar la ganzúa un momento. Cada fallo cerca del mismo perno lo afloja (el verde se ensancha), así que quien insiste siempre llega. Con temblor, la aguja vibra y el verde se estrecha. De 1 a 4 pernos, según los segundos que pide la pieza. Con la alarma de la vitrina conectada (en la historia, desde el robo 11), cada perno es un gancho de color: un fallo lo pone naranja, dos en el mismo, rojo, y rojo es lo que hace saltar la alarma; el perno siguiente vuelve a verde, y abierta limpia nunca suena (más en «Alerta y guardias»).",
         consts: { PIN_PERIOD: "segundos que tarda la aguja en dar una vuelta", PIN_BAND: "medio ancho del sector verde (parte de la vuelta)", SHAKE_NARROW: "cuánto se estrecha el verde con todo el temblor", SHAKE_JITTER: "cuánto vibra la aguja con todo el temblor", SLIP_S: "segundos sin responder tras un fallo", GIVE: "cuánto se ensancha el verde por cada fallo cerca (parte de PIN_BAND)" },
       },
       wires: {
@@ -29,7 +29,7 @@ window.MECANICAS = {
       },
       steady: {
         nombre: "La ventosa", donde: "En el cristal del cuadro de alarma (o de la vitrina, algunas noches)", clase: "de hacer",
-        texto: "Una ventosa sobre el cristal que se va sola hacia un lado u otro; las direcciones la devuelven. Si aguanta dentro del aro los segundos que hacen falta, seguidos, el cristal está cortado; si sale, la cuenta vuelve a empezar. Los niveles altos tienen el aro más pequeño y la deriva más fuerte; el temblor la vuelve más loca.",
+        texto: "Una ventosa sobre el cristal que se va sola hacia un lado u otro; las direcciones la devuelven. Si aguanta dentro del aro los segundos que hacen falta, seguidos, el cristal está cortado; si sale, la cuenta vuelve a empezar. Los niveles altos tienen el aro más pequeño y la deriva más fuerte; el temblor la vuelve más loca. Con la alarma conectada, cada lámpara es un gancho de color: salir del aro una vez, naranja; dos antes de la siguiente lámpara, rojo y alarma; cada lámpara encendida vuelve a verde (más en «Alerta y guardias»).",
         consts: { CUP: "radio de la ventosa (el aro fácil mide 1)", DRIFT: "fuerza de la deriva", RING_LEVEL: "tamaño del aro por nivel", DRIFT_LEVEL: "fuerza de la deriva por nivel", PUSH: "fuerza con que la empujan las teclas", DAMP: "cuánto se frena", GUST_S: "cada cuántos segundos cambia de idea la deriva" },
       },
       balance: {

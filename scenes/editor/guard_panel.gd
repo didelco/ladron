@@ -40,7 +40,7 @@ func guard_capabilities_page(g: GuardSpawn) -> void:
 	arch.select(maxi(0, arch_keys.find(g.archetype)))
 	arch.item_selected.connect(func(i: int) -> void: pick_archetype(arch_keys[i]))
 
-	for stat in ["view", "hearing", "speed"]:
+	for stat in GuardSpawn.STATS:
 		level_row(stat, "EDITOR_GUARD_STAT_" + stat.to_upper())
 	var desc := host._label(guard_description(g), 11, Hud.CREAM, host._guard_sub)
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -134,7 +134,7 @@ func level_row(stat: String, title_key: String) -> void:
 ## strung together, or a line saying it is nothing out of the ordinary.
 func guard_description(g: GuardSpawn) -> String:
 	var parts: Array[String] = []
-	for stat in ["view", "hearing", "speed"]:
+	for stat in GuardSpawn.STATS:
 		var lvl := g.level(stat)
 		if lvl != 2:
 			parts.append(Text.t(GuardSpawn.LEVEL_LABELS[stat][lvl]))
@@ -172,7 +172,7 @@ func remove_selected_guard() -> void:
 	host.selected_guard = null
 	host._open("")
 
-## An archetype loads its three sliders fresh (the "default values"
+## An archetype loads its sliders fresh (the "default values"
 ## moment); from then on they are free to move one at a time without it
 ## snapping back.
 func pick_archetype(key: String) -> void:
@@ -183,6 +183,7 @@ func pick_archetype(key: String) -> void:
 	host.selected_guard.view_level = int(preset.view)
 	host.selected_guard.hearing_level = int(preset.hearing)
 	host.selected_guard.speed_level = int(preset.speed)
+	host.selected_guard.attention_level = int(preset.get("attention", 2))
 	host.dirty = true
 	host._open("guard")
 

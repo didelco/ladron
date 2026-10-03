@@ -127,7 +127,7 @@ func _init() -> void:
 	check(Text.t("END_HEAD_MUSEUM").left(10) in m._front_page(true).headline, "tras el gran golpe, el museo desvalijado")
 
 	# The pause: scenes/hub.gd replaces the monitor and its menu with its own
-	# pegatinas (Seguir/Ajustes/Salir); the real monitor turns off instead of
+	# pegatinas (Ajustes/Salir); the real monitor turns off instead of
 	# staying lit, same as the real panel underneath it (ver Hub._process).
 	m.phase = "playing"
 	m._pause()

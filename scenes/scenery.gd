@@ -52,6 +52,16 @@ const SUSPICION_COLOURS := [Color.TRANSPARENT, Color("#ffd43b"), Color("#ff922b"
 
 ## The bar under the marks, in this many steps: redrawn only on a change.
 const SUSPICION_STEPS := 24
+## Dev mode's text over a guard: world size of a pixel, height of its foot
+## (over the alert marks at 2.9), and how often it is rewritten
+const DEV_PIXEL := 0.007
+const DEV_HEIGHT := 4.2
+## The big line's font and the small block's, and how many lines the block
+## may have (room kept for them over the guard's marks).
+const DEV_HEAD_FONT := 54
+const DEV_DETAIL_FONT := 20
+const DEV_DETAIL_LINES := 6
+const DEV_REFRESH_MS := 150.0
 
 ## What a guard that saw you get in shows beside its marks: the thing you
 ## are in (Guard.knows_kind), by its icon in the editor's catalogue.
@@ -72,6 +82,12 @@ var cones: Array[MeshInstance3D] = []
 
 ## over each guard's head: its suspicion, and what was last drawn there
 var suspicion_marks: Array[Sprite3D] = []
+## Dev mode: the block of text over each guard (DevInfo), made only while it is
+## on, and when it was last rewritten (ms), so it is not rebuilt every frame
+var dev_labels: Array[Label3D] = []
+var dev_label_at: Array[float] = []
+## ... and over that block, in big, the numbers that matter (DevInfo.guard_head)
+var dev_heads: Array[Label3D] = []
 var suspicion_keys: Array[String] = []
 var switch_marks: Array[MeshInstance3D] = []
 var lit_washes: Array[MeshInstance3D] = []
@@ -132,6 +148,9 @@ func _forget() -> void:
 	cones.clear()
 	suspicion_marks.clear()
 	suspicion_keys.clear()
+	dev_labels.clear()
+	dev_label_at.clear()
+	dev_heads.clear()
 	switch_marks.clear()
 	lit_washes.clear()
 
@@ -527,6 +546,7 @@ func draw_figures(dt: float) -> void:
 		var power := Sim.torch_power()
 		torch.light_energy = 0.0 if Museum.is_lit(g.x, g.y) else (TORCH_ENERGY_ALERT if g.alert else TORCH_ENERGY) * power * power * (1.0 + TORCH_BREATH * breath)
 		draw_cone(g, cones[i])
+	draw_dev_guards()
 	for d in host.house.mannequins:
 		d.set_state(d.position, float(d.get_meta("dir", PI)), 0.0, dt)
 
@@ -581,11 +601,17 @@ func draw_room_lights() -> void:
 
 ## The piece: turning over its case, on the thief's back, or on the floor.
 func draw_loot() -> void:
+	var t := Time.get_ticks_msec() / 1000.0
+	# The alarm ringing (NightAlert): the beacons round the museum turn, and
+	# the case's spotlight throbs red.
+	var ringing := NightAlert.ringing() and host.phase in ["playing", "paused"]
+	if host.museum_view != null and is_instance_valid(host.museum_view):
+		host.museum_view.set_alarm(ringing)
 	# Once the piece is gone the spotlight has nothing to show: it dims.
 	if loot_spot:
 		loot_spot.light_energy = move_toward(loot_spot.light_energy, 0.0 if Heist.taken else 14.0, 0.2)
+		loot_spot.light_color = Color("#fff0d6").lerp(Color("#ff2a1f"), 0.55 + 0.45 * sin(t * 9.0)) if ringing else Color("#fff0d6")
 	draw_panel()
-	var t := Time.get_ticks_msec() / 1000.0
 	# The piece shows only on its case; taken, it is in the sack.
 	# (The house has no piece to show: no sock over the bench.)
 	loot_node.visible = host.mode != Practice.MODE and not Heist.taken and host.house.home_shows(Heist.at.x + 0.5, Heist.at.y + 0.5)
@@ -607,6 +633,63 @@ func draw_loot() -> void:
 		sack_node.visible = true
 		sack_node.position = host._to_world(Heist.dropped.x, Heist.dropped.y, 0.0)
 		sack_node.rotation = Vector3.ZERO
+
+
+## Dev mode: over each guard, in big, the numbers that matter (suspicion,
+## attention, pace and how long before its level changes) and under them, in
+## small, where each comes from (DevInfo, the same functions the simulation
+## uses). Off, nothing is made or updated, and what there was goes.
+func draw_dev_guards() -> void:
+	if not host.dev_mode:
+		if not dev_labels.is_empty():
+			for l in dev_labels + dev_heads:
+				if is_instance_valid(l):
+					l.queue_free()
+			dev_labels.clear()
+			dev_label_at.clear()
+			dev_heads.clear()
+		return
+	var now := Sim.now_ms()
+	# Where the big line ends and the small block begins: room below for the
+	# block's lines, so it stays clear of the marks over the head.
+	var seam := DEV_HEIGHT + DEV_DETAIL_LINES * (DEV_DETAIL_FONT + 6) * DEV_PIXEL
+	for i in host.guards.size():
+		if i >= guard_nodes.size():
+			break
+		if i >= dev_labels.size():
+			var detail := _dev_label(DEV_DETAIL_FONT, 8, VERTICAL_ALIGNMENT_TOP, Hud.CREAM)
+			var head := _dev_label(DEV_HEAD_FONT, 14, VERTICAL_ALIGNMENT_BOTTOM, Hud.C.gold)
+			detail.position = Vector3(0, seam, 0)
+			head.position = Vector3(0, seam, 0)
+			guard_nodes[i].add_child(detail)
+			guard_nodes[i].add_child(head)
+			dev_labels.append(detail)
+			dev_heads.append(head)
+			dev_label_at.append(-INF)
+		if now - dev_label_at[i] >= DEV_REFRESH_MS:
+			dev_label_at[i] = now
+			dev_heads[i].text = DevInfo.guard_head(host.guards[i], now)
+			dev_labels[i].text = DevInfo.guard_text(host.guards[i], now)
+
+
+## One of the two texts over a guard in dev mode, facing the camera and drawn
+## over everything.
+func _dev_label(font: int, outline: int, valign: VerticalAlignment, colour: Color) -> Label3D:
+	var l := Label3D.new()
+	l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	l.no_depth_test = true
+	l.shaded = false
+	l.fixed_size = false
+	l.pixel_size = DEV_PIXEL
+	l.font_size = font
+	l.outline_size = outline
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.vertical_alignment = valign
+	l.modulate = colour
+	l.outline_modulate = Hud.INK
+	l.render_priority = 12
+	l.outline_render_priority = 11
+	return l
 
 
 ## What a guard's head says: nothing when it suspects nothing; else its

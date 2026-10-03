@@ -396,7 +396,9 @@ func _init() -> void:
 		result = Heist.step(thieves, DT, now, noises)
 		alarms += noises.size()
 	check(result == "stolen" and Heist.carrier == p.id and p.game == null, "abre la vitrina y se lleva la pieza")
-	check(alarms > 0, "solo, forzándola: suena la alarma de la vitrina (%d veces)" % alarms)
+	# The case has its alarm here (Sim.custom {}), but picked clean it never
+	# rings: only a pin missed twice sets it off (test_modos).
+	check(alarms == 0 and NightAlert.alarms == 0, "solo y sin fallar: la vitrina con alarma no pita (%d)" % alarms)
 
 	print("En equipo: primero el cuadro")
 	Sim.new_map(4242, "small")

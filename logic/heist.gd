@@ -5,14 +5,19 @@ extends RefCounted
 ##
 ## The piece sits in a case deep in the museum; you take it by standing
 ## next to it, still, for as long as the lock takes — step away and you start
-## again — and forcing it sets its alarm off. The way out is a service door in
-## the outer wall, far from the piece and never where you came in, so the job
-## is always a crossing and never a there-and-back.
+## again. The way out is a service door in the outer wall, far from the piece
+## and never where you came in, so the job is always a crossing and never a
+## there-and-back.
 ##
 ## With two thieves the job takes both: the case only gives while the other
 ## one holds the alarm panel, a box on a wall a good walk from it. Held, the
-## case opens in silence; let go, the work stops where it was. Only if the
-## partner is caught does the one left force it alone, alarm and all.
+## case opens; let go, the work stops where it was. Only if the partner is
+## caught does the one left work it alone.
+##
+## The alarm (Sim.feature("case_alarm")): picked clean, the case never rings.
+## A pin missed twice (the pick's hook gone red, Minigame.hook_colour) sets
+## it off (NightAlert.trip), and so does the panel's suction cup slipping
+## twice; once the panel is cut it is off for the case (alarm_live).
 
 ## The words of a piece, as keys into Text.
 const TEXT_FIELDS := ["name", "blurb", "verb", "story"]
@@ -26,8 +31,6 @@ const PANEL_REACH := 1.1
 const PICK_UP := 0.7
 ## Near enough to the door to be through it.
 const DOOR := 0.8
-## The case's alarm rings this often while someone is forcing it.
-const ALARM_EVERY_MS := 900.0
 
 # The job for the current level.
 static var level := 1
@@ -52,7 +55,6 @@ static var carrier := ""
 ## where it lies on the floor after its carrier was caught, or INF
 static var dropped := Vector2.INF
 static var taken := false
-static var _last_alarm := 0.0
 
 # Two thieves: the alarm panel.
 static var team := false
@@ -122,7 +124,8 @@ static func plan_job(n: int, piece: Dictionary = {}, gang: int = 1, fixed: Dicti
 	carrier = ""
 	dropped = Vector2.INF
 	taken = false
-	_last_alarm = 0.0
+	# A new job, a quiet night: no alarm, nobody seen, nothing found missing.
+	NightAlert.reset()
 	var from_start := _distances(start)
 	var reach := func(t: Vector2i) -> int: return from_start[t.y * Museum.w + t.x]
 
@@ -271,6 +274,19 @@ static func minigames() -> bool:
 	return Sim.feature("lockpick")
 
 
+## The alarm can go off tonight (the case has one: Sim.feature("case_alarm"))
+## and is still wired: a gang's panel (both, for four) not yet cut. Then the
+## pick at the case and the suction cup at a panel count their misses
+## (Minigame.alarm), and red sets it off.
+static func alarm_live() -> bool:
+	return Sim.feature("case_alarm") and not (team and panels_held())
+
+
+## Whether this job in hand (Minigame.what) is one the alarm watches.
+static func _alarmed_job(what: String) -> bool:
+	return what in ["case", "panel", "panel2"]
+
+
 ## The minigame this thief would start with the action key where it stands:
 ## {kind, what, steps}, or empty if there is none to start.
 static func game_for(p: Thief) -> Dictionary:
@@ -288,6 +304,7 @@ static func game_for(p: Thief) -> Dictionary:
 ## Sets the thief to it: it stops where it is, hands busy.
 static func start_game(p: Thief, spec: Dictionary, input: Dictionary) -> void:
 	p.game = Minigame.make(spec.kind, spec.what, spec.steps, input)
+	p.game.alarm = _alarmed_job(spec.what) and alarm_live()
 	p.moving = false
 	p.speed = 0.0
 	p.sprinting = false
@@ -376,7 +393,8 @@ static func at_door(p: Thief) -> bool:
 
 ## One frame of the job: working the lock (and its alarm), carrying, dropping,
 ## picking up, leaving. Returns "", "stolen", "dropped", "picked" or "out";
-## an alarm going off this frame is appended to noises.
+## the alarm going off this frame (a hook gone red, NightAlert.trip) is
+## appended to noises.
 static func step(thieves: Array[Thief], dt: float, now: float, noises: Array[SoundEvent]) -> String:
 	# Caught with a job in hand, or stepped off the pedestal it was keeping
 	# its balance on: it lets go of it.
@@ -391,18 +409,29 @@ static func step(thieves: Array[Thief], dt: float, now: float, noises: Array[Sou
 	short_hand = false
 	if team and minigames():
 		for p in thieves:
-			if p.game and p.game.what in ["panel", "panel2"] and p.game.done:
-				if p.game.what == "panel":
-					panel_off = true
-				else:
-					panel2_off = true
-				p.game = null
+			if p.game and p.game.what in ["panel", "panel2"]:
+				# The suction cup slipped twice on one lamp: the alarm goes off,
+				# there at the panel.
+				if p.game.events.has("red") and alarm_live():
+					var spot: Vector2i = panel if p.game.what == "panel" else panel2
+					NightAlert.trip(Vector2(spot.x + 0.5, spot.y + 0.5), noises)
+				if p.game.done:
+					if p.game.what == "panel":
+						panel_off = true
+					else:
+						panel2_off = true
+					p.game = null
 	elif team:
 		for p in thieves:
 			if at_panel(p):
 				panel_by = p.id
 			elif at_panel2(p):
 				panel2_by = p.id
+	# The alarm watches the case and the panels while it is wired: the panel
+	# cut, the pick at the case stays green.
+	for p in thieves:
+		if p.game and _alarmed_job(p.game.what):
+			p.game.alarm = alarm_live()
 	# A sealed case (the practice room): nothing works it.
 	if not taken and not Sim.feature("case"):
 		progress = 0.0
@@ -419,11 +448,10 @@ static func step(thieves: Array[Thief], dt: float, now: float, noises: Array[Sou
 		if worker == null:
 			progress = 0.0
 			by = ""
-			_last_alarm = 0.0
 			return ""
-		# Two thieves: nothing gives until the other one holds the panel,
-		# and then it gives without a sound. Alone (the partner caught), it
-		# is forced the loud way.
+		# Two thieves: nothing gives until the other one holds the panel.
+		# Alone (the partner caught), it is worked alone. Standing still at
+		# it, there is nothing to miss: it never sets the alarm off.
 		var partner_in := team and thieves.any(func(p): return p != worker and not p.out)
 		if partner_in and (not panels_held() or worker.id in [panel_by, panel2_by]):
 			waiting = true
@@ -436,12 +464,6 @@ static func step(thieves: Array[Thief], dt: float, now: float, noises: Array[Sou
 				short_hand = true
 				by = worker.id
 				return ""
-		var silent := partner_in
-		# Forcing the case sets its alarm off, and a guard hears it like any
-		# other sound: the job is a race against whoever is in earshot.
-		if not silent and Sim.feature("case_alarm") and now - _last_alarm > ALARM_EVERY_MS:
-			_last_alarm = now
-			noises.append(SoundEvent.make(at.x + 0.5, at.y + 0.5, "alarm"))
 		# Swapping who is at it is stepping away.
 		progress = (progress if worker.id == by else 0.0) + dt / float(loot.seconds)
 		by = worker.id
@@ -474,15 +496,18 @@ static func step(thieves: Array[Thief], dt: float, now: float, noises: Array[Sou
 
 ## The case with minigames: it opens when the lock is picked — both locks,
 ## by two thieves at once, for a gang of three — and, with a partner still
-## in, not before the panel's glass is cut. Picked alone, it is forced: the
-## alarm rings while someone is at it.
-static func _step_picking(thieves: Array[Thief], now: float, noises: Array[SoundEvent]) -> String:
+## in, not before the panel's glass is cut. A pin missed twice (its hook red,
+## with the alarm wired: alarm_live) sets the alarm off at the case.
+static func _step_picking(thieves: Array[Thief], _now: float, noises: Array[SoundEvent]) -> String:
 	var pickers := thieves.filter(func(p): return p.game != null and p.game.what == "case")
 	if pickers.is_empty():
 		progress = 0.0
 		by = ""
-		_last_alarm = 0.0
 		return ""
+	for p in pickers:
+		if p.game.events.has("red") and alarm_live():
+			NightAlert.trip(Vector2(at.x + 0.5, at.y + 0.5), noises)
+			break
 	pickers.sort_custom(func(a, b): return a.game.progress() > b.game.progress())
 	var worker: Thief = pickers[0]
 	by = worker.id
@@ -503,9 +528,6 @@ static func _step_picking(thieves: Array[Thief], now: float, noises: Array[Sound
 	progress = sum / needed
 	if blocked != "":
 		return ""
-	if not partner_in and Sim.feature("case_alarm") and now - _last_alarm > ALARM_EVERY_MS:
-		_last_alarm = now
-		noises.append(SoundEvent.make(at.x + 0.5, at.y + 0.5, "alarm"))
 	if pickers.filter(func(p): return p.game.done).size() >= needed:
 		progress = 1.0
 		by = ""

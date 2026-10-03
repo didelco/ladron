@@ -228,6 +228,9 @@ static func record(id: String, players: int, score: float, won_: bool, tier := 0
 	var is_won := won_ and not won(id, players, tier)
 	if not is_best and not is_won:
 		return false
+	# Dev mode shows the result but keeps nothing (Story.dev).
+	if Story.dev:
+		return is_best
 	var cfg := ConfigFile.new()
 	cfg.load(Story.save)
 	if is_best:

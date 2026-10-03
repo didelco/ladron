@@ -78,6 +78,10 @@ var loot := {}
 ## the gift for the first time it is got away with (Missions): shape (a
 ## LOOT_SHAPES one), colour (hex), name. Empty: a replica of the piece.
 var gift := {}
+## who calls to offer the mission (Missions, PhoneCall): name, line (what they
+## say on the phone) and face (a drawing, see CallerFace: skin, hair and bg as
+## hex colours, style "bald", "cap", "bun", "curls" or "tuft", glasses, moustache).
+var caller := {}
 ## what stands on a case, where chosen by hand: tile to a piece (Themes.is_piece:
 ## one of MuseumView.EXHIBITS or a theme's model)
 var exhibits := {}
@@ -697,13 +701,14 @@ func to_dict() -> Dictionary:
 		"exit": pair.call(exit),
 		"guards": guards.map(func(g: GuardSpawn) -> Dictionary: return {"x": g.at.x, "y": g.at.y, "dir": g.dir,
 			"stance": g.stance, "watch": g.watch, "archetype": g.archetype,
-			"view": g.view_level, "hearing": g.hearing_level, "speed": g.speed_level}),
+			"view": g.view_level, "hearing": g.hearing_level, "speed": g.speed_level, "attention": g.attention_level}),
 		"doors": doors.map(pair),
 		"columns": columns.map(pair),
 		"paintings": paintings.map(func(p): return {"span": p.span, "at": pair.call(p.at)}),
 		"props": props.map(func(p): return {"kind": p.kind, "at": pair.call(p.at)}),
 		"loot": loot,
 		"gift": gift,
+		"caller": caller,
 		"exhibits": exhibits.keys().map(func(t): return {"kind": exhibits[t], "at": pair.call(t)}),
 	}.merged({"night": night} if night > 0 else {}).merged({"drew_outline": false} if not drew_outline else {})
 
@@ -757,6 +762,7 @@ static func from_dict(d: Variant) -> MapFile:
 			spawn.view_level = clampi(int(g.get("view", 2)), 0, 4)
 			spawn.hearing_level = clampi(int(g.get("hearing", 2)), 0, 4)
 			spawn.speed_level = clampi(int(g.get("speed", 2)), 0, 4)
+			spawn.attention_level = clampi(int(g.get("attention", 2)), 0, 4)
 		else:
 			spawn.at = pair.call(g)
 		m.guards.append(spawn)
@@ -789,6 +795,16 @@ static func from_dict(d: Variant) -> MapFile:
 			m.gift["colour"] = String(gf.colour)
 		if String(gf.get("name", "")) != "":
 			m.gift["name"] = String(gf.name)
+	var cl: Variant = d.get("caller", {})
+	if cl is Dictionary and String(cl.get("name", "")) != "":
+		m.caller = {"name": String(cl.name), "line": String(cl.get("line", "")), "face": {}}
+		var fc: Variant = cl.get("face", {})
+		if fc is Dictionary:
+			for k in ["skin", "hair", "bg", "style"]:
+				if fc.has(k):
+					m.caller.face[k] = String(fc[k])
+			for k in ["glasses", "moustache"]:
+				m.caller.face[k] = bool(fc.get(k, false))
 	for e in d.get("exhibits", []):
 		if e is Dictionary and Themes.is_piece(String(e.get("kind", ""))):
 			var t: Vector2i = pair.call(e.get("at"))

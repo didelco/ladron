@@ -73,6 +73,14 @@ static func _state(g: Guard, others: Array[Guard], now: float) -> Dictionary:
 			else "Something made you jumpy a moment ago; you are on edge."
 	elif g.suspicion == 1:
 		mood = "You noticed something odd just now; probably nothing, but you want a look."
+	# The night as all the guards know it (NightAlert): the siren, someone
+	# seen, the piece found gone.
+	if NightAlert.ringing():
+		mood += " The alarm is ringing in %s." % Museum.zone_name(NightAlert.alarm_at.x, NightAlert.alarm_at.y)
+	elif NightAlert.intruder:
+		mood += " An intruder has been seen in the building: everyone is looking for them."
+	if NightAlert.robbed:
+		mood += " The piece in %s has been stolen: search everywhere, and keep an eye on the way out." % Museum.zone_name(Heist.at.x + 0.5, Heist.at.y + 0.5)
 	state.me = "You are %s, a night attendant in a closed museum of long galleries, standing in %s. %s" % [g.name, Museum.zone_name(g.x, g.y), mood]
 
 	var m := g.memory
@@ -447,7 +455,10 @@ static func decide(mind: Dictionary, answers: Dictionary, ms: int) -> Decision:
 ## Used until Laya answers and whenever it is not there.
 static func fallback(g: Guard, others: Array[Guard], now: float) -> Decision:
 	var options := _menu(g, others, now)
-	var order := ["chase", "follow", "search", "check_zone", "cover", "patrol", "watch"] if g.alert else ["patrol", "watch"]
+	# On alert, or the piece found gone (NightAlert.robbed): hunting, not
+	# strolling — the areas not looked over come before the round.
+	var hunting: bool = g.alert or NightAlert.robbed
+	var order := ["chase", "follow", "search", "check_zone", "cover", "patrol", "watch"] if hunting else ["patrol", "watch"]
 	var pick := options[0]
 	var found := false
 	for p in order:
@@ -464,10 +475,10 @@ static func fallback(g: Guard, others: Array[Guard], now: float) -> Decision:
 	d.option = pick.key
 	d.label = pick.label
 	d.target = pick.target
-	d.look = "sweep" if g.alert else "ahead"
+	d.look = "sweep" if hunting else "ahead"
 	d.probabilities = {pick.key: 1.0}
 	d.labels = {pick.key: pick.label}
 	var hot := pick.plan == "chase" or pick.plan == "follow"
-	d.aggression = 0.85 if hot else (0.45 if g.alert else 0.2)
+	d.aggression = 0.85 if hot else (0.45 if hunting else 0.2)
 	d.near = 0.6
 	return d

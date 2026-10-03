@@ -36,6 +36,12 @@ static func crash_loudness(speed: float, top_speed: float, shelf: bool) -> float
 	return float(LOUDNESS["shelf" if shelf else "bump"]) * (0.15 + 0.85 * t * t)
 
 
+## What the guard's state does to how far it hears: HEARING_ALERT on alert,
+## HEARING_CALM otherwise (heard_at and the dev overlay read it from here).
+static func state_factor(g: Guard) -> float:
+	return HEARING_ALERT if g.alert else HEARING_CALM
+
+
 ## Where a guard thinks a noise came from, or null if it does not reach. Faint
 ## noises are mislocated: the guard goes roughly the right way. ear is the
 ## night's hearing dial (Sim.tuning("hearing")), given by the caller.
@@ -45,7 +51,7 @@ static func heard_at(g: Guard, noise: SoundEvent, ear: float) -> Variant:
 	# A crash (something knocked over) is a deep, carrying sound: walls take
 	# half as much off it as off footsteps.
 	var damping := WALL_DAMPING * (0.5 if noise.kind in CRASHES else 1.0)
-	var reach := noise.loudness * (HEARING_ALERT if g.alert else HEARING_CALM) * ear \
+	var reach := noise.loudness * state_factor(g) * ear \
 		- damping * Museum.muffle_between(g.x, g.y, noise.x, noise.y)
 	if reach <= 0 or d > reach:
 		return null

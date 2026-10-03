@@ -10,31 +10,52 @@ extends RefCounted
 ## breath for SETTLE_SECONDS, then it gets up (the last RISE_SECONDS of Sim's
 ## usual getting up): a little longer on the floor than a crawler. Rolled
 ## into a wall or a case, it stops dead there with a crash the whole museum
-## hears (roll_bump) and lies flat on its back, stars going round its head, for
-## DIZZY_SECONDS before getting up — a long while, with the guards coming.
+## hears (roll_bump) and lies flat on its back, ninja stars going round its
+## head, for DIZZY_SECONDS before getting up: stood up as far as the guards'
+## eyes go (Sim.view_posture), with them coming. Whoever carries the piece
+## cannot roll at all.
 ##
 ## Sim.step_thief drives it: the roll key starts one, on the press.
 
 const DISTANCE := 8.0
-const SECONDS := 1.1
-## Tiles per second (about 7.3): TOP_SPEED is a run, this is past it, yet
-## slow enough to steer by eye, and a frame's worth (an eighth of a tile at
-## 60 fps) is short enough to show
-## the ball tumbling rather than jumping, and to stop at a wall cleanly.
-const SPEED := DISTANCE / SECONDS
+## Tiles per second (about 7.3): a third past a run (Sim.TOP_SPEED, 5.4), the
+## fastest a thief ever goes, yet slow enough to see the ball tumble rather
+## than jump, and to stop at a wall cleanly a frame at a time.
+const SPEED := DISTANCE / 1.1
+const SECONDS := DISTANCE / SPEED
 ## A clean roll: on all fours, before getting up even starts.
 const SETTLE_SECONDS := 0.8
-## Into a wall or a case: flat out and seeing stars, before getting up.
-const DIZZY_SECONDS := 2.5
+## Into a wall or a case: stunned, ninja stars going round the head, before
+## getting up. Stood up and in full view all that while (Sim.view_posture):
+## the price of a crash.
+const DIZZY_SECONDS := 2.0
 ## Then getting up: quicker than from all fours (Sim.CROUCH_SECONDS), but
-## the whole spell on the floor is longer (1.8 s clean, 3.5 s after a crash).
+## the whole spell on the floor is longer (1.8 s clean, 3.0 s after a crash).
 const RISE_SECONDS := 1.0
 
 
+## Carrying the loot sack (Heist.carrier): too bulky to roll.
+static func carrying(p: Thief) -> bool:
+	return Heist.carrier == p.id
+
+
 ## Can it roll now? On its feet or on all fours, not already rolling or
-## down after one, and still playing. Getting up (after a roll too) is all you do
+## down after one, still playing, and not carrying the piece. Getting up (after a roll too) is all you do
 ## while you do it, as in Sim.step_thief: no rolling out of it.
 static func can_start(p: Thief) -> bool:
+	return free_to_roll(p) and refusal(p) == ""
+
+
+## Why a thief fit to roll (free_to_roll) still may not: "sack" (carrying the
+## piece) or "tired" (not enough wind, Energy.ROLL_COST), or "" if it may.
+static func refusal(p: Thief) -> String:
+	if carrying(p):
+		return "sack"
+	return "" if Energy.can_roll(p) else "tired"
+
+
+## Everything but the sack and the wind: fit to roll if it could.
+static func free_to_roll(p: Thief) -> bool:
 	var rising := not p.crouched and p.posture > 0.0
 	return not (p.out or p.safe or p.rolling or p.dizzy > 0.0 or rising)
 
@@ -50,6 +71,7 @@ static func pose(p: Thief) -> String:
 static func start(p: Thief) -> bool:
 	if not can_start(p):
 		return false
+	Energy.pay_roll(p)
 	p.rolling = true
 	p.roll_left = DISTANCE
 	p.crouched = true

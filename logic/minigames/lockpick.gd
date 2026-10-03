@@ -4,7 +4,9 @@ extends Minigame
 ## on its rim; press the action key as the needle crosses the green to set a
 ## pin, one pin after another, the green somewhere else each time. A miss
 ## slips the pick, and it settles again. Shaking hands make the needle
-## jitter and the green narrower.
+## jitter and the green narrower. With the case's alarm on (Minigame.alarm)
+## each pin is a hook: one miss turns it orange, two red, and red sets the
+## alarm off; the next pin is green again. Picked clean, it never rings.
 
 ## Seconds for the needle to go once round the dial.
 const PIN_PERIOD := 1.0
@@ -65,6 +67,8 @@ func _play(_input: Dictionary, press: Dictionary, dt: float) -> String:
 			if off() <= band() * 3.0:
 				misses += 1
 			events.append("slip")
+			# Any miss counts towards the alarm, a wild one too.
+			_missed_hook()
 	return "done" if step >= steps else ""
 
 
@@ -72,4 +76,5 @@ func _play(_input: Dictionary, press: Dictionary, dt: float) -> String:
 ## of the needle (it must come round to it).
 func _new_pin() -> void:
 	misses = 0
+	_next_hook()
 	spot = fposmod(sweep + _rng.randf_range(0.3, 0.85), 1.0)

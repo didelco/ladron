@@ -54,6 +54,10 @@ var watch := ""
 var view_scale := 1.0
 var hearing_scale := 1.0
 var speed_scale := 1.0
+## How attentive it is ("Atento"): how likely it is to notice that a case
+## it looks at has been emptied (NightAlert.find_chance). The state of the
+## night multiplies it (NightAlert.attention).
+var attention_scale := 1.0
 ## spot being checked while combing the area around a clue, or (-1, -1)
 var search_spot := Vector2i(-1, -1)
 ## seconds spent standing at one junction, so nobody takes root there
@@ -80,11 +84,15 @@ var suspicion_at := 0.0
 var seen_at := PackedFloat64Array()
 ## the situation the current plan was made for
 var planned_for := ""
-## "", "lights" or "warn": something it went off to do instead of its round
+## "", "lights", "warn" or "door": something it went off to do instead of
+## its round ("door": keep an eye on the way out once the piece is found
+## gone, NightAlert)
 var errand := ""
-## the room (lights) or the guard id (warn) the errand is about
+## the room (lights), the guard id (warn) or the tile to stand on (door)
+## the errand is about
 var errand_room := -1
 var errand_partner := ""
+var errand_at := Vector2i(-1, -1)
 ## A thief it saw get into a hideout or up on a pedestal (its id, or ""):
 ## it goes to get it out, whether it still sees it or not, until it does or
 ## the thief is no longer there. Where that was, and in what: "plinth",

@@ -7,14 +7,19 @@ Pensado para saber, al tocar algo, en qué nivel vive y a quién afecta.
 ## 1. Por guardia individual — `GuardSpawn` (editable en el editor de mapas)
 
 Fichero: `logic/guard_spawn.gd`. Guardado en `MapFile.guards: Array[GuardSpawn]`
-(`logic/map_file.gd:82`).
+(`logic/map_file.gd`). Además de `at` y `dir`, cada guardia lleva `stance` (`round` o
+`post`), `watch`, el `archetype` elegido y cuatro deslizadores de 0 a 4 (el 2 es el
+guardia normal): `view_level`, `hearing_level`, `speed_level` y `attention_level`
+(la «Atención», que decide lo fácil que le es notar una vitrina vacía; los niveles y
+la fórmula están en la página «Alerta y guardias» de la web, `docs/ALERTA.md`).
+En el JSON del mapa: `view`, `hearing`, `speed`, `attention`.
 
 | Parámetro | Tipo | Qué hace | Se aplica en |
 |---|---|---|---|
 | `at` | `Vector2i` | Dónde empieza el guardia la noche. También decide, indirectamente, a qué punto de la ronda automática (`Museum.watchpoints`) se engancha: el más cercano a `at`. | `Sim.place_guards()`, `logic/sim.gd:424-437` |
 | `dir` | `float` (radianes) | Hacia dónde mira al empezar. Se copia a `Guard.dir` y `Guard.post_dir`. | `Sim.place_guards()`, `logic/sim.gd:424-437` |
 
-Lo que **no** es configurable por guardia hoy: la ruta de patrulla. Siempre
+Lo que **no** es configurable por guardia: la ruta de patrulla. Siempre
 la calcula `Museum._build_round()` a partir de la geometría del mapa
 (salas, pasillos), igual para un mapa generado que para uno dibujado a
 mano — el editor no la controla ni debería.
@@ -61,7 +66,7 @@ general — `Sim.tuning()` mira primero `custom`, luego `DIFFICULTIES`.
 | `theme` | Qué tema de museo usa. No toca la IA, pero cambia qué salas salen. |
 | `lights` | Si está apagado (`Sim.feature("lights")` da `false`), los guardias nunca hacen el recado de ir a revisar una luz encendida (`sim.gd:1076`, `sim.gd:1269`). |
 | `props` | Interruptor de si hay objetos que tirar y que hacen ruido. |
-| `case_alarm` | Si las vitrinas pueden disparar una alarma al forzarlas (`logic/heist.gd:442,506`). |
+| `case_alarm` | Si la vitrina tiene alarma: con ella, dos fallos en el mismo perno de la ganzúa (o en la misma lámpara de la ventosa) la hacen saltar (`Heist.alarm_live`, `logic/heist.gd`; `NightAlert.trip`). Ya no pita mientras se fuerza. En la historia está apagada hasta la noche 11. |
 | `lockpick` | Si el robo usa el minijuego de la cerradura o se resuelve al momento (`logic/heist.gd:271`). |
 
 Todo lo no fijado en `custom` sale `true` por defecto (`Sim.feature()`,
@@ -135,7 +140,12 @@ Constantes fijas de Sim/Hearing   →  la forma del cono de visión, los rangos 
 ```
 
 Si el editor crece, el hueco natural para nuevos parámetros por guardia es
-`GuardSpawn` — hoy solo `at`/`dir`. Añadir ahí, por ejemplo, un puesto fijo
-explícito o escalas individuales de vista/velocidad/oído (hoy solo existen
-a nivel de dificultad global, nunca por guardia) sería el siguiente paso
-natural.
+`GuardSpawn`, que ya lleva la posición, la orientación, el puesto y los cuatro
+deslizadores (vista, oído, agilidad, atención).
+
+## Lo que ve toda la noche: `NightAlert`
+
+Por encima de la sospecha de cada guardia hay una capa global (`logic/night_alert.gd`)
+con cuatro modos (tranquila, sospecha, intruso, nos han robado), el evento alarma y la
+regla para descubrir el robo. Todo está en la página **«Alerta y guardias»** de la web
+(`docs/ALERTA.md`), con sus tablas, fórmulas y constantes.
