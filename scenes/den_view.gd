@@ -104,17 +104,21 @@ func build() -> void:
 	var base := get_child_count()
 	_furniture()
 	_posters()
-	_front_door()
-	_trophies()
-	_dojo()
-	_dojo_walls()
-	_dojo_wall_things()
-	_dojo_wings()
-	_dojo_sensors()
-	_trial_starts()
-	_scarecrows()
-	_alarm_lights()
-	_bath()
+	if Den.ROOMS.has("salon"):
+		_front_door()
+	if Den.ROOMS.has("trofeos"):
+		_trophies()
+	if Den.ROOMS.has("dojo"):
+		_dojo()
+		_dojo_walls()
+		_dojo_wall_things()
+		_dojo_wings()
+		_dojo_sensors()
+		_trial_starts()
+		_scarecrows()
+		_alarm_lights()
+	if Den.ROOMS.has("aseo"):
+		_bath()
 	_lamps()
 	_sort_into_rooms(base)
 	_veil_rooms()
@@ -223,7 +227,8 @@ func _floors() -> void:
 	var h := Museum.h
 	var img := Image.create(w * PX, h * PX, false, Image.FORMAT_RGB8)
 	_boards(img, Rect2i(0, 0, w, h))
-	_gallery_floor(img, Den.rect("trofeos"))
+	if Den.ROOMS.has("trofeos"):
+		_gallery_floor(img, Den.rect("trofeos"))
 	_straw(img, Den.rect("dojo"))
 	_tiles(img, Den.rect("aseo"))
 	# The dojo's wings: the same straw as the dojo itself, the chain reads as
@@ -356,6 +361,8 @@ func _posters() -> void:
 		["aseo", 22.5, 40], ["aseo", 29.5, 44],
 	]
 	for p in north:
+		if not Den.ROOMS.has(p[0]):
+			continue
 		var r := Den.rect(p[0])
 		var pivot := _pivot(self, to_world(p[1], r.position.y - 0.005), 0.0)
 		# Above the kitchen run there is no room for tall pictures.
@@ -364,15 +371,16 @@ func _posters() -> void:
 		_painting(pivot, p[2], "", Vector3(0.7, 0.5, 0.78))
 	# Three with words, on the lounge's west wall and the trophy room's, and a
 	# window with its curtains between them (the lounge's, west).
-	_word_poster(to_world(1.005, 13.0), PI / 2, Text.t("HIDEOUT_POSTER_1"), Color("#f4d35e"))
-	_word_poster(to_world(1.005, 18.3), PI / 2, Text.t("HIDEOUT_POSTER_2"), Color("#ee6c4d"))
-	_word_poster(to_world(1.005, 4.0), PI / 2, Text.t("HIDEOUT_POSTER_3"), Color("#84a98c"))
-	_window(to_world(1.005, 16.0), PI / 2, Color("#c1666b"))
-	_window(to_world(20.0 - 0.005, 17.0), -PI / 2, Color("#c1666b"))
-	# Pictures in the trophy room's west wall, over the benches.
-	for spot in [[1.005, 2.2, 71], [1.005, 6.4, 72]]:
-		var pivot := _pivot(self, to_world(spot[0], spot[1]), PI / 2)
-		_painting(pivot, spot[2], "", Vector3(0.7, 0.5, 0.78))
+	if Den.ROOMS.has("salon"):
+		_word_poster(to_world(1.005, 13.0), PI / 2, Text.t("HIDEOUT_POSTER_1"), Color("#f4d35e"))
+		_word_poster(to_world(1.005, 18.3), PI / 2, Text.t("HIDEOUT_POSTER_2"), Color("#ee6c4d"))
+		_window(to_world(1.005, 16.0), PI / 2, Color("#c1666b"))
+		_window(to_world(20.0 - 0.005, 17.0), -PI / 2, Color("#c1666b"))
+	if Den.ROOMS.has("trofeos"):
+		_word_poster(to_world(1.005, 4.0), PI / 2, Text.t("HIDEOUT_POSTER_3"), Color("#84a98c"))
+		for spot in [[1.005, 2.2, 71], [1.005, 6.4, 72]]:
+			var pivot := _pivot(self, to_world(spot[0], spot[1]), PI / 2)
+			_painting(pivot, spot[2], "", Vector3(0.7, 0.5, 0.78))
 
 
 ## A window in a wall (pivot at its foot, +z out of the wall into the room): a
@@ -1375,7 +1383,7 @@ func _room_of_world(p: Vector3) -> String:
 		if Rect2(Den.rect(id)).grow(0.1).has_point(at):
 			return id
 	var d: Array = Den.FRONT_DOOR
-	if Rect2(d[0] - 1.0, d[1] - 1.0, d[2] + 2.0, d[3] + 2.0).has_point(at):
+	if Den.ROOMS.has("salon") and Rect2(d[0] - 1.0, d[1] - 1.0, d[2] + 2.0, d[3] + 2.0).has_point(at):
 		return "salon"
 	return ""
 
@@ -1435,7 +1443,7 @@ func set_visible_rooms(ids: Array, snap := false) -> void:
 
 ## Whether a room's contents are drawn now (not fully dark).
 func shows(id: String) -> bool:
-	return float(_dark.get(id, 0.0)) < 0.999
+	return _dark.has(id) and float(_dark[id]) < 0.999
 
 
 ## Whether what stands at a point (tiles) is drawn: in a room that is not
@@ -1572,10 +1580,14 @@ func _omni(x: float, y: float, z: float, color: Color, energy: float, range_: fl
 
 
 func _lamps() -> void:
-	_lamps_salon()
-	_lamps_trofeos()
-	_lamps_aseo()
-	_lamps_dojo()
+	if Den.ROOMS.has("salon"):
+		_lamps_salon()
+	if Den.ROOMS.has("trofeos"):
+		_lamps_trofeos()
+	if Den.ROOMS.has("aseo"):
+		_lamps_aseo()
+	if Den.ROOMS.has("dojo"):
+		_lamps_dojo()
 
 
 ## El salón: lámparas cálidas de siempre (su hogar) más un puñado de acentos

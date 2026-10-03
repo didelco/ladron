@@ -30,8 +30,11 @@ static func find() -> void:
 ## The band's house: its machine in the lounge and nothing else (there is no
 ## collection there). Playing it is the same pong; nothing is won or kept.
 static func find_home() -> void:
-	list = [Den.ARCADE_AT]
-	fronts = {Den.ARCADE_AT: Den.ARCADE_FRONT}
+	list.clear()
+	fronts.clear()
+	if Den.ROOMS.has("salon"):
+		list.append(Den.ARCADE_AT)
+		fronts[Den.ARCADE_AT] = Den.ARCADE_FRONT
 
 
 ## The machine thief p stands in front of (on the side its screen faces,

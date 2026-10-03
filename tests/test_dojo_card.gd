@@ -31,7 +31,7 @@ func hit(k: Variant) -> void:
 		if k is String:
 			var pad := InputEventJoypadButton.new()
 			pad.device = 0
-			pad.button_index = JOY_BUTTON_A if k == "A" else JOY_BUTTON_B
+			pad.button_index = {"A": JOY_BUTTON_A, "B": JOY_BUTTON_B, "Start": JOY_BUTTON_START}[k]
 			pad.pressed = down
 			e = pad
 		else:
@@ -97,11 +97,13 @@ func layout(size: Vector2i, ui: int, label: String) -> void:
 	var dojo: Control = game.hub.cards[game.hub.cursor].container
 	check(screen.encloses(dojo.get_global_rect()), label + ": pegatina seleccionada visible")
 	await hit("A")
-	check(game.hub.active_kind == "players", label + ": A abre banda nueva")
+	check(game.phase == "playing" and not game.hub.visible and game.house.space_id == "salon", label + ": A entra al salón")
 	await frames(12)
-	check(screen.encloses(game.hub.cards[game.hub.cursor].container.get_global_rect()), label + ": jugador seleccionado cabe")
-	await hit("B")
-	check(game.phase == "title" and game.hub.active[game.hub.cursor].id == "dojo", label + ": B vuelve a Guarida")
+	check(screen.encloses(game.hub.cards[game.hub.cursor].container.get_global_rect()), label + ": controles caben")
+	await hit("Start")
+	check(game.phase == "paused" and game.hub.visible and game.hub.active_kind == "pause", label + ": Start abre pausa")
+	game._quit_to_title()
+	await frames()
 
 
 func _init() -> void:
@@ -132,11 +134,13 @@ func _init() -> void:
 	game._show_title("dojo", false)
 	await frames()
 	await hit(KEY_ENTER)
-	check(game.hub.active_kind == "players", "Enter abre selector nuevo")
+	check(game.phase == "playing" and not game.hub.visible and game.house.space_id == "salon", "Enter entra directamente al salón")
 	await hit(KEY_ESCAPE)
-	check(game.hub.active[game.hub.cursor].id == "dojo", "Esc devuelve Guarida seleccionada")
+	check(game.hub.visible and game.hub.active_kind == "pause", "Esc abre pausa desde el salón")
+	game._quit_to_title()
+	await frames()
 	await click(game.hub.cards[game.hub.cursor].container)
-	check(game.hub.active_kind == "players", "clic en pegatina abre selector")
+	check(game.phase == "playing" and not game.hub.visible and game.house.space_id == "salon", "clic en Guarida entra directamente al salón")
 	await hit(KEY_ESCAPE)
 	check(Practice.open_trials(1).is_empty(), "banda nueva: pruebas bloqueadas por Historia")
 	for n in range(1, 5):
@@ -147,7 +151,7 @@ func _init() -> void:
 		var open := Practice.open_trials(n).map(func(t: Dictionary) -> String: return t.id)
 		game._show_title("dojo")
 		await frames()
-		game.hub._select(n, false)
+		game.hub._select(n - 1, false)
 		check(game.hub._detail.text == "%dP · %d/%d" % [n, open.size(), DojoTrials.TABLE.size()], "banda%d: disponibilidad visible" % n)
 		game.hub._pick("p%d" % n)
 		if n > 1:

@@ -1,5 +1,6 @@
 class_name MapEditor
 extends CanvasLayer
+
 ## The map editor, for the challenges: the plan seen from above, tile by
 ## tile, to draw a museum on — or to roll one from the generator and touch it
 ## up — and save it (MapFile).
@@ -177,6 +178,12 @@ const PROP := Color("#ff8c2e")
 const ROOM := Color("#d8ac5c")
 const DOOR := Color("#4dabf7")
 const COLUMN := Color("#c9a869")
+
+## Controladores sin nodos: comparten el mapa y los controles de este editor.
+var widgets := EditorWidgets.new(self)
+var guard_panel := EditorGuardPanel.new(self)
+var view_3d := EditorPreview3D.new(self)
+var pad_navigation := EditorPadNavigation.new(self)
 
 var map: MapFile
 var tool := "wall"
@@ -554,212 +561,50 @@ func _build() -> void:
 	guard_inside.add_child(_guard_sub)
 
 	_pick_kind("construir")
-
-
-## A small square button with a drawn icon, its name on hover.
 func _icon_button(icon: String, key: String, call: Callable, parent: Node, colour: Color) -> Button:
-	var b := _button("", call, parent, colour, false, icon)
-	b.custom_minimum_size = Vector2(42, 36)
-	b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	b.add_theme_constant_override("icon_max_width", 20)
-	b.tooltip_text = Text.t(key)
-	return b
+	return widgets.icon_button(icon, key, call, parent, colour)
 
 
-## One of the bar's settings at the right: its value is its text.
 func _setting_button(call: Callable, parent: Node, icon: Variant) -> Button:
-	var b := _button("", call, parent, Hud.C.safe, false, icon)
-	b.custom_minimum_size = Vector2(220, 38)
-	b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	b.autowrap_mode = TextServer.AUTOWRAP_OFF
-	b.add_theme_constant_override("icon_max_width", 20)
-	b.add_theme_font_size_override("font_size", 8)
-	return b
+	return widgets.setting_button(call, parent, icon)
 
 
 func _label(text: String, size: int, colour: Color, parent: Node, arcade := false) -> Label:
-	var l := Label.new()
-	l.text = text
-	if arcade:
-		l.add_theme_font_override("font", Hud.ARCADE)
-	l.add_theme_font_size_override("font_size", size)
-	l.add_theme_color_override("font_color", colour)
-	l.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
-	l.add_theme_constant_override("shadow_offset_y", 2)
-	parent.add_child(l)
-	return l
+	return widgets.label(text, size, colour, parent, arcade)
 
 
-## A button in the menus' look: walnut, brass when it has the focus.
-## big: the toolbar's. icon: a name in assets/icons/editor (white, tinted
-## like the text), or a texture of its own, shown as it is.
 func _button(text: String, call: Callable, parent: Node, colour: Color, big := false, icon: Variant = null) -> Button:
-	var b := Button.new()
-	b.text = text
-	if icon is String:
-		var stickers := {"new": "editor-mapas", "save": "guardar-mapa", "play": "probar-mapa"}
-		if stickers.has(icon):
-			b.icon = load("res://assets/ui/hub/%s.png" % stickers[icon])
-			b.set_meta("photo", true)
-		else:
-			b.icon = load("res://assets/icons/editor/%s.svg" % icon)
-	elif icon is Texture2D:
-		b.icon = icon
-		b.set_meta("photo", true)
-	if b.icon:
-		b.expand_icon = true
-		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.add_theme_constant_override("icon_max_width", 34 if big else 24)
-		b.add_theme_constant_override("h_separation", 10)
-	b.focus_mode = Control.FOCUS_ALL
-	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	b.custom_minimum_size = Vector2(160, 52 if big else 38)
-	# The toolbar's words on one line; the panels' may wrap.
-	b.autowrap_mode = TextServer.AUTOWRAP_OFF if big else TextServer.AUTOWRAP_WORD_SMART
-	b.add_theme_font_override("font", Hud.ARCADE)
-	b.add_theme_font_size_override("font_size", 10)
-	b.set_meta("colour", colour)
-	_look(b, false)
-	b.pressed.connect(call)
-	b.pressed.connect(func() -> void: ui_sound.emit("ok"))
-	b.focus_entered.connect(func() -> void:
-		ui_sound.emit("nav")
-		if not b.tooltip_text.is_empty() and is_instance_valid(_hint):
-			_say(b.tooltip_text, Hud.CREAM))
-	b.mouse_entered.connect(b.grab_focus)
-	parent.add_child(b)
-	return b
+	return widgets.button(text, call, parent, colour, big, icon)
 
 
-## selected: the tool in hand, or the room.
 func _look(b: Button, selected: bool) -> void:
-	var colour: Color = b.get_meta("colour")
-	for state in ["normal", "hover", "pressed", "focus"]:
-		var lit: bool = state != "normal"
-		var st := StyleBoxFlat.new()
-		st.bg_color = Hud.GLASS_LIT if lit or selected else Hud.GLASS
-		st.set_corner_radius_all(12)
-		st.border_color = Hud.GLOW if lit else (colour if selected else Hud.GLASS_EDGE)
-		st.set_border_width_all(3 if lit or selected else 2)
-		if lit:
-			st.shadow_color = Color(Hud.GLOW, 0.4)
-			st.shadow_size = 10
-		st.set_content_margin_all(6)
-		b.add_theme_stylebox_override(state, st)
-	b.add_theme_color_override("font_color", colour if selected else Hud.CREAM)
-	for key in ["font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
-		b.add_theme_color_override(key, Hud.GLOW_TEXT)
-	# A drawn icon goes the colour of the text; a picture stays as it is.
-	if not b.has_meta("photo"):
-		b.add_theme_color_override("icon_normal_color", colour if selected else Hud.CREAM)
-		for key in ["icon_hover_color", "icon_focus_color", "icon_pressed_color", "icon_hover_pressed_color"]:
-			b.add_theme_color_override(key, Hud.GLOW)
+	widgets.look(b, selected)
 
 
-## A ready-made room as a little plan, in the plan's own colours.
 func _template_picture(i: int) -> ImageTexture:
-	var rows: Array = TEMPLATES[i].rows
-	var cell := 4
-	var img := Image.create(String(rows[0]).length() * cell, rows.size() * cell, false, Image.FORMAT_RGBA8)
-	for y in rows.size():
-		for x in String(rows[0]).length():
-			var ch := String(rows[y])[x]
-			var col: Color = Hud.MAP_WALL if ch == "#" else (Hud.MAP_CASE if ch in ["o", "D", "S", "O", "b"] else Hud.MAP_FLOOR)
-			img.fill_rect(Rect2i(x * cell, y * cell, cell, cell), col)
-	return ImageTexture.create_from_image(img)
+	return widgets.template_picture(i)
 
 
-## The floor's or the walls' colours as they are now: two tones of stone in
-## a check, or the wallpaper's stripes over its wainscot.
-## which: one of the looks (MuseumView.looks), -1 the seed's own, or -2
-## (the default) whatever the map has now.
 func _swatch(part: String, which := -2) -> ImageTexture:
-	var look: Dictionary = {}
-	if which >= 0:
-		look = MuseumView.looks()[which]
-	elif which == -2 and map:
-		look = map.palette()
-	if look.is_empty():
-		look = MuseumView.THEMES[posmod(map.seed if map else 0, MuseumView.THEMES.size())]
-	var img := Image.create(16, 16, false, Image.FORMAT_RGBA8)
-	for y in 16:
-		for x in 16:
-			var c: Color
-			if part == "floor":
-				c = look.stone if (x / 4 + y / 4) % 2 == 0 else look.stone2
-			else:
-				c = look.wainscot if y >= 11 else (look.paper if (x / 3) % 2 == 0 else look.paper2)
-			img.set_pixel(x, y, c.lightened(0.15))
-	return ImageTexture.create_from_image(img)
+	return widgets.swatch(part, which)
 
 
-## A stat's level (0-4) as a little bar chart, like a volume meter: five
-## bars rising left to right, gold up to the level in force, the rest dim.
 func _level_bars_texture(level: int) -> ImageTexture:
-	var w := 160
-	var h := 30
-	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
-	var n := 5
-	var bw := 20
-	var gap := 9
-	var start_x := (w - (n * bw + (n - 1) * gap)) / 2
-	for i in n:
-		var bar_h := roundi(h * (0.3 + 0.7 * float(i + 1) / n))
-		var x := start_x + i * (bw + gap)
-		var y := h - bar_h
-		var col := Hud.C.gold if i <= level else Color(Hud.CREAM, 0.22)
-		img.fill_rect(Rect2i(x, y, bw, bar_h), col)
-	return ImageTexture.create_from_image(img)
+	return widgets.level_bars_texture(level)
 
 
-## An upward arrow turned to face one of the eight GUARD_DIRS: each pixel
-## checked against the shape unrotated, by undoing the turn on its way in.
 func _dir_arrow_texture(angle: float) -> ImageTexture:
-	var w := 40
-	var img := Image.create(w, w, false, Image.FORMAT_RGBA8)
-	var c := w / 2.0
-	var cos_a := cos(-angle)
-	var sin_a := sin(-angle)
-	for y in w:
-		for x in w:
-			var dx := x - c
-			var dy := y - c
-			var lx := dx * cos_a - dy * sin_a
-			var ly := dx * sin_a + dy * cos_a
-			if _in_arrow_shape(lx, ly, c):
-				img.set_pixel(x, y, Hud.CREAM)
-	return ImageTexture.create_from_image(img)
+	return widgets.dir_arrow_texture(angle)
 
 
-## The arrow's shape in its own upward frame (north is -Y): a shaft below
-## the centre, a triangular head above it, its tip at the top.
 func _in_arrow_shape(lx: float, ly: float, c: float) -> bool:
-	if absf(lx) <= c * 0.12 and ly >= -c * 0.15 and ly <= c * 0.75:
-		return true
-	var head_top := -c * 0.85
-	var head_base := -c * 0.05
-	if ly < head_top or ly > head_base:
-		return false
-	var t := (ly - head_top) / (head_base - head_top)
-	return absf(lx) <= t * c * 0.55
+	return widgets.in_arrow_shape(lx, ly, c)
 
 
 func _tool_colour(t: String) -> Color:
-	if t.begins_with("prop:"):
-		return PROP
-	if t.begins_with("big:"):
-		return ROOM
-	match t:
-		"spawn": return THIEF
-		"piece": return PIECE
-		"exit": return EXIT
-		"guard": return GUARD
-		"door": return DOOR
-		"prop": return PROP
-		"case": return PIECE
-		"room": return ROOM
-	return Hud.C.safe
+	return widgets.tool_colour(t)
+
+
 
 
 # --- Tools and settings ------------------------------------------------------------
@@ -1165,224 +1010,54 @@ const GUARD_DIR_KEYS := ["N", "NE", "E", "SE", "S", "SO", "O", "NO"]
 ## the way to remove it sit above the tabs, built once in _build.
 const GUARD_PAGES := ["capabilities", "position"]
 var guard_page := "capabilities"
-
-
 func _guard_panel() -> void:
-	var g := selected_guard
-	if g == null:
-		_open("")
-		return
-	_guard_title.text = Text.t("EDITOR_TOOL_GUARD")
-
-	for page in GUARD_PAGES:
-		var b := _button(Text.t("EDITOR_GUARD_TAB_" + page.to_upper()), func() -> void:
-			guard_page = page
-			_open("guard"), _guard_tabs, Hud.C.gold)
-		b.custom_minimum_size = Vector2(0, 30)
-		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		b.set_meta("guard_page", page)
-
-	match guard_page:
-		"capabilities":
-			_guard_capabilities_page(g)
-		"position":
-			_guard_position_page(g)
+	guard_panel.guard_panel()
 
 
-## The archetype (its dropdown seeds the three sliders below), the sliders
-## themselves — drawn as a little bar chart, like a volume meter, the stat's
-## name at its top right — and the line of traits they add up to.
 func _guard_capabilities_page(g: GuardSpawn) -> void:
-	_label(Text.t("EDITOR_GUARD_ARCHETYPE"), 8, Hud.C.dim, _guard_sub, true)
-	var arch := _dropdown(_guard_sub)
-	var arch_keys := GuardSpawn.ARCHETYPES.keys()
-	for i in arch_keys.size():
-		arch.add_item(Text.t(GuardSpawn.ARCHETYPES[arch_keys[i]].label), i)
-	arch.select(maxi(0, arch_keys.find(g.archetype)))
-	arch.item_selected.connect(func(i: int) -> void: _pick_archetype(arch_keys[i]))
-
-	for stat in ["view", "hearing", "speed"]:
-		_level_row(stat, "EDITOR_GUARD_STAT_" + stat.to_upper())
-	var desc := _label(_guard_description(g), 11, Hud.CREAM, _guard_sub)
-	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	desc.set_meta("guard_desc", true)
+	guard_panel.guard_capabilities_page(g)
 
 
-## How it moves (round/post) and, posted, what it watches: icon buttons —
-## their words are long, and full-width ones would spill past the sidebar —
-## and which way it looks at the start (‹ › in steps of 45°, an arrow icon
-## turned to match, like _seconds_slider).
 func _guard_position_page(g: GuardSpawn) -> void:
-	_label(Text.t("EDITOR_GUARD_STANCE"), 8, Hud.C.dim, _guard_sub, true)
-	var stance_row := HBoxContainer.new()
-	stance_row.add_theme_constant_override("separation", 6)
-	_guard_sub.add_child(stance_row)
-	for s in ["round", "post"]:
-		var b := _icon_button("stance_" + s, "EDITOR_GUARD_STANCE_" + s.to_upper(), _pick_stance.bind(s), stance_row, Hud.C.safe)
-		b.set_meta("guard_stance", s)
-
-	if g.stance == "post":
-		# Some missions ask for exactly this: a guard that never leaves its
-		# post, whichever way you set it to look.
-		_label(Text.t("EDITOR_GUARD_WATCH"), 8, Hud.C.dim, _guard_sub, true)
-		var watch_row := HBoxContainer.new()
-		watch_row.add_theme_constant_override("separation", 6)
-		_guard_sub.add_child(watch_row)
-		var watch_icons := {"": "watch_none", "room": "room", "piece": "piece"}
-		for w in ["", "room", "piece"]:
-			var b := _icon_button(watch_icons[w], "EDITOR_GUARD_WATCH_" + (w if w != "" else "none").to_upper(), _pick_watch.bind(w), watch_row, Hud.C.safe)
-			b.set_meta("guard_watch", w)
-
-	_label(Text.t("EDITOR_GUARD_FACING"), 8, Hud.C.dim, _guard_sub, true)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 6)
-	_guard_sub.add_child(row)
-	var less := _button("‹", _step_dir.bind(-1), row, Hud.C.safe)
-	var idx := _nearest_dir(g.dir)
-	var bar := _button(GUARD_DIR_KEYS[idx], _step_dir.bind(0), row, Hud.C.safe, false, _dir_arrow_texture(GUARD_DIRS[idx]))
-	bar.tooltip_text = Text.t("EDITOR_GUARD_" + GUARD_DIR_KEYS[idx])
-	bar.add_theme_constant_override("icon_max_width", 28)
-	var more := _button("›", _step_dir.bind(1), row, Hud.C.safe)
-	for b in [less, more]:
-		b.custom_minimum_size = Vector2(38, 38)
-		b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-		b.alignment = HORIZONTAL_ALIGNMENT_CENTER
-	bar.custom_minimum_size = Vector2(176, 38)
-	bar.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	bar.autowrap_mode = TextServer.AUTOWRAP_OFF
-	bar.set_meta("guard_dir", true)
-	bar.gui_input.connect(func(e: InputEvent) -> void:
-		for pair in [["ui_left", -1], ["ui_right", 1]]:
-			if e.is_action_pressed(pair[0], true):
-				_step_dir(pair[1])
-				bar.accept_event())
+	guard_panel.guard_position_page(g)
 
 
-## One stat, its name at the top right (like a volume setting's); the bars
-## below stand for the five levels, lit up to the one in force. A click on
-## the middle settles it back on the plain middle level (2), the arrows
-## step it.
 func _level_row(stat: String, title_key: String) -> void:
-	var head := HBoxContainer.new()
-	_guard_sub.add_child(head)
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	head.add_child(spacer)
-	_label(Text.t(title_key), 8, Hud.C.dim, head, true)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 6)
-	_guard_sub.add_child(row)
-	var less := _button("‹", _step_level.bind(stat, -1), row, Hud.C.safe)
-	var level := selected_guard.level(stat)
-	var bar := _button("", _step_level.bind(stat, 0), row, Hud.C.safe, false, _level_bars_texture(level))
-	bar.tooltip_text = Text.t(GuardSpawn.LEVEL_LABELS[stat][level])
-	bar.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	bar.add_theme_constant_override("icon_max_width", 150)
-	var more := _button("›", _step_level.bind(stat, 1), row, Hud.C.safe)
-	for b in [less, more]:
-		b.custom_minimum_size = Vector2(38, 38)
-		b.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-		b.alignment = HORIZONTAL_ALIGNMENT_CENTER
-	bar.custom_minimum_size = Vector2(176, 38)
-	bar.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	bar.autowrap_mode = TextServer.AUTOWRAP_OFF
-	bar.set_meta("guard_level", stat)
-	bar.gui_input.connect(func(e: InputEvent) -> void:
-		for pair in [["ui_left", -1], ["ui_right", 1]]:
-			if e.is_action_pressed(pair[0], true):
-				_step_level(stat, pair[1])
-				bar.accept_event())
+	guard_panel.level_row(stat, title_key)
 
 
-## What the sliders say it is like, in words: the ones off the plain middle
-## strung together, or a line saying it is nothing out of the ordinary.
 func _guard_description(g: GuardSpawn) -> String:
-	var parts: Array[String] = []
-	for stat in ["view", "hearing", "speed"]:
-		var lvl := g.level(stat)
-		if lvl != 2:
-			parts.append(Text.t(GuardSpawn.LEVEL_LABELS[stat][lvl]))
-	if parts.is_empty():
-		return Text.t("EDITOR_GUARD_NO_TRAITS")
-	return ", ".join(parts)
+	return guard_panel.guard_description(g)
 
 
-## The closest of the eight GUARD_DIRS to an angle.
 func _nearest_dir(dir: float) -> int:
-	var best := 0
-	var best_diff := INF
-	for i in GUARD_DIRS.size():
-		var diff := absf(wrapf(GUARD_DIRS[i] - dir, -PI, PI))
-		if diff < best_diff:
-			best_diff = diff
-			best = i
-	return best
+	return guard_panel.nearest_dir(dir)
 
 
-## One step round (-1/1), or 0 to just settle it on the nearest of the eight.
 func _step_dir(step: int) -> void:
-	if selected_guard == null:
-		return
-	var i := (_nearest_dir(selected_guard.dir) + step) % GUARD_DIRS.size()
-	if i < 0:
-		i += GUARD_DIRS.size()
-	selected_guard.dir = GUARD_DIRS[i]
-	dirty = true
-	_refresh()
+	guard_panel.step_dir(step)
 
 
 func _remove_selected_guard() -> void:
-	if selected_guard == null:
-		return
-	_remember()
-	map.guards = map.guards.filter(func(g): return g != selected_guard)
-	selected_guard = null
-	_open("")
+	guard_panel.remove_selected_guard()
 
 
-## An archetype loads its three sliders fresh (the "default values"
-## moment); from then on they are free to move one at a time without it
-## snapping back.
 func _pick_archetype(key: String) -> void:
-	if selected_guard == null:
-		return
-	selected_guard.archetype = key
-	var preset: Dictionary = GuardSpawn.ARCHETYPES[key]
-	selected_guard.view_level = int(preset.view)
-	selected_guard.hearing_level = int(preset.hearing)
-	selected_guard.speed_level = int(preset.speed)
-	dirty = true
-	_open("guard")
+	guard_panel.pick_archetype(key)
 
 
-## -1/1 to step a slider, or 0 to settle it back on the plain middle (2).
 func _step_level(stat: String, step: int) -> void:
-	if selected_guard == null:
-		return
-	var next := 2 if step == 0 else clampi(selected_guard.level(stat) + step, 0, 4)
-	selected_guard.set_level(stat, next)
-	dirty = true
-	_refresh()
+	guard_panel.step_level(stat, step)
 
 
-## Whether it patrols or stands guard: the "watch" row only makes sense
-## posted, so this rebuilds the panel instead of just refreshing it.
 func _pick_stance(s: String) -> void:
-	if selected_guard == null:
-		return
-	selected_guard.stance = s
-	if s != "post":
-		selected_guard.watch = ""
-	dirty = true
-	_open("guard")
+	guard_panel.pick_stance(s)
 
 
 func _pick_watch(w: String) -> void:
-	if selected_guard == null:
-		return
-	selected_guard.watch = w
-	dirty = true
-	_refresh()
+	guard_panel.pick_watch(w)
+
+
 
 
 ## Its tale: the piece's name, a line on it, and the story told before the
@@ -2166,222 +1841,52 @@ func _draw_plan() -> void:
 		_plan.draw_rect(Rect2(o, Vector2(map.w, map.h) * c).grow(2), Hud.BRASS, false, 2.0)
 
 
-# --- The 3D view --------------------------------------------------------------------
-
 func _toggle_3d() -> void:
-	if in_3d:
-		stop_preview()
-	else:
-		_ask_preview()
+	view_3d.toggle()
 
 
-## The museum just built from the map in the game's world (Main has laid it
-## out): the plan makes way for it, a camera comes round it, and whatever
-## changed since the last build throws up a little dust.
 func start_preview(world: Node3D) -> void:
-	var first := not in_3d
-	in_3d = true
-	_back.visible = false
-	if first:
-		_was_current = get_viewport().get_camera_3d()
-	_cam = Camera3D.new()
-	_cam.fov = 45
-	world.add_child(_cam)
-	_cam.make_current()
-	# A little moonlight from over the camera: the museum at night, but readable.
-	_cam_light = DirectionalLight3D.new()
-	_cam_light.light_color = Color("#b8c4ff")
-	_cam_light.light_energy = 0.5
-	world.add_child(_cam_light)
-	if not _span_set:
-		_span = maxf(map.w, map.h) * 0.9
-		_span_set = true
-	_place_camera()
-	_hover_mark = MeshInstance3D.new()
-	var q := PlaneMesh.new()
-	q.size = Vector2(0.96, 0.96)
-	_hover_mark.mesh = q
-	_hover_mark.material_override = _mark_look(Color(Hud.CREAM, 0.45))
-	_hover_mark.visible = false
-	world.add_child(_hover_mark)
-	_marks = Node3D.new()
-	world.add_child(_marks)
-	for t in _changed(_built, map).slice(0, 14):
-		Fx.puff(world, MuseumView.to_world(t.x + 0.5, t.y + 0.5))
-	_built = map.copy()
-	_view_button.icon = load("res://assets/icons/editor/rooms.svg")
-	_view_button.tooltip_text = Text.t("EDITOR_2D")
-	_refresh()
+	view_3d.start(world)
 
 
-## Back to the plan.
 func stop_preview() -> void:
-	if not in_3d:
-		return
-	in_3d = false
-	_back.visible = true
-	for n in [_cam, _cam_light, _hover_mark, _marks]:
-		if is_instance_valid(n):
-			n.queue_free()
-	if is_instance_valid(_was_current):
-		_was_current.make_current()
-	_view_button.icon = load("res://assets/icons/editor/view3d.svg")
-	_view_button.tooltip_text = Text.t("EDITOR_PREVIEW")
-	_refresh()
-	_plan.grab_focus()
+	view_3d.stop()
 
 
 func _exit_tree() -> void:
-	# Leaving from the 3D: the game's camera back.
-	if in_3d and is_instance_valid(_was_current):
-		_was_current.make_current()
+	view_3d.restore_camera()
 
 
-## Build the museum again from the map as it is now; one that cannot be
-## played cannot be built, and waits (with its marks) until it can.
 func _rebuild() -> void:
-	if not in_3d:
-		return
-	if not map.check().is_empty():
-		_say(Text.t("EDITOR_3D_WAITS"), Hud.C.gold)
-		return
-	preview.emit(map.copy())
+	view_3d.rebuild()
 
 
-## Tiles that differ between two builds: what is on them or stands there.
 static func _changed(a: MapFile, b: MapFile) -> Array[Vector2i]:
-	var out: Array[Vector2i] = []
-	if a == null or a.w != b.w or a.h != b.h:
-		return out
-	for y in b.h:
-		for x in b.w:
-			var t := Vector2i(x, y)
-			if a.at(t) != b.at(t) or a.exhibits.get(t, "") != b.exhibits.get(t, "") \
-					or a.guards.any(func(g): return g.at == t) != b.guards.any(func(g): return g.at == t) \
-					or a.doors.has(t) != b.doors.has(t) or a.columns.has(t) != b.columns.has(t) \
-					or a.props.any(func(p): return p.at == t) != b.props.any(func(p): return p.at == t):
-				out.append(t)
-	for k in [["spawn", a.spawn, b.spawn], ["piece", a.piece, b.piece], ["exit", a.exit, b.exit]]:
-		if k[1] != k[2] and b.inside(k[2]):
-			out.append(k[2])
-	return out
+	return EditorPreview3D.changed_tiles(a, b)
 
 
-## The tile under the mouse: the top of a wall if it points at one, or the
-## floor.
 func _tile_3d() -> Vector2i:
-	if not is_instance_valid(_cam):
-		return MapFile.NONE
-	var at := get_viewport().get_mouse_position()
-	var o := _cam.project_ray_origin(at)
-	var d := _cam.project_ray_normal(at)
-	for height in [MuseumView.WALL_HEIGHT, 0.0]:
-		if absf(d.y) < 0.0001:
-			continue
-		var k: float = (height - o.y) / d.y
-		if k <= 0.0:
-			continue
-		var p := o + d * k
-		var t := Vector2i(floori(p.x + map.w / 2.0), floori(p.z + map.h / 2.0))
-		if not map.inside(t):
-			continue
-		if height == 0.0 or (map.at(t) == Tiles.WALL and not map.is_out(t)):
-			return t
-	return MapFile.NONE
+	return view_3d.tile_under_mouse()
 
 
 func _input_3d(event: InputEvent) -> void:
-	if event is InputEventMouseMotion:
-		# The right button held: turn round the museum.
-		if event.button_mask & MOUSE_BUTTON_MASK_RIGHT:
-			_yaw += event.relative.x * 0.01
-			_pitch = clampf(_pitch + event.relative.y * 0.01, 0.25, 1.45)
-			_place_camera()
-		var t := _tile_3d()
-		if t != hover:
-			hover = t
-			if held == MOUSE_BUTTON_LEFT and t != MapFile.NONE and _paints():
-				_use(t, false)
-				_mark(t)
-		_place_hover()
-	elif event is InputEventMouseButton:
-		match event.button_index:
-			MOUSE_BUTTON_WHEEL_UP:
-				_span = maxf(8.0, _span * 0.9)
-				_place_camera()
-			MOUSE_BUTTON_WHEEL_DOWN:
-				_span = minf(90.0, _span * 1.1)
-				_place_camera()
-			MOUSE_BUTTON_RIGHT:
-				# A click without a drag rubs out, as on the plan.
-				if event.pressed:
-					_right_from = event.position
-				elif _right_from.distance_to(event.position) < 6.0 and hover != MapFile.NONE:
-					_press(hover, true)
-					_rebuild()
-			MOUSE_BUTTON_LEFT:
-				if event.pressed:
-					_plan.grab_focus()
-					hover = _tile_3d()
-					if hover == MapFile.NONE:
-						return
-					held = MOUSE_BUTTON_LEFT
-					_press(hover, false)
-					if _paints():
-						_mark(hover)
-					elif tool != "room":
-						_rebuild()
-				else:
-					held = 0
-					if tool == "room" and room_from != MapFile.NONE and hover != MapFile.NONE and room_from != hover:
-						_mark_room(hover)
-					if _paints() or tool == "room":
-						_rebuild()
-	elif event.is_action_pressed("ui_accept") and hover != MapFile.NONE:
-		_press(hover, false)
-		_rebuild()
-	_plan.accept_event()
+	view_3d.handle_input(event)
 
 
-## A tile painted in a stroke not yet built: a block of wall, a case, or a
-## patch of floor, in the plan's colours.
 func _mark(t: Vector2i) -> void:
-	var tile := map.at(t)
-	var tall := 1.2 if tile == Tiles.WALL else (0.8 if tile == Tiles.COVER else 0.04)
-	var m := MeshInstance3D.new()
-	var box := BoxMesh.new()
-	box.size = Vector3(1.0, tall, 1.0)
-	m.mesh = box
-	var colour: Color = Hud.MAP_WALL if tile == Tiles.WALL else (Hud.MAP_CASE if tile == Tiles.COVER else Hud.MAP_FLOOR)
-	m.material_override = _mark_look(Color(colour, 0.85))
-	m.position = MuseumView.to_world(t.x + 0.5, t.y + 0.5, tall / 2.0)
-	_marks.add_child(m)
+	view_3d.mark_tile(t)
 
 
 func _place_hover() -> void:
-	if not is_instance_valid(_hover_mark):
-		return
-	_hover_mark.visible = hover != MapFile.NONE
-	if hover != MapFile.NONE:
-		var on_wall := map.at(hover) == Tiles.WALL
-		_hover_mark.position = MuseumView.to_world(hover.x + 0.5, hover.y + 0.5, MuseumView.WALL_HEIGHT + 0.06 if on_wall else 0.06)
+	view_3d.place_hover()
 
 
 static func _mark_look(colour: Color) -> StandardMaterial3D:
-	var m := StandardMaterial3D.new()
-	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	m.albedo_color = colour
-	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	return m
+	return EditorPreview3D.mark_material(colour)
 
 
 func _place_camera() -> void:
-	if not is_instance_valid(_cam):
-		return
-	var at := Vector3(cos(_yaw) * cos(_pitch), sin(_pitch), sin(_yaw) * cos(_pitch)) * _span
-	_cam.position = at
-	_cam.look_at(Vector3.ZERO)
-	_cam_light.transform = _cam.transform
+	view_3d.place_camera()
 
 
 func _process(dt: float) -> void:
@@ -2389,219 +1894,35 @@ func _process(dt: float) -> void:
 		_pad_dir = Vector2i.ZERO
 		return
 	_pad_cursor(dt)
-	if not in_3d:
-		return
-	# The arrows or the right stick turn it round and tilt it (the left one
-	# moves the cursor).
-	var turn := Vector2(float(Input.is_physical_key_pressed(KEY_RIGHT)) - float(Input.is_physical_key_pressed(KEY_LEFT)),
-		float(Input.is_physical_key_pressed(KEY_DOWN)) - float(Input.is_physical_key_pressed(KEY_UP)))
-	for pad in Input.get_connected_joypads():
-		var r := Vector2(Input.get_joy_axis(pad, JOY_AXIS_RIGHT_X), Input.get_joy_axis(pad, JOY_AXIS_RIGHT_Y))
-		if r.length() > 0.25:
-			turn += r
-	if turn != Vector2.ZERO:
-		_yaw += turn.x * dt * 1.5
-		_pitch = clampf(_pitch - turn.y * dt * 1.0, 0.25, 1.45)
-		_place_camera()
+	view_3d.update_camera(dt)
 
 
-# --- The pad ---------------------------------------------------------------------
-
-## Whether the pad or the mouse and keyboard were used last: the help line
-## shows the buttons of whichever it is. The buttons that work anywhere in
-## the editor (not in a panel) are here too.
 func _input(event: InputEvent) -> void:
-	if not visible or map == null:
-		return
-	var pad := event is InputEventJoypadButton or (event is InputEventJoypadMotion and absf(event.axis_value) > PAD_DEAD)
-	if pad != _pad and (pad or event is InputEventMouseButton or event is InputEventKey):
-		_pad = pad
-		_refresh()
-	if panel != "":
-		return
-	if event is InputEventJoypadMotion and event.axis in [JOY_AXIS_TRIGGER_LEFT, JOY_AXIS_TRIGGER_RIGHT]:
-		var i := 0 if event.axis == JOY_AXIS_TRIGGER_LEFT else 1
-		var down: bool = event.axis_value > PAD_DEAD
-		if down and not _pad_triggers[i]:
-			_pad_kind(-1 if i == 0 else 1)
-			ui_sound.emit("nav")
-		_pad_triggers[i] = down
-		get_viewport().set_input_as_handled()
-	elif event is InputEventJoypadButton and event.pressed:
-		match event.button_index:
-			JOY_BUTTON_LEFT_SHOULDER: _pad_item(-1)
-			JOY_BUTTON_RIGHT_SHOULDER: _pad_item(1)
-			JOY_BUTTON_START:
-				# Over to the buttons, and back.
-				if _plan.has_focus():
-					_play_button.grab_focus()
-				else:
-					_plan.grab_focus()
-			JOY_BUTTON_BACK: _toggle_3d()
-			_: return
-		ui_sound.emit("nav")
-		get_viewport().set_input_as_handled()
+	pad_navigation.handle_input(event)
 
 
-## A, X, B and Y on the plan (or the museum in 3D).
 func _pad_on_plan(event: InputEvent) -> void:
-	if not event is InputEventJoypadButton:
-		return
-	var b: int = event.button_index
-	if not event.pressed:
-		# A or X let go: the stroke is over, and the 3D builds what it painted.
-		if (b == JOY_BUTTON_A and _pad_stroke == 1) or (b == JOY_BUTTON_X and _pad_stroke == 2):
-			_pad_stroke = 0
-			if in_3d and _pad_marked:
-				_rebuild()
-			_pad_marked = false
-		return
-	if hover == MapFile.NONE:
-		hover = map.spawn
-	match b:
-		JOY_BUTTON_A:
-			if tool == "room" and room_from != MapFile.NONE:
-				_mark_room(hover)
-			else:
-				_press(hover, false)
-			_pad_stroke = 1
-			_pad_after_change()
-		JOY_BUTTON_X:
-			_press(hover, true)
-			_pad_stroke = 2
-			_pad_after_change()
-		JOY_BUTTON_B:
-			ui_sound.emit("back")
-			_undo()
-		JOY_BUTTON_Y:
-			if tool == "stamp":
-				_turn()
-			else:
-				_pick_up(hover)
-			ui_sound.emit("nav")
+	pad_navigation.on_plan(event)
 
 
-## A change made on the tile under the cursor: in 3D, a stroke's tiles are
-## marked and built when it ends; anything else is built at once.
 func _pad_after_change() -> void:
-	if not in_3d:
-		return
-	if _paints() or _pad_stroke == 2:
-		_mark(hover)
-		_pad_marked = true
-	elif tool != "room":
-		_rebuild()
+	pad_navigation.after_change()
 
 
-## The cursor on the pad: the cross or the left stick, a step at once and
-## then running on while held. In 3D, up is away from the camera.
 func _pad_cursor(dt: float) -> void:
-	var v := Vector2.ZERO
-	for pad in Input.get_connected_joypads():
-		v += Vector2(Input.get_joy_axis(pad, JOY_AXIS_LEFT_X), Input.get_joy_axis(pad, JOY_AXIS_LEFT_Y))
-		v.x += float(Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_RIGHT)) - float(Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_LEFT))
-		v.y += float(Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_DOWN)) - float(Input.is_joy_button_pressed(pad, JOY_BUTTON_DPAD_UP))
-	if v.length() < PAD_DEAD:
-		_pad_dir = Vector2i.ZERO
-		return
-	if in_3d:
-		# The camera looks at the middle from (cos, sin) of its yaw.
-		var c := cos(_yaw)
-		var s := sin(_yaw)
-		v = Vector2(s * v.x + c * v.y, -c * v.x + s * v.y)
-	var d := Vector2i(signi(roundi(v.x)) if absf(v.x) >= absf(v.y) else 0, signi(roundi(v.y)) if absf(v.y) > absf(v.x) else 0)
-	if d != _pad_dir:
-		_pad_dir = d
-		_pad_wait = PAD_DELAY
-	else:
-		_pad_wait -= dt
-		if _pad_wait > 0.0:
-			return
-		_pad_wait = PAD_REPEAT
-	var from := hover if hover != MapFile.NONE else map.spawn
-	var next := from + d
-	if not map.inside(next):
-		return
-	hover = next
-	# A or X held: the stroke goes on over the tile.
-	if _pad_stroke != 0 and (_paints() or _pad_stroke == 2):
-		_use(hover, _pad_stroke == 2)
-		_pad_after_change()
-		_refresh()
-	if in_3d:
-		_place_hover()
-	_plan.queue_redraw()
+	pad_navigation.move_cursor(dt)
 
 
-## The thing before or after in the catalogue (round from the end to the
-## start), in hand at once and scrolled into sight.
 func _pad_item(step: int) -> void:
-	var items: Array[Button] = []
-	var at := -1
-	for c in _catalogue.get_children():
-		if c is Button and (c in _tool_buttons.values() or c in _template_buttons):
-			if (_tool_buttons.get(tool) == c) or (tool == "stamp" and template >= 0 and template < _template_buttons.size() and _template_buttons[template] == c):
-				at = items.size()
-			items.append(c)
-	if items.is_empty():
-		return
-	var b := items[posmod(at + step, items.size()) if at >= 0 else (0 if step > 0 else items.size() - 1)]
-	b.pressed.emit()
-	_cat_scroll.ensure_control_visible(b)
-	_say(b.tooltip_text, Hud.CREAM)
+	pad_navigation.step_item(step)
 
 
-## The kind of tool before or after (building, objects), with its first
-## thing in hand unless what is in hand is already one of its own.
 func _pad_kind(step: int) -> void:
-	var i := PAD_KINDS.find(kind)
-	_pick_kind(PAD_KINDS[posmod(i + step, PAD_KINDS.size())])
-	var own := tool in _tool_buttons or (tool == "stamp" and kind == "construir")
-	if not own:
-		_pad_item(1)
-	else:
-		_say(Text.t("EDITOR_KIND_" + kind.to_upper()), Hud.CREAM)
+	pad_navigation.step_kind(step)
 
 
-## Take up whatever stands on this tile: the same tool in hand, its kind's
-## catalogue open (and every theme shown, so it is there to see).
 func _pick_up(t: Vector2i) -> void:
-	var what := "wall"
-	var k := "construir"
-	var prop: Array = map.props.filter(func(p): return p.at == t)
-	var big := map.big_at(t)
-	if map.guards.any(func(g): return g.at == t):
-		what = "guard"
-	elif t == map.spawn:
-		what = "spawn"
-	elif t == map.piece:
-		what = "piece"
-	elif t == map.exit:
-		what = "exit"
-	elif map.doors.has(t):
-		what = "door"
-	elif not prop.is_empty():
-		what = "prop:" + String(prop[0].kind)
-	elif not big.is_empty():
-		what = "big:" + String(big.kind)
-	elif map.exhibits.has(t):
-		what = "exhibit:" + String(map.exhibits[t])
-	elif map.at(t) == Tiles.COVER:
-		what = "case"
-	if what != "wall" and not (what in MAIN_TOOLS):
-		k = "objects"
-		filter = ""
-		filter_type = ""
-	else:
-		# wall or a MAIN_TOOLS character: its button lives in construir's
-		# own row, not the salas step-in.
-		building_page = ""
-	kind = k
-	_fill_catalogue()
-	_pick_tool(what)
-	if _tool_buttons.has(what):
-		_cat_scroll.ensure_control_visible.call_deferred(_tool_buttons[what])
-		_say(_tool_buttons[what].tooltip_text, Hud.CREAM)
+	pad_navigation.pick_up(t)
 
 
 # --- A picture of a map ---------------------------------------------------------------

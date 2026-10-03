@@ -108,6 +108,7 @@ func flat(colour: Color) -> StandardMaterial3D:
 ## the switches, the piece and the door, the gang, the lights and the guards are made.
 func build() -> void:
 	if host.world:
+		host.world.process_mode = Node.PROCESS_MODE_DISABLED
 		host.world.queue_free()
 	host.world = Node3D.new()
 	host.add_child(host.world)
@@ -142,7 +143,7 @@ func _view() -> void:
 	var view: MuseumView
 	if home:
 		DenView.players = host.players
-		view = DenView.new()
+		view = host.house.take_space_view()
 	else:
 		view = MuseumView.new()
 	host.nightenv.set_mood(home)
@@ -227,7 +228,7 @@ func _practice_ground() -> void:
 	host.house.lamps = Practice.lamps_new()
 	host.house.scarecrow_time = 0.0
 	host.house.trial_end()
-	if host.mode != Practice.MODE:
+	if host.mode != Practice.MODE or not Den.ROOMS.has("dojo"):
 		return
 	for sc in Practice.scarecrows(host.players):
 		var dummy := Figure.make("guard", Game.COLOURS.guard, Game.COLOURS.guard_dark)

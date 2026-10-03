@@ -112,6 +112,40 @@ func _check_museum(tag: String) -> void:
 		if (wall.call(0, -1) and wall.call(0, 1)) or (wall.call(-1, 0) and wall.call(1, 0)):
 			failures.append("%s: vitrina entre dos paredes en (%d, %d)" % [tag, t.x, t.y])
 			return
+	# Columns are structure: no wall within a tile of one (a case may stand
+	# by it), and the ones in a gallery a full regular grid (same step
+	# along, same step across, nothing skipped), three or more apart.
+	var by_room := {}
+	for t in Museum.columns:
+		for dy in range(-1, 2):
+			for dx in range(-1, 2):
+				if Museum.grid[(t.y + dy) * w + t.x + dx] == Tiles.WALL and not (dx == 0 and dy == 0):
+					failures.append("%s: columna pegada a un muro en (%d, %d)" % [tag, t.x, t.y])
+					return
+		var room := Museum.room_at(t.x + 0.5, t.y + 0.5)
+		if room == null:
+			failures.append("%s: columna fuera de una sala en (%d, %d)" % [tag, t.x, t.y])
+			return
+		if not by_room.has(room.id):
+			by_room[room.id] = []
+		by_room[room.id].append(t)
+	for id in by_room:
+		var cols: Array = by_room[id]
+		var xs := {}
+		var ys := {}
+		for t in cols:
+			xs[t.x] = true
+			ys[t.y] = true
+		if cols.size() != xs.size() * ys.size() or cols.size() < 2:
+			failures.append("%s: columnas sin retícula completa en la sala %d" % [tag, id])
+			return
+		for axis in [xs.keys(), ys.keys()]:
+			var ks: Array = axis
+			ks.sort()
+			for i in range(1, ks.size()):
+				if ks[i] - ks[i - 1] < 3 or (i > 1 and ks[i] - ks[i - 1] != ks[1] - ks[0]):
+					failures.append("%s: columnas sin ritmo en la sala %d" % [tag, id])
+					return
 	# Names.
 	var names := {}
 	for z in Museum.zones:

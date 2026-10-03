@@ -1,27 +1,14 @@
 class_name Game
 extends Node3D
-## The game: screens, the loop, and drawing the world each frame.
+## Coordinador del juego: conserva estado compartido y ordena sus controladores.
+## `mode` elige historia, generativo, retos o casa; `phase` elige pantalla,
+## partida, pausa o final. Separar ambas permite pausar sin cambiar de modo.
 ##
-## Two modes. The story: twenty fixed nights, easy to hard, with a tale (Story).
-## The generative: a new museum every time, at the difficulty and size you
-## pick. Either with one thief or two; with two, the job takes both (Heist).
-##
-## Screens: title (pick the mode; the story asks first how many thieves, in
-## the sticker carousel) → the mode's menu (the story: the town's map, a
-## museum and its night; the generative: difficulty, size, theme and how
-## many thieves) → [prologue] → loot (the piece and its story) → mission
-## (the plan, a map) → countdown → playing ⇄ paused → caught, or escaped with the piece (next level). No
-## clock: a round lasts as long as it takes. The loop is the web version's Game.tsx tick: thieves and their
-## noise, the job and its alarm, guards, the yell, the warning, keeping apart,
-## lights, thinking (Laya through BrainClient, or the fallback rules),
-## hidden, caught (NightLoop).
-##
-## This script is the hub: the state that everything reads (mode, phase, thieves, guards,
-## the settings' values), the screens that lead to a night, the rounds' layout and the
-## frame's order. The rest is in controllers it owns (the vars just below), each one a
-## class in scenes/ that holds a reference back to Game and has a short public face:
-## LaunchArgs, HouseRun, PreviewStand, SettingsScreens, NightEnv, Scenery, CameraRig,
-## Hands, MegaphoneRun, NightLoop, ChallengeScreens, BriefScreens.
+## Las reglas del fotograma viven en NightLoop; el mundo 3D en Scenery;
+## las acciones y ayudas de cada ninja en PlayerInteractions. Los controladores
+## reciben este Game como `host`: comparten la partida sin copiar su estado.
+## Las llamadas pequeñas que permanecen aquí son entradas de compatibilidad.
+## Para localizar cada responsabilidad y entender Godot, consulta CODE_GUIDE.md.
 
 ## the guards think this often
 const THINK_EVERY_MS := 1100.0
@@ -80,6 +67,7 @@ var loudspeaker := MegaphoneRun.new(self)
 var loop := NightLoop.new(self)
 var challenges := ChallengeScreens.new(self)
 var briefing := BriefScreens.new(self)
+var interactions := PlayerInteractions.new(self)
 ## Atraco Sorpresa's plan, moving the cursor over its items with the left
 ## stick (edge-triggered, like Hub._stick_side/_stick_vertical): which way
 ## it was pushed last, so a held stick does not repeat every frame.
@@ -244,7 +232,9 @@ func _show_title(pick := "", choose := true) -> void:
 	challenges.testing = null
 	dojo_from_title = true
 	podium.drop()
-	if mode != Practice.MODE or den_view == null:
+	if mode != Practice.MODE or den_view == null or house.space_id != "salon":
+		house.space_id = "salon"
+		house.arrival_from = ""
 		mode = Practice.MODE
 		_new_round(1)
 	hub.show_start(pick)
@@ -399,6 +389,8 @@ func _dojo_start(n: int, picked := false) -> void:
 	if n >= 2 and not picked:
 		hands.show_join("dojo", n)
 		return
+	house.space_id = "salon"
+	house.arrival_from = ""
 	mode = Practice.MODE
 	players = n
 	dojo_from_title = true
@@ -699,8 +691,13 @@ func _show_end() -> void:
 	var next := Text.t("END_AGAIN")
 	var go := _again
 	var boss := false
+	var gift := {}
 	if phase == "escaped":
 		colour = Hud.C.safe
+		# A mission got away with for the first time: its gift (not when only
+		# trying a map out from the editor).
+		if mode == "challenge" and not challenges.testing and not just_looking and challenges.challenge_map:
+			gift = Missions.complete(challenges.challenge_map)
 		next = Text.t("END_NEXT_NIGHT" if mode == "story" else "END_NEXT_HEIST")
 		# A museum's big job done: the museum is, and the town shows the next.
 		if mode == "story" and Story.is_boss(level) and level < Story.count():
@@ -725,7 +722,7 @@ func _show_end() -> void:
 		{"buttons": [{"text": Text.t("EDITOR_BACK_TO_EDITOR") if challenges.testing else Text.t("END_TO_MENU"), "call": _leave_game.bind(_way_out()), "colour": Hud.C.dim}], "small": true},
 	]
 	if phase == "escaped":
-		hud.show_menu([{"newspaper": _front_page(boss)}] + ways)
+		hud.show_menu([{"newspaper": _front_page(boss, gift)}] + ways)
 	else:
 		# The file runs off the bottom of the screen: the buttons beside it.
 		hud.show_menu([{"columns": [{"items": [{"mugshot": _police_file()}]}, {"items": ways, "middle": true}], "separation": 48}])
@@ -747,7 +744,7 @@ func _end_pick() -> int:
 ## The town paper the morning after: its name, a big headline, the piece's
 ## photo and, beside it, the night in a few big figures. After a museum's
 ## big job (boss), the museum is the news.
-func _front_page(boss: bool) -> Dictionary:
+func _front_page(boss: bool, gift := {}) -> Dictionary:
 	podium.build()
 	# Wide, for the page: the same piece, with more room either side.
 	podium.preview.size = Vector2i(int(300 * EndPages.PAPER_PHOTO.x / EndPages.PAPER_PHOTO.y), 300)
@@ -766,6 +763,8 @@ func _front_page(boss: bool) -> Dictionary:
 		"photo": podium.preview.get_texture(),
 		"figures": _figures(),
 	}
+	if not gift.is_empty():
+		page.gift = Text.t("END_GIFT_WON") % String(gift.name).to_upper()
 	# In the story, the stars this go won (HeistStats.rate), the new ones
 	# stamped in red.
 	if HeistStats.stars != 0:
@@ -1138,6 +1137,7 @@ func _new_round(n: int) -> void:
 		saved_map = challenges.challenge_map
 		_lay_out(n, challenges.challenge_map.seed + n)
 	elif mode == Practice.MODE:
+		house.prepare_space()
 		Sim.custom = Practice.tuning()
 		saved_map = Practice.map(players)
 		_lay_out(n, saved_map.seed)
@@ -1310,148 +1310,26 @@ func _game_input(i: int, keys: Dictionary) -> Dictionary:
 	return Minigame.input_from(keys, Sim.SCHEMES[scheme], action)
 
 
-## Each thief's minigame box, beside it on screen.
-var game_boxes: Array[MinigameBox] = []
-
-
-func _draw_game_boxes() -> void:
-	while game_boxes.size() < thieves.size():
-		var box := MinigameBox.new()
-		hud.add_child(box)
-		game_boxes.append(box)
-	for i in game_boxes.size():
-		var p: Thief = thieves[i] if i < thieves.size() else null
-		var g: Minigame = p.game if p and phase in ["playing", "paused"] else null
-		var head := camera.unproject_position(_to_world(p.x, p.y, 1.6)) if g else Vector2.ZERO
-		var controls := hands.controls(i)
-		controls.glyphs = {"action": hands.glyph(i, "action"), "cancel": hands.glyph(i, "roll"), "move": hands.glyph(i, "move")}
-		controls.glyphs.lr = controls.glyphs.move if controls.glyphs.move.kind == "stick" else hands.glyph(i, "lr")
-		controls.glyphs.ud = controls.glyphs.move if controls.glyphs.move.kind == "stick" else hands.glyph(i, "ud")
-		game_boxes[i].follow(g, head, _thief_colours()[i], controls)
-
-
 ## How a thief's figure stands: curled in a roll, dizzy, posing as a statue.
 func _pose_of(p: Thief) -> String:
 	return "statue" if p.posing else Roll.pose(p)
 
 
-# --- Prompts: what each thief can do, over its head ------------------------------
-
-## Each thief's bubble of what it can do now (Prompt).
-var prompts: Array[Prompt] = []
-## what each thief held last frame, to see a press begin
-var seat_before: Array = []
-## the inputs by their place in _seat_input's answer
-const INPUT_AT := {"move": [0, 1, 2, 3], "crouch": [4], "action": [5], "roll": [6]}
+## Ayudas y acciones comparten una única decisión en PlayerInteractions.
+func _draw_game_boxes() -> void:
+	interactions.draw_game_boxes()
 
 
 func _draw_prompts(dt: float) -> void:
-	while prompts.size() < thieves.size():
-		var p := Prompt.new()
-		hud.add_child(p)
-		prompts.append(p)
-	for i in prompts.size():
-		var p: Thief = thieves[i] if i < thieves.size() else null
-		var rows := _prompt_rows(i) if p else []
-		var head := camera.unproject_position(_to_world(p.x, p.y, 1.9)) if p else Vector2.ZERO
-		prompts[i].show_rows(rows, head, _thief_colours()[i], dt)
-		# A press on this thief's controls sinks the glyph for it.
-		if i < hands.seat_now.size():
-			var was: Array = seat_before[i] if i < seat_before.size() else []
-			for input in INPUT_AT:
-				for k in INPUT_AT[input]:
-					if hands.seat_now[i][k] and not (k < was.size() and was[k]):
-						prompts[i].press(input)
-	seat_before = hands.seat_now.duplicate(true)
+	interactions.draw_prompts(dt)
 
 
-## What the action key would do for thief t where it stands, the first of
-## these there is (the bubble says the same, _prompt_rows): a minigame at
-## the case or the alarm panel ("job"), a pedestal ("plinth"), a hideout
-## ("hide"), an arcade machine ("arcade"), a room's switch ("switch"), a
-## prop to push over ("push"). In the band's house, a door next to one
-## ("door": open it, or shut it if no one is in its way) comes before all but
-## the job; a challenge's own door ("map_door", Museum.doors) the same, in a
-## museum. While a trial is on in the house (HouseRun.trial_active) only what
-## the trial itself needs is offered. {do, at}, or empty for nothing.
 func _action_for(t: Thief) -> Dictionary:
-	# A trial on in the house: only what it needs (HouseRun.trial_action).
-	if mode == Practice.MODE and house.trial_active():
-		return house.trial_action(t)
-	var job := Heist.game_for(t)
-	if not job.is_empty():
-		return {"do": "job", "at": job}
-	if mode == Practice.MODE:
-		var door := Den.door_near(Vector2i(int(floor(t.x)), int(floor(t.y))))
-		if door != "" and Den.can_toggle(door, house.band_points(), players):
-			return {"do": "door", "at": door}
-		# The start point of a trial next to it (the games, the bench's tests, the circuit).
-		if house.trial_lock <= 0.0:
-			var start := Practice.start_at(Vector2(t.x, t.y), players)
-			if not start.is_empty():
-				return {"do": "trial", "id": start.id, "tier": start.tier}
-	elif not Museum.doors.is_empty():
-		var map_door := Museum.door_near(Vector2i(int(floor(t.x)), int(floor(t.y))))
-		if map_door != MapFile.NONE and Museum.can_toggle_door(map_door, house.band_points()):
-			return {"do": "map_door", "at": map_door}
-	var plinth = Plinths.within_reach(t, thieves)
-	if plinth != null:
-		return {"do": "plinth", "at": plinth}
-	var spot := Hideouts.within_reach(t, thieves)
-	if spot:
-		return {"do": "hide", "at": spot}
-	var arcade := Arcades.within_reach(t, thieves)
-	if arcade.x >= 0:
-		return {"do": "arcade", "at": arcade}
-	var room := Sim.switch_within_reach(t)
-	if room:
-		return {"do": "switch", "at": room}
-	var prop := Props.within_reach(t)
-	if prop:
-		return {"do": "push", "at": prop}
-	return {}
+	return interactions.action_for(t)
 
 
-## What thief i can do where it stands, one row each (Prompt): the action
-## key for what it would do (_action_for), why it waits, or how the job goes.
 func _prompt_rows(i: int) -> Array:
-	var p := thieves[i]
-	if phase != "playing" or p.out or p.game or map_open:
-		return []
-	var row := func(input: String, verb: String) -> Dictionary:
-		return {"input": input, "glyph": hands.glyph(i, input), "verb": verb}
-	# At the case: how the job goes, or why it will not give.
-	if Heist.by == p.id and not Heist.taken:
-		if Heist.waiting:
-			var two: bool = Heist.panel2.x >= 0
-			if Heist.minigames():
-				return [{"verb": Text.t("HUD_JOB_WAIT_CUTS" if two else "HUD_JOB_WAIT_CUT")}]
-			return [{"verb": Text.t("HUD_JOB_WAIT_PANELS" if two else "HUD_JOB_WAIT_PANEL")}]
-		if Heist.short_hand:
-			return [{"verb": Text.t("HUD_JOB_TWO_LOCKS")}]
-		return [{"verb": Heist.loot.verb, "progress": Heist.progress}]
-	# Al cogerla ya no se nombra la pieza, solo adónde ir.
-	if Heist.carrier == p.id:
-		return [{"verb": Text.t("HUD_JOB_CARRYING")}]
-	if p.posing:
-		return [row.call("move", Text.t("HUD_PLINTH_DOWN"))]
-	if p.hiding:
-		return [row.call("move", Text.t("HUD_HIDE_OUT"))]
-	# A trial on says how to leave it in its own HUD (TrialView), the same for all.
-	if house.trial != null:
-		return []
-	var act := _action_for(p)
-	match act.get("do", ""):
-		"trial": return [row.call("action", DojoTrials.start_label(act.id, act.tier))]
-		"job": return [row.call("action", Text.t({"lockpick": "HUD_GAME_PICK_HINT", "steady": "HUD_GAME_STEADY_HINT"}.get(act.at.kind, "HUD_GAME_WIRES_HINT")))]
-		"plinth": return [row.call("action", Text.t("HUD_PLINTH_HINT"))]
-		"hide": return [row.call("action", Text.t("HUD_HIDE_HINT"))]
-		"arcade": return [row.call("action", Text.t("HIDEOUT_ARCADE_PLAY" if mode == Practice.MODE else "HUD_ARCADE_HINT"))]
-		"switch": return [row.call("action", Text.t("HUD_SWITCH_HINT"))]
-		"push": return [row.call("action", Text.t("HUD_PUSH_HINT"))]
-		"door": return [row.call("action", Text.t("HIDEOUT_DOOR_CLOSE" if Den.is_open(act.at) else "HIDEOUT_DOOR_OPEN"))]
-		"map_door": return [row.call("action", Text.t("HIDEOUT_DOOR_CLOSE" if Museum.is_door_open(act.at) else "HIDEOUT_DOOR_OPEN"))]
-	return []
+	return interactions.prompt_rows(i)
 
 
 ## Out comes the map, or away it goes.

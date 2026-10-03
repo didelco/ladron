@@ -6,8 +6,8 @@ extends RefCounted
 ## it when the job that teaches it is reached.
 ##
 ## The mode is still called "practica" (it began as one room), and its plan
-## is built here in code, not read from a file: MapFile.list() only reads the
-## challenges' folder anyway.
+## comes from the active HomeSpace PackedScene. MapFile.list() only reads
+## the challenges' folder.
 ##
 ## The dojo has a zone of its own for each trial (Den.DOJO_ZONES, DojoTrials.TABLE) and
 ## these two lists of what is in it:
@@ -301,7 +301,8 @@ static func open_items(players := 1) -> Array:
 ## sock's, and the scarecrows (scarecrows) stand on cover tiles of their own
 ## (the round dresses them, see Scenery.build).
 static func map(players := 1) -> MapFile:
-	var items := open_items(players)
+	var items := open_items(players) if Den.ROOMS.has("dojo") else []
+	var trials := open_trials(players) if Den.ROOMS.has("dojo") else []
 	var cover: Array[Vector2i] = []
 	var m := MapFile.new()
 	m.name = Text.t("HIDEOUT_NAME")
@@ -312,7 +313,7 @@ static func map(players := 1) -> MapFile:
 	m.spawn = Den.SPAWN
 	m.exit = Den.EXIT
 	m.piece = Den.CASE_AT
-	for t in open_trials(players):
+	for t in trials:
 		# What stands (not marked on the floor or hung on a wall) is cover to go round.
 		if VIAS[t.via].solid:
 			for s in t.starts:

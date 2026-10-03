@@ -1,0 +1,364 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/home/home_space.gd" id="1_s4hfo"]
+
+[node name="Dojo" type="Node3D" unique_id=283787917]
+script = ExtResource("1_s4hfo")
+space_id = "dojo"
+map_size = Vector2i(63, 38)
+rooms = {
+"aseo": [21, 30, 9, 7],
+"dojo": [21, 1, 41, 28],
+"dojo2": [31, 30, 6, 5],
+"dojo3": [38, 30, 6, 5],
+"dojo4": [45, 30, 6, 5]
+}
+doors = [{
+"a": "dojo",
+"b": "aseo",
+"id": "dojo_aseo",
+"rect": [27, 29, 2, 1]
+}, {
+"a": "dojo",
+"b": "dojo2",
+"id": "dojo_dojo2",
+"min_players": 2,
+"rect": [32, 29, 2, 1]
+}, {
+"a": "dojo2",
+"b": "dojo3",
+"id": "dojo2_dojo3",
+"min_players": 3,
+"rect": [37, 31, 1, 2]
+}, {
+"a": "dojo3",
+"b": "dojo4",
+"id": "dojo3_dojo4",
+"min_players": 4,
+"rect": [44, 31, 1, 2]
+}]
+sensors = {
+"dojo2_dojo3": [Vector2i(34, 31), Vector2i(34, 33), Vector2i(36, 32)],
+"dojo3_dojo4": [Vector2i(41, 30), Vector2i(41, 34), Vector2i(43, 31), Vector2i(43, 33)],
+"dojo_dojo2": [Vector2i(24, 27), Vector2i(29, 27)]
+}
+spawn = Vector2i(23, 12)
+arrivals = {
+"museo_casa": Vector2i(22, 4),
+"salon": Vector2i(23, 12)
+}
+exit_tile = Vector2i(21, 12)
+case_tile = Vector2i(23, 8)
+furniture = [{
+"at": Vector2(22.4, 1.3),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "bookcaseOpen",
+"s": 1.6,
+"to": Vector2(0, 0),
+"wall": "N",
+"yaw": 0.0
+}, {
+"at": Vector2(23.3, 1.3),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "bookcaseOpen",
+"s": 1.6,
+"to": Vector2(0, 0),
+"wall": "N",
+"yaw": 0.0
+}, {
+"at": Vector2(23, 1.5),
+"block": [22, 1, 2, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(23, 17.65),
+"block": [22, 17, 2, 1],
+"corner": "",
+"lift": 0.0,
+"m": "benchCushion",
+"s": 2.6,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": -180.0
+}, {
+"at": Vector2(22.5, 8.5),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "bookcaseOpenLow",
+"s": 1.8,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(23.5, 8.5),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "bookcaseOpenLow",
+"s": 1.8,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(24.5, 8.5),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "bookcaseOpenLow",
+"s": 1.8,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(23.5, 8.5),
+"block": [22, 8, 3, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(22.5, 10.5),
+"block": [22, 10, 1, 1],
+"corner": "",
+"kind": "sandbag",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(60.5, 11.6),
+"block": [60, 11, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "cardboardBoxClosed",
+"s": 1.6,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": -30.0
+}, {
+"at": Vector2(50.5, 16.5),
+"block": [50, 16, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "cardboardBoxClosed",
+"s": 1.7,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 15.0
+}, {
+"at": Vector2(60.5, 16.5),
+"block": [60, 16, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "cardboardBoxOpen",
+"s": 1.7,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": -15.0
+}, {
+"at": Vector2(60.4, 16.5),
+"block": [],
+"corner": "",
+"lift": 0.45,
+"m": "cardboardBoxClosed",
+"s": 1.4,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 40.0
+}, {
+"at": Vector2(27.5, 23.5),
+"block": [27, 23, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "cardboardBoxClosed",
+"s": 1.7,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 20.0
+}, {
+"at": Vector2(25.5, 27.5),
+"block": [25, 27, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "cardboardBoxOpen",
+"s": 1.7,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": -25.0
+}, {
+"at": Vector2(30.5, 26.5),
+"block": [30, 26, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "cardboardBoxClosed",
+"s": 1.7,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 35.0
+}, {
+"at": Vector2(22.5, 30.7),
+"block": [21, 30, 3, 2],
+"corner": "",
+"lift": 0.0,
+"m": "bathtub",
+"s": 1.8,
+"to": Vector2(0, 0),
+"wall": "N",
+"yaw": 0.0
+}, {
+"at": Vector2(25.7, 30.45),
+"block": [25, 30, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "bathroomSink",
+"s": 1.9,
+"to": Vector2(0, 0),
+"wall": "N",
+"yaw": 0.0
+}, {
+"at": Vector2(25.7, 30.2),
+"block": [],
+"corner": "",
+"lift": 0.6,
+"m": "bathroomMirror",
+"s": 2.0,
+"to": Vector2(0, 0),
+"wall": "N",
+"yaw": 0.0
+}, {
+"at": Vector2(29.5, 30.8),
+"block": [29, 30, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "toilet",
+"s": 1.8,
+"to": Vector2(0, 0),
+"wall": "N",
+"yaw": 0.0
+}, {
+"at": Vector2(28.8, 35.8),
+"block": [28, 35, 2, 2],
+"corner": "SE",
+"lift": 0.0,
+"m": "showerRound",
+"s": 1.8,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": -90.0
+}, {
+"at": Vector2(24.5, 33.6),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "rugRectangle",
+"s": 2.4,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(22.3, 34),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "rugDoormat",
+"s": 2.2,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(26.7, 30.65),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "trashcan",
+"s": 1.6,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(21.12, 32.4),
+"block": [],
+"corner": "",
+"lift": 0.55,
+"m": "coatRack",
+"s": 2.0,
+"to": Vector2(0, 0),
+"wall": "W",
+"yaw": 90.0
+}, {
+"at": Vector2(29.3, 33),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "cardboardBoxOpen",
+"s": 1.5,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 10.0
+}, {
+"at": Vector2(21.9, 36.5),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "plantSmall1",
+"s": 3.0,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(26.4, 36.5),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "plantSmall2",
+"s": 3.0,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(24, 36.68),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "bathroomCabinet",
+"s": 2.0,
+"to": Vector2(0, 0),
+"wall": "S",
+"yaw": -180.0
+}]
+dojo_plan = [".............#.............#.............", ".............#.............#.............", ".............#.............#.............", ".........................................", ".........................................", ".........................................", ".............#.............#.............", ".............#.............#.............", "#####...###########...###########...#####", ".........................................", ".........................................", ".........................................", ".........................................", ".........................................", ".........................................", ".........................................", ".........................................", "#####...###########...###########...#####", ".............#.............#.............", ".............#.............#.............", "##########...#.............#.............", ".........................................", ".........................................", ".........................................", "...###########.............#.............", ".............#.............#.............", ".............#.............#.............", ".............#.............#............."]
+dojo_zones = {
+"aguanta": [49, 19, 13, 10],
+"atrapa": [21, 10, 14, 9],
+"bolos": [49, 10, 13, 9],
+"circuit": [21, 19, 14, 10],
+"lockpick": [21, 1, 14, 9],
+"pedestal": [35, 10, 14, 9],
+"squeeze": [35, 19, 14, 10],
+"steady": [49, 1, 13, 9],
+"wires": [35, 1, 14, 9]
+}
+portals = [{
+"label": "HIDEOUT_ROOM_SALON",
+"rect": [20, 11, 1, 2],
+"target": "salon"
+}, {
+"label": "HIDEOUT_ROOM_TROFEOS",
+"rect": [20, 3, 1, 2],
+"target": "museo_casa"
+}]

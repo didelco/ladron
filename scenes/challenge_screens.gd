@@ -42,7 +42,7 @@ func show_menu() -> void:
 		{"id": "new", "label": Text.t("CHALLENGE_NEW"), "sticker": "editor-mapas.png", "description": Text.t("CHALLENGE_EDIT_LEGEND"), "call": show_editor.bind(MapFile.blank(Museum.SIZES.small.w, Museum.SIZES.small.h))},
 	]
 	for m in MapFile.list():
-		choices.append({"id": "map:" + m.path, "label": m.name.to_upper(), "sticker": "jugar-mapas.png", "call": show_map.bind(m), "focus": land_map.bind(m)})
+		choices.append({"id": "map:" + m.path, "label": ("✓ " if Missions.is_done(m) else "") + m.name.to_upper(), "sticker": "jugar-mapas.png", "call": show_map.bind(m), "focus": land_map.bind(m)})
 	if host.dev_mode:
 		for n in range(1, Story.count() + 1):
 			choices.append({"id": "night:%d" % n, "label": night_name(n), "sticker": "historia.png", "call": show_night_map.bind(n), "focus": land_night.bind(n)})
@@ -61,7 +61,7 @@ func land_night(n: int) -> void:
 
 func land_map(m: MapFile) -> void:
 	challenge_at = "map:" + m.path
-	host.hub.set_preview(MapEditor.picture(m, 8), m.name + "\n" + Text.t("CHALLENGE_BUILT_IN" if m.built_in else "CHALLENGE_MINE") + " · " + challenge_info(m))
+	host.hub.set_preview(MapEditor.picture(m, 8), m.name + "\n" + Text.t("CHALLENGE_BUILT_IN" if m.built_in else "CHALLENGE_MINE") + " · " + challenge_info(m) + "\n" + mission_info(m))
 
 
 func night_name(n: int) -> String:
@@ -176,6 +176,15 @@ func restore_night(n: int) -> void:
 	show_night_map(n)
 
 
+## A mission's lines on its card: its story, the piece to steal, the gift, and
+## whether it is done (then the gift is already the player's).
+func mission_info(m: MapFile) -> String:
+	var gift := Missions.gift_of(m)
+	var done := Missions.is_done(m)
+	return "%s\n%s\n%s\n%s" % [Missions.story_of(m), Text.t("MISSION_STEAL") % Missions.piece_name(m),
+		Text.t("MISSION_GIFT_WON" if done else "MISSION_GIFT") % gift.name, Text.t("MISSION_DONE" if done else "MISSION_TODO")]
+
+
 ## A map's line on its card: its size, difficulty and guards, or that it
 ## cannot be played yet.
 func challenge_info(m: MapFile) -> String:
@@ -190,7 +199,7 @@ func challenge_info(m: MapFile) -> String:
 func show_map(m: MapFile) -> void:
 	challenge_map = m
 	challenge_at = "map:" + m.path
-	var info := Text.t("CHALLENGE_BUILT_IN" if m.built_in else "CHALLENGE_MINE") + " · " + challenge_info(m)
+	var info := Text.t("CHALLENGE_BUILT_IN" if m.built_in else "CHALLENGE_MINE") + " · " + challenge_info(m) + "\n" + mission_info(m)
 	var choices: Array = [{"id": "preview", "label": m.name, "picture": MapEditor.picture(m, 8), "description": info}]
 	if m.check().is_empty():
 		for n in range(1, 5):

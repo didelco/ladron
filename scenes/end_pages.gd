@@ -120,7 +120,7 @@ void fragment() {
 
 
 ## The front page: {"name", "headline", "photo": Texture2D, "figures":
-## [[number, what], ...], "stars"?: [[won, new], ...], "star_names"?}: the
+## [[number, what], ...], "stars"?: [[won, new], ...], "star_names"?, "gift"?: a line for a gift won}: the
 ## masthead, the headline, under it a story heist's three stars, and the
 ## photo on the left and the figures on the right. It spins in, as front
 ## pages do in old films.
@@ -158,6 +158,10 @@ static func newspaper(d: Dictionary) -> Control:
 		photo.material = print
 		row.add_child(photo)
 	row.add_child(_figures(d.get("figures", [])))
+	if d.has("gift"):
+		_rule(page, 2, PAPER_INK)
+		var gift := _line(d.gift, 20, PAPER_INK, page, HEADLINE)
+		gift.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_spin_in(paper)
 	return _loose(paper)
 

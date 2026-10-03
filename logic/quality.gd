@@ -69,6 +69,40 @@ static func smoke_particles() -> bool:
 	return not is_low()
 
 
+## Pixels the main window's 3D render is allowed, before the scale below
+## kicks in: ~1440p (2560×1440). Measured (performance agent): on a 5K
+## screen the render goes to the physical pixel count with no cap at all —
+## 16× a 1280×720 design — and every light/shadow/postprocess is paid per
+## pixel, so FPS falls from 93 to 13 with several guards chasing. The game's
+## look (flat colour, no high-frequency detail) hides a softer 3D image
+## well, so trading resolution for frames here costs nothing visible beyond
+## a little less crispness — the HUD (2D, untouched by this) stays sharp.
+## 1440p is high enough that normal/laptop screens (the vast majority) never
+## hit it and render native; only 1440p+/4K/5K screens, where the problem
+## was measured, are scaled down.
+const RENDER_TARGET_PIXELS := 2560 * 1440
+## Never scaled below this: much softer and the flat-colour look starts to
+## smear rather than just lose crispness.
+const RENDER_SCALE_MIN := 0.5
+
+
+## The main window's 3D resolution, capped to RENDER_TARGET_PIXELS: native
+## (scale 1.0) under the cap, otherwise the scale that brings the actual
+## pixel count down to it (area scales with the square of the linear
+## factor, hence the sqrt). Godot's own bilinear upscale (not FSR: this
+## project runs the Compatibility renderer, where FSR's support is not
+## certain) draws the smaller image back up to the window's real size.
+## Only the main window: SubViewports (menus, portraits) are setup_viewport's.
+static func apply_render_scale(viewport: Viewport) -> void:
+	var size: Vector2i = viewport.size
+	var actual_pixels: int = size.x * size.y
+	var scale := 1.0
+	if actual_pixels > RENDER_TARGET_PIXELS:
+		scale = maxf(RENDER_SCALE_MIN, sqrt(float(RENDER_TARGET_PIXELS) / float(actual_pixels)))
+	viewport.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
+	viewport.scaling_3d_scale = scale
+
+
 ## MSAA on every 3D viewport below the main window (not the window's own
 ## MSAA, which is off).
 static func apply_tree(tree: SceneTree) -> void:

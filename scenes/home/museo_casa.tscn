@@ -1,0 +1,539 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/home/home_space.gd" id="1_vvmmj"]
+
+[node name="Museo Casa" type="Node3D" unique_id=1464546484]
+script = ExtResource("1_vvmmj")
+space_id = "museo_casa"
+map_size = Vector2i(21, 11)
+rooms = {
+"trofeos": [1, 1, 19, 8]
+}
+spawn = Vector2i(9, 7)
+arrivals = {
+"dojo": Vector2i(18, 3),
+"salon": Vector2i(9, 7)
+}
+exit_tile = Vector2i(9, 8)
+case_tile = Vector2i(10, 7)
+furniture = [{
+"at": Vector2(1.5, 1.5),
+"block": [1, 1, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(2.5, 1.5),
+"block": [2, 1, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(3.5, 1.5),
+"block": [3, 1, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(1.5, 5.5),
+"block": [1, 5, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(3.5, 5.5),
+"block": [3, 5, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(5.5, 1.5),
+"block": [5, 1, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(6.5, 1.5),
+"block": [6, 1, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(7.5, 1.5),
+"block": [7, 1, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(5.5, 5.5),
+"block": [5, 5, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(7.5, 5.5),
+"block": [7, 5, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(9.5, 1.5),
+"block": [9, 1, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(10.5, 1.5),
+"block": [10, 1, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(11.5, 1.5),
+"block": [11, 1, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(9.5, 5.5),
+"block": [9, 5, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(11.5, 5.5),
+"block": [11, 5, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(13.5, 1.5),
+"block": [13, 1, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(14.5, 1.5),
+"block": [14, 1, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(15.5, 1.5),
+"block": [15, 1, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(13.5, 5.5),
+"block": [13, 5, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(15.5, 5.5),
+"block": [15, 5, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(17.5, 1.5),
+"block": [17, 1, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(18.5, 1.5),
+"block": [18, 1, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(19.5, 1.5),
+"block": [19, 1, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(17.5, 5.5),
+"block": [17, 5, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(19.5, 5.5),
+"block": [19, 5, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "",
+"s": 1,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(10, 6.5),
+"block": [9, 6, 2, 1],
+"corner": "",
+"lift": 0.0,
+"m": "benchCushion",
+"s": 2.0,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": -180.0
+}, {
+"at": Vector2(6.5, 7.5),
+"block": [6, 7, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "benchCushion",
+"s": 2.4,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": -180.0
+}, {
+"at": Vector2(14.5, 7.5),
+"block": [14, 7, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "benchCushion",
+"s": 2.4,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": -180.0
+}, {
+"at": Vector2(4, 7.4),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "lampRoundFloor",
+"s": 1.8,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(16, 7.4),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "lampRoundFloor",
+"s": 1.8,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(1.7, 7.4),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "pottedPlant",
+"s": 1.8,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(18.4, 7.4),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "pottedPlant",
+"s": 1.8,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(10, 8.4),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "rugDoormat",
+"s": 3.4,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}, {
+"at": Vector2(19.55, 3.5),
+"block": [],
+"corner": "",
+"lift": 0.0,
+"m": "rugDoormat",
+"s": 3.4,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 90.0
+}, {
+"at": Vector2(19.4, 6.6),
+"block": [19, 6, 1, 1],
+"corner": "",
+"lift": 0.0,
+"m": "sideTable",
+"s": 1.8,
+"to": Vector2(0, 0),
+"wall": "E",
+"yaw": -90.0
+}, {
+"at": Vector2(19.4, 6.6),
+"block": [],
+"corner": "",
+"lift": 0.68,
+"m": "lampRoundTable",
+"s": 1.8,
+"to": Vector2(0, 0),
+"wall": "",
+"yaw": 0.0
+}]
+gallery = [{
+"k": 0,
+"kind": "niche",
+"museum": 0,
+"n": 1,
+"tile": Vector2i(1, 1)
+}, {
+"k": 1,
+"kind": "niche",
+"museum": 0,
+"n": 2,
+"tile": Vector2i(2, 1)
+}, {
+"k": 2,
+"kind": "niche",
+"museum": 0,
+"n": 3,
+"tile": Vector2i(3, 1)
+}, {
+"k": 3,
+"kind": "case",
+"museum": 0,
+"n": 4,
+"tile": Vector2i(1, 5)
+}, {
+"k": 4,
+"kind": "case",
+"museum": 0,
+"n": 5,
+"tile": Vector2i(3, 5)
+}, {
+"k": 0,
+"kind": "niche",
+"museum": 1,
+"n": 6,
+"tile": Vector2i(5, 1)
+}, {
+"k": 1,
+"kind": "niche",
+"museum": 1,
+"n": 7,
+"tile": Vector2i(6, 1)
+}, {
+"k": 2,
+"kind": "niche",
+"museum": 1,
+"n": 8,
+"tile": Vector2i(7, 1)
+}, {
+"k": 3,
+"kind": "case",
+"museum": 1,
+"n": 9,
+"tile": Vector2i(5, 5)
+}, {
+"k": 4,
+"kind": "case",
+"museum": 1,
+"n": 10,
+"tile": Vector2i(7, 5)
+}, {
+"k": 0,
+"kind": "niche",
+"museum": 2,
+"n": 11,
+"tile": Vector2i(9, 1)
+}, {
+"k": 1,
+"kind": "niche",
+"museum": 2,
+"n": 12,
+"tile": Vector2i(10, 1)
+}, {
+"k": 2,
+"kind": "niche",
+"museum": 2,
+"n": 13,
+"tile": Vector2i(11, 1)
+}, {
+"k": 3,
+"kind": "case",
+"museum": 2,
+"n": 14,
+"tile": Vector2i(9, 5)
+}, {
+"k": 4,
+"kind": "case",
+"museum": 2,
+"n": 15,
+"tile": Vector2i(11, 5)
+}, {
+"k": 0,
+"kind": "niche",
+"museum": 3,
+"n": 16,
+"tile": Vector2i(13, 1)
+}, {
+"k": 1,
+"kind": "niche",
+"museum": 3,
+"n": 17,
+"tile": Vector2i(14, 1)
+}, {
+"k": 2,
+"kind": "niche",
+"museum": 3,
+"n": 18,
+"tile": Vector2i(15, 1)
+}, {
+"k": 3,
+"kind": "case",
+"museum": 3,
+"n": 19,
+"tile": Vector2i(13, 5)
+}, {
+"k": 4,
+"kind": "case",
+"museum": 3,
+"n": 20,
+"tile": Vector2i(15, 5)
+}, {
+"k": 0,
+"kind": "niche",
+"museum": 4,
+"n": 21,
+"tile": Vector2i(17, 1)
+}, {
+"k": 1,
+"kind": "niche",
+"museum": 4,
+"n": 22,
+"tile": Vector2i(18, 1)
+}, {
+"k": 2,
+"kind": "niche",
+"museum": 4,
+"n": 23,
+"tile": Vector2i(19, 1)
+}, {
+"k": 3,
+"kind": "case",
+"museum": 4,
+"n": 24,
+"tile": Vector2i(17, 5)
+}, {
+"k": 4,
+"kind": "case",
+"museum": 4,
+"n": 25,
+"tile": Vector2i(19, 5)
+}]
+portals = [{
+"label": "HIDEOUT_ROOM_SALON",
+"rect": [9, 9, 2, 1],
+"target": "salon"
+}, {
+"label": "HIDEOUT_ROOM_DOJO",
+"rect": [20, 3, 1, 2],
+"target": "dojo"
+}]

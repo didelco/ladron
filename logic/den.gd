@@ -1,34 +1,18 @@
 class_name Den
 extends RefCounted
-## The band's house (El Escondite del Calcetin): not a level but a place to
-## be at home in, four rooms side by side that one walks from one to the
-## next with the game's own camera:
-##
-##   the lounge (SALON), where one turns up and where the front door is:
-##     sofas, a rug, a telly, a fridge and a little bar with stools;
-##   the trophy room (TROFEOS), a little museum of the band's own: 25 empty
-##     stands, one for each heist of the story, five to a museum, which fill
-##     with the piece as it is stolen (STANDS, filled; DenView draws it);
-##   the dojo (DOJO), the practice ground (Practice): nine bays in three rows
-##     (41 x 28 tiles, DOJO_PLAN), one for each trial of the dojo (DojoTrials) with
-##     room for its three start points, with what has been unlocked to try in each;
-##   the bathroom (ASEO), for looks only, for now (BATH_GAG), south of the dojo.
-##
-## This is the plan as data: the walls, the doors between rooms, the way
-## out and the furniture with the tiles it blocks. Pure logic, like Sim:
-## DenView draws it. The furniture models are Kenney's Furniture Kit
-## (assets/models/casa, CC0); the plan is in tiles, a model's size is scaled
-## (SCALE) to the ninjas' (a thief is 1.1 tall, a tile is 1).
+## Runtime geometry of the current house scene. HomeSpace.configure loads only
+## that space's rooms, contents and portals; no other scene constrains its plan.
+## The initial values retain the original layout for pure logic tests/tools.
 
-const W := 63
-const H := 38
+static var W := 63
+static var H := 38
 ## Kenney's furniture is a little under life size for our chibi ninjas: this
 ## much bigger, unless an entry says otherwise.
 const SCALE := 1.8
 
 ## The rooms' floors (interior, in tiles: x, y, width, height), and the
 ## order they are told in.
-const ROOMS := {
+static var ROOMS := {
 	"salon": [1, 10, 19, 13],
 	"trofeos": [1, 1, 19, 8],
 	"dojo": [21, 1, 41, 28],
@@ -42,7 +26,7 @@ const ROOMS := {
 	"dojo3": [38, 30, 6, 5],
 	"dojo4": [45, 30, 6, 5],
 }
-const ORDER := ["salon", "trofeos", "dojo", "aseo", "dojo2", "dojo3", "dojo4"]
+static var ORDER := ["salon", "trofeos", "dojo", "aseo", "dojo2", "dojo3", "dojo4"]
 ## The doors between rooms: gaps in the walls (rect: x, y, width, height, in
 ## tiles) that join two rooms (a, b). They open and close (DOOR_* below): a
 ## shut one is wall for the feet; and what one sees follows what is open
@@ -54,7 +38,7 @@ const ORDER := ["salon", "trofeos", "dojo", "aseo", "dojo2", "dojo3", "dojo4"]
 ## reached one at a time, in a chain (1 -> 2 -> 3 -> 4), never by a band too
 ## small to cover what is past them, but that is now a fact of the sensors'
 ## own geometry (sensors_satisfied), not a number asked of the band.
-const DOORS := [
+static var DOORS := [
 	{"id": "salon_trofeos", "rect": [9, 9, 2, 1], "a": "salon", "b": "trofeos"},
 	{"id": "salon_dojo", "rect": [20, 11, 1, 2], "a": "salon", "b": "dojo"},
 	{"id": "trofeos_dojo", "rect": [20, 3, 1, 2], "a": "trofeos", "b": "dojo"},
@@ -74,7 +58,7 @@ const DOORS := [
 ## stays as it leaves it. A band smaller than a door's own sensors can never
 ## cover them all at once, so the door is as far out of its reach as if it
 ## still asked "min_players" in words — except nobody has to be told so.
-const DOOR_SENSORS := {
+static var DOOR_SENSORS := {
 	"dojo_dojo2": [Vector2i(24, 27), Vector2i(29, 27)],
 	"dojo2_dojo3": [Vector2i(34, 31), Vector2i(34, 33), Vector2i(36, 32)],
 	"dojo3_dojo4": [Vector2i(41, 30), Vector2i(41, 34), Vector2i(43, 31), Vector2i(43, 33)],
@@ -86,10 +70,10 @@ const DOOR_SECONDS := 0.3
 const DOOR_CLEAR := 0.3
 ## The house's front door: two leaves in the south wall of the lounge. To
 ## cross it (the floor in front of it) is to go out to the town.
-const FRONT_DOOR := [9, 23, 2, 1]
-const EXIT := Vector2i(9, 22)
+static var FRONT_DOOR := [9, 23, 2, 1]
+static var EXIT := Vector2i(9, 22)
 ## Where the band turns up.
-const SPAWN := Vector2i(9, 19)
+static var SPAWN := Vector2i(9, 19)
 ## The bathroom, for looks only. Something funny for it later: a duck to
 ## squeak, a tap to run, a shower to sing in... For now DenView only dresses
 ## it. Nothing here is played; when it is, this is where it goes.
@@ -101,7 +85,7 @@ const BATH_DY := 15
 ## The tile of the practice map's piece: a heist needs a case to be reached (the
 ## map's rules), and this is one of the dojo's low cabinets, sealed and empty
 ## (nothing is shown in it). The trials' things are in DojoTrials.TABLE.
-const CASE_AT := Vector2i(23, 8)
+static var CASE_AT := Vector2i(23, 8)
 
 ## The lounge's arcade machine (the same one as the modern gallery's, Arcades):
 ## against the north wall, its screen looking south. Standing in front of it,
@@ -140,7 +124,7 @@ const BENCH := [9, 6, 2, 1]
 ## (south of the dojo, x 27-28) in CIRCUITO, whose two lanes are walled inside.
 const DOJO_X := 21
 const DOJO_Y := 1
-const DOJO_PLAN := [
+static var DOJO_PLAN := [
 	".............#.............#.............",
 	".............#.............#.............",
 	".............#.............#.............",
@@ -173,7 +157,7 @@ const DOJO_PLAN := [
 ## The zones' names (rects x, y, w, h in tiles; together they cover the dojo, walls
 ## between bays included), for the tests and the docs: the bay of each trial, named
 ## by its id (DojoTrials.TABLE).
-const DOJO_ZONES := {
+static var DOJO_ZONES := {
 	"lockpick": [21, 1, 14, 9],
 	"wires": [35, 1, 14, 9],
 	"steady": [49, 1, 13, 9],
@@ -185,6 +169,8 @@ const DOJO_ZONES := {
 	"aguanta": [49, 19, 13, 10],
 }
 
+static var scoped := false
+static var PORTALS: Array = []
 static var _stands: Array = []
 static var _furniture: Array = []
 
@@ -194,7 +180,7 @@ static func room_at(x: float, y: float) -> String:
 	var tx := int(floor(x))
 	var ty := int(floor(y))
 	for id in ORDER:
-		var r: Array = ROOMS[id]
+		var r: Array = ROOMS.get(id, [0, 0, 0, 0])
 		if tx >= r[0] and ty >= r[1] and tx < r[0] + r[2] and ty < r[1] + r[3]:
 			return id
 	return ""
@@ -202,7 +188,7 @@ static func room_at(x: float, y: float) -> String:
 
 ## The rect of a room, in tiles.
 static func rect(id: String) -> Rect2i:
-	var r: Array = ROOMS[id]
+	var r: Array = ROOMS.get(id, [0, 0, 0, 0])
 	return Rect2i(r[0], r[1], r[2], r[3])
 
 
@@ -430,7 +416,7 @@ static func rows(extra_cover: Array[Vector2i] = []) -> Array[String]:
 				g[DOJO_Y + j][DOJO_X + i] = "#"
 	# The plan has every door open (the map is walkable end to end); a round
 	# shuts them on Museum.grid (apply_doors).
-	for d in DOORS:
+	for d in DOORS + PORTALS:
 		var o: Array = d.rect
 		for y in range(o[1], o[1] + o[3]):
 			for x in range(o[0], o[0] + o[2]):
@@ -588,7 +574,7 @@ static func audit() -> Array[String]:
 ## side of the room its back is to, corner: the corner its back is in, to:
 ## a spot its front looks at (all three checked by `audit`)}.
 static func furniture() -> Array:
-	if not _furniture.is_empty():
+	if scoped or not _furniture.is_empty():
 		return _furniture
 	var f: Array = []
 	# --- The lounge -----------------------------------------------------------
@@ -723,7 +709,7 @@ static func section_x(m: int) -> int:
 ## heist, museum: 0-based, k: which of its five, kind: "niche" or "case",
 ## tile: where it stands}.
 static func stands() -> Array:
-	if not _stands.is_empty():
+	if scoped or not _stands.is_empty():
 		return _stands
 	for m in Story.MUSEUMS.size():
 		for k in Story.ROOMS:

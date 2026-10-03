@@ -317,6 +317,11 @@ class District:
 		return world(Vector3(t * TILE, 0, u * TILE))
 
 
+## Stateless helpers share this builder's caches and RNG via their context argument.
+var _terrain_parts := TownTerrain.new()
+var _vegetation_parts := TownVegetation.new()
+var _places_parts := TownPlaces.new()
+
 var root: Node3D
 ## what each model is made of, and where each copy of it goes:
 ## path -> {"mesh", "inner": Transform3D, "at": [Transform3D], "own": [Color]}
@@ -460,110 +465,62 @@ func block_top(i: int, b: Vector2i) -> Vector3:
 
 ## s along the river and q up towards the far bank, of a point of the plan.
 func frame(p: Vector2) -> Vector2:
-	return Vector2(p.dot(along), p.dot(up))
+	return _terrain_parts.frame(self, p)
 
 
 ## The point of the plan at s along and q up.
 func point(s: float, q: float) -> Vector2:
-	return along * s + up * q
+	return _terrain_parts.point(self, s, q)
 
 
 ## How far up the middle of the river is, at s along it.
 func river_at(s: float) -> float:
-	return MEANDER * sin(s * TAU / MEANDER_LENGTH + 0.8)
+	return _terrain_parts.river_at(self, s)
 
 
 ## How far a point is from the middle of the river, across it: negative on
 ## the near bank, positive on the far one.
 func across(p: Vector2) -> float:
-	var f := frame(p)
-	var slope := MEANDER * TAU / MEANDER_LENGTH * cos(f.x * TAU / MEANDER_LENGTH + 0.8)
-	return (f.y - river_at(f.x)) / sqrt(1.0 + slope * slope)
+	return _terrain_parts.across(self, p)
 
 
 ## How high the ground is at a point: the river's bed below it all, level
 ## on the near bank, up the slope to RISE on the far one and rolling on up
 ## from there (_upland); the rocky outcrops' own rise on top (_crags).
 func ground(p: Vector2) -> float:
-	var d := across(p)
-	var half := RIVER_WIDTH * 0.5
-	if absf(d) < half + 0.3:
-		return lerpf(-0.55, 0.0, smoothstep(half - 0.6, half + 0.3, absf(d)))
-	if d < 0.0:
-		return _crags(p)
-	return RISE * smoothstep(half + 0.3, half + SLOPE, d) + _upland(p, d) + _crags(p)
+	return _terrain_parts.ground(self, p)
 
 
-## How much higher than RISE the high bank is at p, d across from the
-## river: rising towards the back, in low hills, nothing at the top of the
-## slope.
 func _upland(p: Vector2, d: float) -> float:
-	var top := RIVER_WIDTH * 0.5 + SLOPE
-	var fade := smoothstep(top, top + UPLAND_FADE, d)
-	if fade <= 0.0:
-		return 0.0
-	var back := UPLAND_RISE * clampf((d - top) / UPLAND_DEPTH, 0.0, 1.0)
-	return fade * (back + HILLS * (_hills.get_noise_2dv(p) + 0.35))
+	return _terrain_parts.upland(self, p, d)
 
 
-## How far into a rocky outcrop a point is (the one it is furthest into):
-## 0 outside, 1 at its top.
 func _rocky(p: Vector2) -> float:
-	var f := frame(p)
-	var k := 0.0
-	for o in OUTCROPS.size():
-		k = maxf(k, _outcrop(o, f))
-	return k
+	return _terrain_parts.rocky(self, p)
 
 
-## The ground's rise under the outcrops.
 func _crags(p: Vector2) -> float:
-	var f := frame(p)
-	var h := 0.0
-	for o in OUTCROPS.size():
-		var k := _outcrop(o, f)
-		if k > 0.0:
-			h += float(OUTCROPS[o][2]) * k
-	return h
+	return _terrain_parts.crags(self, p)
 
 
-## Where outcrop o's middle is on the plan.
 func _outcrop_at(o: int) -> Vector2:
-	var at: Vector2 = OUTCROPS[o][0]
-	return point(at.x, river_at(at.x) + at.y)
+	return _terrain_parts.outcrop_at(self, o)
 
 
-## How far into outcrop o a point (s along, q up: f) is: 0 outside, 1 at
-## its top; its edge wavers so it is no circle.
 func _outcrop(o: int, f: Vector2) -> float:
-	var at: Vector2 = OUTCROPS[o][0]
-	var off := f - Vector2(at.x, river_at(at.x) + at.y)
-	var r: float = OUTCROPS[o][1]
-	if off.length() > r * 1.4:
-		return 0.0
-	var a := atan2(off.y, off.x)
-	var wobble := 1.0 + 0.22 * sin(a * 3.0 + 1.3 + o * 2.1) + 0.12 * sin(a * 7.0 + o)
-	return smoothstep(1.0, 0.35, off.length() / (r * wobble))
+	return _terrain_parts.outcrop(self, o, f)
 
 
-## On the sports ground: along its stretch of the near bank, back from the
-## water.
 func _in_sports(p: Vector2) -> bool:
-	var s := frame(p).x
-	var d := across(p)
-	return s > SPORTS.x and s < SPORTS.y and d < -RIVER_WIDTH * 0.5 and d > -SPORTS_DEPTH
+	return _terrain_parts.in_sports(self, p)
 
 
-## The way the river runs at s along it, and the way across it (towards
-## the far bank).
 func _tangent(s: float) -> Vector2:
-	var slope := MEANDER * TAU / MEANDER_LENGTH * cos(s * TAU / MEANDER_LENGTH + 0.8)
-	return (along + up * slope).normalized()
+	return _terrain_parts.tangent(self, s)
 
 
 func _across_dir(s: float) -> Vector2:
-	var slope := MEANDER * TAU / MEANDER_LENGTH * cos(s * TAU / MEANDER_LENGTH + 0.8)
-	return (up - along * slope).normalized()
+	return _terrain_parts.across_dir(self, s)
 
 
 ## The district a point belongs to, or -1: on a bank clear of the water and
@@ -790,81 +747,12 @@ func _prune() -> void:
 
 # --- The ground and the water --------------------------------------------------------
 
-## The ground as one mesh, following ground(): grass everywhere, darker
-## meadow here and there, the river's banks and bed.
 func _terrain() -> void:
-	var step := 0.8
-	var n := int((REACH + 8.0) * 2.0 / step)
-	var lo := -(REACH + 8.0)
-	var heights := PackedFloat32Array()
-	var colours := PackedColorArray()
-	heights.resize((n + 1) * (n + 1))
-	colours.resize((n + 1) * (n + 1))
-	# Only the squares ever seen, looked at in patches of TERRAIN_PATCH a side;
-	# the ground worked out only at their corners.
-	var patches := ceili(float(n) / TERRAIN_PATCH)
-	var kept := PackedByteArray()
-	kept.resize(patches * patches)
-	var needed := PackedByteArray()
-	needed.resize((n + 1) * (n + 1))
-	for pj in patches:
-		for pi in patches:
-			var mid := Vector3(lo + (pi + 0.5) * TERRAIN_PATCH * step, 0.0, lo + (pj + 0.5) * TERRAIN_PATCH * step)
-			mid.y = ground(Vector2(mid.x, mid.z))
-			if not _shown(mid, TERRAIN_PATCH * step * 0.71 + RISE * 0.5, "ground"):
-				continue
-			kept[pj * patches + pi] = 1
-			for j in range(pj * TERRAIN_PATCH, mini((pj + 1) * TERRAIN_PATCH, n) + 1):
-				for i in range(pi * TERRAIN_PATCH, mini((pi + 1) * TERRAIN_PATCH, n) + 1):
-					needed[j * (n + 1) + i] = 1
-	var half := RIVER_WIDTH * 0.5
-	for j in n + 1:
-		for i in n + 1:
-			var k := j * (n + 1) + i
-			if not needed[k]:
-				continue
-			var p := Vector2(lo + i * step, lo + j * step)
-			heights[k] = ground(p)
-			var d := absf(across(p))
-			var c := PARK.lerp(MEADOW, 0.5 + 0.5 * sin(p.x * 0.31 + sin(p.y * 0.23) * 2.0))
-			if d < half + 0.4:
-				c = RIVERBED.lerp(BANK, smoothstep(half - 0.5, half + 0.4, d))
-			colours[k] = c
-	var st := SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for j in n:
-		for i in n:
-			if not kept[(j / TERRAIN_PATCH) * patches + i / TERRAIN_PATCH]:
-				continue
-			var quad := [Vector2i(i, j), Vector2i(i + 1, j), Vector2i(i + 1, j + 1), Vector2i(i, j), Vector2i(i + 1, j + 1), Vector2i(i, j + 1)]
-			for v in quad:
-				var k: int = v.y * (n + 1) + v.x
-				st.set_color(colours[k])
-				st.add_vertex(Vector3(lo + v.x * step, heights[k], lo + v.y * step))
-	st.generate_normals()
-	var mi := MeshInstance3D.new()
-	mi.mesh = st.commit()
-	var m := StandardMaterial3D.new()
-	m.vertex_color_use_as_albedo = true
-	m.vertex_color_is_srgb = true
-	m.roughness = 0.95
-	mi.material_override = m
-	root.add_child(mi)
+	_terrain_parts.terrain(self)
 
 
-## The water: a sheet over the river's bed, and the moon on it in strips
-## along the bends.
 func _water() -> void:
-	var span := (REACH + 8.0) * 2.0
-	_box(Vector3(span, 0.02, span), WATER, Vector3(0, -0.22, 0), Basis.IDENTITY, false)
-	var s := -REACH * 1.5
-	while s < REACH * 1.5:
-		s += _rng.randf_range(0.8, 2.2)
-		var at := point(s, river_at(s) + _rng.randf_range(-0.9, 0.9))
-		if absf(at.x) > REACH + 6.0 or absf(at.y) > REACH + 6.0:
-			continue
-		var dir := _tangent(s)
-		_box(Vector3(0.05, 0.02, _rng.randf_range(0.3, 0.9)), WATER_GLINT, Vector3(at.x, -0.2, at.y), Basis.looking_at(Vector3(dir.x, 0, dir.y), Vector3.UP), false)
+	_terrain_parts.water(self)
 
 
 # --- The districts ------------------------------------------------------------------
@@ -1067,193 +955,44 @@ func _corner_lamps(d: District, b: Vector2i) -> void:
 
 # --- Plants ------------------------------------------------------------------------
 
-## A tree at `at`: in town (a garden, a yard, a park) mostly the kit's, now
-## and then a birch, an oak or a flowering bush; out in the wild, whatever
-## grows there (_kind_at).
 func _tree(at: Vector3, wild := false) -> void:
-	var kind := _kind_at(Vector2(at.x, at.z)) if wild else _pick({"kit": 6.0, "oak": 1.5, "birch": 1.0, "autumn": 0.4, "bloom": 0.8})
-	if kind == "kit":
-		var path := "suburbios/tree-large.glb" if _rng.randf() < 0.6 else "suburbios/tree-small.glb"
-		_add(path, at, _rng.randf() * TAU, TILE * _rng.randf_range(1.5, 2.1), _own(0.0))
-	else:
-		_plant(kind, at)
+	_vegetation_parts.tree(self, at, wild)
 
 
-## What grows at p out in the wild, by the lie of the land and its patches:
-## pines up the slope and in their stands, poplars by the water, birch
-## groves and autumn copses, oaks and the kit's trees everywhere else,
-## a bush now and then.
 func _kind_at(p: Vector2) -> String:
-	var d := across(p)
-	var conifer := _conifers.get_noise_2dv(p) * 0.5 + 0.5
-	var grove := _groves.get_noise_2dv(p)
-	var on_slope := d > RIVER_WIDTH * 0.5 and d < RIVER_WIDTH * 0.5 + SLOPE + 1.0
-	return _pick({
-		"kit": 1.5,
-		"oak": 2.2 * (1.0 - conifer),
-		"pine": 4.0 * conifer * conifer + (2.5 if on_slope else 0.0),
-		"birch": 4.0 * maxf(0.0, grove - 0.1),
-		"autumn": 4.0 * maxf(0.0, -grove - 0.25),
-		"poplar": 3.0 if absf(d) < RIVER_WIDTH * 0.5 + 3.0 else 0.15,
-		"bush": 0.7,
-	})
+	return _vegetation_parts.kind_at(self, p)
 
 
-## One of the keys, each as likely as its weight.
 func _pick(weights: Dictionary) -> String:
-	var total := 0.0
-	for k in weights:
-		total += float(weights[k])
-	var r := _rng.randf() * total
-	for k in weights:
-		r -= float(weights[k])
-		if r <= 0.0:
-			return String(k)
-	return String(weights.keys()[0])
+	return _vegetation_parts.pick(self, weights)
 
 
-## A plant of a kind made here, standing at `at`: its own size, width, turn
-## and tint (autumn's leaves anything from gold to red).
 func _plant(kind: String, at: Vector3) -> void:
-	var sizes := {"pine": Vector2(1.7, 2.8), "oak": Vector2(1.3, 2.0), "birch": Vector2(1.4, 2.2), "poplar": Vector2(2.0, 3.0),
-		"autumn": Vector2(1.3, 2.0), "bush": Vector2(0.5, 0.9), "bloom": Vector2(0.5, 0.8)}
-	var span: Vector2 = sizes[kind]
-	var size := _rng.randf_range(span.x, span.y)
-	if not _shown(at, size, kind):
-		return
-	var wide := size * _rng.randf_range(0.85, 1.15)
-	var basis := Basis(Vector3.UP, _rng.randf() * TAU).scaled(Vector3(wide, size, wide))
-	var v := _rng.randf_range(0.85, 1.12)
-	var tint := Color(v * _rng.randf_range(0.95, 1.05), v, v * _rng.randf_range(0.95, 1.05))
-	if kind == "autumn":
-		var hues := [Color(1, 1, 1), Color(1.15, 1.1, 0.6), Color(1.05, 0.72, 0.7)]
-		tint *= hues[_rng.randi() % hues.size()] as Color
-	if not _plants.has(kind):
-		_plants[kind] = []
-	(_plants[kind] as Array).append([Transform3D(basis, at), tint])
+	_vegetation_parts.plant(self, kind, at)
 
 
-## A hedge from a to b, `tall` high, on the ground between them.
 func _hedge(a: Vector3, b: Vector3, tall := 0.34) -> void:
-	var run := Vector3(b.x - a.x, 0, b.z - a.z)
-	if run.length() < 0.05:
-		return
-	var mid := (a + b) * 0.5
-	if not _shown(mid, run.length() * 0.5 + 0.3, "hedge"):
-		return
-	var basis := Basis.looking_at(run.normalized(), Vector3.UP) * Basis.from_scale(Vector3(_rng.randf_range(0.9, 1.1), tall * _rng.randf_range(0.85, 1.15), run.length() + 0.06))
-	var v := _rng.randf_range(0.88, 1.1)
-	if not _plants.has("hedge"):
-		_plants["hedge"] = []
-	(_plants["hedge"] as Array).append([Transform3D(basis, mid), Color(v, v, v)])
+	_vegetation_parts.hedge(self, a, b, tall)
 
 
-## Every plant made here as one MultiMesh a kind, each in its own tint.
 func _flush_plants() -> void:
-	var m := StandardMaterial3D.new()
-	m.vertex_color_use_as_albedo = true
-	m.vertex_color_is_srgb = true
-	m.roughness = 0.85
-	m.rim_enabled = true
-	m.rim = 0.3
-	for kind in _plants:
-		var list: Array = _plants[kind]
-		if list.is_empty():
-			continue
-		var mm := MultiMesh.new()
-		mm.transform_format = MultiMesh.TRANSFORM_3D
-		mm.use_colors = true
-		mm.mesh = _plant_mesh(String(kind))
-		mm.instance_count = list.size()
-		for i in list.size():
-			mm.set_instance_transform(i, list[i][0])
-			mm.set_instance_color(i, list[i][1])
-		var mmi := MultiMeshInstance3D.new()
-		mmi.multimesh = mm
-		mmi.material_override = m
-		if kind in ["bush", "bloom"]:
-			mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		root.add_child(mmi)
-	_plants.clear()
+	_vegetation_parts.flush_plants(self)
 
 
-## A kind of plant, a metre or so high (a hedge a metre long), low and
-## flat-faced like the kits': a trunk and a crown of cones or balls.
 func _plant_mesh(kind: String) -> ArrayMesh:
-	var st := SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	match kind:
-		"pine":
-			_shape(st, _cone(0.05, 0.075, 0.16), Vector3(0, 0.08, 0), TRUNK.darkened(0.1))
-			_shape(st, _cone(0.055, 0.07, 0.22), Vector3(0, 0.24, 0), TRUNK)
-			for k in 4:
-				_shape(st, _cone(0.0, 0.32 - k * 0.07, 0.34), Vector3(0, 0.38 + k * 0.165, 0), PINE_GREEN.lightened(k * 0.05))
-		"oak", "autumn":
-			var leaves := OAK_GREEN if kind == "oak" else AUTUMN_LEAVES
-			_shape(st, _cone(0.05, 0.07, 0.45), Vector3(0, 0.22, 0), TRUNK)
-			_shape(st, _ball(0.3), Vector3(0, 0.62, 0), leaves)
-			_shape(st, _ball(0.24), Vector3(0.17, 0.78, 0.07), leaves.lightened(0.08))
-			_shape(st, _ball(0.22), Vector3(-0.15, 0.74, -0.11), leaves.darkened(0.08))
-			_shape(st, _ball(0.16), Vector3(0.02, 0.9, -0.12), leaves.lightened(0.14))
-			_shape(st, _ball(0.14), Vector3(-0.2, 0.58, 0.16), leaves.darkened(0.04))
-		"birch":
-			_shape(st, _cone(0.03, 0.04, 0.8), Vector3(0, 0.4, 0), BIRCH_BARK)
-			_shape(st, _ball(0.19), Vector3(0, 0.68, 0), BIRCH_GREEN, Vector3(1, 1.3, 1))
-			_shape(st, _ball(0.14), Vector3(0.12, 0.86, 0.05), BIRCH_GREEN.lightened(0.08), Vector3(1, 1.2, 1))
-			_shape(st, _ball(0.12), Vector3(-0.11, 0.8, -0.08), BIRCH_GREEN.darkened(0.06), Vector3(1, 1.2, 1))
-		"poplar":
-			_shape(st, _cone(0.04, 0.05, 0.3), Vector3(0, 0.15, 0), TRUNK)
-			_shape(st, _ball(0.15), Vector3(0, 0.44, 0), POPLAR_GREEN.darkened(0.04), Vector3(1, 1.4, 1))
-			_shape(st, _ball(0.165), Vector3(0, 0.68, 0), POPLAR_GREEN, Vector3(1, 1.5, 1))
-			_shape(st, _ball(0.13), Vector3(0, 0.92, 0), POPLAR_GREEN.lightened(0.08), Vector3(1, 1.3, 1))
-		"bush", "bloom":
-			_shape(st, _ball(0.46), Vector3(0, 0.24, 0), BUSH_GREEN, Vector3(1, 0.66, 1))
-			_shape(st, _ball(0.3), Vector3(0.27, 0.2, 0.1), BUSH_GREEN.lightened(0.07), Vector3(1, 0.72, 1))
-			_shape(st, _ball(0.24), Vector3(-0.22, 0.16, -0.16), BUSH_GREEN.darkened(0.05), Vector3(1, 0.7, 1))
-			if kind == "bloom":
-				for k in 6:
-					var a := k * TAU / 6.0 + 0.4
-					_shape(st, _ball(0.09), Vector3(cos(a) * 0.36, 0.34 + 0.08 * sin(a * 3.0), sin(a) * 0.36), BLOSSOM)
-		"hedge":
-			# A base block, clipped square, with a row of smaller lobes along
-			# the top so it reads as trimmed foliage, not a smooth slab.
-			_shape(st, BoxMesh.new(), Vector3(0, 0.36, 0), HEDGE_GREEN, Vector3(0.34, 0.72, 1.0))
-			for k in 5:
-				var z := -0.42 + k * 0.21
-				var h := 0.1 if k % 2 == 0 else 0.06
-				_shape(st, _ball(0.18), Vector3(0, 0.72 + h, z), HEDGE_GREEN.lightened(0.05 + 0.03 * (k % 2)), Vector3(1.0, 0.62, 1.15))
-	st.generate_normals()
-	return st.commit()
+	return _vegetation_parts.plant_mesh(self, kind)
 
 
-## A primitive's triangles into st, each corner its own (flat faces),
-## stretched and moved, in one colour.
 func _shape(st: SurfaceTool, mesh: PrimitiveMesh, at: Vector3, colour: Color, stretch := Vector3.ONE) -> void:
-	var arrays := mesh.get_mesh_arrays()
-	var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
-	var index: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
-	st.set_color(colour)
-	for i in index:
-		st.add_vertex(verts[i] * stretch + at)
+	_vegetation_parts.shape(self, st, mesh, at, colour, stretch)
 
 
 func _cone(top: float, bottom: float, h: float) -> CylinderMesh:
-	var c := CylinderMesh.new()
-	c.top_radius = top
-	c.bottom_radius = bottom
-	c.height = h
-	c.radial_segments = 6
-	c.rings = 0
-	return c
+	return _vegetation_parts.cone(self, top, bottom, h)
 
 
 func _ball(r: float) -> SphereMesh:
-	var b := SphereMesh.new()
-	b.radius = r
-	b.height = r * 2.0
-	b.radial_segments = 6
-	b.rings = 3
-	return b
+	return _vegetation_parts.ball(self, r)
 
 
 # --- Crossing and joining ------------------------------------------------------------
@@ -1567,75 +1306,16 @@ func _over_ground(pts: Array[Vector3], from: Vector3, to: Vector3) -> void:
 
 # --- The woods ----------------------------------------------------------------------
 
-## Trees wherever there is land and nothing built: along the river, up the
-## slope, between the districts and out past them. Thicker on the slope,
-## a lone one here and there in the fields, bushes under them; each what
-## grows there (_kind_at).
 func _woods() -> void:
-	var y := -(REACH + 6.0)
-	while y < REACH + 6.0:
-		var x := -(REACH + 6.0)
-		while x < REACH + 6.0:
-			var p := Vector2(x + _rng.randf_range(-0.5, 0.5) * WOOD_STEP, y + _rng.randf_range(-0.5, 0.5) * WOOD_STEP)
-			x += WOOD_STEP
-			if seen.is_valid() and not seen.call(Vector3(p.x, ground(p), p.y), TILE * 2.0):
-				continue
-			var d := across(p)
-			if absf(d) < RIVER_WIDTH * 0.5 + 0.5:
-				continue
-			var on_slope := d > 0.0 and d < RIVER_WIDTH * 0.5 + SLOPE
-			var share := 0.85 if on_slope else 0.55
-			if _farmland(p):
-				share = 0.05
-			if _rng.randf() > share:
-				continue
-			if _built(p) or _on_road(p) or _near_taken(p) or _rocky(p) > 0.55 or _on_walk(p):
-				continue
-			var at := Vector3(p.x, ground(p) - 0.02, p.y)
-			if _rng.randf() < 0.15:
-				_plant("bush", at)
-			else:
-				_tree(at, true)
-		y += WOOD_STEP
+	_vegetation_parts.woods(self)
 
 
-## Out of town, where the fields are (_fields): open land clear of the
-## water and the slope, the rocks, the pitches and the districts.
 func _farmland(p: Vector2) -> bool:
-	if _fields.get_noise_2dv(p) < -0.05:
-		return false
-	var d := across(p)
-	if d > -(RIVER_WIDTH * 0.5 + WALK_OFF + WALK_WIDTH + 1.5) and d < RIVER_WIDTH * 0.5 + SLOPE + 0.5:
-		return false
-	return _rocky(p) == 0.0 and not _in_sports(p) and not _built(p, 1.0)
+	return _vegetation_parts.farmland(self, p)
 
 
-## Hedges round the fields: lines along the river's bends and across them,
-## FIELD or so apart, a gap for a gate now and then, a tree in them here
-## and there; not over a road nor into a house's garden.
 func _hedgerows() -> void:
-	for across_lines in [false, true]:
-		var line := -REACH * 1.2 + _rng.randf() * FIELD
-		while line < REACH * 1.2:
-			var t := -REACH * 1.2
-			var prev := Vector3.INF
-			while t < REACH * 1.2:
-				var f := Vector2(line, t) if across_lines else Vector2(t, line)
-				var p := point(f.x, river_at(f.x) + f.y)
-				t += HEDGE_STEP
-				var ok := absf(p.x) < REACH and absf(p.y) < REACH and _rng.randf() > 0.015
-				if ok and seen.is_valid():
-					ok = seen.call(Vector3(p.x, 0, p.y), 1.0)
-				if not ok or not _farmland(p) or _on_road(p) or _near_taken(p, 0.3):
-					prev = Vector3.INF
-					continue
-				var here := Vector3(p.x, ground(p), p.y)
-				if prev != Vector3.INF:
-					_hedge(prev, here)
-				prev = here
-				if _rng.randf() < 0.07:
-					_tree(here, true)
-			line += FIELD * _rng.randf_range(0.75, 1.3)
+	_vegetation_parts.hedgerows(self)
 
 
 ## Something built there: a district's blocks or streets (or within `margin`
@@ -1667,525 +1347,66 @@ func _on_road(p: Vector2) -> bool:
 
 # --- The rocky outcrops --------------------------------------------------------------
 
-## Rocks on each outcrop (OUTCROPS), never in rows: a few heaps spread over
-## it (a Poisson spread, the most near its top), each a great rock or a crag
-## in the middle and smaller ones leaning in round it, and strays down its
-## sides, every one kept its own room from the rest (ROCK_SPACING). Each
-## stone one of ROCK_KINDS rough shapes, never the same as a neighbour's,
-## stretched its own way and tipped over on all three axes, sat into the
-## ground so no edge floats: one MultiMesh a shape, for all the outcrops.
 func _rocks() -> void:
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 41
-	var at: Array = []
-	for k in ROCK_KINDS:
-		at.append([])
-	# every rock laid: Vector4(x, z, its reach, its shape)
-	var laid: Array[Vector4] = []
-	for o in OUTCROPS.size():
-		var c := _outcrop_at(o)
-		var r: float = OUTCROPS[o][1]
-		var count: int = OUTCROPS[o][3]
-		var big: float = OUTCROPS[o][4]
-		var crag: float = OUTCROPS[o][5]
-		# The heaps' middles: darts thrown at the outcrop, the nearer its top
-		# the likelier, none too near another.
-		var want := clampi(count / ROCK_HEAP, 1, 12)
-		var gap := r * 1.3 / sqrt(float(want))
-		var heaps: Array[Vector2] = []
-		var tries := 0
-		while heaps.size() < want and tries < want * 60:
-			tries += 1
-			var p := c + Vector2.from_angle(rng.randf() * TAU) * sqrt(rng.randf()) * r
-			if rng.randf() > pow(_rocky(p), 1.5) or heaps.any(func(h: Vector2) -> bool: return h.distance_to(p) < gap):
-				continue
-			heaps.append(p)
-		var placed := 0
-		# A great one in the middle of each heap, then smaller ones round it.
-		for h in heaps:
-			var k := _rocky(h)
-			var core := lerpf(1.0, big, k) * rng.randf_range(0.85, 1.25)
-			var reach := _lay_rock(rng, h, core, crag * 1.5, laid, at)
-			if reach <= 0.0:
-				continue
-			placed += 1
-			var ring := rng.randi_range(6, 11)
-			var heaped := 0
-			for j in ring * 4:
-				if heaped >= ring or placed >= count:
-					break
-				var size := core * rng.randf_range(0.35, 0.8)
-				var p := h + Vector2.from_angle(rng.randf() * TAU) * (reach + size * 0.5) * rng.randf_range(0.45, 1.3)
-				if _lay_rock(rng, p, size, crag * 0.5, laid, at) > 0.0:
-					placed += 1
-					heaped += 1
-		# Strays: whatever is left, smaller, anywhere on it.
-		tries = 0
-		while placed < count and tries < count * 30:
-			tries += 1
-			var p := c + Vector2(rng.randf_range(-1, 1), rng.randf_range(-1, 1)) * r * 1.25
-			var k := _rocky(p)
-			var size := lerpf(0.3, big * 0.35, k) * rng.randf_range(0.5, 1.2)
-			if _lay_rock(rng, p, size, crag * 0.3, laid, at) > 0.0:
-				placed += 1
-	var m := StandardMaterial3D.new()
-	m.vertex_color_use_as_albedo = true
-	m.vertex_color_is_srgb = true
-	m.roughness = 0.9
-	m.rim_enabled = true
-	m.rim = 0.3
-	for i in at.size():
-		if (at[i] as Array).is_empty():
-			continue
-		var mm := MultiMesh.new()
-		mm.transform_format = MultiMesh.TRANSFORM_3D
-		mm.use_colors = true
-		mm.mesh = _rock_mesh(i + 1)
-		mm.instance_count = at[i].size()
-		for j in at[i].size():
-			mm.set_instance_transform(j, at[i][j][0])
-			mm.set_instance_color(j, at[i][j][1])
-		var mmi := MultiMeshInstance3D.new()
-		mmi.multimesh = mm
-		mmi.material_override = m
-		root.add_child(mmi)
+	_terrain_parts.rocks(self)
 
 
-## One rock `size` across at p, if there is room for it (on its outcrop,
-## clear of what is built and of every rock laid: ROCK_SPACING); a crag
-## standing up one in `crag`. Its reach round p, or 0 if not laid.
 func _lay_rock(rng: RandomNumberGenerator, p: Vector2, size: float, crag: float, laid: Array[Vector4], at: Array) -> float:
-	var k := _rocky(p)
-	if k <= 0.05 or _built(p) or _on_road(p) or _near_bridge(p, TILE * 2.0) or absf(across(p)) < RIVER_WIDTH * 0.5 + 0.6:
-		return 0.0
-	# Squat boulders, slabs and, now and then, a crag, each its own stretch.
-	var dims := Vector3(rng.randf_range(0.7, 1.6), rng.randf_range(0.5, 0.9), rng.randf_range(0.6, 1.3)) * size
-	var tip := 0.3
-	if rng.randf() < crag:
-		dims = Vector3(rng.randf_range(0.6, 1.0), rng.randf_range(1.3, 1.9 + 0.8 * k), rng.randf_range(0.5, 0.9)) * size * 0.8
-		tip = 0.25
-	var reach := maxf(dims.x, dims.z) * 0.5
-	var near: Array[int] = []
-	for q in laid:
-		var dd := Vector2(q.x, q.y).distance_to(p)
-		if dd < (q.z + reach) * ROCK_SPACING:
-			return 0.0
-		if dd < (q.z + reach) * 1.8:
-			near.append(int(q.w))
-	# A shape none of its neighbours has.
-	var kinds: Array[int] = []
-	for i in ROCK_KINDS:
-		if not i in near:
-			kinds.append(i)
-	var kind: int = kinds[rng.randi() % kinds.size()] if not kinds.is_empty() else rng.randi() % ROCK_KINDS
-	var tx := rng.randf_range(-tip, tip)
-	var tz := rng.randf_range(-tip, tip)
-	var basis := Basis(Vector3.UP, rng.randf() * TAU) * Basis(Vector3.RIGHT, tx) * Basis(Vector3.BACK, tz) * Basis(Vector3.UP, rng.randf() * TAU) * Basis.from_scale(dims)
-	# Sat down on the lowest ground under it, and in as far as it is tipped.
-	var low := ground(p)
-	for e in 6:
-		low = minf(low, ground(p + Vector2.from_angle(e * TAU / 6.0) * reach * 0.8))
-	var sink := sin(maxf(absf(tx), absf(tz))) * reach * 0.5
-	var rock := [Transform3D(basis, Vector3(p.x, low + dims.y * 0.12 - sink, p.y)), ROCK.lerp(ROCK_LIGHT, rng.randf())]
-	laid.append(Vector4(p.x, p.y, reach, kind))
-	_take(p, reach * 1.1)
-	if _shown(rock[0].origin, maxf(reach, dims.y) * 1.5, "rock"):
-		(at[kind] as Array).append(rock)
-	return reach
+	return _terrain_parts.lay_rock(self, rng, p, size, crag, laid, at)
 
 
-## A rough stone of its own (seed): a ball of few faces, more or fewer by
-## its seed, each corner pushed in or out, its foot cut flat; one in four a
-## slab, its top cut flat too.
 func _rock_mesh(seed: int) -> ArrayMesh:
-	var ball := SphereMesh.new()
-	ball.radius = 0.5
-	ball.height = 1.0
-	ball.radial_segments = 5 + seed % 3
-	ball.rings = 3 + (seed / 3) % 2
-	var arrays := ball.get_mesh_arrays()
-	var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
-	var index: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
-	var spread := 0.45 + 0.1 * (seed % 4)
-	var top := 0.4 if seed % 4 == 0 else 1.0
-	# The same push for the same corner, seams and all.
-	var push := func(v: Vector3) -> Vector3:
-		var h := sin(roundf(v.x * 40.0) * 12.9898 + roundf(v.y * 40.0) * 78.233 + roundf(v.z * 40.0) * 37.719 + seed * 4.1) * 43758.5453
-		return v * (1.0 - spread * 0.5 + spread * (h - floorf(h)))
-	var st := SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for i in index:
-		var v: Vector3 = push.call(verts[i])
-		st.add_vertex(Vector3(v.x, clampf(v.y, -0.3, top), v.z))
-	st.generate_normals()
-	return st.commit()
+	return _terrain_parts.rock_mesh(self, seed)
 
 
 # --- Loose houses, the walk and the sports ground ------------------------------------
 
-## Houses and chalets out among the trees, each on a garden of its own and
-## turned its own way (a little off the way the river runs): on flat land,
-## clear of the districts, the roads, the rocks and the water; some with a
-## lit pool; windows lit, a pool of light at the door.
 func _loose_houses() -> void:
-	var letters := "abcdefghijklmnopqrstu"
-	var y := -REACH
-	while y < REACH:
-		var x := -REACH
-		while x < REACH:
-			var p := Vector2(x, y) + Vector2(_rng.randf_range(-1, 1), _rng.randf_range(-1, 1)) * HOUSE_STEP * 0.35
-			x += HOUSE_STEP
-			if _rng.randf() > HOUSE_SHARE:
-				continue
-			if seen.is_valid() and not seen.call(Vector3(p.x, ground(p), p.y), TILE * 3.0):
-				continue
-			var d := across(p)
-			if d > -(RIVER_WIDTH * 0.5 + WALK_OFF + WALK_WIDTH + 0.8) and d < RIVER_WIDTH * 0.5 + SLOPE + 0.4:
-				continue
-			if _rocky(p) > 0.0 or _in_sports(p) or _built(p, 1.8) or _on_road(p) or _near_taken(p, 1.2):
-				continue
-			var turn := atan2(along.x, along.y) + _rng.randf_range(-0.6, 0.6) + (PI if _rng.randf() < 0.5 else 0.0)
-			var basis := Basis(Vector3.UP, turn)
-			var chalet := _rng.randf() < 0.45
-			var lot := 2.9 if chalet else 2.3
-			# Its garden level, at the highest ground under it, on a plinth
-			# down to the lowest.
-			var h := -INF
-			var low := INF
-			for c in [Vector2(-1, -1), Vector2(1, -1), Vector2(1, 1), Vector2(-1, 1), Vector2.ZERO]:
-				var w := basis * Vector3(c.x * lot * 0.5, 0, c.y * lot * 0.5)
-				var g := ground(p + Vector2(w.x, w.z))
-				h = maxf(h, g)
-				low = minf(low, g)
-			var at := Vector3(p.x, h, p.y)
-			if h - low > 0.04:
-				var drop := h - low + 0.2
-				_box(Vector3(lot, drop, lot), TERRACE_WALL, at + Vector3(0, -drop * 0.5, 0), basis)
-			_box(Vector3(lot, 0.05, lot), GARDEN, at + Vector3(0, 0.02, 0), basis)
-			var path := "suburbios/building-type-%s.glb" % letters[_rng.randi() % letters.length()]
-			_add(path, at + basis * Vector3(0, 0.05, -0.2), turn, _fit(path, lot * (0.62 if chalet else 0.72)), _own(1.0))
-			_pool(at + basis * Vector3(0, 0, 0.9), 1.4, GLOW_HOUSE)
-			if chalet and _rng.randf() < POOL_SHARE / 0.45:
-				var water := basis * Vector3(0.75, 0.06, 0.95) + at
-				_box(Vector3(0.8, 0.04, 0.5), POOL_WATER, water, basis, true, _glow(POOL_WATER, 1.4))
-				_pool(water, 1.5, GLOW_POOL)
-			if _rng.randf() < 0.7:
-				_tree(at + basis * Vector3(-lot * 0.4, 0, lot * 0.35))
-			_take(p, lot * 0.75)
-		y += HOUSE_STEP
+	_places_parts.loose_houses(self)
 
 
-## The riverside walk: a paved path along the near bank, following the
-## bends, with a lamp and a bench every so often; not where something is
-## built on the bank (a museum by the water) nor across a bridge's foot.
 func _walk() -> void:
-	var s := -REACH * 1.4
-	var step := 0.9
-	var next_lamp := 0.0
-	var prev := Vector3.INF
-	while s < REACH * 1.4:
-		var dir := _across_dir(s)
-		var mid := point(s, river_at(s)) - dir * (RIVER_WIDTH * 0.5 + WALK_OFF)
-		s += step
-		if absf(mid.x) > REACH + 4.0 or absf(mid.y) > REACH + 4.0 or _built(mid, 0.2) or _near_bridge(mid, 1.6):
-			prev = Vector3.INF
-			continue
-		var here := Vector3(mid.x, 0.03, mid.y)
-		if prev != Vector3.INF:
-			_beam(prev, here, WALK_WIDTH, 0.04, PATH)
-		prev = here
-		next_lamp -= step
-		if next_lamp <= 0.0:
-			next_lamp = WALK_LAMP
-			var side := Vector3(-dir.x, 0, -dir.y) * (WALK_WIDTH * 0.5 + 0.25)
-			_lamp(here + side, atan2(dir.x, dir.y))
-			# A bench facing the water, between two lamps.
-			var bench := here + side - Vector3(_tangent(s).x, 0, _tangent(s).y) * WALK_LAMP * 0.5
-			_box(Vector3(0.5, 0.12, 0.16), Color("#6b4a3a"), bench + Vector3(0, 0.08, 0), Basis(Vector3.UP, atan2(dir.x, dir.y)))
+	_places_parts.walk(self)
 
 
-## The sports ground on the near bank: a football pitch, a basketball court
-## and a tennis court, each on its own ground with its white lines and a
-## fence, under floodlights (pools of cool light); not in a row, each a
-## little off and turned its own way.
 func _sports() -> void:
-	var s := (SPORTS.x + SPORTS.y) * 0.5
-	var dir := _tangent(s)
-	var across_dir := _across_dir(s)
-	var back := -(RIVER_WIDTH * 0.5 + WALK_OFF + WALK_WIDTH + 1.0)
-	var base := point(s, river_at(s)) + across_dir * back
-	# Pitch, court, court: along the bank, the pitch nearest the water; where
-	# each is, how big, its colour, and how far it is turned.
-	var fields := [
-		[Vector2(-0.4, -2.7), Vector2(7.0, 4.4), PITCH_GRASS, "pitch", 0.1],
-		[Vector2(-2.7, -7.6), Vector2(3.2, 2.2), COURT, "basket", -0.3],
-		[Vector2(2.6, -7.0), Vector2(3.4, 1.9), TENNIS, "tennis", 0.22],
-	]
-	for f in fields:
-		var off: Vector2 = f[0] + Vector2(_rng.randf_range(-0.3, 0.3), _rng.randf_range(-0.25, 0.25))
-		var size: Vector2 = f[1]
-		var basis := Basis(Vector3.UP, atan2(dir.x, dir.y) + float(f[4]) + _rng.randf_range(-0.06, 0.06))
-		var c2: Vector2 = base + dir * off.x + across_dir * off.y
-		var c := Vector3(c2.x, 0.0, c2.y)
-		# The ground and its lines: the edge, the halfway line, a circle.
-		_box(Vector3(size.y + 0.4, 0.05, size.x + 0.4), PATH.darkened(0.3), c + Vector3(0, 0.02, 0), basis)
-		_box(Vector3(size.y, 0.06, size.x), f[2], c + Vector3(0, 0.03, 0), basis)
-		for sgn in [-1, 1]:
-			_box(Vector3(0.05, 0.07, size.x), LINE, c + basis * Vector3(sgn * size.y * 0.5, 0.035, 0), basis)
-			_box(Vector3(size.y, 0.07, 0.05), LINE, c + basis * Vector3(0, 0.035, sgn * size.x * 0.5), basis)
-		_box(Vector3(size.y, 0.07, 0.05), LINE, c + Vector3(0, 0.035, 0), basis)
-		if f[3] == "pitch":
-			var ring := MeshInstance3D.new()
-			var torus := TorusMesh.new()
-			torus.inner_radius = 0.55
-			torus.outer_radius = 0.6
-			ring.mesh = torus
-			ring.scale = Vector3(1, 0.1, 1)
-			ring.material_override = MenuStage._material(LINE)
-			ring.position = c + Vector3(0, 0.07, 0)
-			root.add_child(ring)
-			for sgn in [-1, 1]:
-				_box(Vector3(0.9, 0.35, 0.06), LINE, c + basis * Vector3(0, 0.2, sgn * size.x * 0.5), basis)
-		else:
-			# A low fence round the court.
-			for sgn in [-1, 1]:
-				_box(Vector3(0.03, 0.4, size.x + 0.4), RAIL, c + basis * Vector3(sgn * (size.y * 0.5 + 0.2), 0.2, 0), basis)
-				_box(Vector3(size.y + 0.4, 0.4, 0.03), RAIL, c + basis * Vector3(0, 0.2, sgn * (size.x * 0.5 + 0.2)), basis)
-		# Floodlights at the corners, and their light.
-		for sx in [-1, 1]:
-			for sz in [-1, 1]:
-				var post := c + basis * Vector3(sx * (size.y * 0.5 + 0.35), 0, sz * (size.x * 0.5 + 0.35))
-				_box(Vector3(0.06, 1.6, 0.06), RAIL, post + Vector3(0, 0.8, 0))
-				_box(Vector3(0.22, 0.1, 0.1), LINE, post + Vector3(0, 1.62, 0), basis, true, _glow(Color(0.9, 0.95, 1.0), 2.5))
-		_pool(c, maxf(size.x, size.y) * 0.75, GLOW_FLOOD)
-		var span := maxf(size.x, size.y) * 0.6 + 0.6
-		_take(c2, span)
+	_places_parts.sports(self)
 
 
-## On clear land, as near the museums as there is room for: the mall, then
-## the big park.
 func _places() -> void:
-	var at := _clear_spot(MALL_REACH)
-	if at != Vector2.INF:
-		_mall(at)
-		_take(at, MALL_REACH)
-	# The park a little smaller if that is all there is room for.
-	var r := BIG_PARK_REACH
-	while r >= BIG_PARK_REACH * 0.7:
-		at = _clear_spot(r)
-		if at != Vector2.INF:
-			_big_park(at, r)
-			_take(at, r)
-			break
-		r -= 0.5
+	_places_parts.places(self)
 
 
-## The clear round of land r across nearest a museum (Vector2.INF if none).
 func _clear_spot(r: float) -> Vector2:
-	var best := Vector2.INF
-	var best_d := INF
-	var y := -REACH
-	while y < REACH:
-		var x := -REACH
-		while x < REACH:
-			var p := Vector2(x, y)
-			x += 2.0
-			var dd := INF
-			for m in museums:
-				dd = minf(dd, m.distance_to(p))
-			if dd < best_d and _clear(p, r):
-				best_d = dd
-				best = p
-		y += 2.0
-	return best
+	return _places_parts.clear_spot(self, r)
 
 
-## Land round p, r across, that can be seen, flat and all on one bank, with
-## nothing on it: no block, road, walk, rock, pitch or loose house.
 func _clear(p: Vector2, r: float) -> bool:
-	if seen.is_valid() and not seen.call(Vector3(p.x, ground(p), p.y), 0.0):
-		return false
-	var bank := signf(across(p))
-	var g0 := ground(p)
-	for k in 9:
-		var q := p if k == 8 else p + Vector2.from_angle(k * TAU / 8.0) * r
-		var d := across(q)
-		var flat := d < -(RIVER_WIDTH * 0.5 + WALK_OFF + WALK_WIDTH + 0.6) or d > RIVER_WIDTH * 0.5 + SLOPE + 0.6
-		if not flat or signf(d) != bank or absf(q.x) > REACH or absf(q.y) > REACH:
-			return false
-		if _rocky(q) > 0.0 or _in_sports(q) or _built(q, 0.6) or _on_road(q) or _near_taken(q):
-			return false
-		if absf(ground(q) - g0) > 0.25:
-			return false
-	return true
+	return _places_parts.clear(self, p, r)
 
 
-## The crossing of the streets of p's bank nearest p, and its key.
 func _nearest_node(p: Vector2) -> Array:
-	var high := across(p) > 0.0
-	var best := Vector3i(-2, 0, 0)
-	var best_d := INF
-	for k in _nodes:
-		if k.x < 0 or districts[k.x].high != high:
-			continue
-		var n: Vector3 = _nodes[k]
-		var dd := Vector2(n.x, n.z).distance_to(p)
-		if dd < best_d:
-			best_d = dd
-			best = k
-	return [best, _nodes.get(best, Vector3(p.x, 0, p.y))]
+	return _places_parts.nearest_node(self, p)
 
 
-## The mall: a long low hall with a glass front and a taller wing, its sign
-## lit on the roof; before it a big car park, bays in rows, cars in half of
-## them, lamps over the aisles, bushes round it; a road from its gate to
-## the nearest street. Facing that street.
 func _mall(c: Vector2) -> void:
-	var near: Array = _nearest_node(c)
-	var goal: Vector3 = near[1]
-	var fwd := (Vector2(goal.x, goal.z) - c).normalized()
-	var basis := Basis(Vector3.UP, atan2(fwd.x, fwd.y))
-	var o := Vector3(c.x, ground(c), c.y)
-	# The car park: a kerb, the tarmac, three rows of fourteen bays.
-	_box(Vector3(9.4, 0.06, 5.9), PAVEMENT_EDGE, o + basis * Vector3(0, 0.03, 1.9), basis)
-	_box(Vector3(9.0, 0.06, 5.5), ROAD, o + basis * Vector3(0, 0.05, 1.9), basis)
-	for row in [[0.1, 1], [2.2, -1], [3.1, 1]]:
-		var z: float = row[0]
-		var x := -4.2
-		while x < 4.3:
-			_box(Vector3(0.03, 0.02, 0.85), LINE, o + basis * Vector3(x, 0.085, z), basis)
-			if x < 4.0 and _rng.randf() < 0.55:
-				_car(o + basis * Vector3(x + 0.3, 0.08, z), basis * Basis(Vector3.UP, (0.0 if int(row[1]) > 0 else PI) + _rng.randf_range(-0.06, 0.06)))
-			x += 0.6
-	# Lamps over the aisles.
-	for z in [1.15, 4.1]:
-		for x in [-3.0, 0.0, 3.0]:
-			_lamp(o + basis * Vector3(x, 0.08, z), atan2(fwd.x, fwd.y))
-	# The hall and its wing, the roof, the glass front and the way in, the signs.
-	_box(Vector3(6.8, 1.2, 2.8), MALL_WALL, o + basis * Vector3(0.8, 0.6, -2.6), basis)
-	_box(Vector3(7.0, 0.08, 3.0), MALL_ROOF, o + basis * Vector3(0.8, 1.24, -2.6), basis)
-	_box(Vector3(2.4, 1.7, 3.2), MALL_WING, o + basis * Vector3(-3.8, 0.85, -2.5), basis)
-	_box(Vector3(2.6, 0.08, 3.4), MALL_ROOF, o + basis * Vector3(-3.8, 1.74, -2.5), basis)
-	_box(Vector3(5.6, 0.5, 0.04), WINDOW_LIT, o + basis * Vector3(1.0, 0.45, -1.19), basis, false, _glow(WINDOW_LIT, 1.1))
-	_box(Vector3(2.0, 0.08, 0.8), MALL_SIGN, o + basis * Vector3(1.0, 0.82, -0.85), basis)
-	_box(Vector3(3.0, 0.42, 0.1), MALL_SIGN, o + basis * Vector3(1.0, 1.55, -1.25), basis, false, _glow(MALL_SIGN, 2.6))
-	_box(Vector3(1.3, 0.36, 0.1), MALL_SIGN, o + basis * Vector3(-3.8, 1.45, -0.88), basis, false, _glow(MALL_SIGN, 2.2))
-	for k in 4:
-		_box(Vector3(0.5, 0.25, 0.4), RAIL, o + basis * Vector3(-1.6 + k * 1.2, 1.4, -3.3 + (k % 2) * 0.6), basis)
-	_pool(o + basis * Vector3(1.0, 0, -0.6), 2.2, GLOW_HOUSE)
-	# Bushes and trees round the car park.
-	for sx in [-1, 1]:
-		for z in [-0.4, 0.7, 1.8, 2.9, 4.0]:
-			_plant("bush" if _rng.randf() < 0.6 else "bloom", o + basis * Vector3(sx * 4.8, 0.02, z + _rng.randf_range(-0.2, 0.2)))
-		_tree(o + basis * Vector3(sx * 4.8, 0.02, 4.8))
-	# The road from the gate.
-	var gate := o + basis * Vector3(0, 0.02, 4.9)
-	_node(Vector3i(-3, 0, 0), gate)
-	_road_to_nearest(Vector3i(-3, 0, 0), gate, across(c) > 0.0)
+	_places_parts.mall(self, c)
 
 
-## A parked car: its body in one of the cars' colours, a dark cabin on it.
 func _car(at: Vector3, basis: Basis) -> void:
-	_box(Vector3(0.32, 0.13, 0.62), CARS[_rng.randi() % CARS.size()], at + Vector3(0, 0.09, 0), basis)
-	_box(Vector3(0.27, 0.11, 0.32), CAR_GLASS, at + basis * Vector3(0, 0.2, -0.04), basis)
+	_places_parts.car(self, at, basis)
 
 
-## The big park, r round: a round lawn with a hedge round it, a fountain in the
-## middle ringed by a path with benches and lamps, winding paths out to the
-## edge, a kiosk, flower beds, and trees of every kind round it all.
 func _big_park(c: Vector2, r: float) -> void:
-	var o := Vector3(c.x, ground(c), c.y)
-	_disc(o + Vector3(0, 0.03, 0), r, 0.06, PARK)
-	var paths: Array = []
-	# The ring round the fountain.
-	for k in 16:
-		var a := k * TAU / 16.0
-		var b := (k + 1) * TAU / 16.0
-		paths.append([o + Vector3(cos(a), 0, sin(a)) * 2.0, o + Vector3(cos(b), 0, sin(b)) * 2.0])
-	# Winding ways out, and where they leave the park.
-	var exits: Array[float] = []
-	var first := _rng.randf() * TAU
-	for k in 4:
-		var a := first + k * TAU / 4.0 + _rng.randf_range(-0.3, 0.3)
-		exits.append(a)
-		var bend := _rng.randf_range(-0.5, 0.5)
-		var prev := o + Vector3(cos(a), 0, sin(a)) * 2.0
-		for j in range(1, 6):
-			var t := j / 5.0
-			var aa := a + bend * sin(t * PI)
-			var here := o + Vector3(cos(aa), 0, sin(aa)) * lerpf(2.0, r - 0.1, t)
-			paths.append([prev, here])
-			prev = here
-	for seg in paths:
-		_beam((seg[0] as Vector3) + Vector3(0, 0.07, 0), (seg[1] as Vector3) + Vector3(0, 0.07, 0), 0.5, 0.04, PATH)
-	# The fountain: a stone basin, its water lit, a column and a bowl.
-	_disc(o + Vector3(0, 0.14, 0), 1.0, 0.24, STONE)
-	_disc(o + Vector3(0, 0.27, 0), 0.88, 0.04, POOL_WATER, _glow(POOL_WATER, 0.9))
-	_disc(o + Vector3(0, 0.55, 0), 0.12, 0.6, STONE)
-	_disc(o + Vector3(0, 0.86, 0), 0.4, 0.08, STONE)
-	_disc(o + Vector3(0, 0.91, 0), 0.34, 0.03, POOL_WATER, _glow(POOL_WATER, 1.4))
-	_pool(o, 2.4, GLOW_POOL)
-	# Benches facing it and lamps between them.
-	for k in 6:
-		var a := k * TAU / 6.0 + TAU / 12.0
-		var at := o + Vector3(cos(a), 0, sin(a)) * 2.55
-		_box(Vector3(0.5, 0.12, 0.16), Color("#6b4a3a"), at + Vector3(0, 0.12, 0), Basis(Vector3.UP, -a + PI / 2))
-		var lamp_a := a + TAU / 12.0
-		_lamp(o + Vector3(cos(lamp_a) * 2.6, 0.06, sin(lamp_a) * 2.6), -lamp_a + PI / 2)
-	# A kiosk by the ring, its roof pink.
-	var ka := first + TAU / 8.0
-	var kiosk := o + Vector3(cos(ka), 0, sin(ka)) * 3.4
-	_box(Vector3(0.7, 0.5, 0.7), MALL_WALL, kiosk + Vector3(0, 0.3, 0), Basis(Vector3.UP, ka))
-	_box(Vector3(0.95, 0.1, 0.95), MALL_SIGN, kiosk + Vector3(0, 0.6, 0), Basis(Vector3.UP, ka))
-	_pool(kiosk, 1.2, GLOW_HOUSE)
-	# The hedge round it, open where the paths leave.
-	for k in 40:
-		var a := k * TAU / 40.0
-		var b := (k + 1) * TAU / 40.0
-		var gap := false
-		for e in exits:
-			if absf(angle_difference(e, (a + b) * 0.5)) < 0.22:
-				gap = true
-		if not gap:
-			_hedge(o + Vector3(cos(a), 0.06, sin(a)) * (r - 0.15), o + Vector3(cos(b), 0.06, sin(b)) * (r - 0.15), 0.3)
-	# Flower beds and trees, clear of the paths and the kiosk.
-	for k in 90:
-		var a := _rng.randf() * TAU
-		var d := sqrt(_rng.randf_range(0.1, 1.0)) * (r - 0.6)
-		var at := o + Vector3(cos(a) * d, 0.06, sin(a) * d)
-		if d < 1.3 or at.distance_to(kiosk) < 0.9 or _near_path(at, paths, 0.45):
-			continue
-		if d < 3.0:
-			_plant("bloom" if _rng.randf() < 0.7 else "bush", at)
-		elif _rng.randf() < 0.75:
-			_tree(at, _rng.randf() < 0.6)
+	_places_parts.big_park(self, c, r)
 
 
 func _near_path(at: Vector3, paths: Array, r: float) -> bool:
-	var p := Vector2(at.x, at.z)
-	for seg in paths:
-		var a: Vector3 = seg[0]
-		var b: Vector3 = seg[1]
-		if Geometry2D.get_closest_point_to_segment(p, Vector2(a.x, a.z), Vector2(b.x, b.z)).distance_to(p) < r:
-			return true
-	return false
+	return _places_parts.near_path(self, at, paths, r)
 
 
-## A round slab, r across and h high, its middle at `at`.
 func _disc(at: Vector3, r: float, h: float, colour: Color, material: Material = null) -> void:
-	if not _shown(at, r, "disc"):
-		return
-	var c := CylinderMesh.new()
-	c.top_radius = r
-	c.bottom_radius = r
-	c.height = h
-	c.radial_segments = 24
-	c.rings = 0
-	var mi := MeshInstance3D.new()
-	mi.mesh = c
-	mi.material_override = material if material else MenuStage._material(colour)
-	mi.position = at
-	root.add_child(mi)
+	_places_parts.disc(self, at, r, h, colour, material)
 
 
 func _near_bridge(p: Vector2, r: float) -> bool:

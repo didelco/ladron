@@ -297,7 +297,8 @@ func _columns() -> void:
 	var hug := Sim._resolve(grazing_x, 5.5, Sim.BODY)
 	check(is_equal_approx(hug[0], grazing_x) and is_equal_approx(hug[1], 5.5), "pero pegado al borde de la casilla, sin tocar el círculo de la columna, no se le empuja: puede rodearla")
 	check(not Museum.has_line_of_sight(6.0, 5.5, 9.0, 5.5), "una mirada que cruza el centro de la columna sí se corta")
-	var graze_y := 5.5 + Museum.COLUMN_R + 0.1
+	# Inside the tile still, halfway between the column's circle and the edge.
+	var graze_y := 5.5 + (Museum.COLUMN_R + 0.5) / 2
 	check(Museum.has_line_of_sight(6.0, graze_y, 9.0, graze_y), "una que solo roza la casilla, fuera del círculo, no se corta")
 
 

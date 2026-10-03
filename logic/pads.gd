@@ -16,6 +16,13 @@ extends RefCounted
 ## (vendor, product) of the devices that are not pads.
 const FAKE: Array[Vector2i] = []
 
+## Pads whose Start and View (Back, Select) reach Godot the wrong way round:
+## their guid, without its checksum (signature). Godot's own mapping for this
+## Mac pad ("HID" 05ac:0004 with this layout) has the two swapped, so Start
+## showed the map and nothing opened the pause. PadFilter puts them back
+## before anything reads the press.
+const SWAPPED_START: Array[String] = ["0500ac05000004000000ae796d04"]
+
 
 ## Where the pads come from: the minimum this file asks of the machine. The
 ## default one asks Input; a test puts its own in `source` (a subclass that
@@ -35,6 +42,10 @@ class Source:
 	func joy_name(device: int) -> String:
 		return Input.get_joy_name(device)
 
+	## Its guid (Input.get_joy_guid).
+	func guid(device: int) -> String:
+		return Input.get_joy_guid(device)
+
 
 static var source: Source = Source.new()
 
@@ -44,6 +55,20 @@ static func real(device: int) -> bool:
 	if device < 0:
 		return true
 	return id_of(device) not in FAKE
+
+
+## A guid without its checksum (characters 4 to 7), which is the pad's own
+## and not its kind's: what SWAPPED_START lists.
+static func signature(guid: String) -> String:
+	return guid.left(4) + guid.substr(8) if guid.length() > 8 else guid
+
+
+## The button a press of this pad really is: Start and View changed over on
+## the pads of SWAPPED_START, itself on any other.
+static func button(device: int, index: JoyButton) -> JoyButton:
+	if index in [JOY_BUTTON_START, JOY_BUTTON_BACK] and device >= 0 and signature(source.guid(device)) in SWAPPED_START:
+		return JOY_BUTTON_BACK if index == JOY_BUTTON_START else JOY_BUTTON_START
+	return index
 
 
 ## The real pads plugged in.

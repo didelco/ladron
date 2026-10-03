@@ -224,158 +224,13 @@ void light() {
 ## ("marquesina", with the lid, what the camera sees most), the screen, and
 ## what is on it, in pixels ("." is the screen, a letter one of its inks).
 ## You play pong on every one of them all the same (Arcades).
-const ARCADE_GAMES := {
-	# Table tennis: the first machine, as it was modelled.
-	"tenis": {"mueble": "#7a3ce0", "marquesina": "#ffd400", "screen": "#0b3326", "ink": {"a": "#3cffb0"},
-		"art": ["........a.......", ".a..............", ".a......a.......", ".a..............", "........a...a...",
-			"..............a.", "........a.....a.", "..............a.", "........a......."]},
-	# Invaders from space, rank on rank, and the gun under them.
-	"invasores": {"mueble": "#00c2d8", "marquesina": "#ff4f9a", "screen": "#07071a",
-		"ink": {"g": "#7dff5a", "w": "#ffffff", "c": "#00c2d8"},
-		"art": ["................", "..g...g...g...g.", ".ggg.ggg.ggg.ggg", ".g.g.g.g.g.g.g.g", "................",
-			"..........w.....", "................", ".......c........", "......ccc......."]},
-	# The dot-eater, a ghost after it, in a maze.
-	"comecocos": {"mueble": "#ffd400", "marquesina": "#00c2d8", "screen": "#0a0f3a",
-		"ink": {"b": "#2f5fd0", "y": "#ffd400", "w": "#ffe9c0", "p": "#ff4f9a"},
-		"art": ["bbbbbbbbbbbbbbbb", "................", ".yyy........ppp.", "yy.......w.ppppp", "y..w..w..w.ppppp",
-			"yy.........ppppp", ".yyy.......p.p.p", "................", "bbbbbbbbbbbbbbbb"]},
-	# Falling blocks, a well filling up.
-	"bloques": {"mueble": "#ff4f9a", "marquesina": "#8a4dff", "screen": "#120a28",
-		"ink": {"c": "#00c2d8", "y": "#ffd400", "p": "#ff4f9a", "g": "#5cff7a", "v": "#8a4dff"},
-		"art": ["......ppp.......", ".......p........", "................", "................", "................",
-			"c.............yy", "cc..gg....vv.yyy", "ccggg.yyyvvv.ppp", "cyyggppyyvvcc.pp"]},
-	# The snake, and the apple it is after.
-	"serpiente": {"mueble": "#3ccf6a", "marquesina": "#ff8a1c", "screen": "#0e2a12",
-		"ink": {"s": "#9dff3a", "r": "#ff3a4a"},
-		"art": ["................", "..ssssssss......", "..s.......s.....", "..s.......s.....", "..s.......sssss.",
-			"..s..........s..", "..sss......r.s..", "................", "................"]},
-	# Racing: two cars on a road, seen from above.
-	"carreras": {"mueble": "#ff5a36", "marquesina": "#f4f2ec", "screen": "#2a2a33",
-		"ink": {"g": "#3ccf6a", "w": "#f4f2ec", "c": "#00c2d8", "y": "#ffd400"},
-		"art": ["gg.....w......gg", "gg..c.........gg", "gg.ccc.w......gg", "gg..c.........gg", "gg.....w......gg",
-			"gg.........y..gg", "gg.....w..yyy.gg", "gg.........y..gg", "gg.....w......gg"]},
-}
-## The first model's materials (art/temas/moderna.py), before they were named
-## the way the game tints them: as which "color_..." each is taken.
-const ARCADE_OLD_NAMES := {"morado": "color_mueble", "morado_oscuro": "color_mueble_oscuro_40", "cartel": "color_marquesina"}
+## Catálogo público conservado para los consumidores existentes.
+const ARCADE_GAMES := ArcadeAppearance.GAMES
 
 
-## Dress an arcade machine (asset(Arcades.MODEL)) as one of its games
-## (ARCADE_GAMES), cheaper than a model per game. As with the pieces to steal
-## (LootModels), the materials whose name starts with "color" take the
-## game's colours: "color_mueble" the cabinet's, "color_marquesina" the
-## marquee's, and a "_claro_N" or "_oscuro_N" after it N % lighter or
-## darker; the rest (the screen, the black, the metal) keep their own. And on
-## the screen (the material whose name starts with "pantalla"), the game's
-## picture.
+## Aplica el aspecto compartido; las reglas jugables siguen en Arcades.
 static func arcade_game(model: Node3D, game: String) -> void:
-	var look: Dictionary = ARCADE_GAMES[game]
-	for mi: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
-		var screen := false
-		for s in mi.mesh.get_surface_count():
-			var src := mi.mesh.surface_get_material(s)
-			if src == null:
-				continue
-			var name: String = ARCADE_OLD_NAMES.get(src.resource_name, src.resource_name)
-			# The table tennis the model has painted on its screen: each game
-			# draws its own picture over the glass instead.
-			if name == "pantalla_dibujo":
-				mi.visible = false
-				continue
-			screen = screen or name == "pantalla"
-			var c := _arcade_colour(look, name)
-			if c.a == 0.0:
-				continue
-			var key := "%s/%s" % [game, src.resource_name]
-			if not _arcade_mats.has(key):
-				var m := mi.get_active_material(s).duplicate() as BaseMaterial3D
-				m.albedo_color = c
-				if m.emission_enabled:
-					m.emission = c
-				_arcade_mats[key] = m
-			mi.set_surface_override_material(s, _arcade_mats[key])
-		if screen:
-			_arcade_screen(mi, game)
-
-
-## The game's colour for a material named "color_<part>[_claro|_oscuro_N]",
-## or none (transparent) for any other.
-static func _arcade_colour(look: Dictionary, name: String) -> Color:
-	var bits := name.split("_")
-	if bits.size() < 2 or bits[0] != "color" or not look.has(bits[1]):
-		return Color(0, 0, 0, 0)
-	var c := Color(look[bits[1]])
-	if bits.size() >= 4 and bits[2] == "claro":
-		c = c.lightened(int(bits[3]) / 100.0)
-	elif bits.size() >= 4 and bits[2] == "oscuro":
-		c = c.darkened(int(bits[3]) / 100.0)
-	return c
-
-
-## The game's picture on the screen's glass, just in front of it: facing the
-## way the glass faces (its broad faces, front and back, towards +Z), as
-## wide as it is and leaning back as it does.
-static func _arcade_screen(mi: MeshInstance3D, game: String) -> void:
-	var faces := mi.mesh.get_faces()
-	var normal := Vector3.ZERO
-	var centre := Vector3.ZERO
-	var area := 0.0
-	var mids: Array[Vector3] = []
-	for i in range(0, faces.size(), 3):
-		var n := (faces[i + 1] - faces[i]).cross(faces[i + 2] - faces[i])
-		if n.z < 0.0:
-			n = -n
-		if n.length() == 0.0 or n.normalized().z < 0.3:
-			continue
-		var mid := (faces[i] + faces[i + 1] + faces[i + 2]) / 3.0
-		normal += n
-		centre += mid * n.length()
-		area += n.length()
-		mids.append(mid)
-	if area == 0.0:
-		return
-	normal = normal.normalized()
-	centre /= area
-	# From the middle of the glass to its front face.
-	var front := 0.0
-	for mid in mids:
-		front = maxf(front, (mid - centre).dot(normal))
-	centre += normal * front
-	var box := mi.get_aabb()
-	var picture := MeshInstance3D.new()
-	var quad := QuadMesh.new()
-	quad.size = Vector2(box.size.x, box.size.y / maxf(normal.z, 0.3)) * 0.9
-	picture.mesh = quad
-	picture.material_override = _arcade_picture(game)
-	picture.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	picture.basis = Basis(Vector3.RIGHT, normal.cross(Vector3.RIGHT), normal)
-	picture.position = centre + normal * 0.003
-	mi.add_child(picture)
-
-
-static var _arcade_mats := {}
-
-
-## A game's picture, lit from within: its pixels, sharp.
-static func _arcade_picture(game: String) -> StandardMaterial3D:
-	var key := "%s/picture" % game
-	if _arcade_mats.has(key):
-		return _arcade_mats[key]
-	var look: Dictionary = ARCADE_GAMES[game]
-	var rows: Array = look.art
-	var img := Image.create(rows[0].length(), rows.size(), false, Image.FORMAT_RGBA8)
-	img.fill(Color(look.screen))
-	for y in rows.size():
-		for x in rows[y].length():
-			var ink: String = rows[y][x]
-			if ink != ".":
-				img.set_pixel(x, y, Color(look.ink[ink]))
-	var m := StandardMaterial3D.new()
-	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	m.albedo_texture = ImageTexture.create_from_image(img)
-	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
-	_arcade_mats[key] = m
-	return m
+	ArcadeAppearance.apply(model, game)
 
 
 # --- Floor -------------------------------------------------------------------
@@ -1126,133 +981,9 @@ func _painting(parent: Node3D, seed: int, kind := "", size := PAINTING) -> void:
 	_mesh(parent, _box(Vector3(0.16 if fw > 0.5 else 0.08, 0.05 if fw > 0.5 else 0.03, 0.012)), C.bone, Vector3(0, cy - fh / 2 - (0.08 if fw > 0.5 else 0.05), 0.01))
 
 
+## Fachada para los cuadros clásicos; el generador vive junto a sus variantes.
 static func _canvas(seed: int, forced := -1) -> Texture2D:
-	var r := func(k: int) -> float: return _hash01(seed, k, 71)
-	var kind := int(r.call(1) * 6) if forced < 0 else forced
-	var ready := Canvases.drawn(Canvases.OLD[kind], seed)
-	if ready:
-		return ready
-	var w := 48
-	var h := 36
-	var img := Image.create(w, h, false, Image.FORMAT_RGB8)
-	if kind == 3:
-		_pipe(img, r)
-		return ImageTexture.create_from_image(img)
-	if kind == 4:
-		_banana(img, r)
-		return ImageTexture.create_from_image(img)
-	if kind == 5:
-		_ice_cream(img, r)
-		return ImageTexture.create_from_image(img)
-	if kind == 0:
-		# Landscape: sky, a moon or low sun, hills in three planes.
-		var dusk: bool = r.call(2) > 0.5
-		var top := Color("#2a1f4d") if dusk else Color("#274b6e")
-		var bottom := Color("#e07a5f") if dusk else Color("#a8d8e8")
-		for yy in h:
-			img.fill_rect(Rect2i(0, yy, w, 1), top.lerp(bottom, float(yy) / h))
-		var sx := int(8 + r.call(3) * 30)
-		var sy := int(8 + r.call(4) * 6)
-		for yy in range(-3, 4):
-			for xx in range(-3, 4):
-				if xx * xx + yy * yy <= 9:
-					img.set_pixel(clampi(sx + xx, 0, w - 1), clampi(sy + yy, 0, h - 1), Color("#ffd479") if dusk else Color("#fff4d0"))
-		for plane in 3:
-			var col: Color = [Color("#4a5d4f"), Color("#2f4a3a"), Color("#1b2c24")][plane]
-			for xx in w:
-				var top_y := int(20 + plane * 4 + sin(xx * 0.16 + r.call(5 + plane) * 6) * (4 - plane))
-				img.fill_rect(Rect2i(xx, top_y, 1, h - top_y), col)
-	elif kind == 1:
-		# Portrait: a sitter in the dark, lit from one side.
-		img.fill(Color("#1d120c"))
-		img.fill_rect(Rect2i(8, 4, 32, 28), Color("#3a2618"))
-		var coat := Color("#2a1a3a") if r.call(2) > 0.5 else Color("#3a1c1c")
-		img.fill_rect(Rect2i(12, 26, 24, 10), coat)
-		img.fill_rect(Rect2i(19, 10, 10, 14), Color("#d9b48f"))
-		img.fill_rect(Rect2i(25, 10, 4, 14), Color("#a8805f"))
-		img.fill_rect(Rect2i(18, 7, 12, 5), Color("#1a120c"))
-	else:
-		# Abstract: blocks of colour on cream, with black lines.
-		img.fill(Color("#e8ddc0"))
-		var cols := [Color("#9b2c3f"), Color("#7ad6ff"), Color("#f0c46a"), Color("#1b2433")]
-		for j in 4:
-			img.fill_rect(Rect2i(int(r.call(10 + j) * 34), int(r.call(20 + j) * 24), 8 + int(r.call(30 + j) * 14), 6 + int(r.call(40 + j) * 12)), cols[(j + int(r.call(2) * 4)) % 4])
-		for j in 3:
-			var at := 6 + int(r.call(60 + j) * 36)
-			if r.call(50 + j) > 0.5:
-				img.fill_rect(Rect2i(clampi(at, 0, w - 2), 0, 2, h), Color("#141018"))
-			else:
-				img.fill_rect(Rect2i(0, clampi(at * h / w, 0, h - 2), w, 2), Color("#141018"))
-	return ImageTexture.create_from_image(img)
-
-
-## "This is not a pipe": a brown pipe on cream, and a line of writing under it.
-static func _pipe(img: Image, r: Callable) -> void:
-	img.fill(Color("#e8dcc0"))
-	var wood := Color("#6b3a1e")
-	var dark := Color("#3a1e0e")
-	# The bowl, the shank and the stem, curving down to the mouthpiece.
-	img.fill_rect(Rect2i(30, 8, 9, 12), wood)
-	img.fill_rect(Rect2i(29, 9, 1, 10), dark)
-	img.fill_rect(Rect2i(31, 8, 7, 2), dark)
-	img.fill_rect(Rect2i(32, 18, 6, 3), wood)
-	for x in range(9, 31):
-		var y := 17 + int(2.0 * sin((x - 9) / 22.0 * PI))
-		img.fill_rect(Rect2i(x, y, 1, 3), wood)
-		img.set_pixel(x, y + 2, dark)
-	img.fill_rect(Rect2i(6, 16, 4, 2), Color("#1a1210"))
-	img.fill_rect(Rect2i(33, 11, 2, 5), Color("#8a5a32"))
-	# The caption, in a copperplate of dots.
-	var x := 10
-	while x < 38:
-		var word := 2 + int(r.call(80 + x) * 4)
-		img.fill_rect(Rect2i(x, 28, word, 1), Color("#2a1e14"))
-		img.set_pixel(x, 27, Color("#2a1e14"))
-		x += word + 2
-
-
-## A pop-art banana: yellow, curved, on white, with its brown tips.
-static func _banana(img: Image, r: Callable) -> void:
-	img.fill(Color("#f7f3ea") if r.call(3) > 0.3 else Color("#ff9ec7"))
-	var yellow := Color("#ffd23f")
-	var shade := Color("#e0a800")
-	for i in 60:
-		var t := i / 59.0
-		var a := lerpf(PI * 1.15, PI * 1.85, t)
-		var cx := 24.0 + cos(a) * 18.0
-		var cy := 6.0 - sin(a) * 18.0
-		var thick := 2.0 + sin(t * PI) * 3.5
-		for k in int(thick * 2):
-			var y := int(cy - thick + k)
-			img.set_pixel(clampi(int(cx), 0, 47), clampi(y, 0, 35), shade if k < 2 else yellow)
-		img.set_pixel(clampi(int(cx), 0, 47), clampi(int(cy + thick), 0, 35), Color("#1a1a1a"))
-	img.fill_rect(Rect2i(4, 12, 3, 3), Color("#5a3a1a"))
-	img.fill_rect(Rect2i(41, 12, 3, 2), Color("#5a3a1a"))
-	img.fill_rect(Rect2i(34, 31, 10, 1), Color("#1a1a1a"))
-
-
-## An ice cream: a crosshatched cone, three scoops and a cherry.
-static func _ice_cream(img: Image, r: Callable) -> void:
-	img.fill(Color("#a8e0f0") if r.call(4) > 0.5 else Color("#ffd6e8"))
-	var cone := Color("#d9954a")
-	for y in range(18, 34):
-		var half := int((34 - y) * 0.45)
-		img.fill_rect(Rect2i(24 - half, y, half * 2 + 1, 1), cone)
-		for x in range(24 - half, 25 + half):
-			if (x + y) % 4 == 0 or (x - y) % 4 == 0:
-				img.set_pixel(x, y, Color("#a8662a"))
-	var scoops := [Color("#ff8ab5"), Color("#8fe0b0"), Color("#6b3a2a")]
-	var at := [Vector2i(19, 16), Vector2i(29, 16), Vector2i(24, 10)]
-	for k in 3:
-		for dy in range(-6, 7):
-			for dx in range(-6, 7):
-				if dx * dx + dy * dy <= 30:
-					img.set_pixel(at[k].x + dx, at[k].y + dy, (scoops[k] as Color).lightened(0.25) if dx < -2 and dy < -2 else scoops[k])
-	for dy in range(-2, 3):
-		for dx in range(-2, 3):
-			if dx * dx + dy * dy <= 4:
-				img.set_pixel(24 + dx, 3 + dy, Color("#d62839"))
-	img.fill_rect(Rect2i(25, 0, 1, 2), Color("#3a6a2a"))
+	return PaintingCanvas.texture(seed, forced)
 
 
 # --- Emergency lights ------------------------------------------------------------
@@ -1396,10 +1127,12 @@ func _process(dt: float) -> void:
 
 # --- Exempt columns (Museum.columns, MapFile.columns) ----------------------------
 
-## A column stands exempt: not part of the wall it is marked on, only its own
-## slim shape in the middle of the tile, with the rest of the tile free —
-## lighter to look at than a solid wall block, and meant for a gallery's own
-## rows of them rather than for splitting up a room the way a wall does.
+## A column stands exempt: not part of the wall it is marked on, its own
+## shape in the middle of the tile with the corners free — structure, so as
+## stout and as tall as the wall round it (shaft 0.8 of a tile across, base
+## and capital nearly the whole tile, capital level with the wall caps), and
+## meant for a gallery's own rows of them rather than for splitting up a
+## room the way a wall does.
 ##
 ## One logical piece, four looks (COLUMN_*): which one a tile gets follows
 ## its gallery's theme (Themes.column_style), the same way a pedestal does
@@ -1435,9 +1168,16 @@ func _map_columns_build() -> void:
 
 
 ## The looks (Themes.COLUMN_STYLES, plus "moderno"/anything else's fallback),
-## each a base, a shaft and a capital, all well inside the tile (radius
-## under 0.5) so there is floor free all round it.
+## each a base, a shaft and a capital. The shaft is the collision circle
+## (Museum.COLUMN_R); base and capital spread to COLUMN_FOOT, just inside
+## the tile, and the capital tops out at COLUMN_TOP, level with the cap on
+## the walls (WALL_HEIGHT + CAP_H), so a column stands as high as the wall.
+const COLUMN_FOOT := 0.96
+const COLUMN_TOP := WALL_HEIGHT + CAP_H
+
+
 func _column(parent: Node3D, style: String) -> void:
+	var r := Museum.COLUMN_R
 	var drum := func(r: float, h: float, r2: float, sides: int, colour: Color, y: float) -> void:
 		var c := CylinderMesh.new()
 		c.bottom_radius = r
@@ -1458,23 +1198,24 @@ func _column(parent: Node3D, style: String) -> void:
 			# echinus under a square abacus (the ancient world's gallery).
 			# A touch of entasis: the shaft is wider at the foot than under
 			# the capital, instead of a dead-straight tube.
-			_mesh(parent, _box(Vector3(0.4, 0.06, 0.4)), Color("#cbb98a"), Vector3(0, 0.03, 0))
-			fluted.call(0.19, 0.155, WALL_HEIGHT - 0.16, 20, 0.22, Color("#e8ddc0"), 0.06 + (WALL_HEIGHT - 0.16) / 2)
-			drum.call(0.2, 0.07, 0.14, 16, Color("#cbb98a"), WALL_HEIGHT - 0.06)
-			_mesh(parent, _box(Vector3(0.36, 0.06, 0.36)), Color("#cbb98a"), Vector3(0, WALL_HEIGHT - 0.03, 0))
+			var shaft_h := COLUMN_TOP - 0.3
+			_mesh(parent, _box(Vector3(COLUMN_FOOT, 0.1, COLUMN_FOOT)), Color("#cbb98a"), Vector3(0, 0.05, 0))
+			fluted.call(r + 0.02, r - 0.06, shaft_h, 20, 0.22, Color("#e8ddc0"), 0.1 + shaft_h / 2)
+			drum.call(r - 0.04, 0.1, COLUMN_FOOT / 2, 16, Color("#cbb98a"), COLUMN_TOP - 0.15)
+			_mesh(parent, _box(Vector3(COLUMN_FOOT, 0.1, COLUMN_FOOT)), Color("#cbb98a"), Vector3(0, COLUMN_TOP - 0.05, 0))
 		"gotica":
 			# A compound gothic pier, not a single drum: a slim central
 			# shaft with a ring of slender colonnettes fused round it (a
 			# cathedral's bundled pier), rising to a pointed cap. Cheap
-			# geometry — a handful of thin CylinderMesh, all still well
-			# inside the tile's radius (ring_r + col_r stays under 0.2).
-			var core_r := 0.09
-			var col_r := 0.05
-			var ring_r := 0.135
+			# geometry — a handful of thin CylinderMesh, the bundle as wide as
+			# the collision circle (ring_r + col_r = r).
+			var core_r := r * 0.55
+			var col_r := r * 0.27
+			var ring_r := r - col_r
 			var cols := 6
-			var shaft_h := WALL_HEIGHT - 0.2
-			var shaft_y := 0.08 + shaft_h / 2
-			drum.call(0.2, 0.08, 0.19, 8, Color("#55505c"), 0.04)
+			var shaft_h := COLUMN_TOP - 0.26
+			var shaft_y := 0.12 + shaft_h / 2
+			drum.call(COLUMN_FOOT / 2, 0.12, r + 0.04, 8, Color("#55505c"), 0.06)
 			drum.call(core_r, shaft_h, core_r, 10, Color("#807a86"), shaft_y)
 			for i in cols:
 				var a := TAU * i / cols
@@ -1485,13 +1226,14 @@ func _column(parent: Node3D, style: String) -> void:
 				c.radial_segments = 8
 				c.rings = 1
 				_mesh(parent, c, Color("#948e99"), Vector3(cos(a) * ring_r, shaft_y, sin(a) * ring_r))
-			drum.call(0.17, 0.05, 0.02, 8, Color("#55505c"), WALL_HEIGHT - 0.05)
+			drum.call(r + 0.02, 0.14, COLUMN_FOOT / 2, 8, Color("#55505c"), COLUMN_TOP - 0.07)
 		"madera":
 			# A round wooden post, bark-dark at the ends (nature's gallery,
 			# and the band's house, Den, if it ever stands one).
-			drum.call(0.21, 0.1, 0.19, 12, Color("#4a3018"), 0.05)
-			drum.call(0.16, WALL_HEIGHT - 0.2, 0.17, 12, Color("#7a5230"), 0.1 + (WALL_HEIGHT - 0.2) / 2)
-			drum.call(0.19, 0.08, 0.21, 12, Color("#4a3018"), WALL_HEIGHT - 0.04)
+			var shaft_h := COLUMN_TOP - 0.26
+			drum.call(COLUMN_FOOT / 2, 0.14, r + 0.04, 12, Color("#4a3018"), 0.07)
+			drum.call(r - 0.02, shaft_h, r, 12, Color("#7a5230"), 0.14 + shaft_h / 2)
+			drum.call(r + 0.04, 0.12, COLUMN_FOOT / 2, 12, Color("#4a3018"), COLUMN_TOP - 0.06)
 		"piedra":
 			# A rough-squared megalith, in prehistory's own ochre-and-flint
 			# browns (Themes.ALL.prehistoria) — three uneven stone blocks
@@ -1499,24 +1241,25 @@ func _column(parent: Node3D, style: String) -> void:
 			# and the dinosaur, not next to a modern gallery's bare
 			# concrete tube. A slight side-to-side offset between blocks
 			# (not perfectly stacked) reads as roughly hewn, not milled.
-			var seg := (WALL_HEIGHT - 0.24) / 2.0
-			_mesh(parent, _box(Vector3(0.44, 0.08, 0.44)), Color("#5a4530"), Vector3(0, 0.04, 0))
-			_mesh(parent, _box(Vector3(0.34, seg, 0.36)), Color("#a37f52"), Vector3(0.02, 0.1 + seg / 2, -0.02))
-			_mesh(parent, _box(Vector3(0.3, 0.04, 0.32)), Color("#5a4530"), Vector3(0, 0.1 + seg + 0.02, 0))
-			_mesh(parent, _box(Vector3(0.3, seg, 0.26)), Color("#c39a63"), Vector3(-0.02, 0.14 + seg + seg / 2, 0.02))
-			_mesh(parent, _box(Vector3(0.36, 0.08, 0.38)), Color("#5a4530"), Vector3(0, WALL_HEIGHT - 0.04, 0))
+			var seg := (COLUMN_TOP - 0.3) / 2.0
+			var d := r * 2
+			_mesh(parent, _box(Vector3(COLUMN_FOOT, 0.1, COLUMN_FOOT)), Color("#5a4530"), Vector3(0, 0.05, 0))
+			_mesh(parent, _box(Vector3(d - 0.04, seg, d)), Color("#a37f52"), Vector3(0.02, 0.1 + seg / 2, -0.02))
+			_mesh(parent, _box(Vector3(d - 0.1, 0.04, d - 0.06)), Color("#5a4530"), Vector3(0, 0.1 + seg + 0.02, 0))
+			_mesh(parent, _box(Vector3(d - 0.08, seg, d - 0.14)), Color("#c39a63"), Vector3(-0.02, 0.14 + seg + seg / 2, 0.02))
+			_mesh(parent, _box(Vector3(COLUMN_FOOT - 0.1, 0.12, COLUMN_FOOT - 0.06)), Color("#5a4530"), Vector3(0, COLUMN_TOP - 0.06, 0))
 		"moderno":
 			# A bare concrete cylinder, nothing added: no plinth, no
 			# capital, just a smooth pale-grey tube top to bottom, the way
 			# a raw-concrete building (Ando-style) stands its columns bare
 			# next to the glass (the corridors, prehistory and the modern
 			# age's gallery, which have no style of their own to speak of).
-			drum.call(0.17, WALL_HEIGHT, 0.17, 20, Color("#d8d5cc"), WALL_HEIGHT / 2)
+			drum.call(r, COLUMN_TOP, r, 20, Color("#d8d5cc"), COLUMN_TOP / 2)
 		_:
 			# Fallback for an unknown style name: the same bare concrete
 			# tube as "moderno" (Themes.column_style never returns anything
 			# else today, but a column always has to look like something).
-			drum.call(0.17, WALL_HEIGHT, 0.17, 20, Color("#d8d5cc"), WALL_HEIGHT / 2)
+			drum.call(r, COLUMN_TOP, r, 20, Color("#d8d5cc"), COLUMN_TOP / 2)
 
 
 ## A cylinder-like shaft with a notched cross-section: flutes points round

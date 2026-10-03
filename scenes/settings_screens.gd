@@ -133,6 +133,7 @@ func step(dir: int, key: String) -> String:
 			var modes := Settings.SCREEN_MODES
 			host.screen_mode = modes[posmod(modes.find(host.screen_mode) + (1 if dir >= 0 else -1), modes.size())]
 			Settings.apply_display(host.screen_mode, host.vsync, host.window)
+			apply_render_scale()
 		"vsync":
 			host.vsync = not host.vsync
 			Settings.apply_display(host.screen_mode, host.vsync, host.window, false)
@@ -141,6 +142,7 @@ func step(dir: int, key: String) -> String:
 			var count := Settings.fitting_sizes().size()
 			host.window = posmod(host.window + 1 + (1 if dir >= 0 else -1), count + 1) - 1
 			Settings.apply_display(host.screen_mode, host.vsync, host.window)
+			apply_render_scale()
 		"ui_scale":
 			host.ui_scale = Settings.UI_SCALE_MIN if dir == 0 and host.ui_scale >= Settings.UI_SCALE_MAX else clampi(host.ui_scale + (10 if dir >= 0 else -10), Settings.UI_SCALE_MIN, Settings.UI_SCALE_MAX)
 			apply_ui_scale()
@@ -187,6 +189,15 @@ func apply_quality() -> void:
 	if host.nightenv.moon:
 		Quality.apply_light(host.nightenv.moon)
 	Quality.apply_tree(host.get_tree())
+	apply_render_scale()
+
+
+## The main window's 3D render, capped on a big screen (Quality.apply_render_scale):
+## called on load, on a screen/window change above (step), and tied to the
+## window's own size_changed so a drag (or a system DPI/monitor change) is
+## caught too, not only the sizes this menu offers.
+func apply_render_scale() -> void:
+	Quality.apply_render_scale(host.get_window())
 
 
 func set_sound(on: bool) -> void:
@@ -247,6 +258,11 @@ func load_all() -> void:
 	Settings.apply_fps(host.fps_limit)
 	apply_ui_scale()
 	Quality.apply_tree(host.get_tree())
+	apply_render_scale()
+	# Dragging the window's edge (or a system DPI/monitor change) resizes it
+	# without going through step()/apply_display above: caught here too.
+	if not host.get_window().size_changed.is_connected(apply_render_scale):
+		host.get_window().size_changed.connect(apply_render_scale)
 
 
 ## Menus and HUD drawn bigger or smaller, whatever the window's size: the

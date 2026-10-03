@@ -73,8 +73,8 @@ func run() -> void:
 		if game.hub.active[i].id == "night:%d" % longest:
 			game.hub._select(i, false)
 			break
-	await selected_visible("Retos")
-	qa.check(game.hub._detail.text.contains(game.challenges.night_name(longest)), "Retos conserva nombre completo en descripción")
+	await selected_visible("Misiones")
+	qa.check(game.hub._detail.text.contains(game.challenges.night_name(longest)), "Misiones conserva nombre completo en descripción")
 	game.hands.show_join("story", 4)
 	await selected_visible("asignación 4P")
 	root.content_scale_factor = 1.0

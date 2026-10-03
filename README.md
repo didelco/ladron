@@ -7,6 +7,12 @@ Port a **Godot 4.7** (escritorio: Windows, macOS y Linux) del MVP web, que queda
 
 Regla general: **simplificar**. Se porta la lógica tal cual; las mejoras, después.
 
+## Orientarse en el código
+
+La [guía del código](CODE_GUIDE.md) explica Godot desde cero, dónde está cada
+funcionalidad y cómo comprobar los cambios. Está separada de la documentación
+web del contenido del juego.
+
 ```
 logic/   lógica pura, sin nodos (GDScript con tipos): se prueba sola
 scenes/  lo visual: main (`Game`, el nodo raíz: estado, pantallas hasta la noche y orden del
@@ -18,7 +24,7 @@ scenes/  lo visual: main (`Game`, el nodo raíz: estado, pantallas hasta la noch
          camera_rig (seguir, alejar, temblar), hands (asientos, teclas y mandos por jugador,
          vibración, glifos), megaphone_run (la megafonía en juego), house_run (la casa de la
          banda: salas a la vista, espantapájaros, banco de pruebas y juegos del dojo),
-         settings_screens (ajustes), challenge_screens (retos y editor), brief_screens
+         settings_screens (ajustes), challenge_screens (misiones y editor), brief_screens
          (prólogo y ficha de la noche), preview_stand (la peana de las piezas) y launch_args
          (las opciones `--menu=…` y compañía). Otros scripts de escena ya eran así: plan_talk,
          tour, end_pages, menu_stage, city_stage.
@@ -237,14 +243,17 @@ En el título se elige el modo:
 - **Generativo**: un museo nuevo cada vez, con dificultad (fácil, media, difícil) y tamaño a elegir.
   Cada golpe trae su pieza y su historia, inventadas a partir de la semilla (`logic/loot_gen.gd`):
   algo que el Barón le quitó a alguien del pueblo.
-- **Retos**: mapas hechos a mano, los de serie (`maps/`) y los tuyos (`user://maps/*.json`,
+- **Misiones** (antes Retos): cada una propone un robo con su historia, su pieza y un obsequio
+  (`maps/*.json`: `loot` y `gift`; `logic/missions.gd`). La primera vez que se logra escapar con la
+  pieza, el obsequio pasa al inventario (`user://progress.cfg`, sección `missions`) y no se repite.
+  Son mapas hechos a mano, los de serie (`maps/`) y los tuyos (`user://maps/*.json`,
   `logic/map_file.gd`). Desde ahí se abre el **editor** (`scenes/map_editor.gd`): pintar suelo,
   muro, vitrina o exterior, poner salas hechas (galería, vitrinas, pedestales, columnas,
   dinosaurio...), la entrada, la pieza, la salida, guardias y objetos, o partir de un mapa
   aleatorio del generador; tamaño, dificultad y guardias; vista 3D, probar y guardar. Solo deja
   jugar mapas cerrados, sin espacios a los que no se llega, con pieza y salida alcanzables.
   `-- --menu=challenges` (o `editor`) los abre directamente. La pantalla es una lista (los robos
-  de la historia, luego los retos) con el plano del que está elegido a la derecha.
+  de la historia, luego las misiones) con el plano del que está elegido a la derecha.
   Los **robos de la historia** también se retocan ahí: se abre el museo tal como lo monta el
   robo (`MapFile.from_museum`), se edita y se guarda en `maps/historia/noche_NN.json` (en
   `user://maps/historia/` si el juego está exportado); desde entonces el robo juega ese museo,

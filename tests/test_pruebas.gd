@@ -360,8 +360,7 @@ func _house() -> void:
 	m.players = 1
 	var seats: Array[String] = ["any"]
 	m.seats = seats
-	m._new_round(1)
-	m._start_playing()
+	m.house.enter_space("dojo")
 	await frames()
 	var h: HouseRun = m.house
 	var p: Thief = m.thieves[0]
