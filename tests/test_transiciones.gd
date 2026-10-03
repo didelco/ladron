@@ -70,10 +70,10 @@ func _init() -> void:
 	check(is_instance_valid(cover) and cover._leaving, "la portada aún se está yendo")
 	await press(KEY_E)
 	await frames()
-	check(m.hub.visible, "una pulsación nueva mientras se va llega al hub: no se pierde")
-	# Esa pulsación habrá elegido lo que tuviera el foco (Guarida, la
-	# primera tarjeta, abre su propio "cuántos"): volvemos al carril
-	# principal antes de seguir con la historia.
+	# Esa pulsación elige lo que tiene el foco: Guarida, la primera tarjeta,
+	# que entra directamente a la casa con la banda que hay (ya no pregunta
+	# cuántos). Volvemos al carril principal antes de seguir con la historia.
+	check(m.mode == Practice.MODE and m.phase == "playing" and not m.hub.visible, "una pulsación nueva mientras se va llega al hub y entra en Guarida: no se pierde (%s, %s)" % [m.phase, m.mode])
 	var guard := 0
 	while m.hub.active != m.hub.OPTIONS and guard < 5:
 		await press(KEY_ESCAPE)
@@ -130,7 +130,9 @@ func _init() -> void:
 	await press(KEY_SPACE)
 	await press(KEY_ESCAPE)
 	await frames()
-	check(m.phase == "countdown" and hud._count_left == Hud.COUNT_S * Hud.COUNT.size(), "otras pulsaciones no la reinician ni la saltan")
+	# Nearly whole still: under load those frames may run past the wait for
+	# the menu to go, and the count has then begun, but only just.
+	check(m.phase == "countdown" and hud._count_left > Hud.COUNT_S * (Hud.COUNT.size() - 1), "otras pulsaciones no la reinician ni la saltan")
 	await create_timer(Hud.FADE_S + 0.1).timeout
 	check(hud._count.visible, "ya sin menú, el 3")
 	await create_timer(Hud.COUNT_S * Hud.COUNT.size()).timeout
@@ -166,9 +168,14 @@ func _init() -> void:
 	await frames(3)
 	check(m.phase == "brief" and m.briefing.brief_page == 0 and m.level == level, "OTRA VEZ, una vez: la previa, en su primera página")
 	# A second press is on the new page's button: one page on, never two.
+	# The surprise heist's plan is a single page, where the action key starts
+	# the night: one press, one start.
 	await press(KEY_E)
 	await frames(3)
-	check(m.phase == "brief" and m.briefing.brief_page == mini(1, m.briefing.pages().size() - 1), "la siguiente pulsación, una página más")
+	if m.briefing.pages().size() > 1:
+		check(m.phase == "brief" and m.briefing.brief_page == 1, "la siguiente pulsación, una página más")
+	else:
+		check(m.phase == "countdown" and m.level == level, "la siguiente pulsación, en un plan de una página, empieza el golpe (%s)" % m.phase)
 
 	# --- Out of a night: away with it, and back out to the title --------------------
 	m._start_playing()

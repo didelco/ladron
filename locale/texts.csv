@@ -715,6 +715,7 @@ EDITOR_HINT_EXIT,"Clic: salida, en el muro exterior. Sin marcar, la elige el jue
 EDITOR_HINT_GUARD,"Clic: pon un guardia (máx. 5) o edita uno puesto. Clic derecho: lo quita. Sin ninguno, salen solos."
 EDITOR_HINT_PROP,"Clic: pone este objeto; otra vez, lo quita. Sin ninguno, los pone el juego."
 EDITOR_HINT_ROOM,"Arrastra: una sala, con su luz y su nombre. Clic derecho: quitarla."
+EDITOR_HINT_DOOR,"Clic: puerta, en un tramo recto de muro. Otro clic, la quita."
 EDITOR_HINT_STAMP,Clic: pon la sala (borra lo de debajo) · R: girarla · Clic derecho: borrar
 EDITOR_TAB_OPTIONS,OPCIONES DEL MAPA
 EDITOR_KIND_WALL,MURO / SUELO
