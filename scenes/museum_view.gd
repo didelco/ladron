@@ -1046,17 +1046,23 @@ func _hang_painting(x: int, y: int, span: int) -> void:
 
 
 ## Paintings (m): width, height, and the height of their middle on the wall.
-## The height is picked so the canvas itself — fw - edge by fh - edge,
-## _painting's actual quad, not the frame's own outer size — comes out
-## true 4:3, so one drawn canvas (Canvases, 4:3) fits any of these with no
-## stretch: the frame's edge eats a different share at each size.
-const PAINTING := Vector3(0.7, 0.55, 0.8)
-const BIG_PAINTING := Vector3(1.12, 0.865, 0.72)
+## The height is picked so each canvas — fw - edge by fh - edge (divided
+## among panels for BIG_PAINTING and TRIPTYCH), _painting's actual quad, not
+## the frame's own outer size — comes out true 4:3, so one drawn canvas
+## (Canvases, 4:3) fits any of these with no stretch: the frame's edge eats
+## a different share at each size. Sized to fill most of the wall module(s)
+## they hang on (a museum's paintings should have presence), leaving just
+## enough margin to clear the module edge, the ceiling (WALL_HEIGHT) and a
+## neighbouring hung tile.
+const PAINTING := Vector3(0.85, 0.66, 0.76)
+## Two canvases in one frame, across two modules — a small diptych, not one
+## overwide canvas, so it keeps its 4:3 panels instead of stretching.
+const BIG_PAINTING := Vector3(1.75, 0.7, 0.74)
 ## Three canvases in one long frame, across three modules; each panel comes
-## out 0.8 x 0.6 (4:3) from this size (see _painting: cw, fh - edge).
-const TRIPTYCH := Vector3(2.6, 0.7, 0.78)
+## out 4:3 from this size (see _painting: cw, fh - edge).
+const TRIPTYCH := Vector3(2.92, 0.78, 0.73)
 ## Two or three small ones on one module.
-const SMALL_PAINTINGS := {2: Vector3(0.36, 0.284, 0.82), 3: Vector3(0.25, 0.1975, 0.84)}
+const SMALL_PAINTINGS := {2: Vector3(0.4, 0.316, 0.82), 3: Vector3(0.26, 0.205, 0.84)}
 
 
 ## The floor in front of a wall with something on it or against it — a thing
@@ -1098,7 +1104,7 @@ func _painting(parent: Node3D, seed: int, kind := "", size := PAINTING) -> void:
 	var cy := size.z
 	_mesh(parent, _box(Vector3(fw + 0.05, fh + 0.05, 0.03)), C.ink, Vector3(0, cy, 0.015))
 	_mesh(parent, _box(Vector3(fw, fh, 0.05)), C.gold_dim, Vector3(0, cy, 0.03))
-	var panels := 3 if size == TRIPTYCH else 1
+	var panels := 3 if size == TRIPTYCH else (2 if size == BIG_PAINTING else 1)
 	# The border a frame leaves round the canvas, and between a triptych's.
 	var edge := clampf(fh * 0.2, 0.04, 0.1)
 	var cw := (fw - edge - (panels - 1) * 0.05) / panels

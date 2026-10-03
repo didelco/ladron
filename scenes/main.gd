@@ -1440,8 +1440,9 @@ func _prompt_rows(i: int) -> Array:
 		if Heist.short_hand:
 			return [{"verb": Text.t("HUD_JOB_TWO_LOCKS")}]
 		return [{"verb": Heist.loot.verb, "progress": Heist.progress}]
+	# Al cogerla ya no se nombra la pieza, solo adónde ir.
 	if Heist.carrier == p.id:
-		return [{"verb": Text.t("HUD_JOB_CARRYING") % String(Heist.loot.name).to_upper()}]
+		return [{"verb": Text.t("HUD_JOB_CARRYING")}]
 	if p.posing:
 		return [row.call("move", Text.t("HUD_PLINTH_DOWN"))]
 	if p.hiding:
@@ -1454,10 +1455,10 @@ func _prompt_rows(i: int) -> Array:
 		"trial": return [row.call("action", DojoTrials.start_label(act.id, act.tier))]
 		"job": return [row.call("action", Text.t({"lockpick": "HUD_GAME_PICK_HINT", "steady": "HUD_GAME_STEADY_HINT"}.get(act.at.kind, "HUD_GAME_WIRES_HINT")))]
 		"plinth": return [row.call("action", Text.t("HUD_PLINTH_HINT"))]
-		"hide": return [row.call("action", Text.t("HUD_HIDE_HINT") % Hideouts.name_of(act.at.kind).to_upper())]
+		"hide": return [row.call("action", Text.t("HUD_HIDE_HINT"))]
 		"arcade": return [row.call("action", Text.t("HIDEOUT_ARCADE_PLAY" if mode == Practice.MODE else "HUD_ARCADE_HINT"))]
 		"switch": return [row.call("action", Text.t("HUD_SWITCH_HINT"))]
-		"push": return [row.call("action", Text.t("HUD_PUSH_HINT") % Props.name_of(act.at.kind).to_upper())]
+		"push": return [row.call("action", Text.t("HUD_PUSH_HINT"))]
 		"door": return [row.call("action", Text.t("HIDEOUT_DOOR_CLOSE" if Den.is_open(act.at) else "HIDEOUT_DOOR_OPEN"))]
 		"map_door": return [row.call("action", Text.t("HIDEOUT_DOOR_CLOSE" if Museum.is_door_open(act.at) else "HIDEOUT_DOOR_OPEN"))]
 	return []
