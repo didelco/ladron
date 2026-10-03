@@ -80,6 +80,11 @@ var loudspeaker := MegaphoneRun.new(self)
 var loop := NightLoop.new(self)
 var challenges := ChallengeScreens.new(self)
 var briefing := BriefScreens.new(self)
+## Atraco Sorpresa's plan, moving the cursor over its items with the left
+## stick (edge-triggered, like Hub._stick_side/_stick_vertical): which way
+## it was pushed last, so a held stick does not repeat every frame.
+var _plan_stick_x := 0.0
+var _plan_stick_y := 0.0
 ## La casa como punto de partida (sustituye el menú de tarjetas) y la pausa
 ## real vista con su misma pinta; ver scenes/hub.gd.
 var hub := Hub.new(self)
@@ -1099,7 +1104,7 @@ func _new_round(n: int) -> void:
 		_lay_out(n, saved_map.seed)
 	else:
 		Sim.custom = {"theme": theme} if theme != "" else {}
-		_lay_out(n, randi() % 1000000000)
+		_lay_out(n, randi() % (MuseumCode.MAX_SEED + 1))
 	stride = [0.0, 0.0, 0.0, 0.0]
 	HeistStats.reset()
 	caught_thief = -1
@@ -1153,6 +1158,67 @@ func _input(event: InputEvent) -> void:
 			_show_city()
 		else:
 			briefing.skip_story()
+	if phase == "brief" and briefing.plan_nav_active():
+		_plan_nav_input(event)
+
+
+func reset_plan_nav() -> void:
+	_plan_stick_x = 0.0
+	_plan_stick_y = 0.0
+
+
+## Atraco Sorpresa's plan, the one page it has: WASD/flechas (or the D-pad
+## or the stick) step plan_cursor over plan_targets() instead of moving the
+## focus along "Volver"/"¡EMPEZAR!" below (taken here, before those buttons
+## get the arrows — same as KEY_TAB above); the action key starts the night
+## right away and back leaves, both the same as their buttons, so the row
+## stays a plain, mouse-only alternative and never a second way through the
+## same choice. MenuKeys.of still says what E, Space, Escape... mean, as
+## everywhere else.
+func _plan_nav_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		match event.keycode:
+			KEY_UP, KEY_W, KEY_LEFT, KEY_A:
+				get_viewport().set_input_as_handled()
+				briefing.plan_select(-1)
+				return
+			KEY_DOWN, KEY_S, KEY_RIGHT, KEY_D:
+				get_viewport().set_input_as_handled()
+				briefing.plan_select(1)
+				return
+	elif event is InputEventJoypadButton and event.pressed and Pads.real(event.device):
+		match event.button_index:
+			JOY_BUTTON_DPAD_UP, JOY_BUTTON_DPAD_LEFT:
+				get_viewport().set_input_as_handled()
+				briefing.plan_select(-1)
+				return
+			JOY_BUTTON_DPAD_DOWN, JOY_BUTTON_DPAD_RIGHT:
+				get_viewport().set_input_as_handled()
+				briefing.plan_select(1)
+				return
+	elif event is InputEventJoypadMotion and Pads.real(event.device):
+		var side := signf(event.axis_value) if absf(event.axis_value) > 0.6 else 0.0
+		if event.axis == JOY_AXIS_LEFT_X:
+			if side != 0.0 and side != _plan_stick_x:
+				briefing.plan_select(int(side))
+			_plan_stick_x = side
+		elif event.axis == JOY_AXIS_LEFT_Y:
+			if side != 0.0 and side != _plan_stick_y:
+				briefing.plan_select(int(side))
+			_plan_stick_y = side
+		else:
+			return
+		get_viewport().set_input_as_handled()
+		return
+	var what := MenuKeys.of(event)
+	if what == "accept":
+		get_viewport().set_input_as_handled()
+		sfx.ui("ok")
+		_start_countdown(Hud.FADE_S)
+	elif what == "back":
+		get_viewport().set_input_as_handled()
+		sfx.ui("back")
+		briefing.back()
 
 
 ## Seats whose pad dropped out: seat index -> the guid of the pad it had.

@@ -10,6 +10,11 @@ var host: Game
 var prologue_page := 0
 var brief_page := 0
 
+## Atraco Sorpresa only: which item of plan_targets() the arrows/WASD have
+## landed on, on the plan's own page (there is only the one page in this
+## mode — no story, no news, straight to the plan).
+var plan_cursor := 0
+
 
 func _init(game: Game) -> void:
 	host = game
@@ -136,30 +141,48 @@ func story_items() -> Array:
 
 
 ## The plan: the map on the left; on the right, the piece (turning under a
-## light, its name and how long it takes) and the rules for the night
-## worked out from it (Briefing).
+## light, its name and how long it takes — not in the generative, which
+## keeps what is stolen out of the briefing) and the rules for the night
+## worked out from it (Briefing). In the generative, the right side shows
+## instead whatever the arrows have landed on in the map (plan_select).
 func plan_items() -> Array:
 	var colours := host._thief_colours().slice(0, host.thieves.size())
 	var keys := ["thief", "gem", "exit", "guard", "prop", "route"]
 	if Heist.team:
 		keys.append("panel")
 	var legend_loot := Color(Heist.loot.colour)
+	var targets: Array = []
+	if host.mode == "generative":
+		# Fresh every time the plan is drawn (there is only this one page
+		# in the mode, so this only runs once a visit): back where the
+		# arrows start.
+		plan_cursor = 0
+		host.reset_plan_nav()
+		targets = plan_targets()
+	var mark: Vector2 = targets[plan_cursor].pos if not targets.is_empty() else Vector2.INF
 	var left: Array = [
-		{"map": Hud.plan_map(host.guards, colours), "height": 390},
+		{"map": Hud.plan_map(host.guards, colours, false, mark), "height": 390},
 		{"legend": keys.slice(0, 3), "thieves": colours, "loot": legend_loot},
 		{"legend": keys.slice(3), "thieves": colours, "loot": legend_loot},
 	]
-	# Rebuilt each time: the last round's piece may still be on the stand.
-	host.podium.build()
-	var piece: Array = [
-		{"text": Heist.first_upper(Heist.loot.name), "size": 26, "colour": Color(Heist.loot.colour), "wrap": true, "width": 330, "align": "left"},
-		{"text": Briefing.takes(), "size": 15, "colour": Hud.C.dim, "wrap": true, "width": 330, "align": "left"},
-	]
-	var right: Array = [{"columns": [
-		{"items": [{"picture": host.podium.preview.get_texture(), "smooth": true, "height": 120}], "middle": true},
-		{"items": piece, "separation": 4, "middle": true},
-	], "separation": 12}]
-	right.append({"gap": 4})
+	var right: Array = []
+	if host.mode != "generative":
+		# Rebuilt each time: the last round's piece may still be on the stand.
+		host.podium.build()
+		var piece: Array = [
+			{"text": Heist.first_upper(Heist.loot.name), "size": 26, "colour": Color(Heist.loot.colour), "wrap": true, "width": 330, "align": "left"},
+			{"text": Briefing.takes(), "size": 15, "colour": Hud.C.dim, "wrap": true, "width": 330, "align": "left"},
+		]
+		right.append({"columns": [
+			{"items": [{"picture": host.podium.preview.get_texture(), "smooth": true, "height": 120}], "middle": true},
+			{"items": piece, "separation": 4, "middle": true},
+		], "separation": 12})
+		right.append({"gap": 4})
+	else:
+		var sel: Dictionary = targets[plan_cursor] if not targets.is_empty() else {"name": "", "tip": ""}
+		right.append({"text": String(sel.get("name", "")), "id": "plan_item_name", "size": 24, "colour": Hud.C.gold, "align": "left"})
+		right.append({"text": "• " + String(sel.get("tip", "")), "id": "plan_item_tip", "size": 17, "wrap": true, "width": 540, "align": "left"})
+		right.append({"gap": 10})
 	right.append({"title": Text.t("BRIEF_TIPS_TITLE"), "size": 24, "align": "left"})
 	for tip in Briefing.tips(host.guards, host.level if host.mode == "story" else 0):
 		right.append({"text": "• " + tip, "size": 17, "wrap": true, "width": 540, "align": "left"})
@@ -167,3 +190,53 @@ func plan_items() -> Array:
 		{"items": left, "separation": 6, "middle": true},
 		{"items": right, "width": 540, "separation": 8, "middle": true},
 	], "separation": 36}]
+
+
+## Whether WASD/flechas move a cursor over the plan's items instead of the
+## row of buttons below it — only in Atraco Sorpresa (the piece's tale and
+## the news are both out of this mode, so "plan" is the only page there,
+## always at brief_page 0).
+func plan_nav_active() -> bool:
+	return host.mode == "generative" and pages()[brief_page] == "plan"
+
+
+## What the arrows can land on, on the plan, this round: the piece's case,
+## the way out, each guard and the alarm panels (if the job wants two
+## hands). Name and clue reuse Tour's own words for them (PlanBeats), never
+## the piece's own name, photo or time — those stay out of the generative's
+## briefing on purpose (see plan_items). pos: the tile to ring on the map.
+func plan_targets() -> Array:
+	var many := host.thieves.size() > 1
+	var out: Array = [
+		{"name": Text.t("TOUR_TAG_PIECE"), "tip": Text.t("PLAN_ITEM_PIECE"), "pos": _mid(Heist.at)},
+		{"name": Text.t("TOUR_TAG_EXIT"), "tip": Text.t("TOUR_MARK_EXIT_MANY" if many else "TOUR_MARK_EXIT_ONE"), "pos": _mid(Heist.exit)},
+	]
+	for g in host.guards:
+		var tip := Text.t("TOUR_MARK_GUARD_POST" if g.post.x >= 0 else "TOUR_MARK_GUARD_ROUND")
+		var ear := PlanBeats.guard_hearing_trait(g)
+		out.append({"name": "%s · %s" % [Text.t("TOUR_TAG_GUARD"), g.name], "tip": tip + (" " + ear if ear != "" else ""), "pos": Vector2(g.x, g.y)})
+	if Heist.team:
+		for p in [Heist.panel, Heist.panel2]:
+			if p.x >= 0:
+				out.append({"name": Text.t("TOUR_TAG_PANEL"), "tip": Text.t("TOUR_MARK_PANEL_MANY" if many else "TOUR_MARK_PANEL_ONE"), "pos": _mid(p)})
+	return out
+
+
+func _mid(t: Vector2i) -> Vector2:
+	return Vector2(t.x + 0.5, t.y + 0.5)
+
+
+## The cursor a step on (-1 or 1), round the ends: the detail card and the
+## ring on the map both move to it, the menu itself untouched (Hud.set_text,
+## Hud.set_menu_map — no rebuild, no refocus).
+func plan_select(delta: int) -> void:
+	var targets := plan_targets()
+	if targets.is_empty():
+		return
+	plan_cursor = posmod(plan_cursor + delta, targets.size())
+	var t: Dictionary = targets[plan_cursor]
+	host.hud.set_text("plan_item_name", String(t.name), Hud.C.gold)
+	host.hud.set_text("plan_item_tip", "• " + String(t.tip), Hud.C.text)
+	var colours := host._thief_colours().slice(0, host.thieves.size())
+	host.hud.set_menu_map(Hud.plan_map(host.guards, colours, false, t.pos))
+	host.sfx.ui("nav")

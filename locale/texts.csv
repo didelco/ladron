@@ -1107,6 +1107,7 @@ TOUR_TAG_START,La entrada
 TOUR_TAG_EXIT,La salida
 TOUR_TAG_RULE,¡Ojo!
 TOUR_MARK_PIECE,Aquí está la pieza. Pulsa para volver a leer su historia.
+PLAN_ITEM_PIECE,"Aquí está la pieza, en su vitrina."
 TOUR_MARK_GUARD_ROUND,Hace su ronda por las salas.
 TOUR_MARK_GUARD_POST,Vigila quieto desde aquí.
 TOUR_MARK_PANEL_ONE,"La alarma naranja: sujétala para abrir la vitrina."

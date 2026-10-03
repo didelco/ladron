@@ -1030,6 +1030,14 @@ func set_text(id: String, text: String, colour: Color) -> void:
 		l.add_theme_color_override("font_color", colour)
 
 
+## The menu's own map (the "map" item of show_menu), redrawn in place with
+## a new plan image — the cursor moved, in Atraco Sorpresa's plan
+## (BriefScreens.plan_select), without folding the paper away and back.
+func set_menu_map(plan: Image) -> void:
+	if _menu_map:
+		_menu_map.print_plan(plan)
+
+
 ## A picture a menu gave an id, changed in place: the new one fits the room
 ## the first took.
 func set_picture(id: String, picture: Texture2D) -> void:
@@ -1847,11 +1855,12 @@ static func live_map(thieves: Array[Thief], colours: Array) -> Image:
 ## starts (a red cross). pins: for the plan looked round pin by pin
 ## (PlanTalk), whose chinchetas already mark the guards and the way in —
 ## so the picture under them does not print its own, one on top of the
-## other.
-static func plan_map(guards: Array[Guard], colours: Array, pins := false) -> Image:
+## other. mark: a tile to ring in gold on top of everything else (the item
+## the arrows have landed on, in the Atraco Sorpresa's plan — BriefScreens).
+static func plan_map(guards: Array[Guard], colours: Array, pins := false, mark := Vector2.INF) -> Image:
 	var none: Array[Thief] = []
 	home_map = false
-	return _draw_map(none, [], guards, colours, pins)
+	return _draw_map(none, [], guards, colours, pins, mark)
 
 
 ## Pixels a tile: the plan fills about MAP_WIDTH whatever the museum's size,
@@ -1885,7 +1894,7 @@ const ICON_PANEL := [
 ]
 
 
-static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard], start_colours: Array, pins := false) -> Image:
+static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard], start_colours: Array, pins := false, mark := Vector2.INF) -> Image:
 	var s := clampi(int(MAP_WIDTH / Museum.w), 8, 32)
 	var img := Image.create(Museum.w * s, Museum.h * s, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
@@ -1966,7 +1975,23 @@ static func _draw_map(thieves: Array[Thief], colours: Array, guards: Array[Guard
 		if Heist.carrier == p.id:
 			_glow(img, c, 44, Color(Heist.loot.colour))
 		_dot(img, c, 14, colours[i], Color.WHITE)
+	if mark != Vector2.INF:
+		_ring(img, at.call(mark), maxi(18, s), maxi(3, s / 6), Color("#ffe066"))
 	return img
+
+
+## A ring in the given colour, nothing filled inside: round whatever the
+## cursor has landed on (BriefScreens.plan_select), on top of the rest.
+static func _ring(img: Image, c: Vector2i, r: int, thickness: int, colour: Color) -> void:
+	for dy in range(-r, r + 1):
+		for dx in range(-r, r + 1):
+			var d := Vector2(dx, dy).length()
+			if d > r or d < r - thickness:
+				continue
+			var x := c.x + dx
+			var y := c.y + dy
+			if x >= 0 and y >= 0 and x < img.get_width() and y < img.get_height():
+				img.set_pixel(x, y, colour)
 
 
 ## A thief: a disc in its colour with a ring round it.
