@@ -56,10 +56,6 @@ var hide_blown := false
 ## the way it walked up): that does not get it out again; it has to be let
 ## go first (Sim.step_thief)
 var hide_settling := false
-## wriggling into one (Minigame "squeeze"): which, and the guards that have
-## seen it at it so far
-var hide_target: Hideouts.Spot = null
-var hide_seen: Array[Guard] = []
 ## at a job with the hands (Minigame): the lock or the alarm's glass, or
 ## the balance on a pedestal; it
 ## stands where it is until done or it lets go

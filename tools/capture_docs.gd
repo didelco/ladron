@@ -301,7 +301,7 @@ func _shots() -> void:
 		["wires", "panel", 19, "Minijuego: los cables", "Desconectar el cuadro de alarma."],
 		["steady", "case", 19, "Minijuego: la ventosa", "Cortar el cristal sin moverse."],
 		["balance", "plinth", 21, "Minijuego: el equilibrio", "Hacerse pasar por estatua sobre un pedestal."],
-		["squeeze", "hideout", 11, "Minijuego: colarse", "Meterse en un escondite: ordenar las bolas de colores como el código, unos segundos a la vista."],
+		["squeeze", "bench", 11, "Minijuego: colarse", "El banco del dojo, ESCONDITE: ordenar las bolas de colores como el código."],
 		["sneeze", "hideout", 18, "Minijuego: el estornudo", "Escondido, aguantar el estornudo: pulsar cuando el polvo pasa por la barra."],
 		["arcade", "arcade", 21, "Minijuego: la recreativa", "Un pong de broma en la máquina: no se gana nada y los guardias siguen su ronda."]]
 	for g in games:
@@ -339,11 +339,6 @@ func _shots() -> void:
 				await _play("story", n + 1, 1, 1.0)
 			if not Plinths.list.is_empty():
 				Plinths.climb(main.thieves[0], Plinths.list[0], main.guards)
-		if g[0] == "squeeze":
-			# Wriggling into a hideout: it needs one to wriggle into.
-			var spots := Hideouts.all()
-			if not spots.is_empty():
-				main.thieves[0].hide_target = spots[0]
 		main.thieves[0].game = Minigame.make(g[0], g[1], 3, {})
 		await _wait(1.2)
 		await _shot("juego_minijuego_" + g[0], "juego", g[3], g[4])

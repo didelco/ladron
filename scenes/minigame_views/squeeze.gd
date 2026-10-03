@@ -1,11 +1,10 @@
 extends MinigameView
-## The colour code of a hideout (SqueezeGame, ColourCode): a walnut board
+## The dojo's ESCONDITE colour code (SqueezeGame, ColourCode): a walnut board
 ## with a brass rim; along its top the code, a row of little gems in the
 ## order to make; along its bottom the balls, in cups, out of order. A gold
 ## arrow over the ball the cursor is on, the picked ball lifted and lit, the
 ## balls sliding over when two change places, and a green lamp under every
-## ball sitting where the code says. A red bar across the board while
-## someone looks.
+## ball sitting where the code says.
 
 ## Space between slots, the balls' size and the gems'.
 const PITCH := 0.26
@@ -19,7 +18,6 @@ var _lamps: Array[MeshInstance3D] = []
 var _lamp_lit: StandardMaterial3D
 var _lamp_dim: StandardMaterial3D
 var _arrow: Node3D
-var _eye: MeshInstance3D
 
 
 func framing() -> Dictionary:
@@ -65,8 +63,6 @@ func build() -> void:
 	# The cursor: a gold arrow pointing down at a ball.
 	_arrow = arrow(GOLD)
 	_arrow.rotation.z = PI
-	_eye = box(Vector3(w + 0.1, 0.05, 0.05), RED, Vector3(0, 0.42, 0.12))
-	_eye.material_override = glowing(RED, 3.0)
 
 
 func pose(dt: float) -> void:
@@ -87,8 +83,6 @@ func pose(dt: float) -> void:
 	_arrow.scale = Vector3.ONE * (0.8 + 0.06 * sin(t * 9.0))
 	# Done: the whole row glows a moment.
 	scale = Vector3.ONE * (1.0 + 0.04 * good)
-	# The red bar: someone looks.
-	_eye.visible = g.watched and not g.done
 
 
 ## Where a slot sits along the board, middled.

@@ -1,7 +1,7 @@
 extends SceneTree
 ## Hiding played through the game loop (main.gd's _tick), a frame at a time,
-## with real key and pad events: in with the action key and a moment's
-## wriggling, still inside until a direction is pressed afresh, the sneeze
+## with real key and pad events: in with the action key at once, no minigame
+## in between, still inside until a direction is pressed afresh, the sneeze
 ## after a while, and out again — alone and as two, on the keyboard and on
 ## a pad.
 ##   godot --headless --script tests/test_esconderse.gd
@@ -106,57 +106,17 @@ func tap(k: Callable) -> void:
 	run(2)
 
 
-## Make the hideout's colour code (SqueezeGame) with these keys, the
-## straight way: for each ball out of place, the cursor to its slot, pick,
-## the cursor to the ball that goes there, pick; the last pick is held down
-## (`hold_last`), as a player's would be. The seconds it took, or -1.
-func wriggle(p: Thief, action: Callable, left: Callable, right: Callable, hold_last := true) -> float:
-	var g := p.game as SqueezeGame
-	if g == null:
-		return -1.0
-	# A frame for the keys as they are now (the action that opened it just let
-	# go), so that the first tap is a press of its own.
-	run(2)
-	var t := 2 * DT
-	var swaps := 0
-	while not p.hiding and swaps < 16:
-		var slot := -1
-		for i in g.size():
-			if g.code.balls[i] != g.code.target[i]:
-				slot = i
-				break
-		if slot < 0:
-			break
-		var other := g.code.balls.find(g.code.target[slot])
-		for to in [slot, other]:
-			while g.cursor != to:
-				tap(right if to > g.cursor else left)
-				t += 4 * DT
-			if to == other and g.code.distance() == 1 and hold_last:
-				action.call(true)
-				run(6)
-				t += 6 * DT
-			else:
-				tap(action)
-				t += 4 * DT
-		swaps += 1
-	return t if p.hiding else -1.0
-
-
-## Get in from where it stands with these keys (the action once to start,
-## then the code): true once in. The action key may still be held from the
-## last pick (wriggle): let go of it first, and a frame between each change,
-## so that every press is one.
-func get_in(p: Thief, action: Callable, left: Callable, right: Callable) -> bool:
+## Get a thief in with this action key, from where it already stands beside
+## a hideout: no minigame in between, so one tap (down, a frame, up) is all
+## it takes. True once hiding.
+func hide_now(p: Thief, action: Callable) -> bool:
 	action.call(false)
 	run(2)
 	action.call(true)
-	run(2)
+	run(1)
 	action.call(false)
 	run(2)
-	var took := wriggle(p, action, left, right)
-	run(3)
-	return took > 0.0 and p.hiding
+	return p.hiding
 
 
 ## Frames till the sneeze is on.
@@ -176,10 +136,8 @@ func _init() -> void:
 		if c is TitleScreen:
 			c.free()
 	var e := func(d): key(KEY_E, d)
-	var ka := func(d): key(KEY_A, d)
-	var kd := func(d): key(KEY_D, d)
 
-	# --- On the keyboard, alone, with the minigames on ---------------------------
+	# --- On the keyboard, alone, a night with the other minigames on -------------
 	var night_on := Story.LOCKPICK_NIGHT
 	night(night_on, 1, ["kb_left"] as Array[String])
 	var p: Thief = m.thieves[0]
@@ -189,26 +147,9 @@ func _init() -> void:
 	var at := Vector2(p.x, p.y)
 	key(KEY_E, true)
 	run(1)
-	check(p.game is SqueezeGame and not p.hiding, "E junto al escondite: a colarse")
-	check(m._prompt_rows(0).is_empty(), "mientras se cuela, sin bocadillo encima")
-	run(10)
+	check(p.hiding and p.game == null, "E junto al escondite: dentro al momento, sin minijuego")
 	key(KEY_E, false)
 	run(2)
-	check(p.game is SqueezeGame and (p.game as SqueezeGame).picked() < 0 and (p.game as SqueezeGame).code.swaps == 0, "la E que te mete no coge ninguna bola")
-	for k in [KEY_A, KEY_D, KEY_W, KEY_S]:
-		key(k, true)
-		run(4)
-		key(k, false)
-	check(p.game is SqueezeGame and (p.game as SqueezeGame).picked() < 0 and (p.game as SqueezeGame).code.swaps == 0, "las direcciones mueven el cursor, no las bolas: solo la acción")
-	var took := wriggle(p, e, ka, kd)
-	check(took > 0.0 and took <= 5.0, "ordenando el código con A, D y E, dentro en %.1f s" % took)
-	check(p.hiding, "... y sigue dentro con la última tecla aún pulsada")
-	run(30)
-	check(p.hiding, "... también medio segundo después")
-	key(KEY_A, false)
-	key(KEY_D, false)
-	run(5)
-	check(p.hiding and p.game == null, "suelta las teclas: dentro, quieto, sin minijuego aún")
 	check(m._prompt_rows(0).size() == 1 and m._prompt_rows(0)[0].input == "move", "dentro, el bocadillo dice cómo salir")
 	# The action key does nothing in there (no switch, no arcade, no push).
 	key(KEY_E, true)
@@ -243,7 +184,7 @@ func _init() -> void:
 	# Let it sneeze: nothing pressed.
 	p.x = at.x
 	p.y = at.y
-	check(get_in(p, e, ka, kd), "otra vez dentro")
+	check(hide_now(p, e), "otra vez dentro")
 	till_sneeze(p)
 	run(int(4.0 / DT))
 	check(not p.hiding and p.game == null, "sin pulsar nada: ¡achís!, fuera y sin minijuego")
@@ -258,7 +199,7 @@ func _init() -> void:
 	p.x = at.x
 	p.y = at.y
 	run(5)
-	check(get_in(p, e, ka, kd), "y dentro de nuevo")
+	check(hide_now(p, e), "y dentro de nuevo")
 	till_sneeze(p)
 	var pushes := [0]
 	var spam := 0
@@ -272,18 +213,19 @@ func _init() -> void:
 	check(not p.hiding and p.game == null, "tres fallos: ¡achís!")
 	check(p.game == null and not (m._action_for(p).get("do", "") == "hide" and p.hiding), "y la E del último fallo no hace nada más")
 	run(int(2.0 / DT))
-	# B while wriggling lets go, and does not roll.
+	# Space (the roll key) right after getting in: no minigame to let go of,
+	# and it does not roll nor get the thief out either.
 	p.x = at.x
 	p.y = at.y
 	run(30)
 	key(KEY_E, true)
-	run(2)
+	run(1)
 	key(KEY_E, false)
 	run(2)
+	check(p.hiding and p.game == null, "dentro antes de probar Espacio")
 	key(KEY_SPACE, true)
-	run(1)
-	check(p.game == null and not p.hiding, "Espacio mientras se cuela: lo deja")
-	check(not p.rolling, "... sin echarse a rodar")
+	run(2)
+	check(p.hiding and not p.rolling, "Espacio justo al entrar: no echa a rodar ni saca del escondite")
 	key(KEY_SPACE, false)
 	run(40)
 
@@ -293,16 +235,11 @@ func _init() -> void:
 	spot = beside_hideout(p)
 	way = from
 	var pa := func(d): button(0, JOY_BUTTON_A, d)
-	var pl := func(d): button(0, JOY_BUTTON_DPAD_LEFT, d)
-	var pr := func(d): button(0, JOY_BUTTON_DPAD_RIGHT, d)
 	button(0, JOY_BUTTON_A, true)
-	run(2)
+	run(1)
 	button(0, JOY_BUTTON_A, false)
-	check(p.game is SqueezeGame, "A junto al escondite: a colarse")
-	took = wriggle(p, pa, pl, pr)
-	check(took > 0.0 and took <= 5.0, "con la cruceta y A del mando, dentro en %.1f s" % took)
-	check(p.hiding, "... y sigue dentro")
-	run(5)
+	run(2)
+	check(p.hiding and p.game == null, "A junto al escondite: dentro al momento, sin minijuego")
 	var dz: float = m.deadzone / 100.0
 	axis(0, JOY_AXIS_LEFT_X if way.x != 0 else JOY_AXIS_LEFT_Y, signf(way.x + way.y) * (dz + 0.1))
 	run(3)
@@ -311,7 +248,7 @@ func _init() -> void:
 	axis(0, JOY_AXIS_LEFT_Y, 0.0)
 	run(30)
 	spot = beside_hideout(p)
-	check(get_in(p, pa, pl, pr), "con A del mando otra vez, dentro")
+	check(hide_now(p, pa), "con A del mando otra vez, dentro")
 	run(5)
 
 	# --- Two thieves on one keyboard ---------------------------------------------
@@ -331,21 +268,17 @@ func _init() -> void:
 	check(s1 != null and s2 != null, "dos escondites, uno para cada uno")
 	var p1_at := Vector2(p1.x, p1.y)
 	key(KEY_PERIOD, true)
-	run(2)
+	run(1)
 	key(KEY_PERIOD, false)
-	check(p2.game is SqueezeGame and p1.game == null, "J2 con el punto: J2 a colarse, J1 nada")
-	took = wriggle(p2, func(d): key(KEY_PERIOD, d), func(d): key(KEY_LEFT, d), func(d): key(KEY_RIGHT, d))
-	check(took > 0.0 and p2.hiding and not p1.hiding, "J2 con el punto, dentro en %.1f s" % took)
+	run(2)
+	check(p2.hiding and p2.game == null and not p1.hiding, "J2 con el punto: dentro al momento, J1 nada")
 	check(Vector2(p1.x, p1.y) == p1_at, "y J1 no se ha movido")
-	key(KEY_LEFT, false)
-	key(KEY_RIGHT, false)
 	till_sneeze(p2)
 	check(p2.game is SneezeGame and p1.game == null, "el estornudo, solo para J2")
 	key(KEY_E, true)
 	run(1)
 	key(KEY_E, false)
 	check(p2.game is SneezeGame and (p2.game as SneezeGame).misses == 0, "la E de J1 no cuenta en el estornudo de J2")
-	check(p1.game is SqueezeGame, "... y a J1 lo pone a colarse en el suyo")
 	run(3)
 	key(KEY_SPACE, true)
 	run(1)
@@ -355,18 +288,20 @@ func _init() -> void:
 	check(not p2.hiding and p2.game == null, "J2 sale con las flechas")
 	key(out_key(way, true), false)
 	run(5)
-	# Both at the same one: the second cannot start while the first wriggles.
+	# Both at the same one, pressed the same frame: J1 (first in the band)
+	# gets in first, and J2's own press finds the spot already taken.
 	p1.x = p1_at.x
 	p1.y = p1_at.y
 	p2.x = p1_at.x
 	p2.y = p1_at.y
 	run(2)
 	key(KEY_E, true)
-	run(2)
+	run(1)
 	key(KEY_E, false)
-	check(p1.game is SqueezeGame and m._action_for(p2).get("do", "") != "hide", "si J1 se está colando, J2 ya no puede en ese")
+	check(p1.hiding and m._action_for(p2).get("do", "") != "hide", "J1 entra al momento y J2 ya no puede en ese escondite")
+	run(2)
 
-	# --- Without the minigames: straight in ---------------------------------------
+	# --- Before the other minigames come in: straight in too ----------------------
 	for n in range(1, Story.LOCKPICK_NIGHT):
 		night(n, 1, ["kb_left"] as Array[String])
 		p = m.thieves[0]

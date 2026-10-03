@@ -13,7 +13,7 @@ extends RefCounted
 ##
 ##   of the action kind, which cannot be failed, only done slowly:
 ##     "lockpick" (LockpickGame), "wires" (WiresGame), "steady" (SteadyGame),
-##     "squeeze" (SqueezeGame: a hideout's colour code, ColourCode);
+##     "squeeze" (SqueezeGame: the dojo bench's colour code, ColourCode);
 ##   of the enduring kind, which can be failed:
 ##     "balance" (BalanceGame: posing as a statue on one foot),
 ##     "sneeze" (SneezeGame: holding in a sneeze while hiding, which never

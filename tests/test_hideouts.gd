@@ -347,8 +347,9 @@ func _init() -> void:
 	check(near == 0, "ninguno a menos de %.0f casillas de otro (el más cerca, a %.1f)" % [Hideouts.APART, furthest_short])
 	check(under <= nights / 20, "casi siempre al menos %d (%d de %d con menos)" % [Hideouts.MIN, under, nights])
 
-	# Getting in takes a moment of wriggling, out in the open: seen at any
-	# point of it, the guard knows.
+	# Getting in is at once, no minigame and no time out in the open: the
+	# only thing that decides if it fools a guard is whether it sees the
+	# instant you get in (Hideouts.get_in, already checked above).
 	Sim.custom = {}
 	Sim.new_map(sarcophagus_seed, "medium")
 	Props.list.clear()
@@ -363,18 +364,9 @@ func _init() -> void:
 	q.x = by.x + 0.5
 	q.y = by.y + 0.5
 	var alone: Array[Thief] = [q]
-	Hideouts.start(q, Hideouts.within_reach(q, alone), {})
-	check(q.game is SqueezeGame and not q.hiding, "E junto al sarcófago: empieza a colarse, aún fuera")
-	var spy := Guard.new()
-	spy.x = q.x + 1.5
-	spy.y = q.y
-	spy.dir = PI
-	var spies: Array[Guard] = [spy]
-	check(Hideouts.squeeze(q, spies, alone, false) == "", "mientras se cuela, sigue fuera")
-	check(q.hide_seen.has(spy) or not Sim.can_see(spy, q), "el guardia que lo ve colarse lo recuerda")
-	var saw_it := q.hide_seen.has(spy)
-	var gone: Array[Guard] = []
-	check(Hideouts.squeeze(q, gone, alone, true) == "in" and q.hiding, "hecho: dentro")
-	check(q.hide_blown == saw_it, "aunque ya no mire al terminar, si lo vio colarse lo sabe")
+	var sq_spot := Hideouts.within_reach(q, alone)
+	var none: Array[Guard] = []
+	Hideouts.get_in(q, sq_spot, none)
+	check(q.hiding and q.game == null, "junto al sarcófago, dentro al momento, sin minijuego de por medio")
 
 	quit(qa.summary())

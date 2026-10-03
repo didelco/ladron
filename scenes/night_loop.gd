@@ -110,18 +110,6 @@ func sneeze(p: Thief, noises: Array[SoundEvent]) -> void:
 	host.loudspeaker.act("sneeze", host.thieves.find(p))
 
 
-## A frame of a thief at a hideout's colour code (Hideouts.squeeze): in once
-## it is done, or let go if the hideout went meanwhile.
-func squeeze(p: Thief, done: bool) -> void:
-	var spot := p.hide_target
-	match Hideouts.squeeze(p, host.guards, host.thieves, done):
-		"in":
-			p.game = null
-			hid(p, spot)
-		"lost":
-			p.game = null
-
-
 ## In: the lid's thud (and the dust it shakes off), and whether anyone saw it.
 func hid(p: Thief, spot: Hideouts.Spot) -> void:
 	HeistStats.add("hides")
@@ -257,8 +245,6 @@ func _move_thieves(dt: float, keys: Dictionary, noises: Array[SoundEvent]) -> vo
 func _play_game(p: Thief, i: int, keys: Dictionary, dt: float, noises: Array[SoundEvent], suspicion: int) -> void:
 	p.game.tremble = Minigame.tremble_for(suspicion)
 	p.game.pressure = Plinths.pressure(p, host.guards)
-	if p.game is SqueezeGame and p.game.what == "hideout":
-		(p.game as SqueezeGame).watched = not Sim.witnesses(host.guards, p).is_empty()
 	var lean: float = (p.game as BalanceGame).lean if p.game is BalanceGame else 0.0
 	var played := p.game.tick(host._game_input(i, keys), dt)
 	match played:
@@ -266,7 +252,6 @@ func _play_game(p: Thief, i: int, keys: Dictionary, dt: float, noises: Array[Sou
 			# Off the pedestal as well, if that is where it was.
 			if p.game.kind == "balance":
 				Plinths.get_down(p, lean)
-			p.hide_target = null
 			p.arcade = Vector2i(-1, -1)
 			p.game = null
 			# The roll key let go of it: it is not a roll as well.
@@ -286,9 +271,6 @@ func _play_game(p: Thief, i: int, keys: Dictionary, dt: float, noises: Array[Sou
 			host.loudspeaker.act("plinth_fall", i)
 		_:
 			game_sounds(p)
-			# (The bench's ESCONDITE is a trial, not a hideout to get into.)
-			if p.game.kind == "squeeze" and p.game.what == "hideout":
-				squeeze(p, played == "done")
 
 
 ## What the physics knocked over, what the thieves do on purpose (the action key), and
@@ -340,13 +322,9 @@ func _do_action(t: Thief, i: int, act: Dictionary, keys: Dictionary, now: float,
 			host.sfx.at("roll", host._to_world(t.x, t.y), 0.4, 2.0)
 			host._log(Text.t("LOG_PLINTH_BLOWN" if t.pose_blown else "LOG_PLINTH_UP"))
 		"hide":
-			# In once its colour code is made (Minigame "squeeze", squeeze);
-			# before the nights have minigames, in at once.
-			if Heist.minigames():
-				Hideouts.start(t, act.at, host._game_input(i, keys))
-			else:
-				Hideouts.get_in(t, act.at, host.guards)
-				hid(t, act.at)
+			# In at once: no minigame to get into a hideout.
+			Hideouts.get_in(t, act.at, host.guards)
+			hid(t, act.at)
 		"arcade":
 			# A game of pong, facing the screen: nothing to win (ArcadeGame).
 			var arcade: Vector2i = act.at

@@ -253,6 +253,15 @@ var _map_picture: TextureRect
 var _map_stage: MapStage
 ## the folded map on the menu on show, if any, to lean with the arrows
 var _menu_map: MapStage
+## the TextureRect that shows it (for menu_map_point, below)
+var _menu_map_rect: TextureRect
+## the floating detail bubble over the item picked on the menu's map
+## (Atraco Sorpresa's plan, BriefScreens.plan_select — Prompt's own look,
+## borrowed rather than invented anew: see set_menu_tip)
+var _map_tip: Prompt
+## the "hints" rows on the menu on show (set_hints_pad moves them between a
+## keyboard's keys and a pad's buttons)
+var _hint_boxes: Array = []
 var _map_legend: VBoxContainer
 var _ia: PanelContainer
 var _ia_box: VBoxContainer
@@ -594,7 +603,26 @@ func _label(size: int, colour: Color, parent: Node = self, arcade := false) -> L
 ##   {"card": {...}}                                  the job sheet with the
 ##                                                    piece before a heist
 ##                                                    (EndPages.piece_card)
+##   {"field": {"id", "hint"?, "text"?, "max_length"?, "width"?, "call"?}}
+##                                                    one line of typed text
+##                                                    (LineEdit); call: (text)
+##                                                    on Enter. Keyboard only
+##                                                    — field_text(id) reads
+##                                                    it back for a button
 ##   {"footer": text}                                 what to press
+##   {"buttons": [...], ..., "unfocusable"?: bool}     a button row the arrows
+##                                                    never reach (its own
+##                                                    nav does instead, e.g.
+##                                                    BriefScreens.plan_select)
+##                                                    — no focus ring, mouse
+##                                                    only, out of the rows
+##   {"hints": [[what, text], ...], "pad"?: bool}      what, say, "accept" or
+##                                                    "back" means right now
+##                                                    (Tour.glyph_for), in a
+##                                                    row under/by a row of
+##                                                    "unfocusable" buttons —
+##                                                    set_hints_pad moves it
+##                                                    keyboard/pad in place
 ## Buttons work with the mouse, and with the arrows and accept (MenuKeys:
 ## E, the full stop, A); the first one
 ## has the focus.
@@ -618,9 +646,14 @@ func show_menu(items: Array, screen := "") -> void:
 	# bottom, for the arrows, and the control to start on.
 	var st := MenuState.new()
 	_named.clear()
+	_fields.clear()
 	_pictures.clear()
 	_cards.clear()
 	_menu_map = null
+	_menu_map_rect = null
+	_hint_boxes.clear()
+	if _map_tip:
+		_map_tip.show_rows([], Vector2.ZERO, Color.WHITE, 1.0)
 	_titles.clear()
 	for item in items:
 		_menu_item(item, _panel_box, st)
@@ -766,7 +799,7 @@ func _fade_play_out(over_game: bool) -> void:
 ## first one and the one to start on, if not the first.
 class MenuState:
 	var rows: Array = []
-	var first: Button = null
+	var first: Control = null
 	var focus_on: Button = null
 	## Buttons an item gave an "id" ({"id": "..."}), to link to from elsewhere
 	## in the same menu (e.g. a list's "right_id").
@@ -810,6 +843,25 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 		var gap := Control.new()
 		gap.custom_minimum_size = Vector2(0, item.gap)
 		parent.add_child(gap)
+	elif item.has("field"):
+		var f: Dictionary = item.field
+		var e := LineEdit.new()
+		e.text = f.get("text", "")
+		e.placeholder_text = f.get("hint", "")
+		if f.has("max_length"):
+			e.max_length = f.max_length
+		e.custom_minimum_size = Vector2(f.get("width", 160), 0)
+		e.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		e.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		e.add_theme_font_size_override("font_size", 22)
+		if f.has("call"):
+			e.text_submitted.connect(f.call)
+		parent.add_child(e)
+		if f.has("id"):
+			_fields[f.id] = e
+		st.rows.append([e])
+		if st.first == null:
+			st.first = e
 	elif item.has("map"):
 		# The plan on the folded paper map, unfolding as the screen opens.
 		var stage := MapStage.new()
@@ -825,6 +877,10 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 		parent.add_child(r)
 		# The arrows lean it, as in play.
 		_menu_map = stage
+		_menu_map_rect = r
+		if not _map_tip:
+			_map_tip = Prompt.new()
+			add_child(_map_tip)
 	elif item.has("legend"):
 		legend_row(parent, item.legend, item.get("thieves", []), item.get("loot", Color.WHITE))
 	elif item.has("stage"):
@@ -878,10 +934,17 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 		if item.get("align", "") == "left":
 			box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		parent.add_child(box)
+		# Atraco Sorpresa's plan: the row still does what it says by mouse,
+		# but the arrows never reach it (BriefScreens.plan_select has them
+		# instead), so it must not look reachable either — no focus ring,
+		# out of the arrows' rows (see the hints row by it, plan_items).
+		var unfocusable: bool = item.get("unfocusable", false)
 		var line: Array = []
 		for bi in item.buttons.size():
 			var b: Dictionary = item.buttons[bi]
 			var button := _button(b)
+			if unfocusable:
+				button.focus_mode = Control.FOCUS_NONE
 			# The one to start on, when it is not the first.
 			if item.get("focus", -1) == bi:
 				st.focus_on = button
@@ -904,6 +967,8 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 				help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 				help.custom_minimum_size.x = 570
 				help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			if unfocusable:
+				continue
 			if item.get("row", false):
 				line.append(button)
 			else:
@@ -912,6 +977,33 @@ func _menu_item(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 				st.first = button
 		if not line.is_empty():
 			st.rows.append(line)
+	elif item.has("hints"):
+		# Which key or button does what, over the mouse-only row above or
+		# below it (see "unfocusable", just above) — the same idea as
+		# Tour._set_hints, for a menu built from items instead of a scene of
+		# its own: "pad" says whether to show a pad's glyphs or a
+		# keyboard's (Tour.glyph_for has both sets; this borrows it rather
+		# than keeping a second copy of what every key and button mean).
+		var row := HBoxContainer.new()
+		row.alignment = BoxContainer.ALIGNMENT_CENTER
+		row.add_theme_constant_override("separation", 28)
+		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		parent.add_child(row)
+		var pad: bool = item.get("pad", false)
+		for h in item.hints:
+			var hbox := HBoxContainer.new()
+			hbox.add_theme_constant_override("separation", 8)
+			hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			hbox.set_meta("what", h[0])
+			row.add_child(hbox)
+			var g := Glyph.new()
+			g.set_spec(Tour.glyph_for(h[0], pad), 26)
+			g.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+			hbox.add_child(g)
+			var l := _label(15, C.dim, hbox)
+			l.text = h[1]
+			l.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+			_hint_boxes.append(hbox)
 	elif item.has("table"):
 		_table(item, parent)
 	elif item.has("newspaper"):
@@ -1011,6 +1103,8 @@ func _columns(item: Dictionary, parent: BoxContainer, st: MenuState) -> void:
 
 ## Labels a menu gave an id, to change without rebuilding it; pictures too.
 var _named := {}
+## the "field" LineEdits of the menu on show, by id (field_text)
+var _fields := {}
 var _pictures := {}
 ## the cards of the menu on show that have an id, for a bubble to point at
 var _cards := {}
@@ -1030,12 +1124,76 @@ func set_text(id: String, text: String, colour: Color) -> void:
 		l.add_theme_color_override("font_color", colour)
 
 
+## The menu's "hints" row, whichever hand picked up last (Main._input sets
+## hands.last_pad as the keyboard or a pad is touched) — the glyphs swap,
+## same as Tour's own hints, without rebuilding the row they are in.
+func set_hints_pad(pad: bool) -> void:
+	for box in _hint_boxes:
+		if not is_instance_valid(box):
+			continue
+		(box.get_child(0) as Glyph).set_spec(Tour.glyph_for(box.get_meta("what"), pad), 26)
+
+
+## A "field"'s current text, for a button elsewhere to read (e.g. a
+## "Validar" next to the field, so Enter is not the only way through it).
+func field_text(id: String) -> String:
+	return _fields[id].text if _fields.has(id) else ""
+
+
 ## The menu's own map (the "map" item of show_menu), redrawn in place with
 ## a new plan image — the cursor moved, in Atraco Sorpresa's plan
 ## (BriefScreens.plan_select), without folding the paper away and back.
 func set_menu_map(plan: Image) -> void:
 	if _menu_map:
 		_menu_map.print_plan(plan)
+
+
+## Where a tile of the menu's own map lands on screen, to float a detail
+## bubble over it (set_menu_tip, below) — the map item is a flat plan
+## printed on MapStage's folded paper (3D, lit, breathing a little), not a
+## plain picture, so this redoes _draw_map's tile→pixel scale (s) and then
+## MapStage's own camera framing (its fov, distance, margin and the fold it
+## settles at once open) to land roughly where the plan's own pixels do.
+## It is an approximation tied to those numbers in map_stage.gd — if they
+## change, this drifts with them — close enough at rest, where the paper
+## barely breathes and never leans (BriefScreens never pushes this map).
+func menu_map_point(tile: Vector2) -> Vector2:
+	if not _menu_map_rect or not is_instance_valid(_menu_map_rect):
+		return Vector2.ZERO
+	var s := clampi(int(MAP_WIDTH / Museum.w), 8, 32)
+	var sheet_w := Museum.w * s + MapStage.MARGIN * 2.0
+	var sheet_h := Museum.h * s + MapStage.MARGIN * 2.0
+	var sx := tile.x * s + MapStage.MARGIN
+	var sy := tile.y * s + MapStage.MARGIN
+	var fov_y := deg_to_rad(30.0)
+	var dist := 5.3
+	var visible_h := 2.0 * dist * tan(fov_y * 0.5)
+	var visible_w := visible_h * (float(MapStage.SIZE.x) / MapStage.SIZE.y)
+	var squeeze := 1.0 - MapStage.OPEN_FOLD * 0.35
+	var paper_w := 3.2 * squeeze
+	var paper_h := paper_w / (sheet_w / sheet_h)
+	var rect_w := MapStage.SIZE.x * (paper_w / visible_w)
+	var rect_h := MapStage.SIZE.y * (paper_h / visible_h)
+	var cx := (MapStage.SIZE.x - rect_w) * 0.5 + sx / sheet_w * rect_w
+	var cy := (MapStage.SIZE.y - rect_h) * 0.5 + sy / sheet_h * rect_h
+	var rect := _menu_map_rect.get_global_rect()
+	var k := rect.size / Vector2(MapStage.SIZE)
+	return rect.position + Vector2(cx, cy) * k
+
+
+## The detail of the item the plan's cursor has landed on (BriefScreens.
+## plan_select), over it on the map itself — Prompt's own bubble, borrowed
+## rather than copied into a second look: name as the first line, the tip
+## as the second. Empty name hides it.
+func set_menu_tip(name_txt: String, tip_txt: String, head: Vector2, colour: Color) -> void:
+	if not _map_tip:
+		return
+	var rows: Array = []
+	if name_txt != "":
+		rows.append({"verb": name_txt})
+	if tip_txt != "":
+		rows.append({"verb": tip_txt})
+	_map_tip.show_rows(rows, head, colour, 1.0)
 
 
 ## A picture a menu gave an id, changed in place: the new one fits the room

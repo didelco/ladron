@@ -89,17 +89,31 @@ func show(page: int) -> void:
 		"news": items.append_array(news_items())
 		"plan": items.append_array(plan_items())
 	var last := page == pages.size() - 1
+	var plan_nav := plan_nav_active()
 	# Along the bottom: back on the left, the next page by name in the middle,
 	# and straight to the night on the right (on the last page, the middle
-	# one starts it).
+	# one starts it). On Atraco Sorpresa's plan the arrows are busy moving
+	# the cursor over the map instead (plan_select), so this row stops
+	# looking like it takes them too: no focus ring (unfocusable, mouse
+	# only), and a hints row under it says what key or button each one
+	# really is (Hud.set_hints_pad keeps it current as the hand changes).
 	var row: Array = [
 		{"text": Text.t("MENU_BACK"), "call": back, "colour": Hud.C.dim},
 		{"text": Text.t("BRIEF_START") if last else Text.t("BRIEF_NEXT_TAB") % names[pages[page + 1]], "call": host._start_countdown.bind(Hud.FADE_S) if last else show.bind(page + 1)},
 	]
 	if not last:
 		row.append({"text": Text.t("BRIEF_SKIP"), "call": skip_story, "colour": Hud.C.dim})
-	items.append({"buttons": row, "row": true, "focus": 1})
+	if plan_nav:
+		items.append({"buttons": row, "row": true, "unfocusable": true})
+		items.append({"hints": [["accept", Text.t("BRIEF_START")], ["back", Text.t("MENU_BACK")]], "pad": host.hands.last_pad})
+	else:
+		items.append({"buttons": row, "row": true, "focus": 1})
 	host.hud.show_menu(items, "brief:%d" % page)
+	if plan_nav:
+		# The map's own TextureRect is only laid out once the menu's box has
+		# been sized (next idle frame) — the bubble's first position waits
+		# for that same beat.
+		update_plan_tip.call_deferred()
 
 
 func back() -> void:
@@ -183,6 +197,14 @@ func plan_items() -> Array:
 		right.append({"text": String(sel.get("name", "")), "id": "plan_item_name", "size": 24, "colour": Hud.C.gold, "align": "left"})
 		right.append({"text": "• " + String(sel.get("tip", "")), "id": "plan_item_tip", "size": 17, "wrap": true, "width": 540, "align": "left"})
 		right.append({"gap": 10})
+		# This museum's own code (MuseumCode), to play it again or share it —
+		# never the piece stolen, which plan_items keeps out of this mode.
+		var code := MuseumCode.encode(host.last_map_seed, host.size, host.theme)
+		if code != "":
+			right.append({"text": Text.t("BRIEF_CODE_LABEL") % code, "size": 20, "colour": Hud.C.gold, "align": "left"})
+			right.append({"buttons": [{"text": Text.t("BRIEF_CODE_COPY"), "call": host.copy_museum_code.bind(code)}], "small": true, "align": "left"})
+			right.append({"text": "", "id": "code_status", "size": 14, "colour": Hud.C.green, "align": "left"})
+			right.append({"gap": 10})
 	right.append({"title": Text.t("BRIEF_TIPS_TITLE"), "size": 24, "align": "left"})
 	for tip in Briefing.tips(host.guards, host.level if host.mode == "story" else 0):
 		right.append({"text": "• " + tip, "size": 17, "wrap": true, "width": 540, "align": "left"})
@@ -239,4 +261,22 @@ func plan_select(delta: int) -> void:
 	host.hud.set_text("plan_item_tip", "• " + String(t.tip), Hud.C.text)
 	var colours := host._thief_colours().slice(0, host.thieves.size())
 	host.hud.set_menu_map(Hud.plan_map(host.guards, colours, false, t.pos))
+	update_plan_tip()
 	host.sfx.ui("nav")
+
+
+## The same detail as the fixed card beside the map (plan_item_name/
+## plan_item_tip), floating over the item itself instead — a Prompt-style
+## bubble (Hud.set_menu_tip), at the spot menu_map_point works out for it
+## on the folded paper. The card stays too: on a small map, close to an
+## edge, the bubble can only do so much to stay clear of the ring and of
+## its neighbours, and it is an approximation of where the paper's own
+## camera puts things (Hud.menu_map_point) rather than read off it — the
+## card is the one of the two always right.
+func update_plan_tip() -> void:
+	var targets := plan_targets()
+	if targets.is_empty():
+		host.hud.set_menu_tip("", "", Vector2.ZERO, Hud.C.gold)
+		return
+	var t: Dictionary = targets[plan_cursor]
+	host.hud.set_menu_tip(String(t.name), String(t.tip), host.hud.menu_map_point(t.pos), Hud.C.gold)

@@ -19,10 +19,9 @@ extends RefCounted
 ## (MapGen), the props only so many suits of armour (Props.place), and each
 ## night adds furniture, and empty pedestals to pose on (Plinths), up to the
 ## museum's share (places, spread). A saved map keeps what it stood by hand.
-## Getting in takes its colour code (Minigame "squeeze", a ColourCode:
-## start), a few seconds out in the open putting the balls in the code's
-## order — once the nights have minigames (Heist.minigames); before that,
-## the action key gets you in at once.
+## The action key gets you in at once: no minigame to get into a hideout
+## (there used to be one, a colour code solved out in the open; it made
+## hiding itself a risk, which was not the fun part, so it is gone).
 ##
 ## Inside, you make no sound and no guard sees you. Same deal as the statue
 ## (Plinths): it only works unseen. Get in in front of a guard and it
@@ -244,8 +243,8 @@ static func all() -> Array[Spot]:
 
 
 ## The hideout within reach of this thief, nearest first, or null: never
-## one another thief is already in, or wriggling into. `allow` (optional, takes
-## the Spot, answers a bool) narrows down which ones count.
+## one another thief is already in. `allow` (optional, takes the Spot,
+## answers a bool) narrows down which ones count.
 static func within_reach(p: Thief, thieves: Array[Thief], allow := Callable()) -> Spot:
 	if p.out or p.posing or p.hiding or p.rolling or p.dizzy > 0.0:
 		return null
@@ -254,47 +253,13 @@ static func within_reach(p: Thief, thieves: Array[Thief], allow := Callable()) -
 	for s in all():
 		if allow.is_valid() and not allow.call(s):
 			continue
-		if thieves.any(func(o): return o != p and ((o.hiding and s.same(o.hideout)) or s.same(o.hide_target))):
+		if thieves.any(func(o): return o != p and o.hiding and s.same(o.hideout)):
 			continue
 		var d := s.dist_to(p.x, p.y)
 		if d <= best_d:
 			best_d = d
 			best = s
 	return best
-
-
-## Start on the colour code of one (Minigame "squeeze"): it stops where it
-## is, hands and all, out in the open until it is in.
-static func start(p: Thief, s: Spot, input: Dictionary) -> void:
-	p.game = Minigame.make("squeeze", "hideout", TIGHT.get(s.kind, 0), input)
-	p.hide_target = s
-	p.hide_seen.clear()
-	p.moving = false
-	p.speed = 0.0
-	p.sprinting = false
-
-
-## One frame of wriggling in, done or not: the guards that see it at it
-## remember. Returns "in" once it is in (seen at any point, it fools none of
-## them), "lost" if the hideout is gone meanwhile (another thief got in
-## first, the suit went over), else "".
-static func squeeze(p: Thief, guards: Array[Guard], thieves: Array[Thief], done: bool) -> String:
-	var s := p.hide_target
-	if s == null or p.out:
-		p.hide_target = null
-		return "lost"
-	if thieves.any(func(o): return o != p and o.hiding and s.same(o.hideout)) or (s.prop and s.prop.fallen):
-		p.hide_target = null
-		return "lost"
-	for g in Sim.witnesses(guards, p):
-		if not g in p.hide_seen:
-			p.hide_seen.append(g)
-	if not done:
-		return ""
-	get_in(p, s, guards, p.hide_seen)
-	p.hide_target = null
-	p.hide_seen.clear()
-	return "in"
 
 
 ## In, and not a sound. Seen doing it (now, or by those in seen while it

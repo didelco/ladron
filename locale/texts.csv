@@ -26,6 +26,11 @@ MENU_PLAYERS,LADRONES
 MENU_HOW_HARD,¿QUÉ DIFICULTAD?
 MENU_HOW_BIG,¿QUÉ TAMAÑO DE MUSEO?
 MENU_HOW_THEME,¿QUÉ TEMA DE MUSEO?
+MENU_CODE_CARD,CÓDIGO
+MENU_CODE_TITLE,INTRODUCIR CÓDIGO
+MENU_CODE_HELP,Escribe el código de 4 caracteres de otro museo y pulsa Intro o Entrar.
+MENU_CODE_GO,ENTRAR
+MENU_CODE_BAD,Ese código no es válido. Prueba otra vez.
 MENU_START,EMPEZAR
 MENU_DIFFICULTY_EASY,FÁCIL
 MENU_DIFFICULTY_MEDIUM,MEDIA
@@ -1108,6 +1113,9 @@ TOUR_TAG_EXIT,La salida
 TOUR_TAG_RULE,¡Ojo!
 TOUR_MARK_PIECE,Aquí está la pieza. Pulsa para volver a leer su historia.
 PLAN_ITEM_PIECE,"Aquí está la pieza, en su vitrina."
+BRIEF_CODE_LABEL,Código de este museo: %s
+BRIEF_CODE_COPY,Copiar código
+BRIEF_CODE_COPIED,¡Copiado!
 TOUR_MARK_GUARD_ROUND,Hace su ronda por las salas.
 TOUR_MARK_GUARD_POST,Vigila quieto desde aquí.
 TOUR_MARK_PANEL_ONE,"La alarma naranja: sujétala para abrir la vitrina."
@@ -1548,6 +1556,7 @@ MENU_HELP_DIFFICULTY,Cambia la vista y el oído de los guardias y las cerraduras
 MENU_HELP_SIZE,Más salas implican más recorrido y lugares donde esconderse.
 MENU_HELP_THEME,Cambia las salas y su decoración.
 MENU_HELP_PLAYERS,De 1 a 4 jugadores en equipo. Dos pueden compartir teclado.
+MENU_HELP_CODE,Juega el museo exacto de un código de otra partida.
 SETTINGS_ADJUST_HELP,←/→ ajustan · Clic o aceptar cambia al instante y guarda
 SETTINGS_HELP_SCREEN_MODE,"Ventana, pantalla completa o una ventana sin bordes."
 SETTINGS_HELP_WINDOW,Tamaño de la ventana; más píxeles exigen más trabajo gráfico.

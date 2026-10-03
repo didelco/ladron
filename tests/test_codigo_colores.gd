@@ -1,9 +1,8 @@
 extends SceneTree
-## El código de colores de los escondites (ColourCode): la mecánica que
-## comparten colarse en un escondite durante un robo (Hideouts.start) y la
-## prueba ESCONDITE del dojo (BenchTrial): nunca se reparte ya resuelto,
-## cambiar dos bolas de sitio cambia solo esas dos, se detecta cuando el orden
-## es el del código, y cada nivel tiene sus bolas (3, 4, 5) y su distancia.
+## El código de colores (ColourCode): la mecánica de la prueba ESCONDITE
+## del dojo (BenchTrial, SqueezeGame): nunca se reparte ya resuelto, cambiar
+## dos bolas de sitio cambia solo esas dos, se detecta cuando el orden es el
+## del código, y cada nivel tiene sus bolas (3, 4, 5) y su distancia.
 ##   godot --headless --script tests/test_codigo_colores.gd
 
 const Support := preload("res://tests/support.gd")
@@ -88,11 +87,11 @@ func _init() -> void:
 	check(cyc.distance() == 1, "una pareja cruzada: a uno")
 	check(ColourCode.colour(0) == ColourCode.COLOURS[0] and ColourCode.colour(99) == ColourCode.COLOURS[-1], "el color de cada bola, sin salirse de la lista")
 
-	print("Dentro del minijuego: la ciudad y el dojo reparten lo mismo")
-	var heist := Minigame.make("squeeze", "hideout", 0, {}, 7, 0) as SqueezeGame
-	var bench := Minigame.make("squeeze", "bench", 0, {}, 7, 0) as SqueezeGame
-	check(heist.code.target == bench.code.target and heist.code.balls == bench.code.balls and heist.size() == 3, "la misma semilla y nivel: el mismo código de tres bolas en el robo y en el banco")
-	var tight := Minigame.make("squeeze", "hideout", Hideouts.TIGHT.get("chest", 0), {}, 7, 2) as SqueezeGame
+	print("Dentro del minijuego: la misma semilla y nivel reparten lo mismo")
+	var sg1 := Minigame.make("squeeze", "bench", 0, {}, 7, 0) as SqueezeGame
+	var sg2 := Minigame.make("squeeze", "bench", 0, {}, 7, 0) as SqueezeGame
+	check(sg1.code.target == sg2.code.target and sg1.code.balls == sg2.code.balls and sg1.size() == 3, "la misma semilla y nivel: el mismo código de tres bolas")
+	var tight := Minigame.make("squeeze", "bench", Hideouts.TIGHT.get("chest", 0), {}, 7, 2) as SqueezeGame
 	check(tight.size() == 5 and tight.code.distance() >= 4, "el baúl, apretado, en difícil: cinco bolas a cuatro cambios")
 
 	quit(qa.summary())

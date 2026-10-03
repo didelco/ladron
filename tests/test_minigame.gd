@@ -288,22 +288,21 @@ func _init() -> void:
 		cup_level.append(sum / 8)
 	check(cup_level[0] < cup_level[1] and cup_level[1] < cup_level[2], "ventosa por niveles: %.1f s fácil, %.1f s medio, %.1f s difícil" % cup_level)
 
-	print("Colarse en un escondite: el código de colores")
-	# The same puzzle in a heist and at the dojo's bench, by level: 3, 4 and 5 balls.
+	print("ESCONDITE: el código de colores")
+	# The dojo's bench, by level: 3, 4 and 5 balls.
 	var sizes := [[], [], []]
 	for lv in 3:
-		for what in ["hideout", "bench"]:
-			var sg := Minigame.make("squeeze", what, 0, {}, 3 + lv, lv) as SqueezeGame
-			sizes[lv].append(sg.size())
-			check(sg.code != null and sg.steps == sg.size() and sg.code.target.size() == sg.size(), "%s nivel %d: un código de %d bolas, los pasos son las bolas" % [what, lv, sg.size()])
-	check(sizes[0] == [3, 3] and sizes[1] == [4, 4] and sizes[2] == [5, 5], "fácil 3 bolas, medio 4, difícil 5, en el robo y en el banco igual: %s" % [sizes])
+		var sg := Minigame.make("squeeze", "bench", 0, {}, 3 + lv, lv) as SqueezeGame
+		sizes[lv].append(sg.size())
+		check(sg.code != null and sg.steps == sg.size() and sg.code.target.size() == sg.size(), "nivel %d: un código de %d bolas, los pasos son las bolas" % [lv, sg.size()])
+	check(sizes[0] == [3] and sizes[1] == [4] and sizes[2] == [5], "fácil 3 bolas, medio 4, difícil 5: %s" % [sizes])
 	# Never dealt made already, whatever the dice.
 	var dealt_done := 0
 	var far_enough := true
 	for s in 300:
 		var lv := s % 3
 		var tight := (s / 3) % 2
-		var sg := Minigame.make("squeeze", "hideout", tight, {}, 1000 + s, lv) as SqueezeGame
+		var sg := Minigame.make("squeeze", "bench", tight, {}, 1000 + s, lv) as SqueezeGame
 		if sg.code.solved() or sg.done:
 			dealt_done += 1
 		if sg.code.distance() < ColourCode.swaps_for(lv, tight):
@@ -312,7 +311,7 @@ func _init() -> void:
 	check(far_enough, "... y todos a los cambios que pide el nivel por lo menos (apretado, uno más)")
 	check(ColourCode.swaps_for(0, 0) == 1 and ColourCode.swaps_for(0, 1) == 2 and ColourCode.swaps_for(1, 0) == 2 and ColourCode.swaps_for(2, 1) == 4, "cambios mínimos: 1 fácil, 2 medio, 3 difícil; apretado, uno más (nunca más de bolas - 1)")
 	# The E that opened it is not a pick; a swap changes the two balls of place.
-	var sq := Minigame.make("squeeze", "hideout", 0, {"action": true}, 3, 1) as SqueezeGame
+	var sq := Minigame.make("squeeze", "bench", 0, {"action": true}, 3, 1) as SqueezeGame
 	sq.tick({"action": true}, DT)
 	check(sq.picked() < 0 and sq.code.swaps == 0 and sq.events.is_empty(), "la E que abrió el juego no coge ninguna bola")
 	sq.tick({}, DT)
@@ -344,15 +343,11 @@ func _init() -> void:
 		var away := sg.code.distance()
 		var made := solve(sg)
 		check(made == away and sg.done, "nivel %d: hecho en %d cambios, los justos (%d bolas)" % [lv, made, sg.size()])
-	# Watched is for the box only: the puzzle is the same.
-	var seen := Minigame.make("squeeze", "hideout", 0, {}, 3, 1) as SqueezeGame
-	seen.watched = true
-	check(solve(seen) >= 1 and seen.done, "a la vista se juega igual: solo cuesta el tiempo")
-	var hard := Minigame.make("squeeze", "hideout", 1, {}, 3, 2) as SqueezeGame
+	var hard := Minigame.make("squeeze", "bench", 1, {}, 3, 2) as SqueezeGame
 	check(hard.size() == 5 and hard.code.distance() >= 4, "difícil y apretado: cinco bolas, a cuatro cambios")
 	check(hard.tick({"cancel": true}, DT) == "quit", "B (rodar) lo deja")
 	# Up and down do nothing: the row is a row.
-	var dirs := Minigame.make("squeeze", "hideout", 0, {}, 3, 1) as SqueezeGame
+	var dirs := Minigame.make("squeeze", "bench", 0, {}, 3, 1) as SqueezeGame
 	for k in ["up", "down"]:
 		tap(dirs, k)
 	check(dirs.cursor == 0 and dirs.picked() < 0 and dirs.code.swaps == 0, "arriba y abajo no hacen nada")

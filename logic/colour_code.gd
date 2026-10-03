@@ -1,12 +1,11 @@
 class_name ColourCode
 extends RefCounted
-## The colour code of a hideout: the one puzzle of getting into one, in a
-## heist (Hideouts.start, Minigame "squeeze") and at the dojo's ESCONDITE
-## (BenchTrial), the same whichever way it is launched. A code of colours is
-## shown in order (target); the same colours sit under it in a row, out of
-## order (balls); a ball is picked and another picked after it to change the
-## two of place (pick, swap), never their colour, until the row reads as the
-## code (solved). Nothing to lose but time: every swap is out in the open.
+## The colour code of the dojo's ESCONDITE bench (BenchTrial, Minigame
+## "squeeze", SqueezeGame). A code of colours is shown in order (target); the
+## same colours sit under it in a row, out of order (balls); a ball is picked
+## and another picked after it to change the two of place (pick, swap),
+## never their colour, until the row reads as the code (solved). Nothing to
+## lose but time.
 ##
 ## By difficulty: more balls, and more swaps the start is from the answer at
 ## the least (BALLS_LEVEL, SWAPS_LEVEL; a tight piece asks one swap more).

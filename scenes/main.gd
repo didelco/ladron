@@ -96,6 +96,12 @@ var story_pick := 1
 var size := "small"
 ## the generative mode's museum theme (Themes), "" for any theme mixed
 var theme := ""
+## the seed the museum on screen was laid out with, generative only — with
+## size and theme, MuseumCode.encode turns it into the plan's shareable code.
+var last_map_seed := 0
+## a seed typed in as a code (MuseumCode.decode), waiting for _new_round's
+## generative "else" to use once instead of a random one; -1 once spent.
+var pending_seed := -1
 ## one thief or two on the same keyboard
 var players := 1
 var sound_on := true
@@ -482,10 +488,11 @@ func _show_generative_menu(on := "") -> void:
 		{"id": "size", "label": Text.t(SIZE_NAMES[size]), "sticker": {"small": "mapa-pequeno.png", "medium": "mapa-mediano.png", "large": "mapa-grande.png"}[size], "description": Text.t("MENU_HELP_SIZE"), "call": _pick_setting.bind("size")},
 		{"id": "theme", "label": Text.t(THEME_NAMES[theme]), "picture": _theme_picture(theme), "description": Text.t("MENU_HELP_THEME"), "call": _pick_setting.bind("theme")},
 		{"id": "players", "label": "%dP" % players, "sticker": "jugadores-coop.png", "description": Text.t("MENU_HELP_PLAYERS"), "call": _pick_generative_players},
+		{"id": "code", "label": Text.t("MENU_CODE_CARD"), "sticker": "ganzua.png", "description": Text.t("MENU_HELP_CODE"), "call": _show_code_entry},
 		{"id": "start", "label": Text.t("MENU_START"), "sticker": "aceptar.png", "call": _start.bind("generative", players)},
 		{"id": "back", "label": Text.t("MENU_BACK"), "sticker": "volver.png", "call": _show_title.bind("generative", false)},
 	]
-	var selected := 4
+	var selected := 5
 	for i in choices.size():
 		if choices[i].id == on:
 			selected = i
@@ -563,6 +570,47 @@ func _pick_generative_players() -> void:
 func _generative_players_picked(n: int) -> void:
 	players = n
 	_show_generative_menu("players")
+
+
+## Another museum's code, typed in (MuseumCode.decode) instead of a random
+## one: a plain text field, keyboard only — the sticker carousel doesn't do
+## free text, so this one screen leaves it for Hud.show_menu's own panel.
+## warning: the last code tried, if it did not decode, under the field.
+func _show_code_entry(warning := "") -> void:
+	phase = "generative_code"
+	hub.visible = false
+	hud.show_menu([
+		{"title": Text.t("MENU_CODE_TITLE"), "size": 36},
+		{"text": Text.t("MENU_CODE_HELP"), "colour": Hud.C.dim, "wrap": true, "width": 420},
+		{"field": {"id": "code_field", "hint": "AAAA", "max_length": MuseumCode.CODE_DIGITS, "width": 180, "call": _submit_code}},
+		{"text": warning, "id": "code_warning", "colour": Hud.C.alert},
+		{"buttons": [
+			{"text": Text.t("MENU_BACK"), "call": _show_generative_menu.bind("code"), "colour": Hud.C.dim},
+			{"text": Text.t("MENU_CODE_GO"), "call": func() -> void: _submit_code(hud.field_text("code_field"))},
+		], "row": true},
+	], "generative_code")
+
+
+## A typed code applied: size and theme swap in like _set_setting, and the
+## seed waits in pending_seed for the next generative round (_new_round's
+## "else") to pick up instead of a random one. Back to Generative with it
+## already set, rather than a separate confirmation screen.
+func _submit_code(code: String) -> void:
+	var found := MuseumCode.decode(code)
+	if found.is_empty():
+		_show_code_entry(Text.t("MENU_CODE_BAD"))
+		return
+	size = found.size
+	theme = found.theme
+	pending_seed = found.seed
+	options.save()
+	_show_generative_menu("start")
+
+
+## The plan's code, for the player to paste or read aloud elsewhere.
+func copy_museum_code(code: String) -> void:
+	DisplayServer.clipboard_set(code)
+	hud.set_text("code_status", Text.t("BRIEF_CODE_COPIED"), Hud.C.green)
 
 
 func _start(which: String, n: int, picked := false) -> void:
@@ -814,7 +862,7 @@ func _again() -> void:
 
 ## Where back (Escape, Backspace or B: MenuKeys) goes somewhere, and so
 ## sounds.
-const BACK_PHASES := ["menu", "pick", "generative", "challenge", "prologue", "ending", "brief", "paused", "settings", "caught", "escaped"]
+const BACK_PHASES := ["menu", "pick", "generative", "generative_code", "challenge", "prologue", "ending", "brief", "paused", "settings", "caught", "escaped"]
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -921,6 +969,7 @@ func _back() -> void:
 		"menu": _show_title()
 		"pick": hub._pick("back")
 		"generative": _show_title("generative")
+		"generative_code": _show_generative_menu("code")
 		"challenge": challenges.show_menu()
 		"prologue": briefing.prologue_back()
 		"ending": _show_title()
@@ -1104,7 +1153,9 @@ func _new_round(n: int) -> void:
 		_lay_out(n, saved_map.seed)
 	else:
 		Sim.custom = {"theme": theme} if theme != "" else {}
-		_lay_out(n, randi() % (MuseumCode.MAX_SEED + 1))
+		last_map_seed = pending_seed if pending_seed >= 0 else randi() % (MuseumCode.MAX_SEED + 1)
+		pending_seed = -1
+		_lay_out(n, last_map_seed)
 	stride = [0.0, 0.0, 0.0, 0.0]
 	HeistStats.reset()
 	caught_thief = -1
@@ -1176,6 +1227,9 @@ func reset_plan_nav() -> void:
 ## same choice. MenuKeys.of still says what E, Space, Escape... mean, as
 ## everywhere else.
 func _plan_nav_input(event: InputEvent) -> void:
+	# The hints row under the row below (BriefScreens.show) follows
+	# whichever hand just moved, same as hands.last_pad above.
+	hud.set_hints_pad(hands.last_pad)
 	if event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
 			KEY_UP, KEY_W, KEY_LEFT, KEY_A:
